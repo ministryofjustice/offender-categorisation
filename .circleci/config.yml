@@ -3,6 +3,12 @@ defaults: &defaults
   environment:
     JAVA_TOOL_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
 
+deploy_container_config: &deploy_container_config
+  docker:
+  - image: ${ECR_ENDPOINT}/cloud-platform/tools:circleci
+    environment:
+      GITHUB_TEAM_NAME_SLUG: categorisation-tool
+
 version: 2
 jobs:
   build:
