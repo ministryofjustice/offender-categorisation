@@ -9,6 +9,14 @@ deploy_container_config: &deploy_container_config
     environment:
       GITHUB_TEAM_NAME_SLUG: categorisation-tool
 
+install_aws_cli: &install_aws_cli
+  run:
+    name: Set up aws
+    command: |
+      sudo apt-get --assume-yes install python3-pip
+      sudo pip3 install awscli
+      $(aws ecr get-login --region eu-west-1 --no-include-email)
+
 version: 2
 jobs:
   build:
@@ -97,6 +105,7 @@ jobs:
         docker_layer_caching: true
     - attach_workspace:
         at: ~/repo
+    - *install_aws_cli
     - run:
         name: Kubectl deployment dev setup
         command: |
