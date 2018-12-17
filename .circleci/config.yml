@@ -72,6 +72,7 @@ jobs:
       - attach_workspace:
           at: ~/app
       - setup_remote_docker
+      - *install_aws_cli
       - run:
           name: Build container and publish to docker hub
           command: |
@@ -105,7 +106,6 @@ jobs:
         docker_layer_caching: true
     - attach_workspace:
         at: ~/repo
-    - *install_aws_cli
     - run:
         name: Kubectl deployment dev setup
         command: |
