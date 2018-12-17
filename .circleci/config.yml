@@ -67,6 +67,8 @@ jobs:
       - run:
           name: Build container and publish to docker hub
           command: |
+            login="$(aws ecr get-login --region eu-west-1 --no-include-email)"
+            ${login}
             VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
             GIT_REF=$(egrep gitRef build-info.json  | awk -F"\"" '{print $8}')
             BUILD_VERSION=${VERSION}
