@@ -40,7 +40,7 @@ In config.js you can see all the required variables. These are set with defaults
 
 `npm run lint`
 
-### Run tests
+### Run tests 
 
 `npm run test`
 
