@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: categorisation-tool
-          image: 926803513772.dkr.ecr.eu-west-1.amazonaws.com/offender-management/offender-management-allocation-manager:latest
+          image: 926803513772.dkr.ecr.eu-west-1.amazonaws.com/omic/categorisation-tool:latest
           imagePullPolicy: Always
           command: ['sh', '-c', "bundle exec puma -p 3000 -C ./config/puma_prod.rb --pidfile /tmp/server.pid"]
           ports:
@@ -52,11 +52,11 @@ spec:
                 secretKeyRef:
                   name: allocation-manager-secrets
                   key: offender_management_allocation_api
-            - name: SENTRY_DSN
-              valueFrom:
-                secretKeyRef:
-                  name: allocation-manager-secrets
-                  key: sentry_dsn
+         #   - name: SENTRY_DSN
+         #     valueFrom:
+         #       secretKeyRef:
+         #         name: allocation-manager-secrets
+         #         key: sentry_dsn
             - name: NOMIS_OAUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:
