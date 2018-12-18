@@ -63,7 +63,7 @@ jobs:
     - store_test_results:
         path: ./reports
 
-  build_docker:
+  copy_image_to_ecs:
     <<: *defaults
     docker:
       - image: circleci/node:8.11.1-browsers
@@ -72,29 +72,55 @@ jobs:
       - attach_workspace:
           at: ~/app
       - setup_remote_docker
+      - *install_aws_cli
       - run:
-          name: Build container and publish to docker hub
+          name: publish image to ecs
           command: |
             VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            GIT_REF=$(egrep gitRef build-info.json  | awk -F"\"" '{print $8}')
             BUILD_VERSION=${VERSION}
 
-            docker build --rm=false . \
-               --build-arg BUILD_NUMBER=$VERSION \
-               --build-arg GIT_REF=$GIT_REF \
-               --tag "mojdigitalstudio/categorisation-tool:$BUILD_VERSION" \
-               --label "maintainer=lucy.bennett@digital.justice.gov.uk" \
-               --label "build.number=$CIRCLE_BUILD_NUM" \
-               --label "build.url=$CIRCLE_BUILD_URL" \
-               --label "build.gitref=$GIT_REF"
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker pull mojdigitalstudio/categorisation-tool:$BUILD_VERSION
 
-            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-              # publish to docker hub as the tag
-             docker login -u $DOCKER_USER -p $DOCKER_PASS
-             docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION mojdigitalstudio/categorisation-tool:latest
-             docker push mojdigitalstudio/categorisation-tool:$BUILD_VERSION
-             docker push mojdigitalstudio/categorisation-tool:latest
-            fi
+            docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${CIRCLE_SHA1}"
+            login="$(aws ecr get-login --region eu-west-1 --no-include-email)"
+            ${login}
+            docker push "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${CIRCLE_SHA1}"
+            docker push "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:latest"
+
+
+  build_docker:
+    <<: *defaults
+    docker:
+    - image: circleci/node:8.11.1-browsers
+    steps:
+    - checkout
+    - attach_workspace:
+        at: ~/app
+    - setup_remote_docker
+    - run:
+        name: Build container and publish to docker hub
+        command: |
+          VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
+          GIT_REF=$(egrep gitRef build-info.json  | awk -F"\"" '{print $8}')
+          BUILD_VERSION=${VERSION}
+
+          docker build --rm=false . \
+             --build-arg BUILD_NUMBER=$VERSION \
+             --build-arg GIT_REF=$GIT_REF \
+             --tag "mojdigitalstudio/categorisation-tool:$BUILD_VERSION" \
+             --label "maintainer=lucy.bennett@digital.justice.gov.uk" \
+             --label "build.number=$CIRCLE_BUILD_NUM" \
+             --label "build.url=$CIRCLE_BUILD_URL" \
+             --label "build.gitref=$GIT_REF"
+
+          if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+            # publish to docker hub as the tag
+           docker login -u $DOCKER_USER -p $DOCKER_PASS
+           docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION mojdigitalstudio/categorisation-tool:latest
+           docker push mojdigitalstudio/categorisation-tool:$BUILD_VERSION
+           docker push mojdigitalstudio/categorisation-tool:latest
+          fi
 
   deploy_staging:
     <<: *deploy_container_config
@@ -134,3 +160,6 @@ workflows:
       - build_docker:
           requires:
           - test
+      - copy_image_to_ecs:
+          requires:
+          - build_docker
