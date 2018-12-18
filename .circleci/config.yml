@@ -83,6 +83,7 @@ jobs:
             docker pull mojdigitalstudio/categorisation-tool:$BUILD_VERSION
 
             docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION "${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1}"
+            docker tag "${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1}" "${ECR_ENDPOINT}/omic/categorisation-tool:latest"
             login="$(aws ecr get-login --region eu-west-1 --no-include-email)"
             ${login}
             docker push "${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1}"
