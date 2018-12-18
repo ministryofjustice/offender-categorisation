@@ -123,7 +123,7 @@ jobs:
            docker push mojdigitalstudio/categorisation-tool:latest
           fi
 
-  deploy_staging:
+  deploy_dev:
     <<: *deploy_container_config
     steps:
     - checkout
@@ -165,3 +165,6 @@ workflows:
       - copy_image_to_ecs:
           requires:
           - build_docker
+      - deploy_dev:
+          requires:
+          - copy_image_to_ecs
