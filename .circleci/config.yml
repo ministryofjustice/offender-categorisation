@@ -136,9 +136,8 @@ jobs:
         command: |
           $(aws ecr get-login --region eu-west-1 --no-include-email)
           setup-kube-auth
-          kubectl config use-context dev
     - deploy:
-        name: Deploy to staging
+        name: Deploy to dev
         command: |
 
           kubectl set image -f deploy/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1} --local -o yaml \
