@@ -82,11 +82,11 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker pull mojdigitalstudio/categorisation-tool:$BUILD_VERSION
 
-            docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${CIRCLE_SHA1}"
+            docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION "${ECR_ENDPOINT}/mojdigitalstudio/categoriation-tool:${CIRCLE_SHA1}"
             login="$(aws ecr get-login --region eu-west-1 --no-include-email)"
             ${login}
-            docker push "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:${CIRCLE_SHA1}"
-            docker push "${ECR_ENDPOINT}/${GITHUB_TEAM_NAME_SLUG}/${REPONAME}:latest"
+            docker push "${ECR_ENDPOINT}/mojdigitalstudio/categoriation-tool:${CIRCLE_SHA1}"
+            docker push "${ECR_ENDPOINT}/mojdigitalstudio/categoriation-tool:latest"
 
 
   build_docker:
