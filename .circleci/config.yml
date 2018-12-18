@@ -90,6 +90,7 @@ jobs:
 
             if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               # publish to docker hub as the tag
+             docker login -u $DOCKER_USER -p $DOCKER_PASS
              docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION mojdigitalstudio/categorisation-tool:latest
              docker push mojdigitalstudio/categorisation-tool:$BUILD_VERSION
              docker push mojdigitalstudio/categorisation-tool:latest
