@@ -1,11 +1,16 @@
 const { equals, isNilOrEmpty, getFieldDetail, getFieldName, getIn } = require('../utils/functionalHelpers')
 const { validate } = require('../utils/fieldValidation')
+const logger = require('../../log.js')
 
 module.exports = function createSomeService(formClient) {
   async function getFormResponse(userId) {
-    const data = await formClient.getFormDataForUser(userId)
-
-    return data.rows[0] || {}
+    try {
+      const data = await formClient.getFormDataForUser(userId)
+      return data.rows[0] || {}
+    } catch (error) {
+      logger.error(error)
+    }
+    return {}
   }
 
   async function update({ userId, formId, formObject, config, userInput, formSection, formName }) {
