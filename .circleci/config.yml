@@ -145,7 +145,7 @@ jobs:
             -f ./deploy/ingress.yaml \
             -f ./deploy/service.yaml \
             -f ./deploy/deployment.yaml
-          kubectl describe services --namespace categorisation-tool-dev
+          echo ${kubectl describe services --namespace categorisation-tool-dev}
 
 workflows:
   version: 2
