@@ -19,7 +19,6 @@ function get(name, fallback, log, options = {}) {
   throw new Error(`Missing env var ${name}`)
 }
 
-
 module.exports = {
   sessionSecret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),
   db: {
