@@ -38,5 +38,5 @@ module.exports = {
     apiClientId: get('API_CLIENT_ID', 'licences', true),
     apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
   },
-  domain: 'http://localhost:3000',
+  domain: `http://${get('HOSTNAME', 'localhost:3000', true)}`,
 }
