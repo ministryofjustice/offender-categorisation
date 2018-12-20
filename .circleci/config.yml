@@ -136,6 +136,7 @@ jobs:
         command: |
           $(aws ecr get-login --region eu-west-1 --no-include-email)
           setup-kube-auth
+          kubectl config use-context dev
     - deploy:
         name: Deploy to dev
         command: |
@@ -163,6 +164,12 @@ workflows:
       - copy_image_to_ecs:
           requires:
           - build_docker
+          filters:
+            branches:
+              only: master
       - deploy_dev:
           requires:
           - copy_image_to_ecs
+          filters:
+            branches:
+              only: master
