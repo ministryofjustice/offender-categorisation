@@ -55,12 +55,12 @@ spec:
                   name: categorisation-tool-rds-dev
                   key: database_name
             - name: API_CLIENT_ID
-                valueFrom:
-                  secretKeyRef:
-                    name: categorisation-tool-secrets
-                    key: api_client_id
+              valueFrom:
+                secretKeyRef:
+                  name: categorisation-tool-secrets
+                  key: api_client_id
             - name: API_CLIENT_SECRET
-                valueFrom:
-                  secretKeyRef:
-                    name: categorisation-tool-secrets
-                    key: api_client_secret
+              valueFrom:
+                secretKeyRef:
+                  name: categorisation-tool-secrets
+                  key: api_client_secret
