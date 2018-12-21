@@ -182,12 +182,16 @@ module.exports = function createApp({ signInService, formService }) {
   app.use('/tasklist/', createTasklistRouter({ formService, authenticationMiddleware }))
   app.use('/form/', createFormRouter({ formService, authenticationMiddleware }))
 
+  app.use((req, res, next) => {
+    next(new Error('Not found'))
+  })
+
   app.use(renderErrors)
 
   return app
 }
 
-function renderErrors(error, req, res) {
+function renderErrors(error, req, res, next) {
   // eslint-disable-line no-unused-vars
   logger.error(error)
 
