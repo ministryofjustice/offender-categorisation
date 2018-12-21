@@ -73,7 +73,7 @@ describe('POST /section/form', () => {
       .expect(() => {
         expect(formService.update).toBeCalledTimes(1)
         expect(formService.update).toBeCalledWith({
-          userId: 'user1',
+          userId: 'CA_USER_TEST',
           formId: undefined,
           formObject: {},
           config: formConfig[formName],
