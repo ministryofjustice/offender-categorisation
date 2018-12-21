@@ -53,7 +53,7 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
       const formPageConfig = formConfig[form]
 
       const updatedFormObject = await formService.update({
-        userId: 'user1',
+        userId: req.user.username,
         formId: res.locals.formId,
         formObject: res.locals.formObject,
         config: formPageConfig,
