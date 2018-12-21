@@ -5,6 +5,7 @@ const csurf = require('csurf')
 const compression = require('compression')
 const passport = require('passport')
 const auth = require('./authentication/auth')
+const { healthFactory } = require('./services/health')
 
 const { authenticationMiddleware } = auth
 const bodyParser = require('body-parser')
@@ -115,6 +116,11 @@ module.exports = function createApp({ signInService, formService }) {
   ;['../node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
     app.use('/assets/images/icons', express.static(path.join(__dirname, dir), cacheControl))
   })
+  app.use('/favicon.ico', express.static(path.join(__dirname, '../assets/images/favicon.ico'), cacheControl))
+
+  const { health } = healthFactory(config.nomis.elite2.url)
+  app.use('/health', health)
+  app.use('/info', health)
 
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'
@@ -191,7 +197,7 @@ module.exports = function createApp({ signInService, formService }) {
   return app
 }
 
-function renderErrors(error, req, res, next) {
+function renderErrors(error, req, res) {
   // eslint-disable-line no-unused-vars
   logger.error(error)
 

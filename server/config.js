@@ -37,6 +37,9 @@ module.exports = {
     },
     apiClientId: get('API_CLIENT_ID', 'licences', true),
     apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
+    elite2: {
+      url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080/', true),
+    },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
 }

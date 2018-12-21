@@ -1,6 +1,6 @@
 {
-  "name": "gov-starter",
-  "version": "0.0.0",
+  "name": "categorisation-tool",
+  "version": "0.0.1",
   "scripts": {
     "start": "node server.js",
     "start:dev": "npm build && DEBUG=gov-starter-server* nodemon server.js | bunyan -o short",
@@ -26,6 +26,7 @@
     "delay": "2500"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "bunyan": "^1.8.12",
     "bunyan-format": "^0.2.1",
