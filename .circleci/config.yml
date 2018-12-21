@@ -161,6 +161,9 @@ workflows:
       - build_docker:
           requires:
           - test
+          filters:
+            branches:
+              only: master
       - copy_image_to_ecs:
           requires:
           - build_docker
