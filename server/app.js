@@ -15,7 +15,7 @@ const createTasklistRouter = require('./routes/tasklist')
 const sassMiddleware = require('node-sass-middleware')
 const moment = require('moment')
 const path = require('path')
-const log = require('bunyan-request-logger')()
+const log = require('bunyan-request-logger')({ name: 'Cat tool http' })
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 
