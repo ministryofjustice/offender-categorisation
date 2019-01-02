@@ -7,7 +7,7 @@ A simple starter kit to start writing node app with the gov uk front end toolkit
 
 
 ## Getting started
-The easiest way to get started is to use docker compose to download and run the three required containers.
+The easiest way to get started is to use docker compose to download and run the three required containers. 
 
 `docker-compose pull`
 
