@@ -28,17 +28,30 @@ module.exports = {
     database: get('DB_NAME', 'form-builder', true),
     sslEnabled: get('DB_SSL_ENABLED', 'false', true),
   },
-  nomis: {
-    authUrl: get('NOMIS_AUTH_URL', 'http://localhost:8080/auth', true),
-    authExternalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:8080/auth'), true),
-    timeout: {
-      response: 30000,
-      deadline: 35000,
+  apis: {
+    oauth2: {
+      url: get('NOMIS_AUTH_URL', 'http://localhost:8080/auth', true),
+      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:8080/auth'), true),
+      timeout: {
+        response: 30000,
+        deadline: 35000,
+      },
+      apiClientId: get('API_CLIENT_ID', 'licences', true),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
     },
-    apiClientId: get('API_CLIENT_ID', 'licences', true),
-    apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
     elite2: {
       url: get('ELITE2API_ENDPOINT_URL', 'http://localhost:8080/', true),
+      timeout: {
+        response: get('ELITE2API_ENDPOINT_TIMEOUT_RESPONSE', 30000, true),
+        deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),
+      },
+    },
+    custody: {
+      url: get('CUSTODY_ENDPOINT_URL', 'http://localhost:8080/', true),
+      timeout: {
+        response: get('CUSTODY_ENDPOINT_TIMEOUT_RESPONSE', 30000, true),
+        deadline: get('CUSTODY_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),
+      },
     },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
