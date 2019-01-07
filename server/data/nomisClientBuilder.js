@@ -1,106 +1,93 @@
-const logger = require('../../log');
-const config = require('../config');
-const {merge, pipe} = require('../utils/functionalHelpers');
-const superagent = require('superagent');
-const {NoTokenError} = require('../utils/errors');
+/* eslint-disable no-unused-vars */
+const logger = require('../../log')
+const config = require('../config')
+const superagent = require('superagent')
+const { NoTokenError } = require('../utils/errors')
 
 const timeoutSpec = {
-    response: config.apis.elite2.timeout.response,
-    deadline: config.apis.elite2.timeout.deadline
-};
+  response: config.apis.elite2.timeout.response,
+  deadline: config.apis.elite2.timeout.deadline,
+}
 
-const apiUrl = config.apis.elite2.url;
-const invalidDate = 'Invalid date';
+const apiUrl = config.apis.elite2.url
 
 module.exports = token => {
+  const nomisGet = nomisGetBuilder(token)
+  const nomisPost = nomisPushBuilder('post', token)
+  const nomisPut = nomisPushBuilder('put', token)
 
-    const nomisGet = nomisGetBuilder(token);
-    const nomisPost = nomisPushBuilder('post', token);
-    const nomisPut = nomisPushBuilder('put', token);
-
-    return {
-
-        getOffendersInPrison: function(agencyId) {
-            const path = `${apiUrl}/bookings/${agencyId}`;
-            return nomisGet({path});
-        },
-
-    };
-};
+  return {
+    getOffendersInPrison(agencyId) {
+      const path = `${apiUrl}/bookings/${agencyId}`
+      return nomisGet({ path })
+    },
+  }
+}
 
 function nomisGetBuilder(token) {
+  return async ({ path, query = '', headers = {}, responseType = '' } = {}) => {
+    if (!token) {
+      throw new NoTokenError()
+    }
 
-    return async ({path, query = '', headers = {}, responseType = ''} = {}) => {
+    try {
+      const result = await superagent
+        .get(path)
+        .query(query)
+        .set('Authorization', `Bearer ${token}`)
+        .set(headers)
+        .responseType(responseType)
+        .timeout(timeoutSpec)
 
-        if (!token) {
-            throw new NoTokenError();
-        }
+      return result.body
+    } catch (error) {
+      logger.warn('Error calling elite2api')
+      logger.warn(error)
 
-        try {
-            const result = await superagent
-                .get(path)
-                .query(query)
-                .set('Authorization', `Bearer ${token}`)
-                .set(headers)
-                .responseType(responseType)
-                .timeout(timeoutSpec);
-
-            return result.body;
-
-        } catch (error) {
-
-            logger.warn('Error calling elite2api');
-            logger.warn(error);
-
-            throw error;
-        }
-    };
+      throw error
+    }
+  }
 }
 
 function nomisPushBuilder(verb, token) {
+  const updateMethod = {
+    put,
+    post,
+  }
 
-    const updateMethod = {
-        put: put,
-        post: post
-    };
+  return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
+    if (!token) {
+      throw new NoTokenError()
+    }
 
-    return async ({path, body = '', headers = {}, responseType = ''} = {}) => {
+    try {
+      const result = await updateMethod[verb](token, path, body, headers, responseType)
+      return result.body
+    } catch (error) {
+      logger.warn('Error calling elite2api')
+      logger.warn(error)
 
-        if (!token) {
-            throw new NoTokenError();
-        }
-
-        try {
-            const result = await updateMethod[verb](token, path, body, headers, responseType);
-            return result.body;
-
-        } catch (error) {
-
-            logger.warn('Error calling elite2api');
-            logger.warn(error);
-
-            throw error;
-        }
-    };
+      throw error
+    }
+  }
 }
 
 async function post(token, path, body, headers, responseType) {
-    return superagent
-        .post(path)
-        .send(body)
-        .set('Authorization', `Bearer ${token}`)
-        .set(headers)
-        .responseType(responseType)
-        .timeout(timeoutSpec);
+  return superagent
+    .post(path)
+    .send(body)
+    .set('Authorization', `Bearer ${token}`)
+    .set(headers)
+    .responseType(responseType)
+    .timeout(timeoutSpec)
 }
 
 async function put(token, path, body, headers, responseType) {
-    return superagent
-        .put(path)
-        .send(body)
-        .set('Authorization', `Bearer ${token}`)
-        .set(headers)
-        .responseType(responseType)
-        .timeout(timeoutSpec);
+  return superagent
+    .put(path)
+    .send(body)
+    .set('Authorization', `Bearer ${token}`)
+    .set(headers)
+    .responseType(responseType)
+    .timeout(timeoutSpec)
 }
-

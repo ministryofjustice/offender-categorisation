@@ -2,7 +2,7 @@ const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const logger = require('../../log.js')
 
-module.exports = function Index({ offendersService, authenticationMiddleware, signInService}) {
+module.exports = function Index({ offendersService, authenticationMiddleware }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -13,12 +13,11 @@ module.exports = function Index({ offendersService, authenticationMiddleware, si
       logger.debug('GET /offendersInPrison')
       const offenders = await offendersService.getOffendersInPrison(
         res.locals.user,
-        'LEI',  //todo replace with current agency
+        'LEI' // todo replace with current agency
       )
       res.render('pages/offendersInPrison', { offenders })
     })
   )
 
   return router
-};
-
+}
