@@ -12,6 +12,7 @@ const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
+const createOffendersRouter = require('./routes/offendersInPrison')
 const sassMiddleware = require('node-sass-middleware')
 const moment = require('moment')
 const path = require('path')
@@ -25,7 +26,7 @@ const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-module.exports = function createApp({ signInService, formService }) {
+module.exports = function createApp({ signInService, formService, offendersService }) {
   const app = express()
 
   auth.init(signInService)
@@ -118,7 +119,7 @@ module.exports = function createApp({ signInService, formService }) {
   })
   app.use('/favicon.ico', express.static(path.join(__dirname, '../assets/images/favicon.ico'), cacheControl))
 
-  const { health } = healthFactory(config.nomis.elite2.url)
+  const { health } = healthFactory(config.apis.elite2.url)
   app.use('/health', health)
   app.use('/info', health)
 
@@ -159,7 +160,7 @@ module.exports = function createApp({ signInService, formService }) {
     next()
   })
 
-  const authLogoutUrl = `${config.nomis.authExternalUrl}/logout?client_id=${config.nomis.apiClientId}&redirect_uri=${
+  const authLogoutUrl = `${config.apis.oauth2.externalUrl}/logout?client_id=${config.apis.oauth2.apiClientId}&redirect_uri=${
     config.domain
   }`
 
@@ -186,6 +187,7 @@ module.exports = function createApp({ signInService, formService }) {
 
   app.get('/', (req, res) => res.render('pages/index'))
   app.use('/tasklist/', createTasklistRouter({ formService, authenticationMiddleware }))
+  app.use('/offendersInPrison/', createOffendersRouter({ offendersService, authenticationMiddleware, signInService }))
   app.use('/form/', createFormRouter({ formService, authenticationMiddleware }))
 
   app.use((req, res, next) => {
