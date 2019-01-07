@@ -1,9 +1,9 @@
 module.exports = {
-    unauthorisedError
-};
+  unauthorisedError,
+}
 
 function unauthorisedError() {
-    const error = new Error('Unauthorised access');
-    error.status = 403;
-    return error;
+  const error = new Error('Unauthorised access')
+  error.status = 403
+  return error
 }
