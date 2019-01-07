@@ -2,6 +2,7 @@
 
 {% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "button/macro.njk" import govukButton %}
+{% from "table/macro.njk" import govukTable %}
 
 {% block beforeContent %}
 {{ govukBreadcrumbs({
@@ -16,63 +17,52 @@
 
 {% block content %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">Categorisation tool</h1>
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-xl">Prisoner Categorisation</h1>
 
-    <p class="govuk-body">Use this package to:</p>
-
-    <ul class="govuk-list govuk-list--bullet">
-      <li>start an application built around form flows</li>
-      <li>authenticate against Nomis</li>
-      <li>persist form responses in json format</li>
-    </ul>
-
-    <p class="govuk-body">A short example flow is included.</p>
-
-    {{ govukButton({
-      text: "Start now",
-      href: "/tasklist",
-      classes: "govuk-button--start govuk-!-margin-top-2 govuk-!-margin-bottom-8"
+    {{ govukTable({
+    caption: "To be categorised",
+    firstCellIsHeader: false,
+    head: [
+    { text: "Name" },
+    { text: "Prison No." },
+    { text: "Days since referral", format: "numeric" },
+    { text: "Date required by" },
+    { text: "Status" },
+    { }
+    ],
+    rows: [
+    [
+    { text: "Ryder, Mark" },
+    { text: "A1234AA" },
+    { text: "4", format: "numeric" },
+    { text: "12/01/2019" },
+    { text: "Not categorised" },
+    {
+    text: govukButton({
+    text: "Start now",
+    href: "/tasklist",
+    classes: "govuk-button--start"
+    })
+    }
+    ],
+    [
+    { text: "Branston, David" },
+    { text: "A1234AA" },
+    { text: "5", format: "numeric" },
+    { text: "12/01/2019" },
+    { text: "Not categorised" },
+    {
+    text: govukButton({
+    text: "Start now",
+    href: "/tasklist",
+    classes: "govuk-button--start"
+    })
+    }
+    ]
+    ]
     }) }}
-
-    <h2 class="govuk-heading-m">Before you start</h2>
-
-    <p class="govuk-body">This application is not meant as a complete framework, there will inevitably be some modification required.</p>
-
-    <p class="govuk-body">Front end is built using GOV UK's Design System and their provided Nunjucks mixins. This can easily be swapped for something else.</p>
-
-    <p class="govuk-body">Out of the box, the application assumes one form response per user, this may well be unsuitable to your needs.</p>
-
-  </div>
-
-  <div class="govuk-grid-column-one-third">
-
-    <!-- The Related items component is not part of GOV.UK Frontend but will be styled if used in the Prototype Kit -->
-
-    <aside class="app-related-items" role="complementary">
-      <h2 class="govuk-heading-m" id="subsection-title">
-        Further information
-      </h2>
-      <nav role="navigation" aria-labelledby="subsection-title">
-        <ul class="govuk-list govuk-!-font-size-16">
-          <li>
-            <a class="govuk-link" href="https://github.com/noms-digital-studio/form-app-starter" target="_blank">
-              Repo
-            </a>
-          </li>
-          <li>
-            <a class="govuk-link" href="https://dsdmoj.atlassian.net/wiki/spaces/NFS/overview" target="_blank">
-              Confluence page
-            </a>
-          </li>
-          <li>
-            <a class="govuk-link" href="https://design-system.service.gov.uk/" target="_blank">
-              Gov UK Design System
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+{#  govuk-!-margin-top-2 govuk-!-margin-bottom-8 #}
 
   </div>
 </div>
