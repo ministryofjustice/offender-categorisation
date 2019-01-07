@@ -34,6 +34,8 @@ spec:
               value: "https://gateway.t3.nomis-api.hmpps.dsd.io/auth"
             - name: ELITE2API_ENDPOINT_URL
               value: "https://gateway.t3.nomis-api.hmpps.dsd.io/elite2api/"
+            - name: CUSTODY_ENDPOINT_URL
+              value: "https://gateway.t3.nomis-api.hmpps.dsd.io/custodyapi/"
             - name: INGRESS_URL
               value: "https://categorisation-tool.apps.cloud-platform-live-0.k8s.integration.dsd.io"
             - name: DB_PASS
