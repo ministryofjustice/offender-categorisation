@@ -10,6 +10,7 @@ const { healthFactory } = require('./services/health')
 const { authenticationMiddleware } = auth
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
+const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
 const createOffendersRouter = require('./routes/offendersInPrison')
@@ -185,7 +186,7 @@ module.exports = function createApp({ signInService, formService, offendersServi
     res.redirect(authLogoutUrl)
   })
 
-  app.get('/', (req, res) => res.render('pages/index'))
+  app.use('/', createHomeRouter({ authenticationMiddleware }))
   app.use('/tasklist/', createTasklistRouter({ formService, authenticationMiddleware }))
   app.use('/offendersInPrison/', createOffendersRouter({ offendersService, authenticationMiddleware, signInService }))
   app.use('/form/', createFormRouter({ formService, authenticationMiddleware }))
