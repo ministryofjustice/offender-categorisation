@@ -5,7 +5,14 @@ module.exports = function createUserService(nomisClientBuilder) {
     try {
       const nomisClient = nomisClientBuilder(token)
       const user = await nomisClient.getUser()
-      return user
+
+      const activeCaseLoads = user.activeCaseLoadId ? await nomisClient.getUserCaseLoads() : []
+      const activeCaseLoad = activeCaseLoads.find(caseLoad => caseLoad.caseLoadId === user.activeCaseLoadId)
+
+      return {
+        ...user,
+        activeCaseLoad,
+      }
     } catch (error) {
       logger.error('Error during getUser: ', error.stack)
       throw error
