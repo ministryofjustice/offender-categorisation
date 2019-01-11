@@ -31,9 +31,11 @@
           <li>
             {{ user.username }}
           </li>
+          {% if user.activeCaseLoad %}
           <li>
-            {{ user.activeCaseloadId }}
+            {{ user.activeCaseLoad.description }}
           </li>
+          {% endif %}
           <li>
             <a href="/logout">Sign out</a>
           </li>
