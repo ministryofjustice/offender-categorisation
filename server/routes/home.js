@@ -1,7 +1,7 @@
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-module.exports = function Index({ authenticationMiddleware }) {
+module.exports = function Index({ authenticationMiddleware, userService, offendersService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -9,7 +9,15 @@ module.exports = function Index({ authenticationMiddleware }) {
   router.get(
     '/',
     asyncMiddleware(async (req, res) => {
-      res.render('pages/index')
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user.activeCaseloadId = user.activeCaseLoadId
+
+      const offenders = await offendersService.getUncategorisedOffenders(
+        res.locals.user.token,
+        res.locals.user.activeCaseloadId
+      )
+
+      res.render('pages/index', { offenders })
     })
   )
 

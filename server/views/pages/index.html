@@ -2,7 +2,6 @@
 
 {% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "button/macro.njk" import govukButton %}
-{% from "table/macro.njk" import govukTable %}
 
 {% block beforeContent %}
 {{ govukBreadcrumbs({
@@ -17,54 +16,52 @@
 
 {% block content %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
+  <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">Prisoner Categorisation</h1>
-
-    {{ govukTable({
-    caption: "To be categorised",
-    firstCellIsHeader: false,
-    head: [
-    { text: "Name" },
-    { text: "Prison No." },
-    { text: "Days since referral", format: "numeric" },
-    { text: "Date required by" },
-    { text: "Status" },
-    { }
-    ],
-    rows: [
-    [
-    { text: "Ryder, Mark" },
-    { text: "A1234AA" },
-    { text: "4", format: "numeric" },
-    { text: "12/01/2019" },
-    { text: "Not categorised" },
-    {
-    text: govukButton({
-    text: "Start now",
-    href: "/tasklist",
-    classes: "govuk-button--start"
-    })
-    }
-    ],
-    [
-    { text: "Branston, David" },
-    { text: "A1234AA" },
-    { text: "5", format: "numeric" },
-    { text: "12/01/2019" },
-    { text: "Not categorised" },
-    {
-    text: govukButton({
-    text: "Start now",
-    href: "/tasklist",
-    classes: "govuk-button--start"
-    })
-    }
-    ]
-    ]
-    }) }}
-{#  govuk-!-margin-top-2 govuk-!-margin-bottom-8 #}
-
   </div>
+  {% if offenders | length > 0 %}
+  <div>{{ offenders }}</div>
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Name</th>
+      <th class="govuk-table__header" scope="col">Prison no.</th>
+      <th class="govuk-table__header" scope="col">Days since referral</th>
+      <th class="govuk-table__header" scope="col">Date required by</th>
+      <th class="govuk-table__header" scope="col">Status</th>
+      <th class="govuk-table__header" scope="col"></th>
+    </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    {% for row in offenders %}
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">{{ row.displayName }}</td>
+      <td class="govuk-table__cell">{{ row.offenderNo }}</td>
+      <td class="govuk-table__cell">{{ row.daysSinceSentence }}</td>
+      <td class="govuk-table__cell">{{ row.dateRequired }}</td>
+      <td class="govuk-table__cell">{{ row.status }}</td>
+      <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+        {{ govukButton({
+        text: "Start now",
+        href: "/tasklist",
+        classes: "govuk-button--start"
+        }) }}
+      </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+  {% else %}
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">No uncategorised offenders found</h1>
+  </div>
+  {% endif %}
+
+
 </div>
+
+</ol>
 {% endblock %}
 

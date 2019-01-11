@@ -2,7 +2,8 @@
 const logger = require('../../log')
 const config = require('../config')
 const superagent = require('superagent')
-const { NoTokenError } = require('../utils/errors')
+const querystring = require('querystring')
+const { generateOauthClientToken } = require('../authentication/clientCredentials')
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,
@@ -10,6 +11,7 @@ const timeoutSpec = {
 }
 
 const apiUrl = config.apis.elite2.url
+const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
 
 module.exports = token => {
   const nomisGet = nomisGetBuilder(token)
@@ -17,8 +19,16 @@ module.exports = token => {
   const nomisPut = nomisPushBuilder('put', token)
 
   return {
-    getOffendersInPrison(agencyId) {
-      const path = `${apiUrl}/bookings/${agencyId}`
+    getUncategorisedOffenders(agencyId) {
+      const path = `${apiUrl}api/offender-assessments/category/${agencyId}/uncategorised`
+      return nomisGet({ path })
+    },
+    getSentenceDatesForOffenders(bookingIds) {
+      const path = `${apiUrl}api/offender-sentences`
+      return nomisPost({ path, body: bookingIds })
+    },
+    getUser() {
+      const path = `${apiUrl}api/users/me`
       return nomisGet({ path })
     },
   }
@@ -26,10 +36,7 @@ module.exports = token => {
 
 function nomisGetBuilder(token) {
   return async ({ path, query = '', headers = {}, responseType = '' } = {}) => {
-    if (!token) {
-      throw new NoTokenError()
-    }
-
+    logger.info(`nomisGet: calling elite2api: ${path} ${query}`)
     try {
       const result = await superagent
         .get(path)
@@ -56,10 +63,8 @@ function nomisPushBuilder(verb, token) {
   }
 
   return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
-    if (!token) {
-      throw new NoTokenError()
-    }
-
+    logger.info(`nomisPush: calling elite2api: ${path}`)
+    logger.debug(`nomisPush: body: ${body}`)
     try {
       const result = await updateMethod[verb](token, path, body, headers, responseType)
       return result.body
