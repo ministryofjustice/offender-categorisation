@@ -13,7 +13,6 @@ const cookieSession = require('cookie-session')
 const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
-const createOffendersRouter = require('./routes/offendersInPrison')
 const sassMiddleware = require('node-sass-middleware')
 const moment = require('moment')
 const path = require('path')
@@ -27,7 +26,7 @@ const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
-module.exports = function createApp({ signInService, formService, offendersService }) {
+module.exports = function createApp({ signInService, formService, offendersService, userService }) {
   const app = express()
 
   auth.init(signInService)
@@ -186,9 +185,8 @@ module.exports = function createApp({ signInService, formService, offendersServi
     res.redirect(authLogoutUrl)
   })
 
-  app.use('/', createHomeRouter({ authenticationMiddleware }))
+  app.use('/', createHomeRouter({ userService, offendersService, authenticationMiddleware }))
   app.use('/tasklist/', createTasklistRouter({ formService, authenticationMiddleware }))
-  app.use('/offendersInPrison/', createOffendersRouter({ offendersService, authenticationMiddleware, signInService }))
   app.use('/form/', createFormRouter({ formService, authenticationMiddleware }))
 
   app.use((req, res, next) => {
