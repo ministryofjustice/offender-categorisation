@@ -36,14 +36,24 @@ describe('getUncategorisedOffenders', () => {
         bookingId: 111,
         status: 'UNCATEGORISED',
       },
+      {
+        offenderNo: 'G55345',
+        firstName: 'Alan',
+        lastName: 'Allen',
+        bookingId: 122,
+        status: 'WAITING_APPROVAL',
+      },
     ]
 
     const sentenceDates = [
       {
-        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(8) },
+        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(6) },
       },
       {
         sentenceDetail: { bookingId: 111, sentenceStartDate: todaySubtract(7) },
+      },
+      {
+        sentenceDetail: { bookingId: 122, sentenceStartDate: todaySubtract(9) },
       },
     ]
 
@@ -55,9 +65,10 @@ describe('getUncategorisedOffenders', () => {
         displayName: 'Brown, Jane',
         bookingId: 123,
         status: 'UNCATEGORISED',
-        sentenceDate: todaySubtract(8),
-        daysSinceSentence: 8,
-        dateRequired: todayAdd(2),
+        displayStatus: 'Not categorised',
+        sentenceDate: todaySubtract(6),
+        daysSinceSentence: 6,
+        dateRequired: todayAdd(4),
       },
       {
         offenderNo: 'H12345',
@@ -66,9 +77,22 @@ describe('getUncategorisedOffenders', () => {
         displayName: 'Doyle, Danny',
         bookingId: 111,
         status: 'UNCATEGORISED',
+        displayStatus: 'Not categorised',
         sentenceDate: todaySubtract(7),
         daysSinceSentence: 7,
         dateRequired: todayAdd(3),
+      },
+      {
+        offenderNo: 'G55345',
+        firstName: 'Alan',
+        lastName: 'Allen',
+        displayName: 'Allen, Alan',
+        bookingId: 122,
+        status: 'WAITING_APPROVAL',
+        displayStatus: 'Awaiting approval',
+        sentenceDate: todaySubtract(9),
+        daysSinceSentence: 9,
+        dateRequired: todayAdd(1),
       },
     ]
 
@@ -86,6 +110,33 @@ describe('getUncategorisedOffenders', () => {
     const expected = []
 
     nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+
+    const result = await service.getUncategorisedOffenders('MDI')
+    expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
+    expect(result).toEqual(expected)
+  })
+
+  test('it should not return offenders without sentence data', async () => {
+    const uncategorised = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: 'UNCATEGORISED',
+      },
+    ]
+
+    const sentenceDates = [
+      {
+        sentenceDetail: { bookingId: 123 },
+      },
+    ]
+
+    const expected = []
+
+    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
 
     const result = await service.getUncategorisedOffenders('MDI')
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
