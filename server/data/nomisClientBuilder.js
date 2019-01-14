@@ -24,7 +24,7 @@ module.exports = token => {
       return nomisGet({ path })
     },
     getSentenceDatesForOffenders(bookingIds) {
-      const path = `${apiUrl}api/offender-sentences`
+      const path = `${apiUrl}api/offender-sentences/bookings`
       return nomisPost({ path, body: bookingIds })
     },
     getUser() {
