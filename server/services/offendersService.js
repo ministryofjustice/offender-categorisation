@@ -2,7 +2,7 @@ const logger = require('../../log.js')
 const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName } = require('../utils/utils.js')
 const moment = require('moment')
-const { sortByLastNameFirstName, sortByDateTime } = require('./offenderSort.js')
+const { sortByDateTime } = require('./offenderSort.js')
 
 module.exports = function createOffendersService(nomisClientBuilder) {
   async function getUncategorisedOffenders(token, agencyId) {
@@ -34,7 +34,8 @@ module.exports = function createOffendersService(nomisClientBuilder) {
           displayStatus: statusText(o.status),
           ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
         }))
-        .sort((a, b) => sortByDateTime(a.dateRequired, b.dateRequired)).reverse()
+        .sort((a, b) => sortByDateTime(a.dateRequired, b.dateRequired))
+        .reverse()
 
       return offenders
     } catch (error) {
