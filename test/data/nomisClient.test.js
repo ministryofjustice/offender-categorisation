@@ -30,7 +30,7 @@ describe('nomisClient', () => {
 
   describe('getSentenceDatesForOffenders', () => {
     it('should return data from api', async () => {
-      fakeElite2Api.post(`/api/offender-sentences`).reply(200, sentenceResponse)
+      fakeElite2Api.post(`/api/offender-sentences/bookings`).reply(200, sentenceResponse)
 
       const output = await nomisClient.getSentenceDatesForOffenders([123, 321])
       return expect(output).toEqual(sentenceResponse)
