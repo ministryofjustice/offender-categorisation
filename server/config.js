@@ -55,7 +55,4 @@ module.exports = {
     },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
-  test: {
-    integrationTest: `${get('INTEGRATION_TEST', '', true)}`,
-  },
 }
