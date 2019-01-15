@@ -1,4 +1,5 @@
 const logger = require('../../log.js')
+const { properCaseName } = require('../utils/utils.js')
 
 module.exports = function createUserService(nomisClientBuilder) {
   async function getUser(token) {
@@ -11,6 +12,7 @@ module.exports = function createUserService(nomisClientBuilder) {
 
       return {
         ...user,
+        displayName: `${properCaseName(user.lastName)}, ${properCaseName(user.firstName)}`,
         activeCaseLoad,
       }
     } catch (error) {
