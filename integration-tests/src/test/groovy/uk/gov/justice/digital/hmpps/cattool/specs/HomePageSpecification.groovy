@@ -39,11 +39,11 @@ class HomePageSpecification extends GebReportingSpec {
 
     then: 'The home page is displayed'
     at CategoriserHomePage
-    prisonNos == ['B2345XY', 'B2346YZ']
-    names == ['Pitstop, Penelope', 'Hillmob, Ant']
+    prisonNos == ['B2346YZ', 'B2345XY']
+    names == ['Hillmob, Ant', 'Pitstop, Penelope']
     days == ['3', '3']
     dates == [requiredDate, requiredDate]
-    statuses == ['UNCATEGORISED', 'AWAITING_APPROVAL']
+    statuses == ['Awaiting approval', 'Not categorised']
   }
 
   def "Log out"() {

@@ -137,7 +137,7 @@ class Elite2Api extends WireMockRule {
     })
 
     this.stubFor(
-      post("/api/offender-sentences")
+      post("/api/offender-sentences/bookings")
         .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, false))
         .willReturn(
         aResponse()
