@@ -10,7 +10,7 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
     '/',
     asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals.user.token)
-      res.locals.user.activeCaseLoad = user.activeCaseLoad
+      res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUncategorisedOffenders(

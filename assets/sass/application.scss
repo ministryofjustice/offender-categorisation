@@ -75,6 +75,7 @@ $path: "/assets/images/";
 .user-block {
   color: white;
   float: right;
+  font-size: 19px;
   background-color: govuk-colour("blue");
   ul {
     padding: 0;
@@ -94,5 +95,24 @@ $path: "/assets/images/";
 .tableButton {
   margin-top:15px;
   margin-bottom:15px;
+}
+
+div.govuk-width-container {
+  max-width: 1150px;
+}
+
+div.govuk-header__container {
+  border-bottom: 0;
+  padding-top: 0px;
+}
+
+div.govuk-header__logo {
+  padding-top:10px;
+  padding-bottom:10px;
+}
+
+header.govuk-header {
+  padding-top:0px;
+  box-sizing: border-box;
 }
 
