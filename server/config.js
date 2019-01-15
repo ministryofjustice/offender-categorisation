@@ -30,8 +30,8 @@ module.exports = {
   },
   apis: {
     oauth2: {
-      url: get('NOMIS_AUTH_URL', 'http://localhost:8080/auth', true),
-      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:8080/auth'), true),
+      url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true),
+      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'), true),
       timeout: {
         response: 30000,
         deadline: 35000,
@@ -47,7 +47,7 @@ module.exports = {
       },
     },
     custody: {
-      url: get('CUSTODY_ENDPOINT_URL', 'http://localhost:8080/', true),
+      url: get('CUSTODY_ENDPOINT_URL', 'http://localhost:8081/', true),
       timeout: {
         response: get('CUSTODY_ENDPOINT_TIMEOUT_RESPONSE', 30000, true),
         deadline: get('CUSTODY_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),

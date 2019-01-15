@@ -55,7 +55,7 @@ module.exports = function createOffendersService(nomisClientBuilder) {
     switch (input) {
       case 'UNCATEGORISED':
         return 'Not categorised'
-      case 'WAITING_APPROVAL':
+      case 'AWAITING_APPROVAL':
         return 'Awaiting approval'
       default:
         return 'Unknown status'
