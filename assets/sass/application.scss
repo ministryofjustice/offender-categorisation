@@ -1,13 +1,13 @@
 // Path to assets for use with the file-url function
 // in the govuk frontend toolkit's url-helpers partial
-$path: "/public/images/";
+$path: "/assets/images/";
 
   // Import GOV.UK elements from /govuk-modules/, this will import the frontend toolkit and some base styles.
   // Take a look in /govuk-modules/_govuk-elements.scss to see which files are imported.
 @import 'all';
 
 #global-header #logo.hmppslogo {
-  background: url('/public/images/logo.svg') no-repeat
+  background: url('/assets/images/logo.svg') no-repeat
 }
 
 #global-header #logo .logo-img {
@@ -75,6 +75,7 @@ $path: "/public/images/";
 .user-block {
   color: white;
   float: right;
+  font-size: 19px;
   background-color: govuk-colour("blue");
   ul {
     padding: 0;
@@ -89,5 +90,29 @@ $path: "/public/images/";
   a {
     color: white;
   }
+}
+
+.tableButton {
+  margin-top:15px;
+  margin-bottom:15px;
+}
+
+div.govuk-width-container {
+  max-width: 1150px;
+}
+
+div.govuk-header__container {
+  border-bottom: 0;
+  padding-top: 0px;
+}
+
+div.govuk-header__logo {
+  padding-top:10px;
+  padding-bottom:10px;
+}
+
+header.govuk-header {
+  padding-top:0px;
+  box-sizing: border-box;
 }
 
