@@ -67,6 +67,10 @@ jobs:
     working_directory: ~/app
     docker:
       - image: circleci/openjdk:11-jdk-node-browsers
+      - image: circleci/postgres:alpine-ram
+          environment:
+            POSTGRES_USER: form-builder
+            POSTGRES_DB: form-builder
     steps:
       - checkout
       - attach_workspace:
@@ -84,7 +88,7 @@ jobs:
           key: gradle-cache-{{ checksum "integration-tests/build.gradle" }}
       - run:
           name: Run Integration Tests
-          command: chmod +x gradlew && ls -l gradlew && ./gradlew build
+          command: chmod +x gradlew && ./gradlew build
       - save_cache:
           key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
           paths:
@@ -104,8 +108,6 @@ jobs:
 
   copy_image_to_ecs:
     <<: *defaults
-    docker:
-      - image: circleci/node:8.11.1-browsers
     steps:
       - checkout
       - attach_workspace:
@@ -131,13 +133,12 @@ jobs:
 
   build_docker:
     <<: *defaults
-    docker:
-    - image: circleci/node:8.11.1-browsers
     steps:
     - checkout
     - attach_workspace:
         at: ~/app
     - setup_remote_docker
+        docker_layer_caching: true
     - run:
         name: Build container and publish to docker hub
         command: |
@@ -209,12 +210,6 @@ workflows:
       - copy_image_to_ecs:
           requires:
           - build_docker
-          filters:
-            branches:
-              only: master
       - deploy_dev:
           requires:
           - copy_image_to_ecs
-          filters:
-            branches:
-              only: master
