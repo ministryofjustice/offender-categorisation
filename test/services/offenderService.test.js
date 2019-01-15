@@ -41,7 +41,7 @@ describe('getUncategorisedOffenders', () => {
         firstName: 'Alan',
         lastName: 'Allen',
         bookingId: 122,
-        status: 'WAITING_APPROVAL',
+        status: 'AWAITING_APPROVAL',
       },
     ]
 
@@ -88,7 +88,7 @@ describe('getUncategorisedOffenders', () => {
         lastName: 'Allen',
         displayName: 'Allen, Alan',
         bookingId: 122,
-        status: 'WAITING_APPROVAL',
+        status: 'AWAITING_APPROVAL',
         displayStatus: 'Awaiting approval',
         sentenceDate: todaySubtract(9),
         daysSinceSentence: 9,
