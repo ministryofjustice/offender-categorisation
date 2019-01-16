@@ -11,6 +11,7 @@ const formConfig = {
   ...pdConfig,
   ...tConfig,
   ...aConfig,
+  ...rConfig,
 }
 
 const formService = {
