@@ -8,11 +8,13 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const personalDetailsConfig = require('../config/personalDetails')
 const transportConfig = require('../config/transport')
 const agile = require('../config/agile')
+const ratings = require('../config/ratings')
 
 const formConfig = {
   ...personalDetailsConfig,
   ...transportConfig,
   ...agile,
+  ...ratings,
 }
 
 module.exports = function Index({ formService, authenticationMiddleware }) {

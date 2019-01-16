@@ -1,77 +1,104 @@
 {% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">Task list</h1>
-      <ol class="app-task-list">
+      <h1 class="govuk-heading-m">Categorisation task list</h1>
+      <ul class="app-task-list">
         <li>
-          <h2 class="app-task-list__section"><span class="app-task-list__section-number">1. </span> Personal details</h2>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/name">Name</a>
-              {% if data.personalDetails.name %}
-              <strong class="govuk-tag app-task-list__task-completed" id="name-completed">Completed</strong>
+              {% if data.ratings.offendingHistory %}
+                <a href="/form/ratings/offendingHistory">Offending history</a>
+                <strong class="govuk-tag app-task-list__task-completed" id="offendingHistory-completed">Completed</strong>
+              {% else %}
+                <p class="govuk-!-font-weight-bold">Offending history</p>
+                {{ govukButton({
+                text: "Start",
+                href: "/form/ratings/offendingHistory",
+                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                }) }}
+                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/dob">Date of birth</a>
-              {% if data.personalDetails.dob %}
-              <strong class="govuk-tag app-task-list__task-completed" id="age-completed">Completed</strong>
+              {% if data.ratings.securityInput %}
+                <a href="/form/ratings/securityInput">Security input</a>
+                <strong class="govuk-tag app-task-list__task-completed" id="securityInput-completed">Completed</strong>
+              {% else %}
+                {{ govukButton({
+                text: "Start",
+                href: "/form/ratings/securityInput",
+                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                }) }}
+                <p class="govuk-!-font-weight-bold">Security input</p>
+                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              <a href="/form/personalDetails/address">Address</a>
-              {% if data.personalDetails.address %}
-              <strong class="govuk-tag app-task-list__task-completed" id="address-completed">Completed</strong>
+              {% if data.ratings.violenceRating %}
+                <a href="/form/ratings/violenceRating">Violence rating</a>
+                <strong class="govuk-tag app-task-list__task-completed" id="violenceRating-completed">Completed</strong>
+              {% else %}
+                {{ govukButton({
+                text: "Start",
+                href: "/form/ratings/violenceRating",
+                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                }) }}
+                <p class="govuk-!-font-weight-bold">Violence rating</a>
+                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
+              {% endif %}
+            </li>
+            <li class="app-task-list__item">
+              {% if data.ratings.escapeRating %}
+                <a href="/form/ratings/escapeRating">Escape rating</a>
+                <strong class="govuk-tag app-task-list__task-completed" id="escapeRating-completed">Completed</strong>
+              {% else %}
+                {{ govukButton({
+                text: "Start",
+                href: "/form/ratings/escapeRating",
+                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                }) }}
+                <p class="govuk-!-font-weight-bold">Escape rating</a>
+                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
+              {% endif %}
+            </li>
+            <li class="app-task-list__item">
+              {% if data.ratings.extremismRating %}
+                <a href="/form/ratings/extremismRating">Extremism rating</a>
+                <strong class="govuk-tag app-task-list__task-completed" id="address-completed4">Completed</strong>
+              {% else %}
+                {{ govukButton({
+                text: "Start",
+                href: "/form/ratings/extremismRating",
+                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                }) }}
+                <p class="govuk-!-font-weight-bold">Extremism rating</a>
+                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
           </ul>
         </li>
-
         <li>
-          <h2 class="app-task-list__section"><span class="app-task-list__section-number">2. </span> Transportation</h2>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              <a href="/form/transport/commute">Commute</a>
               {% if data.transport.commute %}
-              <strong class="govuk-tag app-task-list__task-completed" id="commute-completed">Completed</strong>
-              {% endif %}
-            </li>
-            <li class="app-task-list__item">
-              <a href="/form/transport/car">Car</a>
-              {% if data.transport.car %}
-              <strong class="govuk-tag app-task-list__task-completed" id="car-completed">Completed</strong>
+                <a href="/form/ratings/???">Review and categorisation</a>
+                <strong class="govuk-tag app-task-list__task-completed" id="review-completed">Completed</strong>
+              {% else %}
+                {{ govukButton({
+                text: "Continue",
+                href: "/form/ratings/???",
+                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                }) }}
+                <p class="govuk-!-font-weight-bold">Review and categorisation</a>
+                <p class="govuk-body-s govuk-!-margin-top-2">Tasks not yet complete</p>
               {% endif %}
             </li>
           </ul>
         </li>
-
-        <li>
-          <h2 class="app-task-list__section"><span class="app-task-list__section-number">3. </span> Agile experience</h2>
-          <ul class="app-task-list__items">
-            <li class="app-task-list__item">
-              <a href="/form/agile/experience">Previous experience</a>
-              {% if data.agile.experience %}
-              <strong class="govuk-tag app-task-list__task-completed" id="agile-experience-completed">Completed</strong>
-              {% endif %}
-            </li>
-            {% if data.agile.experience.workedPreviously !== 'No' %}
-              <li class="app-task-list__item">
-                <a href="/form/agile/opinion">Opinion</a>
-                {% if data.agile.opinion %}
-                <strong class="govuk-tag app-task-list__task-completed" id="opinions-completed">Completed</strong>
-                {% endif %}
-              </li>
-            {% endif %}
-          </ul>
-        </li>
-      </ol>
+      </ul>
     </div>
-
   </div>
-
-  </ol>
-
-
-
+  </ul>
 {% endblock %}

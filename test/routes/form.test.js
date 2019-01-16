@@ -5,11 +5,13 @@ const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const pdConfig = require('../../server/config/personalDetails')
 const tConfig = require('../../server/config/transport')
 const aConfig = require('../../server/config/agile')
+const rConfig = require('../../server/config/ratings')
 
 const formConfig = {
   ...pdConfig,
   ...tConfig,
   ...aConfig,
+  ...rConfig,
 }
 
 const formService = {
@@ -34,14 +36,15 @@ afterEach(() => {
 
 describe('GET /section/form', () => {
   test.each`
-    path                         | expectedContent
-    ${'personalDetails/name'}    | ${'Full name'}
-    ${'personalDetails/dob'}     | ${'What is your date of birth?'}
-    ${'personalDetails/address'} | ${'What is your address?'}
-    ${'transport/commute'}       | ${'How do you commute to work?'}
-    ${'transport/car'}           | ${'Do you own a car?'}
-    ${'agile/experience'}        | ${'Have you worked with agile methodologies before?'}
-    ${'agile/opinion'}           | ${'Can you provide your opinions on agile working?'}
+    path                          | expectedContent
+    ${'ratings/offendingHistory'} | ${'Offending history'}
+    ${'personalDetails/name'}     | ${'Full name'}
+    ${'personalDetails/dob'}      | ${'What is your date of birth?'}
+    ${'personalDetails/address'}  | ${'What is your address?'}
+    ${'transport/commute'}        | ${'How do you commute to work?'}
+    ${'transport/car'}            | ${'Do you own a car?'}
+    ${'agile/experience'}         | ${'Have you worked with agile methodologies before?'}
+    ${'agile/opinion'}            | ${'Can you provide your opinions on agile working?'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
