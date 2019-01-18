@@ -1,9 +1,6 @@
-/* eslint-disable no-unused-vars */
 const logger = require('../../log')
 const config = require('../config')
 const superagent = require('superagent')
-const querystring = require('querystring')
-const { generateOauthClientToken } = require('../authentication/clientCredentials')
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,
@@ -11,12 +8,11 @@ const timeoutSpec = {
 }
 
 const apiUrl = config.apis.elite2.url
-const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
 
 module.exports = token => {
   const nomisGet = nomisGetBuilder(token)
   const nomisPost = nomisPushBuilder('post', token)
-  const nomisPut = nomisPushBuilder('put', token)
+  // const nomisPut = nomisPushBuilder('put', token)
 
   return {
     getUncategorisedOffenders(agencyId) {
@@ -27,6 +23,10 @@ module.exports = token => {
       const path = `${apiUrl}api/offender-sentences/bookings`
       return nomisPost({ path, body: bookingIds })
     },
+    getSentenceDetails(bookingId) {
+      const path = `${apiUrl}api/bookings/${bookingId}/sentenceDetail`
+      return nomisGet({ path })
+    },
     getUser() {
       const path = `${apiUrl}api/users/me`
       return nomisGet({ path })
@@ -35,11 +35,23 @@ module.exports = token => {
       const path = `${apiUrl}api/users/me/caseLoads`
       return nomisGet({ path })
     },
+    getImageData(imageId) {
+      const path = `${apiUrl}api/images/${imageId}/data`
+      return nomisGet({ path, responseType: 'stream', raw: true })
+    },
+    getOffenderDetails(bookingId) {
+      const path = `${apiUrl}api/bookings/${bookingId}?basicInfo=false`
+      return nomisGet({ path })
+    },
+    getMainOffence(bookingId) {
+      const path = `${apiUrl}api/bookings/${bookingId}/mainOffence`
+      return nomisGet({ path })
+    },
   }
 }
 
 function nomisGetBuilder(token) {
-  return async ({ path, query = '', headers = {}, responseType = '' } = {}) => {
+  return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     logger.info(`nomisGet: calling elite2api: ${path} ${query}`)
     try {
       const result = await superagent
@@ -50,7 +62,7 @@ function nomisGetBuilder(token) {
         .responseType(responseType)
         .timeout(timeoutSpec)
 
-      return result.body
+      return raw ? result : result.body
     } catch (error) {
       logger.warn('Error calling elite2api')
       logger.warn(error)
