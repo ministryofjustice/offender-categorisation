@@ -1,21 +1,96 @@
 {% extends "../partials/layout.html" %}
 {% from "button/macro.njk" import govukButton %}
+
+{% macro headerTitle(text) %}
+<div class="govuk-grid-row">
+  <p class="govuk-!-margin-bottom-1">{{ text }}</p>
+</div>
+{% endmacro %}
+
+{% macro headerValue(text, classes='') %}
+<div class="govuk-grid-row">
+  <p class="govuk-!-font-weight-bold govuk-!-margin-top-1 {{ classes }}">{{ text if text | length else '-' }}</p>
+</div>
+{% endmacro %}
+
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-m">Categorisation task list</h1>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-s">Offender details</h1>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-body-s">
+    <div class="govuk-grid-column-one-quarter">
+      <div class="photo image clickable">
+       <!-- {...linkOnClick(() => onImageClick(offenderImageUrl(inmateData.get('facialImageId'))))}
+        >-->
+        <img alt="Offender Facial Image" src="/tasklist/images/{{ data.facialImageId if data.facialImageId else 'placeholder' }}/data" />
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      {{ headerTitle('Name') }}
+      {% set comma = joiner(", ") %}
+      {% set fullName %}
+      {{ comma() }} {{ data.lastName | capitalize }}
+      {{ comma() }} {{ data.firstName | capitalize }}
+      {% endset %}
+      {{ headerValue(fullName) }}
+
+      {{ headerTitle('NOMIS ID') }}
+      {{ headerValue(data.offenderNo) }}
+
+      {{ headerTitle('Date of birth') }}
+      {{ headerValue(dateConverter(data.dateOfBirth)) }}
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      {{ headerTitle('Location') }}
+      {{ headerValue(data.assignedLivingUnit.description, 'govuk-!-margin-bottom-1') }}
+      {{ headerValue(data.assignedLivingUnit.agencyName) }}
+
+      {{ headerTitle('Type of offence(s)') }}
+      {% if data.offence | length == 0 %}
+        {{ headerValue('-') }}
+      {% else %}
+        {% for offence in data.offence %}
+          {{ headerValue(offence.offenceDescription) }}
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      {{ headerTitle('Nationality') }}
+
+      {% set nationality %}
+        {% for profileInformation in data.profileInformation %}
+          {% if profileInformation.type === 'NAT' %}
+            {{ profileInformation.resultValue }}
+          {% endif %}
+        {% endfor %}
+      {% endset %}
+      {{ headerValue(nationality | trim) }}
+
+      {{ headerTitle('Conditional Release Date') }}
+      {{ headerValue(dateConverter(data.sentence.conditionalReleaseDate)) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
       <ul class="app-task-list">
         <li>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
               {% if data.ratings.offendingHistory %}
-                <a href="/form/ratings/offendingHistory">Offending history</a>
+                <a href="/form/ratings/offendingHistory/{{ data.bookingId }}">Offending history</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="offendingHistory-completed">Completed</strong>
               {% else %}
                 <p class="govuk-!-font-weight-bold">Offending history</p>
                 {{ govukButton({
                 text: "Start",
-                href: "/form/ratings/offendingHistory",
+                href: "/form/ratings/offendingHistory/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
@@ -23,12 +98,12 @@
             </li>
             <li class="app-task-list__item">
               {% if data.ratings.securityInput %}
-                <a href="/form/ratings/securityInput">Security input</a>
+                <a href="/form/ratings/securityInput/{{ data.bookingId }}">Security input</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="securityInput-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
                 text: "Start",
-                href: "/form/ratings/securityInput",
+                href: "/form/ratings/securityInput/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}
                 <p class="govuk-!-font-weight-bold">Security input</p>
@@ -37,43 +112,43 @@
             </li>
             <li class="app-task-list__item">
               {% if data.ratings.violenceRating %}
-                <a href="/form/ratings/violenceRating">Violence rating</a>
+                <a href="/form/ratings/violenceRating/{{ data.bookingId }}">Violence rating</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="violenceRating-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
                 text: "Start",
-                href: "/form/ratings/violenceRating",
+                href: "/form/ratings/violenceRating/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}
-                <p class="govuk-!-font-weight-bold">Violence rating</a>
+                <p class="govuk-!-font-weight-bold">Violence rating</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
             <li class="app-task-list__item">
               {% if data.ratings.escapeRating %}
-                <a href="/form/ratings/escapeRating">Escape rating</a>
+                <a href="/form/ratings/escapeRating/{{ data.bookingId }}">Escape rating</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="escapeRating-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
                 text: "Start",
-                href: "/form/ratings/escapeRating",
+                href: "/form/ratings/escapeRating/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}
-                <p class="govuk-!-font-weight-bold">Escape rating</a>
+                <p class="govuk-!-font-weight-bold">Escape rating</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
             <li class="app-task-list__item">
               {% if data.ratings.extremismRating %}
-                <a href="/form/ratings/extremismRating">Extremism rating</a>
-                <strong class="govuk-tag app-task-list__task-completed" id="address-completed4">Completed</strong>
+                <a href="/form/ratings/extremismRating/{{ data.bookingId }}">Extremism rating</a>
+                <strong class="govuk-tag app-task-list__task-completed" id="extremismRating-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
                 text: "Start",
-                href: "/form/ratings/extremismRating",
+                href: "/form/ratings/extremismRating/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}
-                <p class="govuk-!-font-weight-bold">Extremism rating</a>
+                <p class="govuk-!-font-weight-bold">Extremism rating</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
@@ -83,15 +158,15 @@
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
               {% if data.transport.commute %}
-                <a href="/form/ratings/???">Review and categorisation</a>
+                <a href="/form/ratings/???/{{ data.bookingId }}">Review and categorisation</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="review-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
                 text: "Continue",
-                href: "/form/ratings/???",
+                href: "/form/ratings/???/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}
-                <p class="govuk-!-font-weight-bold">Review and categorisation</a>
+                <p class="govuk-!-font-weight-bold">Review and categorisation</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Tasks not yet complete</p>
               {% endif %}
             </li>
@@ -100,5 +175,4 @@
       </ul>
     </div>
   </div>
-  </ul>
 {% endblock %}

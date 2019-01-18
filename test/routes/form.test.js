@@ -20,31 +20,39 @@ const formService = {
   getValidationErrors: jest.fn().mockReturnValue([]),
 }
 
-const formRoute = createRouter({ formService, authenticationMiddleware })
+const offendersService = {
+  getUncategorisedOffenders: jest.fn(),
+  getOffenderDetails: jest.fn(),
+  getImage: jest.fn(),
+}
+
+const formRoute = createRouter({ formService, offendersService, authenticationMiddleware })
 
 let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
   formService.getFormResponse.mockResolvedValue({})
+  offendersService.getOffenderDetails.mockResolvedValue({})
 })
 
 afterEach(() => {
   formService.getFormResponse.mockReset()
+  offendersService.getOffenderDetails.mockReset()
   formService.update.mockReset()
 })
 
 describe('GET /section/form', () => {
   test.each`
-    path                          | expectedContent
-    ${'ratings/offendingHistory'} | ${'Offending history'}
-    ${'personalDetails/name'}     | ${'Full name'}
-    ${'personalDetails/dob'}      | ${'What is your date of birth?'}
-    ${'personalDetails/address'}  | ${'What is your address?'}
-    ${'transport/commute'}        | ${'How do you commute to work?'}
-    ${'transport/car'}            | ${'Do you own a car?'}
-    ${'agile/experience'}         | ${'Have you worked with agile methodologies before?'}
-    ${'agile/opinion'}            | ${'Can you provide your opinions on agile working?'}
+    path                                | expectedContent
+    ${'ratings/offendingHistory/12345'} | ${'Offending history'}
+    ${'personalDetails/name/12345'}     | ${'Full name'}
+    ${'personalDetails/dob/12345'}      | ${'What is your date of birth?'}
+    ${'personalDetails/address/12345'}  | ${'What is your address?'}
+    ${'transport/commute/12345'}        | ${'How do you commute to work?'}
+    ${'transport/car/12345'}            | ${'Do you own a car?'}
+    ${'agile/experience/12345'}         | ${'Have you worked with agile methodologies before?'}
+    ${'agile/opinion/12345'}            | ${'Can you provide your opinions on agile working?'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)

@@ -17,7 +17,7 @@ const formConfig = {
   ...ratings,
 }
 
-module.exports = function Index({ formService, authenticationMiddleware }) {
+module.exports = function Index({ formService, offendersService, authenticationMiddleware }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -32,15 +32,16 @@ module.exports = function Index({ formService, authenticationMiddleware }) {
   })
 
   router.get(
-    '/:section/:form',
+    '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const { section, form } = req.params
+      const { section, form, bookingId } = req.params
       const backLink = req.get('Referrer')
       const pageData = getIn([section, form], res.locals.formObject)
       const errors = req.flash('errors')
+      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
 
       res.render(`formPages/${section}/${form}`, {
-        data: pageData,
+        data: { ...pageData, details },
         formName: form,
         backLink,
         errors,
