@@ -18,15 +18,6 @@ class Elite2Api extends WireMockRule {
     super(8080)
   }
 
-  void stubUpdateActiveCaseload() {
-    this.stubFor(
-      put('/api/users/me/activeCaseLoad')
-        .willReturn(
-        aResponse()
-          .withStatus(200)
-      ))
-  }
-
   void stubGetMyDetails(UserAccount user) {
     stubGetMyDetails(user, Caseload.LEI.id)
   }
@@ -131,7 +122,7 @@ class Elite2Api extends WireMockRule {
         "offenderNo"    : no,
         "firstName"     : "firstName-${index}",
         "lastName"      : "lastName-${index}",
-        "sentenceDetail": [bookingId: bookingIds[index++],
+        "sentenceDetail": [bookingId        : bookingIds[index++],
                            sentenceStartDate: formattedStartDate]
       ]
     })
@@ -147,6 +138,71 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubGetUserDetails(int bookingId) {
+    this.stubFor(
+      get("/api/bookings/$bookingId?basicInfo=false")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson(
+          [
+            bookingId         : bookingId,
+            offenderNo        : "B2345XY",
+            firstName         : 'FIRST',
+            lastName          : 'LAST',
+            dateOfBirth       : "1970-02-17",
+            assignedLivingUnit:
+              [
+                description: "C-04-02",
+                agencyName : "Coventry",
+              ],
+            profileInformation: [
+              [
+                type       : "IMM",
+                resultValue: "Other"
+              ],
+              [
+                type       : "NAT",
+                resultValue: "Latvian"
+              ]
+            ],
+          ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+    this.stubFor(
+      get("/api/bookings/$bookingId/sentenceDetail")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson(
+          [
+            bookingId             : bookingId,
+            conditionalReleaseDate: "2020-02-02",
+            releaseDate           : "2019-01-01",
+          ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+    this.stubFor(
+      get("/api/bookings/$bookingId/mainOffence")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            bookingId         : bookingId,
+            offenceDescription: "A Felony",
+          ],
+          [
+            bookingId         : bookingId,
+            offenceDescription: "Another Felony",
+          ]
+        ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
 
   def stubAlerts(List offenderNumbers, Boolean emptyResponse = false) {
     this.stubFor(
