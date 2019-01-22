@@ -3,9 +3,9 @@ const { validate } = require('../utils/fieldValidation')
 const logger = require('../../log.js')
 
 module.exports = function createSomeService(formClient) {
-  async function getFormResponse(userId) {
+  async function getFormResponse(bookingId) {
     try {
-      const data = await formClient.getFormDataForUser(userId)
+      const data = await formClient.getFormDataForUser(bookingId)
       return data.rows[0] || {}
     } catch (error) {
       logger.error(error)
