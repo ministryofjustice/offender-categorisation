@@ -1,113 +1,34 @@
 {% extends "../formTemplate.html" %}
 
-{% from "radios/macro.njk" import govukRadios %}
-{% from "input/macro.njk" import govukInput %}
-{% from "date-input/macro.njk" import govukDateInput %}
-{% from "select/macro.njk" import govukSelect %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "textarea/macro.njk" import govukTextarea %}
 
 {% block formItems %}
 
-{% set offendingHistoryDetailsHtml %}
-  {{ govukDateInput({
-    name: "date",
-    fieldset: {
-      legend: {
-        text: "Date of release"
-      }
-    },
-    hint: {
-      text: "For example, 31 3 2015"
-    },
-    errorMessage: { text: 'Please give a valid date' } if (errors | findError('day') or errors | findError('month') or errors | findError('year')) else null,
-    items: [
-      {
-        classes: "govuk-input--width-2",
-        label: "Day",
-        id: "day",
-        name: "day",
-        value: data.day
-      },
-      {
-        classes: "govuk-input--width-2",
-        label: "Month",
-        id: "month",
-        name: "month",
-        value: data.month
-      },
-      {
-        classes: "govuk-input--width-4",
-        label: "Year",
-        id: "year",
-        name: "year",
-        value: data.year
-      }
-    ]
+<h1 class="govuk-heading-m">Offending history</h1>
+
+  {{ govukWarningText({
+    text: "This offender was categorised as a Cat A in ..year.. and released as a ..Cat ?.. in ..year...",
+    iconFallbackText: "Warning",
+    classes: "forms-warning-text"
   }) }}
 
-  {{ govukSelect({
-    id: "releasedFrom",
-    name: "releasedFrom",
+  {{ govukTextarea({
+    name: "previousConvictions",
+    type: "previousConvictions",
+    id: "more-detail",
     label: {
-      text: "Category released from"
-    },
-    items: [
-      {
-        value: "B",
-        text: "Category B",
-        selected: data.commuteVia === 'B'
-      },
-      {
-        value: "C",
-        text: "Category C",
-        selected: data.commuteVia === 'C'
-      },
-      {
-        value: "D",
-        text: "Category D",
-        selected: data.commuteVia === 'D'
-      }
-    ]
-  }) }}
-
-  {{ govukInput({
-    name: "newOffenceDetails",
-    type: "newOffenceDetails",
-    classes: "govuk-!-width-one-third",
-    label: {
-      html: "Give details of the new offence that relate to the previous offence and any associated risk"
-    },
-    value: data.newOffenceDetails
-  }) }}
-
-  {% endset -%}
-
-  {{ govukRadios({
-    name: "offendingHistory",
-    fieldset: {
-      legend: {
-      text: "Offending history",
-      isPageHeading: true,
-      classes: "govuk-fieldset__legend--l"
+      text: "Please record a summary of previous convictions, and any other information, from this offender's PNC record, which might be relevant to their categorisation"
     }
-    },
-      hint: {
-      text: "*** TODO ***"
-    },
-    items: [
-      {
-        value: "Yes",
-        text: "Yes",
-        checked: data.offendingHistory === 'Yes',
-        conditional: {
-          html: offendingHistoryDetailsHtml
-        }
-      },
-      {
-        value: "No",
-        checked: data.offendingHistory === 'No',
-        text: "No"
-      }
-    ]
   }) }}
+
+{# TODO {{ if data.convictions | length }} #}
+<div class="govuk-body-s">
+  <p class="govuk-!-font-weight-bold">The following convictions are listed on NOMIS:</p>
+  <ul>
+    <li>Burglary other than dwelling-theft (10/09/2016)</li>
+    <li>Armed robbery (10/11/2014)</li>
+  </ul>
+</div>
 
 {% endblock %}

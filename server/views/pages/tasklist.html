@@ -87,12 +87,12 @@
                 <a href="/form/ratings/offendingHistory/{{ data.bookingId }}">Offending history</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="offendingHistory-completed">Completed</strong>
               {% else %}
-                <p class="govuk-!-font-weight-bold">Offending history</p>
                 {{ govukButton({
                 text: "Start",
                 href: "/form/ratings/offendingHistory/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}
+                <p class="govuk-!-font-weight-bold">Offending history</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
