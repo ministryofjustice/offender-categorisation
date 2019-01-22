@@ -1,19 +1,23 @@
 const express = require('express')
-const getFormData = require('../middleware/getFormData')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const moment = require('moment')
 
+const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+
 module.exports = function Index({ formService, offendersService, authenticationMiddleware }) {
   const router = express.Router()
-  const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 
   router.use(authenticationMiddleware())
-  router.use(getFormData(formService))
 
   router.get(
     '/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const details = await offendersService.getOffenderDetails(res.locals.user.token, req.params.bookingId)
+      const { bookingId } = req.params
+      const formData = await formService.getFormResponse(bookingId)
+      res.locals.formObject = formData.form_response || {}
+      res.locals.formId = formData.id
+
+      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
       res.render('pages/tasklist', { data: { ...details, ...res.locals.formObject }, dateConverter })
     })
   )

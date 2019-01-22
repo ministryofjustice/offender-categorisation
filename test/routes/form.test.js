@@ -66,24 +66,26 @@ describe('GET /section/form', () => {
 
 describe('POST /section/form', () => {
   test.each`
-    sectionName          | formName        | userInput                        | nextPath
-    ${'personalDetails'} | ${'name'}       | ${{ fullName: 'Name' }}          | ${'/form/personalDetails/dob/'}
-    ${'personalDetails'} | ${'dob'}        | ${{ day: '12' }}                 | ${'/form/personalDetails/address/'}
-    ${'personalDetails'} | ${'address'}    | ${{ addressLine1: 'Something' }} | ${'/tasklist'}
-    ${'transport'}       | ${'commute'}    | ${{ commuteVia: 'a' }}           | ${'/form/transport/car/'}
-    ${'transport'}       | ${'car'}        | ${{ haveCar: 'no' }}             | ${'/tasklist'}
-    ${'agile'}           | ${'experience'} | ${{ workedPreviously: 'No' }}    | ${'/tasklist'}
-    ${'agile'}           | ${'experience'} | ${{ workedPreviously: 'Yes' }}   | ${'/form/agile/opinion'}
-    ${'agile'}           | ${'opinion'}    | ${{ response: 'Stuff' }}         | ${'/tasklist'}
+    sectionName          | formName              | userInput                          | nextPath
+    ${'ratings'}         | ${'offendingHistory'} | ${{ previousConvictions: 'prev' }} | ${'/tasklist/'}
+    ${'personalDetails'} | ${'name'}             | ${{ fullName: 'Name' }}            | ${'/form/personalDetails/dob/'}
+    ${'personalDetails'} | ${'dob'}              | ${{ day: '12' }}                   | ${'/form/personalDetails/address/'}
+    ${'personalDetails'} | ${'address'}          | ${{ addressLine1: 'Something' }}   | ${'/tasklist/'}
+    ${'transport'}       | ${'commute'}          | ${{ commuteVia: 'a' }}             | ${'/form/transport/car/'}
+    ${'transport'}       | ${'car'}              | ${{ haveCar: 'no' }}               | ${'/tasklist/'}
+    ${'agile'}           | ${'experience'}       | ${{ workedPreviously: 'No' }}      | ${'/tasklist/'}
+    ${'agile'}           | ${'experience'}       | ${{ workedPreviously: 'Yes' }}     | ${'/form/agile/opinion'}
+    ${'agile'}           | ${'opinion'}          | ${{ response: 'Stuff' }}           | ${'/tasklist/'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
-      .post(`/${sectionName}/${formName}`)
+      .post(`/${sectionName}/${formName}/12345`)
       .send(userInput)
       .expect(302)
-      .expect('Location', nextPath)
+      .expect('Location', `${nextPath}12345`)
       .expect(() => {
         expect(formService.update).toBeCalledTimes(1)
         expect(formService.update).toBeCalledWith({
+          bookingId: 12345,
           userId: 'CA_USER_TEST',
           formId: undefined,
           formObject: {},

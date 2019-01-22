@@ -76,7 +76,7 @@ module.exports = {
     ],
     validate: true,
     nextPath: {
-      path: '/tasklist',
+      path: '/tasklist/',
     },
   },
 }

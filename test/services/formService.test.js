@@ -85,7 +85,7 @@ describe('update', () => {
       })
     })
 
-    test('should call updateLicence and pass in the licence', async () => {
+    test('should call update and pass in the user', async () => {
       const userInput = {
         decision: 'Yes',
         followUp1: 'County',
@@ -93,7 +93,8 @@ describe('update', () => {
       }
 
       const output = await service.update({
-        userId: 'user1',
+        bookingId: 1234,
+        userId: 'MEEEE',
         formId: 'form1',
         formObject: baseForm,
         config: { fields: fieldMap },
@@ -103,7 +104,7 @@ describe('update', () => {
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 'user1')
+      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'MEEEE')
     })
 
     test('should not call update if there are no changes', async () => {

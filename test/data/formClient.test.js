@@ -30,11 +30,11 @@ describe('update', () => {
   })
 
   test('it should insert if no formId passed in', () => {
-    formClient.update(undefined, {}, 'bookingId1', 'offenderNo')
+    formClient.update(undefined, {}, 'bookingId1', 'Meeeee')
 
     expect(db.query).toBeCalledWith({
-      text: 'insert into form (form_response, booking_id, offender_no) values ($1, $2, $3)',
-      values: [{}, 'bookingId1', 'offenderNo'],
+      text: 'insert into form (form_response, booking_id, user_id) values ($1, $2, $3)',
+      values: [{}, 'bookingId1', 'Meeeee'],
     })
   })
 
@@ -43,7 +43,7 @@ describe('update', () => {
 
     expect(db.query).toBeCalledWith({
       text: 'update form set form_response = $1 where booking_id = $2',
-      values: [{}, 'bookingId1', undefined],
+      values: [{}, 'bookingId1'],
     })
   })
 })
