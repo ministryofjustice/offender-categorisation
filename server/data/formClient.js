@@ -1,20 +1,19 @@
 const db = require('./dataAccess/db')
 
 module.exports = {
-  getFormDataForUser(userId) {
+  getFormDataForUser(bookingId) {
     const query = {
-      text: 'select id, form_response from form where user_id = $1',
-      values: [userId],
+      text: 'select id, form_response from form where booking_id = $1',
+      values: [bookingId],
     }
 
     return db.query(query)
   },
 
-  update(formId, formResponse, userId) {
+  update(formId, formResponse, bookingId, offenderNo) {
     const query = {
       text: getUpsertQuery(formId),
-
-      values: [formResponse, userId],
+      values: [formResponse, bookingId, offenderNo],
     }
 
     return db.query(query)
@@ -23,8 +22,8 @@ module.exports = {
 
 function getUpsertQuery(formId) {
   if (formId) {
-    return 'update form set form_response = $1 where user_id=$2'
+    return 'update form set form_response = $1 where booking_id = $2'
   }
 
-  return 'insert into form (form_response, user_id) values ($1, $2)'
+  return 'insert into form (form_response, booking_id, offender_no) values ($1, $2, $3)'
 }
