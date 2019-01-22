@@ -4,7 +4,7 @@ exports.up = knex =>
       table.increments('id').primary('pk_form')
       table.jsonb('form_response').nullable()
       table.bigInteger('booking_id').notNullable()
-      table.string('offender_no').notNullable()
+      table.string('user_id').notNullable()
     }),
   ])
 

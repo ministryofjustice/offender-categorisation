@@ -10,20 +10,16 @@ module.exports = {
     return db.query(query)
   },
 
-  update(formId, formResponse, bookingId, offenderNo) {
-    const query = {
-      text: getUpsertQuery(formId),
-      values: [formResponse, bookingId, offenderNo],
-    }
-
+  update(formId, formResponse, bookingId, userId) {
+    const query = formId
+      ? {
+          text: 'update form set form_response = $1 where booking_id = $2',
+          values: [formResponse, bookingId],
+        }
+      : {
+          text: 'insert into form (form_response, booking_id, user_id) values ($1, $2, $3)',
+          values: [formResponse, bookingId, userId],
+        }
     return db.query(query)
   },
-}
-
-function getUpsertQuery(formId) {
-  if (formId) {
-    return 'update form set form_response = $1 where booking_id = $2'
-  }
-
-  return 'insert into form (form_response, booking_id, offender_no) values ($1, $2, $3)'
 }

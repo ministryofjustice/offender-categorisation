@@ -6,7 +6,7 @@ module.exports = {
         {
           discriminator: 'workedPreviously',
           Yes: '/form/agile/opinion',
-          No: '/tasklist',
+          No: '/tasklist/',
         },
       ],
     },
@@ -15,7 +15,7 @@ module.exports = {
   opinion: {
     fields: [{ response: {} }],
     nextPath: {
-      path: '/tasklist',
+      path: '/tasklist/',
     },
   },
 }

@@ -1,8 +1,8 @@
 module.exports = {
   offendingHistory: {
-    fields: [{ offendingHistory: {} }, { date: { dependentOn: 'offendingHistory', predicate: 'Yes' } }],
+    fields: [{ previousConvictions: {} }],
     nextPath: {
-      path: '/task-list',
+      path: '/tasklist/',
     },
   },
 }

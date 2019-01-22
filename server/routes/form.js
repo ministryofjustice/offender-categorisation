@@ -2,7 +2,6 @@ const express = require('express')
 const flash = require('connect-flash')
 const { getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
-const getFormData = require('../middleware/getFormData')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
 const personalDetailsConfig = require('../config/personalDetails')
@@ -21,7 +20,6 @@ module.exports = function Index({ formService, offendersService, authenticationM
   const router = express.Router()
 
   router.use(authenticationMiddleware())
-  router.use(getFormData(formService))
   router.use(flash())
 
   router.use((req, res, next) => {
@@ -35,6 +33,11 @@ module.exports = function Index({ formService, offendersService, authenticationM
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
+
+      const formData = await formService.getFormResponse(bookingId)
+      res.locals.formObject = formData.form_response || {}
+      res.locals.formId = formData.id
+
       const backLink = req.get('Referrer')
       const pageData = getIn([section, form], res.locals.formObject)
       const errors = req.flash('errors')
@@ -50,12 +53,17 @@ module.exports = function Index({ formService, offendersService, authenticationM
   )
 
   router.post(
-    '/:section/:form',
+    '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const { section, form } = req.params
+      const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[form]
 
+      const formData = await formService.getFormResponse(bookingId)
+      res.locals.formObject = formData.form_response || {}
+      res.locals.formId = formData.id
+
       const updatedFormObject = await formService.update({
+        bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         formId: res.locals.formId,
         formObject: res.locals.formObject,
@@ -71,12 +79,12 @@ module.exports = function Index({ formService, offendersService, authenticationM
 
         if (!isNilOrEmpty(errors)) {
           req.flash('errors', errors)
-          return res.redirect(`/form/${section}/${form}/`)
+          return res.redirect(`/form/${section}/${form}/${bookingId}`)
         }
       }
 
       const nextPath = getPathFor({ data: req.body, config: formConfig[form] })
-      return res.redirect(`${nextPath}`)
+      return res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
