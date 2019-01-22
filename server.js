@@ -25,11 +25,13 @@ const init = {
   debug: true,
 }
 log.debug('Migration start')
-knex(init)
-  .migrate.latest()
-  .then(() => {
+const knex1 = knex(init)
+knex1.migrate.rollback().then(() => {
+  log.debug('Rollback finished')
+  knex1.migrate.latest().then(() => {
     log.debug('Migration finished')
     app.listen(app.get('port'), () => {
       log.info(`Server listening on port ${app.get('port')}`)
     })
   })
+})

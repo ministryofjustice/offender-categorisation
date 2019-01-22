@@ -13,7 +13,7 @@ module.exports = function createSomeService(formClient) {
     return {}
   }
 
-  async function update({ userId, formId, formObject, config, userInput, formSection, formName }) {
+  async function update({ bookingId, userId, formId, formObject, config, userInput, formSection, formName }) {
     const updatedFormObject = getUpdatedFormObject({
       formObject,
       fieldMap: config.fields,
@@ -26,7 +26,7 @@ module.exports = function createSomeService(formClient) {
       return formObject
     }
 
-    await formClient.update(formId, updatedFormObject, userId)
+    await formClient.update(formId, updatedFormObject, bookingId, userId)
     return updatedFormObject
   }
 
