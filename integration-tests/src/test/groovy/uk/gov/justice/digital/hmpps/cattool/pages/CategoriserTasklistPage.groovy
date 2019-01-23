@@ -13,7 +13,7 @@ class CategoriserTasklistPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-m').text() }
+    headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     startButtons { bodyRows*.$('td', 5)*.find('a')  }
