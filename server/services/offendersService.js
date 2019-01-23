@@ -78,7 +78,11 @@ module.exports = function createOffendersService(nomisClientBuilder) {
       const sentence = await nomisClient.getSentenceDetails(bookingId)
       const offence = await nomisClient.getMainOffence(bookingId)
 
-      return { ...result, sentence, offence }
+      const displayName = {
+        displayName: `${properCaseName(result.lastName)}, ${properCaseName(result.firstName)}`,
+      }
+
+      return { ...result, ...displayName, sentence, offence }
     } catch (error) {
       logger.error(error, 'Error during getOffenderDetails')
       throw error
