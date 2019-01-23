@@ -31,7 +31,7 @@ module.exports = function createSomeService(formClient) {
   }
 
   function getUpdatedFormObject({ formObject, fieldMap, userInput, formSection, formName }) {
-    const answers = fieldMap.reduce(answersFromMapReducer(userInput), {})
+    const answers = fieldMap ? fieldMap.reduce(answersFromMapReducer(userInput), {}) : {}
 
     return {
       ...formObject,

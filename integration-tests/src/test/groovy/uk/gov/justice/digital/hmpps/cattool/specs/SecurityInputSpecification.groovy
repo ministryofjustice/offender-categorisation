@@ -9,12 +9,13 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
 
-class TasklistSpecification extends GebReportingSpec {
+class SecurityInputSpecification extends GebReportingSpec {
 
   @Rule
   Elite2Api elite2api = new Elite2Api()
@@ -35,11 +36,11 @@ class TasklistSpecification extends GebReportingSpec {
     at CategoriserHomePage
     elite2api.stubGetUserDetails(12)
     startButtons[0].click()
-
-    then: 'The tasklist page is displayed'
     at(new CategoriserTasklistPage(bookingId: '12'))
+    securityButton.click()
 
-    headerValue*.text() == ['Last, First', 'B2345XY', '17/02/1970',
-                            'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']
+    then: 'The security input page is displayed'
+    at(new CategoriserSecurityInputPage(bookingId: '12'))
+
   }
 }

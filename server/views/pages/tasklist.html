@@ -16,7 +16,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-m">Categorisation task list</h1>
+      <h1 class="govuk-heading-l">Categorisation task list</h1>
     </div>
   </div>
   <div class="govuk-grid-row">
@@ -34,12 +34,7 @@
     </div>
     <div class="govuk-grid-column-one-quarter">
       {{ headerTitle('Name') }}
-      {% set comma = joiner(", ") %}
-      {% set fullName %}
-      {{ comma() }} {{ data.lastName | capitalize }}
-      {{ comma() }} {{ data.firstName | capitalize }}
-      {% endset %}
-      {{ headerValue(fullName) }}
+      {{ headerValue(data.displayName) }}
 
       {{ headerTitle('NOMIS ID') }}
       {{ headerValue(data.offenderNo) }}
@@ -104,7 +99,9 @@
                 {{ govukButton({
                 text: "Start",
                 href: "/form/ratings/securityInput/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                attributes:
+                  {  'id': 'securityButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Security input</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
