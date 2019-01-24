@@ -87,7 +87,6 @@ describe('POST /section/form', () => {
         expect(formService.update).toBeCalledWith({
           bookingId: 12345,
           userId: 'CA_USER_TEST',
-          status: 'STARTED',
           config: formConfig[formName],
           userInput,
           formSection: sectionName,
