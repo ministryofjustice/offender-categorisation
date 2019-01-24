@@ -34,7 +34,7 @@ module.exports = function Index({ formService, offendersService, authenticationM
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
 
-      const formData = await formService.getFormResponse(bookingId)
+      const formData = await formService.getCategorisationRecord(bookingId)
       res.locals.formObject = formData.form_response || {}
       res.locals.formId = formData.id
 
@@ -58,19 +58,14 @@ module.exports = function Index({ formService, offendersService, authenticationM
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[form]
 
-      const formData = await formService.getFormResponse(bookingId)
-      res.locals.formObject = formData.form_response || {}
-      res.locals.formId = formData.id
-
       const updatedFormObject = await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
-        formId: res.locals.formId,
-        formObject: res.locals.formObject,
         config: formPageConfig,
         userInput: req.body,
         formSection: section,
         formName: form,
+        status: 'STARTED',
       })
 
       if (formPageConfig.validate) {

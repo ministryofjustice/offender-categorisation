@@ -6,12 +6,16 @@ const nomisClient = {
   getSentenceDatesForOffenders: jest.fn(),
 }
 
+const formService = {
+  getCategorisationRecord: jest.fn(),
+}
+
 const nomisClientBuilder = () => nomisClient
 
 let service
 
 beforeEach(() => {
-  service = serviceCreator(nomisClientBuilder)
+  service = serviceCreator(nomisClientBuilder, formService)
 })
 
 afterEach(() => {
@@ -98,6 +102,7 @@ describe('getUncategorisedOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    formService.getCategorisationRecord.mockReturnValue({})
 
     const result = await service.getUncategorisedOffenders('user1')
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
@@ -137,6 +142,7 @@ describe('getUncategorisedOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    formService.getCategorisationRecord.mockReturnValue({})
 
     const result = await service.getUncategorisedOffenders('MDI')
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)

@@ -5,6 +5,7 @@ exports.up = knex =>
       table.jsonb('form_response').nullable()
       table.bigInteger('booking_id').notNullable()
       table.string('user_id').notNullable()
+      table.string('status').notNullable()
     }),
   ])
 

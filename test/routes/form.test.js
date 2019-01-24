@@ -15,7 +15,7 @@ const formConfig = {
 }
 
 const formService = {
-  getFormResponse: jest.fn(),
+  getCategorisationRecord: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
 }
@@ -32,12 +32,12 @@ let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
-  formService.getFormResponse.mockResolvedValue({})
+  formService.getCategorisationRecord.mockResolvedValue({})
   offendersService.getOffenderDetails.mockResolvedValue({})
 })
 
 afterEach(() => {
-  formService.getFormResponse.mockReset()
+  formService.getCategorisationRecord.mockReset()
   offendersService.getOffenderDetails.mockReset()
   formService.update.mockReset()
 })
@@ -87,8 +87,7 @@ describe('POST /section/form', () => {
         expect(formService.update).toBeCalledWith({
           bookingId: 12345,
           userId: 'CA_USER_TEST',
-          formId: undefined,
-          formObject: {},
+          status: 'STARTED',
           config: formConfig[formName],
           userInput,
           formSection: sectionName,

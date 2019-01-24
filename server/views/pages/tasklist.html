@@ -1,5 +1,6 @@
 {% extends "../partials/layout.html" %}
 {% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
 
 {% macro headerTitle(text) %}
 <div class="govuk-grid-row">
@@ -12,6 +13,15 @@
   <p class="govuk-!-font-weight-bold govuk-!-margin-top-1 {{ classes }}">{{ text if text | length else '-' }}</p>
 </div>
 {% endmacro %}
+
+{% block beforeContent %}
+
+{{ govukBackLink({
+text: "Back",
+href: backLink or "/"
+}) }}
+
+{% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row">
