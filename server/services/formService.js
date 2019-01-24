@@ -3,7 +3,7 @@ const { validate } = require('../utils/fieldValidation')
 const logger = require('../../log.js')
 
 module.exports = function createSomeService(formClient) {
-  async function getFormResponse(bookingId) {
+  async function getCategorisationRecord(bookingId) {
     try {
       const data = await formClient.getFormDataForUser(bookingId)
       return data.rows[0] || {}
@@ -13,24 +13,28 @@ module.exports = function createSomeService(formClient) {
     return {}
   }
 
-  async function update({ bookingId, userId, formId, formObject, config, userInput, formSection, formName }) {
-    const updatedFormObject = getUpdatedFormObject({
-      formObject,
+  async function update({ bookingId, userId, config, userInput, formSection, formName }) {
+    const currentCategorisation = await getCategorisationRecord(bookingId)
+    const currentCategorisationForm = currentCategorisation.form_response || {}
+
+    const newCategorisationForm = buildCategorisationForm({
+      formObject: currentCategorisation.form_response || {},
       fieldMap: config.fields,
       userInput,
       formSection,
       formName,
     })
 
-    if (equals(formObject, updatedFormObject)) {
-      return formObject
+    if (equals(currentCategorisationForm, newCategorisationForm)) {
+      // this wont work if wanting to switch assigned user without updating the form
+      return currentCategorisationForm
     }
 
-    await formClient.update(formId, updatedFormObject, bookingId, userId)
-    return updatedFormObject
+    await formClient.update(currentCategorisation.id, newCategorisationForm, bookingId, userId, calculateStatus())
+    return newCategorisationForm
   }
 
-  function getUpdatedFormObject({ formObject, fieldMap, userInput, formSection, formName }) {
+  function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
     const answers = fieldMap ? fieldMap.reduce(answersFromMapReducer(userInput), {}) : {}
 
     return {
@@ -89,8 +93,12 @@ module.exports = function createSomeService(formClient) {
     }, [])
   }
 
+  function calculateStatus() {
+    return 'STARTED'
+  }
+
   return {
-    getFormResponse,
+    getCategorisationRecord,
     update,
     getValidationErrors,
   }
