@@ -64,7 +64,7 @@ module.exports = function Index({ formService, offendersService, authenticationM
         config: formPageConfig,
         userInput: req.body,
         formSection: section,
-        formName: form
+        formName: form,
       })
 
       if (formPageConfig.validate) {
