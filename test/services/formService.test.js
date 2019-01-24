@@ -17,14 +17,14 @@ afterEach(() => {
   formClient.update.mockReset()
 })
 
-describe('getFormResponse', () => {
+describe('getCategorisationRecord', () => {
   test('it should call query on db', async () => {
-    await service.getFormResponse('user1')
+    await service.getCategorisationRecord('user1')
     expect(formClient.getFormDataForUser).toBeCalledTimes(1)
   })
 
   test('it should return the first row', async () => {
-    const output = await service.getFormResponse('user1')
+    const output = await service.getCategorisationRecord('user1')
     expect(output).toEqual({ a: 'b' })
   })
 })
@@ -56,6 +56,19 @@ describe('update', () => {
     }
 
     test('should store everything', async () => {
+      formClient.getFormDataForUser.mockReturnValue({
+        rows: [
+          {
+            form_response: {
+              section1: '',
+              section2: '',
+              section3: {},
+              section4: { form1: {}, form2: { answer: 'answer' } },
+            },
+          },
+          { c: 'd' },
+        ],
+      })
       const userInput = {
         decision: 'Yes',
         followUp1: 'County',
@@ -64,8 +77,6 @@ describe('update', () => {
 
       const output = await service.update({
         userId: 'user1',
-        formId: 'form1',
-        formObject: baseForm,
         config: { fields: fieldMap },
         userInput,
         formSection: 'section4',
@@ -86,6 +97,16 @@ describe('update', () => {
     })
 
     test('should call update and pass in the user', async () => {
+      formClient.getFormDataForUser.mockReturnValue({
+        rows: [
+          {
+            id: 'form1',
+            ...baseForm,
+          },
+          { c: 'd' },
+        ],
+      })
+
       const userInput = {
         decision: 'Yes',
         followUp1: 'County',
@@ -95,8 +116,6 @@ describe('update', () => {
       const output = await service.update({
         bookingId: 1234,
         userId: 'MEEEE',
-        formId: 'form1',
-        formObject: baseForm,
         config: { fields: fieldMap },
         userInput,
         formSection: 'section4',
@@ -104,17 +123,25 @@ describe('update', () => {
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'MEEEE')
+      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'MEEEE', 'STARTED')
     })
 
     test('should not call update if there are no changes', async () => {
+      formClient.getFormDataForUser.mockReturnValue({
+        rows: [
+          {
+            form_response: {
+              ...baseForm,
+            },
+          },
+          { c: 'd' },
+        ],
+      })
       const fieldMapSimple = [{ answer: {} }]
       const userInput = { answer: 'answer' }
 
       const output = await service.update({
         userId: 'user1',
-        formId: 'form1',
-        formObject: baseForm,
         config: { fields: fieldMapSimple },
         userInput,
         formSection: 'section4',
@@ -126,6 +153,16 @@ describe('update', () => {
     })
 
     it('should add new sections and forms to the licence if they dont exist', async () => {
+      formClient.getFormDataForUser.mockReturnValue({
+        rows: [
+          {
+            form_response: {
+              ...baseForm,
+            },
+          },
+          { c: 'd' },
+        ],
+      })
       const userInput = {
         decision: 'Yes',
         followUp1: 'County',
@@ -134,8 +171,6 @@ describe('update', () => {
 
       const output = await service.update({
         userId: 'user1',
-        formId: 'form1',
-        formObject: baseForm,
         config: { fields: fieldMap },
         userInput,
         formSection: 'section5',
@@ -186,6 +221,16 @@ describe('update', () => {
     ]
 
     test('should store dependents if predicate matches', async () => {
+      formClient.getFormDataForUser.mockReturnValue({
+        rows: [
+          {
+            form_response: {
+              ...baseForm,
+            },
+          },
+          { c: 'd' },
+        ],
+      })
       const userInput = {
         decision: 'Yes',
         followUp1: 'County',
@@ -197,8 +242,6 @@ describe('update', () => {
 
       const output = await service.update({
         userId: 'user1',
-        formId: 'form1',
-        formObject: baseForm,
         config: { fields: fieldMap },
         userInput,
         formSection,
@@ -219,6 +262,16 @@ describe('update', () => {
     })
 
     test('should remove dependents if predicate does not match', async () => {
+      formClient.getFormDataForUser.mockReturnValue({
+        rows: [
+          {
+            form_response: {
+              ...baseForm,
+            },
+          },
+          { c: 'd' },
+        ],
+      })
       const userInput = {
         decision: 'No',
         followUp1: 'County',
@@ -230,8 +283,6 @@ describe('update', () => {
 
       const output = await service.update({
         userId: 'user1',
-        formId: 'form1',
-        formObject: baseForm,
         config: { fields: fieldMap },
         userInput,
         formSection,

@@ -7,7 +7,7 @@ const { sortByDateTime } = require('./offenderSort.js')
 
 const dirname = process.cwd()
 
-module.exports = function createOffendersService(nomisClientBuilder) {
+module.exports = function createOffendersService(nomisClientBuilder, formService) {
   async function getUncategorisedOffenders(token, agencyId) {
     try {
       const nomisClient = nomisClientBuilder(token)
@@ -29,16 +29,18 @@ module.exports = function createOffendersService(nomisClientBuilder) {
           return { bookingId: sentenceDetail.bookingId, sentenceDate: sentenceDetail.sentenceStartDate }
         })
 
-      const offenders = uncategorisedResult
-        .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
-        .map(o => ({
-          ...o,
-          displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-          displayStatus: statusText(o.status),
-          ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
-        }))
-        .sort((a, b) => sortByDateTime(a.dateRequired, b.dateRequired))
-        .reverse()
+      const decoratedResults = await Promise.all(
+        uncategorisedResult
+          .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
+          .map(async o => ({
+            ...o,
+            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+            ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+            ...(await decorateWithCategorisationData(o.bookingId, o.status)),
+          }))
+      )
+
+      const offenders = decoratedResults.sort((a, b) => sortByDateTime(a.dateRequired, b.dateRequired)).reverse()
 
       return offenders
     } catch (error) {
@@ -54,12 +56,23 @@ module.exports = function createOffendersService(nomisClientBuilder) {
     return { daysSinceSentence, dateRequired, sentenceDate }
   }
 
+  async function decorateWithCategorisationData(bookingId, status) {
+    const categorisation = await formService.getCategorisationRecord(bookingId)
+    if (categorisation.status) {
+      logger.debug(`retrieving status ${categorisation.status} for booking id ${bookingId}`)
+      return { displayStatus: `${statusText(categorisation.status)}` }
+    }
+    return { displayStatus: `${statusText(status)}` }
+  }
+
   const statusText = input => {
     switch (input) {
       case 'UNCATEGORISED':
         return 'Not categorised'
       case 'AWAITING_APPROVAL':
         return 'Awaiting approval'
+      case 'STARTED':
+        return 'Categorisation started'
       default:
         return 'Unknown status'
     }

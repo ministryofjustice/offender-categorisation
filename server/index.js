@@ -10,7 +10,7 @@ const createUserService = require('./services/userService')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)
-const offendersService = createOffendersService(nomisClientBuilder)
+const offendersService = createOffendersService(nomisClientBuilder, formService)
 const userService = createUserService(nomisClientBuilder)
 
 const app = createApp({

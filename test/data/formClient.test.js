@@ -17,7 +17,7 @@ describe('getFormDataForUser', () => {
     formClient.getFormDataForUser('bookingId1')
 
     expect(db.query).toBeCalledWith({
-      text: 'select id, form_response from form where booking_id = $1',
+      text: 'select id, user_id, status, form_response from form where booking_id = $1',
       values: ['bookingId1'],
     })
   })
@@ -30,11 +30,11 @@ describe('update', () => {
   })
 
   test('it should insert if no formId passed in', () => {
-    formClient.update(undefined, {}, 'bookingId1', 'Meeeee')
+    formClient.update(undefined, {}, 'bookingId1', 'Meeeee', 'STARTED')
 
     expect(db.query).toBeCalledWith({
-      text: 'insert into form (form_response, booking_id, user_id) values ($1, $2, $3)',
-      values: [{}, 'bookingId1', 'Meeeee'],
+      text: 'insert into form (form_response, booking_id, user_id, status) values ($1, $2, $3, $4)',
+      values: [{}, 'bookingId1', 'Meeeee', 'STARTED'],
     })
   })
 
