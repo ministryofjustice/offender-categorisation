@@ -8,13 +8,14 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
 
-class TasklistSpecification extends GebReportingSpec {
+class OffendingHistorySpecification extends GebReportingSpec {
 
   @Rule
   Elite2Api elite2api = new Elite2Api()
@@ -25,8 +26,8 @@ class TasklistSpecification extends GebReportingSpec {
 
   TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
 
-  def "The tasklist for a categoriser is present"() {
-    when: 'I go to the tasklist page'
+  def "The Offending history page shows a Cat A warning"() {
+    when: 'I go to the Offending history page'
 
     elite2api.stubUncategorised()
     elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
@@ -35,11 +36,13 @@ class TasklistSpecification extends GebReportingSpec {
     at CategoriserHomePage
     elite2api.stubGetUserDetails(12)
     startButtons[0].click() // selects B2345YZ
-
-    then: 'The tasklist page is displayed'
     at(new CategoriserTasklistPage(bookingId: '12'))
+    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    offendingHistoryButton.click()
 
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
-                            'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']
+    then: 'a Cat A warning is displayed'
+    at(new CategoriserOffendingHistoryPage(bookingId: '12'))
+    catAWarning.text().contains('This offender was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014')
   }
 }

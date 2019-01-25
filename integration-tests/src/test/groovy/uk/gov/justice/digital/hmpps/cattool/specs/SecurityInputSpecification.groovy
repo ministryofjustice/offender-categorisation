@@ -30,13 +30,17 @@ class SecurityInputSpecification extends GebReportingSpec {
     when: 'I go to the tasklist page'
 
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2354XY', 'B2354YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
 
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
     elite2api.stubGetUserDetails(12)
     startButtons[0].click()
     at(new CategoriserTasklistPage(bookingId: '12'))
+    // TODO temp till form.js is rearranged to allow form-specific service calls:
+    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+
     securityButton.click()
 
     then: 'The security input page is displayed'

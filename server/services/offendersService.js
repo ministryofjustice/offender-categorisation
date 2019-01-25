@@ -7,6 +7,14 @@ const { sortByDateTime } = require('./offenderSort.js')
 
 const dirname = process.cwd()
 
+function isCatA(c) {
+  return c.classificationCode === 'A' || c.classificationCode === 'H' || c.classificationCode === 'P'
+}
+
+function getYear(isoDate) {
+  return isoDate && isoDate.substring(0, 4)
+}
+
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
   async function getUncategorisedOffenders(token, agencyId) {
     try {
@@ -131,5 +139,47 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  return { getUncategorisedOffenders, getOffenderDetails, getImage }
+  async function getCatAInformation(token, offenderNo) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+      const categories = await nomisClient.getCategoryHistory(offenderNo)
+      const mostRecentCatA = categories
+        .slice()
+        .reverse()
+        .find(isCatA)
+
+      let catAType = null
+      let catAStartYear = null
+      let catAEndYear = null
+      let releaseYear = null
+      let finalCat = null
+      if (mostRecentCatA) {
+        const categoriesForBooking = categories.filter(c => c.bookingId === mostRecentCatA.bookingId)
+        catAType = mostRecentCatA.classificationCode
+        catAStartYear = getYear(mostRecentCatA.assessmentDate)
+        const catAIndex = categoriesForBooking.findIndex(isCatA)
+        if (catAIndex < categoriesForBooking.length - 1) {
+          catAEndYear = getYear(categoriesForBooking[catAIndex + 1].assessmentDate)
+        }
+        finalCat = categoriesForBooking[categoriesForBooking.length - 1].classification
+        const sentences = await nomisClient.getSentenceHistory(offenderNo)
+        const catASentence = sentences.find(s => s.sentenceDetail.bookingId === mostRecentCatA.bookingId)
+        if (catASentence) {
+          if (catAIndex === categoriesForBooking.length - 1) {
+            // Cat A was the last, or only categorisation for this sentence (should not happen!)
+            catAEndYear = getYear(catASentence.sentenceDetail.releaseDate)
+            logger.warn(`Found sentence with ends as Cat A, bookingId=${mostRecentCatA.bookingId}`)
+          }
+          releaseYear = getYear(catASentence.sentenceDetail.releaseDate)
+        }
+      }
+
+      return { catAType, catAStartYear, catAEndYear, releaseYear, finalCat }
+    } catch (error) {
+      logger.error(error, 'Error during getCategoryHistory')
+      throw error
+    }
+  }
+
+  return { getUncategorisedOffenders, getOffenderDetails, getImage, getCategoryHistory: getCatAInformation }
 }

@@ -42,9 +42,11 @@ module.exports = function Index({ formService, offendersService, authenticationM
       const pageData = getIn([section, form], res.locals.formObject)
       const errors = req.flash('errors')
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      // TODO needs rearranging into dedicated router call
+      const history = await offendersService.getCategoryHistory(res.locals.user.token, details.offenderNo)
 
       res.render(`formPages/${section}/${form}`, {
-        data: { ...pageData, details },
+        data: { ...pageData, details, history },
         formName: form,
         backLink,
         errors,

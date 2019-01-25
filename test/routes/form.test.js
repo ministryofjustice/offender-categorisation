@@ -24,6 +24,7 @@ const offendersService = {
   getUncategorisedOffenders: jest.fn(),
   getOffenderDetails: jest.fn(),
   getImage: jest.fn(),
+  getCategoryHistory: jest.fn(),
 }
 
 const formRoute = createRouter({ formService, offendersService, authenticationMiddleware })
