@@ -102,7 +102,7 @@ class Elite2Api extends WireMockRule {
           ],
           [
             "bookingId" : 12,
-            "offenderNo": "B2346YZ",
+            "offenderNo": "B2345YZ",
             firstName   : 'ANT',
             lastName    : 'HILLMOB',
             status      : 'AWAITING_APPROVAL',
@@ -138,6 +138,35 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubSentenceDataGetSingle(String offenderNo, String formattedReleaseDate) {
+    def response = [
+      [
+        "offenderNo"    : offenderNo,
+        "firstName"     : "firstName",
+        "lastName"      : "lastName",
+        "sentenceDetail": [bookingId  : -45,
+                           releaseDate: formattedReleaseDate]
+      ],
+      [
+        "offenderNo"    : offenderNo,
+        "firstName"     : "firstName",
+        "lastName"      : "lastName",
+        "sentenceDetail": [bookingId  : -55,
+                           releaseDate: formattedReleaseDate]
+      ]
+    ]
+
+    this.stubFor(
+      get("/api/offender-sentences?offenderNo=${offenderNo}")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson(response))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
+
   def stubGetUserDetails(int bookingId) {
     this.stubFor(
       get("/api/bookings/$bookingId?basicInfo=false")
@@ -146,9 +175,9 @@ class Elite2Api extends WireMockRule {
           .withBody(JsonOutput.toJson(
           [
             bookingId         : bookingId,
-            offenderNo        : "B2345XY",
-            firstName         : 'FIRST',
-            lastName          : 'LAST',
+            offenderNo        : "B2345YZ",
+            firstName         : 'ANT',
+            lastName          : 'HILLMOB',
             dateOfBirth       : "1970-02-17",
             assignedLivingUnit:
               [
@@ -226,13 +255,37 @@ class Elite2Api extends WireMockRule {
           .withStatus(200)))
   }
 
-  def stubAssessments(List offenderNumbers, Boolean emptyResponse = false) {
+  def stubAssessments(String offenderNo, Boolean emptyResponse = false) {
     this.stubFor(
-      post("/api/offender-assessments/CATEGORY")
-        .withRequestBody(equalToJson(JsonOutput.toJson(offenderNumbers), true, false))
+      get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false")
         .willReturn(
         aResponse()
-          .withBody(emptyResponse ? JsonOutput.toJson([]) : HouseblockResponse.assessmentsResponse)
+          .withBody(JsonOutput.toJson(emptyResponse ? [] :
+          [
+            [
+              bookingId            : -45,
+              offenderNo           : offenderNo,
+              classificationCode   : "A",
+              classification       : "Cat A",
+              assessmentCode       : "CATEGORY",
+              assessmentDescription: "Categorisation",
+              cellSharingAlertFlag : false,
+              assessmentDate       : "2012-04-04",
+              nextReviewDate       : "2012-06-07"
+            ],
+            [
+              bookingId            : -45,
+              offenderNo           : offenderNo,
+              classificationCode   : "B",
+              classification       : "Cat B",
+              assessmentCode       : "CATEGORY",
+              assessmentDescription: "Categorisation",
+              cellSharingAlertFlag : false,
+              assessmentDate       : "2013-03-24",
+              nextReviewDate       : "2013-09-17"
+            ]
+          ])
+        )
           .withHeader('Content-Type', 'application/json')
           .withStatus(200)))
   }
