@@ -7,11 +7,25 @@
 
 <h1 class="govuk-heading-l">Offending history</h1>
 
-  {{ govukWarningText({
-    text: "This offender was categorised as a Cat A in ..year.. and released as a ..Cat ?.. in ..year...",
-    iconFallbackText: "Warning",
-    classes: "forms-warning-text"
-  }) }}
+  {% set warningText %}
+    {% if data.history.catAType === 'A' %}
+      This offender was categorised as a Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+      for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+    {% elif data.history.catAType === 'P' %}
+      This offender was treated as a provisional Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+      for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+    {% elif data.history.catAType === 'H' %}
+      This offender was categorised as a Cat A High in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+      for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+    {% endif %}
+  {% endset %}
+  {% if warningText %}
+    {{ govukWarningText({
+      text: warningText,
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text"
+    }) }}
+  {% endif %}
 
   {{ govukTextarea({
     name: "previousConvictions",

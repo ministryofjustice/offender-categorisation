@@ -17,6 +17,10 @@ class CategoriserTasklistPage extends Page {
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     startButtons { bodyRows*.$('td', 5)*.find('a')  }
+    offendingHistoryButton { $('#offendingHistoryButton') }
     securityButton { $('#securityButton') }
+    violenceButton { $('#violenceButton') }
+    escapeButton { $('#escapeButton') }
+    extremismButton { $('#extremismButton') }
   }
 }
