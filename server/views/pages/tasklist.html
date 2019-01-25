@@ -95,7 +95,9 @@ href: backLink or "/"
                 {{ govukButton({
                 text: "Start",
                 href: "/form/ratings/offendingHistory/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                attributes:
+                  {  'id': 'offendingHistoryButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Offending history</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
@@ -125,7 +127,9 @@ href: backLink or "/"
                 {{ govukButton({
                 text: "Start",
                 href: "/form/ratings/violenceRating/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                attributes:
+                  {  'id': 'violenceButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Violence rating</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
@@ -139,7 +143,9 @@ href: backLink or "/"
                 {{ govukButton({
                 text: "Start",
                 href: "/form/ratings/escapeRating/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                attributes:
+                  {  'id': 'escapeButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Escape rating</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
@@ -153,7 +159,9 @@ href: backLink or "/"
                 {{ govukButton({
                 text: "Start",
                 href: "/form/ratings/extremismRating/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed"
+                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                attributes:
+                  {  'id': 'extremismButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Extremism rating</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>

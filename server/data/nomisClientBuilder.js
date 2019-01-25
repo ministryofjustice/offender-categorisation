@@ -23,6 +23,10 @@ module.exports = token => {
       const path = `${apiUrl}api/offender-sentences/bookings`
       return nomisPost({ path, body: bookingIds })
     },
+    getSentenceHistory(offenderNo) {
+      const path = `${apiUrl}api/offender-sentences?offenderNo=${offenderNo}`
+      return nomisGet({ path })
+    },
     getSentenceDetails(bookingId) {
       const path = `${apiUrl}api/bookings/${bookingId}/sentenceDetail`
       return nomisGet({ path })
@@ -45,6 +49,10 @@ module.exports = token => {
     },
     getMainOffence(bookingId) {
       const path = `${apiUrl}api/bookings/${bookingId}/mainOffence`
+      return nomisGet({ path })
+    },
+    getCategoryHistory(offenderNo) {
+      const path = `${apiUrl}api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false`
       return nomisGet({ path })
     },
   }

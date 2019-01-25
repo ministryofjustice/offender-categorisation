@@ -31,13 +31,13 @@ class HomePageSpecification extends GebReportingSpec {
     def sentenceStartDate = now.plusDays(-3).toString()
     def requiredDate = now.plusDays(7).toString()
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2354XY', 'B2354YZ'], [11, 12], sentenceStartDate)
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], sentenceStartDate)
 
     fixture.loginAs(ITAG_USER)
 
     then: 'The home page is displayed'
     at CategoriserHomePage
-    prisonNos == ['B2346YZ', 'B2345XY']
+    prisonNos == ['B2345YZ', 'B2345XY']
     names == ['Hillmob, Ant', 'Pitstop, Penelope']
     days == ['3', '3']
     dates == [requiredDate, requiredDate]
@@ -49,7 +49,7 @@ class HomePageSpecification extends GebReportingSpec {
     def now = LocalDate.now()
     def sentenceStartDate = now.plusDays(-3).toString()
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2354XY', 'B2354YZ'], [11, 12], sentenceStartDate)
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], sentenceStartDate)
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
 
