@@ -30,7 +30,14 @@ module.exports = function createSomeService(formClient) {
       return currentCategorisationForm
     }
 
-    await formClient.update(currentCategorisation.id, newCategorisationForm, bookingId, userId, calculateStatus())
+    await formClient.update(
+      currentCategorisation.id,
+      newCategorisationForm,
+      bookingId,
+      userId,
+      calculateStatus(),
+      userId
+    )
     return newCategorisationForm
   }
 

@@ -36,6 +36,7 @@ dependencies {
     testCompile "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
     testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
     testCompile 'io.github.http-builder-ng:http-builder-ng-apache:1.0.3'
+    testCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
 
     testCompile 'com.github.tomakehurst:wiremock-standalone:2.20.0'
     testCompile 'com.github.tomjankes:wiremock-groovy:0.2.0'

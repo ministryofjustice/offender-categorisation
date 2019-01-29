@@ -34,7 +34,7 @@ class OffendingHistorySpecification extends GebReportingSpec {
 
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
-    elite2api.stubGetUserDetails(12)
+    elite2api.stubGetOffenderDetails(12)
     startButtons[0].click() // selects B2345YZ
     at(new CategoriserTasklistPage(bookingId: '12'))
     elite2api.stubAssessments(['B2345YZ'])

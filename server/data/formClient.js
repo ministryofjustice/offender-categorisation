@@ -4,14 +4,14 @@ const logger = require('../../log.js')
 module.exports = {
   getFormDataForUser(bookingId) {
     const query = {
-      text: 'select id, user_id, status, form_response from form where booking_id = $1',
+      text: 'select id, user_id, status, form_response, assigned_user_id from form where booking_id = $1',
       values: [bookingId],
     }
 
     return db.query(query)
   },
 
-  update(formId, formResponse, bookingId, userId, status) {
+  update(formId, formResponse, bookingId, userId, status, assignedUserId) {
     logger.debug(`updating record for booking id ${bookingId}`)
     const query = formId
       ? {
@@ -19,8 +19,9 @@ module.exports = {
           values: [formResponse, bookingId],
         }
       : {
-          text: 'insert into form (form_response, booking_id, user_id, status) values ($1, $2, $3, $4)',
-          values: [formResponse, bookingId, userId, status],
+          text:
+            'insert into form (form_response, booking_id, user_id, status, assigned_user_id) values ($1, $2, $3, $4, $5)',
+          values: [formResponse, bookingId, userId, status, assignedUserId],
         }
     return db.query(query)
   },

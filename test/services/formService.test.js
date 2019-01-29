@@ -123,7 +123,7 @@ describe('update', () => {
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'MEEEE', 'STARTED')
+      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'MEEEE', 'STARTED', 'MEEEE')
     })
 
     test('should not call update if there are no changes', async () => {
