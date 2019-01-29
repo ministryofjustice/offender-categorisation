@@ -27,7 +27,11 @@ const offendersService = {
   getCategoryHistory: jest.fn(),
 }
 
-const formRoute = createRouter({ formService, offendersService, authenticationMiddleware })
+const userService = {
+  getUser: jest.fn(),
+}
+
+const formRoute = createRouter({ formService, offendersService, userService, authenticationMiddleware })
 
 let app
 
@@ -35,12 +39,14 @@ beforeEach(() => {
   app = appSetup(formRoute)
   formService.getCategorisationRecord.mockResolvedValue({})
   offendersService.getOffenderDetails.mockResolvedValue({})
+  userService.getUser.mockResolvedValue({})
 })
 
 afterEach(() => {
   formService.getCategorisationRecord.mockReset()
   offendersService.getOffenderDetails.mockReset()
   formService.update.mockReset()
+  userService.getUser.mockReset()
 })
 
 describe('GET /section/form', () => {
