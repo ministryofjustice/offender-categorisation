@@ -16,7 +16,7 @@ const formConfig = {
   ...ratings,
 }
 
-module.exports = function Index({ formService, offendersService, authenticationMiddleware }) {
+module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -32,6 +32,9 @@ module.exports = function Index({ formService, offendersService, authenticationM
   router.get(
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+
       const { section, form, bookingId } = req.params
 
       const formData = await formService.getCategorisationRecord(bookingId)
