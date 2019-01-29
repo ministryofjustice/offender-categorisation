@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
 
@@ -28,10 +29,11 @@ class HomePageSpecification extends GebReportingSpec {
     when: 'I go to the home page'
 
     def now = LocalDate.now()
-    def sentenceStartDate = now.plusDays(-3).toString()
-    def requiredDate = now.plusDays(7).toString()
+    def sentenceStartDate = LocalDate.of(2019, 1, 28)
+    def daysSinceSentence = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate, now))
+    def requiredDate = '2019-02-11' // 14 days after sentenceStartDate
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], sentenceStartDate)
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], sentenceStartDate.toString())
 
     fixture.loginAs(ITAG_USER)
 
@@ -39,7 +41,7 @@ class HomePageSpecification extends GebReportingSpec {
     at CategoriserHomePage
     prisonNos == ['B2345YZ', 'B2345XY']
     names == ['Hillmob, Ant', 'Pitstop, Penelope']
-    days == ['3', '3']
+    days == [daysSinceSentence, daysSinceSentence]
     dates == [requiredDate, requiredDate]
     statuses == ['Awaiting approval', 'Not categorised']
   }
