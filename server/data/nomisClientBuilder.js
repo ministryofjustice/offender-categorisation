@@ -35,6 +35,10 @@ module.exports = token => {
       const path = `${apiUrl}api/users/me`
       return nomisGet({ path })
     },
+    getUserByUserId(userId) {
+      const path = `${apiUrl}api/users/${userId}`
+      return nomisGet({ path })
+    },
     getUserCaseLoads() {
       const path = `${apiUrl}api/users/me/caseLoads`
       return nomisGet({ path })

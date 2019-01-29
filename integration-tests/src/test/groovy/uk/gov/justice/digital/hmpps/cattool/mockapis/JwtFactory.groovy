@@ -7,7 +7,7 @@ class JwtFactory {
   static Algorithm ALGORITHM = Algorithm.HMAC256("secret")
   static ISSUER = "Paddy McGinty's Goat"
 
-  static String token() {
+  static String token(username) {
     Date now = new Date()
 
     Date fiveMinutesLater = new Date(now.getTime() + (5 * 60 * 1000))
@@ -17,6 +17,7 @@ class JwtFactory {
       .withIssuer(ISSUER)
       .withIssuedAt(now)
       .withExpiresAt(fiveMinutesLater)
+      .withClaim("username", username)
       .sign ALGORITHM
   }
 }

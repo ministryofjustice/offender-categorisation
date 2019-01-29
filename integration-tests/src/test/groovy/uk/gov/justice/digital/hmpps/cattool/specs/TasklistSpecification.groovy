@@ -33,7 +33,7 @@ class TasklistSpecification extends GebReportingSpec {
 
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
-    elite2api.stubGetUserDetails(12)
+    elite2api.stubGetOffenderDetails(12)
     startButtons[0].click() // selects B2345YZ
 
     then: 'The tasklist page is displayed'
