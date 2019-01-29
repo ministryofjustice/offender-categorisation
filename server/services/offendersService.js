@@ -7,12 +7,31 @@ const { sortByDateTime } = require('./offenderSort.js')
 
 const dirname = process.cwd()
 
+const SATURDAY = 6
+const SUNDAY = 0
+const SUNDAY2 = 7
+
 function isCatA(c) {
   return c.classificationCode === 'A' || c.classificationCode === 'H' || c.classificationCode === 'P'
 }
 
 function getYear(isoDate) {
   return isoDate && isoDate.substring(0, 4)
+}
+
+function get10BusinessDays(from) {
+  let numberOfDays = 14
+  switch (from.isoWeekday()) {
+    case SATURDAY:
+      numberOfDays += 2
+      break
+    case SUNDAY:
+    case SUNDAY2:
+      numberOfDays += 1
+      break
+    default:
+  }
+  return numberOfDays
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
@@ -60,7 +79,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   function buildSentenceData(sentenceDate) {
     const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
     const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
-    const dateRequired = sentenceDateMoment.add(10, 'day').format('YYYY-MM-DD')
+    const actualDays = get10BusinessDays(sentenceDateMoment)
+    const dateRequired = sentenceDateMoment.add(actualDays, 'day').format('YYYY-MM-DD')
     return { daysSinceSentence, dateRequired, sentenceDate }
   }
 
@@ -176,10 +196,17 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       return { catAType, catAStartYear, catAEndYear, releaseYear, finalCat }
     } catch (error) {
-      logger.error(error, 'Error during getCategoryHistory')
+      logger.error(error, 'Error during getCatAInformation')
       throw error
     }
   }
 
-  return { getUncategorisedOffenders, getOffenderDetails, getImage, getCategoryHistory: getCatAInformation }
+  return {
+    getUncategorisedOffenders,
+    getOffenderDetails,
+    getImage,
+    getCategoryHistory: getCatAInformation,
+    // just for tests:
+    buildSentenceData,
+  }
 }

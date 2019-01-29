@@ -61,6 +61,7 @@ describe('getUncategorisedOffenders', () => {
       },
     ]
 
+    const DATE_MATCHER = '\\d{4}-\\d{2}-\\d{2}'
     const expected = [
       {
         offenderNo: 'G12345',
@@ -72,7 +73,7 @@ describe('getUncategorisedOffenders', () => {
         displayStatus: 'Not categorised',
         sentenceDate: todaySubtract(6),
         daysSinceSentence: 6,
-        dateRequired: todayAdd(4),
+        dateRequired: expect.stringMatching(DATE_MATCHER),
       },
       {
         offenderNo: 'H12345',
@@ -84,7 +85,7 @@ describe('getUncategorisedOffenders', () => {
         displayStatus: 'Not categorised',
         sentenceDate: todaySubtract(7),
         daysSinceSentence: 7,
-        dateRequired: todayAdd(3),
+        dateRequired: expect.stringMatching(DATE_MATCHER),
       },
       {
         offenderNo: 'G55345',
@@ -96,7 +97,7 @@ describe('getUncategorisedOffenders', () => {
         displayStatus: 'Awaiting approval',
         sentenceDate: todaySubtract(9),
         daysSinceSentence: 9,
-        dateRequired: todayAdd(1),
+        dateRequired: expect.stringMatching(DATE_MATCHER),
       },
     ]
 
@@ -107,7 +108,7 @@ describe('getUncategorisedOffenders', () => {
     const result = await service.getUncategorisedOffenders('user1')
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
-    expect(result).toEqual(expected)
+    expect(result).toMatchObject(expected)
   })
 
   test('it should handle an empty response', async () => {
@@ -119,6 +120,36 @@ describe('getUncategorisedOffenders', () => {
     const result = await service.getUncategorisedOffenders('MDI')
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
+  })
+
+  test('it should calculate business days correctly', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    expect(service.buildSentenceData('2019-01-14')).toEqual({
+      daysSinceSentence: 2,
+      dateRequired: '2019-01-28',
+      sentenceDate: '2019-01-14',
+    })
+  })
+
+  test('it should calculate business days correctly when sentenceDate is Saturday', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    expect(service.buildSentenceData('2019-01-12')).toEqual({
+      daysSinceSentence: 4,
+      dateRequired: '2019-01-28',
+      sentenceDate: '2019-01-12',
+    })
+  })
+
+  test('it should calculate business days correctly when sentenceDate is Sunday', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    expect(service.buildSentenceData('2019-01-13')).toEqual({
+      daysSinceSentence: 3,
+      dateRequired: '2019-01-28',
+      sentenceDate: '2019-01-13',
+    })
   })
 
   test('it should not return offenders without sentence data', async () => {
@@ -165,12 +196,6 @@ describe('getUncategorisedOffenders', () => {
   function todaySubtract(days) {
     return moment()
       .subtract(days, 'day')
-      .format('YYYY-MM-DD')
-  }
-
-  function todayAdd(days) {
-    return moment()
-      .add(days, 'day')
       .format('YYYY-MM-DD')
   }
 })
