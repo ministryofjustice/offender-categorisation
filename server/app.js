@@ -186,8 +186,8 @@ module.exports = function createApp({ signInService, formService, offendersServi
   })
 
   app.use('/', createHomeRouter({ userService, offendersService, authenticationMiddleware }))
-  app.use('/tasklist/', createTasklistRouter({ formService, offendersService, authenticationMiddleware }))
-  app.use('/form/', createFormRouter({ formService, offendersService, authenticationMiddleware }))
+  app.use('/tasklist/', createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware }))
+  app.use('/form/', createFormRouter({ formService, offendersService, userService, authenticationMiddleware }))
 
   app.use((req, res, next) => {
     next(new Error('Not found'))

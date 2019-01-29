@@ -4,7 +4,7 @@ const moment = require('moment')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 
-module.exports = function Index({ formService, offendersService, authenticationMiddleware }) {
+module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -12,6 +12,9 @@ module.exports = function Index({ formService, offendersService, authenticationM
   router.get(
     '/:bookingId',
     asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+
       const { bookingId } = req.params
       const formData = await formService.getCategorisationRecord(bookingId)
       res.locals.formObject = formData.form_response || {}
