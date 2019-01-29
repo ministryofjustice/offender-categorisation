@@ -17,5 +17,6 @@ class CategoriserOffendingHistoryPage extends Page {
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     catAWarning(required: false) { $('div.govuk-warning-text') }
+    saveButton { $('button.govuk-button') }
   }
 }

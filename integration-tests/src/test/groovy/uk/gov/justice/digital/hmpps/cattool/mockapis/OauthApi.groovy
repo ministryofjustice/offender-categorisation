@@ -15,7 +15,7 @@ class OauthApi extends WireMockRule {
 
   void stubValidOAuthTokenRequest(UserAccount user, Boolean delayOAuthResponse = false) {
 
-    final accessToken = JwtFactory.token()
+    final accessToken = JwtFactory.token(user.username)
 
     this.stubFor(
       get(urlMatching('/auth/oauth/authorize\\?response_type=code&redirect_uri=.+&state=.+&client_id=licences'))
@@ -34,7 +34,8 @@ class OauthApi extends WireMockRule {
       .withBody(JsonOutput.toJson([
       access_token : accessToken,
       token_type   : 'bearer',
-      refresh_token: JwtFactory.token(),
+      refresh_token: JwtFactory.token(user.username),
+      user_name     : user.username,
       expires_in   : 599,
       scope        : 'read write',
       internalUser : true

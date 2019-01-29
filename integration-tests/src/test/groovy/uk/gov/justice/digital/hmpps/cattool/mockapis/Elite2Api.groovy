@@ -39,6 +39,23 @@ class Elite2Api extends WireMockRule {
         ]))))
   }
 
+  void stubGetUserDetails(UserAccount user, String caseloadId) {
+    this.stubFor(
+      get("/api/users/${user.username}")
+        .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withHeader('Content-Type', 'application/json')
+          .withBody(JsonOutput.toJson([
+          staffId         : user.staffMember.id,
+          username        : user.username,
+          firstName       : user.staffMember.firstName,
+          lastName        : user.staffMember.lastName,
+          email           : 'itaguser@syscon.net',
+          activeCaseLoadId: caseloadId
+        ]))))
+  }
+
   void stubGetMyCaseloads(List<Caseload> caseloads) {
     def json = new JsonBuilder()
     json caseloads, { caseload ->
@@ -114,6 +131,25 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  void stubUncategorisedNoStatus(bookingId) {
+    this.stubFor(
+      get("/api/offender-assessments/category/LEI/uncategorised")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            "bookingId" : bookingId,
+            "offenderNo": "ON${bookingId}",
+            firstName   : 'HARRY',
+            lastName    : 'BONNET',
+          ],
+        ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
   def stubSentenceData(List offenderNumbers, List bookingIds, String formattedStartDate, Boolean emptyResponse = false) {
     def index = 0
 
@@ -167,7 +203,7 @@ class Elite2Api extends WireMockRule {
   }
 
 
-  def stubGetUserDetails(int bookingId) {
+  def stubGetOffenderDetails(int bookingId, offenderNo="B2345YZ") {
     this.stubFor(
       get("/api/bookings/$bookingId?basicInfo=false")
         .willReturn(
@@ -175,7 +211,7 @@ class Elite2Api extends WireMockRule {
           .withBody(JsonOutput.toJson(
           [
             bookingId         : bookingId,
-            offenderNo        : "B2345YZ",
+            offenderNo        : offenderNo,
             firstName         : 'ANT',
             lastName          : 'HILLMOB',
             dateOfBirth       : "1970-02-17",

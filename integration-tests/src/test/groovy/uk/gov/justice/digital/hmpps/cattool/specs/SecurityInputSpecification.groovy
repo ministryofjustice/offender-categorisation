@@ -34,7 +34,7 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
-    elite2api.stubGetUserDetails(12)
+    elite2api.stubGetOffenderDetails(12)
     startButtons[0].click()
     at(new CategoriserTasklistPage(bookingId: '12'))
     // TODO temp till form.js is rearranged to allow form-specific service calls:

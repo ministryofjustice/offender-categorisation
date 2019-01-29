@@ -35,7 +35,7 @@ function get10BusinessDays(from) {
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
-  async function getUncategorisedOffenders(token, agencyId) {
+  async function getUncategorisedOffenders(token, agencyId, user) {
     try {
       const nomisClient = nomisClientBuilder(token)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
@@ -63,7 +63,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             ...o,
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
             ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
-            ...(await decorateWithCategorisationData(o.bookingId, o.status)),
+            ...(await decorateWithCategorisationData(o, user, nomisClient)),
           }))
       )
 
@@ -84,23 +84,39 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return { daysSinceSentence, dateRequired, sentenceDate }
   }
 
-  async function decorateWithCategorisationData(bookingId, status) {
-    const categorisation = await formService.getCategorisationRecord(bookingId)
+  async function decorateWithCategorisationData(offender, user, nomisClient) {
+    const categorisation = await formService.getCategorisationRecord(offender.bookingId)
+    let statusText
     if (categorisation.status) {
-      logger.debug(`retrieving status ${categorisation.status} for booking id ${bookingId}`)
-      return { displayStatus: `${statusText(categorisation.status)}` }
+      statusText = statusTextDisplay(categorisation.status)
+      logger.debug(`retrieving status ${categorisation.status} for booking id ${offender.bookingId}`)
+      if (categorisation.assigned_user_id && categorisation.status === 'STARTED') {
+        if (categorisation.assigned_user_id !== user.username) {
+          // need to retrieve name details for non-current user
+          try {
+            const assignedUser = await nomisClient.getUserByUserId(categorisation.assigned_user_id)
+            statusText += ` (${properCaseName(assignedUser.firstName)} ${properCaseName(assignedUser.lastName)})`
+          } catch (error) {
+            logger.warn(`No assigned user details found for  ${categorisation.assigned_user_id}`)
+          }
+        } else {
+          statusText += ` (${properCaseName(user.firstName)} ${properCaseName(user.lastName)})`
+        }
+      }
+      return { displayStatus: `${statusText}`, assignedUserId: categorisation.assignedUserId }
     }
-    return { displayStatus: `${statusText(status)}` }
+    statusText = statusTextDisplay(offender.status)
+    return { displayStatus: `${statusText}` }
   }
 
-  const statusText = input => {
+  const statusTextDisplay = input => {
     switch (input) {
       case 'UNCATEGORISED':
         return 'Not categorised'
       case 'AWAITING_APPROVAL':
         return 'Awaiting approval'
       case 'STARTED':
-        return 'Categorisation started'
+        return 'Started'
       default:
         return 'Unknown status'
     }

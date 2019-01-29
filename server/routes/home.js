@@ -15,7 +15,8 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUncategorisedOffenders(
             res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId
+            res.locals.user.activeCaseLoad.caseLoadId,
+            user
           )
         : []
 
