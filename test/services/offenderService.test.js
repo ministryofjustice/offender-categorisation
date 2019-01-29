@@ -198,10 +198,4 @@ describe('getUncategorisedOffenders', () => {
       .subtract(days, 'day')
       .format('YYYY-MM-DD')
   }
-
-  function todayAdd(days) {
-    return moment()
-      .add(days, 'day')
-      .format('YYYY-MM-DD')
-  }
 })
