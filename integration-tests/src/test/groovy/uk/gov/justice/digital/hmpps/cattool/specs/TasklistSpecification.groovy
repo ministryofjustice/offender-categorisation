@@ -40,6 +40,16 @@ class TasklistSpecification extends GebReportingSpec {
     at(new CategoriserTasklistPage(bookingId: '12'))
 
     headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
-                            'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']
+                            'C-04-02', 'Coventry',
+                            'Latvian',
+                            'A Felony', 'Another Felony',
+                            '10/06/2020',
+                            '11/06/2020',
+                            '02/02/2020',
+                            '13/06/2020',
+                            '14/06/2020',
+                            '15/06/2020',
+                            '16/06/2020',
+                            '17/06/2020']
   }
 }

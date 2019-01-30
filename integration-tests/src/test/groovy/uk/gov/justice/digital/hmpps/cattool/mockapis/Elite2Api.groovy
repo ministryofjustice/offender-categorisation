@@ -241,10 +241,16 @@ class Elite2Api extends WireMockRule {
         aResponse()
           .withBody(JsonOutput.toJson(
           [
-            bookingId             : bookingId,
-            conditionalReleaseDate: "2020-02-02",
-            releaseDate           : "2019-01-01",
-          ]
+            bookingId                         : bookingId,
+            releaseDate                       : "2019-01-01",
+            homeDetentionCurfewEligibilityDate: '2020-06-10',
+            automaticReleaseDate              : '2020-06-11',
+            conditionalReleaseDate            : "2020-02-02",
+            paroleEligibilityDate             : '2020-06-13',
+            nonParoleDate                     : '2020-06-14',
+            tariffDate                        : '2020-06-15',
+            licenceExpiryDate                 : '2020-06-16',
+            sentenceExpiryDate                : '2020-06-17',]
         ))
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
