@@ -46,6 +46,7 @@
 
 <form method="post">
   <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+  <input type="hidden" name="offenderNo" value="{{ data.details.offenderNo }}" />
 
   {% block formItems %}
 
