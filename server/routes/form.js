@@ -97,14 +97,12 @@ module.exports = function Index({
   router.post(
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const { offenderNo } = req.body
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[form]
 
       const updatedFormObject = await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
-        offenderNo,
         config: formPageConfig,
         userInput: req.body,
         formSection: section,
