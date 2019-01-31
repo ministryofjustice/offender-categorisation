@@ -6,6 +6,7 @@ import geb.spock.GebReportingSpec
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
@@ -19,6 +20,9 @@ class SecurityInputSpecification extends GebReportingSpec {
 
   @Rule
   Elite2Api elite2api = new Elite2Api()
+
+  @Rule
+  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
 
   @Rule
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
@@ -37,9 +41,10 @@ class SecurityInputSpecification extends GebReportingSpec {
     elite2api.stubGetOffenderDetails(12)
     startButtons[0].click()
     at(new CategoriserTasklistPage(bookingId: '12'))
-    // TODO temp till form.js is rearranged to allow form-specific service calls:
+
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true, "SOC")
 
     securityButton.click()
 
