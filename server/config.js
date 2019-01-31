@@ -53,6 +53,13 @@ module.exports = {
         deadline: get('CUSTODY_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),
       },
     },
+    riskProfiler: {
+      url: get('RISK_PROFILER_ENDPOINT_URL', 'http://localhost:8082/', true),
+      timeout: {
+        response: get('RISK_PROFILER_ENDPOINT_TIMEOUT_RESPONSE', 30000, true),
+        deadline: get('RISK_PROFILER_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),
+      },
+    },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
 }
