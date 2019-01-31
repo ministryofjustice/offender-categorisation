@@ -115,6 +115,7 @@ describe('update', () => {
 
       const output = await service.update({
         bookingId: 1234,
+        offenderNo: 'AA1234',
         userId: 'MEEEE',
         config: { fields: fieldMap },
         userInput,
@@ -123,7 +124,7 @@ describe('update', () => {
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'MEEEE', 'STARTED', 'MEEEE')
+      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'AA1234', 'MEEEE', 'STARTED', 'MEEEE')
     })
 
     test('should not call update if there are no changes', async () => {
