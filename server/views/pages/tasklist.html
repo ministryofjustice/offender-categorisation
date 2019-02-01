@@ -137,7 +137,7 @@ href: backLink or "/"
             </li>
             <li class="app-task-list__item">
               {% if data.ratings.securityInput %}
-                <a href="/form/ratings/securityInput/{{ data.bookingId }}">Security input</a>
+                <a id="security-input-edit" href="/form/ratings/securityInput/{{ data.bookingId }}">Security input</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="securityInput-completed">Completed</strong>
               {% else %}
                 {{ govukButton({

@@ -94,6 +94,14 @@ module.exports = function Index({
     }
   }
 
+  const clearConditionalFields = body => {
+    const updated = body
+    if (body.securityInputNeeded === 'No') {
+      updated.securityInputNeededText = ''
+    }
+    return updated
+  }
+
   router.post(
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
@@ -104,7 +112,7 @@ module.exports = function Index({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: req.body,
+        userInput: clearConditionalFields(req.body),
         formSection: section,
         formName: form,
       })
