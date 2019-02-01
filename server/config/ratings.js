@@ -9,6 +9,16 @@ module.exports = {
     nextPath: {
       path: '/tasklist/',
     },
+    fields: [
+      {
+        securityInputNeeded: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      { securityInputNeededText: { responseType: 'optionalString' } },
+    ],
+    validate: true,
   },
   violenceRating: {
     nextPath: {
