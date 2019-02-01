@@ -57,7 +57,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     then: 'The security input page is displayed with an alert'
     at(new CategoriserSecurityInputPage(bookingId: '12'))
 
-    warningTextDiv.text().contains('This offender has been referred to security')
+    warningTextDiv.text().contains('This offender was referred to security')
 
   }
 
