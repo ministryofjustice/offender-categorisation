@@ -256,6 +256,19 @@ class Elite2Api extends WireMockRule {
           .withStatus(200))
     )
     this.stubFor(
+      get("/api/offender-sentences/booking/$bookingId/sentenceTerms")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson(
+          [
+            bookingId: bookingId,
+            years    : 6,
+            months   : 3,]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+    this.stubFor(
       get("/api/bookings/$bookingId/mainOffence")
         .willReturn(
         aResponse()
