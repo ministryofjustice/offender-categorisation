@@ -2,12 +2,44 @@
 
 {% from "radios/macro.njk" import govukRadios %}
 
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "textarea/macro.njk" import govukTextarea %}
+
 {% block formItems %}
 
 <h1 id="securityInputHeader" class="govuk-heading-l">Security input</h1>
 
+  {% if data.socProfile.transferToSecurity === true %}
+    {% set warningText %}
+      This offender was referred to security
+    {% endset %}
+  {% endif %}
+  {% if warningText %}
+    {{ govukWarningText({
+    text: warningText,
+    iconFallbackText: "Warning",
+    classes: "forms-warning-text"
+    }) }}
+  {% endif %}
+
+
+{% set securityInputTextHtml %}
+
+  {{ govukTextarea({
+    name: "securityInputNeededText",
+    type: "securityInputText",
+    id: "securityInputNeededText",
+    label: {
+    text: "Please explain why security input is needed"
+    },
+    value: data.securityInputNeededText
+  }) }}
+
+{% endset -%}
+
   {{ govukRadios({
-    name: "securityInput",
+    name: "securityInputNeeded",
+    classes: "govuk-radios--inline",
     fieldset: {
       legend: {
       text: "Do you have reason to believe security input is needed?",
@@ -18,11 +50,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.securityInput === 'Yes'
+        checked: data.securityInputNeeded === 'Yes',
+        conditional: {
+        html:securityInputTextHtml
+        }
       },
       {
         value: "No",
-        checked: data.securityInput === 'No',
+        checked: data.securityInputNeeded === 'No',
         text: "No"
       }
     ]

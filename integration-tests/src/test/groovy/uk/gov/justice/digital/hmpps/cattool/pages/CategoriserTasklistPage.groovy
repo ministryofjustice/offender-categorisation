@@ -22,6 +22,7 @@ class CategoriserTasklistPage extends Page {
     violenceButton { $('#violenceButton') }
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }
-    backLink { $( 'a.govuk-back-link')}
+    backLink { $( 'a.govuk-back-link') }
+    securityEditLink{ $('#security-input-edit') }
   }
 }
