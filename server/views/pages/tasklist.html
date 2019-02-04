@@ -172,7 +172,7 @@ href: backLink or "/"
             </li>
             <li class="app-task-list__item">
               {% if data.ratings.escapeRating %}
-                <a href="/form/ratings/escapeRating/{{ data.bookingId }}">Escape rating</a>
+                <a id="escape-input-edit" href="/form/ratings/escapeRating/{{ data.bookingId }}">Escape rating</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="escapeRating-completed">Completed</strong>
               {% else %}
                 {{ govukButton({

@@ -7,6 +7,9 @@ module.exports = {
   firstItem: R.head,
   getFieldDetail,
   getFieldName,
+  isEmpty,
+  mergeWithRight,
+  lastItem,
 }
 
 function isNilOrEmpty(item) {
@@ -26,4 +29,17 @@ function getFieldName(fieldConfig) {
     R.keys,
     R.head
   )(fieldConfig)
+}
+
+function lastItem(array) {
+  return R.last(array)
+}
+
+// uses the value on object2 if it key exists on both
+function mergeWithRight(object1, object2) {
+  return R.mergeDeepRight(object1, object2)
+}
+
+function isEmpty(item) {
+  return R.isEmpty(item) || R.isNil(item)
 }

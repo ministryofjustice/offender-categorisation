@@ -24,6 +24,11 @@ module.exports = username => {
       logger.debug(`getSocProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
       return apiGet({ path })
     },
+    getEscapeProfile(offenderNo) {
+      const path = `${apiUrl}escape/${offenderNo}`
+      logger.debug(`getEscapeProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
+      return apiGet({ path })
+    },
   }
 }
 
