@@ -112,6 +112,9 @@ href: backLink or "/"
         {{ headerTitle('Sentence Expiry Date') }}
         {{ headerValue(dateConverter(data.sentence.sentenceExpiryDate)) }}
       {% endif %}
+
+      {{ headerTitle('Court-issued sentence') }}
+      {{ headerValue(data.sentence.length) }}
     </div>
   </div>
   <div class="govuk-grid-row">

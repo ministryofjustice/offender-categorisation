@@ -31,6 +31,10 @@ module.exports = token => {
       const path = `${apiUrl}api/bookings/${bookingId}/sentenceDetail`
       return nomisGet({ path })
     },
+    getSentenceTerms(bookingId) {
+      const path = `${apiUrl}api/offender-sentences/booking/${bookingId}/sentenceTerms`
+      return nomisGet({ path })
+    },
     getUser() {
       const path = `${apiUrl}api/users/me`
       return nomisGet({ path })
