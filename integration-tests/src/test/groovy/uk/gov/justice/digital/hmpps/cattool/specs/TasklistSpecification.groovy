@@ -50,6 +50,7 @@ class TasklistSpecification extends GebReportingSpec {
                             '14/06/2020',
                             '15/06/2020',
                             '16/06/2020',
-                            '17/06/2020']
+                            '17/06/2020',
+                            '6 years, 3 months']
   }
 }

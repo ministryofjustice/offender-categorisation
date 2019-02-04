@@ -4,6 +4,11 @@ const moment = require('moment')
 const nomisClient = {
   getUncategorisedOffenders: jest.fn(),
   getSentenceDatesForOffenders: jest.fn(),
+
+  getOffenderDetails: jest.fn(),
+  getSentenceDetails: jest.fn(),
+  getSentenceTerms: jest.fn(),
+  getMainOffence: jest.fn(),
 }
 
 const formService = {
@@ -51,13 +56,13 @@ describe('getUncategorisedOffenders', () => {
 
     const sentenceDates = [
       {
-        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(6) },
+        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(4) },
       },
       {
         sentenceDetail: { bookingId: 111, sentenceStartDate: todaySubtract(7) },
       },
       {
-        sentenceDetail: { bookingId: 122, sentenceStartDate: todaySubtract(9) },
+        sentenceDetail: { bookingId: 122, sentenceStartDate: todaySubtract(10) },
       },
     ]
 
@@ -71,8 +76,8 @@ describe('getUncategorisedOffenders', () => {
         bookingId: 123,
         status: 'UNCATEGORISED',
         displayStatus: 'Not categorised',
-        sentenceDate: todaySubtract(6),
-        daysSinceSentence: 6,
+        sentenceDate: todaySubtract(4),
+        daysSinceSentence: 4,
         dateRequired: expect.stringMatching(DATE_MATCHER),
       },
       {
@@ -95,8 +100,8 @@ describe('getUncategorisedOffenders', () => {
         bookingId: 122,
         status: 'AWAITING_APPROVAL',
         displayStatus: 'Awaiting approval',
-        sentenceDate: todaySubtract(9),
-        daysSinceSentence: 9,
+        sentenceDate: todaySubtract(10),
+        daysSinceSentence: 10,
         dateRequired: expect.stringMatching(DATE_MATCHER),
       },
     ]
@@ -191,6 +196,24 @@ describe('getUncategorisedOffenders', () => {
     } catch (error) {
       /* do nothing */
     }
+  })
+
+  describe('getOffenderDetails should format sentence length correctly', () => {
+    test.each`
+      apiData                                       | expectedContent
+      ${{ years: 2, months: 4 }}                    | ${'2 years, 4 months'}
+      ${{ months: 2, weeks: 4 }}                    | ${'2 months, 4 weeks'}
+      ${{ days: 4 }}                                | ${'4 days'}
+      ${{ years: 1, months: 1 }}                    | ${'1 year, 1 month'}
+      ${{ weeks: 1 }}                               | ${'1 week'}
+      ${{ weeks: 2, days: 4, years: null }}         | ${'2 weeks, 4 days'}
+      ${{ years: 5, months: 6, weeks: 7, days: 1 }} | ${'5 years, 6 months, 7 weeks, 1 day'}
+    `('should render $expectedContent for $apiData', async ({ apiData, expectedContent }) => {
+      nomisClient.getOffenderDetails.mockReturnValue({ firstName: 'SAM', lastName: 'SMITH' })
+      nomisClient.getSentenceTerms.mockReturnValue(apiData)
+      const result = await service.getOffenderDetails('token', -5)
+      expect(result.sentence.length).toEqual(expectedContent)
+    })
   })
 
   function todaySubtract(days) {
