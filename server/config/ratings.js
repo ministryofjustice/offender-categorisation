@@ -34,5 +34,15 @@ module.exports = {
     nextPath: {
       path: '/tasklist/',
     },
+    fields: [
+      {
+        escapeFurtherCharges: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      { escapeFurtherChargesText: { responseType: 'optionalString' } },
+    ],
+    validate: true,
   },
 }

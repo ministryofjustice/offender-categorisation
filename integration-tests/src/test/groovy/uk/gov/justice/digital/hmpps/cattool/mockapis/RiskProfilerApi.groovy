@@ -29,4 +29,21 @@ class RiskProfilerApi extends WireMockRule {
           transferToSecurity: transferToSecurity
         ]))))
   }
+
+  void stubGetEscapeProfile(String offenderno, String riskType="EXTREMISM", boolean onEscapeList, boolean activeOnEscapeList) {
+    this.stubFor(
+      get("/soc/${offenderno}")
+        .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withHeader('Content-Type', 'application/json')
+          .withBody(JsonOutput.toJson([
+          nomsId: offenderno,
+          riskType: riskType,
+          provisionalCategorisation: "C",
+          onEscapeList: onEscapeList,
+          activeOnEscapeList: activeOnEscapeList
+        ]))))
+  }
+
 }
