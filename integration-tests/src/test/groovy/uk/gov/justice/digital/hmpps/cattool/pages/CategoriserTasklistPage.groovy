@@ -24,5 +24,6 @@ class CategoriserTasklistPage extends Page {
     extremismButton { $('#extremismButton') }
     backLink { $( 'a.govuk-back-link') }
     securityEditLink{ $('#security-input-edit') }
+    escapeEditLink{ $('#escape-input-edit') }
   }
 }

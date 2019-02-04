@@ -65,6 +65,22 @@ module.exports = function Index({
   )
 
   router.get(
+    '/ratings/escapeRating/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const section = 'ratings'
+      const form = 'escapeRating'
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, section, form, bookingId)
+      const escapeProfile = await riskProfilerService.getEscapeProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username
+      )
+      const data = { ...result.data, escapeProfile }
+      res.render(`formPages/${section}/${form}`, { ...result, data })
+    })
+  )
+
+  router.get(
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
@@ -95,9 +111,12 @@ module.exports = function Index({
   }
 
   const clearConditionalFields = body => {
-    const updated = body
+    const updated = Object.assign({}, body)
     if (body.securityInputNeeded === 'No') {
       updated.securityInputNeededText = ''
+    }
+    if (body.escapeFurtherCharges === 'No') {
+      updated.escapeFurtherChargesText = ''
     }
     return updated
   }
