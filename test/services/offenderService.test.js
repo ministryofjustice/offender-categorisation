@@ -56,13 +56,13 @@ describe('getUncategorisedOffenders', () => {
 
     const sentenceDates = [
       {
-        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(6) },
+        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(4) },
       },
       {
         sentenceDetail: { bookingId: 111, sentenceStartDate: todaySubtract(7) },
       },
       {
-        sentenceDetail: { bookingId: 122, sentenceStartDate: todaySubtract(9) },
+        sentenceDetail: { bookingId: 122, sentenceStartDate: todaySubtract(10) },
       },
     ]
 
@@ -76,8 +76,8 @@ describe('getUncategorisedOffenders', () => {
         bookingId: 123,
         status: 'UNCATEGORISED',
         displayStatus: 'Not categorised',
-        sentenceDate: todaySubtract(6),
-        daysSinceSentence: 6,
+        sentenceDate: todaySubtract(4),
+        daysSinceSentence: 4,
         dateRequired: expect.stringMatching(DATE_MATCHER),
       },
       {
@@ -100,8 +100,8 @@ describe('getUncategorisedOffenders', () => {
         bookingId: 122,
         status: 'AWAITING_APPROVAL',
         displayStatus: 'Awaiting approval',
-        sentenceDate: todaySubtract(9),
-        daysSinceSentence: 9,
+        sentenceDate: todaySubtract(10),
+        daysSinceSentence: 10,
         dateRequired: expect.stringMatching(DATE_MATCHER),
       },
     ]
