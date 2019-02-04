@@ -19,7 +19,7 @@
       for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
     {% endif %}
   {% endset %}
-  {% if warningText %}
+  {% if warningText | trim %}
     {{ govukWarningText({
       text: warningText,
       iconFallbackText: "Warning",

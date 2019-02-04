@@ -34,6 +34,24 @@ function get10BusinessDays(from) {
   return numberOfDays
 }
 
+function plural(value) {
+  return value > 1 ? 's' : ''
+}
+
+function formatValue(value, label) {
+  return value > 0 ? `${value} ${label}${plural(value)}, ` : ''
+}
+
+function formatLength(sentenceTerms) {
+  const years = formatValue(sentenceTerms.years, 'year')
+  const months = formatValue(sentenceTerms.months, 'month')
+  const weeks = formatValue(sentenceTerms.weeks, 'week')
+  const days = formatValue(sentenceTerms.days, 'day')
+  const result = `${years}${months}${weeks}${days}`
+  // chop off any trailing comma
+  return result.endsWith(', ') ? result.substr(0, result.length - 2) : result
+}
+
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
   async function getUncategorisedOffenders(token, agencyId, user) {
     try {
@@ -132,14 +150,22 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return []
       }
 
-      const sentence = await nomisClient.getSentenceDetails(bookingId)
-      const offence = await nomisClient.getMainOffence(bookingId)
+      const [sentenceDetails, sentenceTerms, offence] = await Promise.all([
+        nomisClient.getSentenceDetails(bookingId),
+        nomisClient.getSentenceTerms(bookingId),
+        nomisClient.getMainOffence(bookingId),
+      ])
 
       const displayName = {
         displayName: `${properCaseName(result.lastName)}, ${properCaseName(result.firstName)}`,
       }
 
-      return { ...result, ...displayName, sentence, offence }
+      return {
+        ...result,
+        ...displayName,
+        sentence: { ...sentenceDetails, length: formatLength(sentenceTerms) },
+        offence,
+      }
     } catch (error) {
       logger.error(error, 'Error during getOffenderDetails')
       throw error
