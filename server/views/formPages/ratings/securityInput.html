@@ -46,6 +46,9 @@
       isPageHeading: false
       }
     },
+    errorMessage: {
+    text: "Select yes if you have reason to believe security input is needed"
+    } if (errors | findError('securityInputNeeded')),
     items: [
       {
         value: "Yes",
