@@ -148,3 +148,25 @@ header.govuk-header {
 .forms-warning-text {
   background-color: #fed5d5;
 }
+
+.forms-info-text {
+  background-color: #ddeaff;
+}
+
+.warning-overrides {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  span {
+    left: 20px;
+    font-size: 1.4em;
+  }
+  strong {
+    padding-left: 70px;
+  }
+}
+
+.app-buttons-inline {
+  div.govuk-radios__item {
+    display: inline-block;
+  }
+}
