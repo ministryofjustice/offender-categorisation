@@ -319,6 +319,35 @@ describe('getValidationErrors', () => {
     addressPostcode: 'L',
   }
 
+  const dependantConfig = {
+    fields: [
+      {
+        q1: {
+          responseType: 'requiredString',
+          validationMessage: 'Please give a full name',
+        },
+      },
+      {
+        q2: {
+          responseType: 'requiredYesNoIf_q1_Yes',
+          validationMessage: 'Error q2',
+        },
+      },
+      {
+        q3: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter q3 value',
+        },
+      },
+      {
+        q4: {
+          responseType: 'requiredYesNoIf_q3_Yes',
+          validationMessage: 'Error q4',
+        },
+      },
+    ],
+  }
+
   test.each`
     formBody                                    | formConfig                       | expectedOutput
     ${{ fullName: '' }}                         | ${personalDetailsConfig.name}    | ${[{ text: 'Please give a full name', href: '#fullName' }]}
@@ -327,6 +356,10 @@ describe('getValidationErrors', () => {
     ${{ day: '33', year: '33', month: '33' }}   | ${personalDetailsConfig.dob}     | ${[{ href: '#day', text: 'Please give a valid day' }, { href: '#month', text: 'Please give a valid month' }, { href: '#year', text: 'Please give a valid year' }]}
     ${addressInputCorrect}                      | ${personalDetailsConfig.address} | ${[]}
     ${addressInputIncorrect}                    | ${personalDetailsConfig.address} | ${[{ href: '#addressLine1', text: 'Please give an address line 1' }, { href: '#addressTown', text: 'Please give a town or city' }, { href: '#addressCounty', text: 'Please give a county' }, { href: '#addressPostcode', text: 'Please give a postcode' }]}
+    ${{ q1: 'Yes', q3: 'No' }}                  | ${dependantConfig}               | ${[{ href: '#q2', text: 'Error q2' }]}
+    ${{ q1: 'No', q3: 'No' }}                   | ${dependantConfig}               | ${[]}
+    ${{ q1: 'No', q3: 'Yes' }}                  | ${dependantConfig}               | ${[{ href: '#q4', text: 'Error q4' }]}
+    ${{ q1: 'No', q3: 'Yes', q4: 'any text' }}  | ${dependantConfig}               | ${[{ href: '#q4', text: 'Error q4' }]}
   `('should return errors $expectedContent for form return', ({ formBody, formConfig, expectedOutput }) => {
     expect(service.getValidationErrors(formBody, formConfig)).toEqual(expectedOutput)
   })
