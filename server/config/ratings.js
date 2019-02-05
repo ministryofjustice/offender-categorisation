@@ -16,7 +16,12 @@ module.exports = {
           validationMessage: 'Please select yes or no',
         },
       },
-      { securityInputNeededText: { responseType: 'optionalString' } },
+      {
+        securityInputNeededText: {
+          responseType: 'requiredStringIf_securityInputNeeded_Yes',
+          validationMessage: 'Please enter the reason why security input is needed',
+        },
+      },
     ],
     validate: true,
   },
@@ -41,7 +46,12 @@ module.exports = {
           validationMessage: 'Please select yes or no',
         },
       },
-      { escapeFurtherChargesText: { responseType: 'optionalString' } },
+      {
+        escapeFurtherChargesText: {
+          responseType: 'requiredStringIf_escapeFurtherCharges_Yes',
+          validationMessage: 'Please enter details of the evidence',
+        },
+      },
     ],
     validate: true,
   },
