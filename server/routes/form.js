@@ -8,12 +8,14 @@ const personalDetailsConfig = require('../config/personalDetails')
 const transportConfig = require('../config/transport')
 const agile = require('../config/agile')
 const ratings = require('../config/ratings')
+const categoriserConfirmation = require('../config/categoriserConfirmation')
 
 const formConfig = {
   ...personalDetailsConfig,
   ...transportConfig,
   ...agile,
   ...ratings,
+  ...categoriserConfirmation,
 }
 
 module.exports = function Index({

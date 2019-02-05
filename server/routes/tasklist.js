@@ -26,6 +26,13 @@ module.exports = function Index({ formService, offendersService, userService, au
   )
 
   router.get(
+    '/categoriserSubmitted/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      res.render('pages/categoriserSubmitted')
+    })
+  )
+
+  router.get(
     '/images/:imageId/data',
     asyncMiddleware(async (req, res) => {
       await offendersService.getImage(res.locals.user.token, req.params.imageId, res)
