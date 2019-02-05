@@ -1,7 +1,114 @@
 {% extends "../formTemplate.html" %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% set highRiskOfViolenceTextHtml %}
+  {{ govukTextarea({
+    name: "highRiskOfViolenceText",
+    type: "highRiskOfViolenceText",
+    id: "highRiskOfViolenceText",
+    label: {
+      text: "Give details of this evidence"
+    },
+    value: data.highRiskOfViolenceText,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('highRiskOfViolenceText'))
+  }) }}
+{% endset %}
+
+{% set seriousThreatTextHtml %}
+  {{ govukTextarea({
+    name: "seriousThreatText",
+    type: "seriousThreatText",
+    id: "seriousThreatText",
+    label: {
+      text: "Give details of this evidence"
+    },
+    value: data.seriousThreatText,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('seriousThreatText'))
+  }) }}
+{% endset %}
 
 {% block formItems %}
 
 <h1 class="govuk-heading-l">Violence rating</h1>
 
+  {% if data.violenceProfile.veryHighRiskViolentOffender %}
+    {{ govukWarningText({
+      text: "Violent in custody Text TBC",
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides"
+    }) }}
+  {% endif %}
+
+  {{ govukRadios({
+    name: "highRiskOfViolence",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Is there any other evidence to suggest that the person poses a high risk of violence in custody?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('highRiskOfViolence')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.highRiskOfViolence === 'Yes',
+        conditional: {
+          html: highRiskOfViolenceTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.highRiskOfViolence === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {{ govukRadios({
+    name: "seriousThreat",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Is there any other evidence to indicate that the person represents a serious threat to control, good order or discipline?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('seriousThreat')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.seriousThreat === 'Yes',
+        conditional: {
+          html: seriousThreatTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.seriousThreat === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
 {% endblock %}
+
+{#
+coming back from risk profiler:
+
+private boolean veryHighRiskViolentOffender;
+private boolean notifySafetyCustodyLead;
+private boolean displayAssaults;
+#}

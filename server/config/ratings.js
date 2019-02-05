@@ -26,6 +26,33 @@ module.exports = {
     validate: true,
   },
   violenceRating: {
+    fields: [
+      {
+        highRiskOfViolence: {
+          responseType: 'requiredString',
+          validationMessage: 'High risk of violence: please select yes or no',
+        },
+      },
+      {
+        highRiskOfViolenceText: {
+          responseType: 'requiredStringIf_highRiskOfViolence_Yes',
+          validationMessage: 'Please enter high risk of violence details',
+        },
+      },
+      {
+        seriousThreat: {
+          responseType: 'requiredString',
+          validationMessage: 'Serious Threat: Please select yes or no',
+        },
+      },
+      {
+        seriousThreatText: {
+          responseType: 'requiredStringIf_seriousThreat_Yes',
+          validationMessage: 'Please enter serious threat details',
+        },
+      },
+    ],
+    validate: true,
     nextPath: {
       path: '/tasklist/',
     },
