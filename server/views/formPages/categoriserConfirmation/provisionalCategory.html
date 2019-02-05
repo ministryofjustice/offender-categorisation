@@ -1,0 +1,96 @@
+{% extends "../../formPages/formTemplate.html" %}
+
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "button/macro.njk" import govukButton %}
+
+{% set cat = "B" %}
+{% set greenButtonText = "Submit" %}
+
+{% set overriddenCategoryTextHtml %}
+
+  {{ govukRadios({
+    name: "overriddenCategory",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+      text: "Which category is more appropriate?",
+      isPageHeading: false
+      }
+    },
+    items: [
+      {
+        value: "B",
+        checked: data.overriddenCategory === 'B',
+        text: "B"
+      } if cat != "B",
+      {
+        value: "C",
+        checked: data.overriddenCategory === 'C',
+        text: "C"
+      } if cat != "C",
+      {
+        value: "D",
+        checked: data.overriddenCategory === 'D',
+        text: "D"
+      } if cat != "D"
+    ],
+    errorMessage: {
+      text: "Please select the new category"
+    } if (errors | findError('overriddenCategory'))
+  }) }}
+
+  {{ govukTextarea({
+    name: "overriddenCategoryText",
+    type: "myTextWhatsThisFor",
+    id: "overriddenCategoryText",
+    label: {
+      text: "Explain why you changed the category"
+    },
+    value: data.overriddenCategoryText,
+    errorMessage: {
+      text: "Please enter the reason why you changed the category"
+    } if (errors | findError('overriddenCategoryText'))
+  }) }}
+{% endset -%}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Provisional category</h1>
+
+<div class="govuk-warning-text forms-info-text warning-overrides">
+  <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    Based on the information provided, the provision category is {{ cat }}
+  </strong>
+</div>
+
+{{ govukRadios({
+  name: "categoryAppropriate",
+  classes: "govuk-radios--inline app-buttons-inline",
+  fieldset: {
+    legend: {
+    text: "Do you think the category is appropriate for this person?",
+    isPageHeading: false
+    }
+  },
+  items: [
+    {
+      value: "Yes",
+      checked: data.categoryAppropriate === 'Yes',
+      text: "Yes"
+    },
+    {
+      value: "No",
+      checked: data.categoryAppropriate === 'No',
+      text: "No",
+      conditional: {
+        html:overriddenCategoryTextHtml
+      }
+    }
+  ]
+}) }}
+
+{% endblock %}
