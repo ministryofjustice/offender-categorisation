@@ -120,6 +120,16 @@ module.exports = function Index({
     if (body.escapeFurtherCharges === 'No') {
       updated.escapeFurtherChargesText = ''
     }
+    if (body.highRiskOfViolence === 'No') {
+      updated.highRiskOfViolenceText = ''
+    }
+    if (body.seriousThreat === 'No') {
+      updated.seriousThreatText = ''
+    }
+    if (body.categoryAppropriate === 'Yes') {
+      updated.overriddenCategory = ''
+      updated.overriddenCategoryText = ''
+    }
     return updated
   }
 

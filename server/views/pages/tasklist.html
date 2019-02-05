@@ -123,7 +123,7 @@ href: backLink or "/"
         <li>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              {% if data.ratings.offendingHistory %}
+              {% if data.ratings.offendingHistory.previousConvictions %}
                 <a href="/form/ratings/offendingHistory/{{ data.bookingId }}">Offending history</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="offendingHistory-completed">Completed</strong>
               {% else %}
@@ -139,7 +139,7 @@ href: backLink or "/"
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              {% if data.ratings.securityInput %}
+              {% if data.ratings.securityInput.securityInputNeeded %}
                 <a id="security-input-edit" href="/form/ratings/securityInput/{{ data.bookingId }}">Security input</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="securityInput-completed">Completed</strong>
               {% else %}
@@ -155,7 +155,7 @@ href: backLink or "/"
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              {% if data.ratings.violenceRating %}
+              {% if data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
                 <a href="/form/ratings/violenceRating/{{ data.bookingId }}">Violence rating</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="violenceRating-completed">Completed</strong>
               {% else %}
