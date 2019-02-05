@@ -79,27 +79,6 @@ module.exports = function createSomeService(formClient) {
     }
   }
 
-  function getValidationErrors(formObject, pageConfig) {
-    return pageConfig.fields.reduce((errors, field) => {
-      const fieldName = getFieldName(field)
-      const requiredResponseType = getFieldDetail(['responseType'], field)
-
-      const fieldErrors = validate(formObject[fieldName], requiredResponseType)
-
-      if (isNilOrEmpty(fieldErrors.error)) {
-        return errors
-      }
-
-      return [
-        ...errors,
-        {
-          text: getFieldDetail(['validationMessage'], field) || getIn(['error', 'message'], fieldErrors),
-          href: `#${fieldName}`,
-        },
-      ]
-    }, [])
-  }
-
   function calculateStatus() {
     return 'STARTED'
   }
@@ -107,6 +86,6 @@ module.exports = function createSomeService(formClient) {
   return {
     getCategorisationRecord,
     update,
-    getValidationErrors,
+    getValidationErrors: validate,
   }
 }
