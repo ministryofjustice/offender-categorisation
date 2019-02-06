@@ -7,7 +7,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Escape rating</h1>
+<h1 class="govuk-heading-l">Risk of escape</h1>
 
 {% if data.escapeProfile.onEscapeList === true %}
 {% set warningText %}
@@ -30,11 +30,11 @@ classes: "forms-warning-text"
   type: "escapeFurtherChargesText",
   id: "escapeFurtherChargesText",
   label: {
-  text: "Give details of this evidence"
+  text: "Provide details of these charges"
   },
   value: data.escapeFurtherChargesText,
   errorMessage: {
-  text: "Please enter details of the evidence"
+  text: "Please enter details of these charges"
   } if (errors | findError('escapeFurtherChargesText'))
 }) }}
 
@@ -45,12 +45,12 @@ classes: "forms-warning-text"
   classes: "govuk-radios--inline",
   fieldset: {
   legend: {
-  text: "Are there any further serious charges against the person that warrant higher security conditions?",
+  text: "Is the person facing further serious charges that warrant higher security?",
   isPageHeading: false
   }
   },
   errorMessage: {
-    text: "Select yes if there any further serious charges against the person that warrant higher security conditions"
+    text: "Select yes if the person is facing further serious charges that warrant higher security"
     } if (errors | findError('escapeFurtherCharges')),
   items: [
   {

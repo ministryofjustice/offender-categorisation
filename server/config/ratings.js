@@ -76,7 +76,7 @@ module.exports = {
       {
         escapeFurtherChargesText: {
           responseType: 'requiredStringIf_escapeFurtherCharges_Yes',
-          validationMessage: 'Please enter details of the evidence',
+          validationMessage: 'Please enter details of these charges',
         },
       },
     ],
