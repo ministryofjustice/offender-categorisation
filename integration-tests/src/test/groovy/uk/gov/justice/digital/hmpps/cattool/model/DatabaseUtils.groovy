@@ -21,4 +21,8 @@ class DatabaseUtils {
     sql.executeUpdate("delete from form ")
   }
 
+  def getData(bookingId) {
+    def sql = Sql.newInstance(dbConnParams)
+    return sql.rows("select * from form where booking_id = $bookingId")
+  }
 }

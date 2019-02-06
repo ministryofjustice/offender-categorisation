@@ -111,18 +111,18 @@ class Elite2Api extends WireMockRule {
         aResponse()
           .withBody(JsonOutput.toJson([
           [
-            "bookingId" : 11,
-            "offenderNo": "B2345XY",
-            firstName   : 'PENELOPE',
-            lastName    : 'PITSTOP',
-            status      : 'UNCATEGORISED',
+            bookingId : 11,
+            offenderNo: 'B2345XY',
+            firstName : 'PENELOPE',
+            lastName  : 'PITSTOP',
+            status    : 'UNCATEGORISED',
           ],
           [
-            "bookingId" : 12,
-            "offenderNo": "B2345YZ",
-            firstName   : 'ANT',
-            lastName    : 'HILLMOB',
-            status      : 'AWAITING_APPROVAL',
+            bookingId : 12,
+            offenderNo: 'B2345YZ',
+            firstName : 'ANT',
+            lastName  : 'HILLMOB',
+            status    : 'AWAITING_APPROVAL',
           ],
         ]
         ))
@@ -138,8 +138,8 @@ class Elite2Api extends WireMockRule {
         aResponse()
           .withBody(JsonOutput.toJson([
           [
-            "bookingId" : bookingId,
-            "offenderNo": "ON${bookingId}",
+            bookingId : bookingId,
+            offenderNo: "ON${bookingId}",
             firstName   : 'HARRY',
             lastName    : 'BONNET',
           ],
@@ -155,11 +155,11 @@ class Elite2Api extends WireMockRule {
 
     def response = emptyResponse ? [] : offenderNumbers.collect({ no ->
       [
-        "offenderNo"    : no,
-        "firstName"     : "firstName-${index}",
-        "lastName"      : "lastName-${index}",
-        "sentenceDetail": [bookingId        : bookingIds[index++],
-                           sentenceStartDate: formattedStartDate]
+        offenderNo    : no,
+        firstName     : "firstName-${index}",
+        lastName      : "lastName-${index}",
+        sentenceDetail: [bookingId        : bookingIds[index++],
+                         sentenceStartDate: formattedStartDate]
       ]
     })
 
@@ -177,17 +177,17 @@ class Elite2Api extends WireMockRule {
   def stubSentenceDataGetSingle(String offenderNo, String formattedReleaseDate) {
     def response = [
       [
-        "offenderNo"    : offenderNo,
-        "firstName"     : "firstName",
-        "lastName"      : "lastName",
-        "sentenceDetail": [bookingId  : -45,
+        offenderNo    : offenderNo,
+        firstName     : 'firstName',
+        lastName      : 'lastName',
+        sentenceDetail: [bookingId  : -45,
                            releaseDate: formattedReleaseDate]
       ],
       [
-        "offenderNo"    : offenderNo,
-        "firstName"     : "firstName",
-        "lastName"      : "lastName",
-        "sentenceDetail": [bookingId  : -55,
+        offenderNo    : offenderNo,
+        firstName     : 'firstName',
+        lastName      : 'lastName',
+        sentenceDetail: [bookingId  : -55,
                            releaseDate: formattedReleaseDate]
       ]
     ]
@@ -203,7 +203,7 @@ class Elite2Api extends WireMockRule {
   }
 
 
-  def stubGetOffenderDetails(int bookingId, offenderNo="B2345YZ") {
+  def stubGetOffenderDetails(int bookingId, offenderNo='B2345YZ', youngOffender = false) {
     this.stubFor(
       get("/api/bookings/$bookingId?basicInfo=false")
         .willReturn(
@@ -214,20 +214,20 @@ class Elite2Api extends WireMockRule {
             offenderNo        : offenderNo,
             firstName         : 'ANT',
             lastName          : 'HILLMOB',
-            dateOfBirth       : "1970-02-17",
+            dateOfBirth       : youngOffender ? '2018-01-01' : '1970-02-17',
             assignedLivingUnit:
               [
-                description: "C-04-02",
-                agencyName : "Coventry",
+                description: 'C-04-02',
+                agencyName : 'Coventry',
               ],
             profileInformation: [
               [
-                type       : "IMM",
-                resultValue: "Other"
+                type       : 'IMM',
+                resultValue: 'Other'
               ],
               [
-                type       : "NAT",
-                resultValue: "Latvian"
+                type       : 'NAT',
+                resultValue: 'Latvian'
               ]
             ],
           ]
@@ -242,10 +242,10 @@ class Elite2Api extends WireMockRule {
           .withBody(JsonOutput.toJson(
           [
             bookingId                         : bookingId,
-            releaseDate                       : "2019-01-01",
+            releaseDate                       : '2019-01-01',
             homeDetentionCurfewEligibilityDate: '2020-06-10',
             automaticReleaseDate              : '2020-06-11',
-            conditionalReleaseDate            : "2020-02-02",
+            conditionalReleaseDate            : '2020-02-02',
             paroleEligibilityDate             : '2020-06-13',
             nonParoleDate                     : '2020-06-14',
             tariffDate                        : '2020-06-15',
@@ -275,11 +275,11 @@ class Elite2Api extends WireMockRule {
           .withBody(JsonOutput.toJson([
           [
             bookingId         : bookingId,
-            offenceDescription: "A Felony",
+            offenceDescription: 'A Felony',
           ],
           [
             bookingId         : bookingId,
-            offenceDescription: "Another Felony",
+            offenceDescription: 'Another Felony',
           ]
         ]
         ))
@@ -290,7 +290,7 @@ class Elite2Api extends WireMockRule {
 
   def stubAlerts(List offenderNumbers, Boolean emptyResponse = false) {
     this.stubFor(
-      post("/api/bookings/offenderNo/LEI/alerts")
+      post('/api/bookings/offenderNo/LEI/alerts')
         .withRequestBody(equalToJson(JsonOutput.toJson(offenderNumbers), true, false))
         .willReturn(
         aResponse()
@@ -301,7 +301,7 @@ class Elite2Api extends WireMockRule {
 
   def stubSystemAccessAlerts(List offenderNumbers, Boolean emptyResponse = false) {
     this.stubFor(
-      post("/api/bookings/offenderNo/alerts")
+      post('/api/bookings/offenderNo/alerts')
         .withRequestBody(equalToJson(JsonOutput.toJson(offenderNumbers), true, false))
         .willReturn(
         aResponse()
@@ -320,24 +320,24 @@ class Elite2Api extends WireMockRule {
             [
               bookingId            : -45,
               offenderNo           : offenderNo,
-              classificationCode   : "A",
-              classification       : "Cat A",
-              assessmentCode       : "CATEGORY",
-              assessmentDescription: "Categorisation",
+              classificationCode   : 'A',
+              classification       : 'Cat A',
+              assessmentCode       : 'CATEGORY',
+              assessmentDescription: 'Categorisation',
               cellSharingAlertFlag : false,
-              assessmentDate       : "2012-04-04",
-              nextReviewDate       : "2012-06-07"
+              assessmentDate       : '2012-04-04',
+              nextReviewDate       : '2012-06-07'
             ],
             [
               bookingId            : -45,
               offenderNo           : offenderNo,
-              classificationCode   : "B",
-              classification       : "Cat B",
-              assessmentCode       : "CATEGORY",
-              assessmentDescription: "Categorisation",
+              classificationCode   : 'B',
+              classification       : 'Cat B',
+              assessmentCode       : 'CATEGORY',
+              assessmentDescription: 'Categorisation',
               cellSharingAlertFlag : false,
-              assessmentDate       : "2013-03-24",
-              nextReviewDate       : "2013-09-17"
+              assessmentDate       : '2013-03-24',
+              nextReviewDate       : '2013-09-17'
             ]
           ])
         )

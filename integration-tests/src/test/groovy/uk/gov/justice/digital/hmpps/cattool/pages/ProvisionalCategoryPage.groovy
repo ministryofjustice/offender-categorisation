@@ -15,16 +15,18 @@ class ProvisionalCategoryPage extends Page {
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
 
-    form {$('form')}
-    appropriateYes {$('#categoryAppropriate-1')}
-    appropriateNo {$('#categoryAppropriate-2')}
-    overriddenCategoryB {$('#overriddenCategory-1')}
-    overriddenCategoryC {$('#overriddenCategory-2')}
-    overriddenCategoryD {$('#overriddenCategory-3')}
-    overriddenCategoryText {$('#overriddenCategoryText')}
-    submitButton { $('button', type:'submit') }
-    backLink { $( 'a.govuk-back-link') }
-    errorSummaries {$('ul.govuk-error-summary__list li')}
-    errors {$('span.govuk-error-message')}
+    warning { $('div.govuk-warning-text') }
+    form { $('form') }
+    appropriateYes { $('#categoryAppropriate-1') }
+    appropriateNo { $('#categoryAppropriate-2') }
+    overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
+    overriddenCategoryC(required: false) { $('#overriddenCategoryC') }
+    overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
+    catJMessage(required: false) { $('h2.govuk-heading-m') }
+    overriddenCategoryText(required: false) { $('#overriddenCategoryText') }
+    submitButton { $('button', type: 'submit') }
+    backLink { $('a.govuk-back-link') }
+    errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
+    errors(required: false) { $('span.govuk-error-message') }
   }
 }
