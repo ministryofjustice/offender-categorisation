@@ -172,7 +172,7 @@ href: backLink or "/"
             </li>
             <li class="app-task-list__item">
               {% if data.ratings.escapeRating %}
-                <a id="escape-input-edit" href="/form/ratings/escapeRating/{{ data.bookingId }}">Escape rating</a>
+                <a id="escape-input-edit" href="/form/ratings/escapeRating/{{ data.bookingId }}">Risk of escape</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="escapeRating-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
@@ -182,7 +182,7 @@ href: backLink or "/"
                 attributes:
                   {  'id': 'escapeButton' }
                 }) }}
-                <p class="govuk-!-font-weight-bold">Escape rating</p>
+                <p class="govuk-!-font-weight-bold">Risk of escape</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
