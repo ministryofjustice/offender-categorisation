@@ -9,7 +9,7 @@ class CategoriserEscapePage extends Page {
   static url = '/form/ratings/escapeRating/' + bookingId
 
   static at = {
-    headingText == 'Escape rating'
+    headingText == 'Risk of escape'
   }
 
   static content = {
