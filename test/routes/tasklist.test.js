@@ -56,7 +56,6 @@ describe('GET /tasklist/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        console.log('Got response')
         expect(res.text).toContain('Categorisation task list')
         expect(res.text).toContain('Offending history')
         expect(res.text).toContain('Not yet checked')
@@ -68,7 +67,6 @@ describe('GET /tasklist/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        console.log('Got response')
         expect(res.text).toContain('Submitted for approval')
       }))
 })
