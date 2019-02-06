@@ -208,6 +208,7 @@ describe('getUncategorisedOffenders', () => {
       ${{ weeks: 1 }}                               | ${'1 week'}
       ${{ weeks: 2, days: 4, years: null }}         | ${'2 weeks, 4 days'}
       ${{ years: 5, months: 6, weeks: 7, days: 1 }} | ${'5 years, 6 months, 7 weeks, 1 day'}
+      ${{ years: 5, lifeSentence: true }}           | ${'Life'}
     `('should render $expectedContent for $apiData', async ({ apiData, expectedContent }) => {
       nomisClient.getOffenderDetails.mockReturnValue({ firstName: 'SAM', lastName: 'SMITH' })
       nomisClient.getSentenceTerms.mockReturnValue(apiData)
