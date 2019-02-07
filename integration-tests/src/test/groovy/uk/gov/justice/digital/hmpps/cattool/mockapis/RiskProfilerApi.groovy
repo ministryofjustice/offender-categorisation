@@ -1,11 +1,7 @@
 package uk.gov.justice.digital.hmpps.cattool.mockapis
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
-import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
-import uk.gov.justice.digital.hmpps.cattool.mockapis.mockResponses.*
-import uk.gov.justice.digital.hmpps.cattool.model.Caseload
-import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 
@@ -15,7 +11,7 @@ class RiskProfilerApi extends WireMockRule {
     super(8082)
   }
 
-  void stubGetSocProfile(String offenderno, String cat, boolean transferToSecurity, String riskType) {
+  void stubGetSocProfile(String offenderno, String category, boolean transferToSecurity) {
     this.stubFor(
       get("/soc/${offenderno}")
         .willReturn(
@@ -23,27 +19,59 @@ class RiskProfilerApi extends WireMockRule {
           .withStatus(200)
           .withHeader('Content-Type', 'application/json')
           .withBody(JsonOutput.toJson([
-          nomsId: offenderno,
-          riskType: riskType,
-          provisionalCategorisation: cat,
-          transferToSecurity: transferToSecurity
+          nomsId                   : offenderno,
+          riskType                 : 'SOC',
+          provisionalCategorisation: category,
+          transferToSecurity       : transferToSecurity
         ]))))
   }
 
-  void stubGetEscapeProfile(String offenderno, String riskType="EXTREMISM", boolean onEscapeList, boolean activeOnEscapeList) {
+  void stubGetViolenceProfile(String offenderno, String category, boolean veryHighRiskViolentOffender, boolean notifySafetyCustodyLead, boolean displayAssaults) {
     this.stubFor(
-      get("/soc/${offenderno}")
+      get("/violence/${offenderno}")
         .willReturn(
         aResponse()
           .withStatus(200)
           .withHeader('Content-Type', 'application/json')
           .withBody(JsonOutput.toJson([
-          nomsId: offenderno,
-          riskType: riskType,
-          provisionalCategorisation: "C",
-          onEscapeList: onEscapeList,
-          activeOnEscapeList: activeOnEscapeList
+          nomsId                     : offenderno,
+          riskType                   : 'VIOLENCE',
+          provisionalCategorisation  : category,
+          veryHighRiskViolentOffender: veryHighRiskViolentOffender,
+          notifySafetyCustodyLead    : notifySafetyCustodyLead,
+          displayAssaults            : displayAssaults
         ]))))
   }
 
+  void stubGetEscapeProfile(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
+    this.stubFor(
+      get("/escape/${offenderno}")
+        .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withHeader('Content-Type', 'application/json')
+          .withBody(JsonOutput.toJson([
+          nomsId                   : offenderno,
+          riskType                 : 'ESCAPE',
+          provisionalCategorisation: category,
+          onEscapeList             : onEscapeList,
+          activeOnEscapeList       : activeOnEscapeList
+        ]))))
+  }
+
+  void stubGetExtremismProfile(String offenderno, String category, boolean increasedRisk, boolean notifyRegionalCTLead) {
+    this.stubFor(
+      get("/extremism/${offenderno}?previousOffences=false")
+        .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withHeader('Content-Type', 'application/json')
+          .withBody(JsonOutput.toJson([
+          nomsId                   : offenderno,
+          riskType                 : 'EXTREMISM',
+          provisionalCategorisation: category,
+          increasedRisk            : increasedRisk,
+          notifyRegionalCTLead     : notifyRegionalCTLead
+        ]))))
+  }
 }

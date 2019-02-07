@@ -44,10 +44,10 @@ class ViolenceSpecification extends GebReportingSpec {
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
     to ViolencePage, '12'
 
     then: 'The violence page is displayed'
-    //at(new ViolencePage(bookingId: '12')
     at ViolencePage
     !highRiskOfViolenceText.displayed
     !seriousThreatText.displayed
@@ -75,6 +75,7 @@ class ViolenceSpecification extends GebReportingSpec {
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
     to ViolencePage, '12'
     submitButton.click()
 
