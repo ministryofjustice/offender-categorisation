@@ -187,7 +187,7 @@ href: backLink or "/"
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              {% if data.ratings.extremismRating %}
+              {% if data.ratings.extremismRating.previousTerrorismOffences %}
                 <a href="/form/ratings/extremismRating/{{ data.bookingId }}">Extremism rating</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="extremismRating-completed">Completed</strong>
               {% else %}

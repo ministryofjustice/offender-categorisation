@@ -22,6 +22,9 @@ const formService = {
 
 const riskProfilerService = {
   getSecurityProfile: jest.fn(),
+  getViolenceProfile: jest.fn(),
+  getEscapeProfile: jest.fn(),
+  getExtremismProfile: jest.fn(),
 }
 
 const offendersService = {
@@ -116,6 +119,38 @@ describe('GET /ratings/securityInput', () => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCategoryHistory).toBeCalledTimes(0)
         expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(1)
+      })
+  )
+})
+
+describe('GET /ratings/violence', () => {
+  test.each`
+    path                              | expectedContent
+    ${'ratings/violenceRating/12345'} | ${'Violence rating'}
+  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+    request(app)
+      .get(`/${path}`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(expectedContent)
+        expect(riskProfilerService.getViolenceProfile).toBeCalledTimes(1)
+      })
+  )
+})
+
+describe('GET /ratings/extremism', () => {
+  test.each`
+    path                               | expectedContent
+    ${'ratings/extremismRating/12345'} | ${'Extremism rating'}
+  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+    request(app)
+      .get(`/${path}`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(expectedContent)
+        expect(riskProfilerService.getExtremismProfile).toBeCalledTimes(1)
       })
   )
 })
