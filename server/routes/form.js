@@ -1,3 +1,4 @@
+const moment = require('moment')
 const express = require('express')
 const flash = require('connect-flash')
 const { getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
@@ -16,6 +17,15 @@ const formConfig = {
   ...agile,
   ...ratings,
   ...categoriserConfirmation,
+}
+
+function isYoungOffender(details) {
+  const dob = details && details.dateOfBirth
+  if (!dob) {
+    return false
+  }
+  const d = moment(dob, 'YYYY-MM-DD')
+  return d.isAfter(moment().subtract(21, 'years'))
 }
 
 module.exports = function Index({
@@ -78,6 +88,19 @@ module.exports = function Index({
         res.locals.user.username
       )
       const data = { ...result.data, escapeProfile }
+      res.render(`formPages/${section}/${form}`, { ...result, data })
+    })
+  )
+
+  router.get(
+    '/categoriserConfirmation/provisionalCategory/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const section = 'categoriserConfirmation'
+      const form = 'provisionalCategory'
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, section, form, bookingId)
+      const suggestedCat = 'B' // TODO await riskProfilerService.get??(result.data.details.offenderNo, res.locals.user.username)
+      const data = { ...result.data, suggestedCat: isYoungOffender(result.data.details) ? 'I' : suggestedCat }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
   )

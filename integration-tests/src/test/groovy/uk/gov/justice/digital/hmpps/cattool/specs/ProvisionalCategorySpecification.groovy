@@ -81,4 +81,29 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     errors*.text() == ['Please select the new category',
                        'Please enter the reason why you changed the category']
   }
+
+  def 'young offender test'() {
+    when: 'I go to the Provisional Category page for young offender'
+    elite2api.stubUncategorised()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
+    fixture.loginAs(UserAccount.ITAG_USER)
+    at CategoriserHomePage
+    elite2api.stubGetOffenderDetails(12, 'B2345YZ', true)
+    to ProvisionalCategoryPage, '12'
+    at ProvisionalCategoryPage
+    !catJMessage.displayed
+    appropriateNo.click()
+
+    then: 'The page shows cat I and J'
+    warning.text().contains 'the provisional category is I'
+    catJMessage.text() == 'Changing to Cat J'
+
+    when: 'Changing to Cat J'
+    overriddenCategoryText << "Some Text"
+    submitButton.click()
+
+    then: 'Cat J details are saved'
+    def response = db.getData(12).form_response
+    response[0].toString() == '{"categoriserConfirmation": {"provisionalCategory": {"overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}}'
+  }
 }
