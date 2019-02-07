@@ -11,13 +11,13 @@ import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ExtremismPage
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
 
-class SecurityInputSpecification extends GebReportingSpec {
+class ExtremismSpecification extends GebReportingSpec {
 
   @Rule
   Elite2Api elite2api = new Elite2Api()
@@ -36,64 +36,55 @@ class SecurityInputSpecification extends GebReportingSpec {
   TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
   DatabaseUtils db = new DatabaseUtils()
 
-  def "The security page displays an alert when status is transferred to security"() {
-    when: 'I go to the tasklist page'
+  def "The extremism page saves details correctly"() {
+    when: 'I go to the extremism page'
 
     elite2api.stubUncategorised()
     elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
-
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
-    startButtons[0].click()
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false)
+    to ExtremismPage, '12'
 
-    elite2api.stubAssessments(['B2345YZ'])
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true,)
+    then: 'The extremism page is displayed'
+    at ExtremismPage
+    !previousTerrorismOffencesText.displayed
 
-    securityButton.click()
+    when: 'Details are entered, saved and accessed'
+    previousTerrorismOffencesYes.click()
+    previousTerrorismOffencesText << "Some risk text"
+    submitButton.click()
+    at CategoriserTasklistPage
+    to ExtremismPage, '12'
 
-    then: 'The security input page is displayed with an alert'
-    at(new CategoriserSecurityInputPage(bookingId: '12'))
-
-    warningTextDiv.text().contains('This offender was referred to security')
-
+    then: "data is correctly retrieved"
+    form.previousTerrorismOffences == "Yes"
+    form.previousTerrorismOffencesText == "Some risk text"
   }
 
-  def "The security page can be edited"() {
-    given: 'the security input page has been completed'
-
+  def 'Validation test'() {
+    when: 'I submit the page with empty details'
     elite2api.stubUncategorised()
     elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
-
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
-    startButtons[0].click()
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false)
+    to ExtremismPage, '12'
+    submitButton.click()
 
-    elite2api.stubAssessments(['B2345YZ'])
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
+    then: 'I stay on the page with radio button validation errors'
+    at ExtremismPage
+    errorSummaries*.text() == ['Please select yes or no']
+    errors*.text() == ['Please select yes or no']
 
-    securityButton.click()
+    when: 'I click yes but fail to add details'
+    previousTerrorismOffencesYes.click()
+    submitButton.click()
 
-    at(new CategoriserSecurityInputPage(bookingId: '12'))
-    securityRadio = 'No'
-    saveButton.click()
-
-    at(new CategoriserTasklistPage(bookingId: '12'))
-
-    when: 'The edit link is selected'
-
-    securityEditLink.click()
-
-    then: 'the security input page is displayed with the saved form details'
-
-    at(new CategoriserSecurityInputPage(bookingId: '12'))
-
-    securityRadio == 'No'
-
+    then: 'I stay on the page with textarea validation errors'
+    errorSummaries*.text() == ['Please enter the previous offences']
+    errors*.text() == ['Please enter details']
   }
 }

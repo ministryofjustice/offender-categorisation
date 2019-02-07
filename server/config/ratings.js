@@ -61,6 +61,21 @@ module.exports = {
     nextPath: {
       path: '/tasklist/',
     },
+    fields: [
+      {
+        previousTerrorismOffences: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        previousTerrorismOffencesText: {
+          responseType: 'requiredStringIf_previousTerrorismOffences_Yes',
+          validationMessage: 'Please enter the previous offences',
+        },
+      },
+    ],
+    validate: true,
   },
   escapeRating: {
     nextPath: {

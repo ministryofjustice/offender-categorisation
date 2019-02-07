@@ -77,6 +77,22 @@ module.exports = function Index({
   )
 
   router.get(
+    '/ratings/violenceRating/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const section = 'ratings'
+      const form = 'violenceRating'
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, section, form, bookingId)
+      const violenceProfile = await riskProfilerService.getViolenceProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username
+      )
+      const data = { ...result.data, violenceProfile }
+      res.render(`formPages/${section}/${form}`, { ...result, data })
+    })
+  )
+
+  router.get(
     '/ratings/escapeRating/:bookingId',
     asyncMiddleware(async (req, res) => {
       const section = 'ratings'
@@ -93,13 +109,30 @@ module.exports = function Index({
   )
 
   router.get(
+    '/ratings/extremismRating/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const section = 'ratings'
+      const form = 'extremismRating'
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, section, form, bookingId)
+      const extremismProfile = await riskProfilerService.getExtremismProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username,
+        false // TODO
+      )
+      const data = { ...result.data, extremismProfile }
+      res.render(`formPages/${section}/${form}`, { ...result, data })
+    })
+  )
+
+  router.get(
     '/categoriserConfirmation/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res) => {
       const section = 'categoriserConfirmation'
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId)
-      const suggestedCat = 'B' // TODO await riskProfilerService.get??(result.data.details.offenderNo, res.locals.user.username)
+      const suggestedCat = 'B' // TODO await riskProfilerService.getAllFourProfiles??(result.data.details.offenderNo, res.locals.user.username)
       const data = { ...result.data, suggestedCat: isYoungOffender(result.data.details) ? 'I' : suggestedCat }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })

@@ -24,9 +24,21 @@ module.exports = username => {
       logger.debug(`getSocProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
       return apiGet({ path })
     },
+    getViolenceProfile(offenderNo) {
+      const path = `${apiUrl}violence/${offenderNo}`
+      logger.debug(`getViolenceProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
+      return apiGet({ path })
+    },
     getEscapeProfile(offenderNo) {
       const path = `${apiUrl}escape/${offenderNo}`
       logger.debug(`getEscapeProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
+      return apiGet({ path })
+    },
+    getExtremismProfile(offenderNo, previousOffences) {
+      const path = `${apiUrl}extremism/${offenderNo}?previousOffences=${previousOffences}`
+      logger.debug(
+        `getExtremismProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo} and previousOffences ${previousOffences}`
+      )
       return apiGet({ path })
     },
   }
