@@ -66,7 +66,7 @@ describe('getUncategorisedOffenders', () => {
       },
     ]
 
-    const DATE_MATCHER = '\\d{4}-\\d{2}-\\d{2}'
+    const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
     const expected = [
       {
         offenderNo: 'G12345',
@@ -132,7 +132,7 @@ describe('getUncategorisedOffenders', () => {
     moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
     expect(service.buildSentenceData('2019-01-14')).toEqual({
       daysSinceSentence: 2,
-      dateRequired: '2019-01-28',
+      dateRequired: '28/01/2019',
       sentenceDate: '2019-01-14',
     })
   })
@@ -142,7 +142,7 @@ describe('getUncategorisedOffenders', () => {
     moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
     expect(service.buildSentenceData('2019-01-12')).toEqual({
       daysSinceSentence: 4,
-      dateRequired: '2019-01-28',
+      dateRequired: '28/01/2019',
       sentenceDate: '2019-01-12',
     })
   })
@@ -152,7 +152,7 @@ describe('getUncategorisedOffenders', () => {
     moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
     expect(service.buildSentenceData('2019-01-13')).toEqual({
       daysSinceSentence: 3,
-      dateRequired: '2019-01-28',
+      dateRequired: '28/01/2019',
       sentenceDate: '2019-01-13',
     })
   })

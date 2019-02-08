@@ -1,8 +1,6 @@
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-const moment = require('moment')
-
-const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+const { dateConverter } = require('../utils/utils.js')
 
 module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()

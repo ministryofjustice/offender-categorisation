@@ -1,8 +1,8 @@
 const moment = require('moment')
 
-const sortByDateTime = (t1, t2) => {
+const sortByDateTimeDesc = (t1, t2) => {
   if (t1 && t2) {
-    return moment(t1).valueOf() - moment(t2).valueOf()
+    return moment(t2, 'DD/MM/YYYY').valueOf() - moment(t1, 'DD/MM/YYYY').valueOf()
   }
   if (t1) return -1
   if (t2) return 1
@@ -24,6 +24,6 @@ const sortByLastNameFirstName = (a, b) => {
 }
 
 module.exports = {
-  sortByDateTime,
+  sortByDateTimeDesc,
   sortByLastNameFirstName,
 }

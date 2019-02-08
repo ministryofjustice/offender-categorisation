@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.ViolencePage
 
 import java.time.LocalDate
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
 class ViolenceSpecification extends GebReportingSpec {
 
@@ -40,8 +40,10 @@ class ViolenceSpecification extends GebReportingSpec {
     when: 'I go to the violence page'
 
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
-    fixture.loginAs(ITAG_USER)
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
@@ -71,8 +73,10 @@ class ViolenceSpecification extends GebReportingSpec {
   def 'Validation test'() {
     when: 'I submit the page with empty details'
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
-    fixture.loginAs(ITAG_USER)
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)

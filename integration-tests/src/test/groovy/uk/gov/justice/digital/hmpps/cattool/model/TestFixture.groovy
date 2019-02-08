@@ -1,13 +1,10 @@
 package uk.gov.justice.digital.hmpps.cattool.model
 
-import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.verification.LoggedRequest
 import geb.Browser
 import groovy.json.JsonOutput
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
 
 class TestFixture {
 
