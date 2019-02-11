@@ -2,10 +2,229 @@
 
 {% set greenButtonText = "Continue" %}
 
+{% from "warning-text/macro.njk" import govukWarningText %}
+
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Review</h1>
+<div class="govuk-grid-row govuk-body-s">
+  <div class="govuk-grid-column-two-thirds">
 
-<p>TODO: Dummy page</p>
+    <h1 class="govuk-heading-l">Check your answers before you continue</h1>
+
+    <hr>
+    <div class="govuk-grid-column-full govuk-!-padding-0">
+      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+        <h1 class="govuk-heading-m">Offending history</h1>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
+        <span><a href="/form/ratings/offendingHistory/{{ data.details.bookingId }}" class="govuk-link">Change</a></span>
+      </div>
+    </div>
+
+    {% set warningText %}
+
+    {% if data.history.catAType === 'A' %}
+    This offender was categorised as a Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+    {% elif data.history.catAType === 'P' %}
+    This offender was treated as a provisional Cat A in {{ data.history.catAStartYear }} until {{
+    data.history.catAEndYear }}
+    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+    {% elif data.history.catAType === 'H' %}
+    This offender was categorised as a Cat A High in {{ data.history.catAStartYear }} until {{
+    data.history.catAEndYear }}
+    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+    {% endif %}
+    {% endset %}
+    {% if warningText | trim %}
+    <div>
+      {{ govukWarningText({
+      text: warningText,
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides"
+      }) }}
+    </div>
+    {% endif %}
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="historyQ1">
+        Please record a summary of previous convictions, and any other information, from this offender's PNC record,
+        which might be relevant to their categorisation
+      </label>
+      <div class="govuk-inset-text" id=historyQ1">{{ data.offendingHistory.previousConvictions }}</div>
+    </div>
+
+    <hr>
+    <div class="govuk-grid-column-full govuk-!-padding-0">
+      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+        <h1 class="govuk-heading-m">Security input</h1>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
+        <span><a href="/form/ratings/securityInput/{{ data.details.bookingId }}" class="govuk-link">Change</a></span>
+      </div>
+    </div>
+
+    {% if data.socProfile.transferToSecurity %}
+
+    {% set warningText %}
+    This offender was referred to security
+    {% endset %}
+    {% endif %}
+    {% if warningText | trim %}
+    <div>
+      {{ govukWarningText({
+      text: warningText,
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text"
+      }) }}
+    </div>
+    {% endif %}
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="securityQ1">
+        Do you have reason to believe security input is needed?
+      </label>
+      <div class="govuk-body govuk-!-font-weight-bold" id=securityQ1">{{ data.securityInput.securityInputNeeded }}
+      </div>
+    </div>
+
+    {% if data.securityInput.securityInputNeededText %}
+    <div class="govuk-form-group">
+      <div class="govuk-inset-text" id=securityQ1Extra">{{ data.securityInput.securityInputNeededText }}</div>
+    </div>
+    {% endif %}
+
+    <hr>
+    <div class="govuk-grid-column-full govuk-!-padding-0">
+      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+        <h1 class="govuk-heading-m">Violence rating</h1>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
+            <span><a href="/form/ratings/violenceRating/{{ data.details.bookingId }}"
+                     class="govuk-link">Change</a></span></div>
+    </div>
+
+    {% if data.violenceProfile.veryHighRiskViolentOffender %}
+    <div>
+      {{ govukWarningText({
+      text: "Violent in custody Text TBC",
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides"
+      }) }}
+    </div>
+    {% endif %}
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="violenceQ1">
+        Is there any other evidence to suggest that the person poses a high risk of violence in custody?
+      </label>
+      <div class="govuk-body govuk-!-font-weight-bold" id="violenceQ1">{{ data.violenceRating.highRiskOfViolence }}
+      </div>
+    </div>
+
+    {% if data.violenceRating.highRiskOfViolenceText %}
+    <div class="govuk-form-group">
+      <div class="govuk-inset-text" id="violenceQ1Text">{{ data.violenceRating.highRiskOfViolenceText }}</div>
+    </div>
+    {% endif %}
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="violenceQ2">
+        Is there any other evidence to indicate that the person represents a serious threat to control, good order
+        or
+        discipline?
+      </label>
+      <div class="govuk-body govuk-!-font-weight-bold" id="violenceQ2">{{ data.violenceRating.seriousThreat }}</div>
+    </div>
+
+    {% if data.violenceRating.seriousThreatText %}
+    <div class="govuk-form-group">
+      <div class="govuk-inset-text" id="violenceQ2Text">{{ data.violenceRating.seriousThreatText }}</div>
+    </div>
+
+    {% endif %}
+
+    <hr>
+    <div class="govuk-grid-column-full govuk-!-padding-0">
+      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+        <h1 class="govuk-heading-m">Risk of escape</h1>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
+              <span><a href="/form/ratings/escapeRating/{{ data.details.bookingId }}"
+                       class="govuk-link">Change</a></span></div>
+    </div>
+
+    {% if data.escapeProfile.onEscapeList %}
+    {% set warningText %}
+    This person is on the heightened / standard / escort e-list
+    {% endset %}
+    {% endif %}
+    {% if warningText | trim %}
+    <div>
+      {{ govukWarningText({
+      text: warningText,
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text"
+      }) }}
+    </div>
+    {% endif %}
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="escapeQ1">
+        Is the person facing further serious charges that warrant higher security?
+      </label>
+      <div class="govuk-body govuk-!-font-weight-bold" id=escapeQ1">{{ data.escapeRating.escapeFurtherCharges }}
+      </div>
+    </div>
+
+    {% if data.escapeRating.escapeFurtherChargesText %}
+    <div class="govuk-form-group">
+      <div class="govuk-inset-text" id="escapeQ2Text">{{ data.escapeRating.escapeFurtherChargesText }}</div>
+    </div>
+
+    {% endif %}
+
+    <hr>
+    <div class="govuk-grid-column-full govuk-!-padding-0">
+      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+        <h1 class="govuk-heading-m">Extremism rating</h1>
+      </div>
+      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
+        <span><a href="/form/ratings/extremismRating/{{ data.details.bookingId }}" class="govuk-link">Change</a></span>
+      </div>
+    </div>
+
+    {% if data.extremismProfile.increasedRisk %}
+    <div>
+      {{ govukWarningText({
+      text: "There is data to indicate that this person has an increased risk of engaging in extremism",
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides"
+      }) }}
+    </div>
+    {% endif %}
+
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="extQ1">
+        Are there any previous offences under the Terrorism Act listed on the person's PNC record?
+      </label>
+      <div class="govuk-body govuk-!-font-weight-bold" id=extQ1">{{
+        data.extremismRating.previousTerrorismOffences }}
+      </div>
+    </div>
+
+    {% if data.extremismRating.previousTerrorismOffencesText %}
+    <div class="govuk-form-group">
+      <div class="govuk-inset-text" id="extText">{{ data.extremismRating.previousTerrorismOffencesText }}</div>
+    </div>
+
+    {% endif %}
+
+    <hr>
+
+  </div>
+</div>
+
 
 {% endblock %}
