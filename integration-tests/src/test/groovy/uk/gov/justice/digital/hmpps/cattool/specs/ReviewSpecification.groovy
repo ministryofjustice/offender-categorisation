@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
 
 import java.time.LocalDate
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
 class ReviewSpecification extends GebReportingSpec {
 
@@ -46,7 +46,7 @@ class ReviewSpecification extends GebReportingSpec {
     def date12 = LocalDate.now().plusDays(-1).toString()
     elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
 
-    fixture.loginAs(ITAG_USER)
+    fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
     startButtons[0].click()
