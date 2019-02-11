@@ -42,7 +42,9 @@ class ReviewSpecification extends GebReportingSpec {
     given: 'data has been entered for the ratings pages'
 
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
 
     fixture.loginAs(ITAG_USER)
     at CategoriserHomePage
