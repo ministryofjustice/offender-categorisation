@@ -47,6 +47,7 @@
     "joi": "^14.3.0",
     "joi-date-extensions": "^1.2.0",
     "joi-postcode": "^3.0.0",
+    "jwt-decode": "^2.2.0",
     "knex": "^0.16.2",
     "moment": "^2.23.0",
     "morgan": "^1.9.1",

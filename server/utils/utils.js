@@ -1,5 +1,7 @@
 const moment = require('moment')
 
+const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+
 const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 
@@ -63,6 +65,7 @@ const linkOnClick = handlerFn => ({
 })
 
 module.exports = {
+  dateConverter,
   properCase,
   properCaseName,
   getHoursMinutes,

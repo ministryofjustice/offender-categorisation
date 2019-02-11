@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.cattool.pages
 
 import geb.Page
 
-class CategoriserHomePage extends Page {
+class SupervisorHomePage extends Page {
 
-  static url = '/categoriserHome'
+  static url = '/supervisorHome'
 
   static at = {
     headingText == 'Prisoner Categorisation'
@@ -17,12 +17,9 @@ class CategoriserHomePage extends Page {
     prisonNos { bodyRows*.$('td', 1)*.text()  }
     days { bodyRows*.$('td', 2)*.text()  }
     dates { bodyRows*.$('td', 3)*.text()  }
-    statuses { bodyRows*.$('td', 4)*.text()  }
-    startButtons { bodyRows*.$('td', 5)*.find('a')  }
+    catBy { bodyRows*.$('td', 4)*.text()  }
+    statuses { bodyRows*.$('td', 5)*.text()  }
+    startButtons { bodyRows*.$('td', 6)*.find('a')  }
     logoutLink { $('a', href: '/logout')}
-  }
-
-  def logout() {
-    logoutLink.click()
   }
 }

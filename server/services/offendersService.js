@@ -3,7 +3,7 @@ const logger = require('../../log.js')
 const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName } = require('../utils/utils.js')
 const moment = require('moment')
-const { sortByDateTime } = require('./offenderSort.js')
+const { sortByDateTimeDesc } = require('./offenderSort.js')
 
 const dirname = process.cwd()
 
@@ -88,7 +88,53 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           }))
       )
 
-      const offenders = decoratedResults.sort((a, b) => sortByDateTime(a.dateRequired, b.dateRequired)).reverse()
+      const offenders = decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
+
+      return offenders
+    } catch (error) {
+      logger.error(error, 'Error during getUncategorisedOffenders')
+      throw error
+    }
+  }
+
+  async function getUnapprovedOffenders(token, agencyId) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+      const uncategorisedResult = (await nomisClient.getUncategorisedOffenders(agencyId)).filter(
+        s => s.status === 'AWAITING_APPROVAL'
+      )
+
+      if (isNilOrEmpty(uncategorisedResult)) {
+        logger.info(`No unapproved offenders found for ${agencyId}`)
+        return []
+      }
+
+      const bookingIds = uncategorisedResult.map(o => o.bookingId)
+
+      const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
+
+      const sentenceMap = sentenceDates
+        .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
+        .map(s => {
+          const { sentenceDetail } = s
+          return { bookingId: sentenceDetail.bookingId, sentenceDate: sentenceDetail.sentenceStartDate }
+        })
+
+      const decoratedResults = await Promise.all(
+        uncategorisedResult
+          .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
+          .map(async o => ({
+            ...o,
+            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+            categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(
+              o.categoriserLastName
+            )}`,
+            ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+            //    ...(await decorateWithCategorisationData(o, user, nomisClient)),
+          }))
+      )
+
+      const offenders = decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
 
       return offenders
     } catch (error) {
@@ -101,7 +147,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
     const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
     const actualDays = get10BusinessDays(sentenceDateMoment)
-    const dateRequired = sentenceDateMoment.add(actualDays, 'day').format('YYYY-MM-DD')
+    const dateRequired = sentenceDateMoment.add(actualDays, 'day').format('DD/MM/YYYY')
     return { daysSinceSentence, dateRequired, sentenceDate }
   }
 
@@ -248,6 +294,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
   return {
     getUncategorisedOffenders,
+    getUnapprovedOffenders,
     getOffenderDetails,
     getImage,
     getCategoryHistory: getCatAInformation,

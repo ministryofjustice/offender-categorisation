@@ -131,6 +131,39 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  void stubUncategorisedForSupervisor() {
+    this.stubFor(
+      get("/api/offender-assessments/category/LEI/uncategorised")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            bookingId : 11,
+            offenderNo: 'B2345XY',
+            firstName : 'PENELOPE',
+            lastName  : 'PITSTOP',
+            status    : 'AWAITING_APPROVAL',
+            category  : 'B',
+            categoriserFirstName: 'Roger',
+            categoriserLastName: 'Rabbit',
+          ],
+          [
+            bookingId : 12,
+            offenderNo: 'B2345YZ',
+            firstName : 'ANT',
+            lastName  : 'HILLMOB',
+            status    : 'AWAITING_APPROVAL',
+            category  : 'C',
+            categoriserFirstName: 'Bugs',
+            categoriserLastName: 'Bunny',
+          ],
+        ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
   void stubUncategorisedNoStatus(bookingId) {
     this.stubFor(
       get("/api/offender-assessments/category/LEI/uncategorised")
@@ -150,16 +183,16 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  def stubSentenceData(List offenderNumbers, List bookingIds, String formattedStartDate, Boolean emptyResponse = false) {
+  def stubSentenceData(List offenderNumbers, List bookingIds, List startDate, Boolean emptyResponse = false) {
     def index = 0
 
     def response = emptyResponse ? [] : offenderNumbers.collect({ no ->
       [
         offenderNo    : no,
+        sentenceDetail: [bookingId        : bookingIds[index],
+                         sentenceStartDate: startDate[index]],
         firstName     : "firstName-${index}",
-        lastName      : "lastName-${index}",
-        sentenceDetail: [bookingId        : bookingIds[index++],
-                         sentenceStartDate: formattedStartDate]
+        lastName      : "lastName-${index++}"
       ]
     })
 
