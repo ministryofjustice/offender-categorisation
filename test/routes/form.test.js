@@ -69,7 +69,7 @@ afterEach(() => {
 describe('GET /section/form', () => {
   test.each`
     path                                                   | expectedContent
-    ${'categoriserConfirmation/review/12345'}              | ${'Review'}
+    ${'categoriserConfirmation/review/12345'}              | ${'Check your answers before you continue'}
     ${'categoriserConfirmation/provisionalCategory/12345'} | ${'Provisional category'}
     ${'personalDetails/name/12345'}                        | ${'Full name'}
     ${'personalDetails/dob/12345'}                         | ${'What is your date of birth?'}
