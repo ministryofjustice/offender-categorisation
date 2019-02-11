@@ -19,6 +19,7 @@ class CategoriserTasklistPage extends Page {
     startButtons { bodyRows*.$('td', 5)*.find('a')  }
     offendingHistoryButton { $('#offendingHistoryButton') }
     securityButton { $('#securityButton') }
+    continueButton { $('#review a') }
     violenceButton { $('#violenceButton') }
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }
