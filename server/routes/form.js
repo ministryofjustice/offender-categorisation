@@ -139,6 +139,24 @@ module.exports = function Index({
   )
 
   router.get(
+    '/categoriserConfirmation/review/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const result = await buildFormDataForAllRatings(res, req, bookingId)
+      const escapeProfile = await riskProfilerService.getEscapeProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username
+      )
+      const socProfile = await riskProfilerService.getSecurityProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username
+      )
+      const data = { ...result.data, socProfile, escapeProfile }
+      res.render(`formPages/categoriserConfirmation/review`, { ...result, data })
+    })
+  )
+
+  router.get(
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
@@ -163,6 +181,26 @@ module.exports = function Index({
     return {
       data: { ...pageData, details },
       formName: form,
+      backLink,
+      errors,
+    }
+  }
+
+  const buildFormDataForAllRatings = async (res, req, bookingId) => {
+    const user = await userService.getUser(res.locals.user.token)
+    res.locals.user = { ...user, ...res.locals.user }
+
+    const formData = await formService.getCategorisationRecord(bookingId)
+    res.locals.formObject = formData.form_response || {}
+    res.locals.formId = formData.id
+
+    const backLink = req.get('Referrer')
+    const pageData = getIn(['ratings'], res.locals.formObject)
+    const errors = req.flash('errors')
+    const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+
+    return {
+      data: { ...pageData, details },
       backLink,
       errors,
     }
