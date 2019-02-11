@@ -1,0 +1,64 @@
+{% extends "../partials/layout.html" %}
+
+{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "button/macro.njk" import govukButton %}
+
+{% block beforeContent %}
+{{ govukBreadcrumbs({
+  items: [
+    {
+      text: "Home",
+      href: "#"
+    }
+  ]
+}) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h1 class="govuk-heading-l">Prisoner Categorisation</h1>
+    <h2 class="govuk-heading-m">To be reviewed</h2>
+  </div>
+  {% if offenders | length > 0 %}
+  <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
+    <thead class="govuk-table__head">
+
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Name</th>
+      <th class="govuk-table__header" scope="col">Prison no.</th>
+      <th class="govuk-table__header" scope="col">Days since sentence</th>
+      <th class="govuk-table__header" scope="col">Date due</th>
+      <th class="govuk-table__header" scope="col">Categorised by</th>
+      <th class="govuk-table__header" scope="col">Status</th>
+      <th class="govuk-table__header" scope="col"></th>
+    </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    {% for row in offenders %}
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">{{ row.displayName }}</td>
+      <td class="govuk-table__cell">{{ row.offenderNo }}</td>
+      <td class="govuk-table__cell">{{ row.daysSinceSentence }}</td>
+      <td class="govuk-table__cell">{{ row.dateRequired }}</td>
+      <td class="govuk-table__cell">{{ row.categoriserDisplayName }}</td>
+      <td class="govuk-table__cell">Categorised as {{ row.category }}</td>
+      <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+        {{ govukButton({
+        text: "Start now",
+        href: "/tasklist/" + row.bookingId,
+        classes: "govuk-button--start tableButton"
+        }) }}
+      </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+  {% else %}
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-m">No uncategorised offenders found</h1>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

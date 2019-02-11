@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
 
 import java.time.LocalDate
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
 class ProvisionalCategorySpecification extends GebReportingSpec {
 
@@ -36,8 +36,10 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   def 'The Provisional Category page is present'() {
     when: 'I go to the Provisional Category page'
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
-    fixture.loginAs(UserAccount.ITAG_USER)
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(UserAccount.CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
     to ProvisionalCategoryPage, '12'
@@ -66,8 +68,10 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   def 'Validation test'() {
     when: 'I submit the Provisional Category page with an empty text area'
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
-    fixture.loginAs(ITAG_USER)
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
     to ProvisionalCategoryPage, '12'
@@ -85,8 +89,10 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   def 'young offender test'() {
     when: 'I go to the Provisional Category page for young offender'
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
-    fixture.loginAs(UserAccount.ITAG_USER)
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(UserAccount.CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12, 'B2345YZ', true)
     to ProvisionalCategoryPage, '12'

@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
 
 import java.time.LocalDate
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
 class SecurityInputSpecification extends GebReportingSpec {
 
@@ -40,9 +40,11 @@ class SecurityInputSpecification extends GebReportingSpec {
     when: 'I go to the tasklist page'
 
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
 
-    fixture.loginAs(ITAG_USER)
+    fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
     startButtons[0].click()
@@ -65,9 +67,11 @@ class SecurityInputSpecification extends GebReportingSpec {
     given: 'the security input page has been completed'
 
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], LocalDate.now().plusDays(-3).toString())
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
 
-    fixture.loginAs(ITAG_USER)
+    fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
     startButtons[0].click()

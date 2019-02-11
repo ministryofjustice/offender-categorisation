@@ -12,13 +12,14 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.API_TEST_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER_COLLEAGUE
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
 class HomePageSpecification extends GebReportingSpec {
 
@@ -37,32 +38,58 @@ class HomePageSpecification extends GebReportingSpec {
   DatabaseUtils db = new DatabaseUtils()
 
   def "The home page for a categoriser is present"() {
-    when: 'I go to the home page'
+    when: 'I go to the home page as categoriser'
 
     def now = LocalDate.now()
-    def sentenceStartDate = LocalDate.of(2019, 1, 28)
-    def daysSinceSentence = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate, now))
-    def requiredDate = '2019-02-11' // 14 days after sentenceStartDate
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    def daysSinceSentence11 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate11, now))
+    def daysSinceSentence12 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate12, now))
+    // 14 days after sentenceStartDate
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], sentenceStartDate.toString())
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
-    fixture.loginAs(ITAG_USER)
+    fixture.loginAs(CATEGORISER_USER)
 
-    then: 'The home page is displayed'
+    then: 'The categoriser home page is displayed'
     at CategoriserHomePage
     prisonNos == ['B2345YZ', 'B2345XY']
     names == ['Hillmob, Ant', 'Pitstop, Penelope']
-    days == [daysSinceSentence, daysSinceSentence]
-    dates == [requiredDate, requiredDate]
+    days == [daysSinceSentence12, daysSinceSentence11]
+    dates == ['14/02/2019', '11/02/2019']
     statuses == ['Awaiting approval', 'Not categorised']
+  }
+
+  def "The home page for a supervisor is present"() {
+    when: 'I go to the home page as supervisor'
+
+    def now = LocalDate.now()
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    def daysSinceSentence11 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate11, now))
+    def daysSinceSentence12 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate12, now))
+    // 14 days after sentenceStartDate
+    elite2api.stubUncategorisedForSupervisor()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+
+    fixture.loginAs(SUPERVISOR_USER)
+
+    then: 'The supervisor home page is displayed'
+    at SupervisorHomePage
+    prisonNos == ['B2345YZ', 'B2345XY']
+    names == ['Hillmob, Ant', 'Pitstop, Penelope']
+    days == [daysSinceSentence12, daysSinceSentence11]
+    dates == ['14/02/2019', '11/02/2019']
+    catBy == ['Bugs Bunny', 'Roger Rabbit']
+    statuses == ['Categorised as C', 'Categorised as B']
   }
 
   def "The status of 'Started' for an offender is calculated correctly"() {
     when: 'A user starts a categorisation'
 
     elite2api.stubUncategorisedNoStatus(678)
-    elite2api.stubSentenceData(['ON678'], [678], LocalDate.now().plusDays(-3).toString())
-    fixture.loginAs(ITAG_USER)
+    elite2api.stubSentenceData(['ON678'], [678], [LocalDate.now().plusDays(-3).toString()])
+    fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(678, "ON678")
     startButtons[0].click() // selects B2345YZ
@@ -88,7 +115,7 @@ class HomePageSpecification extends GebReportingSpec {
     fixture.setBrowser(createBrowser())
     oauthApi.resetAll()
     // call to retrieve another users's details for assigned user name
-    elite2api.stubGetUserDetails(ITAG_USER, Caseload.LEI.id)
+    elite2api.stubGetUserDetails(CATEGORISER_USER, Caseload.LEI.id)
     fixture.loginAs(ITAG_USER_COLLEAGUE)
     at CategoriserHomePage
 
@@ -102,8 +129,8 @@ class HomePageSpecification extends GebReportingSpec {
     def now = LocalDate.now()
     def sentenceStartDate = now.plusDays(-3).toString()
     elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], sentenceStartDate)
-    fixture.loginAs(ITAG_USER)
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate.toString(), sentenceStartDate.toString()])
+    fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
 
     when: "I log out"
