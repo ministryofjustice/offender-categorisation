@@ -25,4 +25,8 @@ class CategoriserHomePage extends Page {
   def logout() {
     logoutLink.click()
   }
+
+  def selectFirstPrisoner() {
+    startButtons[0].click() // should select B2345YZ
+  }
 }

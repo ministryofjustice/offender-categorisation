@@ -39,15 +39,7 @@ class EscapeSpecification extends GebReportingSpec {
   def "The escape page displays an alert when the offender is on the escape list"() {
     when: 'I go to the tasklist page'
 
-    elite2api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
-
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
-    startButtons[0].click()
+    fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
     elite2api.stubAssessments(['B2345YZ'])
@@ -66,15 +58,7 @@ class EscapeSpecification extends GebReportingSpec {
   def "The escape page can be edited"() {
     given: 'the security input page has been completed'
 
-    elite2api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
-
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
-    startButtons[0].click()
+    fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
     elite2api.stubAssessments(['B2345YZ'])

@@ -16,15 +16,16 @@ class CategoriserTasklistPage extends Page {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
-    startButtons { bodyRows*.$('td', 5)*.find('a')  }
+    startButtons { bodyRows*.$('td', 5)*.find('a') }
     offendingHistoryButton { $('#offendingHistoryButton') }
     securityButton { $('#securityButton') }
-    continueButton { $('#review a') }
+    continueButton(required: false) { $('#review a') }
+    continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }
     violenceButton { $('#violenceButton') }
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }
-    backLink { $( 'a.govuk-back-link') }
-    securityEditLink{ $('#security-input-edit') }
-    escapeEditLink{ $('#escape-input-edit') }
+    backLink { $('a.govuk-back-link') }
+    securityEditLink { $('#security-input-edit') }
+    escapeEditLink { $('#escape-input-edit') }
   }
 }
