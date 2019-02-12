@@ -3,6 +3,7 @@
 {% set greenButtonText = "Continue" %}
 
 {% from "warning-text/macro.njk" import govukWarningText %}
+{% from "../../macros/reviewSectionHeader.html" import reviewSectionHeader %}
 
 {% block formItems %}
 
@@ -12,39 +13,10 @@
     <h1 class="govuk-heading-l">Check your answers before you continue</h1>
 
     <hr>
-    <div class="govuk-grid-column-full govuk-!-padding-0">
-      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-        <h1 class="govuk-heading-m">Offending history</h1>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
-        <span><a href="/form/ratings/offendingHistory/{{ data.details.bookingId }}" class="govuk-link">Change</a></span>
-      </div>
-    </div>
+    {{ reviewSectionHeader('Offending history','/form/ratings/offendingHistory/'+ data.details.bookingId) }}
 
-    {% set warningText %}
+    {% include "../../partials/warningOffendingHistory.html" %}
 
-    {% if data.history.catAType === 'A' %}
-    This offender was categorised as a Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
-    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
-    {% elif data.history.catAType === 'P' %}
-    This offender was treated as a provisional Cat A in {{ data.history.catAStartYear }} until {{
-    data.history.catAEndYear }}
-    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
-    {% elif data.history.catAType === 'H' %}
-    This offender was categorised as a Cat A High in {{ data.history.catAStartYear }} until {{
-    data.history.catAEndYear }}
-    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
-    {% endif %}
-    {% endset %}
-    {% if warningText | trim %}
-    <div>
-      {{ govukWarningText({
-      text: warningText,
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides"
-      }) }}
-    </div>
-    {% endif %}
 
     <div class="govuk-form-group">
       <label class="govuk-label" for="historyQ1">
@@ -55,29 +27,21 @@
     </div>
 
     <hr>
-    <div class="govuk-grid-column-full govuk-!-padding-0">
-      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-        <h1 class="govuk-heading-m">Security input</h1>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
-        <span><a href="/form/ratings/securityInput/{{ data.details.bookingId }}" class="govuk-link">Change</a></span>
-      </div>
-    </div>
+    {{ reviewSectionHeader('Security input','/form/ratings/securityInput/'+ data.details.bookingId) }}
 
     {% if data.socProfile.transferToSecurity %}
-
-    {% set warningText %}
+    {% set warningTextSecurity %}
     This offender was referred to security
     {% endset %}
-    {% endif %}
-    {% if warningText | trim %}
+    {% if warningTextSecurity %}
     <div>
       {{ govukWarningText({
-      text: warningText,
+      text: warningTextSecurity,
       iconFallbackText: "Warning",
       classes: "forms-warning-text"
       }) }}
     </div>
+    {% endif %}
     {% endif %}
 
     <div class="govuk-form-group">
@@ -95,14 +59,7 @@
     {% endif %}
 
     <hr>
-    <div class="govuk-grid-column-full govuk-!-padding-0">
-      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-        <h1 class="govuk-heading-m">Violence rating</h1>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
-            <span><a href="/form/ratings/violenceRating/{{ data.details.bookingId }}"
-                     class="govuk-link">Change</a></span></div>
-    </div>
+    {{ reviewSectionHeader('Violence rating','/form/ratings/violenceRating/'+ data.details.bookingId) }}
 
     {% if data.violenceProfile.veryHighRiskViolentOffender %}
     <div>
@@ -145,28 +102,21 @@
     {% endif %}
 
     <hr>
-    <div class="govuk-grid-column-full govuk-!-padding-0">
-      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-        <h1 class="govuk-heading-m">Risk of escape</h1>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
-              <span><a href="/form/ratings/escapeRating/{{ data.details.bookingId }}"
-                       class="govuk-link">Change</a></span></div>
-    </div>
+    {{ reviewSectionHeader('Risk of escape','/form/ratings/escapeRating/'+ data.details.bookingId) }}
 
     {% if data.escapeProfile.onEscapeList %}
-    {% set warningText %}
+    {% set warningTextEscape %}
     This person is on the heightened / standard / escort e-list
     {% endset %}
-    {% endif %}
-    {% if warningText | trim %}
+    {% if warningTextEscape | trim %}
     <div>
       {{ govukWarningText({
-      text: warningText,
+      text: warningTextEscape,
       iconFallbackText: "Warning",
       classes: "forms-warning-text"
       }) }}
     </div>
+    {% endif %}
     {% endif %}
 
     <div class="govuk-form-group">
@@ -185,14 +135,8 @@
     {% endif %}
 
     <hr>
-    <div class="govuk-grid-column-full govuk-!-padding-0">
-      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-        <h1 class="govuk-heading-m">Extremism rating</h1>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
-        <span><a href="/form/ratings/extremismRating/{{ data.details.bookingId }}" class="govuk-link">Change</a></span>
-      </div>
-    </div>
+    {{ reviewSectionHeader('Extremism rating','/form/ratings/extremismRating/'+ data.details.bookingId) }}
+
 
     {% if data.extremismProfile.increasedRisk %}
     <div>
