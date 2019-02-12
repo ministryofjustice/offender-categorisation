@@ -5,6 +5,11 @@ import geb.Browser
 import groovy.json.JsonOutput
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
+
+import java.time.LocalDate
+
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
 class TestFixture {
 
@@ -28,6 +33,18 @@ class TestFixture {
     elite2Api.stubGetMyCaseloads currentUser.caseloads
 
     simulateLogin()
+  }
+
+  def gotoTasklist() {
+    elite2Api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-4).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+
+    loginAs(CATEGORISER_USER)
+    browser.at CategoriserHomePage
+    elite2Api.stubGetOffenderDetails(12)
+    browser.selectFirstPrisoner()
   }
 
   private void simulateLogin() {

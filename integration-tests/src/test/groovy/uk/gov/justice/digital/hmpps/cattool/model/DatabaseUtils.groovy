@@ -25,4 +25,9 @@ class DatabaseUtils {
     def sql = Sql.newInstance(dbConnParams)
     return sql.rows("select * from form where booking_id = $bookingId")
   }
+
+  def createData(bookingId, json) {
+    def sql = Sql.newInstance(dbConnParams)
+    sql.executeUpdate("insert into form values (-1, ?::JSON, $bookingId, 'the categoriser', 'somestatus', 'assigned_user')", json)
+  }
 }

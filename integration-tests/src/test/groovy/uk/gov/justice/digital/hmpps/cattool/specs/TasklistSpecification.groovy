@@ -3,9 +3,11 @@ package uk.gov.justice.digital.hmpps.cattool.specs
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
+import groovy.json.JsonOutput
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
@@ -24,19 +26,19 @@ class TasklistSpecification extends GebReportingSpec {
     .extensions(new ResponseTemplateTransformer(false)))
 
   TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  DatabaseUtils db = new DatabaseUtils()
+
+  def setup() {
+    db.clearDb()
+  }
+
+  def cleanup() {
+    db.clearDb()
+  }
 
   def "The tasklist for a categoriser is present"() {
     when: 'I go to the tasklist page'
-
-    elite2api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
-
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
-    startButtons[0].click() // selects B2345YZ
+    fixture.gotoTasklist()
 
     then: 'The tasklist page is displayed'
     at(new CategoriserTasklistPage(bookingId: '12'))
@@ -54,5 +56,25 @@ class TasklistSpecification extends GebReportingSpec {
                             '16/06/2020',
                             '17/06/2020',
                             '6 years, 3 months']
+    !continueButton
+    continueButtonDisabled.displayed
+  }
+
+  def "The continue button behaves correctly"() {
+    when: 'I go to the tasklist page with all sections complete'
+    db.createData(12, JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        securityInput   : [securityInputNeeded: "Yes"],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ]]))
+    fixture.gotoTasklist()
+    at(new CategoriserTasklistPage(bookingId: '12'))
+
+    then: 'The continue button takes me to the review page'
+    continueButton.displayed
+    !continueButtonDisabled
   }
 }

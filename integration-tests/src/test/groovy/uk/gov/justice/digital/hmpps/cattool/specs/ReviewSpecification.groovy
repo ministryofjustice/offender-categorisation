@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.cattool.specs
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
+import groovy.json.JsonOutput
+import org.junit.After
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -34,22 +36,25 @@ class ReviewSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
+  def cleanup() {
+    db.clearDb()
+  }
+
   TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
   DatabaseUtils db = new DatabaseUtils()
 
 
   def "The review page can be displayed"() {
     given: 'data has been entered for the ratings pages'
-
-    elite2api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
-
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
-    startButtons[0].click()
+    db.createData(12, JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ]]))
+    fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
     elite2api.stubAssessments(['B2345YZ'])
