@@ -117,6 +117,12 @@ href: backLink or "/"
       {{ headerValue(data.sentence.length) }}
     </div>
   </div>
+  {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
+  {% set securityInputCompleted = data.ratings.securityInput.securityInputNeeded %}
+  {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
+  {% set escapeRatingCompleted = data.ratings.escapeRating.escapeFurtherCharges %}
+  {% set extremismRatingCompleted = data.ratings.extremismRating.previousTerrorismOffences %}
+  {% set allSectionsCompleted = offendingHistoryCompleted and securityInputCompleted and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <ul class="app-task-list">
@@ -171,7 +177,7 @@ href: backLink or "/"
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              {% if data.ratings.escapeRating %}
+              {% if data.ratings.escapeRating.escapeFurtherCharges %}
                 <a id="escape-input-edit" href="/form/ratings/escapeRating/{{ data.bookingId }}">Risk of escape</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="escapeRating-completed">Completed</strong>
               {% else %}
@@ -213,7 +219,8 @@ href: backLink or "/"
               {% else %}
                 {{ govukButton({
                   text: "Continue",
-                  href: "/form/categoriserConfirmation/review/" + data.bookingId,
+                  href: "/form/categoriserConfirmation/review/" + data.bookingId if allSectionsCompleted,
+                  disabled: not allSectionsCompleted,
                   classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}
                 <p class="govuk-!-font-weight-bold">Review and categorisation</p>

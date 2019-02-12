@@ -29,15 +29,7 @@ class OffendingHistorySpecification extends GebReportingSpec {
   def "The Offending history page shows a Cat A warning"() {
     when: 'I go to the Offending history page'
 
-    elite2api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
-
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
-    startButtons[0].click() // selects B2345YZ
+    fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
