@@ -4,7 +4,8 @@ const logger = require('../../log.js')
 module.exports = {
   getFormDataForUser(bookingId) {
     const query = {
-      text: 'select id, user_id, status, form_response, assigned_user_id from form where booking_id = $1',
+      text: `select id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
+        from form where booking_id = $1`,
       values: [bookingId],
     }
 
