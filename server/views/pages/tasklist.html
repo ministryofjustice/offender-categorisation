@@ -213,13 +213,13 @@ href: backLink or "/"
         <li>
           <ul id="review" class="app-task-list__items">
             <li class="app-task-list__item">
-              {% if data.categoriserConfirmation.provisionalCategory.categoryAppropriate %}
-                <a href="/form/categoriserConfirmation/provisionalCategory/{{ data.bookingId }}">Review and categorisation</a>
+              {% if data.categoriser.provisionalCategory.categoryAppropriate %}
+                <a href="/form/categoriser/provisionalCategory/{{ data.bookingId }}">Review and categorisation</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="review-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
                   text: "Continue",
-                  href: "/form/categoriserConfirmation/review/" + data.bookingId if allSectionsCompleted,
+                  href: "/form/categoriser/review/" + data.bookingId if allSectionsCompleted,
                   disabled: not allSectionsCompleted,
                   classes: "govuk-button--start tableButton app-task-list__task-completed"
                 }) }}

@@ -110,6 +110,6 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     then: 'Cat J details are saved'
     def response = db.getData(12).form_response
-    response[0].toString() == '{"categoriserConfirmation": {"provisionalCategory": {"overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}}'
+    response[0].toString() == '{"categoriser": {"provisionalCategory": {"overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}}'
   }
 }
