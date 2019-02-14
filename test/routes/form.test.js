@@ -55,6 +55,9 @@ beforeEach(() => {
   offendersService.getCategoryHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
+  riskProfilerService.getViolenceProfile.mockResolvedValue({})
+  riskProfilerService.getExtremismProfile.mockResolvedValue({})
+  riskProfilerService.getEscapeProfile.mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -64,6 +67,9 @@ afterEach(() => {
   formService.update.mockReset()
   userService.getUser.mockReset()
   riskProfilerService.getSecurityProfile.mockReset()
+  riskProfilerService.getViolenceProfile.mockReset()
+  riskProfilerService.getExtremismProfile.mockReset()
+  riskProfilerService.getEscapeProfile.mockReset()
 })
 
 describe('GET /section/form', () => {
