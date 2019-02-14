@@ -9,14 +9,14 @@ const personalDetailsConfig = require('../config/personalDetails')
 const transportConfig = require('../config/transport')
 const agile = require('../config/agile')
 const ratings = require('../config/ratings')
-const categoriserConfirmation = require('../config/categoriserConfirmation')
+const categoriser = require('../config/categoriser')
 
 const formConfig = {
   ...personalDetailsConfig,
   ...transportConfig,
   ...agile,
   ...ratings,
-  ...categoriserConfirmation,
+  ...categoriser,
 }
 
 function isYoungOffender(details) {
@@ -126,9 +126,9 @@ module.exports = function Index({
   )
 
   router.get(
-    '/categoriserConfirmation/provisionalCategory/:bookingId',
+    '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const section = 'categoriserConfirmation'
+      const section = 'categoriser'
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId)
@@ -139,20 +139,16 @@ module.exports = function Index({
   )
 
   router.get(
-    '/categoriserConfirmation/review/:bookingId',
+    '/categoriser/review/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const { bookingId } = req.params
-      const result = await buildFormDataForAllRatings(res, req, bookingId)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(
-        result.data.details.offenderNo,
-        res.locals.user.username
-      )
-      const socProfile = await riskProfilerService.getSecurityProfile(
-        result.data.details.offenderNo,
-        res.locals.user.username
-      )
-      const data = { ...result.data, socProfile, escapeProfile }
-      res.render(`formPages/categoriserConfirmation/review`, { ...result, data })
+      await renderReview(req, res, 'formPages/categoriser/review')
+    })
+  )
+
+  router.get(
+    '/supervisor/review/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      await renderReview(req, res, 'formPages/supervisor/review')
     })
   )
 
@@ -184,6 +180,37 @@ module.exports = function Index({
       backLink,
       errors,
     }
+  }
+
+  const renderReview = async (req, res, page) => {
+    const { bookingId } = req.params
+    const result = await buildFormDataForAllRatings(res, req, bookingId)
+    const escapeProfile = await riskProfilerService.getEscapeProfile(
+      result.data.details.offenderNo,
+      res.locals.user.username
+    )
+    const socProfile = await riskProfilerService.getSecurityProfile(
+      result.data.details.offenderNo,
+      res.locals.user.username
+    )
+    const extremismProfile = await riskProfilerService.getExtremismProfile(
+      result.data.details.offenderNo,
+      res.locals.user.username,
+      false // TODO
+    )
+    const violenceProfile = await riskProfilerService.getViolenceProfile(
+      result.data.details.offenderNo,
+      res.locals.user.username
+    )
+    const data = {
+      ...result.data,
+      socProfile,
+      escapeProfile,
+      extremismProfile,
+      violenceProfile,
+      ...{ provisionCat: 'C', overCat: 'D' },
+    }
+    res.render(page, { ...result, data })
   }
 
   const buildFormDataForAllRatings = async (res, req, bookingId) => {

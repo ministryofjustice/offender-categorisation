@@ -1,10 +1,12 @@
-{% macro reviewSectionHeader(heading, changeHref) %}
+{% macro reviewSectionHeader(showChangeLinks, heading, changeHref) %}
 <div class="govuk-grid-column-full govuk-!-padding-0">
-      <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-        <h1 class="govuk-heading-m">{{ heading }}</h1>
-      </div>
-      <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
-        <span><a href="{{ changeHref }}" class="govuk-link">Change</a></span>
-      </div>
-    </div>
+  <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
+    <h1 class="govuk-heading-m">{{ heading }}</h1>
+  </div>
+  {% if showChangeLinks === 'true' %}
+  <div class="govuk-grid-column-one-quarter govuk-!-padding-0">
+    <span><a href="{{ changeHref }}" class="govuk-link">Change</a></span>
+  </div>
+  {% endif %}
+</div>
 {% endmacro %}

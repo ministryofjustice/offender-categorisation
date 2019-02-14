@@ -4,7 +4,7 @@ import geb.Page
 
 class ProvisionalCategoryPage extends Page {
 
-  static url = '/form/categoriserConfirmation/provisionalCategory'
+  static url = '/form/categoriser/provisionalCategory'
 
   static at = {
     headingText == 'Provisional category'
