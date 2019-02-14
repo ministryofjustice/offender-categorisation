@@ -188,7 +188,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function decorateWithCategorisationData(offender, user, nomisClient) {
-    const categorisation = offender.dbRecord // await formService.getCategorisationRecord(offender.bookingId)
+    const categorisation = offender.dbRecord
     let statusText
     if (categorisation.status) {
       statusText = statusTextDisplay(categorisation.status)
