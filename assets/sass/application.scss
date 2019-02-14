@@ -164,3 +164,23 @@ header.govuk-header {
     padding-left: 70px;
   }
 }
+
+#warning-arrow {
+  display: inline-block;
+  position: absolute;
+  left: 70px;
+  top: 18px;
+}
+
+#override-cat-icon {
+   left: 92px;
+ }
+
+#override-old-cat-icon {
+  background-color: slategrey;
+  border-color: slategrey;
+}
+
+#override-icon-text {
+  padding-left: 140px;
+}

@@ -1,0 +1,134 @@
+{% extends "../formTemplate.html" %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "button/macro.njk" import govukButton %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% set greenButtonText = "Continue" %}
+
+{% block formItems %}
+
+
+<div class="govuk-grid-row govuk-body-s">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">Review provisional categorisation</h1>
+
+    {% set cat = data.provisionCat %}
+    {% set overriddenCat = data.overCat %}
+    {% set currentCat %}{% if overriddenCat %}{{overriddenCat}}{% else %}{{cat}}{% endif %}{% endset %}
+
+
+    {% if overriddenCat %}
+    <div class="govuk-warning-text forms-info-text warning-overrides">
+      <span id="override-old-cat-icon" class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+      <span id="warning-arrow" class=""><img src='/assets/images/Triangle.png' alt='arrow' height='18'
+                                             width='12'/></span>
+      <span id="override-cat-icon" class="govuk-warning-text__icon" aria-hidden="true">{{ overriddenCat }}</span>
+      <strong id="override-icon-text" class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        The category was originally {{ cat }} and is now {{ overriddenCat }}
+      </strong>
+    </div>
+    {% else %}
+    <div class="govuk-warning-text forms-info-text warning-overrides">
+      <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        Based on the information provided, the provisional category is {{ cat }}
+      </strong>
+    </div>
+    {% endif %}
+
+
+    {% set showChangeLinks %}false{% endset %}
+    {% include "../../partials/reviewContents.html" %}
+
+
+    {% set overriddenCategoryTextHtml %}
+
+    {% if (currentCat == "B" or currentCat == "C" or currentCat == "D") %}
+      {{ govukRadios({
+        name: "overriddenCategory",
+        classes: "govuk-radios--inline",
+        fieldset: {
+        legend: {
+        text: "Which category is more appropriate?",
+        isPageHeading: false
+      }
+      },
+      items: [
+      {
+        value: "B",
+        id: "overriddenCategoryB",
+        checked: data.supervisorOverriddenCategory === 'B',
+        text: "B"
+        } if currentCat != "B",
+      {
+        value: "C",
+        id: "overriddenCategoryC",
+        checked: data.supervisorOverriddenCategory === 'C',
+        text: "C"
+        } if currentCat != "C",
+      {
+        value: "D",
+        id: "overriddenCategoryD",
+        checked: data.supervisorOverriddenCategory === 'D',
+        text: "D"
+        } if currentCat != "D"
+      ],
+      errorMessage: {
+        text: "Please select the new category"
+        } if (errors | findError('overriddenCategory'))
+      }) }}
+      {% else %}
+      <h2 class="govuk-heading-m">Changing to Cat J</h2>
+      <input type="hidden" name="overriddenCategory" value="J"/>
+    {% endif %}
+
+    {{ govukTextarea({
+      name: "overriddenCategoryText",
+      type: "myTextWhatsThisFor",
+      id: "overriddenCategoryText",
+      label: {
+      text: "Explain why you changed the category"
+      },
+      value: data.supervisorOverriddenCategoryText,
+      errorMessage: {
+      text: "Please enter the reason why you changed the category"
+      } if (errors | findError('supervisorOverriddenCategoryText'))
+      }) }}
+    {% endset %}
+
+
+    {{ govukRadios({
+    name: "categoryAppropriate",
+    classes: "govuk-radios--inline",
+    fieldset: {
+    legend: {
+    text: "Do you think the category is appropriate for this person?",
+    isPageHeading: false
+    }
+    },
+    items: [
+    {
+    value: "Yes",
+    checked: data.supervisorCategoryAppropriate === 'Yes',
+    text: "Yes"
+    },
+    {
+    value: "No",
+    checked: data.supervisorCategoryAppropriate === 'No',
+    text: "No",
+    conditional: {
+    html:overriddenCategoryTextHtml
+    }
+    }
+    ]
+    }) }}
+
+  </div>
+</div>
+
+
+{% endblock %}

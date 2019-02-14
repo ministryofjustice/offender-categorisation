@@ -1,7 +1,7 @@
 module.exports = {
   review: {
     nextPath: {
-      path: '/form/categoriserConfirmation/provisionalCategory/',
+      path: '/form/categoriser/provisionalCategory/',
     },
   },
   provisionalCategory: {
