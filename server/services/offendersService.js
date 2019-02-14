@@ -55,6 +55,20 @@ function formatLength(sentenceTerms) {
   return result.endsWith(', ') ? result.substr(0, result.length - 2) : result
 }
 
+async function getSentenceMap(uncategorisedResult, nomisClient) {
+  const bookingIds = uncategorisedResult.map(o => o.bookingId)
+
+  const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
+
+  const sentenceMap = sentenceDates
+    .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
+    .map(s => {
+      const { sentenceDetail } = s
+      return { bookingId: sentenceDetail.bookingId, sentenceDate: sentenceDetail.sentenceStartDate }
+    })
+  return sentenceMap
+}
+
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
   async function getUncategorisedOffenders(token, agencyId, user) {
     try {
@@ -65,32 +79,24 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         logger.info(`No uncategorised offenders found for ${agencyId}`)
         return []
       }
-
-      const bookingIds = uncategorisedResult.map(o => o.bookingId)
-
-      const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
-
-      const sentenceMap = sentenceDates
-        .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
-        .map(s => {
-          const { sentenceDetail } = s
-          return { bookingId: sentenceDetail.bookingId, sentenceDate: sentenceDetail.sentenceStartDate }
-        })
+      const sentenceMap = await getSentenceMap(uncategorisedResult, nomisClient)
 
       const decoratedResults = await Promise.all(
         uncategorisedResult
           .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
-          .map(async o => ({
-            ...o,
-            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-            ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
-            ...(await decorateWithCategorisationData(o, user, nomisClient)),
-          }))
+          .map(async o => {
+            const dbRecord = await formService.getCategorisationRecord(o.bookingId)
+            const row = { ...o, dbRecord }
+            return {
+              ...row,
+              displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+              ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+              ...(await decorateWithCategorisationData(row, user, nomisClient)),
+            }
+          })
       )
 
-      const offenders = decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
-
-      return offenders
+      return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
     } catch (error) {
       logger.error(error, 'Error during getUncategorisedOffenders')
       throw error
@@ -109,16 +115,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return []
       }
 
-      const bookingIds = uncategorisedResult.map(o => o.bookingId)
-
-      const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
-
-      const sentenceMap = sentenceDates
-        .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
-        .map(s => {
-          const { sentenceDetail } = s
-          return { bookingId: sentenceDetail.bookingId, sentenceDate: sentenceDetail.sentenceStartDate }
-        })
+      const sentenceMap = await getSentenceMap(uncategorisedResult, nomisClient)
 
       const decoratedResults = await Promise.all(
         uncategorisedResult
@@ -130,15 +127,54 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               o.categoriserLastName
             )}`,
             ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
-            //    ...(await decorateWithCategorisationData(o, user, nomisClient)),
           }))
       )
 
-      const offenders = decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
-
-      return offenders
+      return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
     } catch (error) {
-      logger.error(error, 'Error during getUncategorisedOffenders')
+      logger.error(error, 'Error during getUnapprovedOffenders')
+      throw error
+    }
+  }
+
+  async function getReferredOffenders(token, agencyId, user) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+      const allUncategorised = await nomisClient.getUncategorisedOffenders(agencyId)
+      const referredResult = (await Promise.all(
+        allUncategorised.map(async s => {
+          const dbRecord = await formService.getCategorisationRecord(s.bookingId)
+          return {
+            ...s,
+            // NO!  dateRequired: get10BusinessDays(dbRecord.referred_date),
+            dbRecord,
+            referredBy: dbRecord.referred_by,
+            dbStatus: dbRecord.status,
+          }
+        })
+      )).filter(s => s.dbStatus === 'SECURITY')
+
+      if (isNilOrEmpty(referredResult)) {
+        logger.info(`No referred offenders found for ${agencyId}`)
+        return []
+      }
+
+      const sentenceMap = await getSentenceMap(referredResult, nomisClient)
+
+      const decoratedResults = await Promise.all(
+        referredResult
+          .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
+          .map(async o => ({
+            ...o,
+            ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+            ...(await decorateWithCategorisationData(o, user, nomisClient)),
+            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+          }))
+      )
+
+      return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
+    } catch (error) {
+      logger.error(error, 'Error during getReferredOffenders')
       throw error
     }
   }
@@ -152,11 +188,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function decorateWithCategorisationData(offender, user, nomisClient) {
-    const categorisation = await formService.getCategorisationRecord(offender.bookingId)
+    const categorisation = offender.dbRecord // await formService.getCategorisationRecord(offender.bookingId)
     let statusText
     if (categorisation.status) {
       statusText = statusTextDisplay(categorisation.status)
       logger.debug(`retrieving status ${categorisation.status} for booking id ${offender.bookingId}`)
+      let referrer
       if (categorisation.assigned_user_id && categorisation.status === 'STARTED') {
         if (categorisation.assigned_user_id !== user.username) {
           // need to retrieve name details for non-current user
@@ -164,13 +201,24 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             const assignedUser = await nomisClient.getUserByUserId(categorisation.assigned_user_id)
             statusText += ` (${properCaseName(assignedUser.firstName)} ${properCaseName(assignedUser.lastName)})`
           } catch (error) {
-            logger.warn(`No assigned user details found for  ${categorisation.assigned_user_id}`)
+            logger.warn(`No assigned user details found for ${categorisation.assigned_user_id}`)
           }
         } else {
           statusText += ` (${properCaseName(user.firstName)} ${properCaseName(user.lastName)})`
         }
+      } else if (categorisation.referred_by && categorisation.status === 'SECURITY') {
+        // need to retrieve name details for categoriser user
+        try {
+          referrer = await nomisClient.getUserByUserId(categorisation.referred_by)
+        } catch (error) {
+          logger.warn(`No user details found for ${categorisation.referred_by}`)
+        }
       }
-      return { displayStatus: `${statusText}`, assignedUserId: categorisation.assignedUserId }
+      return {
+        displayStatus: `${statusText}`,
+        assignedUserId: categorisation.assigned_user_id,
+        referredBy: referrer && `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`,
+      }
     }
     statusText = statusTextDisplay(offender.status)
     return { displayStatus: `${statusText}` }
@@ -184,6 +232,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return 'Awaiting approval'
       case 'STARTED':
         return 'Started'
+      case 'SECURITY':
+        return 'Referred to Security'
       default:
         return 'Unknown status'
     }
@@ -295,6 +345,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
+    getReferredOffenders,
     getOffenderDetails,
     getImage,
     getCategoryHistory: getCatAInformation,

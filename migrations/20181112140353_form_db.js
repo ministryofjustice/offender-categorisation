@@ -7,6 +7,8 @@ exports.up = knex =>
       table.string('user_id').notNullable()
       table.string('status').notNullable()
       table.string('assigned_user_id').nullable()
+      table.string('referred_date').nullable()
+      table.string('referred_by').nullable()
     }),
   ])
 

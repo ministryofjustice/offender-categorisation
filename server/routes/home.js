@@ -17,11 +17,11 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
       } else if (roles.includes('ROLE_CREATE_CATEGORISATION')) {
         res.redirect('/categoriserHome')
       } else if (roles.includes('ROLE_CATEGORISATION_SECURITY')) {
-        res.redirect('/TODO')
+        res.redirect('/securityHome')
       } else {
         // go to a 'not auth' page?
         res.status(403)
-        res.end('User does not have any cat tool roles')
+        res.end('User does not have any categorisation tool roles')
       }
     })
   )
@@ -56,6 +56,19 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
           )
         : []
       res.render('pages/supervisorHome', { offenders })
+    })
+  )
+
+  router.get(
+    '/securityHome',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+
+      const offenders = res.locals.user.activeCaseLoad
+        ? await offendersService.getReferredOffenders(res.locals.user.token, res.locals.user.activeCaseLoad.caseLoadId)
+        : []
+      res.render('pages/securityHome', { offenders })
     })
   )
 
