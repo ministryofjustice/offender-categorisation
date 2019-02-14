@@ -4,7 +4,7 @@ import geb.Page
 
 class ReviewPage extends Page {
 
-  static url = '/form/categoriserConfirmation/review'
+  static url = '/form/categoriser/review'
 
   static at = {
     headingText == 'Check your answers before you continue'

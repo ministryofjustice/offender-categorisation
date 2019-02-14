@@ -55,6 +55,9 @@ beforeEach(() => {
   offendersService.getCategoryHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
+  riskProfilerService.getViolenceProfile.mockResolvedValue({})
+  riskProfilerService.getExtremismProfile.mockResolvedValue({})
+  riskProfilerService.getEscapeProfile.mockResolvedValue({})
 })
 
 afterEach(() => {
@@ -64,20 +67,23 @@ afterEach(() => {
   formService.update.mockReset()
   userService.getUser.mockReset()
   riskProfilerService.getSecurityProfile.mockReset()
+  riskProfilerService.getViolenceProfile.mockReset()
+  riskProfilerService.getExtremismProfile.mockReset()
+  riskProfilerService.getEscapeProfile.mockReset()
 })
 
 describe('GET /section/form', () => {
   test.each`
-    path                                                   | expectedContent
-    ${'categoriserConfirmation/review/12345'}              | ${'Check your answers before you continue'}
-    ${'categoriserConfirmation/provisionalCategory/12345'} | ${'Provisional category'}
-    ${'personalDetails/name/12345'}                        | ${'Full name'}
-    ${'personalDetails/dob/12345'}                         | ${'What is your date of birth?'}
-    ${'personalDetails/address/12345'}                     | ${'What is your address?'}
-    ${'transport/commute/12345'}                           | ${'How do you commute to work?'}
-    ${'transport/car/12345'}                               | ${'Do you own a car?'}
-    ${'agile/experience/12345'}                            | ${'Have you worked with agile methodologies before?'}
-    ${'agile/opinion/12345'}                               | ${'Can you provide your opinions on agile working?'}
+    path                                       | expectedContent
+    ${'categoriser/review/12345'}              | ${'Check your answers before you continue'}
+    ${'categoriser/provisionalCategory/12345'} | ${'Provisional category'}
+    ${'personalDetails/name/12345'}            | ${'Full name'}
+    ${'personalDetails/dob/12345'}             | ${'What is your date of birth?'}
+    ${'personalDetails/address/12345'}         | ${'What is your address?'}
+    ${'transport/commute/12345'}               | ${'How do you commute to work?'}
+    ${'transport/car/12345'}                   | ${'Do you own a car?'}
+    ${'agile/experience/12345'}                | ${'Have you worked with agile methodologies before?'}
+    ${'agile/opinion/12345'}                   | ${'Can you provide your opinions on agile working?'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
