@@ -2,16 +2,15 @@ const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const createRouter = require('../../server/routes/form')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
-const pdConfig = require('../../server/config/personalDetails')
-const tConfig = require('../../server/config/transport')
-const aConfig = require('../../server/config/agile')
-const rConfig = require('../../server/config/ratings')
+
+const ratings = require('../../server/config/ratings')
+const supervisor = require('../../server/config/supervisor')
+const categoriser = require('../../server/config/categoriser')
 
 const formConfig = {
-  ...pdConfig,
-  ...tConfig,
-  ...aConfig,
-  ...rConfig,
+  ratings,
+  categoriser,
+  supervisor,
 }
 
 const formService = {
@@ -77,13 +76,6 @@ describe('GET /section/form', () => {
     path                                       | expectedContent
     ${'categoriser/review/12345'}              | ${'Check your answers before you continue'}
     ${'categoriser/provisionalCategory/12345'} | ${'Provisional category'}
-    ${'personalDetails/name/12345'}            | ${'Full name'}
-    ${'personalDetails/dob/12345'}             | ${'What is your date of birth?'}
-    ${'personalDetails/address/12345'}         | ${'What is your address?'}
-    ${'transport/commute/12345'}               | ${'How do you commute to work?'}
-    ${'transport/car/12345'}                   | ${'Do you own a car?'}
-    ${'agile/experience/12345'}                | ${'Have you worked with agile methodologies before?'}
-    ${'agile/opinion/12345'}                   | ${'Can you provide your opinions on agile working?'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
@@ -163,15 +155,13 @@ describe('GET /ratings/extremism', () => {
 
 describe('POST /section/form', () => {
   test.each`
-    sectionName          | formName        | userInput                        | nextPath
-    ${'personalDetails'} | ${'name'}       | ${{ fullName: 'Name' }}          | ${'/form/personalDetails/dob/'}
-    ${'personalDetails'} | ${'dob'}        | ${{ day: '12' }}                 | ${'/form/personalDetails/address/'}
-    ${'personalDetails'} | ${'address'}    | ${{ addressLine1: 'Something' }} | ${'/tasklist/'}
-    ${'transport'}       | ${'commute'}    | ${{ commuteVia: 'a' }}           | ${'/form/transport/car/'}
-    ${'transport'}       | ${'car'}        | ${{ haveCar: 'no' }}             | ${'/tasklist/'}
-    ${'agile'}           | ${'experience'} | ${{ workedPreviously: 'No' }}    | ${'/tasklist/'}
-    ${'agile'}           | ${'experience'} | ${{ workedPreviously: 'Yes' }}   | ${'/form/agile/opinion'}
-    ${'agile'}           | ${'opinion'}    | ${{ response: 'Stuff' }}         | ${'/tasklist/'}
+    sectionName     | formName              | userInput               | nextPath
+    ${'ratings'}    | ${'securityInput'}    | ${{ fullName: 'Name' }} | ${'/tasklist/'}
+    ${'ratings'}    | ${'violenceRating'}   | ${{ day: '12' }}        | ${'/tasklist/'}
+    ${'ratings'}    | ${'escapeRating'}     | ${{ day: '12' }}        | ${'/tasklist/'}
+    ${'ratings'}    | ${'extremismRating'}  | ${{ day: '12' }}        | ${'/tasklist/'}
+    ${'ratings'}    | ${'offendingHistory'} | ${{ day: '12' }}        | ${'/tasklist/'}
+    ${'supervisor'} | ${'review'}           | ${{ day: '12' }}        | ${'/tasklist/supervisor/outcome/'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
       .post(`/${sectionName}/${formName}/12345`)
@@ -184,7 +174,7 @@ describe('POST /section/form', () => {
         expect(formService.update).toBeCalledWith({
           bookingId: 12345,
           userId: 'CA_USER_TEST',
-          config: formConfig[formName],
+          config: formConfig[sectionName][formName],
           userInput,
           formSection: sectionName,
           formName,

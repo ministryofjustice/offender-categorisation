@@ -5,18 +5,14 @@ const { getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
-const personalDetailsConfig = require('../config/personalDetails')
-const transportConfig = require('../config/transport')
-const agile = require('../config/agile')
 const ratings = require('../config/ratings')
 const categoriser = require('../config/categoriser')
+const supervisor = require('../config/supervisor')
 
 const formConfig = {
-  ...personalDetailsConfig,
-  ...transportConfig,
-  ...agile,
-  ...ratings,
-  ...categoriser,
+  ratings,
+  categoriser,
+  supervisor,
 }
 
 function isYoungOffender(details) {
@@ -258,7 +254,7 @@ module.exports = function Index({
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
-      const formPageConfig = formConfig[form]
+      const formPageConfig = formConfig[section][form]
 
       const updatedFormObject = await formService.update({
         bookingId: parseInt(bookingId, 10),
@@ -279,7 +275,7 @@ module.exports = function Index({
         }
       }
 
-      const nextPath = getPathFor({ data: req.body, config: formConfig[form] })
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       return res.redirect(`${nextPath}${bookingId}`)
     })
   )
