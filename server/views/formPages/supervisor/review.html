@@ -49,7 +49,7 @@
 
     {% if (currentCat == "B" or currentCat == "C" or currentCat == "D") %}
       {{ govukRadios({
-        name: "overriddenCategory",
+        name: "supervisorOverriddenCategory",
         classes: "govuk-radios--inline",
         fieldset: {
         legend: {
@@ -62,34 +62,37 @@
         value: "B",
         id: "overriddenCategoryB",
         checked: data.supervisorOverriddenCategory === 'B',
-        text: "B"
-        } if currentCat != "B",
+        text: "B",
+        B: true
+        },
       {
         value: "C",
         id: "overriddenCategoryC",
         checked: data.supervisorOverriddenCategory === 'C',
-        text: "C"
-        } if currentCat != "C",
+        text: "C",
+        C: true
+        },
       {
         value: "D",
         id: "overriddenCategoryD",
         checked: data.supervisorOverriddenCategory === 'D',
-        text: "D"
-        } if currentCat != "D"
-      ],
+        text: "D",
+        D: true
+        }
+    ] | rejectattr(currentCat),
       errorMessage: {
         text: "Please select the new category"
-        } if (errors | findError('overriddenCategory'))
+        } if (errors | findError('supervisorOverriddenCategory'))
       }) }}
       {% else %}
       <h2 class="govuk-heading-m">Changing to Cat J</h2>
-      <input type="hidden" name="overriddenCategory" value="J"/>
+      <input type="hidden" name="supervisorOverriddenCategory" value="J"/>
     {% endif %}
 
     {{ govukTextarea({
-      name: "overriddenCategoryText",
+      name: "supervisorOverriddenCategoryText",
       type: "myTextWhatsThisFor",
-      id: "overriddenCategoryText",
+      id: "supervisorOverriddenCategoryText",
       label: {
       text: "Explain why you changed the category"
       },
@@ -102,29 +105,34 @@
 
 
     {{ govukRadios({
-    name: "categoryAppropriate",
-    classes: "govuk-radios--inline",
-    fieldset: {
-    legend: {
-    text: "Do you think the category is appropriate for this person?",
-    isPageHeading: false
-    }
-    },
-    items: [
-    {
-    value: "Yes",
-    checked: data.supervisorCategoryAppropriate === 'Yes',
-    text: "Yes"
-    },
-    {
-    value: "No",
-    checked: data.supervisorCategoryAppropriate === 'No',
-    text: "No",
-    conditional: {
-    html:overriddenCategoryTextHtml
-    }
-    }
-    ]
+      name: "supervisorCategoryAppropriate",
+      classes: "govuk-radios--inline",
+      fieldset: {
+        legend: {
+          text: "Do you agree with the provisional category?",
+          isPageHeading: false,
+          classes: "govuk-heading-m govuk-!-font-weight-bold"
+        },
+      classes: "govuk-!-margin-top-7"
+      },
+      errorMessage: {
+      text: "Select yes if you agree with the provisional category"
+      } if (errors | findError('supervisorCategoryAppropriate')),
+      items: [
+        {
+          value: "Yes",
+          checked: data.supervisorCategoryAppropriate === 'Yes',
+          text: "Yes"
+        },
+        {
+          value: "No",
+          checked: data.supervisorCategoryAppropriate === 'No',
+          text: "No",
+          conditional: {
+            html:overriddenCategoryTextHtml
+          }
+        }
+      ]
     }) }}
 
   </div>
