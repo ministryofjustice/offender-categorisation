@@ -6,10 +6,13 @@ import groovy.json.JsonOutput
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
 class TestFixture {
 
@@ -45,6 +48,17 @@ class TestFixture {
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
     browser.selectFirstPrisoner()
+  }
+
+  def gotoSupervisorHome() {
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+
+    loginAs(SUPERVISOR_USER)
+
+    browser.at SupervisorHomePage
   }
 
   private void simulateLogin() {

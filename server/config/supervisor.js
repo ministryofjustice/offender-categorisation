@@ -1,12 +1,13 @@
 module.exports = {
   review: {
     nextPath: {
-      path: '/outcome/',
+      path: '/tasklist/supervisor/outcome/',
     },
     fields: [
       {
         supervisorCategoryAppropriate: {
           responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
         },
       },
       {
