@@ -118,18 +118,19 @@ href: backLink or "/"
     </div>
   </div>
   {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
+  {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
   {% set securityInputCompleted = data.ratings.securityInput.securityInputNeeded %}
   {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
   {% set escapeRatingCompleted = data.ratings.escapeRating.escapeFurtherCharges %}
   {% set extremismRatingCompleted = data.ratings.extremismRating.previousTerrorismOffences %}
-  {% set allSectionsCompleted = offendingHistoryCompleted and securityInputCompleted and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted %}
+  {% set allSectionsCompleted = offendingHistoryCompleted and securityInputCompleted and not locked and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <ul class="app-task-list">
         <li>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              {% if data.ratings.offendingHistory.previousConvictions %}
+              {% if offendingHistoryCompleted %}
                 <a href="/form/ratings/offendingHistory/{{ data.bookingId }}">Offending history</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="offendingHistory-completed">Completed</strong>
               {% else %}
@@ -144,24 +145,26 @@ href: backLink or "/"
                 <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
               {% endif %}
             </li>
-            <li class="app-task-list__item">
-              {% if data.ratings.securityInput.securityInputNeeded %}
+            <li class="app-task-list__item" id="securitySection">
+              {% if securityInputCompleted and not locked %}
                 <a id="security-input-edit" href="/form/ratings/securityInput/{{ data.bookingId }}">Security input</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="securityInput-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
-                text: "Start",
-                href: "/form/ratings/securityInput/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed",
-                attributes:
-                  {  'id': 'securityButton' }
-                }) }}
+                  text: "Start",
+                  href: "/form/ratings/securityInput/" + data.bookingId if not locked,
+                  disabled: locked,
+                  classes: "govuk-button--start tableButton app-task-list__task-completed",
+                  attributes:
+                    { 'id': 'securityButton' }
+                  })
+                }}
                 <p class="govuk-!-font-weight-bold">Security input</p>
-                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
+                <p class="govuk-body-s govuk-!-margin-top-2">{{ Status[data.status].value + ' (' + data.referredDate + ')' if locked else 'Not yet checked' }}</p>
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              {% if data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
+              {% if violenceRatingCompleted %}
                 <a href="/form/ratings/violenceRating/{{ data.bookingId }}">Violence rating</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="violenceRating-completed">Completed</strong>
               {% else %}
@@ -177,7 +180,7 @@ href: backLink or "/"
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              {% if data.ratings.escapeRating.escapeFurtherCharges %}
+              {% if escapeRatingCompleted %}
                 <a id="escape-input-edit" href="/form/ratings/escapeRating/{{ data.bookingId }}">Risk of escape</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="escapeRating-completed">Completed</strong>
               {% else %}
@@ -193,7 +196,7 @@ href: backLink or "/"
               {% endif %}
             </li>
             <li class="app-task-list__item">
-              {% if data.ratings.extremismRating.previousTerrorismOffences %}
+              {% if extremismRatingCompleted %}
                 <a href="/form/ratings/extremismRating/{{ data.bookingId }}">Extremism rating</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="extremismRating-completed">Completed</strong>
               {% else %}
