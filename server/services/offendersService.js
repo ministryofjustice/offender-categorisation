@@ -147,7 +147,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           const dbRecord = await formService.getCategorisationRecord(s.bookingId)
           return {
             ...s,
-            // NO!  dateRequired: get10BusinessDays(dbRecord.referred_date),
             dbRecord,
             referredBy: dbRecord.referred_by,
             dbStatus: dbRecord.status,

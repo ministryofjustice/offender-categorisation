@@ -46,7 +46,7 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true,)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
 
     securityButton.click()
 
@@ -63,6 +63,16 @@ class SecurityInputSpecification extends GebReportingSpec {
     securityButton.@disabled
     def today = LocalDate.now().format('dd/MM/YYYY')
     $('#securitySection').text().contains("Automatically referred to Security ($today)")
+
+    when: 'a security user views their homepage'
+    elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    logoutLink.click()
+    fixture.loginAs(SECURITY_USER)
+
+    then: 'this prisoner is present with automatic referral'
+    at SecurityHomePage
+    prisonNos[0] == 'B2345YZ'
+    referredBy[0] == 'Automatic'
   }
 
   def "The security page can be edited"() {
@@ -122,7 +132,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     startButtons[0].@disabled
     statuses[0] == 'Manually referred to Security'
 
-    when: 'a security user views the homepage'
+    when: 'a security user views their homepage'
     logout()
     elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     fixture.loginAs(SECURITY_USER)

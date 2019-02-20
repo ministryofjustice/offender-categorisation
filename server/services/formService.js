@@ -83,15 +83,15 @@ module.exports = function createSomeService(formClient) {
   async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile) {
     if (socProfile.transferToSecurity) {
       try {
-        const newVar = await formClient.referToSecurity(bookingId, userId, Status.SECURITY_AUTO.name)
-        if (newVar.rowCount === 0) {
+        const result = await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name)
+        if (result.rowCount === 0) {
           // May be no record in db yet - ensure this is the case and insert it
           const current = await getCategorisationRecord(bookingId)
           if (current.form_response) {
-            throw new Error(`Invalid state, booking id ${bookingId}`)
+            throw new Error(`Invalid state, booking id ${bookingId}, status ${current.status}`)
           }
           await formClient.update(null, '{}', bookingId, userId, Status.STARTED.name, userId, null)
-          await formClient.referToSecurity(bookingId, userId, Status.SECURITY_AUTO.name)
+          await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name)
         }
       } catch (error) {
         logger.error(error)
