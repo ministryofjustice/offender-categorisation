@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
@@ -68,7 +67,8 @@ class TestFixture {
     List<LoggedRequest> requests = oauthApi.getAllServeEvents()
     print JsonOutput.toJson(requests)
     // Capture 'state' param for passport ( -1 = last server request)
-    def state = requests[-1].request.queryParams['state'].values[0]
+    def stateParam = requests[-1].request.queryParams['state']
+    def state = stateParam ? stateParam.values[0] : requests[-2].request.queryParams['state'].values[0]
     // Simulate auth server calling the callback, which then gets a token (from wiremock) and goes to homepage
     browser.go "/login/callback?code=codexxxx&state=$state"
   }
