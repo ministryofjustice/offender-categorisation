@@ -1,5 +1,6 @@
 const serviceCreator = require('../../server/services/offendersService')
 const moment = require('moment')
+const Status = require('../../server/utils/statusEnum')
 
 const nomisClient = {
   getUncategorisedOffenders: jest.fn(),
@@ -48,21 +49,21 @@ describe('getUncategorisedOffenders', () => {
         firstName: 'Jane',
         lastName: 'Brown',
         bookingId: 123,
-        status: 'UNCATEGORISED',
+        status: Status.UNCATEGORISED.name,
       },
       {
         offenderNo: 'H12345',
         firstName: 'Danny',
         lastName: 'Doyle',
         bookingId: 111,
-        status: 'UNCATEGORISED',
+        status: Status.UNCATEGORISED.name,
       },
       {
         offenderNo: 'G55345',
         firstName: 'Alan',
         lastName: 'Allen',
         bookingId: 122,
-        status: 'AWAITING_APPROVAL',
+        status: Status.AWAITING_APPROVAL.name,
       },
     ]
 
@@ -86,8 +87,8 @@ describe('getUncategorisedOffenders', () => {
         lastName: 'Brown',
         displayName: 'Brown, Jane',
         bookingId: 123,
-        status: 'UNCATEGORISED',
-        displayStatus: 'Not categorised',
+        status: Status.UNCATEGORISED.name,
+        displayStatus: Status.UNCATEGORISED.value,
         sentenceDate: todaySubtract(4),
         daysSinceSentence: 4,
         dateRequired: expect.stringMatching(DATE_MATCHER),
@@ -98,8 +99,8 @@ describe('getUncategorisedOffenders', () => {
         lastName: 'Doyle',
         displayName: 'Doyle, Danny',
         bookingId: 111,
-        status: 'UNCATEGORISED',
-        displayStatus: 'Not categorised',
+        status: Status.UNCATEGORISED.name,
+        displayStatus: Status.UNCATEGORISED.value,
         sentenceDate: todaySubtract(7),
         daysSinceSentence: 7,
         dateRequired: expect.stringMatching(DATE_MATCHER),
@@ -110,8 +111,8 @@ describe('getUncategorisedOffenders', () => {
         lastName: 'Allen',
         displayName: 'Allen, Alan',
         bookingId: 122,
-        status: 'AWAITING_APPROVAL',
-        displayStatus: 'Awaiting approval',
+        status: Status.AWAITING_APPROVAL.name,
+        displayStatus: Status.AWAITING_APPROVAL.value,
         sentenceDate: todaySubtract(10),
         daysSinceSentence: 10,
         dateRequired: expect.stringMatching(DATE_MATCHER),
@@ -176,7 +177,7 @@ describe('getUncategorisedOffenders', () => {
         firstName: 'Jane',
         lastName: 'Brown',
         bookingId: 123,
-        status: 'UNCATEGORISED',
+        status: Status.UNCATEGORISED.name,
       },
     ]
 
@@ -219,21 +220,21 @@ describe('getReferredOffenders', () => {
         firstName: 'Jane',
         lastName: 'Brown',
         bookingId: 123,
-        status: 'UNCATEGORISED',
+        status: Status.UNCATEGORISED.name,
       },
       {
         offenderNo: 'H12345',
         firstName: 'Danny',
         lastName: 'Doyle',
         bookingId: 111,
-        status: 'UNCATEGORISED',
+        status: Status.UNCATEGORISED.name,
       },
       {
         offenderNo: 'G55345',
         firstName: 'Alan',
         lastName: 'Allen',
         bookingId: 122,
-        status: 'UNCATEGORISED',
+        status: Status.UNCATEGORISED.name,
       },
     ]
 
@@ -279,7 +280,7 @@ describe('getReferredOffenders', () => {
           return {
             id: -1,
             user_id: 'me',
-            status: 'SECURITY',
+            status: Status.SECURITY_AUTO.name,
             form_response: '',
             // assigned_user_id not present
             referred_date: '2019-02-04',
@@ -296,7 +297,7 @@ describe('getReferredOffenders', () => {
           return {
             id: -3,
             user_id: 'me',
-            status: 'SECURITY',
+            status: Status.SECURITY_MANUAL.name,
             form_response: '',
             referred_date: '2019-02-04',
             referred_by: 'BMAY',
@@ -354,7 +355,7 @@ describe('getReferredOffenders', () => {
         firstName: 'Jane',
         lastName: 'Brown',
         bookingId: 123,
-        status: 'UNCATEGORISED',
+        status: Status.UNCATEGORISED.name,
       },
     ]
 

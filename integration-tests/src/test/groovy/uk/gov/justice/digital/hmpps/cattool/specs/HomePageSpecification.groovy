@@ -120,8 +120,7 @@ class HomePageSpecification extends GebReportingSpec {
     at CategoriserHomePage
 
     then: 'The uncategorised list is displayed with the assigned user text'
-    statuses == ['Started (Api User)']
-
+    statuses == ["Started (Hpa User)"]
   }
 
   def "Log out"() {
@@ -135,7 +134,6 @@ class HomePageSpecification extends GebReportingSpec {
 
     when: "I log out"
     logout()
-
 
     then: "I am taken back to the Login page."
     waitFor { $('h1').text() == 'Sign in' }

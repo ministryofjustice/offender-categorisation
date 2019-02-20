@@ -12,10 +12,12 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
+import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_USER
 
 class SecurityInputSpecification extends GebReportingSpec {
 
@@ -49,10 +51,18 @@ class SecurityInputSpecification extends GebReportingSpec {
     securityButton.click()
 
     then: 'The security input page is displayed with an alert'
-    at(new CategoriserSecurityInputPage(bookingId: '12'))
-
+    at new CategoriserSecurityInputPage(bookingId: '12')
     warningTextDiv.text().contains('This offender was referred to security')
 
+    when: 'I return to the tasklist page'
+    backLink.click()
+    at new CategoriserTasklistPage(bookingId: '12')
+
+    then: 'the prisoner start button is locked'
+    securityButton.tag() == 'button'
+    securityButton.@disabled
+    def today = LocalDate.now().format('dd/MM/YYYY')
+    $('#securitySection').text().contains("Automatically referred to Security ($today)")
   }
 
   def "The security page can be edited"() {
@@ -63,7 +73,7 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
 
     securityButton.click()
 
@@ -82,6 +92,44 @@ class SecurityInputSpecification extends GebReportingSpec {
     at(new CategoriserSecurityInputPage(bookingId: '12'))
 
     securityRadio == 'No'
+  }
 
+  def "A prisoner can be manually referred to security"() {
+    given: 'the security input page has been completed'
+
+    fixture.gotoTasklist()
+    at(new CategoriserTasklistPage(bookingId: '12'))
+    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    securityButton.click()
+    at(new CategoriserSecurityInputPage(bookingId: '12'))
+    securityRadio = 'Yes'
+    securityText << 'Some text'
+    saveButton.click()
+    at(new CategoriserTasklistPage(bookingId: '12'))
+    securityButton.tag() == 'button'
+    securityButton.@disabled
+    def today = LocalDate.now().format('DD/MM/YYYY')
+    $('#securitySection').text().contains("Manually referred to Security ($today)")
+
+    when: 'I view the categoriser list again'
+    elite2api.stubGetUserDetails(CATEGORISER_USER, 'LEI')
+    to CategoriserHomePage
+
+    then: 'the prisoner start button is locked'
+    startButtons[0].tag() == 'button'
+    startButtons[0].@disabled
+    statuses[0] == 'Manually referred to Security'
+
+    when: 'a security user views the homepage'
+    logout()
+    elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    fixture.loginAs(SECURITY_USER)
+
+    then: 'this prisoner is present'
+    at SecurityHomePage
+    prisonNos[0] == 'B2345YZ'
+    referredBy[0] == 'Api User'
   }
 }

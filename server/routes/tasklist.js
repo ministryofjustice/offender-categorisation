@@ -1,6 +1,8 @@
+const moment = require('moment')
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { dateConverter } = require('../utils/utils.js')
+const Status = require('../utils/statusEnum')
 
 module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()
@@ -19,7 +21,14 @@ module.exports = function Index({ formService, offendersService, userService, au
       res.locals.formId = formData.id
 
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
-      res.render('pages/tasklist', { data: { ...details, ...res.locals.formObject }, dateConverter })
+      const data = {
+        ...details,
+        ...res.locals.formObject,
+        status: formData.status,
+        displayStatus: formData.status && Status[formData.status].value,
+        referredDate: formData.referred_date && moment(formData.referred_date).format('DD/MM/YYYY'),
+      }
+      res.render('pages/tasklist', { data, dateConverter, Status })
     })
   )
 

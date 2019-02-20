@@ -65,7 +65,7 @@ class TasklistSpecification extends GebReportingSpec {
     db.createData(12, JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
-        securityInput   : [securityInputNeeded: "Yes"],
+        securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]

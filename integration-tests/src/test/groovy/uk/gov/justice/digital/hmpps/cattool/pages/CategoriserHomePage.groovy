@@ -18,7 +18,7 @@ class CategoriserHomePage extends Page {
     days { bodyRows*.$('td', 2)*.text()  }
     dates { bodyRows*.$('td', 3)*.text()  }
     statuses { bodyRows*.$('td', 4)*.text()  }
-    startButtons { bodyRows*.$('td', 5)*.find('a')  }
+    startButtons { bodyRows*.$('td', 5)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
   }
 

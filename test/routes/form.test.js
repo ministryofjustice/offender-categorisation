@@ -15,6 +15,8 @@ const formConfig = {
 
 const formService = {
   getCategorisationRecord: jest.fn(),
+  referToSecurityIfRiskAssessed: jest.fn(),
+  referToSecurityIfRequested: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
 }
@@ -50,6 +52,8 @@ let app
 beforeEach(() => {
   app = appSetup(formRoute)
   formService.getCategorisationRecord.mockResolvedValue({})
+  formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
+  formService.referToSecurityIfRequested.mockResolvedValue({})
   offendersService.getOffenderDetails.mockResolvedValue({})
   offendersService.getCategoryHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
@@ -61,6 +65,8 @@ beforeEach(() => {
 
 afterEach(() => {
   formService.getCategorisationRecord.mockReset()
+  formService.referToSecurityIfRiskAssessed.mockReset()
+  formService.referToSecurityIfRequested.mockReset()
   offendersService.getOffenderDetails.mockReset()
   offendersService.getCategoryHistory.mockReset()
   formService.update.mockReset()

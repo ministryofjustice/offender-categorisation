@@ -1,6 +1,7 @@
 const { equals } = require('../utils/functionalHelpers')
 const { validate } = require('../utils/fieldValidation')
 const logger = require('../../log.js')
+const Status = require('../utils/statusEnum')
 
 module.exports = function createSomeService(formClient) {
   async function getCategorisationRecord(bookingId) {
@@ -79,13 +80,46 @@ module.exports = function createSomeService(formClient) {
     }
   }
 
+  async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile) {
+    if (socProfile.transferToSecurity) {
+      try {
+        const newVar = await formClient.referToSecurity(bookingId, userId, Status.SECURITY_AUTO.name)
+        if (newVar.rowCount === 0) {
+          // May be no record in db yet - ensure this is the case and insert it
+          const current = await getCategorisationRecord(bookingId)
+          if (current.form_response) {
+            throw new Error(`Invalid state, booking id ${bookingId}`)
+          }
+          await formClient.update(null, '{}', bookingId, userId, Status.STARTED.name, userId, null)
+          await formClient.referToSecurity(bookingId, userId, Status.SECURITY_AUTO.name)
+        }
+      } catch (error) {
+        logger.error(error)
+      }
+    }
+    return {}
+  }
+
+  async function referToSecurityIfRequested(bookingId, userId, updatedFormObject) {
+    if (updatedFormObject.ratings.securityInput.securityInputNeeded === 'Yes') {
+      try {
+        await formClient.referToSecurity(bookingId, userId, Status.SECURITY_MANUAL.name)
+      } catch (error) {
+        logger.error(error)
+      }
+    }
+    return {}
+  }
+
   function calculateStatus() {
-    return 'STARTED'
+    return Status.STARTED.name
   }
 
   return {
     getCategorisationRecord,
     update,
     getValidationErrors: validate,
+    referToSecurityIfRiskAssessed,
+    referToSecurityIfRequested,
   }
 }
