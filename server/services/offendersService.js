@@ -1,5 +1,6 @@
 const path = require('path')
 const logger = require('../../log.js')
+const Status = require('../utils/statusEnum')
 const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName } = require('../utils/utils.js')
 const moment = require('moment')
@@ -107,7 +108,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       const nomisClient = nomisClientBuilder(token)
       const uncategorisedResult = (await nomisClient.getUncategorisedOffenders(agencyId)).filter(
-        s => s.status === 'AWAITING_APPROVAL'
+        s => s.status === Status.AWAITING_APPROVAL.name
       )
 
       if (isNilOrEmpty(uncategorisedResult)) {
@@ -152,7 +153,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             dbStatus: dbRecord.status,
           }
         })
-      )).filter(s => s.dbStatus === 'SECURITY')
+      )).filter(s => s.dbStatus === Status.SECURITY_AUTO.name || s.dbStatus === Status.SECURITY_MANUAL.name)
 
       if (isNilOrEmpty(referredResult)) {
         logger.info(`No referred offenders found for ${agencyId}`)
@@ -194,7 +195,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       statusText = statusTextDisplay(categorisation.status)
       logger.debug(`retrieving status ${categorisation.status} for booking id ${offender.bookingId}`)
       let referrer
-      if (categorisation.assigned_user_id && categorisation.status === 'STARTED') {
+      if (categorisation.assigned_user_id && categorisation.status === Status.STARTED.name) {
         if (categorisation.assigned_user_id !== user.username) {
           // need to retrieve name details for non-current user
           try {
@@ -206,7 +207,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         } else {
           statusText += ` (${properCaseName(user.firstName)} ${properCaseName(user.lastName)})`
         }
-      } else if (categorisation.referred_by && categorisation.status === 'SECURITY') {
+      } else if (
+        categorisation.referred_by &&
+        (categorisation.status === Status.SECURITY_AUTO.name || categorisation.status === Status.SECURITY_MANUAL.name)
+      ) {
         // need to retrieve name details for categoriser user
         try {
           referrer = await nomisClient.getUserByUserId(categorisation.referred_by)
@@ -215,29 +219,16 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         }
       }
       return {
-        displayStatus: `${statusText}`,
+        displayStatus: statusText,
         assignedUserId: categorisation.assigned_user_id,
         referredBy: referrer && `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`,
       }
     }
     statusText = statusTextDisplay(offender.status)
-    return { displayStatus: `${statusText}` }
+    return { displayStatus: statusText }
   }
 
-  const statusTextDisplay = input => {
-    switch (input) {
-      case 'UNCATEGORISED':
-        return 'Not categorised'
-      case 'AWAITING_APPROVAL':
-        return 'Awaiting approval'
-      case 'STARTED':
-        return 'Started'
-      case 'SECURITY':
-        return 'Referred to Security'
-      default:
-        return 'Unknown status'
-    }
-  }
+  const statusTextDisplay = input => (Status[input] ? Status[input].value : '')
 
   async function getOffenderDetails(token, bookingId) {
     try {

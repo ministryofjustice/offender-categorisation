@@ -1,6 +1,7 @@
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const jwtDecode = require('jwt-decode')
+const Status = require('../utils/statusEnum')
 
 module.exports = function Index({ authenticationMiddleware, userService, offendersService }) {
   const router = express.Router()
@@ -39,7 +40,7 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
             user
           )
         : []
-      res.render('pages/categoriserHome', { offenders })
+      res.render('pages/categoriserHome', { offenders, Status })
     })
   )
 

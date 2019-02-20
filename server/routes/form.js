@@ -67,6 +67,7 @@ module.exports = function Index({
         result.data.details.offenderNo,
         res.locals.user.username
       )
+      await formService.referToSecurityIfRiskAssessed(bookingId, req.user.username, socProfile)
       const data = { ...result.data, socProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
@@ -173,6 +174,7 @@ module.exports = function Index({
     return {
       data: { ...pageData, details },
       formName: form,
+      status: formData.status,
       backLink,
       errors,
     }
@@ -249,6 +251,39 @@ module.exports = function Index({
     }
     return updated
   }
+
+  router.post(
+    '/ratings/securityInput/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const section = 'ratings'
+      const form = 'securityInput'
+      const { bookingId } = req.params
+      const formPageConfig = formConfig[section][form]
+
+      const updatedFormObject = await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+      })
+      await formService.referToSecurityIfRequested(bookingId, req.user.username, updatedFormObject)
+
+      if (formPageConfig.validate) {
+        const formResponse = getIn([section, form], updatedFormObject)
+        const errors = formService.getValidationErrors(formResponse, formPageConfig)
+
+        if (!isNilOrEmpty(errors)) {
+          req.flash('errors', errors)
+          return res.redirect(`/form/${section}/${form}/${bookingId}`)
+        }
+      }
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      return res.redirect(`${nextPath}${bookingId}`)
+    })
+  )
 
   router.post(
     '/:section/:form/:bookingId',

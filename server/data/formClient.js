@@ -1,5 +1,6 @@
 const db = require('./dataAccess/db')
 const logger = require('../../log.js')
+const Status = require('../utils/statusEnum')
 
 module.exports = {
   getFormDataForUser(bookingId) {
@@ -10,6 +11,17 @@ module.exports = {
     }
 
     return db.query(query)
+  },
+
+  referToSecurity(bookingId, userId, status) {
+    logger.debug(`referToSecurity called for ${userId}, status ${status} and booking id ${bookingId}`)
+    const query = {
+      text:
+        'update form set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where booking_id = $3 and status = $4',
+      values: [status, userId, bookingId, Status.STARTED.name],
+    }
+    const query1 = db.query(query)
+    return query1
   },
 
   update(formId, formResponse, bookingId, userId, status, assignedUserId) {

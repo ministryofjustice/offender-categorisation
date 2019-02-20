@@ -29,6 +29,7 @@ class TestFixture {
   }
 
   def loginAs(UserAccount user) {
+    oauthApi.resetRequests()
     currentUser = user
     elite2Api.stubHealth()
     oauthApi.stubValidOAuthTokenRequest currentUser
