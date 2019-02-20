@@ -20,8 +20,7 @@ module.exports = {
         'update form set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where booking_id = $3 and status = $4',
       values: [status, userId, bookingId, Status.STARTED.name],
     }
-    const query1 = db.query(query)
-    return query1
+    return db.query(query)
   },
 
   update(formId, formResponse, bookingId, userId, status, assignedUserId) {
