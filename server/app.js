@@ -125,7 +125,7 @@ module.exports = function createApp({
   })
   app.use('/favicon.ico', express.static(path.join(__dirname, '../assets/images/favicon.ico'), cacheControl))
 
-  const { health } = healthFactory(config.apis.elite2.url)
+  const { health } = healthFactory(config.apis.elite2.url, config.apis.riskProfiler.url)
   app.use('/health', health)
   app.use('/info', health)
 
