@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.cattool.mockapis
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import groovy.json.JsonOutput
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*
+
 class RiskProfilerApi extends WireMockRule {
 
   RiskProfilerApi() {
@@ -11,7 +13,7 @@ class RiskProfilerApi extends WireMockRule {
 
   void stubGetSocProfile(String offenderno, String category, boolean transferToSecurity) {
     this.stubFor(
-      get("risk-profile/soc/${offenderno}")
+      get("/risk-profile/soc/${offenderno}")
         .willReturn(
         aResponse()
           .withStatus(200)
@@ -26,7 +28,7 @@ class RiskProfilerApi extends WireMockRule {
 
   void stubGetViolenceProfile(String offenderno, String category, boolean veryHighRiskViolentOffender, boolean notifySafetyCustodyLead, boolean displayAssaults) {
     this.stubFor(
-      get("risk-profile/violence/${offenderno}")
+      get("/risk-profile/violence/${offenderno}")
         .willReturn(
         aResponse()
           .withStatus(200)
@@ -43,7 +45,7 @@ class RiskProfilerApi extends WireMockRule {
 
   void stubGetEscapeProfile(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
     this.stubFor(
-      get("risk-profile/escape/${offenderno}")
+      get("/risk-profile/escape/${offenderno}")
         .willReturn(
         aResponse()
           .withStatus(200)
@@ -59,7 +61,7 @@ class RiskProfilerApi extends WireMockRule {
 
   void stubGetExtremismProfile(String offenderno, String category, boolean increasedRisk, boolean notifyRegionalCTLead) {
     this.stubFor(
-      get("risk-profile/extremism/${offenderno}?previousOffences=false")
+      get("/risk-profile/extremism/${offenderno}?previousOffences=false")
         .willReturn(
         aResponse()
           .withStatus(200)
