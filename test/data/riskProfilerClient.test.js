@@ -28,7 +28,7 @@ describe('riskProfilerClient', () => {
   describe('getSocProfile', () => {
     it('should return data from api', async () => {
       fakeNomisAuth.post(`/oauth/token`).reply(200, { access_token: 'token123' })
-      fakeRiskProfilerApi.get(`/soc/AN1234`).reply(200, socProfileResponse)
+      fakeRiskProfilerApi.get(`/risk-profile/soc/AN1234`).reply(200, socProfileResponse)
 
       const output = await riskProfilerClient.getSocProfile('AN1234')
       return expect(output).toEqual(socProfileResponse)
