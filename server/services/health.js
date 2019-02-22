@@ -44,6 +44,7 @@ const healthFactory = (elite2ApiUrl, offenderRiskProfilerUrl) => {
 
       appInfo.api = {
         elite2Api: results[0].data,
+        riskProfiler: results[1].data,
       }
 
       status = 200
