@@ -10,7 +10,7 @@ const timeoutSpec = {
   deadline: config.apis.riskProfiler.timeout.deadline,
 }
 
-const apiUrl = config.apis.riskProfiler.url
+const apiUrl = `${config.apis.riskProfiler.url}/risk-profile`
 const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
 
 module.exports = username => {
