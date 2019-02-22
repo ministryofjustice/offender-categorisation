@@ -3,8 +3,8 @@ const applicationVersion = require('../application-version')
 
 const { packageData, buildNumber } = applicationVersion
 
-const healthFactory = elite2ApiUrl => {
-  const serviceUris = [elite2ApiUrl]
+const healthFactory = (elite2ApiUrl, offenderRiskProfilerUrl) => {
+  const serviceUris = [elite2ApiUrl, offenderRiskProfilerUrl]
 
   const getHealth = uri => axios.get(`${uri}health`, { timeout: 2000 })
 
