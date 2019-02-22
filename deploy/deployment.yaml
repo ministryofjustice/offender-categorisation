@@ -31,7 +31,7 @@ spec:
             httpGet:
               path: /health
               port: 3000
-            initialDelaySeconds: 30
+            initialDelaySeconds: 10
             periodSeconds: 20
             timeoutSeconds: 10
           readinessProbe:
@@ -50,7 +50,7 @@ spec:
             - name: CUSTODY_ENDPOINT_URL
               value: "https://gateway.t3.nomis-api.hmpps.dsd.io/custodyapi/"
             - name: RISK_PROFILER_ENDPOINT_URL
-              value: "https://offender-risk-profiler.apps.cloud-platform-live-0.k8s.integration.dsd.io/risk-profile/"
+              value: "https://offender-risk-profiler.apps.cloud-platform-live-0.k8s.integration.dsd.io/"
             - name: INGRESS_URL
               value: "https://categorisation-tool.apps.cloud-platform-live-0.k8s.integration.dsd.io"
             - name: DB_PASS
