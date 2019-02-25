@@ -15,6 +15,16 @@ class SupervisorReviewPage extends Page {
 
     form {$('form')}
 
+    appropriateYes { $('#supervisorCategoryAppropriate-1') }
+    appropriateNo { $('#supervisorCategoryAppropriate-2') }
+    overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
+    overriddenCategoryC(required: false) { $('#overriddenCategoryC') }
+    overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
+    catJMessage(required: false) { $('h2.govuk-heading-m') }
+    overriddenCategoryText(required: false) { $('#supervisorOverriddenCategoryText') }
+    errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
+    errors(required: false) { $('span.govuk-error-message') }
+
     submitButton { $('button', type:'submit') }
     backLink { $( 'a.govuk-back-link') }
   }

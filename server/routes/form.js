@@ -206,7 +206,6 @@ module.exports = function Index({
       escapeProfile,
       extremismProfile,
       violenceProfile,
-      ...{ provisionCat: 'C', overCat: 'D' },
     }
     res.render(page, { ...result, data })
   }
@@ -221,11 +220,12 @@ module.exports = function Index({
 
     const backLink = req.get('Referrer')
     const pageData = getIn(['ratings'], res.locals.formObject)
+    const provisionalCategoryData = getIn(['categoriser'], res.locals.formObject)
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
 
     return {
-      data: { ...pageData, details },
+      data: { ...pageData, ...provisionalCategoryData, details },
       backLink,
       errors,
     }
