@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SecurityReviewPage
 
 import java.time.LocalDate
 
@@ -141,5 +142,17 @@ class SecurityInputSpecification extends GebReportingSpec {
     at SecurityHomePage
     prisonNos[0] == 'B2345YZ'
     referredBy[0] == 'Api User'
+
+    when: 'the security user enters data'
+    startButtons[0].click()
+    at new SecurityReviewPage(bookingId: '12')
+    categoriserText == 'Some text'
+    securityText << 'security info'
+    saveButton.click()
+
+    then: 'the prisoner status is back from security'
+    at SecurityHomePage
+    prisonNos.size() == 0
+    noOffendersText == 'No referred offenders found'
   }
 }

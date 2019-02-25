@@ -1,19 +1,27 @@
 const serviceCreator = require('../../server/services/formService')
+const Status = require('../../server/utils/statusEnum')
 
 const formClient = {
   getFormDataForUser: jest.fn(),
   update: jest.fn(),
+  referToSecurity: jest.fn(),
+  backFromSecurity: jest.fn(),
 }
 let service
 
 beforeEach(() => {
   service = serviceCreator(formClient)
   formClient.getFormDataForUser.mockReturnValue({ rows: [{ a: 'b' }, { c: 'd' }] })
+  formClient.update.mockReturnValue({})
+  formClient.referToSecurity.mockReturnValue({})
+  formClient.backFromSecurity.mockReturnValue({})
 })
 
 afterEach(() => {
   formClient.getFormDataForUser.mockReset()
   formClient.update.mockReset()
+  formClient.referToSecurity.mockReset()
+  formClient.backFromSecurity.mockReset()
 })
 
 describe('getCategorisationRecord', () => {
@@ -341,3 +349,145 @@ describe('getValidationErrors', () => {
     expect(service.getValidationErrors(formBody, formConfig)).toEqual(expectedOutput)
   })
 })
+
+const bookingId = 34
+const userId = 'MEEE'
+
+describe('referToSecurityIfRiskAssessed', () => {
+  const socProfile = { transferToSecurity: true }
+
+  test('no existing status', async () => {
+    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, null)
+
+    expect(formClient.update.mock.calls[0]).toEqual([null, '{}', bookingId, userId, Status.STARTED.name, userId, null])
+    expect(formClient.referToSecurity.mock.calls[0]).toEqual([bookingId, null, Status.SECURITY_AUTO.name])
+  })
+
+  test(' valid existing status', async () => {
+    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED')
+
+    expect(formClient.update).not.toBeCalled()
+    expect(formClient.referToSecurity.mock.calls[0]).toEqual([bookingId, null, Status.SECURITY_AUTO.name])
+  })
+
+  test('invalid status', async () => {
+    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED')
+
+    expect(formClient.update).not.toBeCalled()
+    expect(formClient.referToSecurity).not.toBeCalled()
+  })
+
+  test('invalid SECURITY_AUTO status', async () => {
+    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'SECURITY_AUTO')
+
+    expect(formClient.update).not.toBeCalled()
+    expect(formClient.referToSecurity).not.toBeCalled()
+  })
+
+  test('database error', async () => {
+    formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
+
+    expect(service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED')).rejects.toThrow('TEST')
+    expect(formClient.update).not.toBeCalled()
+  })
+})
+
+describe('referToSecurityIfRequested', () => {
+  const updatedFormObject = { ratings: { securityInput: { securityInputNeeded: 'Yes' } } }
+
+  test('happy path', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
+
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)
+
+    expect(formClient.referToSecurity.mock.calls[0]).toEqual([bookingId, userId, Status.SECURITY_MANUAL.name])
+  })
+
+  test('no record in db', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [] })
+
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)
+
+    expect(formClient.referToSecurity).not.toBeCalled()
+  })
+
+  test('invalid status', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'APPROVED' }] })
+
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)
+
+    expect(formClient.referToSecurity).not.toBeCalled()
+  })
+
+  test('invalid SECURITY_MANUAL status', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
+
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)
+
+    expect(formClient.referToSecurity).not.toBeCalled()
+  })
+
+  test('database error', async () => {
+    formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
+
+    expect(service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)).rejects.toThrow('TEST')
+  })
+})
+
+describe('backFromSecurity', () => {
+  test('happy path', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_AUTO' }] })
+
+    await service.backFromSecurity(bookingId)
+
+    expect(formClient.backFromSecurity.mock.calls[0]).toEqual([bookingId])
+  })
+
+  test('no record in db', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [] })
+
+    await service.backFromSecurity(bookingId)
+
+    expect(formClient.backFromSecurity).not.toBeCalled()
+  })
+
+  test('invalid status', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
+
+    await service.backFromSecurity(bookingId)
+
+    expect(formClient.backFromSecurity).not.toBeCalled()
+  })
+
+  test('invalid SECURITY_BACK status', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_BACK' }] })
+
+    await service.backFromSecurity(bookingId)
+
+    expect(formClient.backFromSecurity).not.toBeCalled()
+  })
+
+  test('database error', async () => {
+    formClient.backFromSecurity.mockRejectedValue(new Error('TEST'))
+
+    expect(service.backFromSecurity(bookingId)).rejects.toThrow('TEST')
+  })
+})
+/*
+ async function backFromSecurity(bookingId) {
+    const currentCategorisation = await getCategorisationRecord(bookingId)
+    const currentStatus = currentCategorisation.status
+    const status = Status[currentStatus]
+    if (Status.SECURITY_BACK.previous.includes(status) && currentStatus !== Status.SECURITY_BACK) {
+      try {
+        await formClient.backFromSecurity(bookingId)
+      } catch (error) {
+        logger.error(error)
+        throw error
+      }
+    } else {
+      logger.warn(`Cannot transition from status ${status && status.name} to SECURITY_BACK, bookingId=${bookingId}`)
+    }
+    return {}
+  }
+ */

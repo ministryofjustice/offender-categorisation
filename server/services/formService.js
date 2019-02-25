@@ -10,8 +10,8 @@ module.exports = function createSomeService(formClient) {
       return data.rows[0] || {}
     } catch (error) {
       logger.error(error)
+      throw error
     }
-    return {}
   }
 
   async function update({ bookingId, userId, config, userInput, formSection, formName }) {
@@ -80,21 +80,25 @@ module.exports = function createSomeService(formClient) {
     }
   }
 
-  async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile) {
+  async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile, currentStatus) {
     if (socProfile.transferToSecurity) {
-      try {
-        const result = await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name)
-        if (result.rowCount === 0) {
-          // May be no record in db yet - ensure this is the case and insert it
-          const current = await getCategorisationRecord(bookingId)
-          if (current.form_response) {
-            throw new Error(`Invalid state, booking id ${bookingId}, status ${current.status}`)
-          }
-          await formClient.update(null, '{}', bookingId, userId, Status.STARTED.name, userId, null)
+      let status
+      if (!currentStatus) {
+        // No record in db yet - ensure we have an initial record
+        await formClient.update(null, '{}', bookingId, userId, Status.STARTED.name, userId, null)
+        status = Status.STARTED
+      } else {
+        status = Status[currentStatus]
+      }
+      if (Status.SECURITY_AUTO.previous.includes(status) && currentStatus !== Status.SECURITY_AUTO) {
+        try {
           await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name)
+        } catch (error) {
+          logger.error(error)
+          throw error
         }
-      } catch (error) {
-        logger.error(error)
+      } else {
+        logger.warn(`Cannot transition from status ${status && status.name} to SECURITY_AUTO, bookingId=${bookingId}`)
       }
     }
     return {}
@@ -102,11 +106,36 @@ module.exports = function createSomeService(formClient) {
 
   async function referToSecurityIfRequested(bookingId, userId, updatedFormObject) {
     if (updatedFormObject.ratings.securityInput.securityInputNeeded === 'Yes') {
+      const currentCategorisation = await getCategorisationRecord(bookingId)
+      const currentStatus = currentCategorisation.status
+      const status = Status[currentStatus]
+      if (Status.SECURITY_MANUAL.previous.includes(status) && currentStatus !== Status.SECURITY_MANUAL) {
+        try {
+          await formClient.referToSecurity(bookingId, userId, Status.SECURITY_MANUAL.name)
+        } catch (error) {
+          logger.error(error)
+          throw error
+        }
+      } else {
+        logger.warn(`Cannot transition from status ${status && status.name} to SECURITY_MANUAL, bookingId=${bookingId}`)
+      }
+    }
+    return {}
+  }
+
+  async function backFromSecurity(bookingId) {
+    const currentCategorisation = await getCategorisationRecord(bookingId)
+    const currentStatus = currentCategorisation.status
+    const status = Status[currentStatus]
+    if (Status.SECURITY_BACK.previous.includes(status) && currentStatus !== Status.SECURITY_BACK) {
       try {
-        await formClient.referToSecurity(bookingId, userId, Status.SECURITY_MANUAL.name)
+        await formClient.backFromSecurity(bookingId)
       } catch (error) {
         logger.error(error)
+        throw error
       }
+    } else {
+      logger.warn(`Cannot transition from status ${status && status.name} to SECURITY_BACK, bookingId=${bookingId}`)
     }
     return {}
   }
@@ -121,5 +150,6 @@ module.exports = function createSomeService(formClient) {
     getValidationErrors: validate,
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,
+    backFromSecurity,
   }
 }

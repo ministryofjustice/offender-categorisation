@@ -6,11 +6,13 @@ const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const ratings = require('../../server/config/ratings')
 const supervisor = require('../../server/config/supervisor')
 const categoriser = require('../../server/config/categoriser')
+const security = require('../../server/config/security')
 
 const formConfig = {
   ratings,
   categoriser,
   supervisor,
+  security,
 }
 
 const formService = {
