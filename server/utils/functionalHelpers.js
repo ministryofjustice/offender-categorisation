@@ -10,6 +10,7 @@ module.exports = {
   isEmpty,
   mergeWithRight,
   lastItem,
+  pickBy: R.pickBy,
 }
 
 function isNilOrEmpty(item) {
