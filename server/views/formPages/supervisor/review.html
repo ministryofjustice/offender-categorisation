@@ -14,8 +14,8 @@
 
     <h1 class="govuk-heading-l">Review provisional categorisation</h1>
 
-    {% set cat = data.provisionCat %}
-    {% set overriddenCat = data.overCat %}
+    {% set cat = data.provisionalCategory.suggestedCategory %}
+    {% set overriddenCat = data.provisionalCategory.overriddenCategory %}
     {% set currentCat %}{% if overriddenCat %}{{overriddenCat}}{% else %}{{cat}}{% endif %}{% endset %}
 
 
