@@ -1,7 +1,7 @@
 const moment = require('moment')
 const express = require('express')
 const flash = require('connect-flash')
-const { getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
+const { getIn, isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 
@@ -167,7 +167,7 @@ module.exports = function Index({
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
-    const pageData = getIn([section, form], res.locals.formObject)
+    const pageData = firstItem(req.flash('userInput')) || getIn([section, form], res.locals.formObject)
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
 
@@ -290,8 +290,20 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[section][form]
+      const expectedFields = formPageConfig.fields.map(getFieldName)
+      const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
 
-      const updatedFormObject = await formService.update({
+      if (formPageConfig.validate) {
+        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
+
+        if (!isNilOrEmpty(errors)) {
+          req.flash('errors', errors)
+          req.flash('userInput', inputForExpectedFields)
+          return res.redirect(`/form/${section}/${form}/${bookingId}`)
+        }
+      }
+
+      await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
@@ -299,16 +311,6 @@ module.exports = function Index({
         formSection: section,
         formName: form,
       })
-
-      if (formPageConfig.validate) {
-        const formResponse = getIn([section, form], updatedFormObject)
-        const errors = formService.getValidationErrors(formResponse, formPageConfig)
-
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          return res.redirect(`/form/${section}/${form}/${bookingId}`)
-        }
-      }
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       return res.redirect(`${nextPath}${bookingId}`)
