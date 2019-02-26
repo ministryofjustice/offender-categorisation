@@ -378,6 +378,28 @@ class Elite2Api extends WireMockRule {
           .withStatus(200)))
   }
 
+  def stubCategorise() {
+
+    this.stubFor(
+      post("/api/offender-assessments/category/categorise")
+        .willReturn(
+        aResponse()
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(201))
+    )
+  }
+
+  def stubSupervisorApprove() {
+
+    this.stubFor(
+      put("/api/offender-assessments/category/approve")
+        .willReturn(
+        aResponse()
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
   void stubImage() {
     this.stubFor(
       get(urlMatching("/api/bookings/offenderNo/.+/image/data"))

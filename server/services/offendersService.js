@@ -332,6 +332,33 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  async function createInitialCategorisation(token, bookingId, form) {
+    const category = form.overriddenCategory || form.suggestedCategory
+    const comment = form.overriddenCategoryText || ''
+    const nomisClient = nomisClientBuilder(token)
+    try {
+      await nomisClient.createInitialCategorisation({ bookingId, category, committee: 'Cat-tool', comment })
+    } catch (error) {
+      logger.error(error)
+    }
+  }
+
+  async function createSupervisorApproval(token, bookingId, form) {
+    const category = form.supervisorOverriddenCategory || form.proposedCategory
+    const comment = form.supervisorOverriddenCategoryText || ''
+    const nomisClient = nomisClientBuilder(token)
+    try {
+      await nomisClient.createSupervisorApproval({
+        bookingId,
+        category,
+        evaluationDate: moment().format('YYYY-MM-DD'),
+        reviewSupLevelText: comment,
+      })
+    } catch (error) {
+      logger.error(error)
+    }
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -341,5 +368,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getCategoryHistory: getCatAInformation,
     // just for tests:
     buildSentenceData,
+    createInitialCategorisation,
+    createSupervisorApproval,
   }
 }

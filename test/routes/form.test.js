@@ -35,6 +35,8 @@ const offendersService = {
   getOffenderDetails: jest.fn(),
   getImage: jest.fn(),
   getCategoryHistory: jest.fn(),
+  createSupervisorApproval: jest.fn(),
+  createInitialCategorisation: jest.fn(),
 }
 
 const userService = {
@@ -163,13 +165,12 @@ describe('GET /ratings/extremism', () => {
 
 describe('POST /section/form', () => {
   test.each`
-    sectionName     | formName              | userInput               | nextPath
-    ${'ratings'}    | ${'securityInput'}    | ${{ fullName: 'Name' }} | ${'/tasklist/'}
-    ${'ratings'}    | ${'violenceRating'}   | ${{ day: '12' }}        | ${'/tasklist/'}
-    ${'ratings'}    | ${'escapeRating'}     | ${{ day: '12' }}        | ${'/tasklist/'}
-    ${'ratings'}    | ${'extremismRating'}  | ${{ day: '12' }}        | ${'/tasklist/'}
-    ${'ratings'}    | ${'offendingHistory'} | ${{ day: '12' }}        | ${'/tasklist/'}
-    ${'supervisor'} | ${'review'}           | ${{ day: '12' }}        | ${'/tasklist/supervisor/outcome/'}
+    sectionName  | formName              | userInput               | nextPath
+    ${'ratings'} | ${'securityInput'}    | ${{ fullName: 'Name' }} | ${'/tasklist/'}
+    ${'ratings'} | ${'violenceRating'}   | ${{ day: '12' }}        | ${'/tasklist/'}
+    ${'ratings'} | ${'escapeRating'}     | ${{ day: '12' }}        | ${'/tasklist/'}
+    ${'ratings'} | ${'extremismRating'}  | ${{ day: '12' }}        | ${'/tasklist/'}
+    ${'ratings'} | ${'offendingHistory'} | ${{ day: '12' }}        | ${'/tasklist/'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
       .post(`/${sectionName}/${formName}/12345`)
@@ -188,5 +189,59 @@ describe('POST /section/form', () => {
           formName,
         })
       })
+  )
+})
+
+describe('POST /supervisor/review', () => {
+  test.each`
+    sectionName     | formName    | userInput        | nextPath
+    ${'supervisor'} | ${'review'} | ${{ day: '12' }} | ${'/tasklist/supervisor/outcome/'}
+  `('should render $expectedContent for supervisor/review', ({ sectionName, formName, userInput, nextPath }) =>
+    request(app)
+      .post(`/${sectionName}/${formName}/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect('Location', `${nextPath}12345`)
+      .expect(() => {
+        expect(formService.update).toBeCalledTimes(1)
+        expect(offendersService.getCategoryHistory).toBeCalledTimes(0)
+        expect(offendersService.createSupervisorApproval).toBeCalledWith('ABCDEF', '12345', userInput)
+        expect(formService.update).toBeCalledWith({
+          bookingId: 12345,
+          userId: 'CA_USER_TEST',
+          config: formConfig[sectionName][formName],
+          userInput,
+          formSection: sectionName,
+          formName,
+        })
+      })
+  )
+})
+
+describe('POST /categoriser/provisionalCategory', () => {
+  test.each`
+    sectionName      | formName                 | userInput        | nextPath
+    ${'categoriser'} | ${'provisionalCategory'} | ${{ day: '12' }} | ${'/tasklist/categoriserSubmitted/'}
+  `(
+    'should render $expectedContent for /categoriser/provisionalCategory',
+    ({ sectionName, formName, userInput, nextPath }) =>
+      request(app)
+        .post(`/${sectionName}/${formName}/12345`)
+        .send(userInput)
+        .expect(302)
+        .expect('Location', `${nextPath}12345`)
+        .expect(() => {
+          expect(formService.update).toBeCalledTimes(1)
+          expect(offendersService.getCategoryHistory).toBeCalledTimes(0)
+          expect(offendersService.createInitialCategorisation).toBeCalledWith('ABCDEF', '12345', userInput)
+          expect(formService.update).toBeCalledWith({
+            bookingId: 12345,
+            userId: 'CA_USER_TEST',
+            config: formConfig[sectionName][formName],
+            userInput,
+            formSection: sectionName,
+            formName,
+          })
+        })
   )
 })
