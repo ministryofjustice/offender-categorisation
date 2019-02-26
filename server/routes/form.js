@@ -4,15 +4,18 @@ const flash = require('connect-flash')
 const { getIn, isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
+const { dateConverter } = require('../utils/utils.js')
 
 const ratings = require('../config/ratings')
 const categoriser = require('../config/categoriser')
 const supervisor = require('../config/supervisor')
+const security = require('../config/security')
 
 const formConfig = {
   ratings,
   categoriser,
   supervisor,
+  security,
 }
 
 function isYoungOffender(details) {
@@ -67,7 +70,7 @@ module.exports = function Index({
         result.data.details.offenderNo,
         res.locals.user.username
       )
-      await formService.referToSecurityIfRiskAssessed(bookingId, req.user.username, socProfile)
+      await formService.referToSecurityIfRiskAssessed(bookingId, req.user.username, socProfile, result.status)
       const data = { ...result.data, socProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
@@ -146,6 +149,20 @@ module.exports = function Index({
     '/supervisor/review/:bookingId',
     asyncMiddleware(async (req, res) => {
       await renderReview(req, res, 'formPages/supervisor/review')
+    })
+  )
+
+  router.get(
+    '/security/review/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const section = 'security'
+      const form = 'review'
+      const result = await buildFormData(res, req, section, form, bookingId)
+
+      const formData = await formService.getCategorisationRecord(bookingId)
+      const securityInput = getIn(['ratings', 'securityInput'], formData.form_response)
+      res.render(`formPages/${section}/${form}`, { ...result, data: result.data.details, securityInput, dateConverter })
     })
   )
 
@@ -282,6 +299,38 @@ module.exports = function Index({
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       return res.redirect(`${nextPath}${bookingId}`)
+    })
+  )
+
+  router.post(
+    '/security/review/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const section = 'security'
+      const form = 'review'
+      const { bookingId } = req.params
+      const formPageConfig = formConfig[section][form]
+
+      const updatedFormObject = await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+      })
+
+      await formService.backFromSecurity(bookingId)
+
+      if (formPageConfig.validate) {
+        const formResponse = getIn([section, form], updatedFormObject)
+        const errors = formService.getValidationErrors(formResponse, formPageConfig)
+
+        if (!isNilOrEmpty(errors)) {
+          req.flash('errors', errors)
+          return res.redirect(`/form/${section}/${form}/${bookingId}`)
+        }
+      }
+      return res.redirect('/')
     })
   )
 

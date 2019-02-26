@@ -11,7 +11,7 @@ class SecurityHomePage extends Page {
   }
 
   static content = {
-    headingText { $('h1').text() }
+    headingText { $('h1.govuk-heading-l').text() }
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     names { bodyRows*.$('td', 0)*.text() }
     prisonNos { bodyRows*.$('td', 1)*.text()  }
@@ -20,5 +20,6 @@ class SecurityHomePage extends Page {
     referredBy { bodyRows*.$('td', 4)*.text()  }
     startButtons { bodyRows*.$('td', 5)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
+    noOffendersText { $('h3.govuk-heading-s').text() }
   }
 }

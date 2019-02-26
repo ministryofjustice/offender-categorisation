@@ -1,0 +1,63 @@
+{% extends "../../partials/layout.html" %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "panel/macro.njk" import govukPanel %}
+{% from "textarea/macro.njk" import govukTextarea %}
+
+{% block beforeContent %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: "/"
+}) }}
+
+<hr/>
+{% include "../../partials/offenderDetails.html" %}
+<hr/>
+
+{% endblock %}
+
+{% block content %}
+
+{% if errors.length > 0 %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+{% if securityInput.securityInputNeeded and securityInput.securityInputNeededText %}
+  {{ govukPanel({
+    titleText: "Manually referred for review"
+  }) }}
+  <p class="govuk-body-s">{{ securityInput.securityInputNeededText }}</p>
+{% endif %}
+
+<form method="post">
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+  {% block formItems %}
+
+    <h1 class="govuk-heading-l">Security Review</h1>
+
+    {{ govukTextarea({
+      name: "securityReview",
+      type: "securityReview",
+      id: "more-detail",
+      label: {
+        text: "Please provide an assessment of any Security information held on this prisoner, which could be relevant to their security categorisation"
+      },
+      value: data.securityReview
+    }) }}
+
+  {% endblock %}
+
+  {{ govukButton({
+    text: "Save"
+  }) }}
+
+</form>
+
+{% endblock %}

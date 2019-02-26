@@ -2,18 +2,6 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "back-link/macro.njk" import govukBackLink %}
 
-{% macro headerTitle(text) %}
-<div class="govuk-grid-row">
-  <p class="govuk-!-margin-bottom-1">{{ text }}</p>
-</div>
-{% endmacro %}
-
-{% macro headerValue(text, classes='') %}
-<div class="govuk-grid-row">
-  <p class="govuk-!-font-weight-bold govuk-!-margin-top-1 {{ classes }}">{{ text if text | length else '-' }}</p>
-</div>
-{% endmacro %}
-
 {% block beforeContent %}
 
 {{ govukBackLink({
@@ -34,89 +22,9 @@ href: backLink or "/"
       <h1 class="govuk-heading-s">Offender details</h1>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-body-s">
-    <div class="govuk-grid-column-one-quarter">
-      <div class="photo image clickable">
-       <!-- {...linkOnClick(() => onImageClick(offenderImageUrl(inmateData.get('facialImageId'))))}
-        >-->
-        <img alt="Offender Facial Image" src="/tasklist/images/{{ data.facialImageId if data.facialImageId else 'placeholder' }}/data" />
-      </div>
-    </div>
-    <div class="govuk-grid-column-one-quarter">
-      {{ headerTitle('Name') }}
-      {{ headerValue(data.displayName) }}
 
-      {{ headerTitle('NOMIS ID') }}
-      {{ headerValue(data.offenderNo) }}
+  {% include "../partials/offenderDetails.html" %}
 
-      {{ headerTitle('Date of birth') }}
-      {{ headerValue(dateConverter(data.dateOfBirth)) }}
-    </div>
-    <div class="govuk-grid-column-one-quarter">
-      {{ headerTitle('Location') }}
-      {{ headerValue(data.assignedLivingUnit.description, 'govuk-!-margin-bottom-1') }}
-      {{ headerValue(data.assignedLivingUnit.agencyName) }}
-
-      {{ headerTitle('Nationality') }}
-      {% set nationality %}
-        {% for profileInformation in data.profileInformation %}
-          {% if profileInformation.type === 'NAT' %}
-            {{ profileInformation.resultValue }}
-          {% endif %}
-        {% endfor %}
-      {% endset %}
-      {{ headerValue(nationality | trim) }}
-
-      {{ headerTitle('Type of offence(s)') }}
-      {% if data.offence | length == 0 %}
-        {{ headerValue('-') }}
-      {% else %}
-        {% for offence in data.offence %}
-          {{ headerValue(offence.offenceDescription) }}
-        {% endfor %}
-      {% endif %}
-    </div>
-    <div class="govuk-grid-column-one-quarter">
-      {% if data.sentence.homeDetentionCurfewEligibilityDate %}
-        {{ headerTitle('HDC Eligibility Date') }}
-        {{ headerValue(dateConverter(data.sentence.homeDetentionCurfewEligibilityDate)) }}
-      {% endif %}
-      {% if data.sentence.automaticReleaseDate %}
-        {{ headerTitle('Automatic Release Date') }}
-        {{ headerValue(dateConverter(data.sentence.automaticReleaseDate)) }}
-      {% endif %}
-      {% if data.sentence.conditionalReleaseDate %}
-        {{ headerTitle('Conditional Release Date') }}
-        {{ headerValue(dateConverter(data.sentence.conditionalReleaseDate)) }}
-      {% endif %}
-      {% if data.sentence.paroleEligibilityDate %}
-        {{ headerTitle('Parole Eligibility Date') }}
-        {{ headerValue(dateConverter(data.sentence.paroleEligibilityDate)) }}
-      {% endif %}
-      {% if data.sentence.nonParoleDate %}
-        {{ headerTitle('Non Parole Date') }}
-        {{ headerValue(dateConverter(data.sentence.nonParoleDate)) }}
-      {% endif %}
-      {% if data.sentence.tariffDate %}
-        {{ headerTitle('ISP Tariff End Date') }}
-        {{ headerValue(dateConverter(data.sentence.tariffDate)) }}
-        {# ISP means indeterminate sentenced prisoners - instead of a sentence length, they have a "tariff", which is the
-        minimum amount of time their sentence is supposed to last for, so their tariff end date is the earliest date
-        they could be released #}
-      {% endif %}
-      {% if data.sentence.licenceExpiryDate %}
-        {{ headerTitle('Licence Expiry Date') }}
-        {{ headerValue(dateConverter(data.sentence.licenceExpiryDate)) }}
-      {% endif %}
-      {% if data.sentence.sentenceExpiryDate %}
-        {{ headerTitle('Sentence Expiry Date') }}
-        {{ headerValue(dateConverter(data.sentence.sentenceExpiryDate)) }}
-      {% endif %}
-
-      {{ headerTitle('Court-issued sentence') }}
-      {{ headerValue(data.sentence.length) }}
-    </div>
-  </div>
   {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
   {% set securityInputCompleted = data.ratings.securityInput.securityInputNeeded %}
