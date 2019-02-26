@@ -16,9 +16,17 @@ module.exports = {
   referToSecurity(bookingId, userId, status) {
     logger.debug(`referToSecurity called for ${userId}, status ${status} and booking id ${bookingId}`)
     const query = {
-      text:
-        'update form set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where booking_id = $3 and status = $4',
-      values: [status, userId, bookingId, Status.STARTED.name],
+      text: 'update form set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where booking_id = $3',
+      values: [status, userId, bookingId],
+    }
+    return db.query(query)
+  },
+
+  backFromSecurity(bookingId) {
+    logger.debug(`backFromSecurity called for booking id ${bookingId}`)
+    const query = {
+      text: 'update form set status = $1 where booking_id = $2',
+      values: [Status.SECURITY_BACK.name, bookingId],
     }
     return db.query(query)
   },
