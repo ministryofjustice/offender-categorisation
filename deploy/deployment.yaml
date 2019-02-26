@@ -27,13 +27,13 @@ spec:
           # command: ['sh', '-c', "bundle exec puma -p 3000 -C ./config/puma_prod.rb --pidfile /tmp/server.pid"]
           ports:
             - containerPort: 3000
-        resources:
-          limits:
-            cpu: 360m
-            memory: "1024Mi"
-          requests:
-            cpu: 180m
-            memory: "512Mi"
+          resources:
+            limits:
+              cpu: 360m
+              memory: "1024Mi"
+            requests:
+              cpu: 180m
+              memory: "512Mi"
           livenessProbe:
             httpGet:
               path: /health
