@@ -96,7 +96,7 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     when: 'The edit link is selected'
 
-    securityEditLink.click()
+    securityButton.click()
 
     then: 'the security input page is displayed with the saved form details'
 

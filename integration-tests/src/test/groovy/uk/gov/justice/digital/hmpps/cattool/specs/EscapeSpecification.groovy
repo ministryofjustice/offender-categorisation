@@ -75,7 +75,7 @@ class EscapeSpecification extends GebReportingSpec {
 
     when: 'The edit link is selected'
 
-    escapeEditLink.click()
+    escapeButton.click()
 
     then: 'the escape page is displayed with the saved form details'
 

@@ -38,28 +38,21 @@ href: backLink or "/"
         <li>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              {% if offendingHistoryCompleted %}
-                <a href="/form/ratings/offendingHistory/{{ data.bookingId }}">Offending history</a>
-                <strong class="govuk-tag app-task-list__task-completed" id="offendingHistory-completed">Completed</strong>
-              {% else %}
+              {% set buttonTextOH = "Edit" if offendingHistoryCompleted else "Start" %}
                 {{ govukButton({
-                text: "Start",
+                text: buttonTextOH,
                 href: "/form/ratings/offendingHistory/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed",
                 attributes:
-                  {  'id': 'offendingHistoryButton' }
+                {  'id': 'offendingHistoryButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Offending history</p>
-                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
-              {% endif %}
+                <p class="govuk-body-s govuk-!-margin-top-2">{% if offendingHistoryCompleted %}Completed{% else %}Not yet checked{% endif %}</p>
             </li>
             <li class="app-task-list__item" id="securitySection">
-              {% if securityInputCompleted and not locked %}
-                <a id="security-input-edit" href="/form/ratings/securityInput/{{ data.bookingId }}">Security input</a>
-                <strong class="govuk-tag app-task-list__task-completed" id="securityInput-completed">Completed</strong>
-              {% else %}
+              {% set buttonTextSec = "Edit" if violenceRatingCompleted else "Start" %}
                 {{ govukButton({
-                  text: "Start",
+                  text: buttonTextSec,
                   href: "/form/ratings/securityInput/" + data.bookingId if not locked,
                   disabled: locked,
                   classes: "govuk-button--start tableButton app-task-list__task-completed",
@@ -68,56 +61,43 @@ href: backLink or "/"
                   })
                 }}
                 <p class="govuk-!-font-weight-bold">Security input</p>
-                <p class="govuk-body-s govuk-!-margin-top-2">{{ Status[data.status].value + ' (' + data.referredDate + ')' if locked else 'Not yet checked' }}</p>
-              {% endif %}
+                <p class="govuk-body-s govuk-!-margin-top-2">{% if locked %}{{Status[data.status].value + ' (' + data.referredDate + ')'}}{% elseif securityInputCompleted %}Completed{% else %}Not yet checked{% endif %}</p>
             </li>
             <li class="app-task-list__item">
-              {% if violenceRatingCompleted %}
-                <a href="/form/ratings/violenceRating/{{ data.bookingId }}">Violence rating</a>
-                <strong class="govuk-tag app-task-list__task-completed" id="violenceRating-completed">Completed</strong>
-              {% else %}
+              {% set buttonTextV = "Edit" if violenceRatingCompleted else "Start" %}
                 {{ govukButton({
-                text: "Start",
+                text: buttonTextV,
                 href: "/form/ratings/violenceRating/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'violenceButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Violence rating</p>
-                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
-              {% endif %}
+                <p class="govuk-body-s govuk-!-margin-top-2">{% if violenceRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</p>
             </li>
             <li class="app-task-list__item">
-              {% if escapeRatingCompleted %}
-                <a id="escape-input-edit" href="/form/ratings/escapeRating/{{ data.bookingId }}">Risk of escape</a>
-                <strong class="govuk-tag app-task-list__task-completed" id="escapeRating-completed">Completed</strong>
-              {% else %}
+              {% set buttonTextE = "Edit" if escapeRatingCompleted else "Start" %}
                 {{ govukButton({
-                text: "Start",
+                text: buttonTextE,
                 href: "/form/ratings/escapeRating/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'escapeButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Risk of escape</p>
-                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
-              {% endif %}
+                <p class="govuk-body-s govuk-!-margin-top-2">{% if escapeRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</p>
             </li>
             <li class="app-task-list__item">
-              {% if extremismRatingCompleted %}
-                <a href="/form/ratings/extremismRating/{{ data.bookingId }}">Extremism rating</a>
-                <strong class="govuk-tag app-task-list__task-completed" id="extremismRating-completed">Completed</strong>
-              {% else %}
+              {% set buttonTextEx = "Edit" if extremismRatingCompleted else "Start" %}
                 {{ govukButton({
-                text: "Start",
+                text: buttonTextEx,
                 href: "/form/ratings/extremismRating/" + data.bookingId,
                 classes: "govuk-button--start tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'extremismButton' }
                 }) }}
                 <p class="govuk-!-font-weight-bold">Extremism rating</p>
-                <p class="govuk-body-s govuk-!-margin-top-2">Not yet checked</p>
-              {% endif %}
+               <p class="govuk-body-s govuk-!-margin-top-2">{% if extremismRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</p>
             </li>
           </ul>
         </li>
