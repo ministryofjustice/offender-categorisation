@@ -335,14 +335,87 @@ module.exports = function Index({
   )
 
   router.post(
-    '/:section/:form/:bookingId',
+    '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const { section, form, bookingId } = req.params
+      const { bookingId } = req.params
+      const section = 'categoriser'
+      const form = 'provisionalCategory'
+      const formPageConfig = formConfig[section][form]
+
+      if (formPageConfig.validate) {
+        const expectedFields = formPageConfig.fields.map(getFieldName)
+        const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
+        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
+
+        if (!isNilOrEmpty(errors)) {
+          req.flash('errors', errors)
+          req.flash('userInput', inputForExpectedFields)
+          return res.redirect(`/form/${section}/${form}/${bookingId}`)
+        }
+      }
+
+      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, req.body)
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+      })
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      return res.redirect(`${nextPath}${bookingId}`)
+    })
+  )
+
+  router.post(
+    '/supervisor/review/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const section = 'supervisor'
+      const form = 'review'
       const formPageConfig = formConfig[section][form]
       const expectedFields = formPageConfig.fields.map(getFieldName)
       const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
 
       if (formPageConfig.validate) {
+        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
+
+        if (!isNilOrEmpty(errors)) {
+          req.flash('errors', errors)
+          req.flash('userInput', inputForExpectedFields)
+          return res.redirect(`/form/${section}/${form}/${bookingId}`)
+        }
+      }
+
+      await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, req.body)
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+      })
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      return res.redirect(`${nextPath}${bookingId}`)
+    })
+  )
+
+  router.post(
+    '/:section/:form/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { section, form, bookingId } = req.params
+      const formPageConfig = formConfig[section][form]
+
+      if (formPageConfig.validate && formPageConfig.fields) {
+        const expectedFields = formPageConfig.fields.map(getFieldName)
+        const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
+
         const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
 
         if (!isNilOrEmpty(errors)) {

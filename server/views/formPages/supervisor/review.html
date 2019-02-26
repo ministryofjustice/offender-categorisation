@@ -30,6 +30,13 @@
         The category was originally {{ cat }} and is now {{ overriddenCat }}
       </strong>
     </div>
+    <div>
+      <label class="govuk-label" for="overriddenText">
+        Reason for overriding the suggested category
+      </label>
+      <div class="forms-info-text" id=overriddenText">{{ data.provisionalCategory.overriddenCategoryText }}
+      </div>
+    </div>
     {% else %}
     <div class="govuk-warning-text forms-info-text warning-overrides">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
@@ -134,6 +141,8 @@
         }
       ]
     }) }}
+
+    <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
 
   </div>
 </div>

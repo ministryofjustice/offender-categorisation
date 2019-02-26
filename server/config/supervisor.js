@@ -22,6 +22,11 @@ module.exports = {
           validationMessage: 'Please enter the reason why you changed the category',
         },
       },
+      {
+        proposedCategory: {
+          responseType: 'optionalString',
+        },
+      },
     ],
     validate: true,
   },
