@@ -62,6 +62,8 @@ class SupervisorSpecification extends GebReportingSpec {
     navigateToReview()
 
     when: 'the supervisor selects yes'
+    elite2api.stubSupervisorApprove()
+
     appropriateYes.click()
     submitButton.click()
 
@@ -69,7 +71,7 @@ class SupervisorSpecification extends GebReportingSpec {
     at(new SupervisorReviewOutcomePage())
 
     def response = db.getData(12).form_response
-    response[0].toString() contains '"supervisor": {"review": {"supervisorCategoryAppropriate": "Yes", "supervisorOverriddenCategoryText": ""}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
+    response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorCategoryAppropriate": "Yes", "supervisorOverriddenCategoryText": ""}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
 
   }
 
@@ -119,6 +121,7 @@ class SupervisorSpecification extends GebReportingSpec {
     errorSummaries*.text() == ['Please enter the reason why you changed the category']
 
     and: 'the supervisor selects a category, reason and submits'
+    elite2api.stubSupervisorApprove()
     appropriateNo.click()
     overriddenCategoryB.click()
     overriddenCategoryText << 'A good reason'
@@ -128,7 +131,7 @@ class SupervisorSpecification extends GebReportingSpec {
     at(new SupervisorReviewOutcomePage())
 
     def response = db.getData(12).form_response
-    response[0].toString() contains '"supervisor": {"review": {"supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "A good reason"}}'
+    response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "D", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "A good reason"}}'
 
   }
 

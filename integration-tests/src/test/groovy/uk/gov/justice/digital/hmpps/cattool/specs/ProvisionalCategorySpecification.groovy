@@ -51,6 +51,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     !overriddenCategoryD.displayed
 
     when: 'I enter some data, save and return to the page'
+    elite2api.stubCategorise()
     appropriateNo.click()
     overriddenCategoryC.click()
     overriddenCategoryText << "Some Text"
@@ -105,11 +106,12 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     catJMessage.text() == 'Changing to Cat J'
 
     when: 'Changing to Cat J'
+    elite2api.stubCategorise()
     overriddenCategoryText << "Some Text"
     submitButton.click()
 
     then: 'Cat J details are saved'
     def response = db.getData(12).form_response
-    response[0].toString() == '{"categoriser": {"provisionalCategory": {"overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}}'
+    response[0].toString() == '{"categoriser": {"provisionalCategory": {"suggestedCategory": "I", "overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}}'
   }
 }

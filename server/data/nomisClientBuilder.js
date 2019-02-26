@@ -12,7 +12,7 @@ const apiUrl = config.apis.elite2.url
 module.exports = token => {
   const nomisGet = nomisGetBuilder(token)
   const nomisPost = nomisPushBuilder('post', token)
-  // const nomisPut = nomisPushBuilder('put', token)
+  const nomisPut = nomisPushBuilder('put', token)
 
   return {
     getUncategorisedOffenders(agencyId) {
@@ -62,6 +62,14 @@ module.exports = token => {
     getCategoryHistory(offenderNo) {
       const path = `${apiUrl}api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false`
       return nomisGet({ path })
+    },
+    createSupervisorApproval(details) {
+      const path = `${apiUrl}api/offender-assessments/category/approve`
+      return nomisPut({ path, body: details })
+    },
+    createInitialCategorisation(details) {
+      const path = `${apiUrl}api/offender-assessments/category/categorise`
+      return nomisPost({ path, body: details })
     },
   }
 }
