@@ -10,16 +10,16 @@
 <h1 class="govuk-heading-l">Risk of escape</h1>
 
 {% if data.escapeProfile.onEscapeList === true %}
-{% set warningText %}
-This person is on the heightened / standard / escort e-list
-{% endset %}
+  {% set warningText %}
+    This person is on the heightened / standard / escort e-list
+  {% endset %}
 {% endif %}
 {% if warningText %}
-{{ govukWarningText({
-text: warningText,
-iconFallbackText: "Warning",
-classes: "forms-warning-text"
-}) }}
+  {{ govukWarningText({
+    text: warningText,
+    iconFallbackText: "Warning",
+    classes: "forms-warning-text"
+  }) }}
 {% endif %}
 
 
@@ -30,11 +30,11 @@ classes: "forms-warning-text"
   type: "escapeFurtherChargesText",
   id: "escapeFurtherChargesText",
   label: {
-  text: "Provide details of these charges"
+    text: "Provide details of these charges"
   },
-  value: data.escapeFurtherChargesText,
+  value: data.escapeRating.escapeFurtherChargesText,
   errorMessage: {
-  text: "Please enter details of these charges"
+    text: "Please enter details of these charges"
   } if (errors | findError('escapeFurtherChargesText'))
 }) }}
 
@@ -44,10 +44,10 @@ classes: "forms-warning-text"
   name: "escapeFurtherCharges",
   classes: "govuk-radios--inline",
   fieldset: {
-  legend: {
-  text: "Is the person facing further serious charges that warrant higher security?",
-  isPageHeading: false
-  }
+    legend: {
+      text: "Is the person facing further serious charges that warrant higher security?",
+      isPageHeading: false
+    }
   },
   errorMessage: {
     text: "Select yes if the person is facing further serious charges that warrant higher security"
@@ -56,14 +56,14 @@ classes: "forms-warning-text"
   {
     value: "Yes",
     text: "Yes",
-    checked: data.escapeFurtherCharges === 'Yes',
+    checked: data.escapeRating.escapeFurtherCharges === 'Yes',
     conditional: {
     html:escapeTextHtml
   }
   },
   {
     value: "No",
-    checked: data.escapeFurtherCharges === 'No',
+    checked: data.escapeRating.escapeFurtherCharges === 'No',
     text: "No"
   }
   ]

@@ -193,7 +193,9 @@ module.exports = function Index({
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
-    const pageData = firstItem(req.flash('userInput')) || getIn([section, form], res.locals.formObject)
+    const userInput = {}
+    userInput[form] = firstItem(req.flash('userInput'))
+    const pageData = userInput[form] ? userInput : getIn([section], res.locals.formObject)
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
 
