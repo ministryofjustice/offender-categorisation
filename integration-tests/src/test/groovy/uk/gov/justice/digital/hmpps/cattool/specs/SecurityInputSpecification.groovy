@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
@@ -154,5 +155,20 @@ class SecurityInputSpecification extends GebReportingSpec {
     at SecurityHomePage
     prisonNos.size() == 0
     noOffendersText == 'No referred offenders found'
+
+    when: 'the categoriser revisits the page and enters a category decision'
+    logout()
+    fixture.gotoTasklist()
+    at new CategoriserTasklistPage(bookingId: '12')
+    $('#securitySection').text().contains("Completed Security ($today)")
+    securityButton.click()
+    at new CategoriserSecurityBackPage(bookingId: '12')
+    noteFromSecurity.text() == 'security info'
+    catBRadio = 'No'
+    saveButton.click()
+
+    then: 'the security rating section is complete'
+    at new CategoriserTasklistPage(bookingId: '12')
+    securityButton.text() == 'Edit'
   }
 }

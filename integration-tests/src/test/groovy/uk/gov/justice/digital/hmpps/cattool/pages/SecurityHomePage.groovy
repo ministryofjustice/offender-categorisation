@@ -21,5 +21,10 @@ class SecurityHomePage extends Page {
     startButtons { bodyRows*.$('td', 5)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
     noOffendersText { $('h3.govuk-heading-s').text() }
+    logoutLink { $('a', href: '/logout')}
+  }
+
+  def logout() {
+    logoutLink.click()
   }
 }
