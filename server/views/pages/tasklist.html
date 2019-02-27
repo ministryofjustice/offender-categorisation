@@ -42,7 +42,7 @@ href: backLink or "/"
                 {{ govukButton({
                 text: buttonTextOH,
                 href: "/form/ratings/offendingHistory/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
                 {  'id': 'offendingHistoryButton' }
                 }) }}
@@ -55,7 +55,7 @@ href: backLink or "/"
                   text: buttonTextSec,
                   href: "/form/ratings/securityInput/" + data.bookingId if not locked,
                   disabled: locked,
-                  classes: "govuk-button--start tableButton app-task-list__task-completed",
+                  classes: "govuk-button tableButton app-task-list__task-completed",
                   attributes:
                     { 'id': 'securityButton' }
                   })
@@ -68,7 +68,7 @@ href: backLink or "/"
                 {{ govukButton({
                 text: buttonTextV,
                 href: "/form/ratings/violenceRating/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'violenceButton' }
                 }) }}
@@ -80,7 +80,7 @@ href: backLink or "/"
                 {{ govukButton({
                 text: buttonTextE,
                 href: "/form/ratings/escapeRating/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'escapeButton' }
                 }) }}
@@ -92,7 +92,7 @@ href: backLink or "/"
                 {{ govukButton({
                 text: buttonTextEx,
                 href: "/form/ratings/extremismRating/" + data.bookingId,
-                classes: "govuk-button--start tableButton app-task-list__task-completed",
+                classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'extremismButton' }
                 }) }}
@@ -112,7 +112,7 @@ href: backLink or "/"
                   text: "Continue",
                   href: "/form/categoriser/review/" + data.bookingId if allSectionsCompleted,
                   disabled: not allSectionsCompleted,
-                  classes: "govuk-button--start tableButton app-task-list__task-completed"
+                  classes: "govuk-button tableButton app-task-list__task-completed"
                 }) }}
                 <p class="govuk-!-font-weight-bold">Review and categorisation</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">Tasks not yet complete</p>
