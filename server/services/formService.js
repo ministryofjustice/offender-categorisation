@@ -81,7 +81,7 @@ module.exports = function createSomeService(formClient) {
   }
 
   async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile, currentStatus) {
-    if (socProfile.transferToSecurity) {
+    if (socProfile.transferToSecurity && currentStatus !== Status.SECURITY_BACK.name) {
       let status
       if (!currentStatus) {
         // No record in db yet - ensure we have an initial record

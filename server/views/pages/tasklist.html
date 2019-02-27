@@ -27,7 +27,7 @@ href: backLink or "/"
 
   {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
-  {% set securityInputCompleted = data.ratings.securityInput.securityInputNeeded %}
+  {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No' and not locked) or data.ratings.securityBack.catB %}
   {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
   {% set escapeRatingCompleted = data.ratings.escapeRating.escapeFurtherCharges %}
   {% set extremismRatingCompleted = data.ratings.extremismRating.previousTerrorismOffences %}
@@ -50,18 +50,19 @@ href: backLink or "/"
                 <p class="govuk-body-s govuk-!-margin-top-2">{% if offendingHistoryCompleted %}Completed{% else %}Not yet checked{% endif %}</p>
             </li>
             <li class="app-task-list__item" id="securitySection">
-              {% set buttonTextSec = "Edit" if violenceRatingCompleted else "Start" %}
-                {{ govukButton({
-                  text: buttonTextSec,
-                  href: "/form/ratings/securityInput/" + data.bookingId if not locked,
-                  disabled: locked,
-                  classes: "govuk-button tableButton app-task-list__task-completed",
-                  attributes:
-                    { 'id': 'securityButton' }
-                  })
-                }}
-                <p class="govuk-!-font-weight-bold">Security input</p>
-                <p class="govuk-body-s govuk-!-margin-top-2">{% if locked %}{{Status[data.status].value + ' (' + data.referredDate + ')'}}{% elseif securityInputCompleted %}Completed{% else %}Not yet checked{% endif %}</p>
+              {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
+              {% set buttonTextSec = "Edit" if securityInputCompleted else "Start" %}
+              {{ govukButton({
+                text: buttonTextSec,
+                href: null if locked else ("/form/ratings/securityBack/" + data.bookingId if backFromSecurity else "/form/ratings/securityInput/" + data.bookingId),
+                disabled: locked,
+                classes: "govuk-button tableButton app-task-list__task-completed",
+                attributes:
+                  { 'id': 'securityButton' }
+                })
+              }}
+              <p class="govuk-!-font-weight-bold">Security input</p>
+              <p class="govuk-body-s govuk-!-margin-top-2">{% if locked or backFromSecurity %}{{Status[data.status].value + ' (' + data.referredDate + ')'}}{% elseif securityInputCompleted %}Completed{% else %}Not yet checked{% endif %}</p>
             </li>
             <li class="app-task-list__item">
               {% set buttonTextV = "Edit" if violenceRatingCompleted else "Start" %}
