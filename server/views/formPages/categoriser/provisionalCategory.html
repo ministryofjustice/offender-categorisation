@@ -23,21 +23,21 @@
         {
           value: "B",
           id: "overriddenCategoryB",
-          checked: data.provisionalCategory.overriddenCategory === 'B',
+          checked: data.categoriser.provisionalCategory.overriddenCategory === 'B',
           text: "B",
           B: true
         },
         {
           value: "C",
           id: "overriddenCategoryC",
-          checked: data.provisionalCategory.overriddenCategory === 'C',
+          checked: data.categoriser.provisionalCategory.overriddenCategory === 'C',
           text: "C",
           C: true
         },
         {
           value: "D",
           id: "overriddenCategoryD",
-          checked: data.provisionalCategory.overriddenCategory === 'D',
+          checked: data.categoriser.provisionalCategory.overriddenCategory === 'D',
           text: "D",
           D: true
         }
@@ -57,7 +57,7 @@
     label: {
       text: "Explain why you changed the category"
     },
-    value: data.provisionalCategory.overriddenCategoryText,
+    value: data.categoriser.provisionalCategory.overriddenCategoryText,
     errorMessage: {
       text: "Please enter the reason why you changed the category"
     } if (errors | findError('overriddenCategoryText'))
@@ -90,12 +90,12 @@
   items: [
     {
       value: "Yes",
-      checked: data.provisionalCategory.categoryAppropriate === 'Yes',
+      checked: data.categoriser.provisionalCategory.categoryAppropriate === 'Yes',
       text: "Yes"
     },
     {
       value: "No",
-      checked: data.provisionalCategory.categoryAppropriate === 'No',
+      checked: data.categoriser.provisionalCategory.categoryAppropriate === 'No',
       text: "No",
       conditional: {
         html:overriddenCategoryTextHtml

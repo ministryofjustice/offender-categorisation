@@ -16,10 +16,10 @@
     label: {
       text: "Please record a summary of previous convictions, and any other information, from this offender's PNC record, which might be relevant to their categorisation"
     },
-    value: data.offendingHistory.previousConvictions
+    value: data.ratings.offendingHistory.previousConvictions
   }) }}
 
-{# TODO {{ if data.offendingHistory.nomisConvictions | length }} #}
+{# TODO {{ if data.ratings.offendingHistory.nomisConvictions | length }} #}
 <div class="govuk-body-s">
   <p class="govuk-!-font-weight-bold">The following convictions are listed on NOMIS:</p>
   <ul>
