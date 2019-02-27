@@ -25,6 +25,20 @@ module.exports = {
     ],
     validate: true,
   },
+  securityBack: {
+    nextPath: {
+      path: '/tasklist/',
+    },
+    fields: [
+      {
+        catB: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+    ],
+    validate: true,
+  },
   violenceRating: {
     fields: [
       {
