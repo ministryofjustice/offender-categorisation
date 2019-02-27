@@ -30,7 +30,7 @@
     label: {
     text: "Please explain why security input is needed"
     },
-    value: data.securityInputNeededText,
+    value: data.securityInput.securityInputNeededText,
     errorMessage: {
     text: "Please enter the reason why security input is needed"
     } if (errors | findError('securityInputNeededText'))
@@ -54,14 +54,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.securityInputNeeded === 'Yes',
+        checked: data.securityInput.securityInputNeeded === 'Yes',
         conditional: {
           html:securityInputTextHtml
         }
       },
       {
         value: "No",
-        checked: data.securityInputNeeded === 'No',
+        checked: data.securityInput.securityInputNeeded === 'No',
         text: "No"
       }
     ]

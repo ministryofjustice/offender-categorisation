@@ -68,21 +68,21 @@
       {
         value: "B",
         id: "overriddenCategoryB",
-        checked: data.supervisorOverriddenCategory === 'B',
+        checked: data.review.supervisorOverriddenCategory === 'B',
         text: "B",
         B: true
         },
       {
         value: "C",
         id: "overriddenCategoryC",
-        checked: data.supervisorOverriddenCategory === 'C',
+        checked: data.review.supervisorOverriddenCategory === 'C',
         text: "C",
         C: true
         },
       {
         value: "D",
         id: "overriddenCategoryD",
-        checked: data.supervisorOverriddenCategory === 'D',
+        checked: data.review.supervisorOverriddenCategory === 'D',
         text: "D",
         D: true
         }
@@ -103,7 +103,7 @@
       label: {
       text: "Explain why you changed the category"
       },
-      value: data.supervisorOverriddenCategoryText,
+      value: data.review.supervisorOverriddenCategoryText,
       errorMessage: {
       text: "Please enter the reason why you changed the category"
       } if (errors | findError('supervisorOverriddenCategoryText'))
@@ -128,12 +128,12 @@
       items: [
         {
           value: "Yes",
-          checked: data.supervisorCategoryAppropriate === 'Yes',
+          checked: data.review.supervisorCategoryAppropriate === 'Yes',
           text: "Yes"
         },
         {
           value: "No",
-          checked: data.supervisorCategoryAppropriate === 'No',
+          checked: data.review.supervisorCategoryAppropriate === 'No',
           text: "No",
           conditional: {
             html:overriddenCategoryTextHtml

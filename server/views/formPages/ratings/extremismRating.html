@@ -11,12 +11,12 @@
     label: {
       text: "Give details of this evidence"
     },
-    value: data.previousTerrorismOffencesText,
+    value: data.extremismRating.previousTerrorismOffencesText,
     errorMessage: {
       text: "Please enter details"
     } if (errors | findError('previousTerrorismOffencesText'))
   }) }}
-  {% if data.extremismProfile.notifyRegionalCTLead %}
+  {% if data.extremismRating.extremismProfile.notifyRegionalCTLead %}
     <p class="govuk-heading-s">Please notify your regional CT lead that you have this person in custody</p>
   {% endif %}
 
@@ -26,7 +26,7 @@
 
 <h1 class="govuk-heading-l">Extremism rating</h1>
 
-  {% if data.extremismProfile.increasedRisk %}
+  {% if data.extremismRating.extremismProfile.increasedRisk %}
     {{ govukWarningText({
       text: "There is data to indicate that this person has an increased risk of engaging in extremism",
       iconFallbackText: "Warning",
@@ -50,14 +50,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.previousTerrorismOffences === 'Yes',
+        checked: data.extremismRating.previousTerrorismOffences === 'Yes',
         conditional: {
           html: previousTerrorismOffencesTextHtml
         }
       },
       {
         value: "No",
-        checked: data.previousTerrorismOffences === 'No',
+        checked: data.extremismRating.previousTerrorismOffences === 'No',
         text: "No"
       }
     ]
