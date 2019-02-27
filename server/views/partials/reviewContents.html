@@ -1,5 +1,3 @@
-
-
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "../macros/reviewSectionHeader.html" import reviewSectionHeader %}
 
@@ -14,7 +12,7 @@
     Please record a summary of previous convictions, and any other information, from this offender's PNC record,
     which might be relevant to their categorisation
   </label>
-  <div class="govuk-inset-text" id=historyQ1">{{ data.offendingHistory.previousConvictions }}</div>
+  <div class="govuk-inset-text" id="historyQ1">{{ data.ratings.offendingHistory.previousConvictions }}</div>
 </div>
 
 <hr>
@@ -36,20 +34,20 @@
   <label class="govuk-label" for="securityQ1">
     Do you have reason to believe security input is needed?
   </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id=securityQ1">{{ data.securityInput.securityInputNeeded }}
+  <div class="govuk-body govuk-!-font-weight-bold" id="securityQ1">{{ data.ratings.securityInput.securityInputNeeded }}
   </div>
 </div>
 
-{% if data.securityInput.securityInputNeededText %}
+{% if data.ratings.securityInput.securityInputNeededText %}
 <div class="govuk-form-group">
-  <div class="govuk-inset-text" id=securityQ1Extra">{{ data.securityInput.securityInputNeededText }}</div>
+  <div class="govuk-inset-text" id=securityQ1Extra">{{ data.ratings.securityInput.securityInputNeededText }}</div>
 </div>
 {% endif %}
 
 <hr>
 {{ reviewSectionHeader(showChangeLinks, 'Violence rating','/form/ratings/violenceRating/'+ data.details.bookingId) }}
 
-{% if data.violenceProfile.veryHighRiskViolentOffender %}
+{% if data.ratings.violenceProfile.veryHighRiskViolentOffender %}
   {{ govukWarningText({
   text: "Violent in custody Text TBC",
   iconFallbackText: "Warning",
@@ -61,13 +59,13 @@
   <label class="govuk-label" for="violenceQ1">
     Is there any other evidence to suggest that the person poses a high risk of violence in custody?
   </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id="violenceQ1">{{ data.violenceRating.highRiskOfViolence }}
+  <div class="govuk-body govuk-!-font-weight-bold" id="violenceQ1">{{ data.ratings.violenceRating.highRiskOfViolence }}
   </div>
 </div>
 
-{% if data.violenceRating.highRiskOfViolenceText %}
+{% if data.ratings.violenceRating.highRiskOfViolenceText %}
 <div class="govuk-form-group">
-  <div class="govuk-inset-text" id="violenceQ1Text">{{ data.violenceRating.highRiskOfViolenceText }}</div>
+  <div class="govuk-inset-text" id="violenceQ1Text">{{ data.ratings.violenceRating.highRiskOfViolenceText }}</div>
 </div>
 {% endif %}
 
@@ -77,12 +75,12 @@
     or
     discipline?
   </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id="violenceQ2">{{ data.violenceRating.seriousThreat }}</div>
+  <div class="govuk-body govuk-!-font-weight-bold" id="violenceQ2">{{ data.ratings.violenceRating.seriousThreat }}</div>
 </div>
 
-{% if data.violenceRating.seriousThreatText %}
+{% if data.ratings.violenceRating.seriousThreatText %}
 <div class="govuk-form-group">
-  <div class="govuk-inset-text" id="violenceQ2Text">{{ data.violenceRating.seriousThreatText }}</div>
+  <div class="govuk-inset-text" id="violenceQ2Text">{{ data.ratings.violenceRating.seriousThreatText }}</div>
 </div>
 
 {% endif %}
@@ -107,13 +105,13 @@ This person is on the heightened / standard / escort e-list
   <label class="govuk-label" for="escapeQ1">
     Is the person facing further serious charges that warrant higher security?
   </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id=escapeQ1">{{ data.escapeRating.escapeFurtherCharges }}
+  <div class="govuk-body govuk-!-font-weight-bold" id="escapeQ1">{{ data.ratings.escapeRating.escapeFurtherCharges }}
   </div>
 </div>
 
-{% if data.escapeRating.escapeFurtherChargesText %}
+{% if data.ratings.escapeRating.escapeFurtherChargesText %}
 <div class="govuk-form-group">
-  <div class="govuk-inset-text" id="escapeQ2Text">{{ data.escapeRating.escapeFurtherChargesText }}</div>
+  <div class="govuk-inset-text" id="escapeQ2Text">{{ data.ratings.escapeRating.escapeFurtherChargesText }}</div>
 </div>
 
 {% endif %}
@@ -135,14 +133,14 @@ This person is on the heightened / standard / escort e-list
   <label class="govuk-label" for="extQ1">
     Are there any previous offences under the Terrorism Act listed on the person's PNC record?
   </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id=extQ1">{{
-    data.extremismRating.previousTerrorismOffences }}
+  <div class="govuk-body govuk-!-font-weight-bold" id="extQ1">{{
+    data.ratings.extremismRating.previousTerrorismOffences }}
   </div>
 </div>
 
-{% if data.extremismRating.previousTerrorismOffencesText %}
+{% if data.ratings.extremismRating.previousTerrorismOffencesText %}
 <div class="govuk-form-group">
-  <div class="govuk-inset-text" id="extText">{{ data.extremismRating.previousTerrorismOffencesText }}</div>
+  <div class="govuk-inset-text" id="extText">{{ data.ratings.extremismRating.previousTerrorismOffencesText }}</div>
 </div>
 
 {% endif %}

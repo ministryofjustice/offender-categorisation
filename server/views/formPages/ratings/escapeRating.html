@@ -32,7 +32,7 @@
   label: {
     text: "Provide details of these charges"
   },
-  value: data.escapeRating.escapeFurtherChargesText,
+  value: data.ratings.escapeRating.escapeFurtherChargesText,
   errorMessage: {
     text: "Please enter details of these charges"
   } if (errors | findError('escapeFurtherChargesText'))
@@ -56,14 +56,14 @@
   {
     value: "Yes",
     text: "Yes",
-    checked: data.escapeRating.escapeFurtherCharges === 'Yes',
+    checked: data.ratings.escapeRating.escapeFurtherCharges === 'Yes',
     conditional: {
     html:escapeTextHtml
   }
   },
   {
     value: "No",
-    checked: data.escapeRating.escapeFurtherCharges === 'No',
+    checked: data.ratings.escapeRating.escapeFurtherCharges === 'No',
     text: "No"
   }
   ]
