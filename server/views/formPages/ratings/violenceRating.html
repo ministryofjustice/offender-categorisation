@@ -11,7 +11,7 @@
     label: {
       text: "Give details of this evidence"
     },
-    value: data.highRiskOfViolenceText,
+    value: data.ratings.violenceRating.highRiskOfViolenceText,
     errorMessage: {
       text: "Please enter details"
     } if (errors | findError('highRiskOfViolenceText'))
@@ -26,7 +26,7 @@
     label: {
       text: "Give details of this evidence"
     },
-    value: data.seriousThreatText,
+    value: data.ratings.violenceRating.seriousThreatText,
     errorMessage: {
       text: "Please enter details"
     } if (errors | findError('seriousThreatText'))
@@ -37,7 +37,7 @@
 
 <h1 class="govuk-heading-l">Violence rating</h1>
 
-  {% if data.violenceProfile.veryHighRiskViolentOffender %}
+  {% if data.ratings.violenceRating.violenceProfile.veryHighRiskViolentOffender %}
     {{ govukWarningText({
       text: "Violent in custody Text TBC",
       iconFallbackText: "Warning",
@@ -61,14 +61,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.highRiskOfViolence === 'Yes',
+        checked: data.ratings.violenceRating.highRiskOfViolence === 'Yes',
         conditional: {
           html: highRiskOfViolenceTextHtml
         }
       },
       {
         value: "No",
-        checked: data.highRiskOfViolence === 'No',
+        checked: data.ratings.violenceRating.highRiskOfViolence === 'No',
         text: "No"
       }
     ]
@@ -90,14 +90,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.seriousThreat === 'Yes',
+        checked: data.ratings.violenceRating.seriousThreat === 'Yes',
         conditional: {
           html: seriousThreatTextHtml
         }
       },
       {
         value: "No",
-        checked: data.seriousThreat === 'No',
+        checked: data.ratings.violenceRating.seriousThreat === 'No',
         text: "No"
       }
     ]

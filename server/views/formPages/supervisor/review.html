@@ -14,8 +14,8 @@
 
     <h1 class="govuk-heading-l">Review provisional categorisation</h1>
 
-    {% set cat = data.provisionalCategory.suggestedCategory %}
-    {% set overriddenCat = data.provisionalCategory.overriddenCategory %}
+    {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
+    {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
     {% set currentCat %}{% if overriddenCat %}{{overriddenCat}}{% else %}{{cat}}{% endif %}{% endset %}
 
 
@@ -34,7 +34,7 @@
       <label class="govuk-label" for="overriddenText">
         Reason for overriding the suggested category
       </label>
-      <div class="forms-info-text" id=overriddenText">{{ data.provisionalCategory.overriddenCategoryText }}
+      <div class="forms-info-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
       </div>
     </div>
     {% else %}
@@ -68,30 +68,30 @@
       {
         value: "B",
         id: "overriddenCategoryB",
-        checked: data.supervisorOverriddenCategory === 'B',
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'B',
         text: "B",
         B: true
-        },
+      },
       {
         value: "C",
         id: "overriddenCategoryC",
-        checked: data.supervisorOverriddenCategory === 'C',
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'C',
         text: "C",
         C: true
-        },
+      },
       {
         value: "D",
         id: "overriddenCategoryD",
-        checked: data.supervisorOverriddenCategory === 'D',
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'D',
         text: "D",
         D: true
-        }
-    ] | rejectattr(currentCat),
+      }
+      ] | rejectattr(currentCat),
       errorMessage: {
         text: "Please select the new category"
         } if (errors | findError('supervisorOverriddenCategory'))
       }) }}
-      {% else %}
+    {% else %}
       <h2 class="govuk-heading-m">Changing to Cat J</h2>
       <input type="hidden" name="supervisorOverriddenCategory" value="J"/>
     {% endif %}
@@ -101,11 +101,11 @@
       type: "myTextWhatsThisFor",
       id: "supervisorOverriddenCategoryText",
       label: {
-      text: "Explain why you changed the category"
+        text: "Explain why you changed the category"
       },
-      value: data.supervisorOverriddenCategoryText,
+      value: data.supervisor.review.supervisorOverriddenCategoryText,
       errorMessage: {
-      text: "Please enter the reason why you changed the category"
+        text: "Please enter the reason why you changed the category"
       } if (errors | findError('supervisorOverriddenCategoryText'))
       }) }}
     {% endset %}
@@ -128,12 +128,12 @@
       items: [
         {
           value: "Yes",
-          checked: data.supervisorCategoryAppropriate === 'Yes',
+          checked: data.supervisor.review.supervisorCategoryAppropriate === 'Yes',
           text: "Yes"
         },
         {
           value: "No",
-          checked: data.supervisorCategoryAppropriate === 'No',
+          checked: data.supervisor.review.supervisorCategoryAppropriate === 'No',
           text: "No",
           conditional: {
             html:overriddenCategoryTextHtml

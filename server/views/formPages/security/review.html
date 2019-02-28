@@ -28,11 +28,11 @@
   }) }}
 {% endif %}
 
-{% if securityInput.securityInputNeeded and securityInput.securityInputNeededText %}
+{% if data.ratings.securityInput.securityInputNeeded and data.ratings.securityInput.securityInputNeededText %}
   {{ govukPanel({
     titleText: "Manually referred for review"
   }) }}
-  <p class="govuk-body-s">{{ securityInput.securityInputNeededText }}</p>
+  <p class="govuk-body-s">{{ data.ratings.securityInput.securityInputNeededText }}</p>
 {% endif %}
 
 <form method="post">
@@ -49,7 +49,7 @@
       label: {
         text: "Please provide an assessment of any Security information held on this prisoner, which could be relevant to their security categorisation"
       },
-      value: data.securityReview
+      value: data.security.review.securityReview
     }) }}
 
   {% endblock %}
