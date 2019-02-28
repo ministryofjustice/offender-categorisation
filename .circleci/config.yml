@@ -180,7 +180,7 @@ jobs:
     - deploy:
         name: Deploy to dev
         command: |
-          kubectl set image -f deploy/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1} --local -o yaml \
+          kubectl set image -f ./deploy/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1} --local -o yaml \
           | kubectl apply -f -
           kubectl apply \
             -f ./deploy/ingress.yaml \

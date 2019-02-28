@@ -23,7 +23,7 @@ spec:
       containers:
         - name: categorisation-tool
           image: 926803513772.dkr.ecr.eu-west-1.amazonaws.com/omic/categorisation-tool:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           # command: ['sh', '-c', "bundle exec puma -p 3000 -C ./config/puma_prod.rb --pidfile /tmp/server.pid"]
           ports:
             - containerPort: 3000
