@@ -23,22 +23,25 @@
         {
           value: "B",
           id: "overriddenCategoryB",
-          checked: data.overriddenCategory === 'B',
-          text: "B"
-        } if cat != "B",
+          checked: data.categoriser.provisionalCategory.overriddenCategory === 'B',
+          text: "B",
+          B: true
+        },
         {
           value: "C",
           id: "overriddenCategoryC",
-          checked: data.overriddenCategory === 'C',
-          text: "C"
-        } if cat != "C",
+          checked: data.categoriser.provisionalCategory.overriddenCategory === 'C',
+          text: "C",
+          C: true
+        },
         {
           value: "D",
           id: "overriddenCategoryD",
-          checked: data.overriddenCategory === 'D',
-          text: "D"
-        } if cat != "D"
-      ],
+          checked: data.categoriser.provisionalCategory.overriddenCategory === 'D',
+          text: "D",
+          D: true
+        }
+      ] | rejectattr(cat),
       errorMessage: {
         text: "Please select the new category"
       } if (errors | findError('overriddenCategory'))
@@ -54,7 +57,7 @@
     label: {
       text: "Explain why you changed the category"
     },
-    value: data.overriddenCategoryText,
+    value: data.categoriser.provisionalCategory.overriddenCategoryText,
     errorMessage: {
       text: "Please enter the reason why you changed the category"
     } if (errors | findError('overriddenCategoryText'))
@@ -87,12 +90,12 @@
   items: [
     {
       value: "Yes",
-      checked: data.categoryAppropriate === 'Yes',
+      checked: data.categoriser.provisionalCategory.categoryAppropriate === 'Yes',
       text: "Yes"
     },
     {
       value: "No",
-      checked: data.categoryAppropriate === 'No',
+      checked: data.categoriser.provisionalCategory.categoryAppropriate === 'No',
       text: "No",
       conditional: {
         html:overriddenCategoryTextHtml

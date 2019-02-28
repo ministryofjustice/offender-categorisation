@@ -57,7 +57,7 @@ class ReviewSpecification extends GebReportingSpec {
     fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
-    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubAssessments('B2345YZ')
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
@@ -77,5 +77,6 @@ class ReviewSpecification extends GebReportingSpec {
 
     then: 'the review is displayed with the saved form details'
     at(new ReviewPage())
+    offendingHistoryText.text() == 'some convictions'
   }
 }

@@ -37,7 +37,7 @@ class EscapeSpecification extends GebReportingSpec {
   DatabaseUtils db = new DatabaseUtils()
 
   def "The escape page displays an alert when the offender is on the escape list"() {
-    when: 'I go to the tasklist page'
+    when: 'I go to the escape page'
 
     fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
@@ -48,15 +48,14 @@ class EscapeSpecification extends GebReportingSpec {
 
     escapeButton.click()
 
-    then: 'The security input page is displayed with an alert'
+    then: 'The page is displayed with an alert'
     at(new CategoriserEscapePage(bookingId: '12'))
 
     warningTextDiv.text().contains('This person is on the heightened / standard / escort e-list')
-
   }
 
   def "The escape page can be edited"() {
-    given: 'the security input page has been completed'
+    given: 'the escape page has been completed'
 
     fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
