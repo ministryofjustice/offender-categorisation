@@ -184,8 +184,7 @@ jobs:
           | kubectl apply -f -
           kubectl apply \
             -f ./deploy/ingress.yaml \
-            -f ./deploy/service.yaml \
-            -f ./deploy/deployment.yaml
+            -f ./deploy/service.yaml
 
 workflows:
   version: 2
