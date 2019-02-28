@@ -54,8 +54,8 @@ class RiskProfilerApi extends WireMockRule {
           nomsId                   : offenderno,
           riskType                 : 'ESCAPE',
           provisionalCategorisation: category,
-          onEscapeList             : onEscapeList,
-          activeOnEscapeList       : activeOnEscapeList
+          activeEscapeList         : onEscapeList,
+          activeEscapeRisk         : activeOnEscapeList
         ]))))
   }
 
