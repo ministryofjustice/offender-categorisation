@@ -26,17 +26,19 @@ class OffendingHistorySpecification extends GebReportingSpec {
 
   TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
 
-  def "The Offending history page shows a Cat A warning"() {
+  def "The Offending history page is shown correctly"() {
     when: 'I go to the Offending history page'
 
     fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2api.stubOffenceHistory('B2345YZ')
     offendingHistoryButton.click()
 
-    then: 'a Cat A warning is displayed'
+    then: 'a Cat A warning and offence history is displayed'
     at(new CategoriserOffendingHistoryPage(bookingId: '12'))
     catAWarning.text().contains('This offender was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014')
+    history*.text() == ['Libel (21/02/2019)', 'Slander (22/02/2019 - 24/02/2019)']
   }
 }
