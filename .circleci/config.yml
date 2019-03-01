@@ -106,6 +106,34 @@ jobs:
       - store_test_results:
           path: integration-tests/build/test-results
 
+  build_docker:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/app
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build container and publish to docker hub
+          command: |
+            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
+            GIT_REF=$(egrep gitRef build-info.json  | awk -F"\"" '{print $8}')
+
+            docker build --rm=false . \
+               --build-arg BUILD_NUMBER=$APP_VERSION \
+               --build-arg GIT_REF=$GIT_REF \
+               --tag "mojdigitalstudio/categorisation-tool:$APP_VERSION" \
+               --label "maintainer=lucy.bennett@digital.justice.gov.uk" \
+               --label "build.number=$CIRCLE_BUILD_NUM" \
+               --label "build.url=$CIRCLE_BUILD_URL" \
+               --label "build.gitref=$GIT_REF"
+
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker tag mojdigitalstudio/categorisation-tool:$APP_VERSION mojdigitalstudio/categorisation-tool:latest
+            docker push mojdigitalstudio/categorisation-tool:$APP_VERSION
+            docker push mojdigitalstudio/categorisation-tool:latest
+
   copy_image_to_ecs:
     <<: *defaults
     steps:
@@ -117,51 +145,17 @@ jobs:
       - run:
           name: publish image to ecs
           command: |
-            VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            BUILD_VERSION=${VERSION}
+            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
 
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker pull mojdigitalstudio/categorisation-tool:$BUILD_VERSION
+            docker pull mojdigitalstudio/categorisation-tool:$APP_VERSION
 
-            docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION "${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1}"
-            docker tag "${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1}" "${ECR_ENDPOINT}/omic/categorisation-tool:latest"
+            docker tag mojdigitalstudio/categorisation-tool:$APP_VERSION "${ECR_ENDPOINT}/omic/categorisation-tool:${APP_VERSION}"
+            docker tag "${ECR_ENDPOINT}/omic/categorisation-tool:${APP_VERSION}" "${ECR_ENDPOINT}/omic/categorisation-tool:latest"
             login="$(aws ecr get-login --region eu-west-1 --no-include-email)"
             ${login}
-            docker push "${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1}"
+            docker push "${ECR_ENDPOINT}/omic/categorisation-tool:${APP_VERSION}"
             docker push "${ECR_ENDPOINT}/omic/categorisation-tool:latest"
-
-
-  build_docker:
-    <<: *defaults
-    steps:
-    - checkout
-    - attach_workspace:
-        at: ~/app
-    - setup_remote_docker:
-        docker_layer_caching: true
-    - run:
-        name: Build container and publish to docker hub
-        command: |
-          VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-          GIT_REF=$(egrep gitRef build-info.json  | awk -F"\"" '{print $8}')
-          BUILD_VERSION=${VERSION}
-
-          docker build --rm=false . \
-             --build-arg BUILD_NUMBER=$VERSION \
-             --build-arg GIT_REF=$GIT_REF \
-             --tag "mojdigitalstudio/categorisation-tool:$BUILD_VERSION" \
-             --label "maintainer=lucy.bennett@digital.justice.gov.uk" \
-             --label "build.number=$CIRCLE_BUILD_NUM" \
-             --label "build.url=$CIRCLE_BUILD_URL" \
-             --label "build.gitref=$GIT_REF"
-
-          if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-            # publish to docker hub as the tag
-           docker login -u $DOCKER_USER -p $DOCKER_PASS
-           docker tag mojdigitalstudio/categorisation-tool:$BUILD_VERSION mojdigitalstudio/categorisation-tool:latest
-           docker push mojdigitalstudio/categorisation-tool:$BUILD_VERSION
-           docker push mojdigitalstudio/categorisation-tool:latest
-          fi
 
   deploy_dev:
     <<: *deploy_container_config
@@ -180,7 +174,8 @@ jobs:
     - deploy:
         name: Deploy to dev
         command: |
-          kubectl set image -f ./deploy/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${CIRCLE_SHA1} --local -o yaml \
+          APP_VERSION=$(egrep buildNumber ~/app/build-info.json  | awk -F"\"" '{print $4}')
+          kubectl set image -f ./deploy/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${APP_VERSION} --local -o yaml \
           | kubectl apply -f -
           kubectl apply \
             -f ./deploy/ingress.yaml \
