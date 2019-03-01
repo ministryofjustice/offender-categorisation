@@ -129,11 +129,10 @@ jobs:
                --label "build.url=$CIRCLE_BUILD_URL" \
                --label "build.gitref=$GIT_REF"
 
-            # publish to docker hub as the tag
-           docker login -u $DOCKER_USER -p $DOCKER_PASS
-           docker tag mojdigitalstudio/categorisation-tool:$APP_VERSION mojdigitalstudio/categorisation-tool:latest
-           docker push mojdigitalstudio/categorisation-tool:$APP_VERSION
-           docker push mojdigitalstudio/categorisation-tool:latest
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker tag mojdigitalstudio/categorisation-tool:$APP_VERSION mojdigitalstudio/categorisation-tool:latest
+            docker push mojdigitalstudio/categorisation-tool:$APP_VERSION
+            docker push mojdigitalstudio/categorisation-tool:latest
 
   copy_image_to_ecs:
     <<: *defaults
