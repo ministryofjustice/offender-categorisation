@@ -359,13 +359,20 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  async function getOffenceHistory(token, offenderNo) {
+    const nomisClient = nomisClientBuilder(token)
+    const result = await nomisClient.getOffenceHistory(offenderNo)
+    return result
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
     getReferredOffenders,
     getOffenderDetails,
     getImage,
-    getCategoryHistory: getCatAInformation,
+    getCatAInformation,
+    getOffenceHistory,
     // just for tests:
     buildSentenceData,
     createInitialCategorisation,

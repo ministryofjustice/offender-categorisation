@@ -321,6 +321,30 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubOffenceHistory(offenderNo) {
+    this.stubFor(
+      get("/api/bookings/offenderNo/$offenderNo/offenceHistory")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            bookingId         : 12,
+            offenceDescription: 'Libel',
+            offenceDate       : '2019-02-21',
+          ],
+          [
+            bookingId         : 12,
+            offenceDescription: 'Slander',
+            offenceDate       : '2019-02-22',
+            offenceRangeDate  : '2019-02-24',
+          ]
+        ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
   def stubAlerts(List offenderNumbers, Boolean emptyResponse = false) {
     this.stubFor(
       post('/api/bookings/offenderNo/LEI/alerts')

@@ -9,6 +9,18 @@
 
 {% include "../../partials/warningOffendingHistory.html" %}
 
+  {% if data.offences | length %}
+    <h2 class="govuk-heading-m">Previous convictions</h2>
+    <div class="govuk-body-s">
+      <p class="govuk-!-font-weight-bold">The following convictions are listed on NOMIS:</p>
+      <ul>
+        {% for offence in data.offences %}
+          <li>{{ offence.offenceDescription }} ({{ dateConverter(offence.offenceDate) }}{{ ' - ' +dateConverter(offence.offenceRangeDate) if offence.offenceRangeDate }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
   {{ govukTextarea({
     name: "previousConvictions",
     type: "previousConvictions",
@@ -18,14 +30,5 @@
     },
     value: data.ratings.offendingHistory.previousConvictions
   }) }}
-
-{# TODO {{ if data.ratings.offendingHistory.nomisConvictions | length }} #}
-<div class="govuk-body-s">
-  <p class="govuk-!-font-weight-bold">The following convictions are listed on NOMIS:</p>
-  <ul>
-    <li>Burglary other than dwelling-theft (10/09/2016)</li>
-    <li>Armed robbery (10/11/2014)</li>
-  </ul>
-</div>
 
 {% endblock %}

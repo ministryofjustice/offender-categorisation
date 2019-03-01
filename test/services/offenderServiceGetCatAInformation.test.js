@@ -57,7 +57,7 @@ describe('getCatAInformation', () => {
     nomisClient.getCategoryHistory.mockReturnValue(categories)
     nomisClient.getSentenceHistory.mockReturnValue(sentences)
 
-    const result = await service.getCategoryHistory('token', offenderNo)
+    const result = await service.getCatAInformation('token', offenderNo)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(nomisClient.getSentenceHistory).toBeCalledTimes(1)
     expect(result).toEqual({
@@ -72,7 +72,7 @@ describe('getCatAInformation', () => {
   test('it should handle no previous', async () => {
     nomisClient.getCategoryHistory.mockReturnValue([])
 
-    const result = await service.getCategoryHistory('token', offenderNo)
+    const result = await service.getCatAInformation('token', offenderNo)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(nomisClient.getSentenceHistory).not.toBeCalled()
     expect(result).toEqual(emptyResponse)
@@ -95,7 +95,7 @@ describe('getCatAInformation', () => {
 
     nomisClient.getCategoryHistory.mockReturnValue(categories)
 
-    const result = await service.getCategoryHistory('token', offenderNo)
+    const result = await service.getCatAInformation('token', offenderNo)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(nomisClient.getSentenceHistory).not.toBeCalled()
     expect(result).toEqual(emptyResponse)
@@ -130,7 +130,7 @@ describe('getCatAInformation', () => {
     nomisClient.getCategoryHistory.mockReturnValue(categories)
     nomisClient.getSentenceHistory.mockReturnValue(sentences)
 
-    const result = await service.getCategoryHistory('token', offenderNo)
+    const result = await service.getCatAInformation('token', offenderNo)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(nomisClient.getSentenceHistory).toBeCalledTimes(1)
     expect(result).toEqual({
@@ -162,7 +162,7 @@ describe('getCatAInformation', () => {
     nomisClient.getCategoryHistory.mockReturnValue(categories)
     nomisClient.getSentenceHistory.mockReturnValue([])
 
-    const result = await service.getCategoryHistory('token', offenderNo)
+    const result = await service.getCatAInformation('token', offenderNo)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(nomisClient.getSentenceHistory).toBeCalledTimes(1)
     expect(result).toEqual({
@@ -237,7 +237,7 @@ describe('getCatAInformation', () => {
     nomisClient.getCategoryHistory.mockReturnValue(categories)
     nomisClient.getSentenceHistory.mockReturnValue(sentences)
 
-    const result = await service.getCategoryHistory('token', offenderNo)
+    const result = await service.getCatAInformation('token', offenderNo)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(nomisClient.getSentenceHistory).toBeCalledTimes(1)
     expect(result).toEqual({
