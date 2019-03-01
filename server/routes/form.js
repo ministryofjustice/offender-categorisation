@@ -53,9 +53,10 @@ module.exports = function Index({
       const form = 'offendingHistory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId)
-      const history = await offendersService.getCategoryHistory(res.locals.user.token, result.data.details.offenderNo)
-      const data = { ...result.data, history }
-      res.render(`formPages/${section}/${form}`, { ...result, data })
+      const history = await offendersService.getCatAInformation(res.locals.user.token, result.data.details.offenderNo)
+      const offences = await offendersService.getOffenceHistory(res.locals.user.token, result.data.details.offenderNo)
+      const data = { ...result.data, history, offences }
+      res.render(`formPages/${section}/${form}`, { ...result, data, dateConverter })
     })
   )
 

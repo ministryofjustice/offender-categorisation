@@ -34,7 +34,8 @@ const offendersService = {
   getUncategorisedOffenders: jest.fn(),
   getOffenderDetails: jest.fn(),
   getImage: jest.fn(),
-  getCategoryHistory: jest.fn(),
+  getCatAInformation: jest.fn(),
+  getOffenceHistory: jest.fn(),
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
 }
@@ -59,7 +60,8 @@ beforeEach(() => {
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
   offendersService.getOffenderDetails.mockResolvedValue({})
-  offendersService.getCategoryHistory.mockResolvedValue({})
+  offendersService.getCatAInformation.mockResolvedValue({})
+  offendersService.getOffenceHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
   riskProfilerService.getViolenceProfile.mockResolvedValue({})
@@ -72,7 +74,8 @@ afterEach(() => {
   formService.referToSecurityIfRiskAssessed.mockReset()
   formService.referToSecurityIfRequested.mockReset()
   offendersService.getOffenderDetails.mockReset()
-  offendersService.getCategoryHistory.mockReset()
+  offendersService.getCatAInformation.mockReset()
+  offendersService.getOffenceHistory.mockReset()
   formService.update.mockReset()
   userService.getUser.mockReset()
   riskProfilerService.getSecurityProfile.mockReset()
@@ -93,7 +96,7 @@ describe('GET /section/form', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-        expect(offendersService.getCategoryHistory).toBeCalledTimes(0)
+        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
       })
   )
 })
@@ -109,7 +112,7 @@ describe('GET /ratings/offendingHistory', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-        expect(offendersService.getCategoryHistory).toBeCalledTimes(1)
+        expect(offendersService.getCatAInformation).toBeCalledTimes(1)
       })
   )
 })
@@ -125,7 +128,7 @@ describe('GET /ratings/securityInput', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-        expect(offendersService.getCategoryHistory).toBeCalledTimes(0)
+        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(1)
       })
   )
@@ -179,7 +182,7 @@ describe('POST /section/form', () => {
       .expect('Location', `${nextPath}12345`)
       .expect(() => {
         expect(formService.update).toBeCalledTimes(1)
-        expect(offendersService.getCategoryHistory).toBeCalledTimes(0)
+        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(formService.update).toBeCalledWith({
           bookingId: 12345,
           userId: 'CA_USER_TEST',
@@ -204,7 +207,7 @@ describe('POST /supervisor/review', () => {
       .expect('Location', `${nextPath}12345`)
       .expect(() => {
         expect(formService.update).toBeCalledTimes(1)
-        expect(offendersService.getCategoryHistory).toBeCalledTimes(0)
+        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(offendersService.createSupervisorApproval).toBeCalledWith('ABCDEF', '12345', userInput)
         expect(formService.update).toBeCalledWith({
           bookingId: 12345,
@@ -232,7 +235,7 @@ describe('POST /categoriser/provisionalCategory', () => {
         .expect('Location', `${nextPath}12345`)
         .expect(() => {
           expect(formService.update).toBeCalledTimes(1)
-          expect(offendersService.getCategoryHistory).toBeCalledTimes(0)
+          expect(offendersService.getCatAInformation).toBeCalledTimes(0)
           expect(offendersService.createInitialCategorisation).toBeCalledWith('ABCDEF', '12345', userInput)
           expect(formService.update).toBeCalledWith({
             bookingId: 12345,
