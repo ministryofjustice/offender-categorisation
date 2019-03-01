@@ -2,24 +2,24 @@
 
 
 {% set warningText %}
-{% if data.history.catAType === 'A' %}
-This offender was categorised as a Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
-for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
-{% elif data.history.catAType === 'P' %}
-This offender was treated as a provisional Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
-for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
-{% elif data.history.catAType === 'H' %}
-This offender was categorised as a Cat A High in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
-for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
-{% endif %}
+  {% if data.history.catAType === 'A' %}
+    This offender was categorised as a Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+  {% elif data.history.catAType === 'P' %}
+    This offender was treated as a provisional Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+  {% elif data.history.catAType === 'H' %}
+    This offender was categorised as a Cat A High in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+  {% endif %}
 {% endset %}
 {% if warningText | trim %}
 <div>
+  <h2 class="govuk-heading-m">Previous categorisation</h2>
   {{ govukWarningText({
-  text: warningText,
-  iconFallbackText: "Warning",
-  classes: "forms-warning-text warning-overrides"
+    text: warningText,
+    iconFallbackText: "Warning",
+    classes: "forms-warning-text warning-overrides"
   }) }}
 </div>
 {% endif %}
-

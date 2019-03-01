@@ -97,6 +97,7 @@ class HomePageSpecification extends GebReportingSpec {
     headerValue*.text() == ['Hillmob, Ant', 'ON678', '17/02/1970', 'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']
     elite2api.stubAssessments(['ON678'])
     elite2api.stubSentenceDataGetSingle('ON678', '2014-11-23')
+    elite2api.stubOffenceHistory('ON678')
     offendingHistoryButton.click()
     at(new CategoriserOffendingHistoryPage(bookingId: '12'))
     saveButton.click()
