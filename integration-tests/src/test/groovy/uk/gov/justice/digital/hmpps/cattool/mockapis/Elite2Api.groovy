@@ -207,6 +207,26 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubSentenceDataError() {
+    this.stubFor(
+      post("/api/offender-sentences/bookings")
+        .willReturn(
+        aResponse()
+          .withStatusMessage('A test error')
+          .withStatus(500))
+    )
+  }
+
+  def stubSentenceDataTimeout() {
+    this.stubFor(
+      post("/api/offender-sentences/bookings")
+        .willReturn(
+        aResponse()
+          .okForEmptyJson()
+          .withFixedDelay(40000))
+    )
+  }
+
   def stubSentenceDataGetSingle(String offenderNo, String formattedReleaseDate) {
     def response = [
       [
