@@ -212,16 +212,21 @@ module.exports = function createApp({
   return app
 }
 
-function renderErrors(error, req, res) {
-  // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+function renderErrors(error, req, res, next) {
+  // NOTE 'next' param MUST be included so that express recognises this as an error handler
+
   logger.error(error)
 
   // code to handle unknown errors
-
-  res.locals.error = error
-  res.locals.stack = production ? null : error.stack
-  res.locals.message = production ? 'Something went wrong. The error has been logged. Please try again' : error.message
-
+  const prodMessage = 'Something went wrong. The error has been logged. Please try again'
+  if (error.response) {
+    res.locals.error = error.response.error
+    res.locals.message = production ? prodMessage : error.response.res.statusMessage
+  } else {
+    res.locals.error = error
+    res.locals.message = production ? prodMessage : error.message
+  }
   res.status(error.status || 500)
 
   res.render('pages/error')
