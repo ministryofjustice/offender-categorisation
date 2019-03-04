@@ -236,7 +236,7 @@ class Elite2Api extends WireMockRule {
   }
 
 
-  def stubGetOffenderDetails(int bookingId, offenderNo='B2345YZ', youngOffender = false) {
+  def stubGetOffenderDetails(int bookingId, offenderNo='B2345YZ', youngOffender = false, indeterminateSentence = false) {
     this.stubFor(
       get("/api/bookings/$bookingId?basicInfo=false")
         .willReturn(
@@ -268,23 +268,26 @@ class Elite2Api extends WireMockRule {
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
     )
+
+    def sentenceDetail = [
+      bookingId                         : bookingId,
+      homeDetentionCurfewEligibilityDate: '2020-06-10',
+      paroleEligibilityDate             : '2020-06-13',
+      nonParoleDate                     : '2020-06-14',
+      tariffDate                        : '2020-06-15',
+      licenceExpiryDate                 : '2020-06-16',
+      sentenceExpiryDate                : '2020-06-17',]
+    if (!indeterminateSentence) {
+      sentenceDetail.releaseDate = '2019-01-01'
+      sentenceDetail.conditionalReleaseDate = '2020-02-02'
+      sentenceDetail.automaticReleaseDate = '2020-06-11'
+    }
+
     this.stubFor(
       get("/api/bookings/$bookingId/sentenceDetail")
         .willReturn(
         aResponse()
-          .withBody(JsonOutput.toJson(
-          [
-            bookingId                         : bookingId,
-            releaseDate                       : '2019-01-01',
-            homeDetentionCurfewEligibilityDate: '2020-06-10',
-            automaticReleaseDate              : '2020-06-11',
-            conditionalReleaseDate            : '2020-02-02',
-            paroleEligibilityDate             : '2020-06-13',
-            nonParoleDate                     : '2020-06-14',
-            tariffDate                        : '2020-06-15',
-            licenceExpiryDate                 : '2020-06-16',
-            sentenceExpiryDate                : '2020-06-17',]
-        ))
+          .withBody(JsonOutput.toJson(sentenceDetail))
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
     )

@@ -12,6 +12,7 @@ module.exports = {
       {
         categoryAppropriate: {
           responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
         },
       },
       {
