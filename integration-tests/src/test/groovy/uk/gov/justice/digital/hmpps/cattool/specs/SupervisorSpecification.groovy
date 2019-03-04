@@ -10,15 +10,11 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
 
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
@@ -58,7 +54,6 @@ class SupervisorSpecification extends GebReportingSpec {
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
-
     navigateToReview()
 
     when: 'the supervisor selects yes'
@@ -68,11 +63,107 @@ class SupervisorSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'the review outcome page is displayed and review choices persisted'
-    at(new SupervisorReviewOutcomePage())
+    at SupervisorReviewOutcomePage
 
     def response = db.getData(12).form_response
     response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorCategoryAppropriate": "Yes", "supervisorOverriddenCategoryText": ""}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
+  }
 
+  def "The supervisor review page can be confirmed - youth offender"() {
+    given: 'supervisor is viewing the review page for B2345YZ'
+    db.createData(12, JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
+
+    navigateToReview(true, false)
+
+    when: 'the supervisor selects no'
+    elite2api.stubSupervisorApprove()
+    appropriateNo.click()
+
+    then: 'The page shows info Changing to Cat'
+    warning.text().contains 'the provisional category is I'
+    newCatMessage.text() == 'Changing to Cat J'
+
+    when: 'Changing to Cat J'
+    elite2api.stubCategorise()
+    overriddenCategoryText << "Some Text"
+    submitButton.click()
+
+    then: 'the review outcome page is displayed and review choices persisted'
+    at SupervisorReviewOutcomePage
+
+    def dbData = db.getData(12).form_response
+    dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "I", "supervisorOverriddenCategory": "J", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "Some Text"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "I", "categoryAppropriate": "Yes"}}}'
+  }
+
+  def "The supervisor review page can be confirmed - indeterminate sentence"() {
+    given: 'supervisor is viewing the review page for B2345YZ'
+    db.createData(12, JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
+
+    navigateToReview(false, true)
+
+    when: 'the supervisor selects no'
+    elite2api.stubSupervisorApprove()
+    appropriateNo.click()
+
+    then: 'The page shows info Changing to Cat'
+    warning.text().contains 'the provisional category is C'
+    newCatMessage.text() == 'Changing to Cat B'
+
+    when: 'Changing to Cat B'
+    elite2api.stubCategorise()
+    overriddenCategoryText << "Some Text"
+    submitButton.click()
+
+    then: 'the review outcome page is displayed and review choices persisted'
+    at SupervisorReviewOutcomePage
+
+    def dbData = db.getData(12).form_response
+    dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "Some Text"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
+  }
+
+  def "The supervisor review page can be confirmed - youth offender and indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for B2345YZ'
+    db.createData(12, JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
+
+    navigateToReview(true, true)
+
+    then: 'the supervisor sees an info message'
+    elite2api.stubSupervisorApprove()
+    indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - Cat J not available'
+
+    when: 'Approving'
+    elite2api.stubCategorise()
+    submitButton.click()
+
+    then: 'the review outcome page is displayed and review choices persisted'
+    at SupervisorReviewOutcomePage
+
+    def dbData = db.getData(12).form_response
+    dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "I", "supervisorCategoryAppropriate": "Yes"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "I", "categoryAppropriate": "Yes"}}}'
   }
 
   def "The supervisor review page validates input, suggested category C overridden with D"() {
@@ -93,7 +184,7 @@ class SupervisorSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'the review page is displayed with an error'
-    at(new SupervisorReviewPage())
+    at SupervisorReviewPage
 
     errorSummaries*.text() == ['Please select yes or no']
 
@@ -102,7 +193,7 @@ class SupervisorSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'the review page is displayed with errors - enter a category and a reason'
-    at(new SupervisorReviewPage())
+    at SupervisorReviewPage
 
     //overriddenCategoryB.displayed
     //overriddenCategoryC.displayed
@@ -110,13 +201,13 @@ class SupervisorSpecification extends GebReportingSpec {
 
     errorSummaries*.text() == ['Please enter the new category', 'Please enter the reason why you changed the category']
 
-    and: 'the supervisor selects a category  and submits'
+    and: 'the supervisor selects a category and submits'
     appropriateNo.click()
     overriddenCategoryB.click()
     submitButton.click()
 
     then: 'the review page is displayed with an error - reason not provided'
-    at(new SupervisorReviewPage())
+    at SupervisorReviewPage
 
     errorSummaries*.text() == ['Please enter the reason why you changed the category']
 
@@ -128,20 +219,17 @@ class SupervisorSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'the review outcome page is displayed and review choices persisted'
-    at(new SupervisorReviewOutcomePage())
+    at SupervisorReviewOutcomePage
 
     def response = db.getData(12).form_response
     response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "D", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "A good reason"}}'
 
   }
 
-  def navigateToReview(){
+  def navigateToReview(youngOffender = false, indeterminateSentence = false){
 
-    def now = LocalDate.now()
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-    def daysSinceSentence11 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate11, now))
-    def daysSinceSentence12 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate12, now))
     // 14 days after sentenceStartDate
     elite2api.stubUncategorisedForSupervisor()
     elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
@@ -150,7 +238,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     at SupervisorHomePage
 
-    elite2api.stubGetOffenderDetails(12)
+    elite2api.stubGetOffenderDetails(12, 'B2345YZ', youngOffender, indeterminateSentence)
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
@@ -160,6 +248,6 @@ class SupervisorSpecification extends GebReportingSpec {
 
     startButtons[0].click()
 
-    at(new SupervisorReviewPage())
+    at SupervisorReviewPage
   }
 }

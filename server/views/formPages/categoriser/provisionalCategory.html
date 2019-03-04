@@ -7,49 +7,58 @@
 
 {% set cat = data.suggestedCat %}
 {% set greenButtonText = "Submit" %}
-
+{% set indeterminate = data.details.sentence.tariffDate and not data.details.sentence.releaseDate %}
+{% set radios = [
+  {
+    value: "B",
+    id: "overriddenCategoryB",
+    checked: data.categoriser.provisionalCategory.overriddenCategory === 'B',
+    text: "B",
+    B: true
+  },
+  {
+    value: "C",
+    id: "overriddenCategoryC",
+    checked: data.categoriser.provisionalCategory.overriddenCategory === 'C',
+    text: "C",
+    C: true
+  },
+  {
+    value: "D",
+    id: "overriddenCategoryD",
+    checked: data.categoriser.provisionalCategory.overriddenCategory === 'D',
+    text: "D",
+    D: true
+  }
+] %}
 {% set overriddenCategoryTextHtml %}
-  {% if (cat == "B" or cat == "C" or cat == "D") %}
-    {{ govukRadios({
-      name: "overriddenCategory",
-      classes: "govuk-radios--inline",
-      fieldset: {
-        legend: {
-        text: "Which category is more appropriate?",
-        isPageHeading: false
-        }
-      },
-      items: [
-        {
-          value: "B",
-          id: "overriddenCategoryB",
-          checked: data.categoriser.provisionalCategory.overriddenCategory === 'B',
-          text: "B",
-          B: true
-        },
-        {
-          value: "C",
-          id: "overriddenCategoryC",
-          checked: data.categoriser.provisionalCategory.overriddenCategory === 'C',
-          text: "C",
-          C: true
-        },
-        {
-          value: "D",
-          id: "overriddenCategoryD",
-          checked: data.categoriser.provisionalCategory.overriddenCategory === 'D',
-          text: "D",
-          D: true
-        }
-      ] | rejectattr(cat),
-      errorMessage: {
-        text: "Please select the new category"
-      } if (errors | findError('overriddenCategory'))
-    }) }}
+  {% if indeterminate %}
+    {% set newCat = "C" if cat == "B" else "B" %}
+    <p class="govuk-body">Prisoner has indeterminate sentence - Cat D not available</p>
+    <h2 class="govuk-heading-m">Changing to Cat {{ newCat }}</h2>
+    <input type="hidden" name="overriddenCategory" value="{{ newCat }}" />
   {% else %}
-    <h2 class="govuk-heading-m">Changing to Cat J</h2>
-    <input type="hidden" name="overriddenCategory" value="J" />
+    {% if (cat == "B" or cat == "C" or cat == "D") %}
+      {{ govukRadios({
+        name: "overriddenCategory",
+        classes: "govuk-radios--inline",
+        fieldset: {
+          legend: {
+          text: "Which category is more appropriate?",
+          isPageHeading: false
+          }
+        },
+        items: radios | rejectattr(cat),
+        errorMessage: {
+          text: "Please select the new category"
+        } if (errors | findError('overriddenCategory'))
+      }) }}
+    {% else %}
+      <h2 class="govuk-heading-m">Changing to Cat J</h2>
+      <input type="hidden" name="overriddenCategory" value="J" />
+    {% endif %}
   {% endif %}
+
   {{ govukTextarea({
     name: "overriddenCategoryText",
     type: "myTextWhatsThisFor",
@@ -65,6 +74,7 @@
 {% endset %}
 
 {% block formItems %}
+<pre>{{ data | dump(2) }}</pre>
 
 <h1 class="govuk-heading-l">Provisional category</h1>
 
@@ -78,6 +88,9 @@
 
 <input type="hidden" name="suggestedCategory" value="{{ cat }}" />
 
+{% if indeterminate and cat == "I" %}
+  <p class="govuk-body">Prisoner has an indeterminate sentence - Cat J not available</p>
+{% else %}
 {{ govukRadios({
   name: "categoryAppropriate",
   classes: "govuk-radios--inline",
@@ -87,6 +100,9 @@
     isPageHeading: false
     }
   },
+  errorMessage: {
+    text: "Please select yes or no"
+  } if (errors | findError('categoryAppropriate')),
   items: [
     {
       value: "Yes",
@@ -103,5 +119,6 @@
     }
   ]
 }) }}
+{% endif %}
 
 {% endblock %}
