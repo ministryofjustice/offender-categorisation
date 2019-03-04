@@ -33,7 +33,8 @@ class ErrorSpecification extends GebReportingSpec {
     fixture.loginAs(SUPERVISOR_USER)
 
     then: 'the error page is displayed'
-    at ErrorPage
-    offendingHistoryText.text() == 'some convictions'
+    at new ErrorPage (url: 'supervisorHome')
+    errorSummaryTitle.text() == 'A test error'
+    errorText.text() == 'status 500'
   }
 }
