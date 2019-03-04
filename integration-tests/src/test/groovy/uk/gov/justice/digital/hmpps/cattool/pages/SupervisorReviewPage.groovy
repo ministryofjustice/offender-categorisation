@@ -13,6 +13,7 @@ class SupervisorReviewPage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
 
+    warning { $('div.govuk-warning-text', 0) }
     form {$('form')}
 
     appropriateYes { $('#supervisorCategoryAppropriate-1') }
@@ -20,8 +21,9 @@ class SupervisorReviewPage extends Page {
     overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
     overriddenCategoryC(required: false) { $('#overriddenCategoryC') }
     overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
-    catJMessage(required: false) { $('h2.govuk-heading-m') }
+    newCatMessage(required: false) { $('h2.govuk-heading-m') }
     overriddenCategoryText(required: false) { $('#supervisorOverriddenCategoryText') }
+    indeterminateMessage(required: false) { $('p.govuk-body') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
 

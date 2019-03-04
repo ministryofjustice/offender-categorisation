@@ -5,9 +5,9 @@
 {% from "radios/macro.njk" import govukRadios %}
 
 {% set greenButtonText = "Continue" %}
+{% set indeterminate = data.details.sentence.tariffDate and not data.details.sentence.releaseDate %}
 
 {% block formItems %}
-
 
 <div class="govuk-grid-row govuk-body-s">
   <div class="govuk-grid-column-two-thirds">
@@ -16,8 +16,7 @@
 
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
-    {% set currentCat %}{% if overriddenCat %}{{overriddenCat}}{% else %}{{cat}}{% endif %}{% endset %}
-
+    {% set currentCat = overriddenCat if overriddenCat else cat %}
 
     {% if overriddenCat %}
     <div class="govuk-warning-text forms-info-text warning-overrides">
@@ -51,20 +50,7 @@
     {% set showChangeLinks %}false{% endset %}
     {% include "../../partials/reviewContents.html" %}
 
-
-    {% set overriddenCategoryTextHtml %}
-
-    {% if (currentCat == "B" or currentCat == "C" or currentCat == "D") %}
-      {{ govukRadios({
-        name: "supervisorOverriddenCategory",
-        classes: "govuk-radios--inline",
-        fieldset: {
-        legend: {
-        text: "Which category is more appropriate?",
-        isPageHeading: false
-      }
-      },
-      items: [
+    {% set radios = [
       {
         value: "B",
         id: "overriddenCategoryB",
@@ -86,61 +72,84 @@
         text: "D",
         D: true
       }
-      ] | rejectattr(currentCat),
-      errorMessage: {
-        text: "Please select the new category"
-        } if (errors | findError('supervisorOverriddenCategory'))
-      }) }}
-    {% else %}
-      <h2 class="govuk-heading-m">Changing to Cat J</h2>
-      <input type="hidden" name="supervisorOverriddenCategory" value="J"/>
-    {% endif %}
+    ] %}
+    {% set overriddenCategoryTextHtml %}
+      {% if indeterminate %}
+        {% set newCat = "C" if currentCat == "B" else "B" %}
+        <p class="govuk-body">Prisoner has indeterminate sentence - Cat D not available</p>
+        <h2 class="govuk-heading-m">Changing to Cat {{ newCat }}</h2>
+        <input type="hidden" name="supervisorOverriddenCategory" value="{{ newCat }}" />
+      {% else %}
+        {% if (currentCat == "B" or currentCat == "C" or currentCat == "D") %}
+          {{ govukRadios({
+            name: "supervisorOverriddenCategory",
+            classes: "govuk-radios--inline",
+            fieldset: {
+            legend: {
+            text: "Which category is more appropriate?",
+            isPageHeading: false
+          }
+          },
+          items: radios | rejectattr(currentCat),
+          errorMessage: {
+            text: "Please select the new category"
+            } if (errors | findError('supervisorOverriddenCategory'))
+          }) }}
+        {% else %}
+          <h2 class="govuk-heading-m">Changing to Cat J</h2>
+          <input type="hidden" name="supervisorOverriddenCategory" value="J"/>
+        {% endif %}
+      {% endif %}
 
-    {{ govukTextarea({
-      name: "supervisorOverriddenCategoryText",
-      type: "myTextWhatsThisFor",
-      id: "supervisorOverriddenCategoryText",
-      label: {
-        text: "Explain why you changed the category"
-      },
-      value: data.supervisor.review.supervisorOverriddenCategoryText,
-      errorMessage: {
-        text: "Please enter the reason why you changed the category"
-      } if (errors | findError('supervisorOverriddenCategoryText'))
-      }) }}
+      {{ govukTextarea({
+        name: "supervisorOverriddenCategoryText",
+        type: "myTextWhatsThisFor",
+        id: "supervisorOverriddenCategoryText",
+        label: {
+          text: "Explain why you changed the category"
+        },
+        value: data.supervisor.review.supervisorOverriddenCategoryText,
+        errorMessage: {
+          text: "Please enter the reason why you changed the category"
+        } if (errors | findError('supervisorOverriddenCategoryText'))
+        }) }}
     {% endset %}
 
-
-    {{ govukRadios({
-      name: "supervisorCategoryAppropriate",
-      classes: "govuk-radios--inline",
-      fieldset: {
-        legend: {
-          text: "Do you agree with the provisional category?",
-          isPageHeading: false,
-          classes: "govuk-heading-m govuk-!-font-weight-bold"
+    {% if indeterminate and currentCat == "I" %}
+      <p class="govuk-body">Prisoner has an indeterminate sentence - Cat J not available</p>
+      <input type="hidden" name="supervisorCategoryAppropriate" value="Yes"/>
+    {% else %}
+      {{ govukRadios({
+        name: "supervisorCategoryAppropriate",
+        classes: "govuk-radios--inline",
+        fieldset: {
+          legend: {
+            text: "Do you agree with the provisional category?",
+            isPageHeading: false,
+            classes: "govuk-heading-m govuk-!-font-weight-bold"
+          },
+        classes: "govuk-!-margin-top-7"
         },
-      classes: "govuk-!-margin-top-7"
-      },
-      errorMessage: {
-      text: "Select yes if you agree with the provisional category"
-      } if (errors | findError('supervisorCategoryAppropriate')),
-      items: [
-        {
-          value: "Yes",
-          checked: data.supervisor.review.supervisorCategoryAppropriate === 'Yes',
-          text: "Yes"
-        },
-        {
-          value: "No",
-          checked: data.supervisor.review.supervisorCategoryAppropriate === 'No',
-          text: "No",
-          conditional: {
-            html:overriddenCategoryTextHtml
+        errorMessage: {
+          text: "Select yes if you agree with the provisional category"
+        } if (errors | findError('supervisorCategoryAppropriate')),
+        items: [
+          {
+            value: "Yes",
+            checked: data.supervisor.review.supervisorCategoryAppropriate === 'Yes',
+            text: "Yes"
+          },
+          {
+            value: "No",
+            checked: data.supervisor.review.supervisorCategoryAppropriate === 'No',
+            text: "No",
+            conditional: {
+              html:overriddenCategoryTextHtml
+            }
           }
-        }
-      ]
-    }) }}
+        ]
+      }) }}
+    {% endif %}
 
     <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
 
