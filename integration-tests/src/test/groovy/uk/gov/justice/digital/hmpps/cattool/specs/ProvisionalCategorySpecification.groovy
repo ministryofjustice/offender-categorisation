@@ -67,7 +67,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   }
 
   def 'Validation test'() {
-    when: 'I submit the Provisional Category page with an empty text area'
+    when: 'I submit the Provisional Category page without selecting anything'
     elite2api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
@@ -76,6 +76,13 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
     to ProvisionalCategoryPage, '12'
+    submitButton.click()
+
+    then: 'I stay on the page with validation errors'
+    errorSummaries*.text() == ['Please select yes or no']
+    errors*.text() == ['Please select yes or no']
+
+    when: 'I just select appropriate "No"'
     appropriateNo.click()
     submitButton.click()
 
@@ -85,6 +92,15 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
                                'Please enter the reason why you changed the category']
     errors*.text() == ['Please select the new category',
                        'Please enter the reason why you changed the category']
+
+    when: 'I submit the Provisional Category page with an empty text area'
+    overriddenCategoryC.click()
+    submitButton.click()
+
+    then: 'I stay on the page with validation errors'
+    at ProvisionalCategoryPage
+    errorSummaries*.text() == ['Please enter the reason why you changed the category']
+    errors*.text() == ['Please enter the reason why you changed the category']
   }
 
   def 'young offender test'() {
@@ -98,12 +114,12 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     elite2api.stubGetOffenderDetails(12, 'B2345YZ', true)
     to ProvisionalCategoryPage, '12'
     at ProvisionalCategoryPage
-    !catJMessage.displayed
+    !newCatMessage.displayed
     appropriateNo.click()
 
-    then: 'The page shows cat I and J'
+    then: 'The page shows info Changing to Cat J'
     warning.text().contains 'the provisional category is I'
-    catJMessage.text() == 'Changing to Cat J'
+    newCatMessage.text() == 'Changing to Cat J'
 
     when: 'Changing to Cat J'
     elite2api.stubCategorise()
@@ -113,5 +129,42 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     then: 'Cat J details are saved'
     def response = db.getData(12).form_response
     response[0].toString() == '{"categoriser": {"provisionalCategory": {"suggestedCategory": "I", "overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}}'
+  }
+
+  def 'indefinite sentence test'() {
+    when: 'I go to the Provisional Category page'
+    elite2api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(UserAccount.CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2api.stubGetOffenderDetails(12, 'B2345YZ', false, true)
+    to ProvisionalCategoryPage, '12'
+
+    then: 'The page is displayed correctly'
+    at ProvisionalCategoryPage
+    appropriateNo.click()
+
+    then: 'The page shows cat B and C'
+    warning.text().contains 'the provisional category is B'
+    newCatMessage.text() == 'Changing to Cat C'
+  }
+
+  def 'indefinite sentence test for young offender'() {
+    when: 'I go to the Provisional Category page'
+    elite2api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(UserAccount.CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2api.stubGetOffenderDetails(12, 'B2345YZ', true, true)
+    to ProvisionalCategoryPage, '12'
+
+    then: 'The page is displayed correctly'
+    at ProvisionalCategoryPage
+    !appropriateNo.displayed
+    indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - Cat J not available'
   }
 }
