@@ -4,14 +4,14 @@ import geb.Page
 
 class ErrorPage extends Page {
 
-  static url = '/form/categoriser/review'
+  static url
 
   static at = {
-
+    errorSummaryTitle.displayed
   }
 
   static content = {
     errorSummaryTitle { $('#error-summary-title') }
-    errorText { $( 'a.govuk-back-link') }
+    errorText(required: false) { $( 'div.govuk-error-summary__body p') }
   }
 }
