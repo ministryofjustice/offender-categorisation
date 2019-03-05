@@ -5,7 +5,6 @@ const config = require('../config')
 const { generateOauthClientToken } = require('./clientCredentials')
 
 function authenticationMiddleware() {
-  // eslint-disable-next-line
   return (req, res, next) => {
     if (req.isAuthenticated()) {
       return next()

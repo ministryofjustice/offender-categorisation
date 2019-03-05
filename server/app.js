@@ -147,13 +147,26 @@ module.exports = function createApp({
     app.use(csurf())
   }
 
-  // token refresh
+  // JWT token refresh
   app.use(async (req, res, next) => {
     if (req.user) {
       const timeToRefresh = new Date() > req.user.refreshTime
       if (timeToRefresh) {
-        req.session.returnTo = req.originalUrl
-        return res.redirect('/login')
+        try {
+          const newToken = await signInService.getRefreshedToken(req.user)
+          req.user.token = newToken.token
+          req.user.refreshToken = newToken.refreshToken
+          logger.info(`existing refreshTime in the past by ${new Date() - req.user.refreshTime}`)
+          logger.info(
+            `updating time by ${newToken.refreshTime - req.user.refreshTime} from ${req.user.refreshTime} to ${
+              newToken.refreshTime
+            }`
+          )
+          req.user.refreshTime = newToken.refreshTime
+        } catch (error) {
+          logger.error(`Token refresh error: ${req.user.username}`, error.stack)
+          return res.redirect('/logout')
+        }
       }
     }
     return next()
@@ -172,9 +185,7 @@ module.exports = function createApp({
 
   app.get('/autherror', (req, res) => {
     res.status(401)
-    return res.render('autherror', {
-      authURL: authLogoutUrl,
-    })
+    return res.render('autherror')
   })
 
   app.get('/login', passport.authenticate('oauth2'))

@@ -22,7 +22,7 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
       } else {
         // go to a 'not auth' page?
         res.status(403)
-        res.end('User does not have any categorisation tool roles')
+        res.render('authError')
       }
     })
   )
