@@ -34,6 +34,24 @@ module.exports = function Index({
   riskProfilerService,
   authenticationMiddleware,
 }) {
+  function doValidation(formPageConfig, req, res, section, form, bookingId) {
+    if (formPageConfig.validate && formPageConfig.fields) {
+      const expectedFields = formPageConfig.fields.map(getFieldName)
+      const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
+
+      const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
+
+      if (!isNilOrEmpty(errors)) {
+        req.flash('errors', errors)
+        req.flash('userInput', inputForExpectedFields)
+        req.flash('backLink', inputForExpectedFields)
+        res.redirect(`/form/${section}/${form}/${bookingId}`)
+        return false
+      }
+    }
+    return true
+  }
+
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -247,17 +265,8 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (formPageConfig.validate && formPageConfig.fields) {
-        const expectedFields = formPageConfig.fields.map(getFieldName)
-        const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
-
-        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
-
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          req.flash('userInput', inputForExpectedFields)
-          return res.redirect(`/form/${section}/${form}/${bookingId}`)
-        }
+      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+        return
       }
 
       const updatedFormObject = await formService.update({
@@ -271,7 +280,7 @@ module.exports = function Index({
       await formService.referToSecurityIfRequested(bookingId, req.user.username, updatedFormObject)
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      return res.redirect(`${nextPath}${bookingId}`)
+      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
@@ -283,17 +292,8 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (formPageConfig.validate && formPageConfig.fields) {
-        const expectedFields = formPageConfig.fields.map(getFieldName)
-        const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
-
-        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
-
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          req.flash('userInput', inputForExpectedFields)
-          return res.redirect(`/form/${section}/${form}/${bookingId}`)
-        }
+      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+        return
       }
 
       await formService.update({
@@ -306,7 +306,7 @@ module.exports = function Index({
       })
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      return res.redirect(`${nextPath}${bookingId}`)
+      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
@@ -318,16 +318,8 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (formPageConfig.validate) {
-        const expectedFields = formPageConfig.fields.map(getFieldName)
-        const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
-        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
-
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          req.flash('userInput', inputForExpectedFields)
-          return res.redirect(`/form/${section}/${form}/${bookingId}`)
-        }
+      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+        return
       }
 
       await formService.update({
@@ -341,7 +333,7 @@ module.exports = function Index({
 
       await formService.backFromSecurity(bookingId)
 
-      return res.redirect('/')
+      res.redirect('/')
     })
   )
 
@@ -353,16 +345,8 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
 
-      if (formPageConfig.validate) {
-        const expectedFields = formPageConfig.fields.map(getFieldName)
-        const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
-        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
-
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          req.flash('userInput', inputForExpectedFields)
-          return res.redirect(`/form/${section}/${form}/${bookingId}`)
-        }
+      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+        return
       }
 
       await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, req.body)
@@ -377,7 +361,7 @@ module.exports = function Index({
       })
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      return res.redirect(`${nextPath}${bookingId}`)
+      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
@@ -388,17 +372,9 @@ module.exports = function Index({
       const section = 'supervisor'
       const form = 'review'
       const formPageConfig = formConfig[section][form]
-      const expectedFields = formPageConfig.fields.map(getFieldName)
-      const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
 
-      if (formPageConfig.validate) {
-        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
-
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          req.flash('userInput', inputForExpectedFields)
-          return res.redirect(`/form/${section}/${form}/${bookingId}`)
-        }
+      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+        return
       }
 
       await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, req.body)
@@ -413,7 +389,7 @@ module.exports = function Index({
       })
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      return res.redirect(`${nextPath}${bookingId}`)
+      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
@@ -423,17 +399,9 @@ module.exports = function Index({
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (formPageConfig.validate && formPageConfig.fields) {
-        const expectedFields = formPageConfig.fields.map(getFieldName)
-        const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
-
-        const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
-
-        if (!isNilOrEmpty(errors)) {
-          req.flash('errors', errors)
-          req.flash('userInput', inputForExpectedFields)
-          return res.redirect(`/form/${section}/${form}/${bookingId}`)
-        }
+      const valid = doValidation(formPageConfig, req, res, section, form, bookingId)
+      if (!valid) {
+        return
       }
 
       await formService.update({
@@ -446,7 +414,7 @@ module.exports = function Index({
       })
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      return res.redirect(`${nextPath}${bookingId}`)
+      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
