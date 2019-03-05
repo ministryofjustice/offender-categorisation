@@ -1,11 +1,19 @@
 {% extends "../partials/layout.html" %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
 
 {% block content %}
 
-  <main class="app-container">
-    <h1>{{ message }}</h1>
-    <h2>{{ error.status }}</h2>
-    <pre>{{ error.stack }}</pre>
-  </main>
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink or "/"
+  }) }}
+
+  {{ govukErrorSummary({
+    titleText: message,
+    descriptionText: 'status ' + error.status if error.status
+  }) }}
+
+  <pre>{{ error.stack }}</pre>
 
 {% endblock %}
