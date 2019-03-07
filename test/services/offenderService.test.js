@@ -10,6 +10,8 @@ const nomisClient = {
   getSentenceDetails: jest.fn(),
   getSentenceTerms: jest.fn(),
   getMainOffence: jest.fn(),
+  createInitialCategorisation: jest.fn(),
+  createSupervisorApproval: jest.fn(),
 }
 
 const formService = {
@@ -32,6 +34,8 @@ afterEach(() => {
   nomisClient.getSentenceDetails.mockReset()
   nomisClient.getSentenceTerms.mockReset()
   nomisClient.getMainOffence.mockReset()
+  nomisClient.createInitialCategorisation.mockReset()
+  nomisClient.createSupervisorApproval.mockReset()
   formService.getCategorisationRecord.mockReset()
 })
 
@@ -198,7 +202,6 @@ describe('getUncategorisedOffenders', () => {
     expect(result).toEqual(expected)
   })
 
-  // TODO determine error handling stategy
   test('it should propagate an error response', async () => {
     nomisClient.getUncategorisedOffenders.mockImplementation(() => {
       throw new Error()
@@ -346,6 +349,30 @@ describe('getReferredOffenders', () => {
     const result = await service.getReferredOffenders('user1', 'MDI')
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
+  })
+
+  test('create categorisation should propagate error response', async () => {
+    nomisClient.createInitialCategorisation.mockImplementation(() => {
+      throw new Error('our Error')
+    })
+
+    try {
+      await service.createInitialCategorisation({}, {}, {})
+    } catch (s) {
+      expect(s.message).toEqual('our Error')
+    }
+  })
+
+  test('createSupervisorApproval should propagate error response', async () => {
+    nomisClient.createSupervisorApproval.mockImplementation(() => {
+      throw new Error('our Error')
+    })
+
+    try {
+      await service.createSupervisorApproval({}, {}, {})
+    } catch (s) {
+      expect(s.message).toEqual('our Error')
+    }
   })
 
   test('it should not return offenders without sentence data', async () => {
