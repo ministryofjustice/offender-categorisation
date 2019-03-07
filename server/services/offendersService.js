@@ -375,7 +375,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       await nomisClient.createInitialCategorisation({ bookingId, category, committee: 'Cat-tool', comment })
     } catch (error) {
-      logger.error(error)
+      logger.error(error, 'Error during createInitialCategorisation')
+      throw error
     }
   }
 
@@ -389,9 +390,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         category,
         evaluationDate: moment().format('YYYY-MM-DD'),
         reviewSupLevelText: comment,
+        reviewCommitteeCode: 'REVIEW',
       })
     } catch (error) {
-      logger.error(error)
+      logger.error(error, 'Error during createSupervisorApproval')
+      throw error
     }
   }
 
