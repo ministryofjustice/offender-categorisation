@@ -131,6 +131,47 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  void stubCategorised() {
+    this.stubFor(
+      get("/api/offender-assessments/category/LEI/categorised")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            offenderNo: 'B2345YZ',
+            bookingId: 11,
+            firstName: 'SARAH',
+            lastName: 'HEMMEL',
+            assessmentDate: '2017-03-27',
+            approvalDate: '2019-02-20',
+            assessmentSeq: 7,
+            categoriserFirstName: 'JANE',
+            categoriserLastName: 'FAN',
+            approverFirstName: 'JAMES',
+            approverLastName: 'HELLY',
+            category: 'C'
+          ],
+          [
+            offenderNo: 'B2345XY',
+            bookingId: 12,
+            firstName: 'TIM',
+            lastName: 'SCRAMBLE',
+            assessmentDate: '2017-03-27',
+            approvalDate: '2019-02-21',
+            assessmentSeq: 7,
+            categoriserFirstName: 'JOHN',
+            categoriserLastName: 'LAMB',
+            approverFirstName: 'JAMES',
+            approverLastName: 'HELLY',
+            category: 'C'
+          ],
+        ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
   void stubUncategorisedForSupervisor() {
     this.stubFor(
       get("/api/offender-assessments/category/LEI/uncategorised")

@@ -59,7 +59,7 @@ beforeEach(() => {
   formService.getCategorisationRecord.mockResolvedValue({})
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
-  offendersService.getOffenderDetails.mockResolvedValue({})
+  offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
@@ -130,6 +130,23 @@ describe('GET /ratings/securityInput', () => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(1)
+      })
+  )
+})
+
+describe('GET /security/review', () => {
+  test.each`
+    path                       | expectedContent
+    ${'security/review/12345'} | ${'Security Review'}
+  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+    request(app)
+      .get(`/${path}`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(expectedContent)
+        expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(res.text).toContain('Claire Dent')
       })
   )
 })

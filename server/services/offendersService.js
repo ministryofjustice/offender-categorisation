@@ -87,12 +87,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
           .map(async o => {
             const dbRecord = await formService.getCategorisationRecord(o.bookingId)
-            const row = { ...o, dbRecord }
             return {
-              ...row,
+              ...o,
               displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
               ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
-              ...(await decorateWithCategorisationData(row, user, nomisClient)),
+              ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
             }
           })
       )
@@ -100,6 +99,44 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
     } catch (error) {
       logger.error(error, 'Error during getUncategorisedOffenders')
+      throw error
+    }
+  }
+
+  async function getCategorisedOffenders(token, agencyId, user) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+      const categorised = await nomisClient.getCategorisedOffenders(agencyId)
+      const categorisedWithDbRecord = (await Promise.all(
+        categorised.map(async s => {
+          const dbRecord = await formService.getCategorisationRecord(s.bookingId)
+          return {
+            ...s,
+            dbRecord,
+          }
+        })
+      )).filter(s => s.dbRecord.booking_id) // discard records that do not have a categorisation record (categorised by PNOMIS)
+
+      const decoratedResults = await Promise.all(
+        categorisedWithDbRecord.map(async o => {
+          const dbRecord = await formService.getCategorisationRecord(o.bookingId)
+          const approvalMoment = moment(o.approvalDate, 'YYYY-MM-DD')
+          return {
+            ...o,
+            ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
+            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+            displayApprovalDate: approvalMoment.format('DD/MM/YYYY'),
+            displayCategoriserName: `${properCaseName(o.categoriserLastName)}, ${properCaseName(
+              o.categoriserFirstName
+            )}`,
+            displayApproverName: `${properCaseName(o.approverLastName)}, ${properCaseName(o.approverFirstName)}`,
+          }
+        })
+      )
+
+      return decoratedResults.sort(a => sortByDateTimeDesc(a.displayApprovalDate)).reverse()
+    } catch (error) {
+      logger.error(error, 'Error during getCategorisedOffenders')
       throw error
     }
   }
@@ -167,7 +204,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           .map(async o => ({
             ...o,
             ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
-            ...(await decorateWithCategorisationData(o, user, nomisClient)),
+            ...(await decorateWithCategorisationData(o, user, nomisClient, o.dbRecord)),
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
           }))
       )
@@ -187,8 +224,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return { daysSinceSentence, dateRequired, sentenceDate }
   }
 
-  async function decorateWithCategorisationData(offender, user, nomisClient) {
-    const categorisation = offender.dbRecord
+  async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {
     let statusText
     if (categorisation.status) {
       statusText = statusTextDisplay(categorisation.status)
@@ -377,5 +413,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     buildSentenceData,
     createInitialCategorisation,
     createSupervisorApproval,
+    getCategorisedOffenders,
   }
 }
