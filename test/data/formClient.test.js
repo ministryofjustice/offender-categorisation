@@ -17,7 +17,7 @@ describe('getFormDataForUser', () => {
     formClient.getFormDataForUser('bookingId1')
 
     expect(db.query).toBeCalledWith({
-      text: `select id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
         from form where booking_id = $1`,
       values: ['bookingId1'],
     })

@@ -30,4 +30,9 @@ class DatabaseUtils {
     def sql = Sql.newInstance(dbConnParams)
     sql.executeUpdate("insert into form values (-1, ?::JSON, $bookingId, 'CATEGORISER_USER', 'STARTED', 'CATEGORISER_USER')", json)
   }
+
+  def createData(id, bookingId, json) {
+    def sql = Sql.newInstance(dbConnParams)
+    sql.executeUpdate("insert into form values ($id, ?::JSON, $bookingId, 'CATEGORISER_USER', 'STARTED', 'CATEGORISER_USER')", json)
+  }
 }
