@@ -24,12 +24,12 @@
 
   <ul class="govuk-tabs__list">
     <li class="govuk-tabs__list-item">
-      <a class="govuk-tabs__tab govuk-tabs__tab--selected" id="todo-tab">
+      <a class="govuk-tabs__tab " id="todo-tab" href="/categoriserHome">
         To do
       </a>
     </li>
     <li class="govuk-tabs__list-item">
-      <a class="govuk-tabs__tab" id="done-tab" href="/categoriserDone">
+      <a class="govuk-tabs__tab govuk-tabs__tab--selected" id="done-tab" >
         Done
       </a>
     </li>
@@ -43,9 +43,10 @@
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Name</th>
       <th class="govuk-table__header" scope="col">Prison no.</th>
-      <th class="govuk-table__header" scope="col">Days since sentence</th>
-      <th class="govuk-table__header" scope="col">Date required by</th>
-      <th class="govuk-table__header" scope="col">Status</th>
+      <th class="govuk-table__header" scope="col">Approved on</th>
+      <th class="govuk-table__header" scope="col">Categorised by</th>
+      <th class="govuk-table__header" scope="col">Approved by</th>
+      <th class="govuk-table__header" scope="col">Category</th>
       <th class="govuk-table__header" scope="col"></th>
     </tr>
     </thead>
@@ -55,17 +56,19 @@
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">{{ row.displayName }}</td>
       <td class="govuk-table__cell">{{ row.offenderNo }}</td>
-      <td class="govuk-table__cell">{{ row.daysSinceSentence }}</td>
-      <td class="govuk-table__cell">{{ row.dateRequired }}</td>
-      <td class="govuk-table__cell">{{ row.displayStatus }}</td>
+      <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
+      <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
+      <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
+      <td class="govuk-table__cell">{{ row.category }}</td>
       <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+        {% if row.statusTextDisplay != '' %}
         {% set locked = regExp.test(row.displayStatus) %}
         {{ govukButton({
-          text: "Start now",
-          href: "/tasklist/" + row.bookingId if not locked,
-          disabled: locked,
+          text: "View",
+          href: "/tasklist/" + row.bookingId,
           classes: "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3"
         }) }}
+        {% endif %}
       </td>
     </tr>
     {% endfor %}
@@ -74,7 +77,7 @@
   </table>
   {% else %}
   <div class="govuk-!-padding-top-7">
-    <div class="govuk-heading-m">No uncategorised offenders found</div>
+    <div id="no-results-message" class="govuk-heading-m">No categorised offenders found</div>
   </div>
   {% endif %}
 </div>

@@ -19,6 +19,10 @@ module.exports = token => {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}/uncategorised`
       return nomisGet({ path })
     },
+    getCategorisedOffenders(agencyId) {
+      const path = `${apiUrl}api/offender-assessments/category/${agencyId}/categorised`
+      return nomisGet({ path })
+    },
     getSentenceDatesForOffenders(bookingIds) {
       const path = `${apiUrl}api/offender-sentences/bookings`
       return nomisPost({ path, body: bookingIds })

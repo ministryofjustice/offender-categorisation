@@ -41,7 +41,7 @@ href: backLink or "/"
               {% set buttonTextOH = "Edit" if offendingHistoryCompleted else "Start" %}
                 {{ govukButton({
                 text: buttonTextOH,
-                href: "/form/ratings/offendingHistory/" + data.bookingId,
+                href: "/form/ratings/offendingHistory/" + data.details.bookingId,
                 classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
                 {  'id': 'offendingHistoryButton' }
@@ -54,7 +54,7 @@ href: backLink or "/"
               {% set buttonTextSec = "Edit" if securityInputCompleted else "Start" %}
               {{ govukButton({
                 text: buttonTextSec,
-                href: null if locked else ("/form/ratings/securityBack/" + data.bookingId if backFromSecurity else "/form/ratings/securityInput/" + data.bookingId),
+                href: null if locked else ("/form/ratings/securityBack/" + data.details.bookingId if backFromSecurity else "/form/ratings/securityInput/" + data.details.bookingId),
                 disabled: locked,
                 classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
@@ -68,7 +68,7 @@ href: backLink or "/"
               {% set buttonTextV = "Edit" if violenceRatingCompleted else "Start" %}
                 {{ govukButton({
                 text: buttonTextV,
-                href: "/form/ratings/violenceRating/" + data.bookingId,
+                href: "/form/ratings/violenceRating/" + data.details.bookingId,
                 classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'violenceButton' }
@@ -80,7 +80,7 @@ href: backLink or "/"
               {% set buttonTextE = "Edit" if escapeRatingCompleted else "Start" %}
                 {{ govukButton({
                 text: buttonTextE,
-                href: "/form/ratings/escapeRating/" + data.bookingId,
+                href: "/form/ratings/escapeRating/" + data.details.bookingId,
                 classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'escapeButton' }
@@ -92,7 +92,7 @@ href: backLink or "/"
               {% set buttonTextEx = "Edit" if extremismRatingCompleted else "Start" %}
                 {{ govukButton({
                 text: buttonTextEx,
-                href: "/form/ratings/extremismRating/" + data.bookingId,
+                href: "/form/ratings/extremismRating/" + data.details.bookingId,
                 classes: "govuk-button tableButton app-task-list__task-completed",
                 attributes:
                   {  'id': 'extremismButton' }
@@ -106,12 +106,12 @@ href: backLink or "/"
           <ul id="review" class="app-task-list__items">
             <li class="app-task-list__item">
               {% if data.categoriser.provisionalCategory.categoryAppropriate %}
-                <a href="/form/categoriser/provisionalCategory/{{ data.bookingId }}">Review and categorisation</a>
+                <a href="/form/categoriser/provisionalCategory/{{ data.details.bookingId }}">Review and categorisation</a>
                 <strong class="govuk-tag app-task-list__task-completed" id="review-completed">Completed</strong>
               {% else %}
                 {{ govukButton({
                   text: "Continue",
-                  href: "/form/categoriser/review/" + data.bookingId if allSectionsCompleted,
+                  href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
                   disabled: not allSectionsCompleted,
                   classes: "govuk-button tableButton app-task-list__task-completed"
                 }) }}

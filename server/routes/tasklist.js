@@ -22,7 +22,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
       const data = {
-        ...details,
+        details,
         ...res.locals.formObject,
         status: formData.status,
         displayStatus: formData.status && Status[formData.status].value,
