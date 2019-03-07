@@ -45,6 +45,23 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
   )
 
   router.get(
+    '/categoriserDone',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+
+      const offenders = res.locals.user.activeCaseLoad
+        ? await offendersService.getCategorisedOffenders(
+            res.locals.user.token,
+            res.locals.user.activeCaseLoad.caseLoadId,
+            user
+          )
+        : []
+      res.render('pages/categoriserDone', { offenders, Status })
+    })
+  )
+
+  router.get(
     '/supervisorHome',
     asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals.user.token)
