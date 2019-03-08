@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
