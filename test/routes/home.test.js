@@ -12,6 +12,7 @@ const offendersService = {
   getOffenceHistory: jest.fn(),
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
+  getUnapprovedOffenders: jest.fn(),
 }
 
 const userService = {
@@ -30,6 +31,7 @@ beforeEach(() => {
   app = appSetup(homeRoute)
   offendersService.getOffenderDetails.mockResolvedValue({})
   offendersService.getCategorisedOffenders.mockResolvedValue({})
+  offendersService.getUnapprovedOffenders.mockResolvedValue({})
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI' })
@@ -38,39 +40,68 @@ beforeEach(() => {
 afterEach(() => {
   offendersService.getCategorisedOffenders.mockReset()
   offendersService.getOffenderDetails.mockReset()
+  offendersService.getUnapprovedOffenders.mockReset()
+  offendersService.getOffenderDetails.mockReset()
   offendersService.getCatAInformation.mockReset()
   offendersService.getOffenceHistory.mockReset()
   userService.getUser.mockReset()
 })
 
 describe('GET /categoriserDone', () => {
-  test.each`
-    path                 | expectedContent
-    ${'categoriserDone'} | ${'No categorised offenders found'}
-  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
-    request(app)
-      .get(`/${path}`)
+  test('results', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue([
+      {
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        displayName: 'Tim Handle',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2019-02-21',
+        assessmentSeq: 7,
+        categoriserFirstName: 'JOHN',
+        categoriserLastName: 'LAMB',
+        approverFirstName: 'JAMES',
+        approverLastName: 'HELLY',
+        category: 'C',
+      },
+    ])
+    return request(app)
+      .get('/categoriserDone')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(expectedContent)
+        expect(res.text).toContain('Tim Handle')
         expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
       })
-  )
+  })
+
+  test('no results', () =>
+    request(app)
+      .get('/categoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('No categorised offenders found')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      }))
 })
 
-describe('GET /categoriserDone', () => {
-  test.each`
-    path                 | expectedContent
-    ${'categoriserDone'} | ${'No categorised offenders found'}
-  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
-    request(app)
-      .get(`/${path}`)
+describe('GET /supervisorHome', () => {
+  test('results for categorisation outside of cat tool', () => {
+    offendersService.getUnapprovedOffenders.mockResolvedValue([
+      {
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        displayName: 'Tim Handle',
+        category: 'C',
+      },
+    ])
+    return request(app)
+      .get('/supervisorHome')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(expectedContent)
-        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+        expect(res.text).toContain('PNOMIS') // should not display start button
+        expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
       })
-  )
+  })
 })
