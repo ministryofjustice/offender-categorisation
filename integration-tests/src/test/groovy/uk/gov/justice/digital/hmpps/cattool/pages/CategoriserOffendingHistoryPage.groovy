@@ -17,7 +17,11 @@ class CategoriserOffendingHistoryPage extends Page {
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     catAWarning(required: false) { $('div.govuk-warning-text') }
+    form { $('form') }
+    textArea { $('#more-detail') }
     saveButton { $('button.govuk-button') }
     history { $('div.govuk-body-s > ul > li') }
+    errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
+    errors(required: false) { $('span.govuk-error-message') }
   }
 }

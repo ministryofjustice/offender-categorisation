@@ -1,9 +1,17 @@
 module.exports = {
   offendingHistory: {
-    fields: [{ previousConvictions: {} }],
+    fields: [
+      {
+        previousConvictions: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter details of previous convictions',
+        },
+      },
+    ],
     nextPath: {
       path: '/tasklist/',
     },
+    validate: true,
   },
   securityInput: {
     nextPath: {
