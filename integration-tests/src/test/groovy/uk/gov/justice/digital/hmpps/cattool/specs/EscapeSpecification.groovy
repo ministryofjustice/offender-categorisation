@@ -10,12 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserEscapePage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
-
-import java.time.LocalDate
-
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
 class EscapeSpecification extends GebReportingSpec {
 
@@ -48,10 +43,14 @@ class EscapeSpecification extends GebReportingSpec {
 
     escapeButton.click()
 
-    then: 'The page is displayed with an alert'
+    then: 'The page is displayed with an alert and info'
     at(new CategoriserEscapePage(bookingId: '12'))
 
-    warningTextDiv.text().contains('This person is on the heightened / standard / escort e-list')
+    warningTextDiv.text().contains('This person is considered an escape risk')
+    alertInfo*.text() == [
+      'XEL First xel comment 2016-09-14',
+      '''XEL Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
+      'XER First xer comment 2016-09-16']
   }
 
   def "The escape page can be edited"() {
@@ -82,5 +81,33 @@ class EscapeSpecification extends GebReportingSpec {
 
     radio == 'No'
 
+  }
+
+  def "Validation"() {
+    when: 'the escape page is submitted when nothing has been entered'
+
+    fixture.gotoTasklist()
+    at(new CategoriserTasklistPage(bookingId: '12'))
+
+    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
+
+    escapeButton.click()
+
+    at(new CategoriserEscapePage(bookingId: '12'))
+    saveButton.click()
+
+    then:
+    errorSummaries*.text() == ['Please select yes or no']
+    errors*.text() == ['Please select yes or no']
+
+    when: 'the escape page is submitted with no reason text'
+    radio = 'Yes'
+    saveButton.click()
+
+    then:
+    errorSummaries*.text() == ['Please enter details of these charges']
+    errors*.text() == ['Please enter details of these charges']
   }
 }
