@@ -28,7 +28,10 @@
     label: {
       text: "Please record a summary of previous convictions, and any other information, from this offender's PNC record, which might be relevant to their categorisation"
     },
-    value: data.ratings.offendingHistory.previousConvictions
+    value: data.ratings.offendingHistory.previousConvictions,
+    errorMessage: {
+      text: "Please enter previous convictions"
+    } if (errors | findError('previousConvictions'))
   }) }}
 
 {% endblock %}
