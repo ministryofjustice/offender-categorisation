@@ -5,23 +5,34 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "textarea/macro.njk" import govukTextarea %}
 
+{% macro renderAlert(alert) %}
+  <p class="govuk-!-margin-bottom-1">{{ alert.alertCode }} {{ alert.comment }} <strong>{{ alert.dateCreated }}</strong>
+    {% if alert.expired %} (expired){% endif %}
+    {% if not alert.active %} (inactive){% endif %}
+  </p>
+{% endmacro %}
+
 {% block formItems %}
 
 <h1 class="govuk-heading-l">Risk of escape</h1>
 
-{% if data.escapeProfile.activeEscapeList === true %}
-  {% set warningText %}
-    This person is on the heightened / standard / escort e-list
-  {% endset %}
-{% endif %}
-{% if warningText %}
+{% if data.escapeProfile.activeEscapeList or data.escapeProfile.activeEscapeRisk %}
   {{ govukWarningText({
-    text: warningText,
+    text: 'This person is considered an escape risk',
     iconFallbackText: "Warning",
     classes: "forms-warning-text"
   }) }}
-{% endif %}
 
+  <h2 class="govuk-heading-s">Alert notes</h2>
+  <div class="govuk-details__text govuk-body-m govuk-!-margin-bottom-3">
+    {% for alert in data.escapeProfile.escapeListAlerts %}
+      {{ renderAlert(alert) }}
+    {% endfor %}
+    {% for alert in data.escapeProfile.escapeRiskAlerts %}
+      {{ renderAlert(alert) }}
+    {% endfor %}
+  </div>
+{% endif %}
 
 {% set escapeTextHtml %}
 
@@ -45,12 +56,12 @@
   classes: "govuk-radios--inline",
   fieldset: {
     legend: {
-      text: "Is the person facing further serious charges that warrant higher security?",
+      text: "Is there any other evidence to suggest this person poses a risk of escape?",
       isPageHeading: false
     }
   },
   errorMessage: {
-    text: "Select yes if the person is facing further serious charges that warrant higher security"
+    text: "Please select yes or no"
     } if (errors | findError('escapeFurtherCharges')),
   items: [
   {
