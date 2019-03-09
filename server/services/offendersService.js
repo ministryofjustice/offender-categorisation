@@ -158,14 +158,18 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const decoratedResults = await Promise.all(
         uncategorisedResult
           .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
-          .map(async o => ({
-            ...o,
-            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-            categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(
-              o.categoriserLastName
-            )}`,
-            ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
-          }))
+          .map(async o => {
+            const dbRecord = await formService.getCategorisationRecord(o.bookingId)
+            return {
+              ...o,
+              displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+              categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(
+                o.categoriserLastName
+              )}`,
+              dbRecordExists: !!dbRecord.booking_id,
+              ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+            }
+          })
       )
 
       return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
@@ -254,6 +258,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         }
       }
       return {
+        dbRecordExists: true,
         displayStatus: statusText,
         assignedUserId: categorisation.assigned_user_id,
         referredBy: referrer && `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`,
