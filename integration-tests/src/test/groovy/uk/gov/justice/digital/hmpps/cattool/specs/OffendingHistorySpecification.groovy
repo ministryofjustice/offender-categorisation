@@ -58,5 +58,6 @@ class OffendingHistorySpecification extends GebReportingSpec {
     then: "data is correctly retrieved"
     at new CategoriserOffendingHistoryPage(bookingId: '12')
     form.previousConvictions == "Some PNC data"
+    db.getData(12).status == ["STARTED"]
   }
 }
