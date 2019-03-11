@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.cattool.specs
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
+import groovy.json.JsonOutput
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -34,6 +35,18 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   }
 
   def 'The Provisional Category page is present'() {
+    given: 'Ratings data exists for for B2345YZ'
+    db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
+
+
     when: 'I go to the Provisional Category page'
     elite2api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
@@ -104,6 +117,17 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   }
 
   def 'young offender test'() {
+    given: 'Ratings data exists for for B2345YZ'
+    db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
+
     when: 'I go to the Provisional Category page for young offender'
     elite2api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
@@ -128,7 +152,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     then: 'Cat J details are saved'
     def response = db.getData(12).form_response
-    response[0].toString() == '{"categoriser": {"provisionalCategory": {"suggestedCategory": "I", "overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}}'
+    response[0].toString() contains '"categoriser": {"provisionalCategory": {"suggestedCategory": "I", "overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}'
   }
 
   def 'indefinite sentence test'() {

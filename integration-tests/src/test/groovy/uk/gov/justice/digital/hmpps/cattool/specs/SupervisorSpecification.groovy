@@ -44,7 +44,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
   def "The supervisor review page can be confirmed"() {
     given: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -71,7 +71,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
   def "The supervisor review page can be confirmed - youth offender"() {
     given: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -105,7 +105,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
   def "The supervisor review page can be confirmed - indeterminate sentence"() {
     given: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -139,7 +139,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
   def "The supervisor review page can be confirmed - youth offender and indeterminate sentence"() {
     when: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -168,7 +168,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
   def "The supervisor review page validates input, suggested category C overridden with D"() {
     given: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted

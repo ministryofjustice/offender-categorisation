@@ -8,9 +8,10 @@ const states = {
   APPROVED: { name: 'APPROVED', value: 'Approved' },
 }
 states.SECURITY_MANUAL.previous = [states.STARTED, states.SECURITY_AUTO, states.SECURITY_BACK]
-states.SECURITY_AUTO.previous = [states.STARTED]
+states.SECURITY_AUTO.previous = [undefined, states.STARTED]
 states.SECURITY_BACK.previous = [states.SECURITY_MANUAL, states.SECURITY_AUTO]
 states.AWAITING_APPROVAL.previous = [states.STARTED, states.SECURITY_BACK]
 states.APPROVED.previous = [states.AWAITING_APPROVAL]
+states.STARTED.previous = [undefined]
 
 module.exports = Object.freeze(states)

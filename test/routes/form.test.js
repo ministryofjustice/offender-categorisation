@@ -233,6 +233,7 @@ describe('POST /supervisor/review', () => {
           userInput,
           formSection: sectionName,
           formName,
+          status: 'APPROVED',
         })
       })
   )
@@ -261,6 +262,7 @@ describe('POST /categoriser/provisionalCategory', () => {
             userInput,
             formSection: sectionName,
             formName,
+            status: 'AWAITING_APPROVAL',
           })
         })
   )
