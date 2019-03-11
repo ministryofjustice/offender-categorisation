@@ -68,6 +68,7 @@ class ViolenceSpecification extends GebReportingSpec {
     form.highRiskOfViolenceText == "Some risk text"
     form.seriousThreat == "Yes"
     form.seriousThreatText == "Some threat text"
+    db.getData(12).status == ["STARTED"]
   }
 
   def 'Validation test'() {

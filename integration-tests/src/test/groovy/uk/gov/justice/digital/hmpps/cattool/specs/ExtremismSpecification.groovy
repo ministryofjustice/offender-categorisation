@@ -63,6 +63,7 @@ class ExtremismSpecification extends GebReportingSpec {
     then: "data is correctly retrieved"
     form.previousTerrorismOffences == "Yes"
     form.previousTerrorismOffencesText == "Some risk text"
+    db.getData(12).status == ["STARTED"]
   }
 
   def 'Validation test'() {

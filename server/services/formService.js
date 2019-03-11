@@ -30,7 +30,7 @@ module.exports = function createFormService(formClient) {
         newCategorisationForm,
         bookingId,
         userId,
-        calculateStatus(status),
+        calculateStatus(currentCategorisation.status, status),
         userId
       )
       return newCategorisationForm
@@ -136,8 +136,8 @@ module.exports = function createFormService(formClient) {
     return {}
   }
 
-  function calculateStatus(status) {
-    return status || Status.STARTED.name
+  function calculateStatus(currentStatus, newStatus) {
+    return newStatus || currentStatus || Status.STARTED.name // status may not be changing
   }
 
   function validateStatusIfProvided(current, proposed) {

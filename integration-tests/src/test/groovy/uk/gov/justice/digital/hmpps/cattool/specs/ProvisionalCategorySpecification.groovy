@@ -77,6 +77,9 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     form.categoryAppropriate == "No"
     form.overriddenCategory == "C"
     form.overriddenCategoryText == "Some Text"
+
+    db.getData(12).status == ["AWAITING_APPROVAL"]
+
   }
 
   def 'Validation test'() {
