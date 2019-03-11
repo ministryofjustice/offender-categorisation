@@ -5,6 +5,7 @@ const { isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/func
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { dateConverter } = require('../utils/utils.js')
+const Status = require('../utils/statusEnum')
 
 const ratings = require('../config/ratings')
 const categoriser = require('../config/categoriser')
@@ -358,6 +359,7 @@ module.exports = function Index({
         userInput: clearConditionalFields(req.body),
         formSection: section,
         formName: form,
+        status: Status.AWAITING_APPROVAL.name,
       })
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
@@ -386,6 +388,7 @@ module.exports = function Index({
         userInput: clearConditionalFields(req.body),
         formSection: section,
         formName: form,
+        status: Status.APPROVED.name,
       })
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })

@@ -1,9 +1,8 @@
-const { equals } = require('../utils/functionalHelpers')
 const { validate } = require('../utils/fieldValidation')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 
-module.exports = function createSomeService(formClient) {
+module.exports = function createFormService(formClient) {
   async function getCategorisationRecord(bookingId) {
     try {
       const data = await formClient.getFormDataForUser(bookingId)
@@ -14,9 +13,8 @@ module.exports = function createSomeService(formClient) {
     }
   }
 
-  async function update({ bookingId, userId, config, userInput, formSection, formName }) {
+  async function update({ bookingId, userId, config, userInput, formSection, formName, status }) {
     const currentCategorisation = await getCategorisationRecord(bookingId)
-    const currentCategorisationForm = currentCategorisation.form_response || {}
 
     const newCategorisationForm = buildCategorisationForm({
       formObject: currentCategorisation.form_response || {},
@@ -26,20 +24,18 @@ module.exports = function createSomeService(formClient) {
       formName,
     })
 
-    if (equals(currentCategorisationForm, newCategorisationForm)) {
-      // this wont work if wanting to switch assigned user without updating the form
-      return currentCategorisationForm
+    if (validateStatusIfProvided(currentCategorisation.status, status)) {
+      await formClient.update(
+        currentCategorisation.id,
+        newCategorisationForm,
+        bookingId,
+        userId,
+        calculateStatus(status),
+        userId
+      )
+      return newCategorisationForm
     }
-
-    await formClient.update(
-      currentCategorisation.id,
-      newCategorisationForm,
-      bookingId,
-      userId,
-      calculateStatus(),
-      userId
-    )
-    return newCategorisationForm
+    throw new Error(`Invalid state transition from ${currentCategorisation.status} to ${status}`)
   }
 
   function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
@@ -140,8 +136,12 @@ module.exports = function createSomeService(formClient) {
     return {}
   }
 
-  function calculateStatus() {
-    return Status.STARTED.name
+  function calculateStatus(status) {
+    return status || Status.STARTED.name
+  }
+
+  function validateStatusIfProvided(current, proposed) {
+    return proposed ? Status[proposed].previous.includes(Status[current]) : true
   }
 
   return {
@@ -151,5 +151,6 @@ module.exports = function createSomeService(formClient) {
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,
     backFromSecurity,
+    validateStatus: validateStatusIfProvided,
   }
 }

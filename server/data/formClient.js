@@ -35,8 +35,8 @@ module.exports = {
     logger.debug(`updating record for booking id ${bookingId}`)
     const query = formId
       ? {
-          text: 'update form set form_response = $1 where booking_id = $2',
-          values: [formResponse, bookingId],
+          text: 'update form set form_response = $1, status = $2 where booking_id = $3',
+          values: [formResponse, status, bookingId],
         }
       : {
           text:
