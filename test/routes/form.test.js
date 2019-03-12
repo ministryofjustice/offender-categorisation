@@ -22,7 +22,7 @@ const formService = {
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
-  storeDecisionData: jest.fn(),
+  updateFormData: jest.fn(),
 }
 
 const riskProfilerService = {
