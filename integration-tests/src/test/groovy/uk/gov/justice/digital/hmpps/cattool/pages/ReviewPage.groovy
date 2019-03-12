@@ -18,5 +18,7 @@ class ReviewPage extends Page {
     submitButton { $('button', type:'submit') }
     backLink { $( 'a.govuk-back-link') }
     offendingHistoryText { $('#historyQ1')}
+    veryHighRiskViolentOffenderMessage(required: false) { $('#veryHighRiskViolentOffender') }
+    newCatMessage(required: false) { $('#newCatMessage') }
   }
 }

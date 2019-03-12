@@ -78,5 +78,6 @@ class ReviewSpecification extends GebReportingSpec {
     then: 'the review is displayed with the saved form details'
     at(new ReviewPage())
     offendingHistoryText.text() == 'some convictions'
+    veryHighRiskViolentOffenderMessage.text().contains('Violent in custody Text TBC')
   }
 }

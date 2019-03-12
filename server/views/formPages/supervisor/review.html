@@ -77,7 +77,7 @@
       {% if indeterminate %}
         {% set newCat = "C" if currentCat == "B" else "B" %}
         <p class="govuk-body">Prisoner has indeterminate sentence - Cat D not available</p>
-        <h2 class="govuk-heading-m">Changing to Cat {{ newCat }}</h2>
+        <h2 class="govuk-heading-m" id="newCatMessage">Changing to Cat {{ newCat }}</h2>
         <input type="hidden" name="supervisorOverriddenCategory" value="{{ newCat }}" />
       {% else %}
         {% if (currentCat == "B" or currentCat == "C" or currentCat == "D") %}
@@ -96,7 +96,7 @@
             } if (errors | findError('supervisorOverriddenCategory'))
           }) }}
         {% else %}
-          <h2 class="govuk-heading-m">Changing to Cat J</h2>
+          <h2 class="govuk-heading-m" id="newCatMessage">Changing to Cat J</h2>
           <input type="hidden" name="supervisorOverriddenCategory" value="J"/>
         {% endif %}
       {% endif %}

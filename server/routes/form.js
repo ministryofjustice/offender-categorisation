@@ -1,4 +1,3 @@
-const moment = require('moment')
 const express = require('express')
 const flash = require('connect-flash')
 const { isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/functionalHelpers')
@@ -17,15 +16,6 @@ const formConfig = {
   categoriser,
   supervisor,
   security,
-}
-
-function isYoungOffender(details) {
-  const dob = details && details.dateOfBirth
-  if (!dob) {
-    return false
-  }
-  const d = moment(dob, 'YYYY-MM-DD')
-  return d.isAfter(moment().subtract(21, 'years'))
 }
 
 module.exports = function Index({
@@ -150,8 +140,8 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId)
-      const suggestedCat = 'B' // TODO await riskProfilerService.getAllFourProfiles??(result.data.details.offenderNo, res.locals.user.username)
-      const data = { ...result.data, suggestedCat: isYoungOffender(result.data.details) ? 'I' : suggestedCat }
+      const suggestedCat = formService.computeSuggestedCat(result.data)
+      const data = { ...result.data, suggestedCat }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
   )
@@ -159,6 +149,7 @@ module.exports = function Index({
   router.get(
     '/categoriser/review/:bookingId',
     asyncMiddleware(async (req, res) => {
+      // TODO save risk profile data and Off his cata data
       await renderReview(req, res, 'categoriser')
     })
   )
