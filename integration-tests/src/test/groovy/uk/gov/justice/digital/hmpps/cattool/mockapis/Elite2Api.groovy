@@ -111,14 +111,14 @@ class Elite2Api extends WireMockRule {
         aResponse()
           .withBody(JsonOutput.toJson([
           [
-            bookingId : 11,
+            bookingId : 12,
             offenderNo: 'B2345XY',
             firstName : 'PENELOPE',
             lastName  : 'PITSTOP',
             status    : 'UNCATEGORISED',
           ],
           [
-            bookingId : 12,
+            bookingId : 11,
             offenderNo: 'B2345YZ',
             firstName : 'ANT',
             lastName  : 'HILLMOB',
@@ -216,6 +216,7 @@ class Elite2Api extends WireMockRule {
             offenderNo: "ON${bookingId}",
             firstName   : 'HARRY',
             lastName    : 'BONNET',
+            status    : 'UNCATEGORISED',
           ],
         ]
         ))
