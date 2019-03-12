@@ -26,7 +26,7 @@
 
 <h1 class="govuk-heading-l">Extremism rating</h1>
 
-  {% if data.ratings.extremismRating.extremismProfile.increasedRisk %}
+  {% if data.extremismProfile.increasedRisk %}
     {{ govukWarningText({
       text: "There is data to indicate that this person has an increased risk of engaging in extremism",
       iconFallbackText: "Warning",

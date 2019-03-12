@@ -46,11 +46,12 @@ class ExtremismSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
     to ExtremismPage, '12'
 
     then: 'The extremism page is displayed'
     at ExtremismPage
+    warningMessage.text().contains('There is data to indicate that this person has an increased risk of engaging in extremism')
     !previousTerrorismOffencesText.displayed
 
     when: 'Details are entered, saved and accessed'

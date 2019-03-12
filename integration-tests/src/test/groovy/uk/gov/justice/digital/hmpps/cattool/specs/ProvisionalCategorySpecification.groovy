@@ -39,13 +39,11 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
-
+      ]
+    ]))
 
     when: 'I go to the Provisional Category page'
     elite2api.stubUncategorised()
@@ -62,6 +60,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     !overriddenCategoryB.displayed
     !overriddenCategoryC.displayed
     !overriddenCategoryD.displayed
+    warning.text() contains 'Based on the information provided, the provisional category is B'
 
     when: 'I enter some data, save and return to the page'
     elite2api.stubCategorise()
@@ -79,7 +78,6 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     form.overriddenCategoryText == "Some Text"
 
     db.getData(12).status == ["AWAITING_APPROVAL"]
-
   }
 
   def 'Validation test'() {
@@ -110,7 +108,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
                        'Please enter the reason why you changed the category']
 
     when: 'I submit the Provisional Category page with an empty text area'
-    overriddenCategoryC.click()
+    overriddenCategoryB.click()
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
@@ -174,8 +172,8 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     appropriateNo.click()
 
     then: 'The page shows cat B and C'
-    warning.text().contains 'the provisional category is B'
-    newCatMessage.text() == 'Changing to Cat C'
+    warning.text().contains 'the provisional category is C'
+    newCatMessage.text() == 'Changing to Cat B'
   }
 
   def 'indefinite sentence test for young offender'() {

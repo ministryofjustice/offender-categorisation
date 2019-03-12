@@ -1,4 +1,5 @@
 const { validate } = require('../utils/fieldValidation')
+const moment = require('moment')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 
@@ -60,6 +61,32 @@ module.exports = function createFormService(formClient) {
 
       return { ...answersAccumulator, [fieldName]: userInput[fieldName] }
     }
+  }
+
+  function isYoungOffender(details) {
+    const dob = details && details.dateOfBirth
+    if (!dob) {
+      return false
+    }
+    const d = moment(dob, 'YYYY-MM-DD')
+    return d.isAfter(moment().subtract(21, 'years'))
+  }
+
+  function computeSuggestedCat(data) {
+    if (isYoungOffender(data.details)) {
+      return 'I'
+    }
+    if (
+      (data.ratings && data.ratings.offendingHistory && data.ratings.offendingHistory.cata) ||
+      (data.securityBack && data.securityBack.catB === 'Yes') ||
+      (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) ||
+      (data.violenceProfile && data.violenceProfile.numberOfSeriousAssaults > 0) || // note: Qs on page ignored (info only)
+      (data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeFurtherCharges === 'Yes') || // ( in fact Q is now whether user thinks should be B based on alert data)
+      (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
+    ) {
+      return 'B'
+    }
+    return 'C'
   }
 
   function getFieldInfo(field, userInput) {
@@ -148,6 +175,7 @@ module.exports = function createFormService(formClient) {
     getCategorisationRecord,
     update,
     getValidationErrors: validate,
+    computeSuggestedCat,
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,
     backFromSecurity,
