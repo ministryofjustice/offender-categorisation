@@ -73,7 +73,7 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     then: 'this prisoner is present with automatic referral'
     at SecurityHomePage
-    prisonNos[0] == 'B2345YZ'
+    prisonNos[0] == 'B2345XY'
     referredBy[0] == 'Automatic'
   }
 
@@ -141,7 +141,7 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     then: 'this prisoner is present'
     at SecurityHomePage
-    prisonNos[0] == 'B2345YZ'
+    prisonNos[0] == 'B2345XY'
     referredBy[0] == 'Api User'
 
     when: 'the security user enters data'

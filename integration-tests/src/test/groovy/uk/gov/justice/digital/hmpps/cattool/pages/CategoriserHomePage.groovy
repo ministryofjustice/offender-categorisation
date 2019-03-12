@@ -30,4 +30,8 @@ class CategoriserHomePage extends Page {
   def selectFirstPrisoner() {
     startButtons[0].click() // should select B2345YZ
   }
+
+  def selectSecondPrisoner() {
+    startButtons[1].click() // should select B2345XY
+  }
 }
