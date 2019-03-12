@@ -41,11 +41,11 @@ describe('update', () => {
   })
 
   test('it should update if formId passed in', () => {
-    formClient.update('formId', {}, 'bookingId1')
+    formClient.update('formId', {}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123')
 
     expect(db.query).toBeCalledWith({
-      text: 'update form set form_response = $1 where booking_id = $2',
-      values: [{}, 'bookingId1'],
+      text: 'update form set form_response = $1, status = $2 where booking_id = $3',
+      values: [{}, 'STARTED', 'bookingId1'],
     })
   })
 })
