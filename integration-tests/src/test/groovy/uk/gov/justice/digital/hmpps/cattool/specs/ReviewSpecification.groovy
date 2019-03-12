@@ -52,13 +52,14 @@ class ReviewSpecification extends GebReportingSpec {
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeFurtherCharges: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
+        extremismRating : [previousTerrorismOffences: "No"]
       ]]))
     fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
     elite2api.stubAssessments('B2345YZ')
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
@@ -76,8 +77,23 @@ class ReviewSpecification extends GebReportingSpec {
     continueButton.click()
 
     then: 'the review is displayed with the saved form details'
-    at(new ReviewPage())
+    at ReviewPage
+    warnings[0].text() contains 'This offender was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
     offendingHistoryText.text() == 'some convictions'
+    $('#securityQ1').text() == 'No'
+    $('#violenceQ1').text() == 'No'
+    $('#violenceQ2').text() == 'Yes'
     veryHighRiskViolentOffenderMessage.text().contains('Violent in custody Text TBC')
+    warnings[2].text() contains 'This person is considered an escape risk'
+    $('#escapeQ1').text() == 'Yes'
+    warnings[3].text() contains 'There is data to indicate that this person has an increased risk of engaging in extremism'
+
+    def response = db.getData(12)[0].form_response
+    def json = response.toString()
+    json.contains '"history": {"catAType": "A",'
+    json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
+    json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'
+    json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "notifySafetyCustodyLead": true, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": true}'
+    json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "increasedRisk": true, "notifyRegionalCTLead": false, "provisionalCategorisation": "C"}'
   }
 }

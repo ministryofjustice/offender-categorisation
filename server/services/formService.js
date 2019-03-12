@@ -63,6 +63,10 @@ module.exports = function createFormService(formClient) {
     }
   }
 
+  async function storeDecisionData(bookingId, data) {
+    await formClient.updateFormData(bookingId, data)
+  }
+
   function isYoungOffender(details) {
     const dob = details && details.dateOfBirth
     if (!dob) {
@@ -77,12 +81,12 @@ module.exports = function createFormService(formClient) {
       return 'I'
     }
     if (
-      (data.ratings && data.ratings.offendingHistory && data.ratings.offendingHistory.cata) ||
+      (data.history && data.history.catAType) ||
       (data.securityBack && data.securityBack.catB === 'Yes') ||
       (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) ||
       (data.violenceProfile && data.violenceProfile.numberOfSeriousAssaults > 0) || // note: Qs on page ignored (info only)
       (data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeFurtherCharges === 'Yes') || // ( in fact Q is now whether user thinks should be B based on alert data)
-      (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
+      (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'B')
     ) {
       return 'B'
     }
@@ -175,6 +179,7 @@ module.exports = function createFormService(formClient) {
     getCategorisationRecord,
     update,
     getValidationErrors: validate,
+    storeDecisionData,
     computeSuggestedCat,
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,

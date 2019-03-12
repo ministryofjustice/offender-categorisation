@@ -20,5 +20,6 @@ class ReviewPage extends Page {
     offendingHistoryText { $('#historyQ1')}
     veryHighRiskViolentOffenderMessage(required: false) { $('#veryHighRiskViolentOffender') }
     newCatMessage(required: false) { $('#newCatMessage') }
+    warnings(required: false) { $('div.govuk-warning-text') }
   }
 }
