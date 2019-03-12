@@ -55,6 +55,7 @@ class SupervisorSpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
     navigateToReview()
+    veryHighRiskViolentOffenderMessage.text() == 'Violent in custody Text TBC'
 
     when: 'the supervisor selects yes'
     elite2api.stubSupervisorApprove()

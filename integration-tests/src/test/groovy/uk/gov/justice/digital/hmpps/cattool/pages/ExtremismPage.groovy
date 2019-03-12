@@ -14,15 +14,16 @@ class ExtremismPage extends Page {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
+    warningMessage { $('div.govuk-warning-text') }
 
-    form {$('form')}
-    previousTerrorismOffencesYes {$('#previousTerrorismOffences-1')}
-    previousTerrorismOffencesNo {$('#previousTerrorismOffences-2')}
-    previousTerrorismOffencesText {$('#previousTerrorismOffencesText')}
+    form { $('form') }
+    previousTerrorismOffencesYes { $('#previousTerrorismOffences-1') }
+    previousTerrorismOffencesNo { $('#previousTerrorismOffences-2') }
+    previousTerrorismOffencesText { $('#previousTerrorismOffencesText') }
 
-    submitButton { $('button', type:'submit') }
-    backLink { $( 'a.govuk-back-link') }
-    errorSummaries {$('ul.govuk-error-summary__list li')}
-    errors {$('span.govuk-error-message')}
+    submitButton { $('button', type: 'submit') }
+    backLink { $('a.govuk-back-link') }
+    errorSummaries { $('ul.govuk-error-summary__list li') }
+    errors { $('span.govuk-error-message') }
   }
 }
