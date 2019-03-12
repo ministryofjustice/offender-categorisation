@@ -170,5 +170,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     then: 'the security rating section is complete'
     at new CategoriserTasklistPage(bookingId: '12')
     securityButton.text() == 'Edit'
+
+    db.getData(12).status == ["SECURITY_BACK"]
   }
 }

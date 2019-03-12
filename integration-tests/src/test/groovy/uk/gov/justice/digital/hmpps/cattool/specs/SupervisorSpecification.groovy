@@ -44,7 +44,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
   def "The supervisor review page can be confirmed"() {
     given: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -67,11 +67,12 @@ class SupervisorSpecification extends GebReportingSpec {
 
     def response = db.getData(12).form_response
     response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorCategoryAppropriate": "Yes", "supervisorOverriddenCategoryText": ""}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
+    db.getData(12).status == ["APPROVED"]
   }
 
   def "The supervisor review page can be confirmed - youth offender"() {
     given: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -101,11 +102,12 @@ class SupervisorSpecification extends GebReportingSpec {
 
     def dbData = db.getData(12).form_response
     dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "I", "supervisorOverriddenCategory": "J", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "Some Text"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "I", "categoryAppropriate": "Yes"}}}'
+    db.getData(12).status == ["APPROVED"]
   }
 
   def "The supervisor review page can be confirmed - indeterminate sentence"() {
     given: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -135,11 +137,12 @@ class SupervisorSpecification extends GebReportingSpec {
 
     def dbData = db.getData(12).form_response
     dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "Some Text"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
+    db.getData(12).status == ["APPROVED"]
   }
 
   def "The supervisor review page can be confirmed - youth offender and indeterminate sentence"() {
     when: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -164,11 +167,12 @@ class SupervisorSpecification extends GebReportingSpec {
 
     def dbData = db.getData(12).form_response
     dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "I", "supervisorCategoryAppropriate": "Yes"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "I", "categoryAppropriate": "Yes"}}}'
+    db.getData(12).status == ["APPROVED"]
   }
 
   def "The supervisor review page validates input, suggested category C overridden with D"() {
     given: 'supervisor is viewing the review page for B2345YZ'
-    db.createData(12, JsonOutput.toJson([
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
@@ -223,7 +227,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     def response = db.getData(12).form_response
     response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "D", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "A good reason"}}'
-
+    db.getData(12).status == ["APPROVED"]
   }
 
   def navigateToReview(youngOffender = false, indeterminateSentence = false){

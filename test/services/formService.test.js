@@ -133,30 +133,66 @@ describe('update', () => {
       expect(formClient.update).toBeCalledWith('form1', output, 1234, 'MEEEE', 'STARTED', 'MEEEE')
     })
 
-    test('should not call update if there are no changes', async () => {
+    test('should reject update if invalid status transition - SECURITY_BACK - APPROVED', async () => {
       formClient.getFormDataForUser.mockReturnValue({
         rows: [
           {
-            form_response: {
-              ...baseForm,
-            },
+            id: 'form1',
+            status: 'SECURITY_BACK',
+            ...baseForm,
           },
           { c: 'd' },
         ],
       })
-      const fieldMapSimple = [{ answer: {} }]
-      const userInput = { answer: 'answer' }
 
-      const output = await service.update({
-        userId: 'user1',
-        config: { fields: fieldMapSimple },
-        userInput,
-        formSection: 'section4',
-        formName: 'form2',
+      const userInput = {
+        decision: 'Yes',
+        followUp1: 'County',
+        followUp2: 'Town',
+      }
+
+      expect(
+        service.update({
+          bookingId: 1234,
+          userId: 'MEEEE',
+          config: { fields: fieldMap },
+          userInput,
+          formSection: 'section4',
+          formName: 'form3',
+          status: 'APPROVED',
+        })
+      ).rejects.toEqual(new Error('Invalid state transition from SECURITY_BACK to APPROVED'))
+    })
+
+    test('should reject update invalid status transition - APPROVED - STARTED', async () => {
+      formClient.getFormDataForUser.mockReturnValue({
+        rows: [
+          {
+            id: 'form1',
+            status: 'SECURITY_BACK',
+            ...baseForm,
+          },
+          { c: 'd' },
+        ],
       })
 
-      expect(formClient.update).toBeCalledTimes(0)
-      expect(output).toEqual(baseForm)
+      const userInput = {
+        decision: 'Yes',
+        followUp1: 'County',
+        followUp2: 'Town',
+      }
+
+      expect(
+        service.update({
+          bookingId: 1234,
+          userId: 'MEEEE',
+          config: { fields: fieldMap },
+          userInput,
+          formSection: 'section4',
+          formName: 'form3',
+          status: 'APPROVED',
+        })
+      ).rejects.toEqual(new Error('Invalid state transition from APPROVED to STARTED'))
     })
 
     it('should add new sections and forms to the licence if they dont exist', async () => {
@@ -347,6 +383,26 @@ describe('getValidationErrors', () => {
     ${{ q1: 'No', q3: 'Yes', q4: 'any text' }} | ${dependantConfig} | ${[{ href: '#q4', text: 'Error q4' }]}
   `('should return errors $expectedContent for form return', ({ formBody, formConfig, expectedOutput }) => {
     expect(service.getValidationErrors(formBody, formConfig)).toEqual(expectedOutput)
+  })
+})
+
+describe('validateStatusIfPresent', () => {
+  test.each`
+    current                        | proposed                         | expectedOutput
+    ${Status.STARTED.name}         | ${Status.AWAITING_APPROVAL.name} | ${true}
+    ${Status.STARTED.name}         | ${Status.APPROVED.name}          | ${false}
+    ${Status.SECURITY_AUTO.name}   | ${Status.SECURITY_BACK.name}     | ${true}
+    ${Status.SECURITY_MANUAL.name} | ${Status.SECURITY_BACK.name}     | ${true}
+    ${Status.SECURITY_MANUAL.name} | ${Status.STARTED.name}           | ${false}
+    ${undefined}                   | ${Status.APPROVED.name}          | ${false}
+    ${undefined}                   | ${Status.AWAITING_APPROVAL.name} | ${false}
+    ${undefined}                   | ${Status.SECURITY_MANUAL.name}   | ${false}
+    ${undefined}                   | ${Status.SECURITY_AUTO.name}     | ${true}
+    ${undefined}                   | ${Status.SECURITY_BACK.name}     | ${false}
+    ${undefined}                   | ${Status.STARTED.name}           | ${true}
+    ${Status.STARTED.name}         | ${undefined}                     | ${true}
+  `('should return errors $expectedContent for validate status', ({ current, proposed, expectedOutput }) => {
+    expect(service.validateStatus(current, proposed)).toEqual(expectedOutput)
   })
 })
 

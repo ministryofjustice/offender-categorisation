@@ -81,6 +81,15 @@ class EscapeSpecification extends GebReportingSpec {
 
     radio == 'No'
 
+    and: "The page is saved"
+    saveButton.click()
+
+    then: 'the tasklist is displayed and the status is STARTED'
+
+    at(new CategoriserTasklistPage(bookingId: '12'))
+
+    db.getData(12).status == ["STARTED"]
+
   }
 
   def "Validation"() {
