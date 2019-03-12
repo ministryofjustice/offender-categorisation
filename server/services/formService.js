@@ -63,7 +63,7 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function storeDecisionData(bookingId, data) {
+  async function updateFormData(bookingId, data) {
     await formClient.updateFormData(bookingId, data)
   }
 
@@ -179,7 +179,7 @@ module.exports = function createFormService(formClient) {
     getCategorisationRecord,
     update,
     getValidationErrors: validate,
-    storeDecisionData,
+    updateFormData,
     computeSuggestedCat,
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,

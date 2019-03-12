@@ -189,7 +189,7 @@ module.exports = function Index({
         extremismProfile,
         violenceProfile,
       }
-      formService.storeDecisionData(bookingId, dataToStore)
+      formService.updateFormData(bookingId, dataToStore)
 
       res.render('formPages/categoriser/review', { ...result, data: dataToDisplay })
     })
