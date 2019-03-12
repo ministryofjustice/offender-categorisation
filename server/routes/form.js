@@ -149,15 +149,49 @@ module.exports = function Index({
   router.get(
     '/categoriser/review/:bookingId',
     asyncMiddleware(async (req, res) => {
-      // TODO save risk profile data and Off his cata data
-      await renderReview(req, res, 'categoriser')
-    })
-  )
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, 'categoriser', 'review', bookingId)
 
-  router.get(
-    '/supervisor/review/:bookingId',
-    asyncMiddleware(async (req, res) => {
-      await renderReview(req, res, 'supervisor')
+      const history = await offendersService.getCatAInformation(res.locals.user.token, result.data.details.offenderNo)
+
+      const escapeProfile = await riskProfilerService.getEscapeProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username
+      )
+      const socProfile = await riskProfilerService.getSecurityProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username
+      )
+      const extremismProfile = await riskProfilerService.getExtremismProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username,
+        result.data.ratings &&
+          result.data.ratings.extremismRating &&
+          result.data.ratings.extremismRating.previousTerrorismOffences === 'Yes'
+      )
+      const violenceProfile = await riskProfilerService.getViolenceProfile(
+        result.data.details.offenderNo,
+        res.locals.user.username
+      )
+      const dataToStore = {
+        ratings: result.data.ratings,
+        history,
+        socProfile,
+        escapeProfile,
+        extremismProfile,
+        violenceProfile,
+      }
+      const dataToDisplay = {
+        ...result.data,
+        history,
+        socProfile,
+        escapeProfile,
+        extremismProfile,
+        violenceProfile,
+      }
+      formService.storeDecisionData(bookingId, dataToStore)
+
+      res.render('formPages/categoriser/review', { ...result, data: dataToDisplay })
     })
   )
 
@@ -196,36 +230,6 @@ module.exports = function Index({
       backLink,
       errors,
     }
-  }
-
-  const renderReview = async (req, res, section) => {
-    const { bookingId } = req.params
-    const result = await buildFormData(res, req, section, 'review', bookingId)
-    const escapeProfile = await riskProfilerService.getEscapeProfile(
-      result.data.details.offenderNo,
-      res.locals.user.username
-    )
-    const socProfile = await riskProfilerService.getSecurityProfile(
-      result.data.details.offenderNo,
-      res.locals.user.username
-    )
-    const extremismProfile = await riskProfilerService.getExtremismProfile(
-      result.data.details.offenderNo,
-      res.locals.user.username,
-      false // TODO
-    )
-    const violenceProfile = await riskProfilerService.getViolenceProfile(
-      result.data.details.offenderNo,
-      res.locals.user.username
-    )
-    const data = {
-      ...result.data,
-      socProfile,
-      escapeProfile,
-      extremismProfile,
-      violenceProfile,
-    }
-    res.render(`formPages/${section}/review`, { ...result, data })
   }
 
   const clearConditionalFields = body => {
