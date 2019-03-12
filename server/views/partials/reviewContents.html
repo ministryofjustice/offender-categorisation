@@ -47,11 +47,12 @@
 <hr>
 {{ reviewSectionHeader(showChangeLinks, 'Violence rating','/form/ratings/violenceRating/'+ data.details.bookingId) }}
 
-{% if data.ratings.violenceProfile.veryHighRiskViolentOffender %}
+{% if data.violenceProfile.veryHighRiskViolentOffender %}
   {{ govukWarningText({
-  text: "Violent in custody Text TBC",
-  iconFallbackText: "Warning",
-  classes: "forms-warning-text warning-overrides govuk-grid-column-full"
+    text: "Violent in custody Text TBC",
+    attributes:{ 'id': 'veryHighRiskViolentOffender' },
+    iconFallbackText: "Warning",
+    classes: "forms-warning-text warning-overrides govuk-grid-column-full"
   }) }}
 {% endif %}
 

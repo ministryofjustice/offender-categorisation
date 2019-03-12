@@ -21,6 +21,7 @@ const formService = {
   referToSecurityIfRequested: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
+  computeSuggestedCat: jest.fn().mockReturnValue('B'),
 }
 
 const riskProfilerService = {

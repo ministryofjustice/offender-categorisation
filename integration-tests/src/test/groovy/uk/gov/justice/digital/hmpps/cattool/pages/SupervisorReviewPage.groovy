@@ -21,7 +21,8 @@ class SupervisorReviewPage extends Page {
     overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
     overriddenCategoryC(required: false) { $('#overriddenCategoryC') }
     overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
-    newCatMessage(required: false) { $('h2.govuk-heading-m') }
+    veryHighRiskViolentOffenderMessage(required: false) { $('#veryHighRiskViolentOffender') }
+    newCatMessage(required: false) { $('#newCatMessage') }
     overriddenCategoryText(required: false) { $('#supervisorOverriddenCategoryText') }
     indeterminateMessage(required: false) { $('p.govuk-body') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }

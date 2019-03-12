@@ -37,9 +37,10 @@
 
 <h1 class="govuk-heading-l">Violence rating</h1>
 
-  {% if data.ratings.violenceRating.violenceProfile.veryHighRiskViolentOffender %}
+  {% if data.violenceProfile.veryHighRiskViolentOffender %}
     {{ govukWarningText({
       text: "Violent in custody Text TBC",
+      attributes:{ 'id': 'veryHighRiskViolentOffender' },
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
