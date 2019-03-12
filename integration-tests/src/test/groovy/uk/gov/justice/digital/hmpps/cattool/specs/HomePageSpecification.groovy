@@ -53,11 +53,11 @@ class HomePageSpecification extends GebReportingSpec {
 
     then: 'The categoriser home page is displayed'
     at CategoriserHomePage
-    prisonNos == ['B2345YZ', 'B2345XY']
-    names == ['Hillmob, Ant', 'Pitstop, Penelope']
+    prisonNos == ['B2345XY','B2345YZ']
+    names == ['Pitstop, Penelope', 'Hillmob, Ant']
     days == [daysSinceSentence12, daysSinceSentence11]
-    dates == ['14/02/2019', '11/02/2019']
-    statuses == ['Awaiting approval', 'Not categorised']
+    dates == ['14/02/2019','11/02/2019']
+    statuses == ['Not categorised', 'Awaiting approval']
   }
 
   def "The home page for a supervisor is present"() {
@@ -123,6 +123,7 @@ class HomePageSpecification extends GebReportingSpec {
 
     then: 'The uncategorised list is displayed with the assigned user text'
     statuses == ["Started (Hpa User)"]
+    startButtons[0].text() == 'Edit'
   }
 
   def "Log out"() {
