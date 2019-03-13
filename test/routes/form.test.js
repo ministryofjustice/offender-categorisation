@@ -22,6 +22,7 @@ const formService = {
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
+  updateFormData: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -88,7 +89,6 @@ afterEach(() => {
 describe('GET /section/form', () => {
   test.each`
     path                                       | expectedContent
-    ${'categoriser/review/12345'}              | ${'Check your answers before you continue'}
     ${'categoriser/provisionalCategory/12345'} | ${'Provisional category'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
@@ -106,6 +106,7 @@ describe('GET /ratings/offendingHistory', () => {
   test.each`
     path                                | expectedContent
     ${'ratings/offendingHistory/12345'} | ${'Offending history'}
+    ${'categoriser/review/12345'}       | ${'Check your answers before you continue'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
