@@ -408,15 +408,15 @@ describe('validateStatusIfPresent', () => {
 
 describe('computeSuggestedCat', () => {
   test.each`
-    data                                                                      | category
-    ${{}}                                                                     | ${'C'}
-    ${{ details: { dateOfBirth: '2001-03-15' } }}                             | ${'I'}
-    ${{ ratings: { offendingHistory: { cata: true } } }}                      | ${'B'}
-    ${{ securityBack: { catB: 'Yes' } }}                                      | ${'B'}
-    ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}             | ${'B'}
-    ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}                    | ${'B'}
-    ${{ ratings: { escapeRating: { escapeFurtherCharges: 'Yes' } } }}         | ${'B'}
-    ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }} | ${'B'}
+    data                                                              | category
+    ${{}}                                                             | ${'C'}
+    ${{ details: { dateOfBirth: '2001-03-15' } }}                     | ${'I'}
+    ${{ history: { catAType: 'A' } }}                                 | ${'B'}
+    ${{ securityBack: { catB: 'Yes' } }}                              | ${'B'}
+    ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}     | ${'B'}
+    ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}            | ${'B'}
+    ${{ ratings: { escapeRating: { escapeFurtherCharges: 'Yes' } } }} | ${'B'}
+    ${{ extremismProfile: { provisionalCategorisation: 'B' } }}       | ${'B'}
   `('should return cat $category for data: $data', ({ data, category }) => {
     expect(service.computeSuggestedCat(data)).toEqual(category)
   })

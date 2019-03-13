@@ -31,6 +31,15 @@ module.exports = {
     return db.query(query)
   },
 
+  updateFormData(bookingId, formResponse) {
+    logger.debug(`updateFormData for booking id ${bookingId}`)
+    const query = {
+      text: 'update form set form_response = $1 where booking_id = $2',
+      values: [formResponse, bookingId],
+    }
+    return db.query(query)
+  },
+
   update(formId, formResponse, bookingId, userId, status, assignedUserId) {
     logger.debug(`updating record for booking id ${bookingId}`)
     const query = formId

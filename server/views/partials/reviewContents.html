@@ -90,16 +90,16 @@
 {{ reviewSectionHeader(showChangeLinks, 'Risk of escape','/form/ratings/escapeRating/'+ data.details.bookingId) }}
 
 {% if data.escapeProfile.activeEscapeList %}
-{% set warningTextEscape %}
-This person is on the heightened / standard / escort e-list
-{% endset %}
-{% if warningTextEscape | trim %}
-  {{ govukWarningText({
-  text: warningTextEscape,
-  iconFallbackText: "Warning",
-  classes: "forms-warning-text govuk-grid-column-full "
-  }) }}
-{% endif %}
+  {% set warningTextEscape %}
+    This person is considered an escape risk
+  {% endset %}
+  {% if warningTextEscape | trim %}
+    {{ govukWarningText({
+      text: warningTextEscape,
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text govuk-grid-column-full"
+    }) }}
+  {% endif %}
 {% endif %}
 
 <div class="govuk-form-group">
