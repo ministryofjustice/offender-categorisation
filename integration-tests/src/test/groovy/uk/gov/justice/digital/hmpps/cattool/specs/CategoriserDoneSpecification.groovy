@@ -7,6 +7,7 @@ import groovy.json.JsonOutput
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
@@ -31,10 +32,13 @@ class CategoriserDoneSpecification extends GebReportingSpec {
   Elite2Api elite2api = new Elite2Api()
 
   @Rule
+  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
+
+  @Rule
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The done page for a categoriser is present"() {

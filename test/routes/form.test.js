@@ -131,7 +131,7 @@ describe('GET /ratings/securityInput', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-        expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(1)
+        expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
       })
   )
 })

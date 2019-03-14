@@ -7,14 +7,18 @@ import groovy.json.JsonOutput
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_USER
 
 class TasklistSpecification extends GebReportingSpec {
 
@@ -22,10 +26,13 @@ class TasklistSpecification extends GebReportingSpec {
   Elite2Api elite2api = new Elite2Api()
 
   @Rule
+  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
+
+  @Rule
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def setup() {
@@ -76,5 +83,33 @@ class TasklistSpecification extends GebReportingSpec {
     then: 'The continue button takes me to the review page'
     continueButton.displayed
     !continueButtonDisabled
+  }
+
+  def "The tasklist page displays an alert when status is transferred to security"() {
+    when: 'I go to the tasklist page'
+
+    fixture.gotoTasklist(true)
+    at(new CategoriserTasklistPage(bookingId: '12'))
+
+    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+
+    at new CategoriserTasklistPage(bookingId: '12')
+
+    then: 'the prisoner start button is locked'
+    securityButton.tag() == 'button'
+    securityButton.@disabled
+    def today = LocalDate.now().format('dd/MM/YYYY')
+    $('#securitySection').text().contains("Automatically referred to Security ($today)")
+
+    when: 'a security user views their homepage'
+    elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    logoutLink.click()
+    fixture.loginAs(SECURITY_USER)
+
+    then: 'this prisoner is present with automatic referral'
+    at SecurityHomePage
+    prisonNos[0] == 'B2345XY'
+    referredBy[0] == 'Automatic'
   }
 }

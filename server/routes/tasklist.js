@@ -4,7 +4,13 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { dateConverter } = require('../utils/utils.js')
 const Status = require('../utils/statusEnum')
 
-module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
+module.exports = function Index({
+  formService,
+  offendersService,
+  userService,
+  authenticationMiddleware,
+  riskProfilerService,
+}) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -16,17 +22,37 @@ module.exports = function Index({ formService, offendersService, userService, au
       res.locals.user = { ...user, ...res.locals.user }
 
       const { bookingId } = req.params
-      const formData = await formService.getCategorisationRecord(bookingId)
-      res.locals.formObject = formData.form_response || {}
-      res.locals.formId = formData.id
+      let categorisationRecord = await formService.createOrRetrieveCategorisationRecord(bookingId, req.user.username)
+      res.locals.formObject = categorisationRecord.form_response || {}
+      res.locals.formId = categorisationRecord.id
 
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+
+      // only load the soc profile once - then it is saved against the record
+      if (!res.locals.formObject.socProfile) {
+        const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals.user.username)
+        const dataToStore = {
+          ...res.locals.formObject, // merge any existing form data
+          socProfile,
+        }
+        formService.updateFormData(bookingId, dataToStore)
+
+        await formService.referToSecurityIfRiskAssessed(
+          bookingId,
+          req.user.username,
+          socProfile,
+          categorisationRecord.status
+        )
+        categorisationRecord = await formService.getCategorisationRecord(bookingId)
+      }
+
       const data = {
         details,
         ...res.locals.formObject,
-        status: formData.status,
-        displayStatus: formData.status && Status[formData.status].value,
-        referredDate: formData.referred_date && moment(formData.referred_date).format('DD/MM/YYYY'),
+        status: categorisationRecord.status,
+        displayStatus: categorisationRecord.status && Status[categorisationRecord.status].value,
+        referredDate:
+          categorisationRecord.referred_date && moment(categorisationRecord.referred_date).format('DD/MM/YYYY'),
       }
       res.render('pages/tasklist', { data, dateConverter, Status })
     })

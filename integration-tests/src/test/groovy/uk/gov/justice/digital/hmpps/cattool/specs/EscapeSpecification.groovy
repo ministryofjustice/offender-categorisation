@@ -28,7 +28,7 @@ class EscapeSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The escape page displays an alert when the offender is on the escape list"() {
