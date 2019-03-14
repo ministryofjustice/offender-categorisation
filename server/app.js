@@ -203,7 +203,10 @@ module.exports = function createApp({
   })
 
   app.use('/', createHomeRouter({ userService, offendersService, authenticationMiddleware }))
-  app.use('/tasklist/', createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware }))
+  app.use(
+    '/tasklist/',
+    createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService })
+  )
   const formRouter = createFormRouter({
     formService,
     offendersService,

@@ -428,31 +428,18 @@ const userId = 'MEEE'
 describe('referToSecurityIfRiskAssessed', () => {
   const socProfile = { transferToSecurity: true }
 
-  test('no existing status', async () => {
-    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, null)
-
-    expect(formClient.update.mock.calls[0]).toEqual([null, '{}', bookingId, userId, Status.STARTED.name, userId, null])
-    expect(formClient.referToSecurity.mock.calls[0]).toEqual([bookingId, null, Status.SECURITY_AUTO.name])
-  })
-
-  test(' valid existing status', async () => {
+  test(' valid status', async () => {
     await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED')
-
-    expect(formClient.update).not.toBeCalled()
     expect(formClient.referToSecurity.mock.calls[0]).toEqual([bookingId, null, Status.SECURITY_AUTO.name])
   })
 
   test('invalid status', async () => {
     await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED')
-
-    expect(formClient.update).not.toBeCalled()
     expect(formClient.referToSecurity).not.toBeCalled()
   })
 
   test('invalid SECURITY_AUTO status', async () => {
     await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'SECURITY_AUTO')
-
-    expect(formClient.update).not.toBeCalled()
     expect(formClient.referToSecurity).not.toBeCalled()
   })
 
@@ -460,7 +447,6 @@ describe('referToSecurityIfRiskAssessed', () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
     expect(service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED')).rejects.toThrow('TEST')
-    expect(formClient.update).not.toBeCalled()
   })
 })
 
@@ -543,6 +529,24 @@ describe('backFromSecurity', () => {
     formClient.backFromSecurity.mockRejectedValue(new Error('TEST'))
 
     expect(service.backFromSecurity(bookingId)).rejects.toThrow('TEST')
+  })
+})
+
+describe('createOrRetrieveCategorisationRecord', () => {
+  test('record exists', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
+
+    await service.createOrRetrieveCategorisationRecord(bookingId, userId)
+
+    expect(formClient.update).not.toBeCalled()
+  })
+
+  test('no record exists', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [] })
+
+    await service.createOrRetrieveCategorisationRecord(bookingId, userId)
+
+    expect(formClient.update).toBeCalledWith(undefined, {}, bookingId, userId, 'STARTED', userId)
   })
 })
 /*

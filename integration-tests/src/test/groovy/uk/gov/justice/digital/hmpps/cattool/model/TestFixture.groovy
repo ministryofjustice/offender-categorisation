@@ -5,6 +5,7 @@ import geb.Browser
 import groovy.json.JsonOutput
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
@@ -17,13 +18,15 @@ class TestFixture {
 
   Browser browser
   Elite2Api elite2Api
+  RiskProfilerApi riskProfilerApi
   OauthApi oauthApi
 
   UserAccount currentUser
 
-  TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi) {
+  TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1) {
     this.browser = browser
     this.elite2Api = elite2Api
+    this.riskProfilerApi = riskProfilerApi1
     this.oauthApi = oauthApi
   }
 
@@ -38,7 +41,7 @@ class TestFixture {
     simulateLogin()
   }
 
-  def gotoTasklist() {
+  def gotoTasklist(transferToSecurity = false) {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
@@ -47,6 +50,7 @@ class TestFixture {
     loginAs(CATEGORISER_USER)
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', transferToSecurity)
     browser.selectFirstPrisoner()
   }
 

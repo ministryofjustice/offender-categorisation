@@ -74,12 +74,7 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId)
-      const socProfile = await riskProfilerService.getSecurityProfile(
-        result.data.details.offenderNo,
-        res.locals.user.username
-      )
-      await formService.referToSecurityIfRiskAssessed(bookingId, req.user.username, socProfile, result.status)
-      const data = { ...result.data, socProfile }
+      const data = { ...result.data }
       res.render('formPages/ratings/securityInput', { ...result, data })
     })
   )
@@ -158,10 +153,6 @@ module.exports = function Index({
         result.data.details.offenderNo,
         res.locals.user.username
       )
-      const socProfile = await riskProfilerService.getSecurityProfile(
-        result.data.details.offenderNo,
-        res.locals.user.username
-      )
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         result.data.details.offenderNo,
         res.locals.user.username,
@@ -175,8 +166,8 @@ module.exports = function Index({
       )
       const dataToStore = {
         ratings: result.data.ratings,
+        socProfile: result.data.socProfile,
         history,
-        socProfile,
         escapeProfile,
         extremismProfile,
         violenceProfile,
@@ -184,7 +175,6 @@ module.exports = function Index({
       const dataToDisplay = {
         ...result.data,
         history,
-        socProfile,
         escapeProfile,
         extremismProfile,
         violenceProfile,
