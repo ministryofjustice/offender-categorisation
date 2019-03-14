@@ -74,8 +74,7 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId)
-      const data = { ...result.data }
-      res.render('formPages/ratings/securityInput', { ...result, data })
+      res.render('formPages/ratings/securityInput', { ...result })
     })
   )
 
@@ -179,7 +178,8 @@ module.exports = function Index({
         extremismProfile,
         violenceProfile,
       }
-      formService.updateFormData(bookingId, dataToStore)
+
+      await formService.updateFormData(bookingId, dataToStore)
 
       res.render('formPages/categoriser/review', { ...result, data: dataToDisplay })
     })
