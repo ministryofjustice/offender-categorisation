@@ -21,11 +21,15 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals.user.token)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
-      let categorisationRecord = await formService.createOrRetrieveCategorisationRecord(bookingId, req.user.username)
+      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      let categorisationRecord = await formService.createOrRetrieveCategorisationRecord(
+        bookingId,
+        req.user.username,
+        details.agencyId,
+        details.offenderNo
+      )
       res.locals.formObject = categorisationRecord.form_response || {}
       res.locals.formId = categorisationRecord.id
-
-      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
 
       // only load the soc profile once - then it is saved against the record
       if (!res.locals.formObject.socProfile) {
