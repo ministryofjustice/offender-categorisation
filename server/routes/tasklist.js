@@ -20,7 +20,6 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals.user.token)
       res.locals.user = { ...user, ...res.locals.user }
-
       const { bookingId } = req.params
       let categorisationRecord = await formService.createOrRetrieveCategorisationRecord(bookingId, req.user.username)
       res.locals.formObject = categorisationRecord.form_response || {}
@@ -35,7 +34,7 @@ module.exports = function Index({
           ...res.locals.formObject, // merge any existing form data
           socProfile,
         }
-        formService.updateFormData(bookingId, dataToStore)
+        await formService.updateFormData(bookingId, dataToStore)
 
         await formService.referToSecurityIfRiskAssessed(
           bookingId,
