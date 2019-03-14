@@ -33,7 +33,7 @@ class ExtremismSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The extremism page saves details correctly"() {
@@ -46,6 +46,12 @@ class ExtremismSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
+
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    selectFirstPrisoner()
+
+    at CategoriserTasklistPage
+
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
     to ExtremismPage, '12'
 
@@ -59,7 +65,8 @@ class ExtremismSpecification extends GebReportingSpec {
     previousTerrorismOffencesText << "Some risk text"
     submitButton.click()
     at CategoriserTasklistPage
-    to ExtremismPage, '12'
+    extremismButton.click()
+    at ExtremismPage
 
     then: "data is correctly retrieved"
     form.previousTerrorismOffences == "Yes"

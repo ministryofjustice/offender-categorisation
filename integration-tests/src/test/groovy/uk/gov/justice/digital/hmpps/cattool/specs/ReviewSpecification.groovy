@@ -40,7 +40,7 @@ class ReviewSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
 
@@ -60,7 +60,6 @@ class ReviewSpecification extends GebReportingSpec {
     elite2api.stubAssessments('B2345YZ')
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2api.stubOffenceHistory('B2345YZ')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)

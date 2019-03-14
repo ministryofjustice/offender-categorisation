@@ -6,6 +6,7 @@ import geb.spock.GebReportingSpec
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
@@ -31,10 +32,13 @@ class HomePageSpecification extends GebReportingSpec {
   Elite2Api elite2api = new Elite2Api()
 
   @Rule
+  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
+
+  @Rule
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The home page for a categoriser is present"() {
@@ -92,6 +96,7 @@ class HomePageSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(678, "ON678")
+    riskProfilerApi.stubGetSocProfile('ON678', 'C', false)
     startButtons[0].click() // selects B2345YZ
     at(new CategoriserTasklistPage(bookingId: '678'))
     headerValue*.text() == ['Hillmob, Ant', 'ON678', '17/02/1970', 'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']

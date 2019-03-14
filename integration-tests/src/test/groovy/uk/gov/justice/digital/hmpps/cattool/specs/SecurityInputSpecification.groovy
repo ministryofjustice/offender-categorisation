@@ -37,45 +37,9 @@ class SecurityInputSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
-  def "The security page displays an alert when status is transferred to security"() {
-    when: 'I go to the tasklist page'
-
-    fixture.gotoTasklist()
-    at(new CategoriserTasklistPage(bookingId: '12'))
-
-    elite2api.stubAssessments(['B2345YZ'])
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
-
-    securityButton.click()
-
-    then: 'The security input page is displayed with an alert'
-    at new CategoriserSecurityInputPage(bookingId: '12')
-    warningTextDiv.text().contains('This offender was referred to security')
-
-    when: 'I return to the tasklist page'
-    backLink.click()
-    at new CategoriserTasklistPage(bookingId: '12')
-
-    then: 'the prisoner start button is locked'
-    securityButton.tag() == 'button'
-    securityButton.@disabled
-    def today = LocalDate.now().format('dd/MM/YYYY')
-    $('#securitySection').text().contains("Automatically referred to Security ($today)")
-
-    when: 'a security user views their homepage'
-    elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
-    logoutLink.click()
-    fixture.loginAs(SECURITY_USER)
-
-    then: 'this prisoner is present with automatic referral'
-    at SecurityHomePage
-    prisonNos[0] == 'B2345XY'
-    referredBy[0] == 'Automatic'
-  }
 
   def "The security page can be edited"() {
     given: 'the security input page has been completed'

@@ -24,7 +24,7 @@ class ErrorSpecification extends GebReportingSpec {
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
 
   def "The error page is displayed when an unexpected error occurs"() {
     when: 'A 500 error occurs in an API call'
