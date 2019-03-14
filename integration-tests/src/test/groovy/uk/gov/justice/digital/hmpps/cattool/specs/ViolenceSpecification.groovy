@@ -33,7 +33,7 @@ class ViolenceSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi)
+  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The violence page saves details correctly"() {
@@ -46,6 +46,12 @@ class ViolenceSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2api.stubGetOffenderDetails(12)
+
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    selectFirstPrisoner()
+    at CategoriserTasklistPage
+
+
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
     to ViolencePage, '12'
 
