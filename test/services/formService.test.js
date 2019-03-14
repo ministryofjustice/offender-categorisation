@@ -544,9 +544,9 @@ describe('createOrRetrieveCategorisationRecord', () => {
   test('no record exists', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.createOrRetrieveCategorisationRecord(bookingId, userId)
+    await service.createOrRetrieveCategorisationRecord(bookingId, userId, 'MDI', 'A4567RS')
 
-    expect(formClient.update).toBeCalledWith(undefined, {}, bookingId, userId, 'STARTED', userId)
+    expect(formClient.update).toBeCalledWith(undefined, {}, bookingId, userId, 'STARTED', userId, 'MDI', 'A4567RS')
   })
 })
 /*

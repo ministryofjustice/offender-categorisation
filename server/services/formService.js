@@ -39,15 +39,15 @@ module.exports = function createFormService(formClient) {
     throw new Error(`Invalid state transition from ${currentCategorisation.status} to ${status}`)
   }
 
-  async function createCategorisationRecord(bookingId, userId) {
-    await formClient.update(undefined, {}, bookingId, userId, Status.STARTED.name, userId)
+  async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo) {
+    await formClient.update(undefined, {}, bookingId, userId, Status.STARTED.name, userId, prisonId, offenderNo)
     return getCategorisationRecord(bookingId)
   }
 
-  async function createOrRetrieveCategorisationRecord(bookingId, userId) {
+  async function createOrRetrieveCategorisationRecord(bookingId, userId, prisonId, offenderNo) {
     const currentRecord = await getCategorisationRecord(bookingId)
     if (!currentRecord.status) {
-      const record = await createCategorisationRecord(bookingId, userId)
+      const record = await createCategorisationRecord(bookingId, userId, prisonId, offenderNo)
       return record
     }
     return currentRecord

@@ -307,6 +307,7 @@ class Elite2Api extends WireMockRule {
           [
             bookingId         : bookingId,
             offenderNo        : offenderNo,
+            agencyId          : 'LEI',
             firstName         : 'ANT',
             lastName          : 'HILLMOB',
             dateOfBirth       : youngOffender ? '2018-01-01' : '1970-02-17',
