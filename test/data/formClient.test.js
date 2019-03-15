@@ -18,7 +18,7 @@ describe('getFormDataForUser', () => {
 
     expect(db.query).toBeCalledWith({
       text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
-        from form where booking_id = $1`,
+        from form f where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['bookingId1'],
     })
   })
@@ -44,7 +44,8 @@ describe('update', () => {
     formClient.update('formId', {}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123')
 
     expect(db.query).toBeCalledWith({
-      text: 'update form set form_response = $1, status = $2 where booking_id = $3',
+      text:
+        'update form f set form_response = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
       values: [{}, 'STARTED', 'bookingId1'],
     })
   })

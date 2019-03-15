@@ -1,11 +1,22 @@
 exports.up = knex =>
   knex.schema.alterTable('form', table => {
-    table.integer('sequence_no').notNullable()
+    table
+      .integer('sequence_no')
+      .notNullable()
+      .defaultTo(1)
     table.jsonb('risk_profile').nullable()
-    table.string('prison_id', 6).notNullable()
-    table.string('offender_no', 10).notNullable()
-    table.timestamp('start_date').notNullable()
-    table.timestamp('approved_date').nullable()
+    table
+      .string('prison_id', 6)
+      .notNullable()
+      .defaultTo('XXX')
+    table
+      .string('offender_no', 10)
+      .notNullable()
+      .defaultTo('unknown')
+    table
+      .timestamp('start_date')
+      .notNullable()
+      .defaultTo(knex.fn.now(6))
 
     table.string('user_id', 32).alter()
     table.string('assigned_user_id', 32).alter()
@@ -23,5 +34,4 @@ exports.down = knex =>
     table.dropColumn('prison_id')
     table.dropColumn('offender_no')
     table.dropColumn('start_date')
-    table.dropColumn('approved_date')
   })
