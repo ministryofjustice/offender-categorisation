@@ -27,4 +27,8 @@ class CategoriserTasklistPage extends Page {
     extremismButton { $('#extremismButton') }
     backLink { $('a.govuk-back-link') }
   }
+
+  def logout() {
+    logoutLink.click()
+  }
 }
