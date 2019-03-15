@@ -39,6 +39,7 @@ beforeEach(() => {
 
 afterEach(() => {
   offendersService.getCategorisedOffenders.mockReset()
+  offendersService.getUncategorisedOffenders.mockReset()
   offendersService.getOffenderDetails.mockReset()
   offendersService.getUnapprovedOffenders.mockReset()
   offendersService.getOffenderDetails.mockReset()
@@ -102,6 +103,87 @@ describe('GET /supervisorHome', () => {
       .expect(res => {
         expect(res.text).toContain('PNOMIS') // should not display start button
         expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
+      })
+  })
+})
+
+describe('GET /categoriserHome', () => {
+  test('button is Start for Uncategorised records (no database record)', () => {
+    offendersService.getUncategorisedOffenders.mockResolvedValue([
+      {
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        displayName: 'Tim Handle',
+        displayStatus: 'Not categorised',
+      },
+    ])
+    return request(app)
+      .get('/categoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Start now')
+        expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('button is view for awaiting approval records (with cat tool dbrecord)', () => {
+    offendersService.getUncategorisedOffenders.mockResolvedValue([
+      {
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        displayName: 'Tim Handle',
+        displayStatus: 'Awaiting approval',
+        dbRecordExists: true,
+        assignedUserId: 'DC123',
+        referredBy: 'Mimsie Don',
+      },
+    ])
+    return request(app)
+      .get('/categoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('View') // should display view button
+        expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('button is edit for completed security records (with cat tool dbrecord)', () => {
+    offendersService.getUncategorisedOffenders.mockResolvedValue([
+      {
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        displayName: 'Tim Handle',
+        displayStatus: 'Completed Security',
+        dbRecordExists: true,
+        assignedUserId: 'DC123',
+        referredBy: 'Mimsie Don',
+      },
+    ])
+    return request(app)
+      .get('/categoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Edit') // should display view button
+        expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('button is replaced with PNOMIS for categorisations that have been progresses in PNOMIS (without a db record)', () => {
+    offendersService.getUncategorisedOffenders.mockResolvedValue([
+      {
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        displayName: 'Tim Handle',
+        displayStatus: 'Any other status',
+      },
+    ])
+    return request(app)
+      .get('/categoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('PNOMIS') // no button
+        expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })
 })

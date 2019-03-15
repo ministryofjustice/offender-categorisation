@@ -62,13 +62,21 @@
         {% set locked = regExp.test(row.displayStatus) %}
         {% set buttonText = "Edit" if row.dbRecordExists else "Start now" %}
 
-        {% if row.displayStatus == 'Not categorised' or row.dbRecordExists %}
-        {{ govukButton({
-        text: buttonText,
-        href: "/tasklist/" + row.bookingId if not locked,
-        disabled: locked,
-        classes: "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3"
-        }) }}
+        {% if (row.dbRecordExists) or (row.displayStatus == 'Not categorised') %}
+          {% if row.displayStatus == 'Awaiting approval' %}
+            {{ govukButton({
+            text: "View",
+            href: "/form/categoriser/view/" + row.bookingId,
+            classes: "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3"
+          }) }}
+          {% else %}
+            {{ govukButton({
+            text: buttonText,
+            href: "/tasklist/" + row.bookingId if not locked,
+            disabled: locked,
+            classes: "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3"
+          }) }}
+          {% endif %}
         {% else %}
         <div class="govuk-!-margin-bottom-3 govuk-!-margin-top-3">PNOMIS</div>
         {% endif %}
