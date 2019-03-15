@@ -2,21 +2,23 @@ const db = require('./dataAccess/db')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 
+const sequenceClause =
+  'and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)'
+
 module.exports = {
   getFormDataForUser(bookingId) {
     const query = {
       text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
-        from form where booking_id = $1`,
+        from form f where f.booking_id = $1 ${sequenceClause}`,
       values: [bookingId],
     }
-
     return db.query(query)
   },
 
   referToSecurity(bookingId, userId, status) {
     logger.debug(`referToSecurity called for ${userId}, status ${status} and booking id ${bookingId}`)
     const query = {
-      text: 'update form set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where booking_id = $3',
+      text: `update form f set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where booking_id = $3 ${sequenceClause}`,
       values: [status, userId, bookingId],
     }
     return db.query(query)
@@ -25,7 +27,7 @@ module.exports = {
   backFromSecurity(bookingId) {
     logger.debug(`backFromSecurity called for booking id ${bookingId}`)
     const query = {
-      text: 'update form set status = $1 where booking_id = $2',
+      text: `update form f set status = $1 where booking_id = $2 ${sequenceClause}`,
       values: [Status.SECURITY_BACK.name, bookingId],
     }
     return db.query(query)
@@ -34,7 +36,7 @@ module.exports = {
   updateFormData(bookingId, formResponse) {
     logger.debug(`updateFormData for booking id ${bookingId}`)
     const query = {
-      text: 'update form set form_response = $1 where booking_id = $2',
+      text: `update form f set form_response = $1 where booking_id = $2 ${sequenceClause}`,
       values: [formResponse, bookingId],
     }
     return db.query(query)
@@ -44,7 +46,7 @@ module.exports = {
     logger.debug(`updating record for booking id ${bookingId}`)
     const query = formId
       ? {
-          text: 'update form set form_response = $1, status = $2 where booking_id = $3',
+          text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
           values: [formResponse, status, bookingId],
         }
       : {
