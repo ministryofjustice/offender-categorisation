@@ -123,6 +123,7 @@ describe('GET /categoriserHome', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Start now')
+        expect(res.text).not.toContain('locked')
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })
@@ -144,6 +145,7 @@ describe('GET /categoriserHome', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('View') // should display view button
+        expect(res.text).not.toContain('locked')
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })
@@ -165,6 +167,29 @@ describe('GET /categoriserHome', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Edit') // should display view button
+        expect(res.text).not.toContain('locked')
+        expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('button is edit for referred security records (with cat tool dbrecord)', () => {
+    offendersService.getUncategorisedOffenders.mockResolvedValue([
+      {
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        displayName: 'Tim Handle',
+        displayStatus: 'Automatically referred to Security',
+        dbRecordExists: true,
+        assignedUserId: 'DC123',
+        referredBy: 'Mimsie Don',
+      },
+    ])
+    return request(app)
+      .get('/categoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Edit') // should display view button
+        expect(res.text).not.toContain('locked')
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })

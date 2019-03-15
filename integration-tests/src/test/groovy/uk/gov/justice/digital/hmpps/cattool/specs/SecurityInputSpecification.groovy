@@ -77,7 +77,6 @@ class SecurityInputSpecification extends GebReportingSpec {
     at(new CategoriserTasklistPage(bookingId: '12'))
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     securityButton.click()
     at(new CategoriserSecurityInputPage(bookingId: '12'))
     securityRadio = 'Yes'
@@ -89,16 +88,8 @@ class SecurityInputSpecification extends GebReportingSpec {
     def today = LocalDate.now().format('DD/MM/YYYY')
     $('#securitySection').text().contains("Manually referred to Security ($today)")
 
-    when: 'I view the categoriser list again'
-    elite2api.stubGetUserDetails(CATEGORISER_USER, 'LEI')
-    to CategoriserHomePage
-
-    then: 'the prisoner start button is locked'
-    startButtons[0].tag() == 'button'
-    startButtons[0].@disabled
-    statuses[0] == 'Manually referred to Security'
-
     when: 'a security user views their homepage'
+    elite2api.stubGetUserDetails(CATEGORISER_USER, 'LEI')
     logout()
     elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     fixture.loginAs(SECURITY_USER)
