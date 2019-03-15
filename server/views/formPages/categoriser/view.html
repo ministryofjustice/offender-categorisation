@@ -1,0 +1,31 @@
+{% extends "../formTemplate.html" %}
+{% set greenButtonText = "Continue" %}
+
+{% block content %}
+
+
+<div class="govuk-grid-row govuk-body-s">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">Provisional categorisation</h1>
+
+    {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
+    {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
+    {% set currentCat = overriddenCat if overriddenCat else cat %}
+
+    <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
+      <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        Category for approval is {{ cat }}
+      </strong>
+    </div>
+
+    {% set showChangeLinks %}false{% endset %}
+    {% include "../../partials/reviewContents.html" %}
+
+  </div>
+</div>
+
+
+{% endblock %}

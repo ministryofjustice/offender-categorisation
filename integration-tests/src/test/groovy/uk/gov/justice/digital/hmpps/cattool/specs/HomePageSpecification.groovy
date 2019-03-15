@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.cattool.specs
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
+import groovy.json.JsonOutput
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
 import java.time.LocalDate
@@ -107,7 +109,7 @@ class HomePageSpecification extends GebReportingSpec {
     at(new CategoriserOffendingHistoryPage(bookingId: '12'))
     textArea << 'some text'
     saveButton.click()
-    at(new CategoriserTasklistPage(bookingId: '678'))
+    at(new CategoriserTasklistPage(bookingId: '12'))
 
     then: 'The uncategorised list is displayed with correct status text'
 
@@ -130,6 +132,40 @@ class HomePageSpecification extends GebReportingSpec {
     statuses == ["Started (Hpa User)"]
     startButtons[0].text() == 'Edit'
   }
+
+  def "An offender Awaiting approval can be viewed"() {
+
+    db.createDataWithStatus(11, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        securityInput   : [securityInputNeeded: "No"],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"],
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]
+    ]))
+
+    when: 'A user starts a categorisation'
+
+    def now = LocalDate.now()
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+
+    // 14 days after sentenceStartDate
+    elite2api.stubUncategorised()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+
+    elite2api.stubGetOffenderDetails(11, "ON678")
+    startButtons[1].click()
+    then: 'The view page is displayed'
+    at CategoriserViewPage
+    categoryDiv.text() contains 'Category for approval is C'
+  }
+
 
   def "Log out"() {
     given: "I have logged in"
