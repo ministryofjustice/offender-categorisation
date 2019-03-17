@@ -175,11 +175,35 @@ jobs:
         name: Deploy to dev
         command: |
           APP_VERSION=$(egrep buildNumber ~/app/build-info.json  | awk -F"\"" '{print $4}')
-          kubectl set image -f ./deploy/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${APP_VERSION} --local -o yaml \
+          kubectl set image -f ./deploy/dev/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${APP_VERSION} --local -o yaml \
           | kubectl apply -f -
           kubectl apply \
-            -f ./deploy/ingress.yaml \
-            -f ./deploy/service.yaml
+            -f ./deploy/dev/ingress.yaml \
+            -f ./deploy/dev/service.yaml
+
+  deploy_preprod:
+    <<: *deploy_container_config
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - attach_workspace:
+          at: ~/app
+      - run:
+          name: Kubectl deployment dev setup
+          command: |
+            $(aws ecr get-login --region eu-west-1 --no-include-email)
+            setup-kube-auth
+            kubectl config use-context preprod
+      - deploy:
+          name: Deploy to dev
+          command: |
+            APP_VERSION=$(egrep buildNumber ~/app/build-info.json  | awk -F"\"" '{print $4}')
+            kubectl set image -f ./deploy/preprod/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${APP_VERSION} --local -o yaml \
+            | kubectl apply -f -
+            kubectl apply \
+              -f ./deploy/preprod/ingress.yaml \
+              -f ./deploy/preprod/service.yaml
 
 workflows:
   version: 2
@@ -207,3 +231,16 @@ workflows:
       - deploy_dev:
           requires:
           - copy_image_to_ecs
+      - deploy_preprod_approval:
+          type: approval
+          requires:
+            - deploy_dev
+          filters:
+            branches:
+              only: master
+      - deploy_preprod:
+          requires:
+            - deploy_preprod_approval
+          filters:
+            branches:
+              only: master
