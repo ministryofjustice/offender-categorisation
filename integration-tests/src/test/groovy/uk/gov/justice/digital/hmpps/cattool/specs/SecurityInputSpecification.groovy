@@ -127,5 +127,12 @@ class SecurityInputSpecification extends GebReportingSpec {
     securityButton.text() == 'Edit'
 
     db.getData(12).status == ["SECURITY_BACK"]
+
+    when: 'the categoriser reviews the security page'
+    securityButton.click()
+    at new CategoriserSecurityBackPage(bookingId: '12')
+
+    then: 'the category decision is shown'
+    catBRadio == 'No'
   }
 }
