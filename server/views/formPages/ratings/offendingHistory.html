@@ -15,7 +15,9 @@
       <p class="govuk-!-font-weight-bold">The following convictions are listed on NOMIS:</p>
       <ul>
         {% for offence in data.offences %}
-          <li>{{ offence.offenceDescription }} ({{ dateConverter(offence.offenceDate) }}{{ ' - ' +dateConverter(offence.offenceRangeDate) if offence.offenceRangeDate }})</li>
+          <li>{{ offence.offenceDescription }}{% if offence.offenceDate %}
+            ({{ dateConverter(offence.offenceDate) }}{% if offence.offenceRangeDate %} - {{ dateConverter(offence.offenceRangeDate) }}{% endif %})</li>
+          {% endif %}
         {% endfor %}
       </ul>
     </div>
