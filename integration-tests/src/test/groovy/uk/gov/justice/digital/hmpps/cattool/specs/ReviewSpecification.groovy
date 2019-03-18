@@ -70,7 +70,12 @@ class ReviewSpecification extends GebReportingSpec {
     securityRadio = 'No'
     saveButton.click()
 
+    when: 'The task list is displayed for a fully completed set of ratings'
     at(new CategoriserTasklistPage(bookingId: '12'))
+
+    then: 'the completed text is displayed'
+    summarySection[0].text() == 'Review and categorisation'
+    summarySection[1].text() == 'Completed'
 
     when: 'The edit link is selected'
     continueButton.click()
