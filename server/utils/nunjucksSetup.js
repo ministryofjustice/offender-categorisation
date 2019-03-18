@@ -1,4 +1,16 @@
 const nunjucks = require('nunjucks')
+const Status = require('../utils/statusEnum')
+const { dateConverter } = require('../utils/utils.js')
+
+const findError = (array, formFieldId) => {
+  const item = array.find(error => error.href === `#${formFieldId}`)
+  if (item) {
+    return {
+      text: item.text,
+    }
+  }
+  return null
+}
 
 module.exports = (app, path) => {
   const njkEnv = nunjucks.configure(
@@ -13,13 +25,8 @@ module.exports = (app, path) => {
     }
   )
 
-  njkEnv.addFilter('findError', (array, formFieldId) => {
-    const item = array.find(error => error.href === `#${formFieldId}`)
-    if (item) {
-      return {
-        text: item.text,
-      }
-    }
-    return null
-  })
+  njkEnv
+    .addFilter('findError', findError)
+    .addGlobal('Status', Status)
+    .addGlobal('dateConverter', dateConverter)
 }
