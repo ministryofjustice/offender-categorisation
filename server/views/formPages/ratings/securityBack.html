@@ -27,7 +27,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Do you this is sufficient to warrant category B?",
+        text: "Do you believe this is sufficient to warrant category B?",
         isPageHeading: false
       }
     },
@@ -38,12 +38,12 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.securityBack.catB === 'Yes'
+        checked: data.ratings.securityBack.catB === 'Yes'
       },
       {
         value: "No",
         text: "No",
-        checked: data.securityBack.catB === 'No'
+        checked: data.ratings.securityBack.catB === 'No'
       }
     ]
   }) }}
