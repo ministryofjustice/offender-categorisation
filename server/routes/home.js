@@ -40,7 +40,7 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
             user
           )
         : []
-      res.render('pages/categoriserHome', { offenders, Status })
+      res.render('pages/categoriserHome', { offenders })
     })
   )
 
@@ -57,7 +57,7 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
             user
           )
         : []
-      res.render('pages/categoriserDone', { offenders, Status })
+      res.render('pages/categoriserDone', { offenders })
     })
   )
 
