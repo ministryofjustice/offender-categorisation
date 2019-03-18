@@ -1,37 +1,15 @@
-/* eslint-disable */
-
-const nunjucks = require('nunjucks')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const path = require('path')
+const nunjucksSetup = require('../../../server/utils/nunjucksSetup')
 
 module.exports = route => {
   const app = express()
 
   app.set('view engine', 'html')
 
-  const njkEnv = nunjucks.configure(
-    [
-      path.join(__dirname, '../../../server/views'),
-      'node_modules/govuk-frontend/',
-      'node_modules/govuk-frontend/components/',
-    ],
-    {
-      autoescape: true,
-      express: app,
-    }
-  )
-
-  njkEnv.addFilter('findError', (array, formFieldId) => {
-    const item = array.find(error => error.href === `#${formFieldId}`)
-    if (item) {
-      return {
-        text: item.text,
-      }
-    }
-    return null
-  })
+  nunjucksSetup(app, path)
 
   app.use((req, res, next) => {
     req.user = {
@@ -48,7 +26,9 @@ module.exports = route => {
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use('/', route)
+  // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => {
+    // eslint-disable-next-line no-console
     console.log(error)
   })
   return app

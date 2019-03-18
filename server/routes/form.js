@@ -3,7 +3,6 @@ const flash = require('connect-flash')
 const { isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-const { dateConverter } = require('../utils/utils.js')
 const Status = require('../utils/statusEnum')
 
 const ratings = require('../config/ratings')
@@ -65,7 +64,7 @@ module.exports = function Index({
       const history = await offendersService.getCatAInformation(res.locals.user.token, result.data.details.offenderNo)
       const offences = await offendersService.getOffenceHistory(res.locals.user.token, result.data.details.offenderNo)
       const data = { ...result.data, history, offences }
-      res.render(`formPages/${section}/${form}`, { ...result, data, dateConverter })
+      res.render(`formPages/${section}/${form}`, { ...result, data })
     })
   )
 
@@ -190,7 +189,7 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId)
-      res.render(`formPages/${section}/${form}`, { ...result, dateConverter })
+      res.render(`formPages/${section}/${form}`, { ...result })
     })
   )
 

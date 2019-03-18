@@ -1,7 +1,6 @@
 const moment = require('moment')
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-const { dateConverter } = require('../utils/utils.js')
 const Status = require('../utils/statusEnum')
 
 module.exports = function Index({
@@ -57,7 +56,7 @@ module.exports = function Index({
         referredDate:
           categorisationRecord.referred_date && moment(categorisationRecord.referred_date).format('DD/MM/YYYY'),
       }
-      res.render('pages/tasklist', { data, dateConverter, Status })
+      res.render('pages/tasklist', { data })
     })
   )
 
