@@ -190,13 +190,13 @@ jobs:
       - attach_workspace:
           at: ~/app
       - run:
-          name: Kubectl deployment dev setup
+          name: Kubectl deployment preprod setup
           command: |
             $(aws ecr get-login --region eu-west-1 --no-include-email)
             setup-kube-auth
             kubectl config use-context preprod
       - deploy:
-          name: Deploy to dev
+          name: Deploy to PreProd
           command: |
             APP_VERSION=$(egrep buildNumber ~/app/build-info.json  | awk -F"\"" '{print $4}')
             kubectl set image -f ./deploy/preprod/deployment.yaml categorisation-tool=${ECR_ENDPOINT}/omic/categorisation-tool:${APP_VERSION} --local -o yaml \
