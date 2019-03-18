@@ -101,6 +101,8 @@ class TasklistSpecification extends GebReportingSpec {
     securityButton.@disabled
     def today = LocalDate.now().format('dd/MM/YYYY')
     $('#securitySection').text().contains("Automatically referred to Security ($today)")
+    summarySection[0].text() == 'Review and categorisation'
+    summarySection[1].text() == 'Tasks not yet complete'
 
     when: 'a security user views their homepage'
     elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
