@@ -28,6 +28,7 @@ module.exports = route => {
   app.use('/', route)
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => {
+    // eslint-disable-next-line no-console
     console.log(error)
   })
   return app
