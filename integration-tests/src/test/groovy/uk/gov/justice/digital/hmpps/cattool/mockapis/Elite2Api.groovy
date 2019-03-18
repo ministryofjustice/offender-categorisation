@@ -403,6 +403,10 @@ class Elite2Api extends WireMockRule {
             offenceDescription: 'Slander',
             offenceDate       : '2019-02-22',
             offenceRangeDate  : '2019-02-24',
+          ],
+          [
+            bookingId         : 12,
+            offenceDescription: 'Undated offence',
           ]
         ]
         ))
