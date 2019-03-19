@@ -4,7 +4,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "panel/macro.njk" import govukPanel %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 
 {% block beforeContent %}
 
@@ -42,10 +42,12 @@
 
     <h1 class="govuk-heading-l">Security Review</h1>
 
-    {{ govukTextarea({
+    {{ govukCharacterCount({
       name: "securityReview",
       type: "securityReview",
       id: "more-detail",
+      maxlength: 50000,
+      threshold: 50,
       label: {
         text: "Please provide an assessment of any Security information held on this prisoner, which could be relevant to their security categorisation"
       },

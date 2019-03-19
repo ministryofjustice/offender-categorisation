@@ -1,13 +1,15 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "radios/macro.njk" import govukRadios %}
 
 {% set highRiskOfViolenceTextHtml %}
-  {{ govukTextarea({
+  {{ govukCharacterCount({
     name: "highRiskOfViolenceText",
     type: "highRiskOfViolenceText",
     id: "highRiskOfViolenceText",
+    maxlength: 50000,
+    threshold: 50,
     label: {
       text: "Give details of this evidence"
     },
@@ -19,10 +21,12 @@
 {% endset %}
 
 {% set seriousThreatTextHtml %}
-  {{ govukTextarea({
+  {{ govukCharacterCount({
     name: "seriousThreatText",
     type: "seriousThreatText",
     id: "seriousThreatText",
+    maxlength: 50000,
+    threshold: 50,
     label: {
       text: "Give details of this evidence"
     },
