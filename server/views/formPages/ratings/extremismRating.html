@@ -1,13 +1,15 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "radios/macro.njk" import govukRadios %}
 
 {% set previousTerrorismOffencesTextHtml %}
-  {{ govukTextarea({
+  {{ govukCharacterCount({
     name: "previousTerrorismOffencesText",
     type: "previousTerrorismOffencesText",
     id: "previousTerrorismOffencesText",
+    maxlength: 50000,
+    threshold: 50,
     label: {
       text: "Give details of this evidence"
     },

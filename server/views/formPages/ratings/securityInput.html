@@ -2,7 +2,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 
 {% block formItems %}
 
@@ -11,10 +11,12 @@
 
 {% set securityInputTextHtml %}
 
-  {{ govukTextarea({
+  {{ govukCharacterCount({
     name: "securityInputNeededText",
     type: "securityInputText",
     id: "securityInputNeededText",
+    maxlength: 50000,
+    threshold: 50,
     label: {
     text: "Please explain why security input is needed"
     },
