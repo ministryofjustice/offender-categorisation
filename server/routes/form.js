@@ -74,7 +74,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId)
 
-      if (result.status == Status.SECURITY_MANUAL.name || result.status === Status.SECURITY_AUTO.name) {
+      if (result.status === Status.SECURITY_MANUAL.name || result.status === Status.SECURITY_AUTO.name) {
         res.redirect(`/tasklist/${bookingId}`)
       } else {
         res.render('formPages/ratings/securityInput', { ...result })
