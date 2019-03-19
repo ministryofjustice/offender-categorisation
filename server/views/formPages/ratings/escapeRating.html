@@ -3,7 +3,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 
 {% macro renderAlert(alert) %}
   <p class="govuk-!-margin-bottom-1">{{ alert.alertCode }} {{ alert.comment }} <strong>{{ alert.dateCreated }}</strong>
@@ -36,10 +36,12 @@
 
 {% set escapeTextHtml %}
 
-{{ govukTextarea({
+{{ govukCharacterCount({
   name: "escapeFurtherChargesText",
   type: "escapeFurtherChargesText",
   id: "escapeFurtherChargesText",
+  maxlength: 50000,
+  threshold: 50,
   label: {
     text: "Provide details of these charges"
   },

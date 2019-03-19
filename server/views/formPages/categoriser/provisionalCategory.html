@@ -2,7 +2,7 @@
 
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "radios/macro.njk" import govukRadios %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "button/macro.njk" import govukButton %}
 
 {% set cat = data.suggestedCat %}
@@ -59,10 +59,12 @@
     {% endif %}
   {% endif %}
 
-  {{ govukTextarea({
+  {{ govukCharacterCount({
     name: "overriddenCategoryText",
     type: "myTextWhatsThisFor",
     id: "overriddenCategoryText",
+    maxlength: 50000,
+    threshold: 50,
     label: {
       text: "Explain why you changed the category"
     },
