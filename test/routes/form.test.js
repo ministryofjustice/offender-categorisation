@@ -134,6 +134,18 @@ describe('GET /ratings/securityInput', () => {
         expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
       })
   )
+  test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'SECURITY_MANUAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+    })
+    return request(app)
+      .get('/ratings/securityInput/12345')
+      .expect(302)
+      .expect('Location', `/tasklist/12345`)
+  })
 })
 
 describe('GET /security/review', () => {

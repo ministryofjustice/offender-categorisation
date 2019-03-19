@@ -73,7 +73,12 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId)
-      res.render('formPages/ratings/securityInput', { ...result })
+
+      if (result.status === Status.SECURITY_MANUAL.name || result.status === Status.SECURITY_AUTO.name) {
+        res.redirect(`/tasklist/${bookingId}`)
+      } else {
+        res.render('formPages/ratings/securityInput', { ...result })
+      }
     })
   )
 
