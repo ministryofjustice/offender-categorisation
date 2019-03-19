@@ -1,6 +1,6 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "button/macro.njk" import govukButton %}
 {% from "radios/macro.njk" import govukRadios %}
 
@@ -101,10 +101,12 @@
         {% endif %}
       {% endif %}
 
-      {{ govukTextarea({
+      {{ govukCharacterCount({
         name: "supervisorOverriddenCategoryText",
         type: "myTextWhatsThisFor",
         id: "supervisorOverriddenCategoryText",
+        maxlength: 50000,
+        threshold: 50,
         label: {
           text: "Explain why you changed the category"
         },

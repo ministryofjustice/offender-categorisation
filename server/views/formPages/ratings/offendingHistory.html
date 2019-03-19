@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %}
 
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 
 {% block formItems %}
 
@@ -23,10 +23,12 @@
     </div>
   {% endif %}
 
-  {{ govukTextarea({
+  {{ govukCharacterCount({
     name: "previousConvictions",
     type: "previousConvictions",
     id: "more-detail",
+    maxlength: 50000,
+    threshold: 50,
     label: {
       text: "Please record a summary of previous convictions, and any other information, from this offender's PNC record, which might be relevant to their categorisation"
     },
