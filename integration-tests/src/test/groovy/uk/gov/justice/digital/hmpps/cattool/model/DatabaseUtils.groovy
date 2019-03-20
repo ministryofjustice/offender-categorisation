@@ -38,6 +38,10 @@ class DatabaseUtils {
     doCreateData(id, bookingId, 'STARTED', json)
   }
 
+  def createDataWithStatus(id, bookingId, status, json) {
+    doCreateData(id, bookingId, status, json)
+  }
+
   private doCreateData(id, bookingId, status, json) {
     def sql = Sql.newInstance(dbConnParams)
     sql.executeUpdate("insert into form values ($id, ?::JSON, $bookingId, 'CATEGORISER_USER', '$status', 'CATEGORISER_USER', null, null, 1, null, 'LEI', 'dummy', current_timestamp(2))", json)

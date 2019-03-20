@@ -20,7 +20,7 @@
   <h1 class="govuk-heading-l">Prisoner Categorisation</h1>
 </div>
 
-<div class="govuk-tabs" data-module="tabs">
+<div class="govuk-tabs">
 
   <ul class="govuk-tabs__list">
     <li class="govuk-tabs__list-item">
@@ -35,9 +35,10 @@
     </li>
   </ul>
 
+  <section class="govuk-tabs__panel">
 
   {% if offenders | length > 0 %}
-  <table class="govuk-table tablesorter sortcolumns govuk-!-margin-top-5" id="offenderTable" >
+  <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
     <thead class="govuk-table__head">
 
     <tr class="govuk-table__row">
@@ -89,6 +90,7 @@
     <div class="govuk-heading-m">No uncategorised offenders found</div>
   </div>
   {% endif %}
+  </section>
 </div>
 
 {% endblock %}

@@ -2,6 +2,7 @@ const nock = require('nock')
 
 const config = require('../../server/config')
 const nomisClientBuilder = require('../../server/data/nomisClientBuilder')
+const moment = require('moment')
 
 describe('nomisClient', () => {
   let fakeElite2Api
@@ -24,6 +25,20 @@ describe('nomisClient', () => {
       fakeElite2Api.get(`/api/offender-assessments/category/LEI/uncategorised`).reply(200, uncatResponse)
 
       const output = await nomisClient.getUncategorisedOffenders('LEI')
+      return expect(output).toEqual(uncatResponse)
+    })
+  })
+
+  describe('getCategorisedOffenders', () => {
+    it('should construct an api call for the last 3 months of data', async () => {
+      const lastThreeMonths = moment()
+        .subtract(3, 'month')
+        .format('YYYY-MM-DD')
+      fakeElite2Api
+        .get(`/api/offender-assessments/category/LEI/categorised?fromDate=${lastThreeMonths}`)
+        .reply(200, uncatResponse)
+
+      const output = await nomisClient.getCategorisedOffenders('LEI')
       return expect(output).toEqual(uncatResponse)
     })
   })

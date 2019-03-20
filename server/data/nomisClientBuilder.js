@@ -1,6 +1,7 @@
 const logger = require('../../log')
 const config = require('../config')
 const superagent = require('superagent')
+const moment = require('moment')
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,
@@ -20,7 +21,10 @@ module.exports = token => {
       return nomisGet({ path })
     },
     getCategorisedOffenders(agencyId) {
-      const path = `${apiUrl}api/offender-assessments/category/${agencyId}/categorised`
+      const lastThreeMonths = moment()
+        .subtract(3, 'month')
+        .format('YYYY-MM-DD')
+      const path = `${apiUrl}api/offender-assessments/category/${agencyId}/categorised?fromDate=${lastThreeMonths}`
       return nomisGet({ path })
     },
     getSentenceDatesForOffenders(bookingIds) {
