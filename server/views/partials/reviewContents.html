@@ -106,13 +106,13 @@
   <label class="govuk-label" for="escapeQ1">
     Is there any other evidence to suggest this person poses a risk of escape?
   </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id="escapeQ1">{{ data.ratings.escapeRating.escapeFurtherCharges }}
+  <div class="govuk-body govuk-!-font-weight-bold" id="escapeQ1">{{ data.ratings.escapeRating.escapeOtherEvidence }}
   </div>
 </div>
 
-{% if data.ratings.escapeRating.escapeFurtherChargesText %}
+{% if data.ratings.escapeRating.escapeOtherEvidenceText %}
 <div class="govuk-form-group">
-  <div class="govuk-inset-text" id="escapeQ2Text">{{ data.ratings.escapeRating.escapeFurtherChargesText }}</div>
+  <div class="govuk-inset-text" id="escapeQ2Text">{{ data.ratings.escapeRating.escapeOtherEvidenceText }}</div>
 </div>
 
 {% endif %}

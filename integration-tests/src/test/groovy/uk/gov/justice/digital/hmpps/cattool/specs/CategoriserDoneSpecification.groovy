@@ -48,7 +48,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ]]))
 
@@ -57,7 +57,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ]]))
 

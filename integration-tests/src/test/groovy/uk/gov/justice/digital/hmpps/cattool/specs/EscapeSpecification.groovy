@@ -31,7 +31,7 @@ class EscapeSpecification extends GebReportingSpec {
   TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
-  def "The escape page displays an alert when the offender is on the escape list"() {
+  def "The escape page displays an alert and extra question when the offender is on the escape list"() {
     when: 'I go to the escape page'
 
     fixture.gotoTasklist()
@@ -43,7 +43,7 @@ class EscapeSpecification extends GebReportingSpec {
 
     escapeButton.click()
 
-    then: 'The page is displayed with an alert and info'
+    then: 'The page is displayed with alert info and extra question'
     at(new CategoriserEscapePage(bookingId: '12'))
 
     warningTextDiv.text().contains('This person is considered an escape risk')
@@ -51,6 +51,7 @@ class EscapeSpecification extends GebReportingSpec {
       'XEL First xel comment 2016-09-14',
       '''XEL Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
       'XER First xer comment 2016-09-16']
+    $('form').text() contains 'Do you think this information means they should be in Cat B?'
   }
 
   def "The escape page can be edited"() {
@@ -61,12 +62,14 @@ class EscapeSpecification extends GebReportingSpec {
 
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, true)
 
     escapeButton.click()
 
     at(new CategoriserEscapePage(bookingId: '12'))
-    radio = 'No'
+    escapeOtherEvidenceRadio = 'No'
+    escapeCatBRadio = 'Yes'
+    escapeCatBTextarea << 'Explanation'
     saveButton.click()
 
     at(new CategoriserTasklistPage(bookingId: '12'))
@@ -79,7 +82,9 @@ class EscapeSpecification extends GebReportingSpec {
 
     at(new CategoriserEscapePage(bookingId: '12'))
 
-    radio == 'No'
+    escapeOtherEvidenceRadio == 'No'
+    escapeCatBRadio == 'Yes'
+    escapeCatBTextarea.text() == 'Explanation'
 
     and: "The page is saved"
     saveButton.click()
@@ -92,7 +97,36 @@ class EscapeSpecification extends GebReportingSpec {
 
   }
 
-  def "Validation"() {
+  def "Validation with alerts"() {
+    when: 'the escape page is submitted when nothing has been entered'
+
+    fixture.gotoTasklist()
+    at(new CategoriserTasklistPage(bookingId: '12'))
+
+    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, false)
+
+    escapeButton.click()
+
+    at(new CategoriserEscapePage(bookingId: '12'))
+    saveButton.click()
+
+    then:
+    errorSummaries*.text() == ['Please select yes or no', 'Please select yes or no']
+    errors*.text() == ['Please select yes or no', 'Please select yes or no']
+
+    when: 'the escape page is submitted with no reason text'
+    escapeOtherEvidenceRadio = 'Yes'
+    escapeCatBRadio = 'Yes'
+    saveButton.click()
+
+    then:
+    errorSummaries*.text() == ['Please enter details explaining cat B', 'Please enter details of escape risk evidence']
+    errors*.text() == ['Please enter details explaining your answer', 'Please enter details of this evidence']
+  }
+
+  def "Validation without alerts"() {
     when: 'the escape page is submitted when nothing has been entered'
 
     fixture.gotoTasklist()
@@ -107,16 +141,23 @@ class EscapeSpecification extends GebReportingSpec {
     at(new CategoriserEscapePage(bookingId: '12'))
     saveButton.click()
 
-    then:
+    then: 'radio errors are shown'
     errorSummaries*.text() == ['Please select yes or no']
     errors*.text() == ['Please select yes or no']
 
     when: 'the escape page is submitted with no reason text'
-    radio = 'Yes'
+    escapeOtherEvidenceRadio = 'Yes'
     saveButton.click()
 
-    then:
-    errorSummaries*.text() == ['Please enter details of these charges']
-    errors*.text() == ['Please enter details of these charges']
+    then: 'textarea errors are shown'
+    errorSummaries*.text() == ['Please enter details of escape risk evidence']
+    errors*.text() == ['Please enter details of this evidence']
+
+    when: 'the escape page is submitted with reason text'
+    escapeOtherEvidenceTextarea << 'Details'
+    saveButton.click()
+
+    then: 'submit succeeds'
+    at(new CategoriserTasklistPage(bookingId: '12'))
   }
 }

@@ -16,11 +16,15 @@ class CategoriserEscapePage extends Page {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
-    warningTextDiv { $('div.govuk-warning-text') }
-    alertInfo { $('.govuk-details__text p') }
+    warningTextDiv(required: false) { $('div.govuk-warning-text') }
+    alertInfo(required: false) { $('.govuk-details__text p') }
     saveButton { $('button.govuk-button') }
-    radio { $('input', name: 'escapeFurtherCharges') }
-    errorSummaries { $('ul.govuk-error-summary__list li') }
-    errors { $('span.govuk-error-message') }
+    escapeCatBQuestion(required: false) { $('input', name: 'escapeCatB') }
+    escapeCatBRadio(required: false) { $('input', name: 'escapeCatB') }
+    escapeCatBTextarea(required: false) { $('#escapeCatBText') }
+    escapeOtherEvidenceRadio { $('input', name: 'escapeOtherEvidence') }
+    escapeOtherEvidenceTextarea { $('#escapeOtherEvidenceText') }
+    errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
+    errors(required: false) { $('span.govuk-error-message') }
   }
 }

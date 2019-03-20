@@ -32,29 +32,77 @@
       {{ renderAlert(alert) }}
     {% endfor %}
   </div>
+
+  {% set escapeCatBTextHtml %}
+    {{ govukCharacterCount({
+      name: "escapeCatBText",
+      type: "escapeCatBText",
+      id: "escapeCatBText",
+      maxlength: 50000,
+      threshold: 50,
+      label: {
+        text: "Please explain your answer"
+      },
+      value: data.ratings.escapeRating.escapeCatBText,
+      errorMessage: {
+        text: "Please enter details explaining your answer"
+      } if (errors | findError('escapeCatBText'))
+    }) }}
+  {% endset -%}
+
+  {{ govukRadios({
+    name: "escapeCatB",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Do you think this information means they should be in Cat B?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+      } if (errors | findError('escapeCatB')),
+    items: [
+    {
+      value: "Yes",
+      text: "Yes",
+      checked: data.ratings.escapeRating.escapeCatB === 'Yes',
+      conditional: {
+        html: escapeCatBTextHtml
+      }
+    },
+    {
+      value: "No",
+      checked: data.ratings.escapeRating.escapeCatB === 'No',
+      text: "No"
+    }
+    ]
+  }) }}
+{% else %}
+  <input type="hidden" name="escapeCatB" value="No" />
 {% endif %}
 
-{% set escapeTextHtml %}
+{% set escapeOtherEvidenceTextHtml %}
 
 {{ govukCharacterCount({
-  name: "escapeFurtherChargesText",
-  type: "escapeFurtherChargesText",
-  id: "escapeFurtherChargesText",
+  name: "escapeOtherEvidenceText",
+  type: "escapeOtherEvidenceText",
+  id: "escapeOtherEvidenceText",
   maxlength: 50000,
   threshold: 50,
   label: {
-    text: "Provide details of these charges"
+    text: "Provide details of this evidence"
   },
-  value: data.ratings.escapeRating.escapeFurtherChargesText,
+  value: data.ratings.escapeRating.escapeOtherEvidenceText,
   errorMessage: {
-    text: "Please enter details of these charges"
-  } if (errors | findError('escapeFurtherChargesText'))
+    text: "Please enter details of this evidence"
+  } if (errors | findError('escapeOtherEvidenceText'))
 }) }}
 
 {% endset -%}
 
 {{ govukRadios({
-  name: "escapeFurtherCharges",
+  name: "escapeOtherEvidence",
   classes: "govuk-radios--inline",
   fieldset: {
     legend: {
@@ -64,19 +112,19 @@
   },
   errorMessage: {
     text: "Please select yes or no"
-    } if (errors | findError('escapeFurtherCharges')),
+    } if (errors | findError('escapeOtherEvidence')),
   items: [
   {
     value: "Yes",
     text: "Yes",
-    checked: data.ratings.escapeRating.escapeFurtherCharges === 'Yes',
+    checked: data.ratings.escapeRating.escapeOtherEvidence === 'Yes',
     conditional: {
-    html:escapeTextHtml
-  }
+      html: escapeOtherEvidenceTextHtml
+    }
   },
   {
     value: "No",
-    checked: data.ratings.escapeRating.escapeFurtherCharges === 'No',
+    checked: data.ratings.escapeRating.escapeOtherEvidence === 'No',
     text: "No"
   }
   ]
