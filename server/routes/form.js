@@ -231,8 +231,11 @@ module.exports = function Index({
     if (body.securityInputNeeded === 'No') {
       updated.securityInputNeededText = ''
     }
-    if (body.escapeFurtherCharges === 'No') {
-      updated.escapeFurtherChargesText = ''
+    if (body.escapeOtherEvidence === 'No') {
+      updated.escapeOtherEvidenceText = ''
+    }
+    if (body.escapeCatB === 'No') {
+      updated.escapeCatBText = ''
     }
     if (body.highRiskOfViolence === 'No') {
       updated.highRiskOfViolenceText = ''
