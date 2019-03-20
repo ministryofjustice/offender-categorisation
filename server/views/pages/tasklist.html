@@ -29,7 +29,7 @@ href: backLink or "/"
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
   {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No') or data.ratings.securityBack.catB %}
   {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
-  {% set escapeRatingCompleted = data.ratings.escapeRating.escapeFurtherCharges %}
+  {% set escapeRatingCompleted = data.ratings.escapeRating.escapeOtherEvidence %}
   {% set extremismRatingCompleted = data.ratings.extremismRating.previousTerrorismOffences %}
   {% set allSectionsCompleted = offendingHistoryCompleted and securityInputCompleted and not locked and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted %}
   <div class="govuk-grid-row">

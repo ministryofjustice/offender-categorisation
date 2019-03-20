@@ -51,7 +51,7 @@ class ReviewSpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "No"]
       ]]))
     fixture.gotoTasklist()

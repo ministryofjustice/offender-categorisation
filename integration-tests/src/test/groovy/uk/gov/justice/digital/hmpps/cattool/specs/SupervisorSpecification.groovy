@@ -52,7 +52,7 @@ class SupervisorSpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
@@ -81,7 +81,7 @@ class SupervisorSpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
@@ -116,7 +116,7 @@ class SupervisorSpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
@@ -151,7 +151,7 @@ class SupervisorSpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
@@ -181,7 +181,7 @@ class SupervisorSpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))

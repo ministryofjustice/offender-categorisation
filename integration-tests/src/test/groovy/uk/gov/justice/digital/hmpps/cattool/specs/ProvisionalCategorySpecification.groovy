@@ -44,7 +44,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeCatB: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ]
     ]))
@@ -128,7 +128,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
         offendingHistory: [previousConvictions: "some convictions"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))

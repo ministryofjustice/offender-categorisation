@@ -99,7 +99,7 @@ module.exports = function createFormService(formClient) {
       (data.securityBack && data.securityBack.catB === 'Yes') ||
       (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) ||
       (data.violenceProfile && data.violenceProfile.numberOfSeriousAssaults > 0) || // note: Qs on page ignored (info only)
-      (data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeFurtherCharges === 'Yes') || // ( in fact Q is now whether user thinks should be B based on alert data)
+      (data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes') || // Other Q is info only
       (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'B')
     ) {
       return 'B'
