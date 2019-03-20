@@ -105,15 +105,27 @@ module.exports = {
     },
     fields: [
       {
-        escapeFurtherCharges: {
+        escapeCatB: {
           responseType: 'requiredString',
           validationMessage: 'Please select yes or no',
         },
       },
       {
-        escapeFurtherChargesText: {
-          responseType: 'requiredStringIf_escapeFurtherCharges_Yes',
-          validationMessage: 'Please enter details of these charges',
+        escapeCatBText: {
+          responseType: 'requiredStringIf_escapeCatB_Yes',
+          validationMessage: 'Please enter details explaining cat B',
+        },
+      },
+      {
+        escapeOtherEvidence: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        escapeOtherEvidenceText: {
+          responseType: 'requiredStringIf_escapeOtherEvidence_Yes',
+          validationMessage: 'Please enter details of escape risk evidence',
         },
       },
     ],
