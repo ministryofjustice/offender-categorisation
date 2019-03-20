@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.mockResponses.*
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*
@@ -132,8 +133,9 @@ class Elite2Api extends WireMockRule {
   }
 
   void stubCategorised() {
+    def threeMonthsAgo  = LocalDate.now().minusMonths(3).format('YYYY-MM-dd')
     this.stubFor(
-      get("/api/offender-assessments/category/LEI/categorised")
+      get("/api/offender-assessments/category/LEI/categorised?fromDate=${threeMonthsAgo}")
         .willReturn(
         aResponse()
           .withBody(JsonOutput.toJson([
