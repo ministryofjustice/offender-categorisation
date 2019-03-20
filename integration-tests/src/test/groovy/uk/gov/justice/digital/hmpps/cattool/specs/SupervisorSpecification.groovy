@@ -10,11 +10,14 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
 
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
@@ -255,4 +258,54 @@ class SupervisorSpecification extends GebReportingSpec {
 
     at SupervisorReviewPage
   }
+
+  def "The done page for a supervisor is present"() {
+    when: 'I go to the home page as supervisor and select the done tab'
+
+    db.createDataWithStatus(-2, 12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        securityInput   : [securityInputNeeded: "No"],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+
+    db.createDataWithStatus(-1,11, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        securityInput   : [securityInputNeeded: "No"],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeFurtherCharges: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+
+    elite2api.stubUncategorisedForSupervisor()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+
+    fixture.loginAs(SUPERVISOR_USER)
+    at SupervisorHomePage
+
+    elite2api.stubCategorised()
+
+    doneTabLink.click()
+
+    then: 'The supervisor done page is displayed'
+
+    at SupervisorDonePage
+
+    prisonNos == ['B2345XY', 'B2345YZ']
+    names == ['Scramble, Tim', 'Hemmel, Sarah']
+    approvalDates == ['21/02/2019', '20/02/2019']
+    categorisers == ['Lamb, John', 'Fan, Jane']
+    approvers == ['Helly, James', 'Helly, James']
+    outcomes == ['C', 'C']
+
+  }
+
 }
