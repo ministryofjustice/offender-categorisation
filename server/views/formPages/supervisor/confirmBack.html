@@ -1,0 +1,38 @@
+{% extends "../formTemplate.html" %}
+
+{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "button/macro.njk" import govukButton %}
+{% from "radios/macro.njk" import govukRadios %}
+
+
+{% block formItems %}
+
+<div>
+  <h1 class="govuk-heading-l">Confirm Status Change</h1>
+</div>
+
+{{ govukRadios({
+  name: "confirmation",
+  classes: "govuk-radios--inline",
+  fieldset: {
+  legend: {
+  text: "Are you sure you want to send this case back to the categoriser?",
+  isPageHeading: false
+  }
+  },
+  errorMessage: {
+  text: "Select yes to return this case to the Categoriser To do list"
+  } if (errors | findError('confirmation')),
+  items: [
+  {
+    value: "Yes",
+    text: "Yes"
+  },
+  {
+    value: "No",
+    text: "No"
+  }
+  ]
+}) }}
+
+{% endblock %}

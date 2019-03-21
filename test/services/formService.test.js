@@ -5,7 +5,7 @@ const formClient = {
   getFormDataForUser: jest.fn(),
   update: jest.fn(),
   referToSecurity: jest.fn(),
-  backFromSecurity: jest.fn(),
+  updateStatus: jest.fn(),
 }
 let service
 
@@ -14,14 +14,14 @@ beforeEach(() => {
   formClient.getFormDataForUser.mockReturnValue({ rows: [{ a: 'b' }, { c: 'd' }] })
   formClient.update.mockReturnValue({})
   formClient.referToSecurity.mockReturnValue({})
-  formClient.backFromSecurity.mockReturnValue({})
+  formClient.updateStatus.mockReturnValue({})
 })
 
 afterEach(() => {
   formClient.getFormDataForUser.mockReset()
   formClient.update.mockReset()
   formClient.referToSecurity.mockReset()
-  formClient.backFromSecurity.mockReset()
+  formClient.updateStatus.mockReset()
 })
 
 describe('getCategorisationRecord', () => {
@@ -388,22 +388,29 @@ describe('getValidationErrors', () => {
 
 describe('validateStatusIfPresent', () => {
   test.each`
-    current                        | proposed                         | expectedOutput
-    ${Status.STARTED.name}         | ${Status.AWAITING_APPROVAL.name} | ${true}
-    ${Status.STARTED.name}         | ${Status.APPROVED.name}          | ${false}
-    ${Status.SECURITY_AUTO.name}   | ${Status.SECURITY_BACK.name}     | ${true}
-    ${Status.SECURITY_MANUAL.name} | ${Status.SECURITY_BACK.name}     | ${true}
-    ${Status.SECURITY_MANUAL.name} | ${Status.STARTED.name}           | ${false}
-    ${undefined}                   | ${Status.APPROVED.name}          | ${false}
-    ${undefined}                   | ${Status.AWAITING_APPROVAL.name} | ${false}
-    ${undefined}                   | ${Status.SECURITY_MANUAL.name}   | ${false}
-    ${undefined}                   | ${Status.SECURITY_AUTO.name}     | ${true}
-    ${undefined}                   | ${Status.SECURITY_BACK.name}     | ${false}
-    ${undefined}                   | ${Status.STARTED.name}           | ${true}
-    ${Status.STARTED.name}         | ${undefined}                     | ${true}
-  `('should return errors $expectedContent for validate status', ({ current, proposed, expectedOutput }) => {
-    expect(service.validateStatus(current, proposed)).toEqual(expectedOutput)
-  })
+    current                          | proposed                         | expectedOutput
+    ${Status.STARTED.name}           | ${Status.AWAITING_APPROVAL.name} | ${true}
+    ${Status.STARTED.name}           | ${Status.APPROVED.name}          | ${false}
+    ${Status.SECURITY_AUTO.name}     | ${Status.SECURITY_BACK.name}     | ${true}
+    ${Status.SECURITY_MANUAL.name}   | ${Status.SECURITY_BACK.name}     | ${true}
+    ${Status.SECURITY_MANUAL.name}   | ${Status.STARTED.name}           | ${false}
+    ${Status.AWAITING_APPROVAL.name} | ${Status.SUPERVISOR_BACK.name}   | ${true}
+    ${Status.STARTED.name}           | ${Status.SUPERVISOR_BACK.name}   | ${false}
+    ${Status.SUPERVISOR_BACK.name}   | ${Status.AWAITING_APPROVAL.name} | ${true}
+    ${Status.SUPERVISOR_BACK.name}   | ${Status.STARTED.name}           | ${false}
+    ${undefined}                     | ${Status.APPROVED.name}          | ${false}
+    ${undefined}                     | ${Status.AWAITING_APPROVAL.name} | ${false}
+    ${undefined}                     | ${Status.SECURITY_MANUAL.name}   | ${false}
+    ${undefined}                     | ${Status.SECURITY_AUTO.name}     | ${true}
+    ${undefined}                     | ${Status.SECURITY_BACK.name}     | ${false}
+    ${undefined}                     | ${Status.STARTED.name}           | ${true}
+    ${Status.STARTED.name}           | ${undefined}                     | ${true}
+  `(
+    `should return $expectedOutput for validate status transition $current to $proposed`,
+    ({ current, proposed, expectedOutput }) => {
+      expect(service.validateStatus(current, proposed)).toEqual(expectedOutput)
+    }
+  )
 })
 
 describe('computeSuggestedCat', () => {
@@ -500,13 +507,13 @@ describe('referToSecurityIfRequested', () => {
   })
 })
 
-describe('backFromSecurity', () => {
+describe('updateStatus', () => {
   test('happy path', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_AUTO' }] })
 
     await service.backFromSecurity(bookingId)
 
-    expect(formClient.backFromSecurity.mock.calls[0]).toEqual([bookingId])
+    expect(formClient.updateStatus.mock.calls[0]).toEqual([bookingId, 'SECURITY_BACK'])
   })
 
   test('no record in db', async () => {
@@ -514,7 +521,7 @@ describe('backFromSecurity', () => {
 
     await service.backFromSecurity(bookingId)
 
-    expect(formClient.backFromSecurity).not.toBeCalled()
+    expect(formClient.updateStatus).not.toBeCalled()
   })
 
   test('invalid status', async () => {
@@ -522,7 +529,7 @@ describe('backFromSecurity', () => {
 
     await service.backFromSecurity(bookingId)
 
-    expect(formClient.backFromSecurity).not.toBeCalled()
+    expect(formClient.updateStatus).not.toBeCalled()
   })
 
   test('invalid SECURITY_BACK status', async () => {
@@ -530,11 +537,11 @@ describe('backFromSecurity', () => {
 
     await service.backFromSecurity(bookingId)
 
-    expect(formClient.backFromSecurity).not.toBeCalled()
+    expect(formClient.updateStatus).not.toBeCalled()
   })
 
   test('database error', async () => {
-    formClient.backFromSecurity.mockRejectedValue(new Error('TEST'))
+    formClient.updateStatus.mockRejectedValue(new Error('TEST'))
 
     expect(service.backFromSecurity(bookingId)).rejects.toThrow('TEST')
   })

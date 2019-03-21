@@ -30,4 +30,15 @@ module.exports = {
     ],
     validate: true,
   },
+  confirmBack: {
+    fields: [
+      {
+        confirmation: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+    ],
+    validate: true,
+  },
 }
