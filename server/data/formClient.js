@@ -1,6 +1,5 @@
 const db = require('./dataAccess/db')
 const logger = require('../../log.js')
-const Status = require('../utils/statusEnum')
 
 const sequenceClause =
   'and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)'
@@ -24,11 +23,11 @@ module.exports = {
     return db.query(query)
   },
 
-  backFromSecurity(bookingId) {
-    logger.debug(`backFromSecurity called for booking id ${bookingId}`)
+  updateStatus(bookingId, status) {
+    logger.debug(`updateStatus called for booking id ${bookingId} and status ${status}`)
     const query = {
       text: `update form f set status = $1 where booking_id = $2 ${sequenceClause}`,
-      values: [Status.SECURITY_BACK.name, bookingId],
+      values: [status, bookingId],
     }
     return db.query(query)
   },

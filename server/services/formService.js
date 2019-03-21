@@ -154,12 +154,27 @@ module.exports = function createFormService(formClient) {
     return {}
   }
 
+  async function backToCategoriser(bookingId) {
+    const currentCategorisation = await getCategorisationRecord(bookingId)
+    const currentStatus = currentCategorisation.status
+    if (validateStatusIfProvided(currentStatus, Status.SUPERVISOR_BACK.name)) {
+      try {
+        await formClient.updateStatus(bookingId, Status.SUPERVISOR_BACK.name)
+      } catch (error) {
+        logger.error(error)
+        throw error
+      }
+    } else {
+      logger.warn(`Cannot transition from status ${currentStatus} to SUPERVISOR_BACK, bookingId=${bookingId}`)
+    }
+  }
+
   async function backFromSecurity(bookingId) {
     const currentCategorisation = await getCategorisationRecord(bookingId)
     const currentStatus = currentCategorisation.status
     if (validateStatusIfProvided(currentStatus, Status.SECURITY_BACK.name)) {
       try {
-        await formClient.backFromSecurity(bookingId)
+        await formClient.updateStatus(bookingId, Status.SECURITY_BACK.name)
       } catch (error) {
         logger.error(error)
         throw error
@@ -189,5 +204,6 @@ module.exports = function createFormService(formClient) {
     backFromSecurity,
     validateStatus: validateStatusIfProvided,
     createOrRetrieveCategorisationRecord,
+    backToCategoriser,
   }
 }
