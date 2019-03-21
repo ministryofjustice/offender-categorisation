@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserViewPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
 import java.time.LocalDate
@@ -162,7 +162,7 @@ class HomePageSpecification extends GebReportingSpec {
     elite2api.stubGetOffenderDetails(11, "ON678")
     startButtons[1].click()
     then: 'The view page is displayed'
-    at CategoriserViewPage
+    at CategoriserAwaitingApprovalViewPage
     categoryDiv.text() contains 'Category for approval is C'
   }
 

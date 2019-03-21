@@ -2,6 +2,7 @@
 
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "../../macros/listOffences.html" import listOffences %}
 
 {% block formItems %}
 
@@ -11,15 +12,9 @@
 
   {% if data.offences | length %}
     <h2 class="govuk-heading-m">Previous convictions</h2>
-    <div class="govuk-body-s">
+    <div class="govuk-body-s govuk-!-margin-bottom-3">
       <p class="govuk-!-font-weight-bold">The following convictions are listed on NOMIS:</p>
-      <ul>
-        {% for offence in data.offences %}
-          <li>{{ offence.offenceDescription }}{% if offence.offenceDate %}
-            ({{ dateConverter(offence.offenceDate) }}{% if offence.offenceRangeDate %} - {{ dateConverter(offence.offenceRangeDate) }}{% endif %})</li>
-          {% endif %}
-        {% endfor %}
-      </ul>
+        {{ listOffences(data.offences) }}
     </div>
   {% endif %}
 
