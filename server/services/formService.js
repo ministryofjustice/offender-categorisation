@@ -165,7 +165,7 @@ module.exports = function createFormService(formClient) {
         throw error
       }
     } else {
-      logger.warn(`Cannot transition from status ${currentStatus} to SECURITY_MANUAL, bookingId=${bookingId}`)
+      logger.warn(`Cannot transition from status ${currentStatus} to SUPERVISOR_BACK, bookingId=${bookingId}`)
     }
   }
 
