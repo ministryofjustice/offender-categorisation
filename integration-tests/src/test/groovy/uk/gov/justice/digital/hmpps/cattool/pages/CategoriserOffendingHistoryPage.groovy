@@ -20,7 +20,7 @@ class CategoriserOffendingHistoryPage extends Page {
     form { $('form') }
     textArea { $('#more-detail') }
     saveButton { $('button.govuk-button') }
-    history { $('div.govuk-body-s > ul > li') }
+    history { $('form > div.govuk-body-s > div') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
   }

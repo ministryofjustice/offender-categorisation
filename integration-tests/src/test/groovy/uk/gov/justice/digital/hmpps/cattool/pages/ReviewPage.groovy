@@ -17,9 +17,7 @@ class ReviewPage extends Page {
 
     submitButton { $('button', type:'submit') }
     backLink { $( 'a.govuk-back-link') }
-    offendingHistoryText { $('#historyQ1')}
-    veryHighRiskViolentOffenderMessage(required: false) { $('#veryHighRiskViolentOffender') }
+    values { $('dd.govuk-summary-list__value')}
     newCatMessage(required: false) { $('#newCatMessage') }
-    warnings(required: false) { $('div.govuk-warning-text') }
   }
 }
