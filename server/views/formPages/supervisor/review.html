@@ -156,6 +156,14 @@
     <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
 
   </div>
+  <div class="govuk-grid-column-one-thirds">
+    {% set bookingId = data.details.bookingId %}
+    {{ govukButton({
+    text: 'Give back to categoriser',
+    href: "/form/supervisor/confirmBack/" + bookingId,
+    classes: "rightAlignedButton"
+    }) }}
+  </div>
 </div>
 
 

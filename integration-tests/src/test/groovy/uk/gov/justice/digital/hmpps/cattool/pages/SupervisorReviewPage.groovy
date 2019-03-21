@@ -27,6 +27,7 @@ class SupervisorReviewPage extends Page {
     indeterminateMessage(required: false) { $('p.govuk-body') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
+    backToCategoriserButton { $('.rightAlignedButton') }
 
     submitButton { $('button', type:'submit') }
     backLink { $( 'a.govuk-back-link') }

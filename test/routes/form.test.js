@@ -23,6 +23,7 @@ const formService = {
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
   updateFormData: jest.fn(),
+  backToCategoriser: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -251,6 +252,24 @@ describe('POST /supervisor/review', () => {
         })
       })
   )
+})
+
+describe('POST /supervisor/confirmBack', () => {
+  test('redirects back to review if not confirmed', () =>
+    request(app)
+      .post('/supervisor/confirmBack/12345')
+      .send({ confirmation: 'No' })
+      .expect(302)
+      .expect('Location', `/form/supervisor/review/12345`))
+  test('redirects to supervisor home if confirmed', () =>
+    request(app)
+      .post('/supervisor/confirmBack/12345')
+      .send({ confirmation: 'Yes' })
+      .expect(302)
+      .expect('Location', `/supervisorHome`)
+      .expect(() => {
+        expect(formService.backToCategoriser).toBeCalledWith('12345')
+      }))
 })
 
 describe('POST /categoriser/provisionalCategory', () => {

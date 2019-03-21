@@ -190,6 +190,43 @@ module.exports = function Index({
   )
 
   router.get(
+    '/supervisor/confirmBack/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, 'categoriser', 'review', bookingId)
+
+      const dataToDisplay = {
+        ...result.data,
+      }
+
+      res.render('formPages/supervisor/confirmBack', { ...result, data: dataToDisplay })
+    })
+  )
+
+  router.post(
+    '/supervisor/confirmBack/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const section = 'supervisor'
+      const form = 'confirmBack'
+      const formPageConfig = formConfig[section][form]
+
+      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+        return
+      }
+
+      const changeConfirmed = req.body.confirmation === 'Yes'
+
+      if (changeConfirmed) {
+        formService.backToCategoriser(bookingId)
+      }
+
+      const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`
+      res.redirect(`${nextPath}`)
+    })
+  )
+
+  router.get(
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
