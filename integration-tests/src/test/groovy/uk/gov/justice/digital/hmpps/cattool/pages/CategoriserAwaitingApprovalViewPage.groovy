@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.cattool.pages
 
 import geb.Page
 
-class CategoriserViewPage extends Page {
+class CategoriserAwaitingApprovalViewPage extends Page {
 
-  static url = '/form/categoriser/view'
+  static url = '/form/categoriser/awaitingApprovalView'
 
   static at = {
     headingText == 'Provisional categorisation'
