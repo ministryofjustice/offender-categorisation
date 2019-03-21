@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorConfirmBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
@@ -142,6 +143,47 @@ class SupervisorSpecification extends GebReportingSpec {
     def dbData = db.getData(12).form_response
     dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "Some Text"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
     db.getData(12).status == ["APPROVED"]
+  }
+
+  def "The supervisor can send the case back to the categoriser"() {
+    given: 'supervisor is viewing the review page for B2345YZ'
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
+
+    navigateToReview(false, true)
+
+    when: 'the supervisor clicks the send back to categoriser button'
+    elite2api.stubSupervisorApprove()
+    backToCategoriserButton.click()
+
+    then: 'The confirm page is displayed'
+    at SupervisorConfirmBackPage
+
+    when: 'no is selected'
+    answerNo.click()
+    submitButton.click()
+
+    then: 'The review page is re-displayed'
+    at SupervisorReviewPage
+
+    when: 'the supervisor confirms to return to categoriser'
+    backToCategoriserButton.click()
+    at SupervisorConfirmBackPage
+    answerYes.click()
+    submitButton.click()
+
+    then: 'the supervisor home page is displayed'
+    at SupervisorHomePage
+
+    def dbData = db.getData(12).form_response
+    db.getData(12).status == ["SUPERVISOR_BACK"]
   }
 
   def "The supervisor review page can be confirmed - youth offender and indeterminate sentence"() {
