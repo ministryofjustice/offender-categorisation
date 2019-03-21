@@ -98,7 +98,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     then: 'I stay on the page with validation errors'
     errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Please select yes or no']
+    errors*.text() == ['Error:\nPlease select yes or no']
 
     when: 'I just select appropriate "No"'
     appropriateNo.click()
@@ -108,8 +108,8 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     at ProvisionalCategoryPage
     errorSummaries*.text() == ['Please enter the new category',
                                'Please enter the reason why you changed the category']
-    errors*.text() == ['Please select the new category',
-                       'Please enter the reason why you changed the category']
+    errors*.text() == ['Error:\nPlease select the new category',
+                       'Error:\nPlease enter the reason why you changed the category']
 
     when: 'I submit the Provisional Category page with an empty text area'
     overriddenCategoryB.click()
@@ -118,7 +118,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     then: 'I stay on the page with validation errors'
     at ProvisionalCategoryPage
     errorSummaries*.text() == ['Please enter the reason why you changed the category']
-    errors*.text() == ['Please enter the reason why you changed the category']
+    errors*.text() == ['Error:\nPlease enter the reason why you changed the category']
   }
 
   def 'young offender test'() {
