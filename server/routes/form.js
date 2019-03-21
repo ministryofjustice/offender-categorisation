@@ -151,6 +151,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'categoriser', 'review', bookingId)
 
       const history = await offendersService.getCatAInformation(res.locals.user.token, result.data.details.offenderNo)
+      const offences = await offendersService.getOffenceHistory(res.locals.user.token, result.data.details.offenderNo)
 
       const escapeProfile = await riskProfilerService.getEscapeProfile(
         result.data.details.offenderNo,
@@ -169,6 +170,7 @@ module.exports = function Index({
       )
       const dataToStore = {
         ratings: result.data.ratings,
+        security: result.data.security,
         socProfile: result.data.socProfile,
         history,
         escapeProfile,
@@ -178,6 +180,7 @@ module.exports = function Index({
       const dataToDisplay = {
         ...result.data,
         history,
+        offences,
         escapeProfile,
         extremismProfile,
         violenceProfile,

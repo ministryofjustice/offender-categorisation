@@ -46,14 +46,22 @@ class ReviewSpecification extends GebReportingSpec {
 
   def "The review page can be displayed"() {
     given: 'data has been entered for the ratings pages'
-    db.createData(12, JsonOutput.toJson([
-      ratings: [
+    db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
+      ratings : [
         offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "No"]
-      ]]))
+        securityInput   : [securityInputNeeded: 'Yes', securityInputNeededText: 'Reasons why referring manually to security'],
+        securityBack    : [catB: 'Yes'],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes", seriousThreatText: "Here are the serious threat details"],
+        escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'Yes', escapeCatBText: 'Reason why Cat B'],
+        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text']
+      ],
+      security: [
+        review: [
+          securityReview: 'Here is the Security information held on this prisoner'
+        ]
+      ]
+    ]))
+    when: 'The task list is displayed for a fully completed set of ratings'
     fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
@@ -62,42 +70,29 @@ class ReviewSpecification extends GebReportingSpec {
     elite2api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
-
-    securityButton.click()
-
-    at(new CategoriserSecurityInputPage(bookingId: '12'))
-    securityRadio = 'No'
-    saveButton.click()
-
-    when: 'The task list is displayed for a fully completed set of ratings'
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
 
     then: 'the completed text is displayed'
     summarySection[0].text() == 'Review and categorisation'
     summarySection[1].text() == 'Completed'
 
-    when: 'The edit link is selected'
+    when: 'The continue link is selected'
     continueButton.click()
 
     then: 'the review is displayed with the saved form details'
     at ReviewPage
-    warnings[0].text() contains 'This offender was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
-    offendingHistoryText.text() == 'some convictions'
-    $('#securityQ1').text() == 'No'
-    $('#violenceQ1').text() == 'No'
-    $('#violenceQ2').text() == 'Yes'
-    veryHighRiskViolentOffenderMessage.text().contains('Violent in custody Text TBC')
-    warnings[2].text() contains 'This person is considered an escape risk'
-    $('#escapeQ1').text() == 'Yes'
-    warnings[3].text() contains 'There is data to indicate that this person has an increased risk of engaging in extremism'
+    values[0..3]*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'some convictions', 'TBA']
+    values[4..8]*.text() == ['Yes', '5', '2', 'No', '''Yes\nHere are the serious threat details''']
+    values[9..12]*.text() == ['Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''']
+    values[13..14]*.text() == ['Yes', '''Yes\nPrevious Terrorism Offences Text''']
+    values[15..18]*.text() == ['No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
 
     def response = db.getData(12)[0].form_response
     def json = response.toString()
     json.contains '"history": {"catAType": "A",'
     json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
     json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'
-    json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "notifySafetyCustodyLead": true, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": true}'
+    json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": true}'
     json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "increasedRisk": true, "notifyRegionalCTLead": false, "provisionalCategorisation": "C"}'
   }
 }

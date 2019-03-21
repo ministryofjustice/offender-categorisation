@@ -1,8 +1,9 @@
 {% extends "../formTemplate.html" %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+
 {% set greenButtonText = "Continue" %}
 
 {% block content %}
-
 
 <div class="govuk-grid-row govuk-body-s">
   <div class="govuk-grid-column-two-thirds">
@@ -21,11 +22,22 @@
       </strong>
     </div>
 
-    {% set showChangeLinks %}false{% endset %}
+    {% set showChangeLinks = false %}
+
     {% include "../../partials/reviewContents.html" %}
 
+    <h2 class="govuk-heading-m">Other information</h2>
+     {{ govukSummaryList({
+        classes: 'govuk-!-margin-bottom-9',
+        rows: [
+          {
+            key: { text: "Other relevant information" },
+            value: { text: data.tobedetermined },
+            actions: { items: [] }
+          }
+        ]
+      }) }}
   </div>
 </div>
-
 
 {% endblock %}

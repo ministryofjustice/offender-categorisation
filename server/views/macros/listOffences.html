@@ -1,0 +1,7 @@
+{% macro listOffences(offences) %}
+    {% for offence in offences %}
+    <div>{{ offence.offenceDescription }}{% if offence.offenceDate %}
+      ({{ dateConverter(offence.offenceDate) }}{% if offence.offenceRangeDate %} - {{ dateConverter(offence.offenceRangeDate) }}{% endif %})
+    {% endif %}</div>
+    {% endfor %}
+{% endmacro %}

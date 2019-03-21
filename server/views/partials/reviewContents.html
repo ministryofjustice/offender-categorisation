@@ -1,150 +1,197 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "../macros/reviewSectionHeader.html" import reviewSectionHeader %}
+{% from "../macros/listOffences.html" import listOffences %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+
+{% macro formatAnswer(yesno, details) %}
+<div>{{yesno}}</div>
+<div>{{details}}</div>
+{% endmacro %}
 
 <hr>
-{{ reviewSectionHeader(showChangeLinks, 'Offending history','/form/ratings/offendingHistory/'+ data.details.bookingId) }}
-
-{% include "../partials/warningOffendingHistory.html" %}
-
-
-<div class="govuk-form-group">
-  <label class="govuk-label" for="historyQ1">
-    Please record a summary of previous convictions, and any other information, from this offender's PNC record,
-    which might be relevant to their categorisation
-  </label>
-  <div class="govuk-inset-text" id="historyQ1">{{ data.ratings.offendingHistory.previousConvictions }}</div>
-</div>
-
-<hr>
-
-{{ reviewSectionHeader(showChangeLinks, 'Security input','/form/ratings/securityInput/'+ data.details.bookingId) }}
-
-{% if data.socProfile.transferToSecurity %}
-{% set warningTextSecurity %}This offender was referred to security{% endset %}
-{% if warningTextSecurity %}
-  {{ govukWarningText({
-  text: warningTextSecurity,
-  iconFallbackText: "Warning",
-  classes: "forms-warning-text govuk-grid-column-full"
+<h2 class="govuk-heading-m">Offending history</h2>
+{% set catAValue %}Cat {{ data.history.catAType }} ({{ data.history.catAStartYear }}){% endset %}
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { text: "Previous Cat A" },
+        value: { text: catAValue if data.history.catAType else 'No Cat A' },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Previous convictions on NOMIS" },
+        value: { text: listOffences(data.offences) },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Relevant convictions on PNC" },
+        value: { text: data.ratings.offendingHistory.previousConvictions },
+        actions: { items: [{
+              href: '/form/ratings/offendingHistory/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Relevant convictions on PNC"
+            }]
+        } if showChangeLinks
+      },
+      {
+        key: { text: "Further serious charges" },
+        value: { text: "TBA" },
+        actions: { items: [{
+              href: '/form/ratings/offendingHistory/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Further serious charges"
+            }]
+        } if showChangeLinks
+      }
+    ]
   }) }}
-{% endif %}
-{% endif %}
 
-<div class="govuk-form-group">
-  <label class="govuk-label" for="securityQ1">
-    Do you have reason to believe security input is needed?
-  </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id="securityQ1">{{ data.ratings.securityInput.securityInputNeeded }}
-  </div>
-</div>
-
-{% if data.ratings.securityInput.securityInputNeededText %}
-<div class="govuk-form-group">
-  <div class="govuk-inset-text" id=securityQ1Extra">{{ data.ratings.securityInput.securityInputNeededText }}</div>
-</div>
-{% endif %}
-
-<hr>
-{{ reviewSectionHeader(showChangeLinks, 'Violence rating','/form/ratings/violenceRating/'+ data.details.bookingId) }}
-
-{% if data.violenceProfile.veryHighRiskViolentOffender %}
-  {{ govukWarningText({
-    text: "Violent in custody Text TBC",
-    attributes:{ 'id': 'veryHighRiskViolentOffender' },
-    iconFallbackText: "Warning",
-    classes: "forms-warning-text warning-overrides govuk-grid-column-full"
+<h2 class="govuk-heading-m">Safety and good order</h2>
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { text: "Very high risk offender" },
+        value: { text: 'Yes' if data.violenceProfile.veryHighRiskViolentOffender else 'No' },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Previous assaults in custody" },
+        value: { text: data.violenceProfile.numberOfAssaults },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Serious assaults in the last 12 months" },
+        value: { text: data.violenceProfile.numberOfSeriousAssaults },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Any more information about risk of violence in custody" },
+        value: { html: formatAnswer(data.ratings.violenceRating.highRiskOfViolence, data.ratings.violenceRating.highRiskOfViolenceText) },
+        actions: { items: [{
+              href: '/form/ratings/violenceRating/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Any more information about risk of violence in custody"
+            }]
+        } if showChangeLinks
+      },
+      {
+        key: { text: "Serious threats to good order in custody" },
+        value: { html: formatAnswer(data.ratings.violenceRating.seriousThreat, data.ratings.violenceRating.seriousThreatText) },
+        actions: { items: [{
+              href: '/form/ratings/violenceRating/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Serious threats to good order in custody"
+            }]
+        } if showChangeLinks
+      }
+    ]
   }) }}
-{% endif %}
 
-<div class="govuk-form-group">
-  <label class="govuk-label" for="violenceQ1">
-    Is there any other evidence to suggest that the person poses a high risk of violence in custody?
-  </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id="violenceQ1">{{ data.ratings.violenceRating.highRiskOfViolence }}
-  </div>
-</div>
-
-{% if data.ratings.violenceRating.highRiskOfViolenceText %}
-<div class="govuk-form-group">
-  <div class="govuk-inset-text" id="violenceQ1Text">{{ data.ratings.violenceRating.highRiskOfViolenceText }}</div>
-</div>
-{% endif %}
-
-<div class="govuk-form-group">
-  <label class="govuk-label" for="violenceQ2">
-    Is there any other evidence to indicate that the person represents a serious threat to control, good order
-    or
-    discipline?
-  </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id="violenceQ2">{{ data.ratings.violenceRating.seriousThreat }}</div>
-</div>
-
-{% if data.ratings.violenceRating.seriousThreatText %}
-<div class="govuk-form-group">
-  <div class="govuk-inset-text" id="violenceQ2Text">{{ data.ratings.violenceRating.seriousThreatText }}</div>
-</div>
-
-{% endif %}
-
-<hr>
-{{ reviewSectionHeader(showChangeLinks, 'Risk of escape','/form/ratings/escapeRating/'+ data.details.bookingId) }}
-
-{% if data.escapeProfile.activeEscapeList %}
-  {% set warningTextEscape %}
-    This person is considered an escape risk
-  {% endset %}
-  {% if warningTextEscape | trim %}
-    {{ govukWarningText({
-      text: warningTextEscape,
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text govuk-grid-column-full"
-    }) }}
-  {% endif %}
-{% endif %}
-
-<div class="govuk-form-group">
-  <label class="govuk-label" for="escapeQ1">
-    Is there any other evidence to suggest this person poses a risk of escape?
-  </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id="escapeQ1">{{ data.ratings.escapeRating.escapeOtherEvidence }}
-  </div>
-</div>
-
-{% if data.ratings.escapeRating.escapeOtherEvidenceText %}
-<div class="govuk-form-group">
-  <div class="govuk-inset-text" id="escapeQ2Text">{{ data.ratings.escapeRating.escapeOtherEvidenceText }}</div>
-</div>
-
-{% endif %}
-
-<hr>
-{{ reviewSectionHeader(showChangeLinks, 'Extremism rating','/form/ratings/extremismRating/'+ data.details.bookingId) }}
-
-
-{% if data.extremismProfile.increasedRisk %}
-  {{ govukWarningText({
-  text: "There is data to indicate that this person has an increased risk of engaging in extremism",
-  iconFallbackText: "Warning",
-  classes: "forms-warning-text warning-overrides govuk-grid-column-full"
+<h2 class="govuk-heading-m">Risk of escape</h2>
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { text: "Escape list" },
+        value: { text: 'Yes' if data.escapeProfile.activeEscapeList else 'No' },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Escape alerts" },
+        value: { text: 'Yes' if data.escapeProfile.activeEscapeRisk else 'No' },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Any other information that they pose an escape risk" },
+        value: { html: formatAnswer(data.ratings.escapeRating.escapeOtherEvidence, data.ratings.escapeRating.escapeOtherEvidenceText) },
+        actions: { items: [{
+              href: '/form/ratings/escapeRating/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Any other information that they pose an escape risk"
+            }]
+        } if showChangeLinks
+      },
+      {
+        key: { text: "Any further details" },
+        value: { html: formatAnswer(data.ratings.escapeRating.escapeCatB, data.ratings.escapeRating.escapeCatBText) },
+        actions: { items: [{
+              href: '/form/ratings/escapeRating/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Any further details"
+            }]
+        } if showChangeLinks
+      }
+    ]
   }) }}
-{% endif %}
 
+<h2 class="govuk-heading-m">Extremism</h2>
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { text: "Identified at risk of engaging in or vulnerable to extremism" },
+        value: { text: 'Yes' if data.extremismProfile.increasedRisk else 'No' },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Offences under terrorism legislation" },
+        value: { html: formatAnswer(data.ratings.extremismRating.previousTerrorismOffences, data.ratings.extremismRating.previousTerrorismOffencesText) },
+        actions: { items: [{
+              href: '/form/ratings/extremismRating/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Other evidence they pose an escape risk"
+            }]
+        } if showChangeLinks
+      }
+    ]
+  }) }}
 
-<div class="govuk-form-group">
-  <label class="govuk-label" for="extQ1">
-    Are there any previous offences under the Terrorism Act listed on the person's PNC record?
-  </label>
-  <div class="govuk-body govuk-!-font-weight-bold" id="extQ1">{{
-    data.ratings.extremismRating.previousTerrorismOffences }}
-  </div>
-</div>
-
-{% if data.ratings.extremismRating.previousTerrorismOffencesText %}
-<div class="govuk-form-group">
-  <div class="govuk-inset-text" id="extText">{{ data.ratings.extremismRating.previousTerrorismOffencesText }}</div>
-</div>
-
-{% endif %}
-
-<hr>
-
+<h2 class="govuk-heading-m">Security information</h2>
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { text: "Automatic referral to security team" },
+        value: { text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
+        actions: { items: [{
+              href: '/form/ratings/securityBack/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Automatic referral to security team"
+            }]
+        } if showChangeLinks
+      },
+      {
+        key: { text: "Manual referral to security team" },
+        value: { text: data.ratings.securityInput.securityInputNeeded or 'No' },
+        actions: { items: [{
+              href: '/form/ratings/securityBack/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Manual referral to security team"
+            }]
+        } if showChangeLinks
+      },
+      {
+        key: { text: "Security comments" },
+        value: { text: data.security.review.securityReview },
+        actions: { items: [{
+              href: '/form/ratings/securityBack/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Security comments"
+            }]
+        } if showChangeLinks
+      },
+      {
+        key: { text: "Warrant category B?" },
+        value: { text: data.ratings.securityBack.catB },
+        actions: { items: [{
+              href: '/form/ratings/securityBack/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Warrant category B"
+            }]
+        } if showChangeLinks
+      }
+    ]
+  }) }}
