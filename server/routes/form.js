@@ -228,7 +228,6 @@ module.exports = function Index({
     const user = await userService.getUser(res.locals.user.token)
     res.locals.user = { ...user, ...res.locals.user }
 
-
     const formData = await formService.getCategorisationRecord(bookingId)
     res.locals.formObject = formData.form_response || {}
     res.locals.formId = formData.id
