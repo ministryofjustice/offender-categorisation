@@ -51,7 +51,7 @@ class OffendingHistorySpecification extends GebReportingSpec {
 
     then: 'There is a validation error'
     errorSummaries*.text() == ['Please enter details of previous convictions']
-    errors*.text() == ['Please enter previous convictions']
+    errors*.text() == ['Error:\nPlease enter previous convictions']
 
     when: 'Some data is saved and accessed'
     textArea << "Some PNC data"

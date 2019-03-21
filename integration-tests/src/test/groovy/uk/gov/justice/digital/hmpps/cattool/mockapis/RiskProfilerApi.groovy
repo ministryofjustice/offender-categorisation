@@ -39,7 +39,9 @@ class RiskProfilerApi extends WireMockRule {
           provisionalCategorisation  : category,
           veryHighRiskViolentOffender: veryHighRiskViolentOffender,
           notifySafetyCustodyLead    : notifySafetyCustodyLead,
-          displayAssaults            : displayAssaults
+          displayAssaults            : displayAssaults,
+          numberOfAssaults           : 5,
+          numberOfSeriousAssaults    : 2
         ]))))
   }
 
@@ -92,9 +94,9 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
         ]))))
   }
 
-  void stubGetExtremismProfile(String offenderno, String category, boolean increasedRisk, boolean notifyRegionalCTLead) {
+  void stubGetExtremismProfile(String offenderno, String category, boolean increasedRisk, boolean notifyRegionalCTLead, boolean previousOffences = false) {
     this.stubFor(
-      get("/risk-profile/extremism/${offenderno}?previousOffences=false")
+      get("/risk-profile/extremism/$offenderno?previousOffences=$previousOffences")
         .willReturn(
         aResponse()
           .withStatus(200)
