@@ -192,20 +192,6 @@ module.exports = function Index({
     })
   )
 
-  router.get(
-    '/supervisor/confirmBack/:bookingId',
-    asyncMiddleware(async (req, res) => {
-      const { bookingId } = req.params
-      const result = await buildFormData(res, req, 'categoriser', 'review', bookingId)
-
-      const dataToDisplay = {
-        ...result.data,
-      }
-
-      res.render('formPages/supervisor/confirmBack', { ...result, data: dataToDisplay })
-    })
-  )
-
   router.post(
     '/supervisor/confirmBack/:bookingId',
     asyncMiddleware(async (req, res) => {
@@ -241,6 +227,7 @@ module.exports = function Index({
   const buildFormData = async (res, req, section, form, bookingId) => {
     const user = await userService.getUser(res.locals.user.token)
     res.locals.user = { ...user, ...res.locals.user }
+
 
     const formData = await formService.getCategorisationRecord(bookingId)
     res.locals.formObject = formData.form_response || {}
