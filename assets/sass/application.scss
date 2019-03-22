@@ -153,36 +153,45 @@ header.govuk-header {
   background-color: #ddeaff;
 }
 
+.forms-supervisor-info-text {
+  background-color: #d3e9dc;
+}
+
+.forms-comments-text {
+  background-color: #f0f0f0;
+  padding: 15px;
+}
+
 .warning-overrides {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 25px;
+  padding-bottom: 25px;
   span {
     left: 20px;
     font-size: 1.4em;
   }
-  strong {
+  strong, div {
     padding-left: 70px;
   }
 }
 
-#warning-arrow {
-  display: inline-block;
-  position: absolute;
-  left: 70px;
-  top: 18px;
+.warning-arrow {
+    display: inline-block;
+    position: absolute;
+    left: 70px !important;
+    top: 18px;
 }
 
-#override-cat-icon {
-   left: 92px;
+.override-cat-icon {
+   left: 92px !important;
  }
 
-#override-old-cat-icon {
+.override-old-cat-icon {
   background-color: slategrey;
   border-color: slategrey;
 }
 
-#override-icon-text {
-  padding-left: 140px;
+.override-icon-text {
+  padding-left: 140px !important;
 }
 
 .rightAlignedButton{
