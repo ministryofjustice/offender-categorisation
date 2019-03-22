@@ -141,9 +141,6 @@ module.exports = function Index({
       const suggestedCat = formService.computeSuggestedCat(result.data)
       const data = { ...result.data, suggestedCat }
 
-
-
-
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
   )
