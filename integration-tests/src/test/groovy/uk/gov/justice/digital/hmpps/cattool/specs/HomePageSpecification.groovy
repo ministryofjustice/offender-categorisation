@@ -108,6 +108,7 @@ class HomePageSpecification extends GebReportingSpec {
     offendingHistoryButton.click()
     at(new CategoriserOffendingHistoryPage(bookingId: '12'))
     textArea << 'some text'
+    furtherChargesNo.click()
     saveButton.click()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
