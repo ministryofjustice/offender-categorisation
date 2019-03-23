@@ -96,7 +96,7 @@ module.exports = function createFormService(formClient) {
     }
     if (
       (data.history && data.history.catAType) ||
-      (data.securityBack && data.securityBack.catB === 'Yes') ||
+      (data.ratings && data.ratings.securityBack && data.ratings.securityBack.catB === 'Yes') ||
       (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) ||
       (data.violenceProfile && data.violenceProfile.numberOfSeriousAssaults > 0) || // note: Qs on page ignored (info only)
       (data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes') || // Other Q is info only
