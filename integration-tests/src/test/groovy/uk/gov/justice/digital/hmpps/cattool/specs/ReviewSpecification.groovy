@@ -48,7 +48,7 @@ class ReviewSpecification extends GebReportingSpec {
     given: 'data has been entered for the ratings pages'
     db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
       ratings : [
-        offendingHistory: [previousConvictions: "some convictions"],
+        offendingHistory: [previousConvictions: "some convictions", furtherCharges: 'Yes', furtherChargesText: 'charges text', offendingHistoryCatB: 'No'],
         securityInput   : [securityInputNeeded: 'Yes', securityInputNeededText: 'Reasons why referring manually to security'],
         securityBack    : [catB: 'Yes'],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes", seriousThreatText: "Here are the serious threat details"],
@@ -81,11 +81,11 @@ class ReviewSpecification extends GebReportingSpec {
 
     then: 'the review is displayed with the saved form details'
     at ReviewPage
-    values[0..3]*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'some convictions', 'TBA']
-    values[4..8]*.text() == ['Yes', '5', '2', 'No', '''Yes\nHere are the serious threat details''']
-    values[9..12]*.text() == ['Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''']
-    values[13..14]*.text() == ['Yes', '''Yes\nPrevious Terrorism Offences Text''']
-    values[15..18]*.text() == ['No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
+    values[0..4]*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'some convictions', 'Yes\ncharges text', 'No']
+    values[5..9]*.text() == ['Yes', '5', '2', 'No', '''Yes\nHere are the serious threat details''']
+    values[10..13]*.text() == ['Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''']
+    values[14..15]*.text() == ['Yes', '''Yes\nPrevious Terrorism Offences Text''']
+    values[16..19]*.text() == ['No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
 
     def response = db.getData(12)[0].form_response
     def json = response.toString()

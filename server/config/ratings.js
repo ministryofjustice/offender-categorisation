@@ -7,6 +7,24 @@ module.exports = {
           validationMessage: 'Please enter details of previous convictions',
         },
       },
+      {
+        furtherCharges: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        furtherChargesText: {
+          responseType: 'requiredStringIf_furtherCharges_Yes',
+          validationMessage: 'Please enter details of the further charges',
+        },
+      },
+      {
+        offendingHistoryCatB: {
+          responseType: 'requiredStringIf_furtherCharges_Yes',
+          validationMessage: 'Please select yes or no',
+        },
+      },
     ],
     nextPath: {
       path: '/tasklist/',

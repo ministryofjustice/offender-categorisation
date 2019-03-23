@@ -3,6 +3,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "../../macros/listOffences.html" import listOffences %}
+{% from "radios/macro.njk" import govukRadios %}
 
 {% block formItems %}
 
@@ -31,6 +32,80 @@
     errorMessage: {
       text: "Please enter previous convictions"
     } if (errors | findError('previousConvictions'))
+  }) }}
+
+{% set furtherChargesHtml %}
+  {{ govukCharacterCount({
+  name: "furtherChargesText",
+  type: "furtherChargesText",
+  id: "furtherChargesText",
+  maxlength: 50000,
+  threshold: 50,
+  label: {
+  text: "Give details of these charges"
+  },
+  value: data.ratings.offendingHistory.furtherChargesText,
+  errorMessage: {
+  text: "Please enter details"
+  } if (errors | findError('furtherChargesText'))
+  }) }}
+
+  {{ govukRadios({
+    name: "offendingHistoryCatB",
+    classes: "govuk-radios--inline",
+    fieldset: {
+    legend: {
+    text: "Do any of these further charges mean they should be in Cat B?",
+    isPageHeading: false
+    }
+    },
+    errorMessage: {
+    text: "Please select yes or no"
+    } if (errors | findError('offendingHistoryCatB')),
+    items: [
+    {
+    value: "Yes",
+    text: "Yes",
+    checked: data.ratings.offendingHistory.offendingHistoryCatB === 'Yes'
+    },
+    {
+    value: "No",
+    checked: data.ratings.offendingHistory.offendingHistoryCatB === 'No',
+    text: "No"
+    }
+    ]
+  }) }}
+
+{% endset %}
+<h2 class="govuk-heading-m">Further charges</h2>
+
+  {{ govukRadios({
+    name: "furtherCharges",
+    classes: "govuk-radios--inline",
+    fieldset: {
+    legend: {
+    text: "Are they facing further serious charges?",
+    isPageHeading: false
+  }
+  },
+  errorMessage: {
+    text: "Please select yes or no"
+  } if (errors | findError('furtherCharges')),
+  items: [
+  {
+    value: "Yes",
+    text: "Yes",
+    checked: data.ratings.offendingHistory.furtherCharges === 'Yes',
+    conditional: {
+    html: furtherChargesHtml
+  }
+  },
+  {
+    value: "No",
+    checked: data.ratings.offendingHistory.furtherCharges === 'No',
+    text: "No"
+  }
+  ]
   }) }}
 
 {% endblock %}
