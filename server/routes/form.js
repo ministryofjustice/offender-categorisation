@@ -140,6 +140,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, section, form, bookingId)
       const suggestedCat = formService.computeSuggestedCat(result.data)
       const data = { ...result.data, suggestedCat }
+
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
   )
@@ -281,6 +282,10 @@ module.exports = function Index({
     if (body.categoryAppropriate === 'Yes') {
       updated.overriddenCategory = ''
       updated.overriddenCategoryText = ''
+    }
+    if (body.furtherCharges === 'No') {
+      updated.offendingHistoryCatB = ''
+      updated.furtherChargesText = ''
     }
     return updated
   }
