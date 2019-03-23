@@ -37,12 +37,22 @@
       },
       {
         key: { text: "Further serious charges" },
-        value: { text: "TBA" },
+        value: { html: formatAnswer(data.ratings.offendingHistory.furtherCharges, data.ratings.offendingHistory.furtherChargesText) },
         actions: { items: [{
               href: '/form/ratings/offendingHistory/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Further serious charges"
             }]
+        } if showChangeLinks
+      },
+      {
+        key: { text: "Warrant category B?" },
+        value: { text: data.ratings.offendingHistory.offendingHistoryCatB },
+        actions: { items: [{
+        href: '/form/ratings/offendingHistory/' + data.details.bookingId,
+        text: "Change",
+        visuallyHiddenText: "Warrant category B"
+        }]
         } if showChangeLinks
       }
     ]
@@ -156,12 +166,7 @@
       {
         key: { text: "Automatic referral to security team" },
         value: { text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
-        actions: { items: [{
-              href: '/form/ratings/securityBack/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Automatic referral to security team"
-            }]
-        } if showChangeLinks
+        actions: { items: [] }
       },
       {
         key: { text: "Manual referral to security team" },

@@ -20,6 +20,12 @@ class CategoriserOffendingHistoryPage extends Page {
     form { $('form') }
     textArea { $('#more-detail') }
     saveButton { $('button.govuk-button') }
+    furtherChargesYes { $('#furtherCharges-1') }
+    furtherChargesNo { $('#furtherCharges-2') }
+    offendingHistoryCatBYes { $('#offendingHistoryCatB-1') }
+    offendingHistoryCatBNo { $('#offendingHistoryCatB-2') }
+    furtherChargesText { $('#furtherChargesText') }
+    warrantCatB { $('#warrantCatB') }
     history { $('form > div.govuk-body-s > div') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
