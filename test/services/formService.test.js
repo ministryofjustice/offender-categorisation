@@ -417,16 +417,15 @@ describe('computeSuggestedCat', () => {
   const nearMisses = {
     extremismProfile: { provisionalCategorisation: 'C' },
     history: {},
-    securityBack: { catB: 'No' },
     violenceProfile: { veryHighRiskViolentOffender: false, numberOfSeriousAssaults: 0 },
-    ratings: { escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'Yes' } },
+    ratings: { escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'Yes' }, securityBack: { catB: 'No' } },
   }
   test.each`
     data                                                          | category
     ${{}}                                                         | ${'C'}
     ${{ details: { dateOfBirth: '2001-03-15' } }}                 | ${'I'}
     ${{ history: { catAType: 'A' } }}                             | ${'B'}
-    ${{ securityBack: { catB: 'Yes' } }}                          | ${'B'}
+    ${{ ratings: { securityBack: { catB: 'Yes' } } }}             | ${'B'}
     ${{ violenceProfile: { veryHighRiskViolentOffender: true } }} | ${'B'}
     ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}        | ${'B'}
     ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}       | ${'B'}

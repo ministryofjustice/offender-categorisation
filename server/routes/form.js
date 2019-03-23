@@ -224,6 +224,15 @@ module.exports = function Index({
     })
   )
 
+  router.get(
+    '/approvedView/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId)
+      res.render(`formPages/approvedView`, { ...result })
+    })
+  )
+
   const buildFormData = async (res, req, section, form, bookingId) => {
     const user = await userService.getUser(res.locals.user.token)
     res.locals.user = { ...user, ...res.locals.user }

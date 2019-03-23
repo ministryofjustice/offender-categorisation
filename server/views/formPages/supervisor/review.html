@@ -20,24 +20,23 @@
 
     {% if overriddenCat %}
     <div class="govuk-warning-text forms-info-text warning-overrides">
-      <span id="override-old-cat-icon" class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
-      <span id="warning-arrow" class=""><img src='/assets/images/Triangle.png' alt='arrow' height='18'
-                                             width='12'/></span>
-      <span id="override-cat-icon" class="govuk-warning-text__icon" aria-hidden="true">{{ overriddenCat }}</span>
-      <strong id="override-icon-text" class="govuk-warning-text__text">
+      <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ cat }}</span>
+      <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
+      <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
+      <strong class="govuk-warning-text__text override-icon-text">
         <span class="govuk-warning-text__assistive">Warning</span>
         The category was originally {{ cat }} and is now {{ overriddenCat }}
       </strong>
     </div>
-    <div>
-      <label class="govuk-label" for="overriddenText">
+    <div class="govuk-!-margin-bottom-6">
+      <label for="overriddenText">
         Reason for overriding the suggested category
       </label>
-      <div class="forms-info-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
+      <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
       </div>
     </div>
     {% else %}
-    <div class="govuk-warning-text forms-info-text warning-overrides">
+    <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>

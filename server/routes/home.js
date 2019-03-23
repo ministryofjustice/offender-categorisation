@@ -1,6 +1,6 @@
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-const jwtDecode = require('jwt-decode')
+const { redirectUsingRole } = require('../utils/routes')
 
 module.exports = function Index({ authenticationMiddleware, userService, offendersService }) {
   const router = express.Router()
@@ -10,19 +10,7 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
   router.get(
     '/',
     asyncMiddleware(async (req, res) => {
-      const roles = jwtDecode(res.locals.user.token).authorities
-
-      if (roles.includes('ROLE_APPROVE_CATEGORISATION')) {
-        res.redirect('/supervisorHome')
-      } else if (roles.includes('ROLE_CREATE_CATEGORISATION')) {
-        res.redirect('/categoriserHome')
-      } else if (roles.includes('ROLE_CATEGORISATION_SECURITY')) {
-        res.redirect('/securityHome')
-      } else {
-        // go to a 'not auth' page?
-        res.status(403)
-        res.render('authError')
-      }
+      redirectUsingRole(res, '/categoriserHome', '/supervisorHome', '/securityHome')
     })
   )
 
