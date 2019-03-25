@@ -103,6 +103,7 @@ module.exports = function createApp({
         dest: path.join(__dirname, '../assets/stylesheets'),
         debug: true,
         outputStyle: 'compressed',
+        indentedSyntax: true,
         prefix: '/stylesheets/',
         includePaths: ['node_modules/govuk-frontend'],
       })

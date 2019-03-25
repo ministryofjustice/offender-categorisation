@@ -1,5 +1,8 @@
+const jwtDecode = require('jwt-decode')
+
 module.exports = {
   getPathFor,
+  redirectUsingRole,
 }
 
 function getPathFor({ data, config }) {
@@ -23,4 +26,20 @@ function getPathFromAnswer({ nextPath, data }) {
 
 function determinePathFromDecisions({ decisions, data }) {
   return decisions.reduce((path, pathConfig) => path || getPathFromAnswer({ nextPath: pathConfig, data }), null)
+}
+
+function redirectUsingRole(res, categoriserUrl, supervisorUrl, securityUrl) {
+  const roles = jwtDecode(res.locals.user.token).authorities
+
+  if (supervisorUrl && roles.includes('ROLE_APPROVE_CATEGORISATION')) {
+    res.redirect(supervisorUrl)
+  } else if (categoriserUrl && roles.includes('ROLE_CREATE_CATEGORISATION')) {
+    res.redirect(categoriserUrl)
+  } else if (securityUrl && roles.includes('ROLE_CATEGORISATION_SECURITY')) {
+    res.redirect(securityUrl)
+  } else {
+    // go to a 'not auth' page
+    res.status(403)
+    res.render('authError')
+  }
 }
