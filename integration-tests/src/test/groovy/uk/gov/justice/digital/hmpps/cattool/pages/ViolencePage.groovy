@@ -15,6 +15,9 @@ class ViolencePage extends Page {
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
 
+    warning(required: false) { $('div.govuk-warning-text') }
+    info(required: false) { $('div.govuk-inset-text') }
+
     form {$('form')}
     highRiskOfViolenceYes {$('#highRiskOfViolence-1')}
     highRiskOfViolenceNo {$('#highRiskOfViolence-2')}

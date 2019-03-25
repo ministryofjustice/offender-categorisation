@@ -57,7 +57,8 @@ class ExtremismSpecification extends GebReportingSpec {
 
     then: 'The extremism page is displayed'
     at ExtremismPage
-    warningMessage.text().contains('There is data to indicate that this person has an increased risk of engaging in extremism')
+    warningMessage.text() contains 'This person is at risk of engaging in or vulnerable to extremism'
+    !info.displayed
     !previousTerrorismOffencesText.displayed
 
     when: 'Details are entered, saved and accessed'
@@ -72,6 +73,31 @@ class ExtremismSpecification extends GebReportingSpec {
     form.previousTerrorismOffences == "Yes"
     form.previousTerrorismOffencesText == "Some risk text"
     db.getData(12).status == ["STARTED"]
+  }
+
+  def "The extremism page correctly shows an info message when not increased risk"() {
+    when: 'I go to the extremism page'
+
+    elite2api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2api.stubGetOffenderDetails(12)
+
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    selectFirstPrisoner()
+
+    at CategoriserTasklistPage
+
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false)
+    to ExtremismPage, '12'
+
+    then: 'The extremism page is displayed'
+    at ExtremismPage
+    info.text() contains 'This person is not at risk of engaging in or vulnerable to extremism.'
+    !warningMessage.displayed
   }
 
   def 'Validation test'() {
