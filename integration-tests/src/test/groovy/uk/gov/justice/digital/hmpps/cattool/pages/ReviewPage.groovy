@@ -18,6 +18,7 @@ class ReviewPage extends Page {
     submitButton { $('button', type:'submit') }
     backLink { $( 'a.govuk-back-link') }
     values { $('dd.govuk-summary-list__value')}
+    changeLinks { $('a.govuk-link', text: startsWith('Change'))}
     newCatMessage(required: false) { $('#newCatMessage') }
   }
 }
