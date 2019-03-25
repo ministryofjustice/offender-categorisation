@@ -47,7 +47,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
 
   def "The supervisor review page can be confirmed"() {
-    given: 'supervisor is viewing the review page for B2345YZ'
+    when: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
@@ -59,7 +59,9 @@ class SupervisorSpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
     navigateToReview()
-    veryHighRiskViolentOffenderMessage.text() == 'Violent in custody Text TBC'
+
+    then: 'the change links are not displayed'
+    changeLinks.size() == 0
 
     when: 'the supervisor selects yes'
     elite2api.stubSupervisorApprove()

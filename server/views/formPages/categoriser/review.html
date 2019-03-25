@@ -8,8 +8,8 @@
   <div class="govuk-grid-column-two-thirds">
 
     <h1 class="govuk-heading-l">Check your answers before you continue</h1>
-    {# <pre>{{ data | dump(2) }}</pre> #}
-    {% set showChangeLinks %}true{% endset %}
+
+    {% set showChangeLinks = true %}
     {% include "../../partials/reviewContents.html" %}
 
   </div>
