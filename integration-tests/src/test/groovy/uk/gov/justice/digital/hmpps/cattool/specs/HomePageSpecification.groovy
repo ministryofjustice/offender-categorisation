@@ -107,8 +107,8 @@ class HomePageSpecification extends GebReportingSpec {
     elite2api.stubOffenceHistory('ON678')
     offendingHistoryButton.click()
     at(new CategoriserOffendingHistoryPage(bookingId: '12'))
-    textArea << 'some text'
     furtherChargesNo.click()
+    previousConvictionsNo.click()
     saveButton.click()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
@@ -138,7 +138,7 @@ class HomePageSpecification extends GebReportingSpec {
 
     db.createDataWithStatus(11, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
