@@ -47,11 +47,31 @@ class EscapeSpecification extends GebReportingSpec {
     at(new CategoriserEscapePage(bookingId: '12'))
 
     warningTextDiv.text().contains('This person is considered an escape risk')
+    !info.displayed
     alertInfo*.text() == [
       'XEL First xel comment 2016-09-14',
       '''XEL Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
       'XER First xer comment 2016-09-16']
     $('form').text() contains 'Do you think this information means they should be in Cat B?'
+  }
+
+  def "The escape page displays an info message when the offender is not on the escape list"() {
+    when: 'I go to the escape page'
+
+    fixture.gotoTasklist()
+    at(new CategoriserTasklistPage(bookingId: '12'))
+
+    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
+
+    escapeButton.click()
+
+    then: 'The page is displayed with alert info and extra question'
+    at(new CategoriserEscapePage(bookingId: '12'))
+
+    info.text(). contains 'This person is not considered an escape risk'
+    !warningTextDiv.displayed
   }
 
   def "The escape page can be edited"() {

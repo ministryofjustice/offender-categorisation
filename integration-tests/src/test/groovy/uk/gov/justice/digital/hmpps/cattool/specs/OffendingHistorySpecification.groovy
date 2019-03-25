@@ -31,19 +31,20 @@ class OffendingHistorySpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  def "The Offending history page is shown correctly"() {
+  def "The Offending history page is shown correctly for a previous cat A"() {
     when: 'I go to the Offending history page'
 
     fixture.gotoTasklist()
     at new CategoriserTasklistPage(bookingId: '12')
-    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubAssessments('B2345YZ')
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2api.stubOffenceHistory('B2345YZ')
     offendingHistoryButton.click()
 
     then: 'a Cat A warning and offence history is displayed'
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    catAWarning.text().contains('This offender was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014')
+    catAWarning.text() contains 'This offender was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
+    !catAInfo.displayed
     history*.text() == ['Libel (21/02/2019)', 'Slander (22/02/2019 - 24/02/2019)', 'Undated offence']
 
     when: 'An empty form is submitted'
@@ -71,5 +72,22 @@ class OffendingHistorySpecification extends GebReportingSpec {
     form.furtherCharges == "Yes"
     form.previousConvictions == "Yes"
     db.getData(12).status == ["STARTED"]
+  }
+
+
+  def "The Offending history page is shown correctly (no previous cat A)"() {
+    when: 'I go to the Offending history page'
+
+    fixture.gotoTasklist()
+    at new CategoriserTasklistPage(bookingId: '12')
+    elite2api.stubAssessments('B2345YZ', true)
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2api.stubOffenceHistory('B2345YZ')
+    offendingHistoryButton.click()
+
+    then: 'a non Cat A info message is displayed'
+    at new CategoriserOffendingHistoryPage(bookingId: '12')
+    catAInfo.text() contains 'This person has not been categorised as a Cat A or a provisional Cat A before.'
+    !catAWarning.displayed
   }
 }

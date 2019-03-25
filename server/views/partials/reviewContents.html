@@ -32,8 +32,8 @@
               href: '/form/ratings/offendingHistory/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Relevant convictions on PNC"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       },
       {
         key: { text: "Further serious charges" },
@@ -42,8 +42,8 @@
               href: '/form/ratings/offendingHistory/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Further serious charges"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       },
       {
         key: { text: "Warrant category B?" },
@@ -52,8 +52,8 @@
         href: '/form/ratings/offendingHistory/' + data.details.bookingId,
         text: "Change",
         visuallyHiddenText: "Warrant category B"
-        }]
-        } if showChangeLinks
+        }] if showChangeLinks else []
+        }
       }
     ]
   }) }}
@@ -84,8 +84,8 @@
               href: '/form/ratings/violenceRating/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Any more information about risk of violence in custody"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       },
       {
         key: { text: "Serious threats to good order in custody" },
@@ -94,8 +94,8 @@
               href: '/form/ratings/violenceRating/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Serious threats to good order in custody"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       }
     ]
   }) }}
@@ -121,8 +121,8 @@
               href: '/form/ratings/escapeRating/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Any other information that they pose an escape risk"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       },
       {
         key: { text: "Any further details" },
@@ -131,8 +131,8 @@
               href: '/form/ratings/escapeRating/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Any further details"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       }
     ]
   }) }}
@@ -153,8 +153,8 @@
               href: '/form/ratings/extremismRating/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Other evidence they pose an escape risk"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       }
     ]
   }) }}
@@ -175,8 +175,8 @@
               href: '/form/ratings/securityBack/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Manual referral to security team"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       },
       {
         key: { text: "Security comments" },
@@ -190,8 +190,8 @@
               href: '/form/ratings/securityBack/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Warrant category B"
-            }]
-        } if showChangeLinks
+            }] if showChangeLinks else []
+        }
       }
     ]
   }) }}

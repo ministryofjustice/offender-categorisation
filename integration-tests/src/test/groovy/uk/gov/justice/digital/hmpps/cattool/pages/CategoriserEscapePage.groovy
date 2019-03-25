@@ -17,6 +17,7 @@ class CategoriserEscapePage extends Page {
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     warningTextDiv(required: false) { $('div.govuk-warning-text') }
+    info(required: false) { $('div.govuk-inset-text') }
     alertInfo(required: false) { $('.govuk-details__text p') }
     saveButton { $('button.govuk-button') }
     escapeCatBQuestion(required: false) { $('input', name: 'escapeCatB') }

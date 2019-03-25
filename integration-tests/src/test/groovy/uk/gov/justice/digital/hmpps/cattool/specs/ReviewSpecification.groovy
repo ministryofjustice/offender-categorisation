@@ -81,6 +81,7 @@ class ReviewSpecification extends GebReportingSpec {
 
     then: 'the review is displayed with the saved form details'
     at ReviewPage
+    changeLinks.size() == 10
     values[0..4]*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'Yes\nsome convictions', 'Yes\ncharges text', 'No']
     values[5..9]*.text() == ['Yes', '5', '2', 'No', '''Yes\nHere are the serious threat details''']
     values[10..13]*.text() == ['Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''']

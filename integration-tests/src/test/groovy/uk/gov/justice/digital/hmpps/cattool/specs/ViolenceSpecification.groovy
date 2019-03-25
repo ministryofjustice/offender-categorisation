@@ -57,6 +57,8 @@ class ViolenceSpecification extends GebReportingSpec {
 
     then: 'The violence page is displayed'
     at ViolencePage
+    info.text() contains 'This person has not been reported as the perpetrator in any assaults in custody before.'
+    !warning.displayed
     !highRiskOfViolenceText.displayed
     !seriousThreatText.displayed
 
@@ -75,6 +77,30 @@ class ViolenceSpecification extends GebReportingSpec {
     form.seriousThreat == "Yes"
     form.seriousThreatText == "Some threat text"
     db.getData(12).status == ["STARTED"]
+  }
+
+  def "The violence page shows warning correctly"() {
+    when: 'I go to the violence page'
+
+    elite2api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2api.stubGetOffenderDetails(12)
+
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    selectFirstPrisoner()
+    at CategoriserTasklistPage
+
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
+    to ViolencePage, '12'
+
+    then: 'The violence page is displayed with a warning'
+    at ViolencePage
+    warning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months'
+    !info.displayed
   }
 
   def 'Validation test'() {
