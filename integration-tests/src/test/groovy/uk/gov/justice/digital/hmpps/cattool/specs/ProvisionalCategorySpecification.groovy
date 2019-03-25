@@ -125,7 +125,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     given: 'Ratings data exists for for B2345YZ'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],

@@ -4,7 +4,13 @@ module.exports = {
       {
         previousConvictions: {
           responseType: 'requiredString',
-          validationMessage: 'Please enter details of previous convictions',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        previousConvictionsText: {
+          responseType: 'requiredStringIf_previousConvictions_Yes',
+          validationMessage: 'Please enter details of the other convictions',
         },
       },
       {
