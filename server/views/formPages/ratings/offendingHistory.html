@@ -19,20 +19,24 @@
     </div>
   {% endif %}
 
+
+{% set previousConvictionsHtml %}
   {{ govukCharacterCount({
-    name: "previousConvictions",
-    type: "previousConvictions",
-    id: "more-detail",
+    name: "previousConvictionsText",
+    type: "previousConvictionsText",
+    id: "previousConvictionsText",
     maxlength: 50000,
     threshold: 50,
     label: {
-      text: "Please record a summary of previous convictions, and any other information, from this offender's PNC record, which might be relevant to their categorisation"
+    text: "Provide details about these convictions"
     },
-    value: data.ratings.offendingHistory.previousConvictions,
+    value: data.ratings.offendingHistory.previousConvictionsText,
     errorMessage: {
-      text: "Please enter previous convictions"
-    } if (errors | findError('previousConvictions'))
+    text: "Please enter previous convictions"
+    } if (errors | findError('previousConvictionsText'))
   }) }}
+
+{% endset %}
 
 {% set furtherChargesHtml %}
   {{ govukCharacterCount({
@@ -77,6 +81,36 @@
   }) }}
 
 {% endset %}
+
+{{ govukRadios({
+  name: "previousConvictions",
+  classes: "govuk-radios--inline",
+  fieldset: {
+  legend: {
+  text: "Are there any other relevant convictions?",
+  isPageHeading: false
+  }
+  },
+  errorMessage: {
+  text: "Please select yes or no"
+  } if (errors | findError('previousConvictions')),
+  items: [
+  {
+  value: "Yes",
+  text: "Yes",
+  checked: data.ratings.offendingHistory.previousConvictions === 'Yes',
+  conditional: {
+  html: previousConvictionsHtml
+  }
+  },
+  {
+  value: "No",
+  checked: data.ratings.offendingHistory.previousConvictions === 'No',
+  text: "No"
+  }
+  ]
+}) }}
+
 <h2 class="govuk-heading-m">Further charges</h2>
 
   {{ govukRadios({

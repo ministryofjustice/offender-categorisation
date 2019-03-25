@@ -45,7 +45,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
     when: 'I go to the home page as categoriser'
     db.createData(-1,12, JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
@@ -54,7 +54,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
 
     db.createData(-2,11, JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],

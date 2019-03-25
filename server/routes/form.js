@@ -287,6 +287,9 @@ module.exports = function Index({
       updated.offendingHistoryCatB = ''
       updated.furtherChargesText = ''
     }
+    if (body.previousConvictions === 'No') {
+      updated.previousConvictionsText = ''
+    }
     return updated
   }
 
