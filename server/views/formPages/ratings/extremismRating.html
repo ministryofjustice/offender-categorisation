@@ -1,5 +1,6 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
+{% from "inset-text/macro.njk" import govukInsetText %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "radios/macro.njk" import govukRadios %}
 
@@ -30,9 +31,13 @@
 
   {% if data.extremismProfile.increasedRisk %}
     {{ govukWarningText({
-      text: "There is data to indicate that this person has an increased risk of engaging in extremism",
+      text: "This person is at risk of engaging in or vulnerable to extremism",
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
+    }) }}
+  {% else %}
+    {{ govukInsetText({
+      text: "This person is not at risk of engaging in or vulnerable to extremism."
     }) }}
   {% endif %}
 

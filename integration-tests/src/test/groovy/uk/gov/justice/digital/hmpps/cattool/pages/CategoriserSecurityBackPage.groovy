@@ -9,5 +9,6 @@ class CategoriserSecurityBackPage extends CategoriserSecurityInputPage {
   static content = {
     catBRadio { $('input', name: 'catB') }
     noteFromSecurity { $('div.govuk-inset-text') }
+    warning(required: false) { $('div.govuk-warning-text') }
   }
 }

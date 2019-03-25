@@ -1,5 +1,5 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
-
+{% from "inset-text/macro.njk" import govukInsetText %}
 
 {% set warningText %}
   {% if data.history.catAType === 'A' %}
@@ -22,4 +22,8 @@
     classes: "forms-warning-text warning-overrides"
   }) }}
 </div>
+{% else %}
+  {{ govukInsetText({
+    text: "This person has not been categorised as a Cat A or a provisional Cat A before."
+  }) }}
 {% endif %}
