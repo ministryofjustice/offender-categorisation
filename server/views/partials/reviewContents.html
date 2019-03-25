@@ -27,7 +27,7 @@
       },
       {
         key: { text: "Relevant convictions on PNC" },
-        value: { text: data.ratings.offendingHistory.previousConvictions },
+        value: { html: formatAnswer( data.ratings.offendingHistory.previousConvictions, data.ratings.offendingHistory.previousConvictionsText) },
         actions: { items: [{
               href: '/form/ratings/offendingHistory/' + data.details.bookingId,
               text: "Change",
@@ -181,12 +181,7 @@
       {
         key: { text: "Security comments" },
         value: { text: data.security.review.securityReview },
-        actions: { items: [{
-              href: '/form/ratings/securityBack/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Security comments"
-            }]
-        } if showChangeLinks
+        actions: { items: [] }
       },
       {
         key: { text: "Warrant category B?" },

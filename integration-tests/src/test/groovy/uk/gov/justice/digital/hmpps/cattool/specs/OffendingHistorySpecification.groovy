@@ -50,24 +50,26 @@ class OffendingHistorySpecification extends GebReportingSpec {
     saveButton.click()
 
     then: 'There is a validation error'
-    errorSummaries*.text() == ['Please enter details of previous convictions','Please select yes or no']
-    errors*.text()[0] == 'Error:\nPlease enter previous convictions'
+    errorSummaries*.text() == ['Please select yes or no','Please select yes or no']
+    errors*.text()[0] == 'Error:\nPlease select yes or no'
     errors*.text()[1] == 'Error:\nPlease select yes or no'
 
     when: 'Some data is saved and accessed'
-    textArea << "Some PNC data"
     furtherChargesYes.click()
+    previousConvictionsYes.click()
     offendingHistoryCatBYes.click()
     furtherChargesText << "There are further charges"
+    previousConvictionsText << "some convictions details"
     saveButton.click()
     at CategoriserTasklistPage
     offendingHistoryButton.click()
 
     then: "data is correctly retrieved"
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    form.previousConvictions == "Some PNC data"
+    form.previousConvictionsText == "some convictions details"
     form.furtherChargesText == "There are further charges"
     form.furtherCharges == "Yes"
+    form.previousConvictions == "Yes"
     db.getData(12).status == ["STARTED"]
   }
 }

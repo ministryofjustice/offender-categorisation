@@ -25,7 +25,7 @@ href: backLink or "/"
 
   {% include "../partials/offenderDetails.html" %}
 
-  {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
+  {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions and data.ratings.offendingHistory.furtherCharges %}
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
   {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No') or data.ratings.securityBack.catB %}
   {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}

@@ -18,8 +18,10 @@ class CategoriserOffendingHistoryPage extends Page {
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     catAWarning(required: false) { $('div.govuk-warning-text') }
     form { $('form') }
-    textArea { $('#more-detail') }
+    previousConvictionsText { $('#previousConvictionsText') }
     saveButton { $('button.govuk-button') }
+    previousConvictionsYes { $('#previousConvictions-1') }
+    previousConvictionsNo { $('#previousConvictions-2') }
     furtherChargesYes { $('#furtherCharges-1') }
     furtherChargesNo { $('#furtherCharges-2') }
     offendingHistoryCatBYes { $('#offendingHistoryCatB-1') }

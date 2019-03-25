@@ -71,7 +71,7 @@ class TasklistSpecification extends GebReportingSpec {
     when: 'I go to the tasklist page with all sections complete'
     db.createData(12, JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions", furtherCharges: "No"],
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
