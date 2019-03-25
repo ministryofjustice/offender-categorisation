@@ -2,6 +2,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "radios/macro.njk" import govukRadios %}
+{% from "inset-text/macro.njk" import govukInsetText %}
 
 {% set highRiskOfViolenceTextHtml %}
   {{ govukCharacterCount({
@@ -41,12 +42,19 @@
 
 <h1 class="govuk-heading-l">Violence rating</h1>
 
-  {% if data.violenceProfile.veryHighRiskViolentOffender %}
+  {% if data.violenceProfile.displayAssaults %}
+    {% set warningText %}
+      This person has been reported as the perpetrator in {{ data.violenceProfile.numberOfAssaults }} assaults in custody before,
+      including {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults in the last 12 months
+    {% endset %}
     {{ govukWarningText({
-      text: "Violent in custody Text TBC",
-      attributes:{ 'id': 'veryHighRiskViolentOffender' },
+      text: warningText,
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
+    }) }}
+  {% else %}
+    {{ govukInsetText({
+      text: "This person has not been reported as the perpetrator in any assaults in custody before."
     }) }}
   {% endif %}
 
@@ -109,11 +117,3 @@
   }) }}
 
 {% endblock %}
-
-{#
-coming back from risk profiler:
-
-private boolean veryHighRiskViolentOffender;
-private boolean notifySafetyCustodyLead;
-private boolean displayAssaults;
-#}
