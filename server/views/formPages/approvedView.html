@@ -79,16 +79,16 @@
     {% include "../partials/reviewContents.html" %}
 
     <h2 class="govuk-heading-m">Other information</h2>
-     {{ govukSummaryList({
-        classes: 'govuk-!-margin-bottom-9',
-        rows: [
-          {
-            key: { text: "Other relevant information" },
-            value: { text: data.tobedetermined },
-            actions: { items: [] }
-          }
-        ]
-      }) }}
+    {{ govukSummaryList({
+      classes: 'govuk-!-margin-bottom-9',
+      rows: [
+      {
+      key: { text: "Other relevant information" },
+      value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
+      actions: { items: [] }
+      }
+      ]
+    }) }}
   </div>
 </div>
 
