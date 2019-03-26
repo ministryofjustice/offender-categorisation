@@ -198,6 +198,60 @@ describe('GET /ratings/extremism', () => {
   )
 })
 
+describe('GET /categoriser/review', () => {
+  test('Should perform a merge with existing data when loading review', () => {
+    // data that should be persisted
+    riskProfilerService.getEscapeProfile.mockResolvedValue({
+      flagA: 'B2345XY',
+    })
+    riskProfilerService.getViolenceProfile.mockResolvedValue({
+      violenceFlag: true,
+    })
+    riskProfilerService.getExtremismProfile.mockResolvedValue({
+      exFlag: true,
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      form_response: {
+        ratings: 'stuff',
+        categoriser: 'other things',
+      },
+    })
+    offendersService.getCatAInformation.mockResolvedValue({
+      catARisk: true,
+    })
+
+    // data for display only (not persisted)
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderName: 'Brian',
+    })
+    offendersService.getOffenceHistory.mockResolvedValue({
+      offence: 'details',
+    })
+
+    return request(app)
+      .get('/categoriser/review/12345')
+      .expect(200)
+      .expect(() => {
+        expect(formService.updateFormData).toBeCalledWith('12345', {
+          categoriser: 'other things',
+          ratings: 'stuff',
+          escapeProfile: {
+            flagA: 'B2345XY',
+          },
+          extremismProfile: {
+            exFlag: true,
+          },
+          violenceProfile: {
+            violenceFlag: true,
+          },
+          history: {
+            catARisk: true,
+          },
+        })
+      })
+  })
+})
+
 describe('POST /section/form', () => {
   test.each`
     sectionName  | formName              | userInput               | nextPath
