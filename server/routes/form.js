@@ -169,10 +169,11 @@ module.exports = function Index({
         result.data.details.offenderNo,
         res.locals.user.username
       )
+
+      const { details, ...dataWithoutOffenderDetails } = result.data  // eslint-disable-line
+
       const dataToStore = {
-        ratings: result.data.ratings,
-        security: result.data.security,
-        socProfile: result.data.socProfile,
+        ...dataWithoutOffenderDetails,
         history,
         escapeProfile,
         extremismProfile,

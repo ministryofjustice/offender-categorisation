@@ -71,6 +71,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     appropriateNo.click()
     overriddenCategoryC.click()
     overriddenCategoryText << "Some Text"
+    otherInformationText << "other info  Text"
     submitButton.click()
     at CategoriserSubmittedPage
     to ProvisionalCategoryPage, '12'
@@ -79,6 +80,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     at ProvisionalCategoryPage
     form.categoryAppropriate == "No"
     form.overriddenCategory == "C"
+    form.otherInformationText == "other info  Text"
     form.overriddenCategoryText == "Some Text"
 
     db.getData(12).status == ["AWAITING_APPROVAL"]
@@ -157,7 +159,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     then: 'Cat J details are saved'
     def response = db.getData(12).form_response
-    response[0].toString() contains '"categoriser": {"provisionalCategory": {"suggestedCategory": "I", "overriddenCategory": "J", "categoryAppropriate": "No", "overriddenCategoryText": "Some Text"}}'
+    response[0].toString() contains '"categoriser": {"provisionalCategory": {"suggestedCategory": "I", "overriddenCategory": "J", "categoryAppropriate": "No", "otherInformationText": "", "overriddenCategoryText": "Some Text"}}'
   }
 
   def 'indefinite sentence test'() {
