@@ -106,10 +106,6 @@ href: backLink or "/"
           <ul id="review" class="app-task-list__items">
             <li class="app-task-list__item">
               {% set completionText = "Completed" if allSectionsCompleted else "Tasks not yet complete" %}
-              {% if data.categoriser.provisionalCategory.categoryAppropriate %}
-                <a href="/form/categoriser/provisionalCategory/{{ data.details.bookingId }}">Review and categorisation</a>
-                <strong class="govuk-tag app-task-list__task-completed" id="review-completed">Completed</strong>
-              {% else %}
                 {{ govukButton({
                   text: "Continue",
                   href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
@@ -118,7 +114,6 @@ href: backLink or "/"
                 }) }}
                 <p class="govuk-!-font-weight-bold">Review and categorisation</p>
                 <p class="govuk-body-s govuk-!-margin-top-2">{{ completionText }}</p>
-              {% endif %}
             </li>
           </ul>
         </li>

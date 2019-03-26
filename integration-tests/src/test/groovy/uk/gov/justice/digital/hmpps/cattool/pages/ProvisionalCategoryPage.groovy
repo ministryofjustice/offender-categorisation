@@ -24,6 +24,7 @@ class ProvisionalCategoryPage extends Page {
     overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
     newCatMessage(required: false) { $('h2.govuk-heading-m') }
     overriddenCategoryText(required: false) { $('#overriddenCategoryText') }
+    otherInformationText(required: false) { $('#otherInformationText') }
     indeterminateMessage(required: false) { $('p.govuk-body') }
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }

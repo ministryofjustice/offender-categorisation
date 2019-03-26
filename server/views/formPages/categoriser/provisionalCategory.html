@@ -122,4 +122,17 @@
 }) }}
 {% endif %}
 
+{{ govukCharacterCount({
+  name: "otherInformationText",
+  type: "otherInformationText",
+  id: "otherInformationText",
+  maxlength: 50000,
+  threshold: 50,
+  label: {
+  text: "Is there any other relevant information that you want to record?"
+  },
+  value: data.categoriser.provisionalCategory.otherInformationText
+}) }}
+
+
 {% endblock %}

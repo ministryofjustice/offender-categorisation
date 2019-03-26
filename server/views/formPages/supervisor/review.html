@@ -1,5 +1,6 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "button/macro.njk" import govukButton %}
 {% from "radios/macro.njk" import govukRadios %}
@@ -48,6 +49,18 @@
 
     {% set showChangeLinks = false %}
     {% include "../../partials/reviewContents.html" %}
+
+    <h2 class="govuk-heading-m">Other Information</h2>
+    {{ govukSummaryList({
+      classes: 'govuk-!-margin-bottom-9',
+      rows: [
+      {
+      key: { text: "Other relevant information" },
+      value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
+      actions: { items: [] }
+      }
+      ]
+    }) }}
 
     {% set radios = [
       {
