@@ -12,7 +12,7 @@
     maxlength: 50000,
     threshold: 50,
     label: {
-      text: "Give details of this evidence"
+      text: "Provide details about this information"
     },
     value: data.ratings.violenceRating.highRiskOfViolenceText,
     errorMessage: {
@@ -29,7 +29,7 @@
     maxlength: 50000,
     threshold: 50,
     label: {
-      text: "Give details of this evidence"
+      text: "Provide details about this information"
     },
     value: data.ratings.violenceRating.seriousThreatText,
     errorMessage: {
@@ -40,7 +40,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Violence rating</h1>
+<h1 class="govuk-heading-l">Safety and good order</h1>
 
   {% if data.violenceProfile.displayAssaults %}
     {% set warningText %}
@@ -63,8 +63,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Is there any other evidence to suggest that the person poses a high risk of violence in custody?",
-        isPageHeading: false
+        text: "Is there any other information to suggest they pose a high risk of violence in custody?"
       }
     },
     errorMessage: {
@@ -92,8 +91,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Is there any other evidence to indicate that the person represents a serious threat to control, good order or discipline?",
-        isPageHeading: false
+        text: "Is there other information to indicate they are a serious threat to good order in custody?"
       }
     },
     errorMessage: {

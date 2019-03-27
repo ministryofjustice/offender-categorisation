@@ -11,9 +11,9 @@
 {% block formItems %}
 
 <div class="govuk-grid-row govuk-body-s">
-  <div class="govuk-grid-column-two-thirds">
+  <div>
 
-    <h1 class="govuk-heading-l">Review provisional categorisation</h1>
+    <h1 class="govuk-heading-l">Approve category</h1>
 
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
@@ -29,10 +29,8 @@
         The category was originally {{ cat }} and is now {{ overriddenCat }}
       </strong>
     </div>
-    <div class="govuk-!-margin-bottom-6">
-      <label for="overriddenText">
-        Reason for overriding the suggested category
-      </label>
+    <div class="govuk-!-margin-bottom-8">
+      <label for="overriddenText">Reason for overriding the suggested category</label>
       <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
       </div>
     </div>

@@ -7,7 +7,7 @@ class ViolencePage extends Page {
   static url = '/form/ratings/violenceRating'
 
   static at = {
-    headingText == 'Violence rating'
+    headingText == 'Safety and good order'
   }
 
   static content = {

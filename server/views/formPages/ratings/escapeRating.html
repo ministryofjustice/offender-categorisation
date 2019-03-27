@@ -24,7 +24,7 @@
   }) }}
 
   <h2 class="govuk-heading-s">Alert notes</h2>
-  <div class="govuk-details__text govuk-body-m govuk-!-margin-bottom-3">
+  <div class="govuk-details__text govuk-!-margin-bottom-3">
     {% for alert in data.escapeProfile.escapeListAlerts %}
       {{ renderAlert(alert) }}
     {% endfor %}
@@ -94,11 +94,11 @@
   maxlength: 50000,
   threshold: 50,
   label: {
-    text: "Provide details of this evidence"
+    text: "Provide details about this information"
   },
   value: data.ratings.escapeRating.escapeOtherEvidenceText,
   errorMessage: {
-    text: "Please enter details of this evidence"
+    text: "Please provide details"
   } if (errors | findError('escapeOtherEvidenceText'))
 }) }}
 
@@ -109,8 +109,7 @@
   classes: "govuk-radios--inline",
   fieldset: {
     legend: {
-      text: "Is there any other evidence to suggest this person poses a risk of escape?",
-      isPageHeading: false
+      text: "Is there other information to suggest they pose a risk of escape?"
     }
   },
   errorMessage: {

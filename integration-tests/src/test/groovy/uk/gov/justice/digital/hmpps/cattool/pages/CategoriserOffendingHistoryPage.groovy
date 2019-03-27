@@ -29,7 +29,7 @@ class CategoriserOffendingHistoryPage extends Page {
     offendingHistoryCatBNo { $('#offendingHistoryCatB-2') }
     furtherChargesText { $('#furtherChargesText') }
     warrantCatB { $('#warrantCatB') }
-    history { $('form > div.govuk-body-s > div') }
+    history { $('div.forms-comments-text li') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
   }
