@@ -14,7 +14,7 @@ class CategoriserTasklistPage extends Page {
 
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
-    headerBlock { $('div.govuk-grid-column-one-quarter') }
+    headerBlock { $('div.govuk-grid-column-one-third') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     logoutLink { $('a', href: '/logout')}
     startButtons { bodyRows*.$('td', 5)*.find('a') }

@@ -20,7 +20,7 @@ href: backLink or "/"
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-s">Offender details</h1>
+      <h1 class="govuk-heading-m">Offender details</h1>
     </div>
   </div>
 
@@ -47,7 +47,7 @@ href: backLink or "/"
                 attributes:
                 {  'id': 'offendingHistoryButton' }
                 }) }}
-                <div class="govuk-!-font-weight-bold">Offending history</div>
+                <div class="govuk-heading-m">Offending history</div>
                 <div class="govuk-!-margin-top-2">{% if offendingHistoryCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
             <li class="app-task-list__item">
@@ -59,7 +59,7 @@ href: backLink or "/"
                 attributes:
                   {  'id': 'violenceButton' }
                 }) }}
-                <div class="govuk-!-font-weight-bold">Safety and good order</div>
+                <div class="govuk-heading-m">Safety and good order</div>
                 <div class="govuk-!-margin-top-2">{% if violenceRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
             <li class="app-task-list__item">
@@ -71,7 +71,7 @@ href: backLink or "/"
                 attributes:
                   {  'id': 'escapeButton' }
                 }) }}
-                <div class="govuk-!-font-weight-bold">Risk of escape</div>
+                <div class="govuk-heading-m">Risk of escape</div>
                 <div class="govuk-!-margin-top-2">{% if escapeRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
             <li class="app-task-list__item">
@@ -83,7 +83,7 @@ href: backLink or "/"
                 attributes:
                   {  'id': 'extremismButton' }
               }) }}
-              <div class="govuk-!-font-weight-bold">Extremism</div>
+              <div class="govuk-heading-m">Extremism</div>
               <div class="govuk-!-margin-top-2">{% if extremismRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
             <li class="app-task-list__item" id="securitySection">
@@ -98,7 +98,7 @@ href: backLink or "/"
                   { 'id': 'securityButton' }
                 })
               }}
-              <div class="govuk-!-font-weight-bold">Security information</div>
+              <div class="govuk-heading-m">Security information</div>
               <div class="govuk-!-margin-top-2">{% if locked or backFromSecurity %}{{Status[data.status].value + ' (' + data.referredDate + ')'}}{% elseif securityInputCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
             <li id="review" class="app-task-list__item">
@@ -109,7 +109,7 @@ href: backLink or "/"
                   disabled: not allSectionsCompleted,
                   classes: "govuk-button tableButton app-task-list__task-completed"
                 }) }}
-                <div class="govuk-!-font-weight-bold">Review and categorisation</div>
+                <div class="govuk-heading-m">Review and categorisation</div>
                 <div class="govuk-!-margin-top-2">{{ completionText }}</div>
             </li>
           </ul>
