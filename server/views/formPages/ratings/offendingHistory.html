@@ -9,13 +9,14 @@
 
 <h1 class="govuk-heading-l">Offending history</h1>
 
-{% include "../../partials/warningOffendingHistory.html" %}
+  <h2 class="govuk-heading-m">Previous categorisation</h2>
+  {% include "../../partials/warningOffendingHistory.html" %}
 
   {% if data.offences | length %}
     <h2 class="govuk-heading-m">Previous convictions</h2>
-    <div class="govuk-body-s govuk-!-margin-bottom-3">
-      <p class="govuk-!-font-weight-bold">The following convictions are listed on NOMIS:</p>
-        {{ listOffences(data.offences) }}
+    <div class="govuk-!-margin-bottom-3">
+      <p>The following convictions are listed on NOMIS:</p>
+         <div class="govuk-body-s forms-comments-text">{{ listOffences(data.offences) }}</div>
     </div>
   {% endif %}
 
@@ -28,11 +29,12 @@
     maxlength: 50000,
     threshold: 50,
     label: {
-    text: "Provide details about these convictions"
+      text: "Enter details about other relevant convictions",
+      classes: "govuk-!-font-weight-bold"
     },
     value: data.ratings.offendingHistory.previousConvictionsText,
     errorMessage: {
-    text: "Please enter previous convictions"
+      text: "Please enter previous convictions"
     } if (errors | findError('previousConvictionsText'))
   }) }}
 
@@ -40,17 +42,17 @@
 
 {% set furtherChargesHtml %}
   {{ govukCharacterCount({
-  name: "furtherChargesText",
-  type: "furtherChargesText",
-  id: "furtherChargesText",
-  maxlength: 50000,
-  threshold: 50,
-  label: {
-  text: "Give details of these charges"
-  },
-  value: data.ratings.offendingHistory.furtherChargesText,
-  errorMessage: {
-  text: "Please enter details"
+    name: "furtherChargesText",
+    type: "furtherChargesText",
+    id: "furtherChargesText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Give details of these charges"
+    },
+    value: data.ratings.offendingHistory.furtherChargesText,
+    errorMessage: {
+      text: "Please enter details"
   } if (errors | findError('furtherChargesText'))
   }) }}
 
@@ -58,25 +60,25 @@
     name: "offendingHistoryCatB",
     classes: "govuk-radios--inline",
     fieldset: {
-    legend: {
-    text: "Do any of these further charges mean they should be in Cat B?",
-    isPageHeading: false
-    }
-    },
-    errorMessage: {
-    text: "Please select yes or no"
+      legend: {
+        text: "Do any of these further charges mean they should be in Cat B?",
+          isPageHeading: false
+        }
+      },
+      errorMessage: {
+      text: "Please select yes or no"
     } if (errors | findError('offendingHistoryCatB')),
     items: [
-    {
-    value: "Yes",
-    text: "Yes",
-    checked: data.ratings.offendingHistory.offendingHistoryCatB === 'Yes'
-    },
-    {
-    value: "No",
-    checked: data.ratings.offendingHistory.offendingHistoryCatB === 'No',
-    text: "No"
-    }
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.ratings.offendingHistory.offendingHistoryCatB === 'Yes'
+      },
+      {
+        value: "No",
+        checked: data.ratings.offendingHistory.offendingHistoryCatB === 'No',
+        text: "No"
+      }
     ]
   }) }}
 
@@ -86,28 +88,28 @@
   name: "previousConvictions",
   classes: "govuk-radios--inline",
   fieldset: {
-  legend: {
-  text: "Are there any other relevant convictions?",
-  isPageHeading: false
-  }
+    legend: {
+    text: "Are there any other relevant convictions?",
+    isPageHeading: false
+    }
   },
   errorMessage: {
-  text: "Please select yes or no"
+    text: "Please select yes or no"
   } if (errors | findError('previousConvictions')),
   items: [
-  {
-  value: "Yes",
-  text: "Yes",
-  checked: data.ratings.offendingHistory.previousConvictions === 'Yes',
-  conditional: {
-  html: previousConvictionsHtml
-  }
-  },
-  {
-  value: "No",
-  checked: data.ratings.offendingHistory.previousConvictions === 'No',
-  text: "No"
-  }
+    {
+      value: "Yes",
+      text: "Yes",
+      checked: data.ratings.offendingHistory.previousConvictions === 'Yes',
+      conditional: {
+        html: previousConvictionsHtml
+      }
+    },
+    {
+      value: "No",
+      checked: data.ratings.offendingHistory.previousConvictions === 'No',
+      text: "No"
+    }
   ]
 }) }}
 
@@ -117,29 +119,29 @@
     name: "furtherCharges",
     classes: "govuk-radios--inline",
     fieldset: {
-    legend: {
-    text: "Are they facing further serious charges?",
-    isPageHeading: false
-  }
-  },
-  errorMessage: {
-    text: "Please select yes or no"
-  } if (errors | findError('furtherCharges')),
-  items: [
-  {
-    value: "Yes",
-    text: "Yes",
-    checked: data.ratings.offendingHistory.furtherCharges === 'Yes',
-    conditional: {
-    html: furtherChargesHtml
-  }
-  },
-  {
-    value: "No",
-    checked: data.ratings.offendingHistory.furtherCharges === 'No',
-    text: "No"
-  }
-  ]
+      legend: {
+        text: "Are they facing further serious charges?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('furtherCharges')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.ratings.offendingHistory.furtherCharges === 'Yes',
+        conditional: {
+          html: furtherChargesHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.ratings.offendingHistory.furtherCharges === 'No',
+        text: "No"
+      }
+    ]
   }) }}
 
 {% endblock %}

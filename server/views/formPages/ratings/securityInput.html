@@ -6,7 +6,7 @@
 
 {% block formItems %}
 
-<h1 id="securityInputHeader" class="govuk-heading-l">Security input</h1>
+<h1 id="securityInputHeader" class="govuk-heading-l">Security information</h1>
 
 
 {% set securityInputTextHtml %}
@@ -18,11 +18,11 @@
     maxlength: 50000,
     threshold: 50,
     label: {
-    text: "Please explain why security input is needed"
+      text: "Provide specific reasons for your referral"
     },
     value: data.ratings.securityInput.securityInputNeededText,
     errorMessage: {
-    text: "Please enter the reason why security input is needed"
+      text: "Please enter details"
     } if (errors | findError('securityInputNeededText'))
   }) }}
 
@@ -33,12 +33,12 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-      text: "Do you have reason to believe security input is needed?",
-      isPageHeading: false
+        text: "Do you want to refer them to the Security team for further investigation?",
+        isPageHeading: false
       }
     },
     errorMessage: {
-    text: "Select yes if you have reason to believe security input is needed"
+      text: "Please select yes or no"
     } if (errors | findError('securityInputNeeded')),
     items: [
       {
