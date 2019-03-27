@@ -12,7 +12,7 @@
     maxlength: 50000,
     threshold: 50,
     label: {
-      text: "Give details of this evidence"
+      text: "Give details of these offences"
     },
     value: data.ratings.extremismRating.previousTerrorismOffencesText,
     errorMessage: {
@@ -27,7 +27,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Extremism rating</h1>
+<h1 class="govuk-heading-l">Extremism</h1>
 
   {% if data.extremismProfile.increasedRisk %}
     {{ govukWarningText({
@@ -46,7 +46,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Are there any previous offences under the Terrorism Act listed on the person's PNC record?",
+        text: "Are there any offences under terrorism legislation on their PNC record?",
         isPageHeading: false
       }
     },

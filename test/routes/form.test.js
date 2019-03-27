@@ -123,7 +123,7 @@ describe('GET /ratings/offendingHistory', () => {
 describe('GET /ratings/securityInput', () => {
   test.each`
     path                             | expectedContent
-    ${'ratings/securityInput/12345'} | ${'Security input'}
+    ${'ratings/securityInput/12345'} | ${'Security information'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
@@ -169,7 +169,7 @@ describe('GET /security/review', () => {
 describe('GET /ratings/violence', () => {
   test.each`
     path                              | expectedContent
-    ${'ratings/violenceRating/12345'} | ${'Violence rating'}
+    ${'ratings/violenceRating/12345'} | ${'Safety and good order'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
@@ -185,7 +185,7 @@ describe('GET /ratings/violence', () => {
 describe('GET /ratings/extremism', () => {
   test.each`
     path                               | expectedContent
-    ${'ratings/extremismRating/12345'} | ${'Extremism rating'}
+    ${'ratings/extremismRating/12345'} | ${'Extremism'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)

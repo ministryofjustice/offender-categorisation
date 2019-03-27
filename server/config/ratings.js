@@ -51,7 +51,7 @@ module.exports = {
       {
         securityInputNeededText: {
           responseType: 'requiredStringIf_securityInputNeeded_Yes',
-          validationMessage: 'Please enter the reason why security input is needed',
+          validationMessage: 'Please enter the reason why referral is needed',
         },
       },
     ],

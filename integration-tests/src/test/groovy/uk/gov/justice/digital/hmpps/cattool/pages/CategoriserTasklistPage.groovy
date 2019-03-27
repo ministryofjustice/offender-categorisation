@@ -14,7 +14,7 @@ class CategoriserTasklistPage extends Page {
 
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
-    headerBlock { $('div.govuk-body-s') }
+    headerBlock { $('div.govuk-grid-column-one-quarter') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     logoutLink { $('a', href: '/logout')}
     startButtons { bodyRows*.$('td', 5)*.find('a') }
@@ -26,7 +26,7 @@ class CategoriserTasklistPage extends Page {
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }
     backLink { $('a.govuk-back-link') }
-    summarySection (required: true) { $('#review p') }
+    summarySection (required: true) { $('#review div') }
   }
 
   def logout() {

@@ -1,3 +1,4 @@
+{% set mainClasses = [mainClasses , 'govuk-body-m', 'govuk-!-margin-left-6'] | join(" ")  %}
 {% extends "template.njk" %}
 
 {% block head %}
@@ -20,8 +21,7 @@
 {% endblock %}
 
 {% block bodyEnd %}
-{# Run JavaScript at end of the
-<body>, to avoid blocking the initial render. #}
+{# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
 <script src="/assets/all.js"></script>
 <script>window.GOVUKFrontend.initAll();</script>
 {% endblock %}

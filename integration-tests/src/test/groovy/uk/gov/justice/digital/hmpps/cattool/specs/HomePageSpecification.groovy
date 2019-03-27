@@ -67,6 +67,10 @@ class HomePageSpecification extends GebReportingSpec {
   }
 
   def "The home page for a supervisor is present"() {
+    // Only one of the prisoners is in the DB
+    db.createDataWithStatus(11, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]
+    ]))
     when: 'I go to the home page as supervisor'
 
     def now = LocalDate.now()
@@ -87,7 +91,7 @@ class HomePageSpecification extends GebReportingSpec {
     days == [daysSinceSentence12, daysSinceSentence11]
     dates == ['14/02/2019', '11/02/2019']
     catBy == ['Bugs Bunny', 'Roger Rabbit']
-    statuses == ['Categorised as C', 'Categorised as B']
+    statuses == ['Review in NOMIS', 'B']
   }
 
   def "The status of 'Started' for an offender is calculated correctly"() {
