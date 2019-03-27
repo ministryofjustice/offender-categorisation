@@ -9,15 +9,10 @@
   <p class="govuk-!-font-weight-bold govuk-!-margin-top-1 {{ classes }}">{{ text if text | length else '-' }}</p>
 </div>
 {% endmacro %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-quarter">
-    <div class="photo image clickable">
-      <!-- {...linkOnClick(() => onImageClick(offenderImageUrl(inmateData.get('facialImageId'))))}
-       >-->
-      <img alt="Offender Facial Image" src="/tasklist/images/{{ data.facialImageId if data.facialImageId else 'placeholder' }}/data" />
-    </div>
-  </div>
-  <div class="govuk-grid-column-one-quarter">
+
+<div class="govuk-grid-row govuk-!-padding-left-3">
+
+  <div class="govuk-grid-column-one-third">
     {{ headerTitle('Name') }}
     {{ headerValue(data.details.displayName) }}
 
@@ -27,7 +22,7 @@
     {{ headerTitle('Date of birth') }}
     {{ headerValue(dateConverter(data.details.dateOfBirth)) }}
   </div>
-  <div class="govuk-grid-column-one-quarter">
+  <div class="govuk-grid-column-one-third">
     {{ headerTitle('Location') }}
     {{ headerValue(data.details.assignedLivingUnit.description, 'govuk-!-margin-bottom-1') }}
     {{ headerValue(data.details.assignedLivingUnit.agencyName) }}
@@ -51,7 +46,7 @@
     {% endfor %}
     {% endif %}
   </div>
-  <div class="govuk-grid-column-one-quarter">
+  <div class="govuk-grid-column-one-third">
     {% if data.details.sentence.homeDetentionCurfewEligibilityDate %}
     {{ headerTitle('HDC Eligibility Date') }}
     {{ headerValue(dateConverter(data.details.sentence.homeDetentionCurfewEligibilityDate)) }}
