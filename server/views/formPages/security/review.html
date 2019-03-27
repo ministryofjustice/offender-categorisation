@@ -14,13 +14,13 @@
   href: "/"
 }) }}
 
-<hr/>
-{% include "../../partials/offenderDetails.html" %}
-<hr/>
-
 {% endblock %}
 
 {% block content %}
+
+<hr/>
+{% include "../../partials/offenderDetails.html" %}
+<hr/>
 
 {% if errors.length > 0 %}
   {{ govukErrorSummary({
