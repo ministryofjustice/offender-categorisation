@@ -7,7 +7,7 @@ class SupervisorReviewPage extends Page {
   static url = '/form/supervisor/review'
 
   static at = {
-    headingText == 'Review provisional categorisation'
+    headingText == 'Approve category'
   }
 
   static content = {

@@ -9,7 +9,7 @@ class CategoriserSecurityInputPage extends Page {
   static url = '/form/ratings/securityInput/' + bookingId
 
   static at = {
-    headingText == 'Security input'
+    headingText == 'Security information'
   }
 
   static content = {
