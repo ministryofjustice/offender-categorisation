@@ -101,6 +101,9 @@ module.exports = function createFormService(formClient) {
       (data.violenceProfile && data.violenceProfile.numberOfSeriousAssaults > 0) || // note: Qs on page ignored (info only)
       (data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes') || // Other Q is info only
       (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'B') ||
+      (data.ratings &&
+        data.ratings.extremismRating &&
+        data.ratings.extremismRating.previousTerrorismOffences === 'Yes') ||
       (data.ratings && data.ratings.offendingHistory && data.ratings.offendingHistory.offendingHistoryCatB === 'Yes')
     ) {
       return 'B'

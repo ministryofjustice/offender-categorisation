@@ -418,20 +418,26 @@ describe('computeSuggestedCat', () => {
     extremismProfile: { provisionalCategorisation: 'C' },
     history: {},
     violenceProfile: { veryHighRiskViolentOffender: false, numberOfSeriousAssaults: 0 },
-    ratings: { escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'Yes' }, securityBack: { catB: 'No' } },
+    ratings: {
+      offendingHistory: { offendingHistoryCatB: 'No' },
+      escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'Yes' },
+      securityBack: { catB: 'No' },
+      extremismRating: { previousTerrorismOffences: 'No' },
+    },
   }
   test.each`
-    data                                                                  | category
-    ${{}}                                                                 | ${'C'}
-    ${{ details: { dateOfBirth: '2001-03-15' } }}                         | ${'I'}
-    ${{ history: { catAType: 'A' } }}                                     | ${'B'}
-    ${{ ratings: { securityBack: { catB: 'Yes' } } }}                     | ${'B'}
-    ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}         | ${'B'}
-    ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}                | ${'B'}
-    ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}               | ${'B'}
-    ${{ ratings: { offendingHistory: { offendingHistoryCatB: 'Yes' } } }} | ${'B'}
-    ${{ extremismProfile: { provisionalCategorisation: 'B' } }}           | ${'B'}
-    ${nearMisses}                                                         | ${'C'}
+    data                                                                      | category
+    ${{}}                                                                     | ${'C'}
+    ${{ details: { dateOfBirth: '2001-03-15' } }}                             | ${'I'}
+    ${{ history: { catAType: 'A' } }}                                         | ${'B'}
+    ${{ ratings: { securityBack: { catB: 'Yes' } } }}                         | ${'B'}
+    ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}             | ${'B'}
+    ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}                    | ${'B'}
+    ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}                   | ${'B'}
+    ${{ ratings: { offendingHistory: { offendingHistoryCatB: 'Yes' } } }}     | ${'B'}
+    ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }} | ${'B'}
+    ${{ extremismProfile: { provisionalCategorisation: 'B' } }}               | ${'B'}
+    ${nearMisses}                                                             | ${'C'}
   `('should return cat $category for data: $data', ({ data, category }) => {
     expect(service.computeSuggestedCat(data)).toEqual(category)
   })
