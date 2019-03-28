@@ -3,6 +3,7 @@
 {% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "button/macro.njk" import govukButton %}
 {% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
 
 
 {% block formItems %}
@@ -34,5 +35,22 @@
   }
   ]
 }) }}
+
+  {% set guidance %}
+
+    <div>Send the categorisation back to the categoriser when you want them to make any changes to their answers. For example, if they have included any information that must not be shared with the offender.</div>
+    <div>Do not send the categorisation back to the categoriser if you want to change the category. You can change the category from the bottom of the Approve category page.</div>
+    <br/>
+    <div class="govuk-!-font-weight-bold">What will happen when I send back to the categoriser?</div>
+    <li>The categorisation will reappear on the categoriser to do list so they can edit it and make any changes.</li>
+    <li>The categorisation will be removed from the supervisor’s to do list.</li>
+    <li>The categoriser will need to submit the categorisation again for final approval.</li>
+
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "When should I do this?",
+    html: guidance
+  }) }}
 
 {% endblock %}

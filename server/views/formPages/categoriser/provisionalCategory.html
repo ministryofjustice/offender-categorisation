@@ -4,6 +4,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "button/macro.njk" import govukButton %}
+{% from "details/macro.njk" import govukDetails %}
 
 {% set cat = data.suggestedCat %}
 {% set greenButtonText = "Submit" %}
@@ -133,6 +134,16 @@
   },
   value: data.categoriser.provisionalCategory.otherInformationText
 }) }}
+
+  {% set guidance %}<div class="govuk-!-font-weight-bold">What to consider:</div>
+    <div>The provisional category is based on the information we provide to you and your answers to the yes or no questions. It does not take into account any information you entered in the text boxes.</div>
+    <div>You should decide if this is the most appropriate category based on all the information you have available.</div>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "How do I answer this question?",
+    html: guidance
+  }) }}
 
 
 {% endblock %}
