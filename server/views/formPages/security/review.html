@@ -1,4 +1,3 @@
-{% set mainClasses = 'govuk-!-width-two-thirds' %}
 {% extends "../../partials/layout.html" %}
 {% from "back-link/macro.njk" import govukBackLink %}
 {% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
@@ -21,7 +20,7 @@
 <hr/>
 {% include "../../partials/offenderDetails.html" %}
 <hr/>
-
+<div class="govuk-!-width-two-thirds">
 {% if errors.length > 0 %}
   {{ govukErrorSummary({
     titleText: "There is a problem",
@@ -62,5 +61,5 @@
   }) }}
 
 </form>
-
+</div>
 {% endblock %}
