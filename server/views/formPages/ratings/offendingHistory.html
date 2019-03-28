@@ -4,6 +4,7 @@
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "../../macros/listOffences.html" import listOffences %}
 {% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
 
 {% block formItems %}
 
@@ -93,6 +94,9 @@
     isPageHeading: false
     }
   },
+  hint: {
+  text: "Check the police national computer (PNC)"
+  },
   errorMessage: {
     text: "Please select yes or no"
   } if (errors | findError('previousConvictions')),
@@ -113,6 +117,17 @@
   ]
 }) }}
 
+  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+    <li>convictions similar to the current offence which indicate a prolific or escalating offence pattern</li>
+    <li>convictions that indicate ongoing criminality in custody</li>
+    <li>convictions for offences committed while the offender was in custody</li>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What should I look for:",
+    html: guidancePrevious
+  }) }}
+
 <h2 class="govuk-heading-m">Further charges</h2>
 
   {{ govukRadios({
@@ -127,6 +142,9 @@
     errorMessage: {
       text: "Please select yes or no"
     } if (errors | findError('furtherCharges')),
+    hint: {
+    text: "Check the police national computer (PNC)"
+    },
     items: [
       {
         value: "Yes",
@@ -142,6 +160,16 @@
         text: "No"
       }
     ]
+  }) }}
+
+  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+    <li>charges likely to result in a long additional sentence</li>
+    <li>charges indicating a risk of violence</li>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What should I look for:",
+    html: guidancePrevious
   }) }}
 
 {% endblock %}
