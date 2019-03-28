@@ -3,6 +3,7 @@
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "inset-text/macro.njk" import govukInsetText %}
+{% from "details/macro.njk" import govukDetails %}
 
 {% set highRiskOfViolenceTextHtml %}
   {{ govukCharacterCount({
@@ -86,6 +87,23 @@
     ]
   }) }}
 
+  {% set guidanceHighRisk %}<div class="govuk-!-font-weight-bold">You should check:</div>
+    <li>current and previous offences</li>
+    <li>pre-sentence reports</li>
+    <li>risk of serious harm (RoSH) rating</li>
+    <li>prisoner escort records (PER)</li>
+    <li>cell-sharing risk assessment</li>
+    <li>adjudication records</li>
+    <li>segregation history</li>
+    <li>court documents</li>
+    <li>alerts</li>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceHighRisk
+  }) }}
+
   {{ govukRadios({
     name: "seriousThreat",
     classes: "govuk-radios--inline",
@@ -112,6 +130,18 @@
         text: "No"
       }
     ]
+  }) }}
+
+{% set guidanceGoodOrderThreat %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+    <li>patterns of violent behaviour</li>
+    <li>violence directed at particular groups</li>
+    <li>concerted indiscipline</li>
+    <li>coordinating others to acts of concerted indiscipline or violence</li>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceGoodOrderThreat
   }) }}
 
 {% endblock %}

@@ -3,6 +3,7 @@
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "details/macro.njk" import govukDetails %}
 
 {% block formItems %}
 
@@ -55,6 +56,17 @@
         text: "No"
       }
     ]
+  }) }}
+
+{% set guidance %}<div class="govuk-!-font-weight-bold">You should refer to the security team when:</div>
+<li>information indicates a heightened risk and security may have access to more information to support your decision</li>
+<li>NOMIS flags are not clear or updated, for example an escape marker is not updated and security can confirm if they are on the escape list </li>
+<li>information indicates a potential risk but you cannot confirm the risk without further details</li>
+{% endset %}
+
+  {{ govukDetails({
+    summaryText: "When should I refer to the Security team?",
+    html: guidance
   }) }}
 
 {% endblock %}

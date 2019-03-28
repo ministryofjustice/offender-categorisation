@@ -4,6 +4,7 @@
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "details/macro.njk" import govukDetails %}
 
 {% macro renderAlert(alert) %}
   <p class="govuk-!-margin-bottom-1">{{ alert.alertCode }} {{ alert.comment }} <strong>{{ alert.dateCreated }}</strong>
@@ -112,6 +113,9 @@
       text: "Is there other information to suggest they pose a risk of escape?"
     }
   },
+  hint: {
+        text: "Check NOMIS case notes and alerts and the prisoner escort records (PER)"
+    },
   errorMessage: {
     text: "Please select yes or no"
     } if (errors | findError('escapeOtherEvidence')),
@@ -131,5 +135,15 @@
   }
   ]
 }) }}
+
+  {% set guidance %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+    <li>previous escape attempts from custody</li>
+    <li>means and motivation to attempt an escape</li>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidance
+  }) }}
 
 {% endblock %}
