@@ -209,7 +209,7 @@ module.exports = function Index({
       const changeConfirmed = req.body.confirmation === 'Yes'
 
       if (changeConfirmed) {
-        formService.backToCategoriser(bookingId)
+        await formService.backToCategoriser(bookingId)
       }
 
       const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`

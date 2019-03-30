@@ -119,11 +119,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const decoratedResults = await Promise.all(
         categorisedWithDbRecord.map(async o => {
-          const dbRecord = await formService.getCategorisationRecord(o.bookingId)
           const approvalMoment = moment(o.approvalDate, 'YYYY-MM-DD')
           return {
             ...o,
-            ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
+            ...(await decorateWithCategorisationData(o, user, nomisClient, o.dbRecord)),
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
             displayApprovalDate: approvalMoment.format('DD/MM/YYYY'),
             displayCategoriserName: `${properCaseName(o.categoriserLastName)}, ${properCaseName(
@@ -145,10 +144,23 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       const nomisClient = nomisClientBuilder(token)
       const uncategorisedResult = (await nomisClient.getUncategorisedOffenders(agencyId)).filter(
-        s => s.status === Status.AWAITING_APPROVAL.name
+        s => s.status === Status.AWAITING_APPROVAL.name // the status coming back from nomis
       )
 
-      if (isNilOrEmpty(uncategorisedResult)) {
+      const unapprovedWithDbRecord = await Promise.all(
+        uncategorisedResult.map(async s => {
+          const dbRecord = await formService.getCategorisationRecord(s.bookingId)
+          return {
+            ...s,
+            dbRecord,
+          }
+        })
+      )
+
+      // remove any sent back to categoriser records
+      const unapprovedOffenders = unapprovedWithDbRecord.filter(o => o.dbRecord.status !== Status.SUPERVISOR_BACK.name)
+
+      if (isNilOrEmpty(unapprovedOffenders)) {
         logger.info(`No unapproved offenders found for ${agencyId}`)
         return []
       }
@@ -156,20 +168,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const sentenceMap = await getSentenceMap(uncategorisedResult, nomisClient)
 
       const decoratedResults = await Promise.all(
-        uncategorisedResult
-          .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
-          .map(async o => {
-            const dbRecord = await formService.getCategorisationRecord(o.bookingId)
-            return {
-              ...o,
-              displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-              categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(
-                o.categoriserLastName
-              )}`,
-              dbRecordExists: !!dbRecord.booking_id,
-              ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
-            }
-          })
+        unapprovedOffenders.map(async o => ({
+          ...o,
+          displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+          categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(o.categoriserLastName)}`,
+          dbRecordExists: !!o.dbRecord.booking_id,
+          ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+        }))
       )
 
       return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))

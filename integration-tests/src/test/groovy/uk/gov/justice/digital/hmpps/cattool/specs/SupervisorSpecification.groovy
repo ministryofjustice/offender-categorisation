@@ -159,9 +159,32 @@ class SupervisorSpecification extends GebReportingSpec {
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
-    navigateToReview(false, true)
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    // 14 days after sentenceStartDate
+    elite2api.stubUncategorisedForSupervisor()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+
+    fixture.loginAs(SUPERVISOR_USER)
+
+    when: 'the supervisor goes to the home page'
+    at SupervisorHomePage
+
+    then: 'there are 2 offenders'
+    names == ['Hillmob, Ant', 'Pitstop, Penelope']
 
     when: 'the supervisor clicks the send back to categoriser button'
+    elite2api.stubGetOffenderDetails(12, 'B2345YZ', false, false)
+    elite2api.stubAssessments(['B2345YZ'])
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
+
+    startButtons[0].click()
+
+    at SupervisorReviewPage
     elite2api.stubSupervisorApprove()
     backToCategoriserButton.click()
 
@@ -179,10 +202,15 @@ class SupervisorSpecification extends GebReportingSpec {
     backToCategoriserButton.click()
     at SupervisorConfirmBackPage
     answerYes.click()
+    elite2api.stubSentenceData(['B2345XY'], [11], [sentenceStartDate11.toString()])
+
     submitButton.click()
 
     then: 'the supervisor home page is displayed'
     at SupervisorHomePage
+
+    then: 'offender with booking id 12 has been removed'
+    names == ['Pitstop, Penelope']
 
     def dbData = db.getData(12).form_response
     db.getData(12).status == ["SUPERVISOR_BACK"]
