@@ -44,7 +44,7 @@ class ReviewSpecification extends GebReportingSpec {
   DatabaseUtils db = new DatabaseUtils()
 
 
-  def "The review page can be displayed"() {
+  def "The review page can be displayed with security input"() {
     given: 'data has been entered for the ratings pages'
     db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
       ratings : [
@@ -79,14 +79,16 @@ class ReviewSpecification extends GebReportingSpec {
     when: 'The continue link is selected'
     continueButton.click()
 
-    then: 'the review is displayed with the saved form details'
+    then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewPage
-    changeLinks.size() == 10
+    changeLinks.size() == 9
     values[0..4]*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'Yes\nsome convictions', 'Yes\ncharges text', 'No']
     values[5..9]*.text() == ['Yes', '5', '2', 'No', '''Yes\nHere are the serious threat details''']
     values[10..13]*.text() == ['Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''']
     values[14..15]*.text() == ['Yes', '''Yes\nPrevious Terrorism Offences Text''']
     values[16..19]*.text() == ['No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
+    changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
+    !changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
 
     def response = db.getData(12)[0].form_response
     def json = response.toString()
@@ -95,5 +97,34 @@ class ReviewSpecification extends GebReportingSpec {
     json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'
     json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": true}'
     json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "increasedRisk": true, "notifyRegionalCTLead": false, "provisionalCategorisation": "C"}'
+  }
+
+  def "The review page can be displayed without security input"() {
+    given: 'data has been entered for the ratings pages'
+    db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
+      ratings : [
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions", furtherCharges: 'No', offendingHistoryCatB: 'No'],
+        securityInput   : [securityInputNeeded: 'No'],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
+        escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'No'],
+        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text']
+      ]
+    ]))
+    when: 'The review page is displayed for a fully completed set of ratings'
+    fixture.gotoTasklist()
+    elite2api.stubAssessments('B2345YZ')
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2api.stubOffenceHistory('B2345YZ')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    at new CategoriserTasklistPage(bookingId: '12')
+    continueButton.click()
+
+    then: 'the review page is displayed with manual security link enabled'
+    at ReviewPage
+    changeLinks.size() == 9
+    changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
+    !changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
   }
 }
