@@ -18,7 +18,7 @@ class OauthApi extends WireMockRule {
     final accessToken = JwtFactory.token(user.username, user.roles)
 
     this.stubFor(
-      get(urlMatching('/auth/oauth/authorize\\?response_type=code&redirect_uri=.+&state=.+&client_id=licences'))
+      get(urlMatching('/auth/oauth/authorize\\?response_type=code&redirect_uri=.+&state=.+&client_id=categorisationtool'))
         .willReturn(aResponse().withBody('<html><body>Login page<h1>Sign in</h1></body></html>')
         .withHeader('Location', "http://localhost:3000/login/callback?code=codexxxx&state=stateyyyy")
         // .withTransformers("response-template")
