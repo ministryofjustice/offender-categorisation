@@ -85,7 +85,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     at(new CategoriserTasklistPage(bookingId: '12'))
     securityButton.tag() == 'button'
     securityButton.@disabled
-    def today = LocalDate.now().format('DD/MM/YYYY')
+    def today = LocalDate.now().format('dd/MM/yyyy')
     $('#securitySection').text().contains("Manually referred to Security ($today)")
 
     when: 'a security user views their homepage'

@@ -99,7 +99,7 @@ class TasklistSpecification extends GebReportingSpec {
     then: 'the prisoner start button is locked'
     securityButton.tag() == 'button'
     securityButton.@disabled
-    def today = LocalDate.now().format('dd/MM/YYYY')
+    def today = LocalDate.now().format('dd/MM/yyyy')
     $('#securitySection').text().contains("Automatically referred to Security ($today)")
     summarySection[0].text() == 'Review and categorisation'
     summarySection[1].text() == 'Tasks not yet complete'
