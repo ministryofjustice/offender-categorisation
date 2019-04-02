@@ -15,11 +15,28 @@
 {% endblock %}
 
 {% block content %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-three-quarters">
-    <h1 class="govuk-heading-l">Prisoner Categorisation</h1>
-    <h2 class="govuk-heading-m">To be reviewed</h2>
-  </div>
+
+<div >
+  <h1 class="govuk-heading-l">Categorisation referrals</h1>
+</div>
+
+<div class="govuk-tabs">
+
+  <ul class="govuk-tabs__list">
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab govuk-tabs__tab--selected" id="todo-tab">
+        To do
+      </a>
+    </li>
+    <!-- TODO <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" id="done-tab" href="/securityDone">
+        Done
+      </a>
+    </li>-->
+  </ul>
+
+  <section class="govuk-tabs__panel">
+
   {% if offenders | length > 0 %}
   <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
     <thead class="govuk-table__head">
