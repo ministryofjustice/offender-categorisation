@@ -159,9 +159,9 @@ class SupervisorSpecification extends GebReportingSpec {
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
-    navigateToReview(false, true)
+    navigateToReview(false, false)
 
-    when: 'the supervisor clicks the send back to categoriser button'
+    when: 'the supervisor clicks the review page "send back to categoriser" button'
     elite2api.stubSupervisorApprove()
     backToCategoriserButton.click()
 
@@ -179,12 +179,16 @@ class SupervisorSpecification extends GebReportingSpec {
     backToCategoriserButton.click()
     at SupervisorConfirmBackPage
     answerYes.click()
+    elite2api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+
     submitButton.click()
 
     then: 'the supervisor home page is displayed'
     at SupervisorHomePage
 
-    def dbData = db.getData(12).form_response
+    then: 'offender with booking id 12 has been removed'
+    names == ['Pitstop, Penelope']
+
     db.getData(12).status == ["SUPERVISOR_BACK"]
   }
 
