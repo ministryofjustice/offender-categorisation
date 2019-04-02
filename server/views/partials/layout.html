@@ -1,5 +1,6 @@
 {% set mainClasses = [mainClasses , 'govuk-body-m', 'govuk-!-margin-left-6'] | join(" ")  %}
 {% extends "template.njk" %}
+{% from "footer/macro.njk" import govukFooter %}
 
 {% block head %}
 <!--[if !IE 8]><!-->
@@ -18,6 +19,15 @@
 
 {% block header %}
   {% include "./header.html" %}
+{% endblock %}
+
+{% block footer %}
+  {{ govukFooter({
+    meta: {
+      title: 'Support',
+      items: [{text:'contact and feedback', href:'mailto:categorisation@justice.gov.uk'}]
+    }
+  }) }}
 {% endblock %}
 
 {% block bodyEnd %}
