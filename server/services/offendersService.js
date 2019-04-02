@@ -168,8 +168,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const sentenceMap = await getSentenceMap(uncategorisedResult, nomisClient)
 
       const decoratedResults = await Promise.all(
-        unapprovedOffenders.map(async o => {
-          // TODO: async probably now redundant ^^
+        unapprovedOffenders.map(o => {
           const sentencedOffender = sentenceMap.find(s => s.bookingId === o.bookingId)
           const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
           return {
