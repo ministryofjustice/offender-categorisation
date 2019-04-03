@@ -10,8 +10,7 @@
 
 {% block formItems %}
 
-<div class="govuk-grid-row govuk-body-s">
-  <div>
+<div class="govuk-body-s">
 
     <h1 class="govuk-heading-l">Approve category</h1>
 
@@ -164,17 +163,15 @@
     {% endif %}
 
     <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
-
-  </div>
-  <div class="govuk-grid-column-one-thirds">
-    {% set bookingId = data.details.bookingId %}
-    {{ govukButton({
-    text: 'Give back to categoriser',
-    href: "/form/supervisor/confirmBack/" + bookingId,
-    classes: "rightAlignedButton"
-    }) }}
-  </div>
 </div>
 
+{% endblock %}
 
+{% block additionalItems %}
+  {% set bookingId = data.details.bookingId %}
+  {{ govukButton({
+    text: 'Give back to categoriser',
+    href: "/form/supervisor/confirmBack/" + bookingId,
+    classes: "rightAlignedButton grey-button"
+  }) }}
 {% endblock %}

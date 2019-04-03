@@ -1,5 +1,6 @@
 {% set mainClasses = 'govuk-!-width-two-thirds' %}
 {% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
 {% from "panel/macro.njk" import govukPanel %}
 
 {% block content %}
@@ -9,5 +10,9 @@
 }) }}
 <br />
 <br />
+{{ govukButton({
+  text: "Finish",
+  href: "/"
+}) }}
 
 {% endblock %}
