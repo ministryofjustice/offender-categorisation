@@ -6,7 +6,6 @@
 {% from "radios/macro.njk" import govukRadios %}
 
 {% set greenButtonText = "Continue" %}
-{% set indeterminate = data.details.sentence.tariffDate and not data.details.sentence.releaseDate %}
 
 {% block formItems %}
 
@@ -83,7 +82,7 @@
       }
     ] %}
     {% set overriddenCategoryTextHtml %}
-      {% if indeterminate %}
+      {% if data.details.sentence.indeterminate %}
         {% set newCat = "C" if currentCat == "B" else "B" %}
         <p class="govuk-body">Prisoner has indeterminate sentence - Cat D not available</p>
         <h2 class="govuk-heading-m" id="newCatMessage">Changing to Cat {{ newCat }}</h2>
@@ -126,7 +125,7 @@
         }) }}
     {% endset %}
 
-    {% if indeterminate and currentCat == "I" %}
+    {% if data.details.sentence.indeterminate and currentCat == "I" %}
       <p class="govuk-body">Prisoner has an indeterminate sentence - Cat J not available</p>
       <input type="hidden" name="supervisorCategoryAppropriate" value="Yes"/>
     {% else %}

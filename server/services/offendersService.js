@@ -300,7 +300,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       return {
         ...result,
         ...displayName,
-        sentence: { ...sentenceDetails, length: formatLength(sentenceTerms) },
+        sentence: {
+          ...sentenceDetails,
+          length: formatLength(sentenceTerms),
+          indeterminate: sentenceTerms.lifeSentence,
+        },
         offence,
       }
     } catch (error) {
