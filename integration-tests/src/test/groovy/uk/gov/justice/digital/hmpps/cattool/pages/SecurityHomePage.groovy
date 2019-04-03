@@ -7,7 +7,7 @@ class SecurityHomePage extends Page {
   static url = '/securityHome'
 
   static at = {
-    headingText == 'Prisoner Categorisation'
+    headingText == 'Categorisation referrals'
   }
 
   static content = {
