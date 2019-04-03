@@ -12,6 +12,6 @@ class CategoriserSubmittedPage extends Page {
 
   static content = {
     headingText { $('h1.govuk-panel__title').text() }
-    finishButton { $('button', type:'submit') }
+    // finishButton { $('button', type:'submit') }
   }
 }

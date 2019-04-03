@@ -167,21 +167,17 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const sentenceMap = await getSentenceMap(uncategorisedResult, nomisClient)
 
-      const decoratedResults = await Promise.all(
-        unapprovedOffenders.map(o => {
-          const sentencedOffender = sentenceMap.find(s => s.bookingId === o.bookingId)
-          const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
-          return {
-            ...o,
-            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-            categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(
-              o.categoriserLastName
-            )}`,
-            dbRecordExists: !!o.dbRecord.booking_id,
-            ...sentenceData,
-          }
-        })
-      )
+      const decoratedResults = unapprovedOffenders.map(o => {
+        const sentencedOffender = sentenceMap.find(s => s.bookingId === o.bookingId)
+        const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
+        return {
+          ...o,
+          displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+          categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(o.categoriserLastName)}`,
+          dbRecordExists: !!o.dbRecord.booking_id,
+          ...sentenceData,
+        }
+      })
 
       return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
     } catch (error) {
