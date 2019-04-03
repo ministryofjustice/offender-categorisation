@@ -364,7 +364,8 @@ class Elite2Api extends WireMockRule {
           [
             bookingId: bookingId,
             years    : 6,
-            months   : 3,]
+            months   : 3,
+            lifeSentence: indeterminateSentence]
         ))
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))

@@ -8,7 +8,6 @@
 
 {% set cat = data.suggestedCat %}
 {% set greenButtonText = "Submit" %}
-{% set indeterminate = data.details.sentence.tariffDate and not data.details.sentence.releaseDate %}
 {% set radios = [
   {
     value: "B",
@@ -33,7 +32,7 @@
   }
 ] %}
 {% set overriddenCategoryTextHtml %}
-  {% if indeterminate %}
+  {% if data.details.sentence.indeterminate %}
     {% set newCat = "C" if cat == "B" else "B" %}
     <p class="govuk-body">Prisoner has indeterminate sentence - Cat D not available</p>
     <h2 class="govuk-heading-m">Changing to Cat {{ newCat }}</h2>
@@ -90,7 +89,7 @@
 
 <input type="hidden" name="suggestedCategory" value="{{ cat }}" />
 
-{% if indeterminate and cat == "I" %}
+{% if data.details.sentence.indeterminate and cat == "I" %}
   <p class="govuk-body">Prisoner has an indeterminate sentence - Cat J not available</p>
 {% else %}
 {{ govukRadios({
