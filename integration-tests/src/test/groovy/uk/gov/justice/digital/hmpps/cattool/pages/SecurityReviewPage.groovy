@@ -17,7 +17,7 @@ class SecurityReviewPage extends Page {
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     backLink { $('a.govuk-back-link') }
-    categoriserText { $('p.govuk-body-s')}
+    categoriserText { $('p.forms-comments-text')}
     saveButton { $('button.govuk-button') }
     securityText{ $('textarea', name: 'securityReview') }
   }

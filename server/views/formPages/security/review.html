@@ -32,7 +32,8 @@
   {{ govukPanel({
     titleText: "Manually referred for review"
   }) }}
-  <p class="govuk-body-s">{{ data.ratings.securityInput.securityInputNeededText }}</p>
+  <p>The case has been referred to Security because:</p>
+  <p class="forms-comments-text">{{ data.ratings.securityInput.securityInputNeededText }}</p>
 {% endif %}
 
 <form method="post">
