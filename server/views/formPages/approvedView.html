@@ -3,11 +3,35 @@
 
 {% block content %}
 
-<div class="govuk-grid-row govuk-body-s">
-  <div>
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+    <h1 class="govuk-!-width-two-thirds govuk-heading-l govuk-!-display-inline">
+     Categorisation outcome
+    </h1>
+    <div class="govuk-!-width-one-third govuk-!-display-inline">
+      <a class="govuk-link rightAlignedButton" href='#' onclick="handlePrint()">
+        <img class="print-icon" src="/assets/images/Printer_icon.png" height="23" width="20" alt="Print icon"/>
+        Print this page
+      </a>
+    </div>
+  </div>
+  <script>
+    function handlePrint() {
+      raiseAnalyticsEvent({
+        category: 'Cat tool',
+        action: 'Print cat',
+      })
+      window.print()
+    }
 
-    <h1 class="govuk-heading-l">Categorisation outcome</h1>
+    function raiseAnalyticsEvent(event) {
+      // if (event && config.googleAnalyticsId) {
+      //   // TODO ReactGA.event(event)
+      // }
+    }
+  </script>
+  <div class="govuk-grid-row govuk-body-s">
 
+    <div class="govuk-!-width-two-thirds">
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
     {% set categoriserCat = overriddenCat or cat %}
@@ -22,9 +46,9 @@
       </strong>
     </div>
 
-    <h2 class="govuk-heading-s">Categoriser decision</h2>
+    <h2 class="govuk-heading-s no-print">Categoriser decision</h2>
     {% if overriddenCat %}
-    <div class="govuk-warning-text forms-info-text warning-overrides">
+    <div class="govuk-warning-text forms-info-text warning-overrides no-print">
       <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ cat }}</span>
       <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
       <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
@@ -39,7 +63,7 @@
       </div>
     </div>
     {% else %}
-    <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
+    <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
       <div class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
@@ -48,9 +72,9 @@
     </div>
     {% endif %}
 
-    <h2 class="govuk-heading-s">Supervisor decision</h2>
+    <h2 class="govuk-heading-s no-print">Supervisor decision</h2>
     {% if superCat %}
-    <div class="govuk-warning-text forms-supervisor-info-text warning-overrides">
+    <div class="govuk-warning-text forms-supervisor-info-text warning-overrides no-print">
       <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ categoriserCat }}</span>
       <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
       <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
@@ -60,12 +84,12 @@
       </div>
     </div>
     <div class="govuk-!-margin-bottom-6">
-      <label for="overriddenText-2">Comments</label>
+      <label for="overriddenText-2"{% if overriddenCat %} class="no-print"{% endif %}>Comments</label>
       <div class="forms-comments-text" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}
       </div>
     </div>
     {% else %}
-    <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6">
+    <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
       <div class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
@@ -89,8 +113,8 @@
       }
       ]
     }) }}
+    </div>
   </div>
-</div>
 
 {{ govukButton({
   href: backLink,
