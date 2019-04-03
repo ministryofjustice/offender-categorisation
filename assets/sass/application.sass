@@ -166,3 +166,16 @@ header.govuk-header
   color: govuk-colour("black") !important
   &:hover
     background-color: govuk-colour("grey-2")
+
+.print-icon
+  position: relative
+  top: 5px
+  left: -10px
+
+@media print
+  header,footer,a.govuk-back-link,a.govuk-link,a.govuk-button,.no-print
+    display: none
+  // force prisoner header to remain in 3 columns
+  .govuk-grid-column-one-third
+    width: 33.3333%
+    float: left
