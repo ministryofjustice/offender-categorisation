@@ -31,15 +31,15 @@ function determinePathFromDecisions({ decisions, data }) {
 function redirectUsingRole(res, categoriserUrl, supervisorUrl, securityUrl) {
   const roles = jwtDecode(res.locals.user.token).authorities
 
-  if (supervisorUrl && roles.includes('ROLE_APPROVE_CATEGORISATION')) {
+  if (supervisorUrl && roles && roles.includes('ROLE_APPROVE_CATEGORISATION')) {
     res.redirect(supervisorUrl)
-  } else if (categoriserUrl && roles.includes('ROLE_CREATE_CATEGORISATION')) {
+  } else if (categoriserUrl && roles && roles.includes('ROLE_CREATE_CATEGORISATION')) {
     res.redirect(categoriserUrl)
-  } else if (securityUrl && roles.includes('ROLE_CATEGORISATION_SECURITY')) {
+  } else if (securityUrl && roles && roles.includes('ROLE_CATEGORISATION_SECURITY')) {
     res.redirect(securityUrl)
   } else {
     // go to a 'not auth' page
     res.status(403)
-    res.render('authError')
+    res.render('autherror')
   }
 }
