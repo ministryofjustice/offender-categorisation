@@ -1,7 +1,12 @@
 const request = require('supertest')
 const appSetup = require('./utils/appSetup')
-const createRouter = require('../../server/routes/home')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
+
+let roles
+// This needs mocking early, before 'requiring' jwt-decode (via home.js)
+jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
+
+const createRouter = require('../../server/routes/home')
 
 const offendersService = {
   getUncategorisedOffenders: jest.fn(),
@@ -210,5 +215,42 @@ describe('GET /categoriserHome', () => {
         expect(res.text).toContain('PNOMIS') // no button
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
+  })
+})
+
+describe('GET /', () => {
+  test('unauthorised user', () => {
+    roles = ['ROLE_1', 'ROLE_2']
+    return request(app)
+      .get('/')
+      .expect(403)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('You are not authorised to use this application') // no button
+      })
+  })
+
+  test('cat user', () => {
+    roles = ['other_role', 'ROLE_CREATE_CATEGORISATION']
+    return request(app)
+      .get('/')
+      .expect(302)
+      .expect('location', '/categoriserHome')
+  })
+
+  test('supervisor user', () => {
+    roles = ['ROLE_APPROVE_CATEGORISATION', 'other_role']
+    return request(app)
+      .get('/')
+      .expect(302)
+      .expect('location', '/supervisorHome')
+  })
+
+  test('security user', () => {
+    roles = ['ROLE_CATEGORISATION_SECURITY']
+    return request(app)
+      .get('/')
+      .expect(302)
+      .expect('location', '/securityHome')
   })
 })
