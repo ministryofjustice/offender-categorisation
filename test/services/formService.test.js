@@ -382,7 +382,7 @@ describe('getValidationErrors', () => {
     ${{ q1: 'No', q3: 'Yes' }}                 | ${dependantConfig} | ${[{ href: '#q4', text: 'Error q4' }]}
     ${{ q1: 'No', q3: 'Yes', q4: 'any text' }} | ${dependantConfig} | ${[{ href: '#q4', text: 'Error q4' }]}
   `('should return errors $expectedContent for form return', ({ formBody, formConfig, expectedOutput }) => {
-    expect(service.getValidationErrors(formBody, formConfig)).toEqual(expectedOutput)
+    expect(service.validate(formBody, formConfig)).toEqual(expectedOutput)
   })
 })
 
