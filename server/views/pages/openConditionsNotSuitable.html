@@ -1,0 +1,22 @@
+{% set mainClasses = 'govuk-!-width-two-thirds' %}
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+{% block content %}
+
+<h1 class="govuk-heading-l">Not suitable for open conditions</h1>
+
+{{ govukWarningText({
+  text: warningText,
+  iconFallbackText: "Warning",
+  classes: "forms-warning-text warning-overrides"
+}) }}
+<br />
+<br />
+{{ govukButton({
+  text: "Back to category review",
+  href: "/form/categoriser/review/" + bookingId
+}) }}
+
+{% endblock %}

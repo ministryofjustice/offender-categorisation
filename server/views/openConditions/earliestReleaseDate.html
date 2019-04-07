@@ -1,0 +1,111 @@
+{% extends "../formPages/formTemplate.html" %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% set justifyTextHtml %}
+
+  {{ govukCharacterCount({
+    name: "justifyText",
+    type: "justifyText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Give details of these circumstances"
+    },
+    value: data.openConditions.earliestReleaseDate.justifyText,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('justifyText'))
+  }) }}
+  <div class="govuk-!-font-weight-bold">You must get the Governing Governor’s approval for this offender to go to open conditions.</div>
+
+{% endset %}
+
+{% set threeOrMoreYearsTextHtml %}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "justify",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Are there circumstances to justify moving this person to open conditions now?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('justify')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.earliestReleaseDate.justify === 'Yes',
+        conditional: {
+          html: justifyTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.earliestReleaseDate.justify === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceJustify %}
+  TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceJustify
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Time until earliest release date</h1>
+
+  {{ govukRadios({
+    name: "threeOrMoreYears",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Does this person have three or more years until their earliest release date?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('threeOrMoreYears')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.earliestReleaseDate.threeOrMoreYears === 'Yes',
+        conditional: {
+          html: threeOrMoreYearsTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.earliestReleaseDate.threeOrMoreYears === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceThreeOrMoreYears %}
+    TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceThreeOrMoreYears
+  }) }}
+
+{% endblock %}

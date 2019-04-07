@@ -1,6 +1,6 @@
 const express = require('express')
 const flash = require('connect-flash')
-const { isNilOrEmpty, getFieldName, pickBy, firstItem } = require('../utils/functionalHelpers')
+const { firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
@@ -9,12 +9,14 @@ const ratings = require('../config/ratings')
 const categoriser = require('../config/categoriser')
 const supervisor = require('../config/supervisor')
 const security = require('../config/security')
+const openConditions = require('../config/openConditions')
 
 const formConfig = {
   ratings,
   categoriser,
   supervisor,
   security,
+  openConditions,
 }
 
 module.exports = function Index({
@@ -202,7 +204,7 @@ module.exports = function Index({
       const form = 'confirmBack'
       const formPageConfig = formConfig[section][form]
 
-      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -302,7 +304,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -329,7 +331,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -355,7 +357,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -382,7 +384,7 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
 
-      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -411,7 +413,7 @@ module.exports = function Index({
       const form = 'review'
       const formPageConfig = formConfig[section][form]
 
-      if (!doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -438,7 +440,7 @@ module.exports = function Index({
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      const valid = doValidation(formPageConfig, req, res, section, form, bookingId)
+      const valid = formService.doValidation(formPageConfig, req, res, section, form, bookingId)
       if (!valid) {
         return
       }

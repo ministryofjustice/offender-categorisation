@@ -13,6 +13,7 @@ const cookieSession = require('cookie-session')
 const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
+const createOpenConditionsRouter = require('./routes/openConditions')
 const sassMiddleware = require('node-sass-middleware')
 const moment = require('moment')
 const path = require('path')
@@ -217,6 +218,14 @@ module.exports = function createApp({
   })
   app.use('/form/', formRouter)
   app.use('/supervisor/', formRouter)
+
+  const openConditionsRouter = createOpenConditionsRouter({
+    formService,
+    offendersService,
+    userService,
+    authenticationMiddleware,
+  })
+  app.use('/openConditions/', openConditionsRouter)
 
   app.use((req, res, next) => {
     next(new Error('Not found'))
