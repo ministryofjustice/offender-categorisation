@@ -26,24 +26,6 @@ module.exports = function Index({
   riskProfilerService,
   authenticationMiddleware,
 }) {
-  function doValidation(formPageConfig, req, res, section, form, bookingId) {
-    if (formPageConfig.validate && formPageConfig.fields) {
-      const expectedFields = formPageConfig.fields.map(getFieldName)
-      const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
-
-      const errors = formService.getValidationErrors(inputForExpectedFields, formPageConfig)
-
-      if (!isNilOrEmpty(errors)) {
-        req.flash('errors', errors)
-        req.flash('userInput', inputForExpectedFields)
-        req.flash('backLink', inputForExpectedFields)
-        res.redirect(`/form/${section}/${form}/${bookingId}`)
-        return false
-      }
-    }
-    return true
-  }
-
   const router = express.Router()
 
   router.use(authenticationMiddleware())
