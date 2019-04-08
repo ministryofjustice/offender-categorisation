@@ -24,7 +24,7 @@ const formService = {
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
   updateFormData: jest.fn(),
   backToCategoriser: jest.fn(),
-  doValidation: jest.fn(),
+  isValid : jest.fn(),
 }
 
 const riskProfilerService = {
@@ -63,7 +63,7 @@ beforeEach(() => {
   formService.getCategorisationRecord.mockResolvedValue({})
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
-  formService.doValidation.mockResolvedValue(true)
+  formService.isValid .mockResolvedValue(true)
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})

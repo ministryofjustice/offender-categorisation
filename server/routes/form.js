@@ -186,7 +186,17 @@ module.exports = function Index({
       const form = 'confirmBack'
       const formPageConfig = formConfig[section][form]
 
-      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (
+        !formService.isValid(
+          formPageConfig,
+          req,
+          res,
+          section,
+          form,
+          bookingId,
+          `/form/${section}/${form}/${bookingId}`
+        )
+      ) {
         return
       }
 
@@ -286,7 +296,17 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (
+        !formService.isValid(
+          formPageConfig,
+          req,
+          res,
+          section,
+          form,
+          bookingId,
+          `/form/${section}/${form}/${bookingId}`
+        )
+      ) {
         return
       }
 
@@ -313,7 +333,17 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (
+        !formService.isValid(
+          formPageConfig,
+          req,
+          res,
+          section,
+          form,
+          bookingId,
+          `/form/${section}/${form}/${bookingId}`
+        )
+      ) {
         return
       }
 
@@ -339,7 +369,17 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (
+        !formService.isValid(
+          formPageConfig,
+          req,
+          res,
+          section,
+          form,
+          bookingId,
+          `/form/${section}/${form}/${bookingId}`
+        )
+      ) {
         return
       }
 
@@ -366,7 +406,17 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
 
-      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (
+        !formService.isValid(
+          formPageConfig,
+          req,
+          res,
+          section,
+          form,
+          bookingId,
+          `/form/${section}/${form}/${bookingId}`
+        )
+      ) {
         return
       }
 
@@ -395,7 +445,17 @@ module.exports = function Index({
       const form = 'review'
       const formPageConfig = formConfig[section][form]
 
-      if (!formService.doValidation(formPageConfig, req, res, section, form, bookingId)) {
+      if (
+        !formService.isValid(
+          formPageConfig,
+          req,
+          res,
+          section,
+          form,
+          bookingId,
+          `/form/${section}/${form}/${bookingId}`
+        )
+      ) {
         return
       }
 
@@ -422,7 +482,15 @@ module.exports = function Index({
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      const valid = formService.doValidation(formPageConfig, req, res, section, form, bookingId)
+      const valid = formService.isValid(
+        formPageConfig,
+        req,
+        res,
+        section,
+        form,
+        bookingId,
+        `/form/${section}/${form}/${bookingId}`
+      )
       if (!valid) {
         return
       }
