@@ -84,8 +84,9 @@ module.exports = function Index({ formService, offendersService, userService, au
       const section = 'openConditions'
       const formPageConfig = formConfig.openConditions[form]
 
-      const valid = formService.doValidation(formPageConfig, req, res, section, form, bookingId)
-      if (!valid) {
+      if (
+        !formService.isValid(formPageConfig, req, res, section, form, bookingId, `/${section}/${form}/${bookingId}`)
+      ) {
         return
       }
 
