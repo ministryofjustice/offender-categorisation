@@ -2,6 +2,7 @@ const { validate } = require('../utils/fieldValidation')
 const moment = require('moment')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
+const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
 
 module.exports = function createFormService(formClient) {
   async function getCategorisationRecord(bookingId) {
@@ -197,10 +198,26 @@ module.exports = function createFormService(formClient) {
     return proposed ? Status[proposed].previous.includes(Status[current]) : true
   }
 
+  function isValid(formPageConfig, req, res, section, form, bookingId, redirectOnFailUrl) {
+    if (formPageConfig.validate && formPageConfig.fields) {
+      const expectedFields = formPageConfig.fields.map(getFieldName)
+      const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
+
+      const errors = validate(inputForExpectedFields, formPageConfig)
+      if (!isNilOrEmpty(errors)) {
+        req.flash('errors', errors)
+        req.flash('userInput', inputForExpectedFields)
+        req.flash('backLink', inputForExpectedFields)
+        res.redirect(redirectOnFailUrl)
+        return false
+      }
+    }
+    return true
+  }
+
   return {
     getCategorisationRecord,
     update,
-    getValidationErrors: validate,
     updateFormData,
     computeSuggestedCat,
     referToSecurityIfRiskAssessed,
@@ -209,5 +226,7 @@ module.exports = function createFormService(formClient) {
     validateStatus: validateStatusIfProvided,
     createOrRetrieveCategorisationRecord,
     backToCategoriser,
+    validate,
+    isValid,
   }
 }

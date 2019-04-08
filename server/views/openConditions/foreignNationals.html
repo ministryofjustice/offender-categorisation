@@ -1,0 +1,146 @@
+{% extends "../formPages/formTemplate.html" %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% set dueDeportedTextHtml %}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "exhaustedAppeal",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Have they exhausted all appeal rights in the UK?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('exhaustedAppeal')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.foreignNationals.exhaustedAppeal === 'Yes'
+      },
+      {
+        value: "No",
+        checked: data.openConditions.foreignNationals.exhaustedAppeal === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endset %}
+
+{% set formCompletedTextHtml %}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "dueDeported",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Is this person due to be deported?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('dueDeported')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.foreignNationals.dueDeported === 'Yes',
+        conditional: {
+          html: dueDeportedTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.foreignNationals.dueDeported === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endset %}
+
+{% set isForeignNationalTextHtml %}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "formCompleted",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Has the CCD3 form been completed by the Home Office?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('formCompleted')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.foreignNationals.formCompleted === 'Yes',
+        conditional: {
+          html: formCompletedTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.foreignNationals.formCompleted === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Foreign Nationals</h1>
+
+  {{ govukRadios({
+    name: "isForeignNational",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Is this person a foreign national?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('isForeignNational')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.foreignNationals.isForeignNational === 'Yes',
+        conditional: {
+          html: isForeignNationalTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.foreignNationals.isForeignNational === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceIsForeignNational %}
+    TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceIsForeignNational
+  }) }}
+
+{% endblock %}
