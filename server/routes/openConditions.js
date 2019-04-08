@@ -108,16 +108,14 @@ module.exports = function Index({ formService, offendersService, userService, au
         })
       } else if (req.body.formCompleted === 'No') {
         res.render('pages/openConditionsNotSuitable', {
-          warningText:
-            'This person cannot be sent to open conditions because they are a foreign national but have' +
-            ' not completed a CCD3 form',
+          warningText: 'This person cannot be sent to open conditions without a CCD3 form',
           bookingId,
         })
       } else if (req.body.exhaustedAppeal === 'Yes') {
         res.render('pages/openConditionsNotSuitable', {
           warningText:
-            'This person cannot be sent to open conditions because they are due to be deported and' +
-            ' have exhausted all appeal rights',
+            'This person cannot be sent to open conditions because they are due to be deported and have exhausted' +
+            ' all appeal rights in the UK',
           bookingId,
         })
       } else {

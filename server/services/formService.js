@@ -198,7 +198,7 @@ module.exports = function createFormService(formClient) {
     return proposed ? Status[proposed].previous.includes(Status[current]) : true
   }
 
-  function isValid (formPageConfig, req, res, section, form, bookingId, redirectOnFailUrl) {
+  function isValid(formPageConfig, req, res, section, form, bookingId, redirectOnFailUrl) {
     if (formPageConfig.validate && formPageConfig.fields) {
       const expectedFields = formPageConfig.fields.map(getFieldName)
       const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), req.body)
@@ -227,6 +227,6 @@ module.exports = function createFormService(formClient) {
     createOrRetrieveCategorisationRecord,
     backToCategoriser,
     validate,
-    isValid ,
+    isValid,
   }
 }
