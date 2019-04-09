@@ -190,6 +190,16 @@ module.exports = function createFormService(formClient) {
     return {}
   }
 
+  async function getCategorisedOffenders(agencyId) {
+    try {
+      const data = await formClient.getCategorisationRecordsByStatus(agencyId, [Status.APPROVED.name])
+      return data.rows || []
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
   function calculateStatus(currentStatus, newStatus) {
     return newStatus || currentStatus || Status.STARTED.name // status may not be changing
   }
@@ -228,5 +238,6 @@ module.exports = function createFormService(formClient) {
     backToCategoriser,
     validate,
     isValid,
+    getCategorisedOffenders,
   }
 }

@@ -106,34 +106,35 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   async function getCategorisedOffenders(token, agencyId, user) {
     try {
       const nomisClient = nomisClientBuilder(token)
-      const categorised = await nomisClient.getCategorisedOffenders(agencyId)
-      const categorisedWithDbRecord = (await Promise.all(
-        categorised.map(async s => {
-          const dbRecord = await formService.getCategorisationRecord(s.bookingId)
-          return {
-            ...s,
-            dbRecord,
-          }
-        })
-      )).filter(s => s.dbRecord.booking_id) // discard records that do not have a categorisation record (categorised by PNOMIS)
 
-      const decoratedResults = await Promise.all(
-        categorisedWithDbRecord.map(async o => {
-          const approvalMoment = moment(o.approvalDate, 'YYYY-MM-DD')
-          return {
-            ...o,
-            ...(await decorateWithCategorisationData(o, user, nomisClient, o.dbRecord)),
-            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-            displayApprovalDate: approvalMoment.format('DD/MM/YYYY'),
-            displayCategoriserName: `${properCaseName(o.categoriserLastName)}, ${properCaseName(
-              o.categoriserFirstName
-            )}`,
-            displayApproverName: `${properCaseName(o.approverLastName)}, ${properCaseName(o.approverFirstName)}`,
-          }
-        })
-      )
+      const categorisedFromDB = await formService.getCategorisedOffenders(agencyId)
+      if (!isNilOrEmpty(categorisedFromDB)) {
+        const categorisedFromElite = await nomisClient.getCategorisedOffenders(
+          agencyId,
+          categorisedFromDB.map(c => c.booking_id)
+        )
 
-      return decoratedResults.sort(a => sortByDateTimeDesc(a.displayApprovalDate)).reverse()
+        const decoratedResults = await Promise.all(
+          categorisedFromElite.map(async o => {
+            const approvalMoment = moment(o.approvalDate, 'YYYY-MM-DD')
+            const dbRecord = categorisedFromDB.filter(record => record.bookingId === o.bookingId)
+            return {
+              ...o,
+              dbRecord,
+              ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
+              displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+              displayApprovalDate: approvalMoment.format('DD/MM/YYYY'),
+              displayCategoriserName: `${properCaseName(o.categoriserLastName)}, ${properCaseName(
+                o.categoriserFirstName
+              )}`,
+              displayApproverName: `${properCaseName(o.approverLastName)}, ${properCaseName(o.approverFirstName)}`,
+            }
+          })
+        )
+
+        return decoratedResults.sort(a => sortByDateTimeDesc(a.displayApprovalDate)).reverse()
+      }
+      return []
     } catch (error) {
       logger.error(error, 'Error during getCategorisedOffenders')
       throw error

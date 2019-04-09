@@ -316,7 +316,7 @@ class SupervisorSpecification extends GebReportingSpec {
   def "The done page for a supervisor is present"() {
     when: 'I go to the home page as supervisor and select the done tab'
 
-    db.createDataWithStatus(-2, 12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+    db.createDataWithStatus(-2, 12, 'APPROVED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
@@ -326,7 +326,7 @@ class SupervisorSpecification extends GebReportingSpec {
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
 
-    db.createDataWithStatus(-1,11, 'AWAITING_APPROVAL', JsonOutput.toJson([
+    db.createDataWithStatus(-1,11, 'APPROVED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],

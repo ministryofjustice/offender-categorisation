@@ -44,7 +44,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
   def "The approved view page is correctly displayed (suggested Cat)"() {
 
     when: 'the approved view page for B2345YZ is selected'
-    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]],
       supervisor : [review: [supervisorCategoryAppropriate: "Yes"]]
     ]))
@@ -62,7 +62,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
   def "The approved view page is correctly displayed (Cat overridden by categoriser and supervisor)"() {
 
     when: 'the approved view page for B2345YZ is selected'
-    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
       categoriser: [provisionalCategory: [suggestedCategory     : "B", categoryAppropriate: "No", overriddenCategory: "C",
                                           overriddenCategoryText: "Here are the categoriser's comments on why the category was changed"]],
       supervisor : [review: [supervisorCategoryAppropriate   : "No", supervisorOverriddenCategory: "D",
