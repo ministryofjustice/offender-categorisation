@@ -135,7 +135,7 @@ class Elite2Api extends WireMockRule {
   void stubCategorised() {
     def threeMonthsAgo  = LocalDate.now().minusMonths(3).format('yyyy-MM-dd')
     this.stubFor(
-      get("/api/offender-assessments/category/LEI/categorised?fromDate=${threeMonthsAgo}")
+      post("/api/offender-assessments/category/LEI")
         .willReturn(
         aResponse()
           .withBody(JsonOutput.toJson([

@@ -24,6 +24,18 @@ describe('getFormDataForUser', () => {
   })
 })
 
+describe('getCategorisationRecordsByStatus', () => {
+  test('it should pass on the correct sql', () => {
+    formClient.getCategorisationRecordsByStatus('MDI', ['APPROVED', 'AWAITING_APPROVAL'])
+
+    expect(db.query).toBeCalledWith({
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
+        from form f where f.prison_id = $1 and f.status = ANY ($2) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
+      values: ['MDI', ['APPROVED', 'AWAITING_APPROVAL']],
+    })
+  })
+})
+
 describe('update', () => {
   test('it should call query on db', () => {
     formClient.update('formId', {}, 'bookingId', null)
