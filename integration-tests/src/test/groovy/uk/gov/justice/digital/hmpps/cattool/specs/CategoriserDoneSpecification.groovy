@@ -43,7 +43,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
 
   def "The done page for a categoriser is present"() {
     when: 'I go to the home page as categoriser'
-    db.createData(-1,12, JsonOutput.toJson([
+    db.createDataWithStatus(-1,12, 'APPROVED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
@@ -52,7 +52,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
         extremismRating : [previousTerrorismOffences: "Yes"]
       ]]))
 
-    db.createData(-2,11, JsonOutput.toJson([
+    db.createDataWithStatus(-2,11, 'APPROVED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
