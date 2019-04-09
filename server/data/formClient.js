@@ -14,6 +14,16 @@ module.exports = {
     return db.query(query)
   },
 
+  getCategorisationRecordsByStatus(agencyId, statusList) {
+    logger.debug(`getCategorisationRecordsByStatus called for ${agencyId}, status ${statusList}`)
+    const query = {
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
+        from form f where f.prison_id = $1 and f.status = ANY ($2) ${sequenceClause}`,
+      values: [agencyId, statusList],
+    }
+    return db.query(query)
+  },
+
   referToSecurity(bookingId, userId, status) {
     logger.debug(`referToSecurity called for ${userId}, status ${status} and booking id ${bookingId}`)
     const query = {
