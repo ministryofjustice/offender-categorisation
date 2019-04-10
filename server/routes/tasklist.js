@@ -63,6 +63,8 @@ module.exports = function Index({
   router.get(
     '/categoriserSubmitted/:bookingId',
     asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
       res.render('pages/categoriserSubmitted')
     })
   )
@@ -70,6 +72,8 @@ module.exports = function Index({
   router.get(
     '/supervisor/outcome/:bookingId',
     asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
       res.render('pages/supervisorReviewOutcome')
     })
   )

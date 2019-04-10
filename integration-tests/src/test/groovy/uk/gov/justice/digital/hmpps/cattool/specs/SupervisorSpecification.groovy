@@ -141,6 +141,8 @@ class SupervisorSpecification extends GebReportingSpec {
 
     then: 'the review outcome page is displayed and review choices persisted'
     at SupervisorReviewOutcomePage
+    userHeader.text().contains 'User, Test'
+
 
     def dbData = db.getData(12).form_response
     dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "Some Text"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'

@@ -13,5 +13,6 @@ class SupervisorReviewOutcomePage extends Page {
   static content = {
     headingText { $('h1.govuk-panel__title').text() }
     finishButton { $('a.govuk-button') }
+    userHeader { $('div.user-block') }
   }
 }
