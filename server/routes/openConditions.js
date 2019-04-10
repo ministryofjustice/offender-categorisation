@@ -46,15 +46,13 @@ module.exports = function Index({ formService, offendersService, userService, au
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else if (previousConvictionsExists && !textExists) {
-        const newResult =
-
-          R.assocPath(
-            ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
-            result.data.ratings.offendingHistory.previousConvictionsText,
-            result
-          )
+        const newResult = R.assocPath(
+          ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
+          result.data.ratings.offendingHistory.previousConvictionsText,
+          result
+        )
         res.render(`formPages/openConditions/${form}`, newResult)
-      } else{
+      } else {
         res.render(`formPages/openConditions/${form}`, result)
       }
     })
