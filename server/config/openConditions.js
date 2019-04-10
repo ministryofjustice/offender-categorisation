@@ -9,7 +9,7 @@ module.exports = {
       },
       {
         justify: {
-          responseType: 'requiredString',
+          responseType: 'requiredStringIf_threeOrMoreYears_Yes',
           validationMessage: 'Please select yes or no',
         },
       },
@@ -21,7 +21,7 @@ module.exports = {
       },
     ],
     nextPath: {
-      path: '/openConditions/foreignNationals/',
+      path: '/form/openConditions/foreignNationals/',
     },
     validate: true,
   },
@@ -53,7 +53,93 @@ module.exports = {
       },
     ],
     nextPath: {
-      path: '/openConditions/nextpagetba/',
+      path: '/form/openConditions/riskOfHarm/',
+    },
+    validate: true,
+  },
+  riskOfHarm: {
+    fields: [
+      {
+        seriousHarm: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        harmManaged: {
+          responseType: 'requiredStringIf_seriousHarm_Yes',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        harmManagedText: {
+          responseType: 'requiredStringIf_seriousHarm_Yes',
+          validationMessage: 'Please enter details',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/openConditions/furtherCharges/',
+    },
+    validate: true,
+  },
+  furtherCharges: {
+    fields: [
+      {
+        increasedRisk: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        furtherChargesText: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter details',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/openConditions/riskLevels/',
+    },
+    validate: true,
+  },
+  riskLevels: {
+    fields: [
+      {
+        likelyToAbscond: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        likelyToAbscondText: {
+          responseType: 'requiredStringIf_likelyToAbscond_Yes',
+          validationMessage: 'Please enter details',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/openConditions/suitability/',
+    },
+    validate: true,
+  },
+  suitability: {
+    fields: [
+      {
+        isOtherInformation: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        otherInformationText: {
+          responseType: 'requiredStringIf_isOtherInformation_Yes',
+          validationMessage: 'Please enter details',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/openConditions/tba/',
     },
     validate: true,
   },
