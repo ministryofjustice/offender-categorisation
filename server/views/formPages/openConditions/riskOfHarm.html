@@ -1,0 +1,103 @@
+{% extends "../formTemplate.html" %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% set harmManagedHtml %}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "harmManaged",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Can this risk of serious harm be safely managed in open conditions?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('harmManaged')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.riskOfHarm.harmManaged === 'Yes'
+
+      },
+      {
+        value: "No",
+        checked: data.openConditions.riskOfHarm.harmManaged === 'No',
+        text: "No"
+
+      }
+    ]
+  }) }}
+  {{ govukCharacterCount({
+    name: "harmManagedText",
+    type: "harmManagedText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Provide details about their risk of serious harm and any measure in place to manage it."
+    },
+    value: data.openConditions.riskOfHarm.harmManagedText,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('harmManagedText'))
+  }) }}
+
+  {% set guidanceHarmManaged %}
+  TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceHarmManaged
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Risk of Serious Harm</h1>
+
+  {{ govukRadios({
+    name: "seriousHarm",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Is there any information to suggest this person represents a serious risk of harm?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('seriousHarm')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.riskOfHarm.seriousHarm === 'Yes',
+        conditional: {
+          html: harmManagedHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.riskOfHarm.seriousHarm === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceSeriousHarm %}
+    TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceSeriousHarm
+  }) }}
+
+{% endblock %}

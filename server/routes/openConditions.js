@@ -1,9 +1,9 @@
 const express = require('express')
 const flash = require('connect-flash')
+const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-
 const openConditions = require('../config/openConditions')
 
 const formConfig = {
@@ -24,11 +24,39 @@ module.exports = function Index({ formService, offendersService, userService, au
   })
 
   router.get(
-    '/openConditionsNotSuitable/:bookingId',
+    '/furtherCharges/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, 'openConditions', 'dummy', bookingId)
-      res.render(`pages/openConditionsNotSuitable`, { ...result })
+      const form = 'furtherCharges'
+      const result = await buildFormData(res, req, 'openConditions', form, bookingId)
+
+      // Copy offending history charges or skip ?
+      const textExists =
+        result.data.openConditions &&
+        result.data.openConditions.furtherCharges &&
+        result.data.openConditions.furtherCharges.furtherChargesText
+
+      const previousConvictionsExists =
+        result.data.ratings &&
+        result.data.ratings.offendingHistory &&
+        result.data.ratings.offendingHistory.previousConvictions === 'Yes'
+
+      if (!previousConvictionsExists && !textExists) {
+        const formPageConfig = formConfig.openConditions[form]
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      } else if (previousConvictionsExists && !textExists) {
+        const newResult =
+
+          R.assocPath(
+            ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
+            result.data.ratings.offendingHistory.previousConvictionsText,
+            result
+          )
+        res.render(`formPages/openConditions/${form}`, newResult)
+      } else{
+        res.render(`formPages/openConditions/${form}`, result)
+      }
     })
   )
 
@@ -37,7 +65,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddleware(async (req, res) => {
       const { form, bookingId } = req.params
       const result = await buildFormData(res, req, 'openConditions', form, bookingId)
-      res.render(`openConditions/${form}`, { ...result })
+      res.render(`formPages/openConditions/${form}`, result)
     })
   )
 
@@ -71,8 +99,29 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   const clearConditionalFields = body => {
     const updated = Object.assign({}, body)
-    if (body.justify === 'No') {
-      updated.justifyText = ''
+    if (body.threeOrMoreYears === 'No') {
+      delete updated.justify
+      delete updated.justifyText
+    }
+    if (body.isForeignNational === 'No') {
+      delete updated.formCompleted
+      delete updated.dueDeported
+      delete updated.exhaustedAppeal
+    } else if (body.formCompleted === 'No') {
+      delete updated.dueDeported
+      delete updated.exhaustedAppeal
+    } else if (body.dueDeported === 'No') {
+      delete updated.exhaustedAppeal
+    }
+    if (body.seriousHarm === 'No') {
+      delete updated.harmManaged
+      delete updated.harmManagedText
+    }
+    if (body.likelyToAbscond === 'No') {
+      delete updated.likelyToAbscondText
+    }
+    if (body.isOtherInformation === 'No') {
+      delete updated.otherInformationText
     }
     return updated
   }
@@ -84,9 +133,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const section = 'openConditions'
       const formPageConfig = formConfig.openConditions[form]
 
-      if (
-        !formService.isValid(formPageConfig, req, res, section, form, bookingId, `/${section}/${form}/${bookingId}`)
-      ) {
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 

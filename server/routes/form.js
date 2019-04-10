@@ -10,6 +10,7 @@ const categoriser = require('../config/categoriser')
 const supervisor = require('../config/supervisor')
 const security = require('../config/security')
 const openConditions = require('../config/openConditions')
+const createOpenConditionsRouter = require('./openConditions')
 
 const formConfig = {
   ratings,
@@ -37,6 +38,14 @@ module.exports = function Index({
     }
     next()
   })
+
+  const openConditionsRouter = createOpenConditionsRouter({
+    formService,
+    offendersService,
+    userService,
+    authenticationMiddleware,
+  })
+  router.use('/openConditions/', openConditionsRouter)
 
   router.get(
     '/ratings/offendingHistory/:bookingId',
@@ -186,17 +195,7 @@ module.exports = function Index({
       const form = 'confirmBack'
       const formPageConfig = formConfig[section][form]
 
-      if (
-        !formService.isValid(
-          formPageConfig,
-          req,
-          res,
-          section,
-          form,
-          bookingId,
-          `/form/${section}/${form}/${bookingId}`
-        )
-      ) {
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -260,30 +259,30 @@ module.exports = function Index({
   const clearConditionalFields = body => {
     const updated = Object.assign({}, body)
     if (body.securityInputNeeded === 'No') {
-      updated.securityInputNeededText = ''
+      delete updated.securityInputNeededText
     }
     if (body.escapeOtherEvidence === 'No') {
-      updated.escapeOtherEvidenceText = ''
+      delete updated.escapeOtherEvidenceText
     }
     if (body.escapeCatB === 'No') {
-      updated.escapeCatBText = ''
+      delete updated.escapeCatBText
     }
     if (body.highRiskOfViolence === 'No') {
-      updated.highRiskOfViolenceText = ''
+      delete updated.highRiskOfViolenceText
     }
     if (body.seriousThreat === 'No') {
-      updated.seriousThreatText = ''
+      delete updated.seriousThreatText
     }
     if (body.categoryAppropriate === 'Yes') {
-      updated.overriddenCategory = ''
-      updated.overriddenCategoryText = ''
+      delete updated.overriddenCategory
+      delete updated.overriddenCategoryText
     }
     if (body.furtherCharges === 'No') {
-      updated.offendingHistoryCatB = ''
-      updated.furtherChargesText = ''
+      delete updated.offendingHistoryCatB
+      delete updated.furtherChargesText
     }
     if (body.previousConvictions === 'No') {
-      updated.previousConvictionsText = ''
+      delete updated.previousConvictionsText
     }
     return updated
   }
@@ -296,17 +295,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (
-        !formService.isValid(
-          formPageConfig,
-          req,
-          res,
-          section,
-          form,
-          bookingId,
-          `/form/${section}/${form}/${bookingId}`
-        )
-      ) {
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -333,17 +322,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (
-        !formService.isValid(
-          formPageConfig,
-          req,
-          res,
-          section,
-          form,
-          bookingId,
-          `/form/${section}/${form}/${bookingId}`
-        )
-      ) {
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -369,17 +348,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      if (
-        !formService.isValid(
-          formPageConfig,
-          req,
-          res,
-          section,
-          form,
-          bookingId,
-          `/form/${section}/${form}/${bookingId}`
-        )
-      ) {
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -406,17 +375,7 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
 
-      if (
-        !formService.isValid(
-          formPageConfig,
-          req,
-          res,
-          section,
-          form,
-          bookingId,
-          `/form/${section}/${form}/${bookingId}`
-        )
-      ) {
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -445,17 +404,7 @@ module.exports = function Index({
       const form = 'review'
       const formPageConfig = formConfig[section][form]
 
-      if (
-        !formService.isValid(
-          formPageConfig,
-          req,
-          res,
-          section,
-          form,
-          bookingId,
-          `/form/${section}/${form}/${bookingId}`
-        )
-      ) {
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
 
@@ -482,15 +431,7 @@ module.exports = function Index({
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[section][form]
 
-      const valid = formService.isValid(
-        formPageConfig,
-        req,
-        res,
-        section,
-        form,
-        bookingId,
-        `/form/${section}/${form}/${bookingId}`
-      )
+      const valid = formService.isValid(formPageConfig, req, res, section, form, bookingId)
       if (!valid) {
         return
       }

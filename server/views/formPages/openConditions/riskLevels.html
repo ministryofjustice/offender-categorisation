@@ -1,0 +1,76 @@
+{% extends "../formTemplate.html" %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% set likelyToAbscondHtml %}
+
+  {{ govukCharacterCount({
+    name: "likelyToAbscondText",
+    type: "likelyToAbscondText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Give details of this information"
+    },
+    value: data.openConditions.riskLevels.likelyToAbscondText,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('likelyToAbscondText'))
+  }) }}
+
+  {% set guidanceLikelyToAbscond %}
+  TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceLikelyToAbscond
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Risk levels</h1>
+
+  {{ govukRadios({
+    name: "likelyToAbscond",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Is there information that they are likely to abscond or otherwise abuse the lower security conditions?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('likelyToAbscond')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.riskLevels.likelyToAbscond === 'Yes',
+        conditional: {
+          html: likelyToAbscondHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.riskLevels.likelyToAbscond === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceLikelyToAbscond %}
+    TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceLikelyToAbscond
+  }) }}
+
+{% endblock %}
