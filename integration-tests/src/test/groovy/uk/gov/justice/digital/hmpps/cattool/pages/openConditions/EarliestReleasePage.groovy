@@ -4,7 +4,7 @@ import geb.Page
 
 class EarliestReleasePage extends Page {
 
-  static url = '/openConditions/earliestReleaseDate'
+  static url = '/form/openConditions/earliestReleaseDate'
 
   static at = {
     headingText == 'Time until earliest release date'

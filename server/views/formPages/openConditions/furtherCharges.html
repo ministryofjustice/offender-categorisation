@@ -1,0 +1,61 @@
+{% extends "../formTemplate.html" %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Further charges</h1>
+
+{{ govukCharacterCount({
+    name: "furtherChargesText",
+    type: "furtherChargesText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Details of further charges"
+    },
+    value: data.openConditions.furtherCharges.furtherChargesText,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('furtherChargesText'))
+  }) }}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "increasedRisk",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Do any of these further charges mean they pose an increased risk in open conditions?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('increasedRisk')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.furtherCharges.increasedRisk === 'Yes'
+      },
+      {
+        value: "No",
+        checked: data.openConditions.furtherCharges.increasedRisk === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceIncreasedRisk %}
+  TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceIncreasedRisk
+  }) }}
+
+{% endblock %}

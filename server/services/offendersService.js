@@ -249,7 +249,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             const assignedUser = await nomisClient.getUserByUserId(categorisation.assigned_user_id)
             statusText += ` (${properCaseName(assignedUser.firstName)} ${properCaseName(assignedUser.lastName)})`
           } catch (error) {
-            logger.warn(`No assigned user details found for ${categorisation.assigned_user_id}`)
+            logger.warn(error, `No assigned user details found for ${categorisation.assigned_user_id}`)
           }
         } else {
           statusText += ` (${properCaseName(user.firstName)} ${properCaseName(user.lastName)})`
@@ -262,7 +262,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         try {
           referrer = await nomisClient.getUserByUserId(categorisation.referred_by)
         } catch (error) {
-          logger.warn(`No user details found for ${categorisation.referred_by}`)
+          logger.warn(error, `No user details found for ${categorisation.referred_by}`)
         }
       }
       return {

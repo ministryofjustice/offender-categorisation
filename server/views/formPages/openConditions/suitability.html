@@ -1,0 +1,76 @@
+{% extends "../formTemplate.html" %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% set isOtherInformationHtml %}
+
+  {{ govukCharacterCount({
+    name: "otherInformationText",
+    type: "otherInformationText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Give details of this information"
+    },
+    value: data.openConditions.suitability.otherInformationText,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('otherInformationText'))
+  }) }}
+
+  {% set guidanceOtherInformationText %}
+  TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceOtherInformationText
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Suitability for open conditions</h1>
+
+  {{ govukRadios({
+    name: "isOtherInformation",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Is there any other information that suggests they'd be better managed in open conditions?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('isOtherInformation')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.suitability.isOtherInformation === 'Yes',
+        conditional: {
+          html: isOtherInformationHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.suitability.isOtherInformation === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceIsOtherInformation %}
+    TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceIsOtherInformation
+  }) }}
+
+{% endblock %}
