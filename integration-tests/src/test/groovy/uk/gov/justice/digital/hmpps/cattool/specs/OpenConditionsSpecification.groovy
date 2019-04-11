@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.EarliestReleasePage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ForeignNationalsPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.FurtherChargesPage
+import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.RiskLevelsPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.RiskOfHarmPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.SuitabilityPage
@@ -232,12 +233,17 @@ class OpenConditionsSpecification extends GebReportingSpec {
     otherInformationText << 'otherInformationText details'
 
     submitButton.click()
-    then: 'the TBA page is displayed'
-    true // at TBA Page TODO
+    then: 'the review page is displayed and Data is stored correctly'
+    at ReviewPage
+    changeLinks.size() == 6
+    values*.text() == ['', 'Yes', 'Yes\ndetails text', // 1 line per section
+                       '', 'Yes', 'Yes', 'Yes', 'No',
+                       '', 'Yes', 'Yes\nharmManagedText details',
+                       '', 'some convictions,furtherChargesText details', 'Yes',
+                       '', 'Yes\nlikelyToAbscondText details',
+                       '', 'Yes\notherInformationText details']
 
-    then: 'Data is stored correctly'
     def response = db.getData(12).form_response
-
     def data = response[0].toString()
     data.contains '"earliestReleaseDate": {"justify": "Yes", "justifyText": "details text", "threeOrMoreYears": "Yes"}'
     data.contains '"foreignNationals": {"dueDeported": "Yes", "formCompleted": "Yes", "exhaustedAppeal": "No", "isForeignNational": "Yes"}'
@@ -308,12 +314,16 @@ class OpenConditionsSpecification extends GebReportingSpec {
     isOtherInformationNo.click()
     submitButton.click()
 
-    then: 'the TBA page is displayed'
-    true // at TBA Page TODO
+    then: 'the review page is displayed and Data is stored correctly'
+    at ReviewPage
+    values*.text() == ['', 'No', 'Not applicable', // 1 line per section
+                       '', 'No', 'Not applicable', 'Not applicable', 'Not applicable',
+                       '', 'No', 'Not applicable',
+                       '', 'some convictions,furtherChargesText details', 'No',
+                       '', 'No',
+                       '', 'No']
 
-    then: 'Data is stored correctly'
     def response = db.getData(12).form_response
-
     def data = response[0].toString()
     data.contains '"earliestReleaseDate": {"threeOrMoreYears": "No"}'
     data.contains '"foreignNationals": {"isForeignNational": "No"}'

@@ -82,11 +82,12 @@ class ReviewSpecification extends GebReportingSpec {
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewPage
     changeLinks.size() == 9
-    values[0..4]*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'Yes\nsome convictions', 'Yes\ncharges text', 'No']
-    values[5..9]*.text() == ['Yes', '5', '2', 'No', '''Yes\nHere are the serious threat details''']
-    values[10..13]*.text() == ['Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''']
-    values[14..15]*.text() == ['Yes', '''Yes\nPrevious Terrorism Offences Text''']
-    values[16..19]*.text() == ['No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
+    // 1 line per section:
+    values*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'Yes\nsome convictions', 'Yes\ncharges text', 'No',
+                       'Yes', '5', '2', 'No', '''Yes\nHere are the serious threat details''',
+                       'Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''',
+                       'Yes', '''Yes\nPrevious Terrorism Offences Text''',
+                       'No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
     changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
 
@@ -102,7 +103,7 @@ class ReviewSpecification extends GebReportingSpec {
   def "The review page can be displayed without security input"() {
     given: 'data has been entered for the ratings pages'
     db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
-      ratings : [
+      ratings: [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions", furtherCharges: 'No', offendingHistoryCatB: 'No'],
         securityInput   : [securityInputNeeded: 'No'],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
