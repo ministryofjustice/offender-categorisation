@@ -1,0 +1,160 @@
+{% from "summary-list/macro.njk" import govukSummaryList %}
+
+{% macro formatAnswer(yesno, details) %}
+  {% if yesno %}
+    <div>{{yesno}}</div>
+    <div>{{details}}</div>
+  {% else %}
+    Not applicable
+  {% endif %}
+{% endmacro %}
+
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Earliest release date" },
+        actions: { items: [{
+              href: '/form/openConditions/earliestReleaseDate/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "earliest release date"
+            }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "3 or more years until earliest release date?" },
+        value: { text: data.openConditions.earliestReleaseDate.threeOrMoreYears },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Circumstances that justify moving to open conditions?" },
+        value: { html: formatAnswer(data.openConditions.earliestReleaseDate.justify, data.openConditions.earliestReleaseDate.justifyText) },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
+
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Foreign nationals" },
+        actions: { items: [{
+              href: '/form/openConditions/foreignNationals/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Foreign nationals"
+            }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Foreign national?" },
+        value: { text: data.openConditions.foreignNationals.isForeignNational },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "CCD3 form completed?" },
+        value: { text: data.openConditions.foreignNationals.formCompleted or 'Not applicable' },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Deportation due" },
+        value: { text: data.openConditions.foreignNationals.dueDeported or 'Not applicable' },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Exhausted all appeal rights in the UK?" },
+        value: { text: data.openConditions.foreignNationals.exhaustedAppeal or 'Not applicable' },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
+
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Risk of serious harm" },
+        actions: { items: [{
+              href: '/form/openConditions/riskOfHarm/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Risk of serious harm"
+            }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Risk of serious harm to the public?" },
+        value: { text: data.openConditions.riskOfHarm.seriousHarm },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Can this risk be managed?" },
+        value: { html: formatAnswer(data.openConditions.riskOfHarm.harmManaged, data.openConditions.riskOfHarm.harmManagedText) },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
+
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Further charges" },
+        actions: { items: [{
+              href: '/form/openConditions/furtherCharges/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Further charges"
+            }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Further charges details" },
+        value: { text: data.openConditions.furtherCharges.furtherChargesText },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Are these further charges an increased risk in open conditions?" },
+        value: { text : data.openConditions.furtherCharges.increasedRisk },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
+
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Risk levels" },
+        actions: { items: [{
+              href: '/form/openConditions/riskLevels/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Risk levels"
+            }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Likely to abscond or abuse open conditions?" },
+        value: { html: formatAnswer(data.openConditions.riskLevels.likelyToAbscond, data.openConditions.riskLevels.likelyToAbscondText) },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
+
+ {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Suitability for open conditions" },
+        actions: { items: [{
+              href: '/form/openConditions/suitability/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Suitability for open conditions"
+            }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Any other information that supports referral to open conditions?" },
+        value: { html: formatAnswer(data.openConditions.suitability.isOtherInformation, data.openConditions.suitability.otherInformationText) },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
