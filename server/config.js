@@ -21,6 +21,8 @@ function get(name, fallback, log, options = {}) {
 
 module.exports = {
   sessionSecret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),
+  expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '60', true),
+  staticResourceCacheDuration: get('STATIC_RESOURCE_TIMEOUT_IN_MINUTES', '0', true),
   db: {
     username: get('DB_USER', 'form-builder', true),
     password: get('DB_PASS', 'form-builder'),
