@@ -83,6 +83,17 @@
     ]
   }) }}
 
+  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+    <li>convictions similar to the current offence which indicate a prolific or escalating offence pattern</li>
+    <li>convictions that indicate ongoing criminality in custody</li>
+    <li>convictions for offences committed while the offender was in custody</li>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What should I look for:",
+    html: guidancePrevious
+  }) }}
+
 {% endset %}
 
 {{ govukRadios({
@@ -117,17 +128,6 @@
   ]
 }) }}
 
-  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
-    <li>convictions similar to the current offence which indicate a prolific or escalating offence pattern</li>
-    <li>convictions that indicate ongoing criminality in custody</li>
-    <li>convictions for offences committed while the offender was in custody</li>
-  {% endset %}
-
-  {{ govukDetails({
-    summaryText: "What should I look for:",
-    html: guidancePrevious
-  }) }}
-
 <h2 class="govuk-heading-m">Further charges</h2>
 
   {{ govukRadios({
@@ -135,7 +135,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Are they facing further serious charges?",
+        text: "Are they facing any further charges?",
         isPageHeading: false
       }
     },
@@ -143,7 +143,7 @@
       text: "Please select yes or no"
     } if (errors | findError('furtherCharges')),
     hint: {
-    text: "Check the police national computer (PNC)"
+      text: "Check the police national computer (PNC)"
     },
     items: [
       {

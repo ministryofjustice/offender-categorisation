@@ -81,11 +81,26 @@ describe('GET /tasklist/', () => {
       }))
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
-    formService.referToSecurityIfRiskAssessed.mockResolvedValue('SECURITY_AUTO')
     const today = moment().format('DD/MM/YYYY')
     const todayISO = moment().format('YYYY-MM-DD')
-    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({ referred_date: `${todayISO}` })
+    offendersService.getOffenderDetails.mockResolvedValue({ bookingId: 12345, displayName: 'Claire Dent' })
+    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      form_response: { sample: 'string' },
+      status: 'STARTED',
+    })
     formService.getCategorisationRecord.mockResolvedValue({ status: 'SECURITY_AUTO', referred_date: `${todayISO}` })
+    const sampleSocProfile = {
+      transferToSecurity: true,
+      provisionalCategorisation: 'B',
+    }
+    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
+    formService.getCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      referred_date: `${todayISO}`,
+      form_response: { sample: 'string', socProfile: sampleSocProfile },
+      status: 'SECURITY_AUTO',
+    })
 
     return request(app)
       .get('/12345')
@@ -94,7 +109,18 @@ describe('GET /tasklist/', () => {
       .expect(res => {
         expect(res.text).toContain('Categorisation task list')
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
-        expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
+        expect(res.text).toContain('href="/form/ratings/offendingHistory/12345"')
+
+        expect(formService.updateFormData).toBeCalledWith('12345', {
+          sample: 'string',
+          socProfile: sampleSocProfile,
+        })
+        expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(
+          '12345',
+          'CA_USER_TEST',
+          sampleSocProfile,
+          'STARTED'
+        )
       })
   })
 

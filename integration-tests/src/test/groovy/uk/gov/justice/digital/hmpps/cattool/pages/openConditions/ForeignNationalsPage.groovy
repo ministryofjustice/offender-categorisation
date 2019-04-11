@@ -4,7 +4,7 @@ import geb.Page
 
 class ForeignNationalsPage extends Page {
 
-  static url = '/openConditions/foreignNationals'
+  static url = '/form/openConditions/foreignNationals'
 
   static at = {
     headingText == 'Foreign Nationals'
