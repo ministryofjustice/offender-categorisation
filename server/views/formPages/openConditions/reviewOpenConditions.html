@@ -1,0 +1,17 @@
+{% extends "../formTemplate.html" %}
+{% set greenButtonText = "Continue" %}
+
+{% block formItems %}
+
+<div class="govuk-grid-row govuk-body-s">
+  <div>
+
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Check your answers before you continue</h1>
+
+    {% set showChangeLinks = true %}
+    {% include "../../partials/reviewContentsOpenConditions.html" %}
+
+  </div>
+</div>
+
+{% endblock %}

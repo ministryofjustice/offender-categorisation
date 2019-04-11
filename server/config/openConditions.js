@@ -139,8 +139,14 @@ module.exports = {
       },
     ],
     nextPath: {
-      path: '/form/openConditions/tba/',
+      path: '/form/openConditions/reviewOpenConditions/',
     },
     validate: true,
+  },
+  reviewOpenConditions: {
+    nextPath: {
+      path: '/form/openConditions/tba/',
+    },
+    validate: false,
   },
 }

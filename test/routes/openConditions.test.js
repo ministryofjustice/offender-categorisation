@@ -162,7 +162,7 @@ describe('POST /form', () => {
     ${'riskOfHarm'}          | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
     ${'furtherCharges'}      | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
     ${'riskLevels'}          | ${{ day: '12' }}              | ${'/form/openConditions/suitability/'}
-    ${'suitability'}         | ${{ day: '12' }}              | ${'/form/openConditions/tba/'}
+    ${'suitability'}         | ${{ day: '12' }}              | ${'/form/openConditions/reviewOpenConditions/'}
   `('should render $expectedContent for $sectionName/$formName', ({ formName, userInput, nextPath }) =>
     request(app)
       .post(`/${formName}/12345`)
