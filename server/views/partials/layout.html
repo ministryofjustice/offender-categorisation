@@ -3,6 +3,17 @@
 {% from "footer/macro.njk" import govukFooter %}
 
 {% block head %}
+  {% if googleAnalyticsKey %}
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ googleAnalyticsKey }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ googleAnalyticsKey }}');
+    </script>
+  {% endif %}
+
 <!--[if !IE 8]><!-->
 <link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet"/>
 <!--<![endif]-->

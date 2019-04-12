@@ -8,7 +8,7 @@
      Categorisation outcome
     </h1>
     <div class="govuk-!-width-one-third govuk-!-display-inline">
-      <a class="govuk-link rightAlignedButton" href='#' onclick="handlePrint()">
+      <a class="govuk-link rightAlignedButton" href="#" onclick="handlePrint()">
         <img class="print-icon" src="/assets/images/Printer_icon.png" height="23" width="20" alt="Print icon"/>
         Print this page
       </a>
@@ -17,16 +17,22 @@
   <script>
     function handlePrint() {
       raiseAnalyticsEvent({
-        category: 'Cat tool',
+        event_category: 'Cat tool',
         action: 'Print cat',
+        event_label: 'Print cat',
+        value: '{{ data.details.agencyId }}'
       })
       window.print()
     }
 
     function raiseAnalyticsEvent(event) {
-      // if (event && config.googleAnalyticsId) {
-      //   // TODO ReactGA.event(event)
-      // }
+      if (event && gtag) {
+        gtag('event', event.action, {
+          'event_category': event.event_category,
+          'event_label': event.event_label,
+          'value': event.value
+        })
+      }
     }
   </script>
   <div class="govuk-grid-row govuk-body-s">

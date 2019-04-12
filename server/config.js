@@ -64,4 +64,5 @@ module.exports = {
     },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
+  googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', null, true)}`,
 }
