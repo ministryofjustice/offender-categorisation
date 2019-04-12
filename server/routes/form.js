@@ -70,7 +70,7 @@ module.exports = function Index({
       if (result.status === Status.SECURITY_MANUAL.name || result.status === Status.SECURITY_AUTO.name) {
         res.redirect(`/tasklist/${bookingId}`)
       } else {
-        res.render('formPages/ratings/securityInput', { ...result })
+        res.render('formPages/ratings/securityInput', result)
       }
     })
   )
@@ -215,7 +215,7 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const { section, form, bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId)
-      res.render(`formPages/${section}/${form}`, { ...result })
+      res.render(`formPages/${section}/${form}`, result)
     })
   )
 
@@ -224,7 +224,7 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId)
-      res.render(`formPages/approvedView`, { ...result })
+      res.render(`formPages/approvedView`, result)
     })
   )
 

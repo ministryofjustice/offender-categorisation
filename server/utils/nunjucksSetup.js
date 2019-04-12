@@ -1,6 +1,7 @@
 const nunjucks = require('nunjucks')
 const Status = require('../utils/statusEnum')
 const { dateConverter } = require('../utils/utils.js')
+const config = require('../config')
 
 const findError = (array, formFieldId) => {
   const item = array.find(error => error.href === `#${formFieldId}`)
@@ -29,4 +30,5 @@ module.exports = (app, path) => {
     .addFilter('findError', findError)
     .addGlobal('Status', Status)
     .addGlobal('dateConverter', dateConverter)
+    .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
 }
