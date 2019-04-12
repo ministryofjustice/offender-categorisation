@@ -64,27 +64,30 @@ class OpenConditionsSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'there is a validation error'
-    at EarliestReleasePage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I submit the page with just threeOrMoreYears=Yes'
     threeOrMoreYearsYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at EarliestReleasePage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
     justifyYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at EarliestReleasePage
-    errorSummaries*.text() == ['Please enter details']
-    errors*.text() == ['Error:\nPlease enter details']
+    waitFor {
+      errorSummaries*.text() == ['Please enter details']
+      errors*.text() == ['Error:\nPlease enter details']
+    }
 
     when: 'the Earliest Release page is completed'
     justifyText << 'details text'
@@ -97,36 +100,40 @@ class OpenConditionsSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'there is a validation error'
-    at ForeignNationalsPage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I submit page after isForeignNationalYes'
     isForeignNationalYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at ForeignNationalsPage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I submit page after formCompletedYes'
     formCompletedYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at ForeignNationalsPage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I submit page after dueDeportedYes'
     dueDeportedYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at ForeignNationalsPage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'the Foreign Nationals page is completed'
     exhaustedAppealNo.click()
@@ -139,27 +146,30 @@ class OpenConditionsSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'there is a validation error'
-    at RiskOfHarmPage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I submit page after seriousHarmYes'
     seriousHarmYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at RiskOfHarmPage
-    errorSummaries*.text() == ['Please select yes or no', 'Please enter details']
-    errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease enter details']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no', 'Please enter details']
+      errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease enter details']
+    }
 
     when: 'I submit page after harmManagedYes'
     harmManagedYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at RiskOfHarmPage
-    errorSummaries*.text() == ['Please enter details']
-    errors*.text() == ['Error:\nPlease enter details']
+    waitFor {
+      errorSummaries*.text() == ['Please enter details']
+      errors*.text() == ['Error:\nPlease enter details']
+    }
 
     when: 'the Risk of Serious Harm page is completed'
     harmManagedText << 'harmManagedText details'
@@ -174,9 +184,10 @@ class OpenConditionsSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'there is a validation error'
-    at FurtherChargesPage
-    errorSummaries*.text() == ['Please select yes or no', 'Please enter details']
-    errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no', 'Please enter details']
+      errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease select yes or no']
+    }
 
     when: 'the Further Charges page is completed'
     furtherChargesText << ',furtherChargesText details'
@@ -191,18 +202,20 @@ class OpenConditionsSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'there is a validation error'
-    at RiskLevelsPage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I submit page after likelyToAbscondYes'
     likelyToAbscondYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at RiskLevelsPage
-    errorSummaries*.text() == ['Please enter details']
-    errors*.text() == ['Error:\nPlease enter details']
+    waitFor {
+      errorSummaries*.text() == ['Please enter details']
+      errors*.text() == ['Error:\nPlease enter details']
+    }
 
     when: 'the Risk Levels page is completed'
     likelyToAbscondText << 'likelyToAbscondText details'
@@ -216,18 +229,20 @@ class OpenConditionsSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'there is a validation error'
-    at SuitabilityPage
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I submit page after isOtherInformationYes'
     isOtherInformationYes.click()
     submitButton.click()
 
     then: 'there is a validation error'
-    at SuitabilityPage
-    errorSummaries*.text() == ['Please enter details']
-    errors*.text() == ['Error:\nPlease enter details']
+    waitFor {
+      errorSummaries*.text() == ['Please enter details']
+      errors*.text() == ['Error:\nPlease enter details']
+    }
 
     when: 'the Suitability page is completed'
     otherInformationText << 'otherInformationText details'
