@@ -5,6 +5,7 @@ const { firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
+const { redirectUsingRole } = require('../utils/routes')
 
 const formConfig = {
   openConditions,
@@ -123,6 +124,64 @@ module.exports = function Index({ formService, offendersService, userService, au
     }
     return updated
   }
+
+  router.post(
+    '/reviewOpenConditions/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const form = 'reviewOpenConditions'
+      const formPageConfig = formConfig.openConditions[form]
+
+      const formData = await formService.getCategorisationRecord(bookingId)
+      const data = formData.form_response
+      const oc = data.openConditions
+      if (
+        oc &&
+        ((oc.riskOfHarm && oc.riskOfHarm.harmManaged === 'No') ||
+          (oc.furtherCharges && oc.furtherCharges.increasedRisk === 'Yes') ||
+          (oc.riskLevels && oc.riskLevels.likelyToAbscond === 'Yes'))
+      ) {
+        res.redirect(`/form/openConditions/notRecommended/${bookingId}`)
+      } else {
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      }
+    })
+  )
+
+  router.post(
+    '/notRecommended/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const section = 'openConditions'
+      const form = 'notRecommended'
+      const formPageConfig = formConfig.openConditions[form]
+
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+        return
+      }
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+      })
+      if (req.body.stillRefer === 'No') {
+        redirectUsingRole(
+          res,
+          `/form/categoriser/provisionalCategory/${bookingId}`,
+          `/form/supervisor/review/${bookingId}`,
+          '/securityHome'
+        )
+      } else {
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      }
+    })
+  )
 
   router.post(
     '/:form/:bookingId',

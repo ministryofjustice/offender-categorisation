@@ -1,6 +1,5 @@
 const request = require('supertest')
 const appSetup = require('./utils/appSetup')
-const createRouter = require('../../server/routes/openConditions')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 
 const ratings = require('../../server/config/ratings')
@@ -8,6 +7,12 @@ const supervisor = require('../../server/config/supervisor')
 const categoriser = require('../../server/config/categoriser')
 const security = require('../../server/config/security')
 const openConditions = require('../../server/config/openConditions')
+
+let roles
+// This needs mocking early, before 'requiring' jwt-decode (via home.js)
+jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
+
+const createRouter = require('../../server/routes/openConditions')
 
 const formConfig = {
   ratings,
@@ -54,6 +59,7 @@ let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
+  roles = ['ROLE_CREATE_CATEGORISATION']
   formService.getCategorisationRecord.mockResolvedValue({})
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
@@ -75,7 +81,7 @@ afterEach(() => {
   userService.getUser.mockReset()
 })
 
-describe('GET /form', () => {
+describe('open conditions', () => {
   test.each`
     path                     | expectedContent
     ${'earliestReleaseDate'} | ${'Time until earliest release date'}
@@ -152,9 +158,7 @@ describe('GET /form', () => {
       .expect(302)
       .expect('Location', `/form/openConditions/riskLevels/12345`)
   })
-})
 
-describe('POST /form', () => {
   test.each`
     formName                 | userInput                     | nextPath
     ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNationals/'}
@@ -196,4 +200,68 @@ describe('POST /form', () => {
         expect(res.text).toContain(expectedContent)
       })
   )
+
+  test.each`
+    data                                                                | expectedPage
+    ${{ openConditions: { riskOfHarm: { harmManaged: 'No' } } }}        | ${'notRecommended'}
+    ${{ openConditions: { furtherCharges: { increasedRisk: 'Yes' } } }} | ${'notRecommended'}
+    ${{ openConditions: { riskLevels: { likelyToAbscond: 'Yes' } } }}   | ${'notRecommended'}
+    ${{ openConditions: {} }}                                           | ${'provisionalCategory'}
+  `('should redirect from reviewOpenConditions page', ({ data, expectedPage }) => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      form_response: data,
+    })
+    return request(app)
+      .post(`/reviewOpenConditions/12345`)
+      .send({})
+      .expect(302)
+      .expect('Location', `/form/openConditions/${expectedPage}/12345`)
+  })
+
+  test.each`
+    data                                                                | expectedContent
+    ${{ openConditions: { riskOfHarm: { harmManaged: 'No' } } }}        | ${'They pose a risk of serious harm to the public which cannot be safely managed in open conditions'}
+    ${{ openConditions: { furtherCharges: { increasedRisk: 'Yes' } } }} | ${'They have further charges which pose an increased risk in open conditions'}
+    ${{ openConditions: { riskLevels: { likelyToAbscond: 'Yes' } } }}   | ${'They are likely to abscond or otherwise abuse the lower security of open conditions'}
+  `('should render notRecommended page', ({ data, expectedContent }) => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      form_response: data,
+    })
+    return request(app)
+      .get(`/notRecommended/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(expectedContent)
+      })
+  })
+
+  test('should redirect from notRecommended page to provisionalCategory', () =>
+    request(app)
+      .post(`/notRecommended/12345`)
+      .send({ stillRefer: 'Yes' })
+      .expect(302)
+      .expect('Location', `/form/openConditions/provisionalCategory/12345`))
+
+  test('should redirect from notRecommended page to categoriser', () => {
+    roles = ['ROLE_CREATE_CATEGORISATION']
+
+    return request(app)
+      .post(`/notRecommended/12345`)
+      .send({ stillRefer: 'No' })
+      .expect(302)
+      .expect('Location', `/form/categoriser/provisionalCategory/12345`)
+  })
+
+  test('should redirect from notRecommended page to supervisor', () => {
+    roles = ['ROLE_APPROVE_CATEGORISATION']
+
+    return request(app)
+      .post(`/notRecommended/12345`)
+      .send({ stillRefer: 'No' })
+      .expect(302)
+      .expect('Location', `/form/supervisor/review/12345`)
+  })
 })

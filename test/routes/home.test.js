@@ -3,7 +3,7 @@ const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 
 let roles
-// This needs mocking early, before 'requiring' jwt-decode (via home.js)
+// This needs mocking early, before 'requiring' jwt-decode
 jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
 
 const createRouter = require('../../server/routes/home')
