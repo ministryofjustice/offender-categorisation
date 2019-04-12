@@ -1,0 +1,61 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Open conditions not recommended</h1>
+
+We do not recommend this person for open conditions because:
+<ul class="govuk-!-font-weight-bold">
+  {% if data.openConditions.riskOfHarm.harmManaged === 'No' %}
+    <li>They pose a risk of serious harm to the public which cannot be safely managed in open conditions</li>
+  {% endif %}
+  {% if data.openConditions.furtherCharges.increasedRisk === 'Yes' %}
+    <li>They have further charges which pose an increased risk in open conditions</li>
+  {% endif %}
+  {% if data.openConditions.riskLevels.likelyToAbscond === 'Yes' %}
+    <li>They are likely to abscond or otherwise abuse the lower security of open conditions</li>
+  {% endif %}
+</ul>
+
+  {{ govukRadios({
+    name: "stillRefer",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Do you still want to refer this person to open conditions?"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('stillRefer')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.notRecommended.stillRefer === 'Yes',
+        conditional: {
+          html: stillReferHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.notRecommended.stillRefer === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceStillRefer %}
+    TEXT TBA
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I check?",
+    html: guidanceStillRefer
+  }) }}
+
+{% endblock %}
