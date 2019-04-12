@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.EarliestReleasePage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ForeignNationalsPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.FurtherChargesPage
+import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.NotRecommendedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.RiskLevelsPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.RiskOfHarmPage
@@ -266,6 +267,14 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.contains '"furtherCharges": {"increasedRisk": "Yes", "furtherChargesText": "some convictions,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "Yes", "likelyToAbscondText": "likelyToAbscondText details"}'
     data.contains '"suitability": {"isOtherInformation": "Yes", "otherInformationText": "otherInformationText details"}'
+
+    when: 'I try to continue to the provision category page'
+    submitButton.click()
+
+    then: 'I am diverted to the not recommended page'
+    at NotRecommendedPage
+    reasons*.text() == ['They have further charges which pose an increased risk in open conditions',
+                        'They are likely to abscond or otherwise abuse the lower security of open conditions']
   }
 
   def "The happy path is correct for categoriser, all nos"() {
@@ -346,6 +355,12 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.contains '"furtherCharges": {"increasedRisk": "No", "furtherChargesText": "some convictions,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "No"}'
     data.contains '"suitability": {"isOtherInformation": "No"}'
+
+//    when: 'I continue to the provision category page'
+//    submitButton.click()
+//
+//    then: 'I am at the provision category page'
+//    at ???
   }
 
   def clearTextarea(ta) {

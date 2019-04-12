@@ -145,8 +145,22 @@ module.exports = {
   },
   reviewOpenConditions: {
     nextPath: {
-      path: '/form/openConditions/tba/',
+      path: '/form/openConditions/provisionalCategory/',
     },
     validate: false,
+  },
+  notRecommended: {
+    fields: [
+      {
+        stillRefer: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/openConditions/provisionalCategory/',
+    },
+    validate: true,
   },
 }
