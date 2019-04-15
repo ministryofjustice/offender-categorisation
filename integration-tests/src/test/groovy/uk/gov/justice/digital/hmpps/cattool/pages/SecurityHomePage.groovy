@@ -22,6 +22,7 @@ class SecurityHomePage extends Page {
     logoutLink { $('a', href: '/logout')}
     noOffendersText { $('h3.govuk-heading-s').text() }
     logoutLink { $('a', href: '/logout')}
+    doneTabLink { $('a', href: '/securityDone')}
   }
 
   def logout() {
