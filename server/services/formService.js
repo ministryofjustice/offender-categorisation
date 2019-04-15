@@ -174,12 +174,12 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function backFromSecurity(bookingId) {
+  async function securityReviewed(bookingId, userId) {
     const currentCategorisation = await getCategorisationRecord(bookingId)
     const currentStatus = currentCategorisation.status
     if (validateStatusIfProvided(currentStatus, Status.SECURITY_BACK.name)) {
       try {
-        await formClient.updateStatus(bookingId, Status.SECURITY_BACK.name)
+        await formClient.securityReviewed(bookingId, Status.SECURITY_BACK.name, userId)
       } catch (error) {
         logger.error(error)
         throw error
@@ -193,6 +193,16 @@ module.exports = function createFormService(formClient) {
   async function getCategorisedOffenders(agencyId) {
     try {
       const data = await formClient.getCategorisationRecordsByStatus(agencyId, [Status.APPROVED.name])
+      return data.rows || []
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
+  async function getSecurityReviewedOffenders(agencyId) {
+    try {
+      const data = await formClient.getSecurityReviewedCategorisationRecords(agencyId)
       return data.rows || []
     } catch (error) {
       logger.error(error)
@@ -232,12 +242,13 @@ module.exports = function createFormService(formClient) {
     computeSuggestedCat,
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,
-    backFromSecurity,
+    securityReviewed,
     validateStatus: validateStatusIfProvided,
     createOrRetrieveCategorisationRecord,
     backToCategoriser,
     validate,
     isValid,
     getCategorisedOffenders,
+    getSecurityReviewedOffenders,
   }
 }

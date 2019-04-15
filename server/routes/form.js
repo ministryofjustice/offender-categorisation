@@ -352,6 +352,7 @@ module.exports = function Index({
         return
       }
 
+      // TODO tech debt - 1. no transaction boundary for these two db updates 2. investigate combining, status validation only performed on second part
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
@@ -361,7 +362,7 @@ module.exports = function Index({
         formName: form,
       })
 
-      await formService.backFromSecurity(bookingId)
+      await formService.securityReviewed(bookingId, req.user.username)
 
       res.redirect('/')
     })

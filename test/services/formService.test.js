@@ -6,6 +6,7 @@ const formClient = {
   update: jest.fn(),
   referToSecurity: jest.fn(),
   updateStatus: jest.fn(),
+  securityReviewed: jest.fn(),
 }
 let service
 
@@ -15,6 +16,7 @@ beforeEach(() => {
   formClient.update.mockReturnValue({})
   formClient.referToSecurity.mockReturnValue({})
   formClient.updateStatus.mockReturnValue({})
+  formClient.securityReviewed.mockReturnValue({})
 })
 
 afterEach(() => {
@@ -22,6 +24,7 @@ afterEach(() => {
   formClient.update.mockReset()
   formClient.referToSecurity.mockReset()
   formClient.updateStatus.mockReset()
+  formClient.securityReviewed.mockReset({})
 })
 
 describe('getCategorisationRecord', () => {
@@ -513,19 +516,29 @@ describe('referToSecurityIfRequested', () => {
   })
 })
 
-describe('updateStatus', () => {
+describe('securityReviewed', () => {
   test('happy path', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_AUTO' }] })
 
-    await service.backFromSecurity(bookingId)
+    await service.securityReviewed(bookingId, userId)
 
-    expect(formClient.updateStatus.mock.calls[0]).toEqual([bookingId, 'SECURITY_BACK'])
+    expect(formClient.securityReviewed.mock.calls[0]).toEqual([bookingId, 'SECURITY_BACK', userId])
+  })
+})
+
+describe('updateStatus', () => {
+  test('happy path', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'AWAITING_APPROVAL' }] })
+
+    await service.backToCategoriser(bookingId)
+
+    expect(formClient.updateStatus.mock.calls[0]).toEqual([bookingId, 'SUPERVISOR_BACK'])
   })
 
   test('no record in db', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.backFromSecurity(bookingId)
+    await service.backToCategoriser(bookingId)
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -533,7 +546,7 @@ describe('updateStatus', () => {
   test('invalid status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
 
-    await service.backFromSecurity(bookingId)
+    await service.backToCategoriser(bookingId)
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -541,7 +554,7 @@ describe('updateStatus', () => {
   test('invalid SECURITY_BACK status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_BACK' }] })
 
-    await service.backFromSecurity(bookingId)
+    await service.backToCategoriser(bookingId)
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -549,7 +562,7 @@ describe('updateStatus', () => {
   test('database error', async () => {
     formClient.updateStatus.mockRejectedValue(new Error('TEST'))
 
-    expect(service.backFromSecurity(bookingId)).rejects.toThrow('TEST')
+    expect(service.backToCategoriser(bookingId)).rejects.toThrow('TEST')
   })
 })
 
@@ -571,13 +584,13 @@ describe('createOrRetrieveCategorisationRecord', () => {
   })
 })
 /*
- async function backFromSecurity(bookingId) {
+ async function securityReviewed(bookingId) {
     const currentCategorisation = await getCategorisationRecord(bookingId)
     const currentStatus = currentCategorisation.status
     const status = Status[currentStatus]
     if (Status.SECURITY_BACK.previous.includes(status) && currentStatus !== Status.SECURITY_BACK) {
       try {
-        await formClient.backFromSecurity(bookingId)
+        await formClient.securityReviewed(bookingId)
       } catch (error) {
         logger.error(error)
         throw error

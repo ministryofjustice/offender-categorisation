@@ -141,6 +141,45 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  async function getSecurityReviewedOffenders(token, agencyId) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+
+      const securityReviewedFromDB = await formService.getSecurityReviewedOffenders(agencyId)
+      if (!isNilOrEmpty(securityReviewedFromDB)) {
+        const offenderDetailsFromElite = await nomisClient.getOffenderDetailList(
+          agencyId,
+          securityReviewedFromDB.map(c => c.booking_id)
+        )
+
+        const userDetailFromElite = await nomisClient.getUserDetailList(
+          securityReviewedFromDB.map(c => c.security_reviewed_by)
+        )
+
+        const decoratedResults = securityReviewedFromDB.map(o => {
+          const reviewedMoment = moment(o.security_reviewed_date, 'YYYY-MM-DD')
+          const offenderDetail = offenderDetailsFromElite.find(
+            record => record.bookingId === parseInt(o.booking_id, 10)
+          )
+          const userDetail = userDetailFromElite.find(record => record.username === o.user_id)
+          return {
+            ...o,
+            offenderNo: offenderDetail.offenderNo,
+            displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+            displayReviewedDate: reviewedMoment.format('DD/MM/YYYY'),
+            displayReviewerName: `${properCaseName(userDetail.lastName)}, ${properCaseName(userDetail.firstName)}`,
+          }
+        })
+
+        return decoratedResults.sort(a => sortByDateTimeDesc(a.displayReviewedDate)).reverse()
+      }
+      return []
+    } catch (error) {
+      logger.error(error, 'Error during getSecurityReviewedOffenders')
+      throw error
+    }
+  }
+
   async function getUnapprovedOffenders(token, agencyId) {
     try {
       const nomisClient = nomisClientBuilder(token)
@@ -434,5 +473,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     createInitialCategorisation,
     createSupervisorApproval,
     getCategorisedOffenders,
+    getSecurityReviewedOffenders,
   }
 }
