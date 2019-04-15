@@ -7,7 +7,7 @@ const sequenceClause =
 module.exports = {
   getFormDataForUser(bookingId) {
     const query = {
-      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
         from form f where f.booking_id = $1 ${sequenceClause}`,
       values: [bookingId],
     }
@@ -17,9 +17,19 @@ module.exports = {
   getCategorisationRecordsByStatus(agencyId, statusList) {
     logger.debug(`getCategorisationRecordsByStatus called for ${agencyId}, status ${statusList}`)
     const query = {
-      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
         from form f where f.prison_id = $1 and f.status = ANY ($2) ${sequenceClause}`,
       values: [agencyId, statusList],
+    }
+    return db.query(query)
+  },
+
+  getSecurityReviewedCategorisationRecords(agencyId) {
+    logger.debug(`getSecurityReviewedOffenders called for ${agencyId}`)
+    const query = {
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+        from form f where f.prison_id = $1 and security_reviewed_date is not null ${sequenceClause}`,
+      values: [agencyId],
     }
     return db.query(query)
   },
@@ -29,6 +39,15 @@ module.exports = {
     const query = {
       text: `update form f set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where booking_id = $3 ${sequenceClause}`,
       values: [status, userId, bookingId],
+    }
+    return db.query(query)
+  },
+
+  securityReviewed(bookingId, status, userId) {
+    logger.debug(`securityReviewed called for ${userId} with status ${status} and booking id ${bookingId}`)
+    const query = {
+      text: `update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where booking_id = $3 ${sequenceClause}`,
+      values: [userId, status, bookingId],
     }
     return db.query(query)
   },

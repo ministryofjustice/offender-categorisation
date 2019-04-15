@@ -17,7 +17,7 @@ describe('getFormDataForUser', () => {
     formClient.getFormDataForUser('bookingId1')
 
     expect(db.query).toBeCalledWith({
-      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
         from form f where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['bookingId1'],
     })
@@ -29,9 +29,33 @@ describe('getCategorisationRecordsByStatus', () => {
     formClient.getCategorisationRecordsByStatus('MDI', ['APPROVED', 'AWAITING_APPROVAL'])
 
     expect(db.query).toBeCalledWith({
-      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
         from form f where f.prison_id = $1 and f.status = ANY ($2) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['MDI', ['APPROVED', 'AWAITING_APPROVAL']],
+    })
+  })
+})
+
+describe('getSecurityReviewedCategorisationRecords', () => {
+  test('it should generate the correct sql', () => {
+    formClient.getSecurityReviewedCategorisationRecords('MDI')
+
+    expect(db.query).toBeCalledWith({
+      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+        from form f where f.prison_id = $1 and security_reviewed_date is not null and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
+      values: ['MDI'],
+    })
+  })
+})
+
+describe('securityReviewed', () => {
+  test('it should generate query to update security reviewed columns', () => {
+    formClient.securityReviewed('12345', 'SECURITY', 'Meeeee')
+
+    expect(db.query).toBeCalledWith({
+      text:
+        'update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+      values: ['Meeeee', 'SECURITY', '12345'],
     })
   })
 })
