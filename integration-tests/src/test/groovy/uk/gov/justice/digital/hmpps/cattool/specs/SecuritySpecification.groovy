@@ -12,10 +12,10 @@ import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
 
+import java.sql.Timestamp
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
 class SecuritySpecification extends GebReportingSpec {
 
@@ -25,6 +25,9 @@ class SecuritySpecification extends GebReportingSpec {
   @Rule
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
+
+  @Rule
+  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
 
   def setup() {
     db.clearDb()
@@ -41,16 +44,19 @@ class SecuritySpecification extends GebReportingSpec {
   def "The done page for a security is present"() {
     when: 'I go to the home page as security and select the done tab'
 
-    db.createDataWithStatus(-2, 12, 'SECURITY_AUTO', JsonOutput.toJson([
+    def reviewDate1 = LocalDate.of(2019, 1, 28)
+    def reviewDate2 = LocalDate.of(2019, 1, 31)
+
+    db.createSecurityReviewedData(-2, 13, 'SECURITY_BACK', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]),SECURITY_USER.username, Timestamp.valueOf(reviewDate1.atStartOfDay()))
 
-    db.createDataWithStatus(-1,11, 'SECURITY_MANUAL', JsonOutput.toJson([
+    db.createSecurityReviewedData(-1,14, 'APPROVED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
         securityInput   : [securityInputNeeded: "Yes"],
@@ -58,16 +64,24 @@ class SecuritySpecification extends GebReportingSpec {
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]),SECURITY_USER.username, Timestamp.valueOf(reviewDate2.atStartOfDay()))
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
 
 
+    // 14 days after sentenceStartDate
+    elite2api.stubUncategorisedForSupervisor()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2api.stubUncategorised()
+    elite2api.stubGetUserDetails(SECURITY_USER, 'LEI')
+
     fixture.loginAs(SECURITY_USER)
     at SecurityHomePage
 
     elite2api.stubCategorised()
+    elite2api.stubGetOffenderDetailsByBookingIdList('LEI')
+    elite2api.stubGetSecurityStaffDetailsByUsername()
 
     doneTabLink.click()
 
@@ -75,10 +89,11 @@ class SecuritySpecification extends GebReportingSpec {
 
     at SecurityDonePage
 
-    prisonNos == ['B2345XY', 'B2345YZ']
-    names == ['Scramble, Tim', 'Hemmel, Sarah']
-    reviewDates == ['21/02/2019', '20/02/2019']
-    reviewers == ['Helly, James', 'Helly, James']
+    prisonNos == ['AB123', 'AB321']
+    names == ['Clark, Frank','Dent, Jane']
+    def today = LocalDate.now().format('dd/MM/yyyy')
+    reviewedDates == ['28/01/2019', '31/01/2019']
+    reviewer == ['Security, Amy', 'Security, Amy']
   }
 
 }

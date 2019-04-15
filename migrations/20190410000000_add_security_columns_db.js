@@ -9,4 +9,5 @@ exports.down = knex =>
   knex.schema.table('form', table => {
     table.dropColumn('security_reviewed_by')
     table.dropColumn('security_reviewed_date')
+    table.dropIndex('prison_id')
   })
