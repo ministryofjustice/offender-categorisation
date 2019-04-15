@@ -161,7 +161,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           const offenderDetail = offenderDetailsFromElite.find(
             record => record.bookingId === parseInt(o.booking_id, 10)
           )
-          const userDetail = userDetailFromElite.find(record => record.username === o.user_id)
+          const userDetail = userDetailFromElite.find(record => record.username === o.security_reviewed_by)
           return {
             ...o,
             offenderNo: offenderDetail.offenderNo,

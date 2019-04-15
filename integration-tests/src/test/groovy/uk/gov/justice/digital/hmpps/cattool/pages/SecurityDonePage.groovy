@@ -7,7 +7,7 @@ class SecurityDonePage extends Page {
   static url = '/securityDone'
 
   static at = {
-    headingText == 'Prisoner Categorisation Approvals'
+    headingText == 'Prisoner Categorisation'
   }
 
   static content = {
@@ -18,6 +18,6 @@ class SecurityDonePage extends Page {
     reviewedDates { bodyRows*.$('td', 2)*.text()  }
     reviewer { bodyRows*.$('td', 3)*.text()  }
     logoutLink { $('a', href: '/logout')}
-    doneTabLink { $('a', href: '/securityDone')}
+    homeTabLink { $('a', href: '/securityHome')}
   }
 }
