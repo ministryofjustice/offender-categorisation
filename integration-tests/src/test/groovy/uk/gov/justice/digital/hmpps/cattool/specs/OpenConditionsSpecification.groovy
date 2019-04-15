@@ -181,7 +181,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at FurtherChargesPage
 
     when: 'I submit a blank page'
-    clearTextarea(furtherChargesText)
+    form.furtherChargesText = '' // remove existing text
     submitButton.click()
 
     then: 'there is a validation error'
@@ -361,9 +361,5 @@ class OpenConditionsSpecification extends GebReportingSpec {
 //
 //    then: 'I am at the provision category page'
 //    at ???
-  }
-
-  def clearTextarea(ta) {
-    ta << Keys.chord(Keys.CONTROL, "a") << Keys.chord(Keys.CONTROL, "x")
   }
 }

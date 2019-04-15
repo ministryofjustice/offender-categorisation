@@ -14,6 +14,7 @@ const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
 const sassMiddleware = require('node-sass-middleware')
+const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const moment = require('moment')
 const path = require('path')
 const log = require('bunyan-request-logger')({ name: 'Cat tool http' })
@@ -204,6 +205,8 @@ module.exports = function createApp({
     }
     res.redirect(authLogoutUrl)
   })
+
+  app.use(authorisationMiddleware)
 
   app.use('/', createHomeRouter({ userService, offendersService, authenticationMiddleware }))
   app.use(

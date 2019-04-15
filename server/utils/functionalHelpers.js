@@ -11,6 +11,7 @@ module.exports = {
   mergeWithRight,
   lastItem,
   pickBy: R.pickBy,
+  getWhereKeyLike,
 }
 
 function isNilOrEmpty(item) {
@@ -43,4 +44,17 @@ function mergeWithRight(object1, object2) {
 
 function isEmpty(item) {
   return R.isEmpty(item) || R.isNil(item)
+}
+
+function getWhereKeyLike(url, roleList) {
+  const stringIncludesKey = (value, key) => {
+    const regExp = new RegExp(`^${key}$`, 'i')
+    return regExp.test(url)
+    // return lowerCaseString.includes(key.toLowerCase())
+  }
+
+  return R.pipe(
+    R.pickBy(stringIncludesKey),
+    R.values
+  )(roleList)[0]
 }
