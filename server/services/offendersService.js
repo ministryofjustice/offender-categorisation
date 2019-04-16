@@ -132,7 +132,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           })
         )
 
-        return decoratedResults.sort(a => sortByDateTimeDesc(a.displayApprovalDate)).reverse()
+        return decoratedResults
+          .sort((a, b) => sortByDateTimeDesc(a.displayApprovalDate, b.displayApprovalDate))
+          .reverse()
       }
       return []
     } catch (error) {
