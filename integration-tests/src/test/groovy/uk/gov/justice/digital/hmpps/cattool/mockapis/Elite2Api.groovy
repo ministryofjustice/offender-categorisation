@@ -3,13 +3,8 @@ package uk.gov.justice.digital.hmpps.cattool.mockapis
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-import uk.gov.justice.digital.hmpps.cattool.mockapis.mockResponses.*
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
-
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 
@@ -133,7 +128,6 @@ class Elite2Api extends WireMockRule {
   }
 
   void stubCategorised() {
-    def threeMonthsAgo  = LocalDate.now().minusMonths(3).format('yyyy-MM-dd')
     this.stubFor(
       post("/api/offender-assessments/category/LEI")
         .willReturn(
@@ -258,16 +252,6 @@ class Elite2Api extends WireMockRule {
         aResponse()
           .withStatusMessage('A test error')
           .withStatus(500))
-    )
-  }
-
-  def stubSentenceDataTimeout() {
-    this.stubFor(
-      post("/api/offender-sentences/bookings")
-        .willReturn(
-        aResponse()
-          .okForEmptyJson()
-          .withFixedDelay(40000))
     )
   }
 
@@ -467,28 +451,6 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  def stubAlerts(List offenderNumbers, Boolean emptyResponse = false) {
-    this.stubFor(
-      post('/api/bookings/offenderNo/LEI/alerts')
-        .withRequestBody(equalToJson(JsonOutput.toJson(offenderNumbers), true, false))
-        .willReturn(
-        aResponse()
-          .withBody(emptyResponse ? JsonOutput.toJson([]) : HouseblockResponse.alertsResponse)
-          .withHeader('Content-Type', 'application/json')
-          .withStatus(200)))
-  }
-
-  def stubSystemAccessAlerts(List offenderNumbers, Boolean emptyResponse = false) {
-    this.stubFor(
-      post('/api/bookings/offenderNo/alerts')
-        .withRequestBody(equalToJson(JsonOutput.toJson(offenderNumbers), true, false))
-        .willReturn(
-        aResponse()
-          .withBody(emptyResponse ? JsonOutput.toJson([]) : HouseblockResponse.alertsResponse)
-          .withHeader('Content-Type', 'application/json')
-          .withStatus(200)))
-  }
-
   def stubAssessments(String offenderNo, Boolean emptyResponse = false) {
     this.stubFor(
       get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false")
@@ -544,12 +506,5 @@ class Elite2Api extends WireMockRule {
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
     )
-  }
-
-  void stubImage() {
-    this.stubFor(
-      get(urlMatching("/api/bookings/offenderNo/.+/image/data"))
-        .willReturn(aResponse()
-        .withStatus(404)))
   }
 }
