@@ -60,14 +60,16 @@
   }) }}
 
 <h2 class="govuk-heading-m">Safety and good order</h2>
+
+{#  Not in scope until we are using ViSor:
+  key: { text: "Very high risk offender" },
+  value: { text: 'Yes' if data.violenceProfile.veryHighRiskViolentOffender else 'No' },
+  actions: { items: [] }
+#}
+
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9',
     rows: [
-      {
-        key: { text: "Very high risk offender" },
-        value: { text: 'Yes' if data.violenceProfile.veryHighRiskViolentOffender else 'No' },
-        actions: { items: [] }
-      },
       {
         key: { text: "Previous assaults in custody" },
         value: { text: data.violenceProfile.numberOfAssaults },
