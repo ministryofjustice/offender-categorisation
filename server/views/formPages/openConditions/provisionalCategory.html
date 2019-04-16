@@ -1,0 +1,130 @@
+{% extends "../../formPages/formTemplate.html" %}
+
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "button/macro.njk" import govukButton %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set cat = data.suggestedCat %}
+{% set greenButtonText = "Submit" %}
+{% set radios = [
+  {
+    value: "B",
+    id: "overriddenCategoryB",
+    checked: data.categoriser.provisionalCategory.overriddenCategory === 'B',
+    text: "B",
+    B: true
+  },
+  {
+    value: "C",
+    id: "overriddenCategoryC",
+    checked: data.categoriser.provisionalCategory.overriddenCategory === 'C',
+    text: "C",
+    C: true
+  }
+] %}
+{% set overriddenCategoryTextHtml %}
+  {% if (cat == "B" or cat == "C" or cat == "D") %}
+    {{ govukRadios({
+      name: "overriddenCategory",
+      classes: "govuk-radios--inline",
+      fieldset: {
+        legend: {
+        text: "Which category is more appropriate?",
+        isPageHeading: false
+        }
+      },
+      items: radios | rejectattr(cat),
+      errorMessage: {
+        text: "Please select the new category"
+      } if (errors | findError('overriddenCategory'))
+    }) }}
+  {% else %}
+    <h2 class="govuk-heading-m">Changing to Cat I</h2>
+    <input type="hidden" name="overriddenCategory" value="I" />
+  {% endif %}
+
+  {{ govukCharacterCount({
+    name: "overriddenCategoryText",
+    type: "myTextWhatsThisFor",
+    id: "overriddenCategoryText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Explain why you changed the category"
+    },
+    value: data.categoriser.provisionalCategory.overriddenCategoryText,
+    errorMessage: {
+      text: "Please enter the reason why you changed the category"
+    } if (errors | findError('overriddenCategoryText'))
+  }) }}
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Provisional category</h1>
+
+<div class="govuk-warning-text forms-info-text warning-overrides">
+  <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+  <strong class="govuk-warning-text__text">
+    <span class="govuk-warning-text__assistive">Warning</span>
+    Based on the information provided, the provisional category is {{ cat }}
+  </strong>
+</div>
+
+<input type="hidden" name="suggestedCategory" value="{{ cat }}" />
+
+{{ govukRadios({
+  name: "categoryAppropriate",
+  classes: "govuk-radios--inline",
+  fieldset: {
+    legend: {
+    text: "Do you think the category is appropriate?",
+    isPageHeading: false
+    }
+  },
+  errorMessage: {
+    text: "Please select yes or no"
+  } if (errors | findError('categoryAppropriate')),
+  items: [
+    {
+      value: "Yes",
+      checked: data.categoriser.provisionalCategory.categoryAppropriate === 'Yes',
+      text: "Yes"
+    },
+    {
+      value: "No",
+      checked: data.categoriser.provisionalCategory.categoryAppropriate === 'No',
+      text: "No",
+      conditional: {
+        html:overriddenCategoryTextHtml
+      }
+    }
+  ]
+}) }}
+
+{{ govukCharacterCount({
+  name: "otherInformationText",
+  type: "otherInformationText",
+  id: "otherInformationText",
+  maxlength: 50000,
+  threshold: 50,
+  label: {
+  text: "Is there any other relevant information that you want to record?"
+  },
+  value: data.categoriser.provisionalCategory.otherInformationText
+}) }}
+
+  {% set guidance %}<div class="govuk-!-font-weight-bold">What to consider:</div>
+    <div>The provisional category is based on the information we provide to you and your answers to the yes or no questions. It does not take into account any information you entered in the text boxes.</div>
+    <div>You should decide if this is the most appropriate category based on all the information you have available.</div>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "How do I answer this question?",
+    html: guidance
+  }) }}
+
+
+{% endblock %}

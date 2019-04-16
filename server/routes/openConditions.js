@@ -5,10 +5,13 @@ const { firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
+const categoriser = require('../config/categoriser')
 const { redirectUsingRole } = require('../utils/routes')
+const Status = require('../utils/statusEnum')
 
 const formConfig = {
   openConditions,
+  categoriser,
 }
 
 module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
@@ -56,6 +59,20 @@ module.exports = function Index({ formService, offendersService, userService, au
       } else {
         res.render(`formPages/openConditions/${form}`, result)
       }
+    })
+  )
+
+  router.get(
+    '/provisionalCategory/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const section = 'categoriser'
+      const form = 'provisionalCategory'
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, section, form, bookingId)
+      const suggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      const data = { ...result.data, suggestedCat }
+
+      res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
     })
   )
 
@@ -180,6 +197,39 @@ module.exports = function Index({ formService, offendersService, userService, au
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
+    })
+  )
+
+  /* The provisional category data is persisted against the categoriser section to avoid
+   * cat data being stored in separate locations */
+  router.post(
+    '/provisionalCategory/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const section = 'categoriser' // persisting the categorisation data in one place
+      const form = 'provisionalCategory'
+      const formPageConfig = formConfig[section][form]
+      const sectionForValidation = 'openConditions' // validation uses open conditions config to return to open conditions on validation failure
+      const formPageConfigForValidation = formConfig.openConditions[form]
+
+      if (!formService.isValid(formPageConfigForValidation, req, res, sectionForValidation, form, bookingId)) {
+        return
+      }
+
+      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, req.body)
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+        status: Status.AWAITING_APPROVAL.name,
+      })
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
