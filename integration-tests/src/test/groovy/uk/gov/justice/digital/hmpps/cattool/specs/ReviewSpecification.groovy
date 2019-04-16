@@ -84,7 +84,7 @@ class ReviewSpecification extends GebReportingSpec {
     changeLinks.size() == 9
     // 1 line per section:
     values*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'Yes\nsome convictions', 'Yes\ncharges text', 'No',
-                       'Yes', '5', '2', 'No', '''Yes\nHere are the serious threat details''',
+                       '5', '2', 'No', '''Yes\nHere are the serious threat details''',
                        'Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''',
                        'Yes', '''Yes\nPrevious Terrorism Offences Text''',
                        'No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
