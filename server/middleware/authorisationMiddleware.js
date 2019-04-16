@@ -12,12 +12,15 @@ module.exports = (req, res, next) => {
     return next(unauthorisedError())
   }
 
-  const roles = jwtDecode(res.locals.user.token).authorities
+  if (res.locals && res.locals.user && res.locals.user.token) {
+    const roles = jwtDecode(res.locals.user.token).authorities
 
-  const authorisedRoles = config.authorised.filter(role => roles.includes(role))
-  if (!authorisedRoles.length) {
-    return next(unauthorisedError())
+    const authorisedRoles = roles ? config.authorised.filter(role => roles.includes(role)) : []
+    if (!authorisedRoles.length) {
+      return next(unauthorisedError())
+    }
+    return next()
   }
-
-  return next()
+  // No session: go to / to have one created
+  return res.redirect('/')
 }
