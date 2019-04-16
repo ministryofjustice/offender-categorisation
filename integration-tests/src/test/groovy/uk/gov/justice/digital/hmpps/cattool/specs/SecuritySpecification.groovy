@@ -41,7 +41,7 @@ class SecuritySpecification extends GebReportingSpec {
   DatabaseUtils db = new DatabaseUtils()
 
 
-  def "The done page for a security is present"() {
+  def "The done page for a security user is present"() {
     when: 'I go to the home page as security and select the done tab'
 
     def reviewDate1 = LocalDate.of(2019, 1, 28)
@@ -89,10 +89,10 @@ class SecuritySpecification extends GebReportingSpec {
 
     at SecurityDonePage
 
-    prisonNos == ['AB123', 'AB321']
-    names == ['Clark, Frank','Dent, Jane']
+    prisonNos == ['AB321', 'AB123']
+    names == ['Dent, Jane', 'Clark, Frank']
     def today = LocalDate.now().format('dd/MM/yyyy')
-    reviewedDates == ['28/01/2019', '31/01/2019']
+    reviewedDates == ['31/01/2019','28/01/2019']
     reviewer == ['Security, Amy', 'Security, Amy']
   }
 
