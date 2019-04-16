@@ -250,5 +250,6 @@ module.exports = function createFormService(formClient) {
     isValid,
     getCategorisedOffenders,
     getSecurityReviewedOffenders,
+    isYoungOffender,
   }
 }

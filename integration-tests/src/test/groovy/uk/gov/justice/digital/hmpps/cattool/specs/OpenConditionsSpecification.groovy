@@ -5,21 +5,15 @@ import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemp
 import geb.spock.GebReportingSpec
 import groovy.json.JsonOutput
 import org.junit.Rule
-import org.openqa.selenium.Keys
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.EarliestReleasePage
-import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ForeignNationalsPage
-import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.FurtherChargesPage
-import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.NotRecommendedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ReviewPage
-import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.RiskLevelsPage
-import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.RiskOfHarmPage
-import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.SuitabilityPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.*
 
 import java.time.LocalDate
 
@@ -356,10 +350,40 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.contains '"riskLevels": {"likelyToAbscond": "No"}'
     data.contains '"suitability": {"isOtherInformation": "No"}'
 
-//    when: 'I continue to the provision category page'
-//    submitButton.click()
-//
-//    then: 'I am at the provision category page'
-//    at ???
+    when: 'I continue to the provision category page'
+    submitButton.click()
+
+    then: 'I am at the provision category page'
+    at ProvisionalCategoryPage
+    !overriddenCategoryB.displayed
+    !overriddenCategoryC.displayed
+    warning.text() contains 'Based on the information provided, the provisional category is D'
+
+    when: 'I enter some data, save and return to the page'
+    elite2api.stubCategorise()
+    appropriateNo.click()
+    overriddenCategoryC.click()
+    overriddenCategoryText << "Some Text"
+    otherInformationText << "other info  Text"
+    submitButton.click()
+    at CategoriserSubmittedPage
+    to ProvisionalCategoryPage, '12'
+
+    then: 'The data is shown on return'
+    at ProvisionalCategoryPage
+    form.categoryAppropriate == "No"
+    form.overriddenCategory == "C"
+    form.otherInformationText == "other info  Text"
+    form.overriddenCategoryText == "Some Text"
+
+    db.getData(12).status == ["AWAITING_APPROVAL"]
+
+    when: 'The record is viewed by the categoriser'
+    to CategoriserHomePage
+    startButtons[0].click()
+
+    then: 'The correct category is retrieved'
+    at CategoriserAwaitingApprovalViewPage
+    categoryDiv.text() contains 'Category for approval is D'
   }
 }

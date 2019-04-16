@@ -160,14 +160,19 @@ describe('open conditions', () => {
   })
 
   test.each`
-    formName                 | userInput                     | nextPath
-    ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNationals/'}
-    ${'foreignNationals'}    | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
-    ${'riskOfHarm'}          | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
-    ${'furtherCharges'}      | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
-    ${'riskLevels'}          | ${{ day: '12' }}              | ${'/form/openConditions/suitability/'}
-    ${'suitability'}         | ${{ day: '12' }}              | ${'/form/openConditions/reviewOpenConditions/'}
-  `('should render $expectedContent for $sectionName/$formName', ({ formName, userInput, nextPath }) =>
+    formName                  | userInput                     | nextPath
+    ${'earliestReleaseDate'}  | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNationals/'}
+    ${'foreignNationals'}     | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
+    ${'riskOfHarm'}           | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
+    ${'furtherCharges'}       | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
+    ${'riskLevels'}           | ${{ day: '12' }}              | ${'/form/openConditions/suitability/'}
+    ${'suitability'}          | ${{ day: '12' }}              | ${'/form/openConditions/reviewOpenConditions/'}
+    ${'reviewOpenConditions'} | ${{ day: '12' }}              | ${'/form/openConditions/provisionalCategory/'}
+  `('should render $expectedContent for $sectionName/$formName', ({ formName, userInput, nextPath }) => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      form_response: {},
+    })
     request(app)
       .post(`/${formName}/12345`)
       .send(userInput)
@@ -183,6 +188,33 @@ describe('open conditions', () => {
           formName,
         })
       })
+  })
+
+  test.each`
+    sectionName         | formName                 | userInput        | nextPath
+    ${'openConditions'} | ${'provisionalCategory'} | ${{ day: '12' }} | ${'/tasklist/categoriserSubmitted/'}
+  `(
+    'should render $expectedContent for /openConditions/provisionalCategory',
+    ({ sectionName, formName, userInput, nextPath }) =>
+      request(app)
+        .post(`/${formName}/12345`)
+        .send(userInput)
+        .expect(302)
+        .expect('Location', `${nextPath}12345`)
+        .expect(() => {
+          expect(formService.update).toBeCalledTimes(1)
+          expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+          expect(offendersService.createInitialCategorisation).toBeCalledWith('ABCDEF', '12345', userInput)
+          expect(formService.update).toBeCalledWith({
+            bookingId: 12345,
+            userId: 'CA_USER_TEST',
+            config: formConfig[sectionName][formName],
+            userInput,
+            formSection: 'categoriser', // persist the provisional categorisation against the categoriser section
+            formName,
+            status: 'AWAITING_APPROVAL',
+          })
+        })
   )
 
   test.each`

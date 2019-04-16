@@ -132,7 +132,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           })
         )
 
-        return decoratedResults.sort(a => sortByDateTimeDesc(a.displayApprovalDate)).reverse()
+        return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.displayApprovalDate, b.displayApprovalDate))
       }
       return []
     } catch (error) {
@@ -171,7 +171,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           }
         })
 
-        return decoratedResults.sort(a => sortByDateTimeDesc(a.displayReviewedDate)).reverse()
+        return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.displayReviewedDate, b.displayReviewedDate))
       }
       return []
     } catch (error) {
