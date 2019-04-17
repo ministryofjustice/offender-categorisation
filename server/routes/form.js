@@ -277,6 +277,10 @@ module.exports = function Index({
       delete updated.overriddenCategory
       delete updated.overriddenCategoryText
     }
+    if (body.supervisorCategoryAppropriate === 'Yes') {
+      delete updated.supervisorOverriddenCategory
+      delete updated.supervisorOverriddenCategoryText
+    }
     if (body.furtherCharges === 'No') {
       delete updated.offendingHistoryCatB
       delete updated.furtherChargesText
@@ -380,13 +384,14 @@ module.exports = function Index({
         return
       }
 
-      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, req.body)
+      const userInput = clearConditionalFields(req.body)
+      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
 
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
         status: Status.AWAITING_APPROVAL.name,
@@ -409,13 +414,14 @@ module.exports = function Index({
         return
       }
 
-      await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, req.body)
+      const userInput = clearConditionalFields(req.body)
+      await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
 
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
         status: Status.APPROVED.name,

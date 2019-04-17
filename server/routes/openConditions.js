@@ -178,15 +178,16 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
+      const userInput = clearConditionalFields(req.body)
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
       })
-      if (req.body.stillRefer === 'No') {
+      if (userInput.stillRefer === 'No') {
         redirectUsingRole(
           res,
           `/form/categoriser/provisionalCategory/${bookingId}`,
@@ -194,7 +195,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           '/securityHome'
         )
       } else {
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        const nextPath = getPathFor({ data: userInput, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
     })
@@ -216,19 +217,20 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
-      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, req.body)
+      const userInput = clearConditionalFields(req.body)
+      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
 
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
         status: Status.AWAITING_APPROVAL.name,
       })
 
-      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      const nextPath = getPathFor({ data: userInput, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
     })
   )
@@ -244,28 +246,29 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
+      const userInput = clearConditionalFields(req.body)
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
       })
 
-      if (req.body.justify === 'No') {
+      if (userInput.justify === 'No') {
         res.render('pages/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because they have more than three years to their' +
             ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
           bookingId,
         })
-      } else if (req.body.formCompleted === 'No') {
+      } else if (userInput.formCompleted === 'No') {
         res.render('pages/openConditionsNotSuitable', {
           warningText: 'This person cannot be sent to open conditions without a CCD3 form',
           bookingId,
         })
-      } else if (req.body.exhaustedAppeal === 'Yes') {
+      } else if (userInput.exhaustedAppeal === 'Yes') {
         res.render('pages/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because they are due to be deported and have exhausted' +
@@ -273,7 +276,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           bookingId,
         })
       } else {
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        const nextPath = getPathFor({ data: userInput, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
     })
