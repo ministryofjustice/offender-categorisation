@@ -10,7 +10,7 @@
 {% endmacro %}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 earliestReleaseDateSummary',
     rows: [
       {
         key: { classes: 'summary-list-title', text: "Earliest release date" },
@@ -18,7 +18,7 @@
               href: '/form/openConditions/earliestReleaseDate/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "earliest release date"
-            }] if showChangeLinks else []
+            }] if showOpenConditionChangeLinks else []
         }
       },
       {
@@ -35,7 +35,7 @@
   }) }}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 foreignNationalsSummary',
     rows: [
       {
         key: { classes: 'summary-list-title', text: "Foreign nationals" },
@@ -43,7 +43,7 @@
               href: '/form/openConditions/foreignNationals/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Foreign nationals"
-            }] if showChangeLinks else []
+            }] if showOpenConditionChangeLinks else []
         }
       },
       {
@@ -70,7 +70,7 @@
   }) }}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 riskOfHarmSummary',
     rows: [
       {
         key: { classes: 'summary-list-title', text: "Risk of serious harm" },
@@ -78,7 +78,7 @@
               href: '/form/openConditions/riskOfHarm/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Risk of serious harm"
-            }] if showChangeLinks else []
+            }] if showOpenConditionChangeLinks else []
         }
       },
       {
@@ -95,7 +95,7 @@
   }) }}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 furtherChargesSummary',
     rows: [
       {
         key: { classes: 'summary-list-title', text: "Further charges" },
@@ -103,7 +103,7 @@
               href: '/form/openConditions/furtherCharges/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Further charges"
-            }] if showChangeLinks else []
+            }] if showOpenConditionChangeLinks else []
         }
       },
       {
@@ -120,7 +120,7 @@
   }) }}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 riskLevelSummary',
     rows: [
       {
         key: { classes: 'summary-list-title', text: "Risk levels" },
@@ -128,7 +128,7 @@
               href: '/form/openConditions/riskLevels/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Risk levels"
-            }] if showChangeLinks else []
+            }] if showOpenConditionChangeLinks else []
         }
       },
       {
@@ -140,7 +140,7 @@
   }) }}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 suitabilitySummary',
     rows: [
       {
         key: { classes: 'summary-list-title', text: "Suitability for open conditions" },
@@ -148,7 +148,7 @@
               href: '/form/openConditions/suitability/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Suitability for open conditions"
-            }] if showChangeLinks else []
+            }] if showOpenConditionChangeLinks else []
         }
       },
       {
