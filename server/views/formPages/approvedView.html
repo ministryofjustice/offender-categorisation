@@ -4,7 +4,7 @@
 {% block content %}
 
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
-    <h1 class="govuk-!-width-two-thirds govuk-heading-l govuk-!-display-inline">
+    <h1 class="govuk-!-width-two-thirds govuk-heading-l govuk-!-display-inline mainHeading">
      Categorisation outcome
     </h1>
     <div class="govuk-!-width-one-third govuk-!-display-inline">
@@ -108,6 +108,15 @@
 
     {% include "../partials/reviewContents.html" %}
 
+    {% if (currentCat == "D" or currentCat == "J") %}
+
+    <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+
+    {% set showOpenConditionChangeLinks = false %}
+    {% include "../partials/reviewContentsOpenConditions.html" %}
+
+    {% endif %}
+
     <h2 class="govuk-heading-m">Other information</h2>
     {{ govukSummaryList({
       classes: 'govuk-!-margin-bottom-9',
@@ -124,7 +133,8 @@
 
 {{ govukButton({
   href: backLink,
-  text: "Back to case list"
+  text: "Back to case list",
+  classes: "govuk-grid-row"
 }) }}
 
 {% endblock %}
