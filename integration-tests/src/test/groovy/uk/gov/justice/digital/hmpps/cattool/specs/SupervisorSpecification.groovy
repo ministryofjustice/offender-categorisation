@@ -64,9 +64,12 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the change links are not displayed'
     changeLinks.size() == 0
 
-    when: 'the supervisor selects yes'
-    elite2api.stubSupervisorApprove()
+    when: 'the supervisor selects yes (after changing their mind)'
+    elite2api.stubSupervisorApprove("C")
 
+    appropriateNo.click()
+    overriddenCategoryB.click()
+    overriddenCategoryText << "Im not sure"
     appropriateYes.click()
     submitButton.click()
 
@@ -74,7 +77,7 @@ class SupervisorSpecification extends GebReportingSpec {
     at SupervisorReviewOutcomePage
 
     def response = db.getData(12).form_response
-    response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorCategoryAppropriate": "Yes", "supervisorOverriddenCategoryText": ""}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
+    response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorCategoryAppropriate": "Yes"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
     db.getData(12).status == ["APPROVED"]
   }
 
@@ -94,7 +97,7 @@ class SupervisorSpecification extends GebReportingSpec {
     !openConditionsHeader.isDisplayed()
 
     when: 'the supervisor selects no'
-    elite2api.stubSupervisorApprove()
+    elite2api.stubSupervisorApprove("J")
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
@@ -102,7 +105,7 @@ class SupervisorSpecification extends GebReportingSpec {
     newCatMessage.text() == 'Changing to Cat J'
 
     when: 'Changing to Cat J'
-    elite2api.stubCategorise()
+    elite2api.stubCategorise('J')
     overriddenCategoryText << "Some Text"
     submitButton.click()
 
@@ -178,7 +181,7 @@ class SupervisorSpecification extends GebReportingSpec {
     !openConditionsHeader.isDisplayed()
 
     when: 'the supervisor selects no'
-    elite2api.stubSupervisorApprove()
+    elite2api.stubSupervisorApprove("B")
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
@@ -186,7 +189,7 @@ class SupervisorSpecification extends GebReportingSpec {
     newCatMessage.text() == 'Changing to Cat B'
 
     when: 'Changing to Cat B'
-    elite2api.stubCategorise()
+    elite2api.stubCategorise('B')
     overriddenCategoryText << "Some Text"
     submitButton.click()
 
@@ -221,7 +224,6 @@ class SupervisorSpecification extends GebReportingSpec {
     navigateToReview(false, false)
 
     when: 'the supervisor clicks the review page "send back to categoriser" button'
-    elite2api.stubSupervisorApprove()
     backToCategoriserButton.click()
 
     then: 'The confirm page is displayed'
@@ -266,11 +268,10 @@ class SupervisorSpecification extends GebReportingSpec {
     navigateToReview(true, true)
 
     then: 'the supervisor sees an info message'
-    elite2api.stubSupervisorApprove()
+    elite2api.stubSupervisorApprove('I')
     indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - Cat J not available'
 
     when: 'Approving'
-    elite2api.stubCategorise()
     submitButton.click()
 
     then: 'the review outcome page is displayed and review choices persisted'
@@ -327,7 +328,7 @@ class SupervisorSpecification extends GebReportingSpec {
     errorSummaries*.text() == ['Please enter the reason why you changed the category']
 
     and: 'the supervisor selects a category, reason and submits'
-    elite2api.stubSupervisorApprove()
+    elite2api.stubSupervisorApprove('B')
     appropriateNo.click()
     overriddenCategoryB.click()
     overriddenCategoryText << 'A good reason'
