@@ -11,7 +11,7 @@
 
 <div class="govuk-body-s">
 
-    <h1 class="govuk-heading-l">Approve category</h1>
+    <h1 class="govuk-heading-l mainHeading">Approve category</h1>
 
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
@@ -45,6 +45,15 @@
 
     {% set showChangeLinks = false %}
     {% include "../../partials/reviewContents.html" %}
+
+    {% if (currentCat == "D" or currentCat == "J") %}
+
+    <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+
+    {% set showOpenConditionChangeLinks = false %}
+    {% include "../../partials/reviewContentsOpenConditions.html" %}
+
+    {% endif %}
 
     <h2 class="govuk-heading-m">Other Information</h2>
     {{ govukSummaryList({
