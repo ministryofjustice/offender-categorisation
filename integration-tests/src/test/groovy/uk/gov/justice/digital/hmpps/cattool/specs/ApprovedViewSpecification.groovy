@@ -56,6 +56,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
                            'C\nWarning\nThe supervisor also recommends category C']
     !comments.displayed
     comments.size() == 0
+    !openConditionsHeader.isDisplayed()
     // NOTE reviewContents.html is tested by ReviewSpecification
   }
 
@@ -66,9 +67,11 @@ class ApprovedViewSpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory     : "B", categoryAppropriate: "No", overriddenCategory: "C",
                                           overriddenCategoryText: "Here are the categoriser's comments on why the category was changed"]],
       supervisor : [review: [supervisorCategoryAppropriate   : "No", supervisorOverriddenCategory: "D",
-                             supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"]]
+                             supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"]],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNationals: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]]
     ]))
     navigateToView()
+    
 
     then: 'the cat details are correct'
     categories*.text() == ['D\nWarning\nCategory D',
