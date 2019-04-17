@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
+import wiremock.org.apache.commons.lang3.StringUtils
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -90,6 +91,7 @@ class SupervisorSpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
 
     navigateToReview(true, false)
+    !openConditionsHeader.isDisplayed()
 
     when: 'the supervisor selects no'
     elite2api.stubSupervisorApprove()
@@ -112,6 +114,54 @@ class SupervisorSpecification extends GebReportingSpec {
     db.getData(12).status == ["APPROVED"]
   }
 
+  def "The supervisor review page displays Open conditions data when category is D"() {
+    given: 'supervisor is viewing the review page for B2345YZ'
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNationals: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
+      categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes"]]]))
+
+    when: 'The supervisor views the review page for a category D'
+    navigateToReview(false, false)
+
+    then: 'the review page includes Open conditions information'
+    openConditionsHeader.isDisplayed()
+
+    suitability*.text()*.trim() == ['', 'No']
+    riskOfHarm*.text() == ['', 'No', 'Not applicable']
+    foreignNationals*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
+    earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
+    riskLevel*.text() == ['', 'No']
+
+    when: 'The supervisor views the review page for a category J'
+    db.clearDb()
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNationals: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
+      categoriser: [provisionalCategory: [suggestedCategory: "J", categoryAppropriate: "Yes"]]]))
+
+    to SupervisorHomePage
+
+    startButtons[0].click()
+
+    at SupervisorReviewPage
+
+    then: 'the review page includes Open conditions information'
+    openConditionsHeader.isDisplayed()
+  }
+
   def "The supervisor review page can be confirmed - indeterminate sentence"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
@@ -125,6 +175,7 @@ class SupervisorSpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
     navigateToReview(false, true)
+    !openConditionsHeader.isDisplayed()
 
     when: 'the supervisor selects no'
     elite2api.stubSupervisorApprove()

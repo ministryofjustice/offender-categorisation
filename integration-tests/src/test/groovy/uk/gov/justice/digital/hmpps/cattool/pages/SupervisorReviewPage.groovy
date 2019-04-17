@@ -11,7 +11,7 @@ class SupervisorReviewPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
+    headingText { $('h1.mainHeading').text() }
 
     warning { $('div.govuk-warning-text', 0) }
     form { $('form') }
@@ -27,7 +27,14 @@ class SupervisorReviewPage extends Page {
     indeterminateMessage(required: false) { $('p.govuk-body') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
+    openConditionsHeader(required: false) { $('.openConditionsHeader') }
     backToCategoriserButton { $('.rightAlignedButton') }
+    suitability { $('dl.suitabilitySummary .govuk-summary-list__value') }
+    riskLevel { $('.riskLevelSummary .govuk-summary-list__value') }
+    furtherCharges { $('.furtherChargesSummary .govuk-summary-list__value') }
+    riskOfHarm { $('.riskOfHarmSummary .govuk-summary-list__value') }
+    foreignNationals { $('.foreignNationalsSummary .govuk-summary-list__value') }
+    earliestReleaseDate { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
