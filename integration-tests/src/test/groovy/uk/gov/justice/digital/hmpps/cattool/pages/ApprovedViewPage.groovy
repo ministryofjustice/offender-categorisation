@@ -11,11 +11,13 @@ class ApprovedViewPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
+    headingText { $('h1.mainHeading').text() }
     categories { $('.govuk-warning-text') }
     comments(required: false) { $('.forms-comments-text') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
+
+    openConditionsHeader(required: false) { $('.openConditionsHeader') }
 
     submitButton { $('a', role:'button') }
     backLink { $('a.govuk-back-link') }
