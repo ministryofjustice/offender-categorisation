@@ -21,15 +21,6 @@
     } if (errors | findError('likelyToAbscondText'))
   }) }}
 
-  {% set guidanceLikelyToAbscond %}
-  TEXT TBA
-  {% endset %}
-
-  {{ govukDetails({
-    summaryText: "What information should I check?",
-    html: guidanceLikelyToAbscond
-  }) }}
-
 {% endset %}
 
 {% block formItems %}
@@ -41,7 +32,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Is there information that they are likely to abscond or otherwise abuse the lower security conditions?"
+        text: "Is there any information suggesting they are likely to abscond or take advantage of lower security?"
       }
     },
     errorMessage: {
@@ -64,12 +55,20 @@
     ]
   }) }}
 
-  {% set guidanceLikelyToAbscond %}
-    TEXT TBA
-  {% endset %}
+{% set guidanceLikelyToAbscond %}
+<div class="govuk-!-font-weight-bold">You should check:</div>
+  <li>any confiscation, serious crime prevention and/or restraining orders that are in force</li>
+  <li>any ongoing proceedings</li>
+  <li>escape history</li>
+  <li>responses to court orders or requirements</li>
+<div class="govuk-!-font-weight-bold">You are looking for:</div>
+  <li>if they owe money</li>
+  <li>if they have time to serve in lieu</li>
+  <li>if they have escaped or absconded in the past</li>
+{% endset %}
 
   {{ govukDetails({
-    summaryText: "What information should I check?",
+    summaryText: "What information should I consider?",
     html: guidanceLikelyToAbscond
   }) }}
 

@@ -84,8 +84,8 @@ afterEach(() => {
 describe('open conditions', () => {
   test.each`
     path                     | expectedContent
-    ${'earliestReleaseDate'} | ${'Time until earliest release date'}
-    ${'foreignNationals'}    | ${'Foreign Nationals'}
+    ${'earliestReleaseDate'} | ${'Earliest release date'}
+    ${'foreignNational'}     | ${'Foreign national'}
     ${'riskOfHarm'}          | ${'Risk of Serious Harm'}
     ${'riskLevels'}          | ${'Risk levels'}
     ${'suitability'}         | ${'Suitability for open conditions'}
@@ -103,7 +103,7 @@ describe('open conditions', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       form_response: {
-        ratings: { offendingHistory: { previousConvictions: 'Yes', previousConvictionsText: 'old stuff' } },
+        ratings: { offendingHistory: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
         openConditions: { furtherCharges: { furtherChargesText: 'new stuff' } },
       },
     })
@@ -116,11 +116,11 @@ describe('open conditions', () => {
       })
   })
 
-  test('furtherCharges previousConvictions exist', () => {
+  test('furtherCharges previous Charges exist', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       form_response: {
-        ratings: { offendingHistory: { previousConvictions: 'Yes', previousConvictionsText: 'old stuff' } },
+        ratings: { offendingHistory: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
       },
     })
     return request(app)
@@ -161,8 +161,8 @@ describe('open conditions', () => {
 
   test.each`
     formName                  | userInput                     | nextPath
-    ${'earliestReleaseDate'}  | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNationals/'}
-    ${'foreignNationals'}     | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
+    ${'earliestReleaseDate'}  | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNational/'}
+    ${'foreignNational'}     | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
     ${'riskOfHarm'}           | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
     ${'furtherCharges'}       | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
     ${'riskLevels'}           | ${{ day: '12' }}              | ${'/form/openConditions/suitability/'}
@@ -220,8 +220,8 @@ describe('open conditions', () => {
   test.each`
     formName                 | userInput                                     | expectedContent
     ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }} | ${'no special circumstances to warrant them moving into open conditions'}
-    ${'foreignNationals'}    | ${{ formCompleted: 'No' }}                    | ${'cannot be sent to open conditions without a CCD3 form'}
-    ${'foreignNationals'}    | ${{ exhaustedAppeal: 'Yes' }}                 | ${'they are due to be deported'}
+    ${'foreignNational'}    | ${{ formCompleted: 'No' }}                    | ${'cannot be sent to open conditions without a CCD3 form'}
+    ${'foreignNational'}    | ${{ exhaustedAppeal: 'Yes' }}                 | ${'they are due to be deported'}
   `('should render openConditionsNotSuitable page', ({ formName, userInput, expectedContent }) =>
     request(app)
       .post(`/${formName}/12345`)

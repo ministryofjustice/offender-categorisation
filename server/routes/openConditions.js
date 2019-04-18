@@ -40,19 +40,19 @@ module.exports = function Index({ formService, offendersService, userService, au
         result.data.openConditions.furtherCharges &&
         result.data.openConditions.furtherCharges.furtherChargesText
 
-      const previousConvictionsExists =
+      const furtherChargesExists =
         result.data.ratings &&
         result.data.ratings.offendingHistory &&
-        result.data.ratings.offendingHistory.previousConvictions === 'Yes'
+        result.data.ratings.offendingHistory.furtherCharges === 'Yes'
 
-      if (!previousConvictionsExists && !textExists) {
+      if (!furtherChargesExists && !textExists) {
         const formPageConfig = formConfig.openConditions[form]
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
-      } else if (previousConvictionsExists && !textExists) {
+      } else if (furtherChargesExists && !textExists) {
         const newResult = R.assocPath(
           ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
-          result.data.ratings.offendingHistory.previousConvictionsText,
+          result.data.ratings.offendingHistory.furtherChargesText,
           result
         )
         res.render(`formPages/openConditions/${form}`, newResult)

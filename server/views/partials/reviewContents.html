@@ -71,7 +71,7 @@
     classes: 'govuk-!-margin-bottom-9',
     rows: [
       {
-        key: { text: "Previous assaults in custody" },
+        key: { text: "Previous assaults in custody recorded" },
         value: { text: data.violenceProfile.numberOfAssaults },
         actions: { items: [] }
       },
@@ -91,7 +91,7 @@
         }
       },
       {
-        key: { text: "Serious threats to good order in custody" },
+        key: { text: "Serious threats to good order in custody recorded" },
         value: { html: formatAnswer(data.ratings.violenceRating.seriousThreat, data.ratings.violenceRating.seriousThreatText) },
         actions: { items: [{
               href: '/form/ratings/violenceRating/' + data.details.bookingId,

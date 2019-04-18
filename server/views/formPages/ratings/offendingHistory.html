@@ -90,7 +90,7 @@
   {% endset %}
 
   {{ govukDetails({
-    summaryText: "What should I look for:",
+    summaryText: "What should I look for?",
     html: guidancePrevious
   }) }}
 
@@ -106,7 +106,7 @@
     }
   },
   hint: {
-  text: "Check the police national computer (PNC)"
+    text: "Check the police national computer (PNC)"
   },
   errorMessage: {
     text: "Please select yes or no"
@@ -143,7 +143,7 @@
       text: "Please select yes or no"
     } if (errors | findError('furtherCharges')),
     hint: {
-      text: "Check the police national computer (PNC)"
+      text: "Please check the PNC and NOMIS"
     },
     items: [
       {
