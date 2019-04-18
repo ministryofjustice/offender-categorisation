@@ -360,7 +360,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
     when: 'I enter some data, save and return to the page'
-    elite2api.stubCategorise()
+    elite2api.stubCategorise('C')
     appropriateNo.click()
     overriddenCategoryC.click()
     overriddenCategoryText << "Some Text"
