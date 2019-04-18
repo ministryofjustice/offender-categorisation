@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.cattool.pages.openConditions
 
 import geb.Page
 
-class ForeignNationalsPage extends Page {
+class ForeignNationalPage extends Page {
 
-  static url = '/form/openConditions/foreignNationals'
+  static url = '/form/openConditions/foreignNational'
 
   static at = {
-    headingText == 'Foreign Nationals'
+    headingText == 'Foreign national'
   }
 
   static content = {
