@@ -35,6 +35,8 @@ class SupervisorReviewPage extends Page {
     riskOfHarm { $('.riskOfHarmSummary .govuk-summary-list__value') }
     foreignNationals { $('.foreignNationalsSummary .govuk-summary-list__value') }
     earliestReleaseDate { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
+    warnings { $('div.govuk-warning-text') }
+
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
