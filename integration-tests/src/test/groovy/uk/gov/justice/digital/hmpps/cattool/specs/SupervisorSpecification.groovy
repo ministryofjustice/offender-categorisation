@@ -97,24 +97,20 @@ class SupervisorSpecification extends GebReportingSpec {
     !openConditionsHeader.isDisplayed()
 
     when: 'the supervisor selects no'
-    elite2api.stubSupervisorApprove("J")
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
-    warning.text().contains 'the provisional category is I'
+    warnings[0].text().contains 'the provisional category is I'
     newCatMessage.text() == 'Changing to Cat J'
 
-    when: 'Changing to Cat J'
-    elite2api.stubCategorise('J')
-    overriddenCategoryText << "Some Text"
+    when: 'The supervisor clicks continue'
     submitButton.click()
 
-    then: 'the review outcome page is displayed and review choices persisted'
-    at SupervisorReviewOutcomePage
+    then: 'The record is sent back to the categoriser'
 
     def dbData = db.getData(12).form_response
-    dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "I", "supervisorOverriddenCategory": "J", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "Some Text"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "I", "categoryAppropriate": "Yes"}}}'
-    db.getData(12).status == ["APPROVED"]
+    !dbData[0].toString().contains('"supervisor"')
+    db.getData(12).status == ["SUPERVISOR_BACK"]
   }
 
   def "The supervisor review page displays Open conditions data when category is D"() {
@@ -185,7 +181,7 @@ class SupervisorSpecification extends GebReportingSpec {
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
-    warning.text().contains 'the provisional category is C'
+    warnings[0].text().contains 'the provisional category is C'
     newCatMessage.text() == 'Changing to Cat B'
 
     when: 'Changing to Cat B'
@@ -250,6 +246,38 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'offender with booking id 12 has been removed'
     names == ['Pitstop, Penelope']
 
+    db.getData(12).status == ["SUPERVISOR_BACK"]
+  }
+
+  def "Overriding to an Open conditions category returns the record to the categoriser"() {
+    given: 'supervisor is viewing the review page for B2345YZ'
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "B", categoryAppropriate: "Yes"]]]))
+
+    navigateToReview(false, false)
+
+    when: 'Supervisor chooses to override to category D'
+    appropriateNo.click()
+    overriddenCategoryD.click()
+
+    then: 'A warning is displayed'
+    warnings[1].text() contains "Making this category change means that the categoriser will have to provide more information."
+
+    when: 'The continue button is clicked'
+    submitButton.click()
+
+    then: 'the record is returned to categoriser without persisting supervisor approval or any validation of the form'
+    at SupervisorHomePage
+
+    def dbData = db.getData(12).form_response
+    !dbData[0].toString().contains('"supervisor"')
     db.getData(12).status == ["SUPERVISOR_BACK"]
   }
 
