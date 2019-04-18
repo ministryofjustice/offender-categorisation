@@ -67,7 +67,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     warning.text() contains 'Based on the information provided, the provisional category is B'
 
     when: 'I enter some data, save and return to the page'
-    elite2api.stubCategorise()
+    elite2api.stubCategorise('C')
     appropriateNo.click()
     overriddenCategoryC.click()
     overriddenCategoryText << "Some Text"
@@ -153,7 +153,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     newCatMessage.text() == 'Changing to Cat J'
 
     when: 'Changing to Cat J'
-    elite2api.stubCategorise()
+    elite2api.stubCategorise('J')
     overriddenCategoryText << "Some Text"
     submitButton.click()
 
