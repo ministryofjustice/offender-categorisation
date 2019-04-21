@@ -162,7 +162,7 @@ describe('open conditions', () => {
   test.each`
     formName                  | userInput                     | nextPath
     ${'earliestReleaseDate'}  | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNational/'}
-    ${'foreignNational'}     | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
+    ${'foreignNational'}      | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
     ${'riskOfHarm'}           | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
     ${'furtherCharges'}       | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
     ${'riskLevels'}           | ${{ day: '12' }}              | ${'/form/openConditions/suitability/'}
@@ -220,8 +220,8 @@ describe('open conditions', () => {
   test.each`
     formName                 | userInput                                     | expectedContent
     ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }} | ${'no special circumstances to warrant them moving into open conditions'}
-    ${'foreignNational'}    | ${{ formCompleted: 'No' }}                    | ${'cannot be sent to open conditions without a CCD3 form'}
-    ${'foreignNational'}    | ${{ exhaustedAppeal: 'Yes' }}                 | ${'they are due to be deported'}
+    ${'foreignNational'}     | ${{ formCompleted: 'No' }}                    | ${'cannot be sent to open conditions without a CCD3 form'}
+    ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}                 | ${'they are due to be deported'}
   `('should render openConditionsNotSuitable page', ({ formName, userInput, expectedContent }) =>
     request(app)
       .post(`/${formName}/12345`)
