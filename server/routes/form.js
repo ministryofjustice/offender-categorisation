@@ -409,26 +409,31 @@ module.exports = function Index({
       const section = 'supervisor'
       const form = 'review'
       const formPageConfig = formConfig[section][form]
+      if (req.body.supervisorOverriddenCategory !== 'D' && req.body.supervisorOverriddenCategory !== 'J') {
+        if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+          return
+        }
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
-        return
+        const userInput = clearConditionalFields(req.body)
+        await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
+
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput,
+          formSection: section,
+          formName: form,
+          status: Status.APPROVED.name,
+        })
+
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      } else {
+        // send back to the categoriser for open conditions completion
+        await formService.backToCategoriser(bookingId)
+        res.redirect(`/supervisorHome`)
       }
-
-      const userInput = clearConditionalFields(req.body)
-      await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
-
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        status: Status.APPROVED.name,
-      })
-
-      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
