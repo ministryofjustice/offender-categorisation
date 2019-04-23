@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.EarliestReleasePage
 
 import java.time.LocalDate
 
@@ -157,9 +158,41 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     overriddenCategoryText << "Some Text"
     submitButton.click()
 
-    then: 'Cat J details are saved'
-    def response = db.getData(12).form_response
-    response[0].toString() contains '"categoriser": {"provisionalCategory": {"suggestedCategory": "I", "overriddenCategory": "J", "categoryAppropriate": "No", "otherInformationText": "", "overriddenCategoryText": "Some Text"}}'
+    then: 'user is redirected to open conditions flow, without persisting the category'
+    at EarliestReleasePage
+    db.getData(12).status == ["STARTED"]
+  }
+
+  def 'Category D redirects to open conditions flow'() {
+    given: 'Ratings data exists for for B2345YZ'
+    db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [furtherCharges: "Yes", furtherChargesText: "some convictions"],
+        // securityInput omitted
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
+
+    when: 'I go to the Provisional Category page for the offender'
+    elite2api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(UserAccount.CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2api.stubGetOffenderDetails(12, 'B2345YZ', false)
+    to ProvisionalCategoryPage, '12'
+    at ProvisionalCategoryPage
+    !newCatMessage.displayed
+    appropriateNo.click()
+    overriddenCategoryD.click()
+    submitButton.click()
+
+    then: 'user is redirected to open conditions flow, without persisting the category'
+    at EarliestReleasePage
+    db.getData(12).status == ["STARTED"]
   }
 
   def 'indefinite sentence test'() {

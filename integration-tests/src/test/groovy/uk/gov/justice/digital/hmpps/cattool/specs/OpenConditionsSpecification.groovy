@@ -217,41 +217,15 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Suitability page is displayed'
-    at SuitabilityPage
 
-    when: 'I submit a blank page'
-    submitButton.click()
-
-    then: 'there is a validation error'
-    waitFor {
-      errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
-    }
-
-    when: 'I submit page after isOtherInformationYes'
-    isOtherInformationYes.click()
-    submitButton.click()
-
-    then: 'there is a validation error'
-    waitFor {
-      errorSummaries*.text() == ['Please enter details']
-      errors*.text() == ['Error:\nPlease enter details']
-    }
-
-    when: 'the Suitability page is completed'
-    otherInformationText << 'otherInformationText details'
-
-    submitButton.click()
     then: 'the review page is displayed and Data is stored correctly'
     at ReviewPage
-    changeLinks.size() == 6
+    changeLinks.size() == 5
     values*.text() == ['', 'Yes', 'Yes\ndetails text', // 1 line per section
                        '', 'Yes', 'Yes', 'Yes', 'No',
                        '', 'Yes', 'Yes\nharmManagedText details',
                        '', 'some convictions,furtherChargesText details', 'Yes',
-                       '', 'Yes\nlikelyToAbscondText details',
-                       '', 'Yes\notherInformationText details']
+                       '', 'Yes\nlikelyToAbscondText details']
 
     def response = db.getData(12).form_response
     def data = response[0].toString()
@@ -260,7 +234,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.contains '"riskOfHarm": {"harmManaged": "Yes", "seriousHarm": "Yes", "harmManagedText": "harmManagedText details"}'
     data.contains '"furtherCharges": {"increasedRisk": "Yes", "furtherChargesText": "some convictions,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "Yes", "likelyToAbscondText": "likelyToAbscondText details"}'
-    data.contains '"suitability": {"isOtherInformation": "Yes", "otherInformationText": "otherInformationText details"}'
 
     when: 'I try to continue to the provision category page'
     submitButton.click()
@@ -325,20 +298,12 @@ class OpenConditionsSpecification extends GebReportingSpec {
     likelyToAbscondNo.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Suitability page is displayed'
-    at SuitabilityPage
-
-    when: 'I submit page after isOtherInformationNo'
-    isOtherInformationNo.click()
-    submitButton.click()
-
     then: 'the review page is displayed and Data is stored correctly'
     at ReviewPage
     values*.text() == ['', 'No', 'Not applicable', // 1 line per section
                        '', 'No', 'Not applicable', 'Not applicable', 'Not applicable',
                        '', 'No', 'Not applicable',
                        '', 'some convictions,furtherChargesText details', 'No',
-                       '', 'No',
                        '', 'No']
 
     def response = db.getData(12).form_response
@@ -348,7 +313,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.contains '"riskOfHarm": {"seriousHarm": "No"}'
     data.contains '"furtherCharges": {"increasedRisk": "No", "furtherChargesText": "some convictions,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "No"}'
-    data.contains '"suitability": {"isOtherInformation": "No"}'
 
     when: 'I continue to the provision category page'
     submitButton.click()

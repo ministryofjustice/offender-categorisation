@@ -119,26 +119,6 @@ module.exports = {
       },
     ],
     nextPath: {
-      path: '/form/openConditions/suitability/',
-    },
-    validate: true,
-  },
-  suitability: {
-    fields: [
-      {
-        isOtherInformation: {
-          responseType: 'requiredString',
-          validationMessage: 'Please select yes or no',
-        },
-      },
-      {
-        otherInformationText: {
-          responseType: 'requiredStringIf_isOtherInformation_Yes',
-          validationMessage: 'Please enter details',
-        },
-      },
-    ],
-    nextPath: {
       path: '/form/openConditions/reviewOpenConditions/',
     },
     validate: true,
