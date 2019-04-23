@@ -380,12 +380,12 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
 
-      if (req.body.overriddenCategory !== 'D' && req.body.overriddenCategory !== 'J') {
+      const userInput = clearConditionalFields(req.body)
+
+      if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
         if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
           return
         }
-
-        const userInput = clearConditionalFields(req.body)
         await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
 
         await formService.update({
@@ -414,12 +414,14 @@ module.exports = function Index({
       const section = 'supervisor'
       const form = 'review'
       const formPageConfig = formConfig[section][form]
-      if (req.body.supervisorOverriddenCategory !== 'D' && req.body.supervisorOverriddenCategory !== 'J') {
+
+      const userInput = clearConditionalFields(req.body)
+
+      if (userInput.supervisorOverriddenCategory !== 'D' && userInput.supervisorOverriddenCategory !== 'J') {
         if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
           return
         }
 
-        const userInput = clearConditionalFields(req.body)
         await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
 
         await formService.update({
