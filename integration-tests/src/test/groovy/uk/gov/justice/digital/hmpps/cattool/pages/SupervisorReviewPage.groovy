@@ -33,7 +33,7 @@ class SupervisorReviewPage extends Page {
     riskLevel { $('.riskLevelSummary .govuk-summary-list__value') }
     furtherCharges { $('.furtherChargesSummary .govuk-summary-list__value') }
     riskOfHarm { $('.riskOfHarmSummary .govuk-summary-list__value') }
-    foreignNationals { $('.foreignNationalsSummary .govuk-summary-list__value') }
+    foreignNational { $('.foreignNationalSummary .govuk-summary-list__value') }
     earliestReleaseDate { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
     warnings { $('div.govuk-warning-text') }
 

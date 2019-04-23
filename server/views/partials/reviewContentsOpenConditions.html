@@ -27,7 +27,7 @@
         actions: { items: [] }
       },
       {
-        key: { text: "Circumstances that justify moving to open conditions?" },
+        key: { text: "Reasons that justify moving to open conditions?" },
         value: { html: formatAnswer(data.openConditions.earliestReleaseDate.justify, data.openConditions.earliestReleaseDate.justifyText) },
         actions: { items: [] }
       }
@@ -35,35 +35,35 @@
   }) }}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 foreignNationalsSummary',
+    classes: 'govuk-!-margin-bottom-9 foreignNationalSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Foreign nationals" },
+        key: { classes: 'summary-list-title', text: "Foreign national" },
         actions: { items: [{
-              href: '/form/openConditions/foreignNationals/' + data.details.bookingId,
+              href: '/form/openConditions/foreignNational/' + data.details.bookingId,
               text: "Change",
-              visuallyHiddenText: "Foreign nationals"
+              visuallyHiddenText: "Foreign national"
             }] if showOpenConditionChangeLinks else []
         }
       },
       {
         key: { text: "Foreign national?" },
-        value: { text: data.openConditions.foreignNationals.isForeignNational },
+        value: { text: data.openConditions.foreignNational.isForeignNational },
         actions: { items: [] }
       },
       {
         key: { text: "CCD3 form completed?" },
-        value: { text: data.openConditions.foreignNationals.formCompleted or 'Not applicable' },
+        value: { text: data.openConditions.foreignNational.formCompleted or 'Not applicable' },
         actions: { items: [] }
       },
       {
         key: { text: "Deportation due" },
-        value: { text: data.openConditions.foreignNationals.dueDeported or 'Not applicable' },
+        value: { text: data.openConditions.foreignNational.dueDeported or 'Not applicable' },
         actions: { items: [] }
       },
       {
-        key: { text: "Exhausted all appeal rights in the UK?" },
-        value: { text: data.openConditions.foreignNationals.exhaustedAppeal or 'Not applicable' },
+        key: { text: "Completed all appeals processes in the UK?" },
+        value: { text: data.openConditions.foreignNational.exhaustedAppeal or 'Not applicable' },
         actions: { items: [] }
       }
     ]
@@ -112,7 +112,7 @@
         actions: { items: [] }
       },
       {
-        key: { text: "Are these further charges an increased risk in open conditions?" },
+        key: { text: "Do these further charges increase risk in open conditions?" },
         value: { text : data.openConditions.furtherCharges.increasedRisk },
         actions: { items: [] }
       }

@@ -13,7 +13,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Can this risk of serious harm be safely managed in open conditions?"
+        text: "Can this risk be managed in open conditions?"
       }
     },
     errorMessage: {
@@ -24,13 +24,11 @@
         value: "Yes",
         text: "Yes",
         checked: data.openConditions.riskOfHarm.harmManaged === 'Yes'
-
       },
       {
         value: "No",
         checked: data.openConditions.riskOfHarm.harmManaged === 'No',
         text: "No"
-
       }
     ]
   }) }}
@@ -40,21 +38,12 @@
     maxlength: 50000,
     threshold: 50,
     label: {
-      text: "Provide details about their risk of serious harm and any measure in place to manage it."
+      text: "Give details of their risk level and any current measures for managing it."
     },
     value: data.openConditions.riskOfHarm.harmManagedText,
     errorMessage: {
       text: "Please enter details"
     } if (errors | findError('harmManagedText'))
-  }) }}
-
-  {% set guidanceHarmManaged %}
-  TEXT TBA
-  {% endset %}
-
-  {{ govukDetails({
-    summaryText: "What information should I check?",
-    html: guidanceHarmManaged
   }) }}
 
 {% endset %}
@@ -68,7 +57,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Is there any information to suggest this person represents a serious risk of harm?"
+        text: "Is there any information that they may pose a risk of serious harm to the public?"
       }
     },
     errorMessage: {
@@ -92,11 +81,20 @@
   }) }}
 
   {% set guidanceSeriousHarm %}
-    TEXT TBA
+<div class="govuk-!-font-weight-bold">You should check:</div>
+  <li>risk of serious harm (ROSH) score</li>
+  <li>MAPPA level</li>
+  <li>court documents</li>
+  <li>PNC record</li>
+  <li>index offence</li>
+<div class="govuk-!-font-weight-bold">You are looking for:</div>
+  <li>high ROSH score</li>
+  <li>risk management plan</li>
+  <li>measures to safely manage risk</li>
   {% endset %}
 
   {{ govukDetails({
-    summaryText: "What information should I check?",
+    summaryText: "What information should I consider?",
     html: guidanceSeriousHarm
   }) }}
 

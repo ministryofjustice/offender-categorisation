@@ -12,7 +12,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Have they exhausted all appeal rights in the UK?"
+        text: "Have they been through all appeals processes in the UK?"
       }
     },
     errorMessage: {
@@ -22,11 +22,11 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.openConditions.foreignNationals.exhaustedAppeal === 'Yes'
+        checked: data.openConditions.foreignNational.exhaustedAppeal === 'Yes'
       },
       {
         value: "No",
-        checked: data.openConditions.foreignNationals.exhaustedAppeal === 'No',
+        checked: data.openConditions.foreignNational.exhaustedAppeal === 'No',
         text: "No"
       }
     ]
@@ -42,7 +42,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Is this person due to be deported?"
+        text: "Are they due to be deported?"
       }
     },
     errorMessage: {
@@ -52,14 +52,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.openConditions.foreignNationals.dueDeported === 'Yes',
+        checked: data.openConditions.foreignNational.dueDeported === 'Yes',
         conditional: {
           html: dueDeportedTextHtml
         }
       },
       {
         value: "No",
-        checked: data.openConditions.foreignNationals.dueDeported === 'No',
+        checked: data.openConditions.foreignNational.dueDeported === 'No',
         text: "No"
       }
     ]
@@ -75,7 +75,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Has the CCD3 form been completed by the Home Office?"
+        text: "Has the Home Office completed the CCD3 form detailing their immigration status?"
       }
     },
     errorMessage: {
@@ -85,14 +85,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.openConditions.foreignNationals.formCompleted === 'Yes',
+        checked: data.openConditions.foreignNational.formCompleted === 'Yes',
         conditional: {
           html: formCompletedTextHtml
         }
       },
       {
         value: "No",
-        checked: data.openConditions.foreignNationals.formCompleted === 'No',
+        checked: data.openConditions.foreignNational.formCompleted === 'No',
         text: "No"
       }
     ]
@@ -102,14 +102,14 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Foreign Nationals</h1>
+<h1 class="govuk-heading-l">Foreign national</h1>
 
   {{ govukRadios({
     name: "isForeignNational",
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Is this person a foreign national?"
+        text: "Are they a foreign national?"
       }
     },
     errorMessage: {
@@ -119,25 +119,28 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.openConditions.foreignNationals.isForeignNational === 'Yes',
+        checked: data.openConditions.foreignNational.isForeignNational === 'Yes',
         conditional: {
           html: isForeignNationalTextHtml
         }
       },
       {
         value: "No",
-        checked: data.openConditions.foreignNationals.isForeignNational === 'No',
+        checked: data.openConditions.foreignNational.isForeignNational === 'No',
         text: "No"
       }
     ]
   }) }}
 
   {% set guidanceIsForeignNational %}
-    TEXT TBA
+<div class="govuk-!-font-weight-bold">You should check:</div>
+  <li>the completed CCD3 form (this should be on file or ask the case admin)</li>
+<div class="govuk-!-font-weight-bold">You are looking for:</div>
+  <li>if they have any appeals against deportation left</li>
   {% endset %}
 
   {{ govukDetails({
-    summaryText: "What information should I check?",
+    summaryText: "What information should I consider?",
     html: guidanceIsForeignNational
   }) }}
 

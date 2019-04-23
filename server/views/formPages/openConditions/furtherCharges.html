@@ -29,7 +29,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Do any of these further charges mean they pose an increased risk in open conditions?"
+        text: "Do these charges mean they pose an increased risk if placed in open conditions?"
       }
     },
     errorMessage: {
@@ -50,11 +50,15 @@
   }) }}
 
   {% set guidanceIncreasedRisk %}
-  TEXT TBA
+<div class="govuk-!-font-weight-bold">You should check:</div>
+  <li>the amount of these charges</li>
+  <li>the seriousness of these charges</li>
+<div class="govuk-!-font-weight-bold">You are looking for:</div>
+  <li>whether they might abscond to avoid further sentencing</li>
   {% endset %}
 
   {{ govukDetails({
-    summaryText: "What information should I check?",
+    summaryText: "What information should I consider?",
     html: guidanceIncreasedRisk
   }) }}
 
