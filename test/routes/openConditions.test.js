@@ -88,7 +88,6 @@ describe('open conditions', () => {
     ${'foreignNational'}     | ${'Foreign national'}
     ${'riskOfHarm'}          | ${'Risk of Serious Harm'}
     ${'riskLevels'}          | ${'Risk levels'}
-    ${'suitability'}         | ${'Suitability for open conditions'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}/12345`)

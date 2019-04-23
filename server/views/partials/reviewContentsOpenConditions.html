@@ -139,22 +139,3 @@
     ]
   }) }}
 
- {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 suitabilitySummary',
-    rows: [
-      {
-        key: { classes: 'summary-list-title', text: "Suitability for open conditions" },
-        actions: { items: [{
-              href: '/form/openConditions/suitability/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Suitability for open conditions"
-            }] if showOpenConditionChangeLinks else []
-        }
-      },
-      {
-        key: { text: "Any other information that supports referral to open conditions?" },
-        value: { html: formatAnswer(data.openConditions.suitability.isOtherInformation, data.openConditions.suitability.otherInformationText) },
-        actions: { items: [] }
-      }
-    ]
-  }) }}
