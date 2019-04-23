@@ -402,7 +402,6 @@ module.exports = function Index({
         res.redirect(`${nextPath}${bookingId}`)
       } else {
         // redirect to open conditions flow
-        await formService.backToCategoriser(bookingId)
         res.redirect(`/form/openConditions/earliestReleaseDate/${bookingId}`)
       }
     })
