@@ -123,7 +123,7 @@ class SupervisorSpecification extends GebReportingSpec {
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNationals: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
       categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes"]]]))
 
     when: 'The supervisor views the review page for a category D'
@@ -134,7 +134,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     suitability*.text()*.trim() == ['', 'No']
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
-    foreignNationals*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
+    foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
     riskLevel*.text() == ['', 'No']
 
@@ -148,7 +148,7 @@ class SupervisorSpecification extends GebReportingSpec {
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNationals: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
       categoriser: [provisionalCategory: [suggestedCategory: "J", categoryAppropriate: "Yes"]]]))
 
     to SupervisorHomePage

@@ -21,11 +21,11 @@ module.exports = {
       },
     ],
     nextPath: {
-      path: '/form/openConditions/foreignNationals/',
+      path: '/form/openConditions/foreignNational/',
     },
     validate: true,
   },
-  foreignNationals: {
+  foreignNational: {
     fields: [
       {
         isForeignNational: {

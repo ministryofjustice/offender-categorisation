@@ -42,7 +42,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     when: 'I go to the first open conditions page'
     db.createData(-1, 12, JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
+        offendingHistory: [furtherCharges: "Yes", furtherChargesText: "some convictions"],
       ]]))
 
     elite2api.stubUncategorised()
@@ -88,8 +88,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     justifyText << 'details text'
     submitButton.click()
 ///////////////////////////////////////////////////////////////////////////////
-    then: 'the Foreign Nationals page is displayed'
-    at ForeignNationalsPage
+    then: 'the Foreign National page is displayed'
+    at ForeignNationalPage
 
     when: 'I submit a blank page'
     submitButton.click()
@@ -130,7 +130,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       errors*.text() == ['Error:\nPlease select yes or no']
     }
 
-    when: 'the Foreign Nationals page is completed'
+    when: 'the Foreign National page is completed'
     exhaustedAppealNo.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
@@ -256,7 +256,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     def response = db.getData(12).form_response
     def data = response[0].toString()
     data.contains '"earliestReleaseDate": {"justify": "Yes", "justifyText": "details text", "threeOrMoreYears": "Yes"}'
-    data.contains '"foreignNationals": {"dueDeported": "Yes", "formCompleted": "Yes", "exhaustedAppeal": "No", "isForeignNational": "Yes"}'
+    data.contains '"foreignNational": {"dueDeported": "Yes", "formCompleted": "Yes", "exhaustedAppeal": "No", "isForeignNational": "Yes"}'
     data.contains '"riskOfHarm": {"harmManaged": "Yes", "seriousHarm": "Yes", "harmManagedText": "harmManagedText details"}'
     data.contains '"furtherCharges": {"increasedRisk": "Yes", "furtherChargesText": "some convictions,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "Yes", "likelyToAbscondText": "likelyToAbscondText details"}'
@@ -275,7 +275,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     when: 'I go to the first open conditions page'
     db.createData(-1, 12, JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
+        offendingHistory: [furtherCharges: "Yes", furtherChargesText: "some convictions"],
       ]]))
 
     elite2api.stubUncategorised()
@@ -293,8 +293,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     submitButton.click()
 
 ///////////////////////////////////////////////////////////////////////////////
-    then: 'the Foreign Nationals page is displayed'
-    at ForeignNationalsPage
+    then: 'the Foreign National page is displayed'
+    at ForeignNationalPage
 
     when: 'I submit page after isForeignNationalNo'
     isForeignNationalNo.click()
@@ -344,7 +344,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     def response = db.getData(12).form_response
     def data = response[0].toString()
     data.contains '"earliestReleaseDate": {"threeOrMoreYears": "No"}'
-    data.contains '"foreignNationals": {"isForeignNational": "No"}'
+    data.contains '"foreignNational": {"isForeignNational": "No"}'
     data.contains '"riskOfHarm": {"seriousHarm": "No"}'
     data.contains '"furtherCharges": {"increasedRisk": "No", "furtherChargesText": "some convictions,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "No"}'
