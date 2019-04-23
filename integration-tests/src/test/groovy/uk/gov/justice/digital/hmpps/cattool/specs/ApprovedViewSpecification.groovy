@@ -68,7 +68,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
                                           overriddenCategoryText: "Here are the categoriser's comments on why the category was changed"]],
       supervisor : [review: [supervisorCategoryAppropriate   : "No", supervisorOverriddenCategory: "D",
                              supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"]],
-      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]]
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]]
     ]))
     navigateToView()
 

@@ -380,25 +380,30 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
-        return
+      if (req.body.overriddenCategory !== 'D' && req.body.overriddenCategory !== 'J') {
+        if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+          return
+        }
+
+        const userInput = clearConditionalFields(req.body)
+        await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
+
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput,
+          formSection: section,
+          formName: form,
+          status: Status.AWAITING_APPROVAL.name,
+        })
+
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      } else {
+        // redirect to open conditions flow
+        res.redirect(`/form/openConditions/earliestReleaseDate/${bookingId}`)
       }
-
-      const userInput = clearConditionalFields(req.body)
-      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
-
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        status: Status.AWAITING_APPROVAL.name,
-      })
-
-      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 

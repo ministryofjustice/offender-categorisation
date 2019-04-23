@@ -123,7 +123,7 @@ class SupervisorSpecification extends GebReportingSpec {
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
       categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes"]]]))
 
     when: 'The supervisor views the review page for a category D'
@@ -132,7 +132,6 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the review page includes Open conditions information'
     openConditionsHeader.isDisplayed()
 
-    suitability*.text()*.trim() == ['', 'No']
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
@@ -148,7 +147,7 @@ class SupervisorSpecification extends GebReportingSpec {
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], suitability: [isOtherInformation: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
       categoriser: [provisionalCategory: [suggestedCategory: "J", categoryAppropriate: "Yes"]]]))
 
     to SupervisorHomePage
