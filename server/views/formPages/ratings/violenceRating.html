@@ -53,6 +53,12 @@
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
+  {% elif data.violenceProfile.notifySafetyCustodyLead %}
+    {{ govukWarningText({
+      text: 'Please notify your safer custody lead about this offender',
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides"
+    }) }}
   {% else %}
     {{ govukInsetText({
       text: "This person has not been reported as the perpetrator in any assaults in custody before."
