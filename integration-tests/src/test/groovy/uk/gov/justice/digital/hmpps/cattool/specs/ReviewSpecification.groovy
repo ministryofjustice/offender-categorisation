@@ -97,7 +97,7 @@ class ReviewSpecification extends GebReportingSpec {
     json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
     json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'
     json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": true}'
-    json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "increasedRisk": true, "notifyRegionalCTLead": false, "provisionalCategorisation": "C"}'
+    json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": false, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}'
   }
 
   def "The review page can be displayed without security input"() {
