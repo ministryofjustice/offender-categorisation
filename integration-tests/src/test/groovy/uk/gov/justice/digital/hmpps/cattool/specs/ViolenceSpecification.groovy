@@ -101,6 +101,17 @@ class ViolenceSpecification extends GebReportingSpec {
     at ViolencePage
     warning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months'
     !info.displayed
+
+    when: 'The risk profiler returns the safer custody lead flag'
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
+    to ViolencePage, '12'
+
+    then: 'The violence page is displayed with the safer custody lead message'
+    at ViolencePage
+    waitFor {
+      warning.text() contains 'Please notify your safer custody lead about this offender'
+      !info.displayed
+    }
   }
 
   def 'Validation test'() {
