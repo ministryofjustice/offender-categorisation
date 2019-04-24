@@ -105,7 +105,7 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
           nomsId                   : offenderno,
           riskType                 : 'EXTREMISM',
           provisionalCategorisation: category,
-          increasedRisk            : increasedRisk,
+          increasedRiskOfExtremism : increasedRisk,
           notifyRegionalCTLead     : notifyRegionalCTLead
         ]))))
   }

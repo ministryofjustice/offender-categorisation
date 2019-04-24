@@ -19,9 +19,6 @@
       text: "Please enter details"
     } if (errors | findError('previousTerrorismOffencesText'))
   }) }}
-  {% if data.ratings.extremismRating.extremismProfile.notifyRegionalCTLead %}
-    <p class="govuk-heading-s">Please notify your regional CT lead that you have this person in custody</p>
-  {% endif %}
 
 {% endset %}
 
@@ -29,7 +26,7 @@
 
 <h1 class="govuk-heading-l">Extremism</h1>
 
-  {% if data.extremismProfile.increasedRisk %}
+  {% if data.extremismProfile.increasedRiskOfExtremism %}
     {{ govukWarningText({
       text: "This person is at risk of engaging in or vulnerable to extremism",
       iconFallbackText: "Warning",
@@ -69,5 +66,9 @@
       }
     ]
   }) }}
+
+  {% if data.extremismProfile.notifyRegionalCTLead %}
+  <p class="govuk-heading-s">Please notify your regional CT lead that you have this person in custody</p>
+  {% endif %}
 
 {% endblock %}
