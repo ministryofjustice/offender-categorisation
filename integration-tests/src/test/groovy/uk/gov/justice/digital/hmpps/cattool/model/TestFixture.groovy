@@ -31,14 +31,19 @@ class TestFixture {
   }
 
   def loginAs(UserAccount user) {
+    stubLogin(user)
+    // Redirect to /oauth/authorise and wiremock serves a dummy login page
+    browser.go '/'
+    simulateLogin()
+  }
+
+  def stubLogin(UserAccount user) {
     oauthApi.resetRequests()
     currentUser = user
     elite2Api.stubHealth()
     oauthApi.stubValidOAuthTokenRequest currentUser
     elite2Api.stubGetMyDetails currentUser
     elite2Api.stubGetMyCaseloads currentUser.caseloads
-
-    simulateLogin()
   }
 
   def gotoTasklist(transferToSecurity = false) {
@@ -65,8 +70,7 @@ class TestFixture {
     browser.at SupervisorHomePage
   }
 
-  private void simulateLogin() {
-    browser.go '/' // Redirect to /oauth/authorise and wiremock serves a dummy login page
+  def simulateLogin() {
     browser.waitFor { browser.$('h1').text() == 'Sign in' }
     List<LoggedRequest> requests = oauthApi.getAllServeEvents()
     print JsonOutput.toJson(requests)

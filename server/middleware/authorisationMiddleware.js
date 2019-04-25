@@ -21,6 +21,7 @@ module.exports = (req, res, next) => {
     }
     return next()
   }
-  // No session: go to / to have one created
-  return res.redirect('/')
+  // No session: get one created
+  req.session.returnTo = req.originalUrl
+  return res.redirect('/login')
 }
