@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
@@ -171,7 +172,6 @@ class HomePageSpecification extends GebReportingSpec {
     categoryDiv.text() contains 'Category for approval is C'
   }
 
-
   def "Log out"() {
     given: "I have logged in"
     def now = LocalDate.now()
@@ -186,5 +186,20 @@ class HomePageSpecification extends GebReportingSpec {
 
     then: "I am taken back to the Login page."
     waitFor { $('h1').text() == 'Sign in' }
+  }
+
+  def "Deep urls work"() {
+    when: "I try to go direct to the categoriser Done page"
+    fixture.stubLogin(CATEGORISER_USER)
+    go 'categoriserDone'
+
+    then: "the login page is shown"
+    waitFor { $('h1').text() == 'Sign in' }
+
+    when: "I login"
+    fixture.simulateLogin()
+
+    then:"I arrive at the originally specified page"
+    at CategoriserDonePage
   }
 }
