@@ -102,7 +102,7 @@ describe('open conditions', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       form_response: {
-        ratings: { offendingHistory: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
+        ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
         openConditions: { furtherCharges: { furtherChargesText: 'new stuff' } },
       },
     })
@@ -119,7 +119,7 @@ describe('open conditions', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       form_response: {
-        ratings: { offendingHistory: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
+        ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
       },
     })
     return request(app)

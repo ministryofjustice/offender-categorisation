@@ -2,27 +2,27 @@ package uk.gov.justice.digital.hmpps.cattool.pages
 
 import geb.Page
 
-class CategoriserOffendingHistoryPage extends Page {
+class CategoriserFurtherChargesPage extends Page {
 
   static String bookingId
 
-  static url = '/form/ratings/offendingHistory/' + bookingId
+  static url = '/form/ratings/furtherCharges/' + bookingId
 
   static at = {
-    headingText == 'Offending history'
+    headingText == 'Further charges'
   }
 
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-body-s') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
-    catAWarning(required: false) { $('div.govuk-warning-text') }
-    catAInfo(required: false) { $('div.govuk-inset-text') }
     form { $('form') }
-    previousConvictionsText { $('#previousConvictionsText') }
     saveButton { $('button.govuk-button') }
-    previousConvictionsYes { $('#previousConvictions-1') }
-    previousConvictionsNo { $('#previousConvictions-2') }
+    furtherChargesYes { $('#furtherCharges-1') }
+    furtherChargesNo { $('#furtherCharges-2') }
+    furtherChargesCatBYes { $('#furtherChargesCatB-1') }
+    furtherChargesCatBNo { $('#furtherChargesCatB-2') }
+    furtherChargesText { $('#furtherChargesText') }
     history { $('div.forms-comments-text li') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }

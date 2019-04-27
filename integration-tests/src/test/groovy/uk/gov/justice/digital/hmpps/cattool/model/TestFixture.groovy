@@ -59,21 +59,10 @@ class TestFixture {
     browser.selectFirstPrisoner()
   }
 
-  def gotoSupervisorHome() {
-    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
-    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-    elite2Api.stubUncategorisedForSupervisor()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
-
-    loginAs(SUPERVISOR_USER)
-
-    browser.at SupervisorHomePage
-  }
-
   def simulateLogin() {
     browser.waitFor { browser.$('h1').text() == 'Sign in' }
     List<LoggedRequest> requests = oauthApi.getAllServeEvents()
-    print JsonOutput.toJson(requests)
+    // print JsonOutput.toJson(requests)
     // Capture 'state' param for passport ( -1 = last server request)
     def stateParam = requests[-1].request.queryParams['state']
     def state = stateParam ? stateParam.values[0] : requests[-2].request.queryParams['state'].values[0]

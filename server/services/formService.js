@@ -105,7 +105,7 @@ module.exports = function createFormService(formClient) {
       (data.ratings &&
         data.ratings.extremismRating &&
         data.ratings.extremismRating.previousTerrorismOffences === 'Yes') ||
-      (data.ratings && data.ratings.offendingHistory && data.ratings.offendingHistory.offendingHistoryCatB === 'Yes')
+      (data.ratings && data.ratings.furtherCharges && data.ratings.furtherCharges.furtherChargesCatB === 'Yes')
     ) {
       return 'B'
     }

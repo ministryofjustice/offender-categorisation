@@ -11,7 +11,7 @@
 
 <h2 class="govuk-heading-m">Offending history</h2>
 {% set catAValue %}Cat {{ data.history.catAType }} ({{ data.history.catAStartYear }}){% endset %}
- {{ govukSummaryList({
+  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9',
     rows: [
       {
@@ -33,12 +33,19 @@
               visuallyHiddenText: "Relevant convictions on PNC"
             }] if showChangeLinks else []
         }
-      },
+      }
+    ]
+  }) }}
+
+<h2 class="govuk-heading-m">Further charges</h2>
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9',
+    rows: [
       {
         key: { text: "Further serious charges" },
-        value: { html: formatAnswer(data.ratings.offendingHistory.furtherCharges, data.ratings.offendingHistory.furtherChargesText) },
+        value: { html: formatAnswer(data.ratings.furtherCharges.furtherCharges, data.ratings.furtherCharges.furtherChargesText) },
         actions: { items: [{
-              href: '/form/ratings/offendingHistory/' + data.details.bookingId,
+              href: '/form/ratings/furtherCharges/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Further serious charges"
             }] if showChangeLinks else []
@@ -46,11 +53,11 @@
       },
       {
         key: { classes: 'no-print', text: "Warrant category B?" },
-        value: { classes: 'no-print', text: data.ratings.offendingHistory.offendingHistoryCatB },
+        value: { classes: 'no-print', text: data.ratings.furtherCharges.furtherChargesCatB },
         actions: {
           classes: 'no-print',
           items: [{
-            href: '/form/ratings/offendingHistory/' + data.details.bookingId,
+            href: '/form/ratings/furtherCharges/' + data.details.bookingId,
             text: "Change",
             visuallyHiddenText: "Warrant category B"
           }] if showChangeLinks else []

@@ -51,15 +51,11 @@ class OffendingHistorySpecification extends GebReportingSpec {
     saveButton.click()
 
     then: 'There is a validation error'
-    errorSummaries*.text() == ['Please select yes or no','Please select yes or no']
-    errors*.text()[0] == 'Error:\nPlease select yes or no'
-    errors*.text()[1] == 'Error:\nPlease select yes or no'
+    errorSummaries*.text() == ['Please select yes or no']
+    errors*.text() == ['Error:\nPlease select yes or no']
 
     when: 'Some data is saved and accessed'
-    furtherChargesYes.click()
     previousConvictionsYes.click()
-    offendingHistoryCatBYes.click()
-    furtherChargesText << "There are further charges"
     previousConvictionsText << "some convictions details"
     saveButton.click()
     at CategoriserTasklistPage
@@ -68,8 +64,6 @@ class OffendingHistorySpecification extends GebReportingSpec {
     then: "data is correctly retrieved"
     at new CategoriserOffendingHistoryPage(bookingId: '12')
     form.previousConvictionsText == "some convictions details"
-    form.furtherChargesText == "There are further charges"
-    form.furtherCharges == "Yes"
     form.previousConvictions == "Yes"
     db.getData(12).status == ["STARTED"]
   }
