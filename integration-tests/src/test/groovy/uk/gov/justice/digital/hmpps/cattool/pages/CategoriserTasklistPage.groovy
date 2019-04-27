@@ -19,6 +19,7 @@ class CategoriserTasklistPage extends Page {
     logoutLink { $('a', href: '/logout')}
     startButtons { bodyRows*.$('td', 5)*.find('a') }
     offendingHistoryButton { $('#offendingHistoryButton') }
+    furtherChargesButton { $('#furtherChargesButton') }
     securityButton { $('#securityButton') }
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }

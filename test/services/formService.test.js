@@ -422,7 +422,7 @@ describe('computeSuggestedCat', () => {
     history: {},
     violenceProfile: { veryHighRiskViolentOffender: false, numberOfSeriousAssaults: 0 },
     ratings: {
-      offendingHistory: { offendingHistoryCatB: 'No' },
+      offendingHistory: { furtherChargesCatB: 'No' },
       escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'Yes' },
       securityBack: { catB: 'No' },
       extremismRating: { previousTerrorismOffences: 'No' },
@@ -437,7 +437,7 @@ describe('computeSuggestedCat', () => {
     ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}             | ${'B'}
     ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}                    | ${'B'}
     ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}                   | ${'B'}
-    ${{ ratings: { offendingHistory: { offendingHistoryCatB: 'Yes' } } }}     | ${'B'}
+    ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}         | ${'B'}
     ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }} | ${'B'}
     ${{ extremismProfile: { provisionalCategorisation: 'B' } }}               | ${'B'}
     ${nearMisses}                                                             | ${'C'}

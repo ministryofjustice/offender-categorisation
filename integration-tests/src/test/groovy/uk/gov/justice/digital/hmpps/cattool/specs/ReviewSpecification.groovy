@@ -48,7 +48,8 @@ class ReviewSpecification extends GebReportingSpec {
     given: 'data has been entered for the ratings pages'
     db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
       ratings : [
-        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions", furtherCharges: 'Yes', furtherChargesText: 'charges text', offendingHistoryCatB: 'No'],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
+        furtherCharges  : [furtherCharges: 'Yes', furtherChargesText: 'charges text', furtherChargesCatB: 'No'],
         securityInput   : [securityInputNeeded: 'Yes', securityInputNeededText: 'Reasons why referring manually to security'],
         securityBack    : [catB: 'Yes'],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes", seriousThreatText: "Here are the serious threat details"],
@@ -83,7 +84,8 @@ class ReviewSpecification extends GebReportingSpec {
     at ReviewPage
     changeLinks.size() == 9
     // 1 line per section:
-    values*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'Yes\nsome convictions', 'Yes\ncharges text', 'No',
+    values*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'Yes\nsome convictions',
+                       'Yes\ncharges text', 'No',
                        '5', '2', 'No', '''Yes\nHere are the serious threat details''',
                        'Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''',
                        'Yes', '''Yes\nPrevious Terrorism Offences Text''',
@@ -104,7 +106,8 @@ class ReviewSpecification extends GebReportingSpec {
     given: 'data has been entered for the ratings pages'
     db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions", furtherCharges: 'No', offendingHistoryCatB: 'No'],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
+        furtherCharges  : [furtherCharges: 'No', furtherChargesCatB: 'No'],
         securityInput   : [securityInputNeeded: 'No'],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
         escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'No'],
