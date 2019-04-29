@@ -1,0 +1,110 @@
+{% extends "../formTemplate.html" %}
+
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "../../macros/listOffences.html" import listOffences %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Further charges</h1>
+
+{% set furtherChargesHtml %}
+  {{ govukCharacterCount({
+    name: "furtherChargesText",
+    type: "furtherChargesText",
+    id: "furtherChargesText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Give details of these charges"
+    },
+    value: data.ratings.furtherCharges.furtherChargesText,
+    errorMessage: {
+      text: "Please enter details"
+  } if (errors | findError('furtherChargesText'))
+  }) }}
+
+  {{ govukRadios({
+    name: "furtherChargesCatB",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Do any of these further charges mean they should be in Cat B?",
+          isPageHeading: false
+        }
+      },
+      errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('furtherChargesCatB')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.ratings.furtherCharges.furtherChargesCatB === 'Yes'
+      },
+      {
+        value: "No",
+        checked: data.ratings.furtherCharges.furtherChargesCatB === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+    <li>convictions similar to the current offence which indicate a prolific or escalating offence pattern</li>
+    <li>convictions that indicate ongoing criminality in custody</li>
+    <li>convictions for offences committed while the offender was in custody</li>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What should I look for?",
+    html: guidancePrevious
+  }) }}
+
+{% endset %}
+
+  {{ govukRadios({
+    name: "furtherCharges",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Are they facing any further charges?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('furtherCharges')),
+    hint: {
+      text: "Please check the PNC and NOMIS"
+    },
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.ratings.furtherCharges.furtherCharges === 'Yes',
+        conditional: {
+          html: furtherChargesHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.ratings.furtherCharges.furtherCharges === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+    <li>charges likely to result in a long additional sentence</li>
+    <li>charges indicating a risk of violence</li>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What should I look for:",
+    html: guidancePrevious
+  }) }}
+
+{% endblock %}

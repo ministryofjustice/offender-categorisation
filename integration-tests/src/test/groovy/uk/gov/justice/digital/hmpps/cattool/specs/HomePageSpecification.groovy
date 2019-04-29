@@ -112,7 +112,6 @@ class HomePageSpecification extends GebReportingSpec {
     elite2api.stubOffenceHistory('ON678')
     offendingHistoryButton.click()
     at(new CategoriserOffendingHistoryPage(bookingId: '12'))
-    furtherChargesNo.click()
     previousConvictionsNo.click()
     saveButton.click()
     at(new CategoriserTasklistPage(bookingId: '12'))

@@ -262,6 +262,7 @@ describe('POST /section/form', () => {
     ${'ratings'} | ${'escapeRating'}     | ${{ day: '12' }}        | ${'/tasklist/'}
     ${'ratings'} | ${'extremismRating'}  | ${{ day: '12' }}        | ${'/tasklist/'}
     ${'ratings'} | ${'offendingHistory'} | ${{ day: '12' }}        | ${'/tasklist/'}
+    ${'ratings'} | ${'furtherCharges'}   | ${{}}                   | ${'/tasklist/'}
   `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
     request(app)
       .post(`/${sectionName}/${formName}/12345`)

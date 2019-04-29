@@ -282,7 +282,7 @@ module.exports = function Index({
       delete updated.supervisorOverriddenCategoryText
     }
     if (body.furtherCharges === 'No') {
-      delete updated.offendingHistoryCatB
+      delete updated.furtherChargesCatB
       delete updated.furtherChargesText
     }
     if (body.previousConvictions === 'No') {

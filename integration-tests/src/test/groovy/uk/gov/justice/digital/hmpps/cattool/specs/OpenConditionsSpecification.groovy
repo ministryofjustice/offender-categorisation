@@ -42,7 +42,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     when: 'I go to the first open conditions page'
     db.createData(-1, 12, JsonOutput.toJson([
       ratings: [
-        offendingHistory: [furtherCharges: "Yes", furtherChargesText: "some convictions"],
+        furtherCharges: [furtherCharges: "Yes", furtherChargesText: "some charges"],
       ]]))
 
     elite2api.stubUncategorised()
@@ -224,7 +224,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     values*.text() == ['', 'Yes', 'Yes\ndetails text', // 1 line per section
                        '', 'Yes', 'Yes', 'Yes', 'No',
                        '', 'Yes', 'Yes\nharmManagedText details',
-                       '', 'some convictions,furtherChargesText details', 'Yes',
+                       '', 'some charges,furtherChargesText details', 'Yes',
                        '', 'Yes\nlikelyToAbscondText details']
 
     def response = db.getData(12).form_response
@@ -232,7 +232,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.contains '"earliestReleaseDate": {"justify": "Yes", "justifyText": "details text", "threeOrMoreYears": "Yes"}'
     data.contains '"foreignNational": {"dueDeported": "Yes", "formCompleted": "Yes", "exhaustedAppeal": "No", "isForeignNational": "Yes"}'
     data.contains '"riskOfHarm": {"harmManaged": "Yes", "seriousHarm": "Yes", "harmManagedText": "harmManagedText details"}'
-    data.contains '"furtherCharges": {"increasedRisk": "Yes", "furtherChargesText": "some convictions,furtherChargesText details"}'
+    data.contains '"furtherCharges": {"increasedRisk": "Yes", "furtherChargesText": "some charges,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "Yes", "likelyToAbscondText": "likelyToAbscondText details"}'
 
     when: 'I try to continue to the provision category page'
@@ -248,7 +248,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     when: 'I go to the first open conditions page'
     db.createData(-1, 12, JsonOutput.toJson([
       ratings: [
-        offendingHistory: [furtherCharges: "Yes", furtherChargesText: "some convictions"],
+        furtherCharges: [furtherCharges: "Yes", furtherChargesText: "some charges"],
       ]]))
 
     elite2api.stubUncategorised()
@@ -303,7 +303,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     values*.text() == ['', 'No', 'Not applicable', // 1 line per section
                        '', 'No', 'Not applicable', 'Not applicable', 'Not applicable',
                        '', 'No', 'Not applicable',
-                       '', 'some convictions,furtherChargesText details', 'No',
+                       '', 'some charges,furtherChargesText details', 'No',
                        '', 'No']
 
     def response = db.getData(12).form_response
@@ -311,7 +311,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.contains '"earliestReleaseDate": {"threeOrMoreYears": "No"}'
     data.contains '"foreignNational": {"isForeignNational": "No"}'
     data.contains '"riskOfHarm": {"seriousHarm": "No"}'
-    data.contains '"furtherCharges": {"increasedRisk": "No", "furtherChargesText": "some convictions,furtherChargesText details"}'
+    data.contains '"furtherCharges": {"increasedRisk": "No", "furtherChargesText": "some charges,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "No"}'
 
     when: 'I continue to the provision category page'
