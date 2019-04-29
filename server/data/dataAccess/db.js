@@ -1,8 +1,10 @@
 const logger = require('../../../log')
 const config = require('../../config')
 
-const { Pool } = require('pg')
+const { Pool, types } = require('pg')
 const fs = require('fs')
+
+types.setTypeParser(20, val => parseInt(val, 10))
 
 const pool = new Pool({
   user: config.db.username,

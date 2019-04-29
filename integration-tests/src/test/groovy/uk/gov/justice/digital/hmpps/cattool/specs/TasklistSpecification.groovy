@@ -108,6 +108,8 @@ class TasklistSpecification extends GebReportingSpec {
     when: 'a security user views their homepage'
     elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     logoutLink.click()
+    elite2api.stubGetCategoriserStaffDetailsByUsernameList()
+    elite2api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
     fixture.loginAs(SECURITY_USER)
 
     then: 'this prisoner is present with automatic referral'

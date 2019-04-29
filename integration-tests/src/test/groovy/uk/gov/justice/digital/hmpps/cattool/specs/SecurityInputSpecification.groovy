@@ -89,8 +89,9 @@ class SecurityInputSpecification extends GebReportingSpec {
     $('#securitySection').text().contains("Manually referred to Security ($today)")
 
     when: 'a security user views their homepage'
-    elite2api.stubGetUserDetails(CATEGORISER_USER, 'LEI')
+    elite2api.stubGetCategoriserStaffDetailsByUsernameList()
     logout()
+    elite2api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
     elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     fixture.loginAs(SECURITY_USER)
 
