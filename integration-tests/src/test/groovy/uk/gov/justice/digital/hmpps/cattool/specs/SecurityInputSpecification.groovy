@@ -109,7 +109,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     then: 'the prisoner status is back from security'
     at SecurityHomePage
     prisonNos.size() == 0
-    noOffendersText == 'No referred offenders found'
+    noOffendersText == 'There are no referrals to review.'
 
     when: 'the categoriser revisits the page and enters a category decision'
     logout()
