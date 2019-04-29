@@ -43,7 +43,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     given: 'Ratings data exists for for B2345YZ'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings: [
-        offendingHistory: [furtherCharges: "some convictions"],
+        furtherCharges  : [furtherCharges: "some charges"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeCatB: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
@@ -128,7 +128,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     given: 'Ratings data exists for for B2345YZ'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings: [
-        offendingHistory: [furtherCharges: "Yes", furtherChargesText: "some convictions"],
+        furtherCharges  : [furtherCharges: "Yes", furtherChargesText: "some charges"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
@@ -167,7 +167,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     given: 'Ratings data exists for for B2345YZ'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings: [
-        offendingHistory: [furtherCharges: "Yes", furtherChargesText: "some convictions"],
+        furtherCharges  : [furtherCharges: "Yes", furtherChargesText: "some charges"],
         // securityInput omitted
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],

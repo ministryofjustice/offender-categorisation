@@ -26,7 +26,8 @@ href: backLink or "/"
   {% include "../partials/offenderDetails.html" %}
   <hr/>
 
-  {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions and data.ratings.offendingHistory.furtherCharges %}
+  {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
+  {% set furtherChargesCompleted = data.ratings.offendingHistory.furtherCharges %}
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
   {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No') or data.ratings.securityBack.catB %}
   {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
@@ -51,6 +52,19 @@ href: backLink or "/"
                 }) }}
                 <div class="govuk-heading-m">Offending history</div>
                 <div class="govuk-!-margin-top-2">{% if offendingHistoryCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+            </li>
+            <li class="app-task-list__item">
+              {% set buttonTextFC = "Edit" if furtherChargesCompleted else "Start" %}
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if furtherChargesCompleted else buttonClassesDefault %}
+              {{ govukButton({
+              text: buttonTextFC,
+              href: "/form/ratings/furtherCharges/" + data.details.bookingId,
+              classes: buttonClasses,
+              attributes:
+              {  'id': 'furtherChargesButton' }
+              }) }}
+              <div class="govuk-heading-m">Further charges</div>
+              <div class="govuk-!-margin-top-2">{% if furtherChargesCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
             <li class="app-task-list__item">
               {% set buttonTextV = "Edit" if violenceRatingCompleted else "Start" %}

@@ -13,6 +13,14 @@ module.exports = {
           validationMessage: 'Please enter details of the other convictions',
         },
       },
+    ],
+    nextPath: {
+      path: '/tasklist/',
+    },
+    validate: true,
+  },
+  furtherCharges: {
+    fields: [
       {
         furtherCharges: {
           responseType: 'requiredString',
@@ -26,7 +34,7 @@ module.exports = {
         },
       },
       {
-        offendingHistoryCatB: {
+        furtherChargesCatB: {
           responseType: 'requiredStringIf_furtherCharges_Yes',
           validationMessage: 'Please select yes or no',
         },

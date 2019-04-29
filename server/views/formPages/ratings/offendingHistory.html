@@ -21,7 +21,6 @@
     </div>
   {% endif %}
 
-
 {% set previousConvictionsHtml %}
   {{ govukCharacterCount({
     name: "previousConvictionsText",
@@ -37,61 +36,6 @@
     errorMessage: {
       text: "Please enter previous convictions"
     } if (errors | findError('previousConvictionsText'))
-  }) }}
-
-{% endset %}
-
-{% set furtherChargesHtml %}
-  {{ govukCharacterCount({
-    name: "furtherChargesText",
-    type: "furtherChargesText",
-    id: "furtherChargesText",
-    maxlength: 50000,
-    threshold: 50,
-    label: {
-      text: "Give details of these charges"
-    },
-    value: data.ratings.offendingHistory.furtherChargesText,
-    errorMessage: {
-      text: "Please enter details"
-  } if (errors | findError('furtherChargesText'))
-  }) }}
-
-  {{ govukRadios({
-    name: "offendingHistoryCatB",
-    classes: "govuk-radios--inline",
-    fieldset: {
-      legend: {
-        text: "Do any of these further charges mean they should be in Cat B?",
-          isPageHeading: false
-        }
-      },
-      errorMessage: {
-      text: "Please select yes or no"
-    } if (errors | findError('offendingHistoryCatB')),
-    items: [
-      {
-        value: "Yes",
-        text: "Yes",
-        checked: data.ratings.offendingHistory.offendingHistoryCatB === 'Yes'
-      },
-      {
-        value: "No",
-        checked: data.ratings.offendingHistory.offendingHistoryCatB === 'No',
-        text: "No"
-      }
-    ]
-  }) }}
-
-  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
-    <li>convictions similar to the current offence which indicate a prolific or escalating offence pattern</li>
-    <li>convictions that indicate ongoing criminality in custody</li>
-    <li>convictions for offences committed while the offender was in custody</li>
-  {% endset %}
-
-  {{ govukDetails({
-    summaryText: "What should I look for?",
-    html: guidancePrevious
   }) }}
 
 {% endset %}
@@ -127,49 +71,5 @@
     }
   ]
 }) }}
-
-<h2 class="govuk-heading-m">Further charges</h2>
-
-  {{ govukRadios({
-    name: "furtherCharges",
-    classes: "govuk-radios--inline",
-    fieldset: {
-      legend: {
-        text: "Are they facing any further charges?",
-        isPageHeading: false
-      }
-    },
-    errorMessage: {
-      text: "Please select yes or no"
-    } if (errors | findError('furtherCharges')),
-    hint: {
-      text: "Please check the PNC and NOMIS"
-    },
-    items: [
-      {
-        value: "Yes",
-        text: "Yes",
-        checked: data.ratings.offendingHistory.furtherCharges === 'Yes',
-        conditional: {
-          html: furtherChargesHtml
-        }
-      },
-      {
-        value: "No",
-        checked: data.ratings.offendingHistory.furtherCharges === 'No',
-        text: "No"
-      }
-    ]
-  }) }}
-
-  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
-    <li>charges likely to result in a long additional sentence</li>
-    <li>charges indicating a risk of violence</li>
-  {% endset %}
-
-  {{ govukDetails({
-    summaryText: "What should I look for:",
-    html: guidancePrevious
-  }) }}
 
 {% endblock %}
