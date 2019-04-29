@@ -7,6 +7,8 @@ const nomisClient = {
   getSentenceDatesForOffenders: jest.fn(),
   getUserByUserId: jest.fn(),
   getOffenderDetails: jest.fn(),
+  getOffenderDetailList: jest.fn(),
+  getUserDetailList: jest.fn(),
   getSentenceDetails: jest.fn(),
   getSentenceTerms: jest.fn(),
   getMainOffence: jest.fn(),
@@ -16,6 +18,7 @@ const nomisClient = {
 
 const formService = {
   getCategorisationRecord: jest.fn(),
+  getSecurityReferredOffenders: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -31,12 +34,15 @@ afterEach(() => {
   nomisClient.getSentenceDatesForOffenders.mockReset()
   nomisClient.getUserByUserId.mockReset()
   nomisClient.getOffenderDetails.mockReset()
+  nomisClient.getOffenderDetailList.mockReset()
+  nomisClient.getUserDetailList.mockReset()
   nomisClient.getSentenceDetails.mockReset()
   nomisClient.getSentenceTerms.mockReset()
   nomisClient.getMainOffence.mockReset()
   nomisClient.createInitialCategorisation.mockReset()
   nomisClient.createSupervisorApproval.mockReset()
   formService.getCategorisationRecord.mockReset()
+  formService.getSecurityReferredOffenders.mockReset()
 })
 
 function todaySubtract(days) {
@@ -215,9 +221,72 @@ describe('getUncategorisedOffenders', () => {
   })
 })
 
+test('it should handle an empty response', async () => {
+  const uncategorised = []
+  const expected = []
+
+  nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+
+  const result = await service.getReferredOffenders('user1', 'MDI')
+  expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
+  expect(result).toEqual(expected)
+})
+
+test('create categorisation should propagate error response', async () => {
+  nomisClient.createInitialCategorisation.mockImplementation(() => {
+    throw new Error('our Error')
+  })
+
+  try {
+    await service.createInitialCategorisation({}, {}, {})
+  } catch (s) {
+    expect(s.message).toEqual('our Error')
+  }
+})
+
+test('createSupervisorApproval should propagate error response', async () => {
+  nomisClient.createSupervisorApproval.mockImplementation(() => {
+    throw new Error('our Error')
+  })
+
+  try {
+    await service.createSupervisorApproval({}, {}, {})
+  } catch (s) {
+    expect(s.message).toEqual('our Error')
+  }
+})
+
+test('it should not return offenders without sentence data', async () => {
+  const uncategorised = [
+    {
+      offenderNo: 'G12345',
+      firstName: 'Jane',
+      lastName: 'Brown',
+      bookingId: 123,
+      status: Status.UNCATEGORISED.name,
+    },
+  ]
+
+  const sentenceDates = [
+    {
+      sentenceDetail: { bookingId: 123 },
+    },
+  ]
+
+  const expected = []
+
+  nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+  nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+  formService.getCategorisationRecord.mockReturnValue({})
+
+  const result = await service.getUncategorisedOffenders('user1', 'MDI')
+  expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
+  expect(result).toEqual(expected)
+})
+
 describe('getReferredOffenders', () => {
   test('it should return a list of offenders and sentence information', async () => {
-    const uncategorised = [
+    const offenderDetailList = [
       {
         offenderNo: 'G12345',
         firstName: 'Jane',
@@ -241,6 +310,19 @@ describe('getReferredOffenders', () => {
       },
     ]
 
+    const userDetailsList = [
+      {
+        username: 'JSMITH',
+        firstName: 'John',
+        lastName: 'Smith',
+      },
+      {
+        username: 'BMAY',
+        firstName: 'Brian',
+        lastName: 'May',
+      },
+    ]
+
     const sentenceDates = [
       {
         sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(4) },
@@ -253,69 +335,37 @@ describe('getReferredOffenders', () => {
       },
     ]
 
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    nomisClient.getOffenderDetailList.mockReturnValue(offenderDetailList)
+    nomisClient.getUserDetailList.mockReturnValue(userDetailsList)
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
 
-    nomisClient.getUserByUserId.mockImplementation(staffId => {
-      switch (staffId) {
-        case 'JSMITH':
-          return {
-            staffId,
-            username: 'DEMO_USER1',
-            firstName: 'John',
-            lastName: 'Smith',
-          }
-        case 'BMAY':
-          return {
-            staffId,
-            username: 'DEMO_USER2',
-            firstName: 'Brian',
-            lastName: 'May',
-          }
-        default:
-          return null
-      }
-    })
-
-    formService.getCategorisationRecord.mockImplementation(bookingId => {
-      switch (bookingId) {
-        case 123:
-          return {
-            id: -1,
-            user_id: 'me',
-            status: Status.SECURITY_AUTO.name,
-            form_response: '',
-            // assigned_user_id not present
-            referred_date: '2019-02-04',
-            referred_by: 'JSMITH',
-          }
-        case 111:
-          return {
-            id: -2,
-            user_id: 'me',
-            status: 'other',
-            form_response: '',
-          }
-        case 122:
-          return {
-            id: -3,
-            user_id: 'me',
-            status: Status.SECURITY_MANUAL.name,
-            form_response: '',
-            referred_date: '2019-02-04',
-            referred_by: 'BMAY',
-          }
-        default:
-          return {}
-      }
-    })
+    formService.getSecurityReferredOffenders.mockImplementation(() => [
+      {
+        id: -1,
+        bookingId: 123,
+        user_id: 'me',
+        status: Status.SECURITY_AUTO.name,
+        form_response: '',
+        // assigned_user_id not present
+        referred_date: '2019-02-04',
+        referred_by: 'JSMITH',
+      },
+      {
+        id: -3,
+        bookingId: 122,
+        user_id: 'me',
+        status: Status.SECURITY_MANUAL.name,
+        form_response: '',
+        referred_date: '2019-02-04',
+        referred_by: 'BMAY',
+      },
+    ])
 
     const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
     const expected = [
       {
         offenderNo: 'G12345',
-        firstName: 'Jane',
-        lastName: 'Brown',
+        displayName: 'Brown, Jane',
         bookingId: 123,
         daysSinceSentence: 4,
         dateRequired: expect.stringMatching(DATE_MATCHER),
@@ -323,8 +373,7 @@ describe('getReferredOffenders', () => {
       },
       {
         offenderNo: 'G55345',
-        firstName: 'Alan',
-        lastName: 'Allen',
+        displayName: 'Allen, Alan',
         bookingId: 122,
         daysSinceSentence: 10,
         dateRequired: expect.stringMatching(DATE_MATCHER),
@@ -334,73 +383,9 @@ describe('getReferredOffenders', () => {
 
     const result = await service.getReferredOffenders('user1', 'agency')
 
-    expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
-    expect(formService.getCategorisationRecord).toBeCalledTimes(3)
+    expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
-  })
-
-  test('it should handle an empty response', async () => {
-    const uncategorised = []
-    const expected = []
-
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-
-    const result = await service.getReferredOffenders('user1', 'MDI')
-    expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
-    expect(result).toEqual(expected)
-  })
-
-  test('create categorisation should propagate error response', async () => {
-    nomisClient.createInitialCategorisation.mockImplementation(() => {
-      throw new Error('our Error')
-    })
-
-    try {
-      await service.createInitialCategorisation({}, {}, {})
-    } catch (s) {
-      expect(s.message).toEqual('our Error')
-    }
-  })
-
-  test('createSupervisorApproval should propagate error response', async () => {
-    nomisClient.createSupervisorApproval.mockImplementation(() => {
-      throw new Error('our Error')
-    })
-
-    try {
-      await service.createSupervisorApproval({}, {}, {})
-    } catch (s) {
-      expect(s.message).toEqual('our Error')
-    }
-  })
-
-  test('it should not return offenders without sentence data', async () => {
-    const uncategorised = [
-      {
-        offenderNo: 'G12345',
-        firstName: 'Jane',
-        lastName: 'Brown',
-        bookingId: 123,
-        status: Status.UNCATEGORISED.name,
-      },
-    ]
-
-    const sentenceDates = [
-      {
-        sentenceDetail: { bookingId: 123 },
-      },
-    ]
-
-    const expected = []
-
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
-    formService.getCategorisationRecord.mockReturnValue({})
-
-    const result = await service.getReferredOffenders('user1', 'MDI')
-    expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
-    expect(result).toEqual(expected)
   })
 })
 
