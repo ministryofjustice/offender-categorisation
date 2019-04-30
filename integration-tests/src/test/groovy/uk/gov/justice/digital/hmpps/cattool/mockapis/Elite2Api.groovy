@@ -312,8 +312,28 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubGetOffenderDetailsByBookingIdList(String agency, bookingId) {
+    this.stubFor(
+      post("/api/bookings/offenders/$agency/list")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            bookingId  : bookingId,
+            offenderNo : 'B2345XY',
+            agencyId   : 'LEI',
+            firstName  : 'JANE',
+            lastName   : 'DENT',
+            dateOfBirth: '1970-02-17',
+          ]]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
 
-  def stubGetSecurityStaffDetailsByUsername() {
+
+  def stubGetSecurityStaffDetailsByUsernameList() {
     this.stubFor(
       post("/api/users/list")
         .willReturn(
@@ -324,6 +344,26 @@ class Elite2Api extends WireMockRule {
             username        : 'SECURITY_USER',
             firstName       : 'Amy',
             lastName        : 'Security',
+            email           : 'itaguser@syscon.net',
+            activeCaseLoadId: 'LEI'
+          ]]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
+  def stubGetCategoriserStaffDetailsByUsernameList() {
+    this.stubFor(
+      post("/api/users/list")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            staffId         : 123,
+            username        : 'CATEGORISER_USER',
+            firstName       : 'Api',
+            lastName        : 'User',
             email           : 'itaguser@syscon.net',
             activeCaseLoadId: 'LEI'
           ]]
