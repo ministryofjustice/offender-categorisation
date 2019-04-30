@@ -19,7 +19,7 @@ module.exports = function createFormService(formClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId)
 
     const newCategorisationForm = buildCategorisationForm({
-      formObject: currentCategorisation.form_response || {},
+      formObject: currentCategorisation.formObject || {},
       fieldMap: config.fields,
       userInput,
       formSection,
