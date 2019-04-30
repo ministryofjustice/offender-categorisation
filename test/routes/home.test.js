@@ -106,7 +106,7 @@ describe('GET /supervisorHome', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Review in NOMIS') // should not display start button
+        expect(res.text).toContain('PNOMIS') // should not display start button
         expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
       })
   })
@@ -127,7 +127,7 @@ describe('GET /categoriserHome', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Start now')
+        expect(res.text).toContain('Start')
         expect(res.text).not.toContain('locked')
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })

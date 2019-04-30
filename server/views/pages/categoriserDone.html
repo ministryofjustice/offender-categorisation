@@ -61,13 +61,13 @@
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
       <td class="govuk-table__cell">{{ row.category }}</td>
-      <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+      <td class="govuk-table__cell">
         {% if row.statusTextDisplay != '' %}
         {% set locked = regExp.test(row.displayStatus) %}
         {{ govukButton({
           text: "View",
           href: "/form/approvedView/" + row.bookingId,
-          classes: "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3"
+          classes: "tableButton grey-button govuk-!-padding-left-3 govuk-!-padding-right-3"
         }) }}
         {% endif %}
       </td>
