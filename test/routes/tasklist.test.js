@@ -86,10 +86,13 @@ describe('GET /tasklist/', () => {
     offendersService.getOffenderDetails.mockResolvedValue({ bookingId: 12345, displayName: 'Claire Dent' })
     formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
       id: 1111,
-      form_response: { sample: 'string' },
+      formObject: { sample: 'string' },
       status: 'STARTED',
     })
-    formService.getCategorisationRecord.mockResolvedValue({ status: 'SECURITY_AUTO', referred_date: `${todayISO}` })
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'SECURITY_AUTO',
+      securityReferredDate: `${todayISO}`,
+    })
     const sampleSocProfile = {
       transferToSecurity: true,
       provisionalCategorisation: 'B',
@@ -97,8 +100,8 @@ describe('GET /tasklist/', () => {
     riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
-      referred_date: `${todayISO}`,
-      form_response: { sample: 'string', socProfile: sampleSocProfile },
+      securityReferredDate: `${todayISO}`,
+      formObject: { sample: 'string', socProfile: sampleSocProfile },
       status: 'SECURITY_AUTO',
     })
 

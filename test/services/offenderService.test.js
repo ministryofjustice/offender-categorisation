@@ -343,21 +343,21 @@ describe('getReferredOffenders', () => {
       {
         id: -1,
         bookingId: 123,
-        user_id: 'me',
+        userId: 'me',
         status: Status.SECURITY_AUTO.name,
-        form_response: '',
+        formObject: '',
         // assigned_user_id not present
-        referred_date: '2019-02-04',
-        referred_by: 'JSMITH',
+        securityReferredDate: '2019-02-04',
+        securityReferredBy: 'JSMITH',
       },
       {
         id: -3,
         bookingId: 122,
-        user_id: 'me',
+        userId: 'me',
         status: Status.SECURITY_MANUAL.name,
-        form_response: '',
-        referred_date: '2019-02-04',
-        referred_by: 'BMAY',
+        formObject: '',
+        securityReferredDate: '2019-02-04',
+        securityReferredBy: 'BMAY',
       },
     ])
 
@@ -369,7 +369,7 @@ describe('getReferredOffenders', () => {
         bookingId: 123,
         daysSinceSentence: 4,
         dateRequired: expect.stringMatching(DATE_MATCHER),
-        referredBy: 'John Smith',
+        securityReferredBy: 'John Smith',
       },
       {
         offenderNo: 'G55345',
@@ -377,7 +377,7 @@ describe('getReferredOffenders', () => {
         bookingId: 122,
         daysSinceSentence: 10,
         dateRequired: expect.stringMatching(DATE_MATCHER),
-        referredBy: 'Brian May',
+        securityReferredBy: 'Brian May',
       },
     ]
 

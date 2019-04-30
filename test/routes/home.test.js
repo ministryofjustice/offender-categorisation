@@ -141,7 +141,7 @@ describe('GET /categoriserHome', () => {
         displayStatus: 'Awaiting approval',
         dbRecordExists: true,
         assignedUserId: 'DC123',
-        referredBy: 'Mimsie Don',
+        securityReferredBy: 'Mimsie Don',
       },
     ])
     return request(app)
@@ -163,7 +163,7 @@ describe('GET /categoriserHome', () => {
         displayStatus: 'Completed Security',
         dbRecordExists: true,
         assignedUserId: 'DC123',
-        referredBy: 'Mimsie Don',
+        securityReferredBy: 'Mimsie Don',
       },
     ])
     return request(app)
@@ -185,7 +185,7 @@ describe('GET /categoriserHome', () => {
         displayStatus: 'Automatically referred to Security',
         dbRecordExists: true,
         assignedUserId: 'DC123',
-        referredBy: 'Mimsie Don',
+        securityReferredBy: 'Mimsie Don',
       },
     ])
     return request(app)

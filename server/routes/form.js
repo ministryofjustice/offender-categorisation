@@ -233,7 +233,7 @@ module.exports = function Index({
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId)
-    res.locals.formObject = formData.form_response || {}
+    res.locals.formObject = formData.formObject || {}
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')

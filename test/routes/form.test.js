@@ -213,7 +213,7 @@ describe('GET /categoriser/review', () => {
       exFlag: true,
     })
     formService.getCategorisationRecord.mockResolvedValue({
-      form_response: {
+      formObject: {
         ratings: 'stuff',
         categoriser: 'other things',
       },
