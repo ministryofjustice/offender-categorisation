@@ -60,22 +60,26 @@ describe('securityReviewed', () => {
   })
 })
 
-test('create categorisation record', () => {
-  formClient.create('bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS')
+describe('create categorisation record', () => {
+  test('create categorisation record', () => {
+    formClient.create('bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS')
 
-  expect(db.query).toBeCalledWith({
-    text:
-      'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, 1, $6, $7, CURRENT_TIMESTAMP)',
-    values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS'],
+    expect(db.query).toBeCalledWith({
+      text:
+        'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, 1, $6, $7, CURRENT_TIMESTAMP)',
+      values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS'],
+    })
   })
 })
 
-describe('it should update the categorisation record', () => {
-  formClient.update('formId', {}, 'bookingId1', 'STARTED')
+describe('categorisation record update', () => {
+  test('it should update the categorisation record', () => {
+    formClient.update('formId', {}, 'bookingId1', 'STARTED')
 
-  expect(db.query).toBeCalledWith({
-    text:
-      'update form f set form_response = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
-    values: [{}, 'STARTED', 'bookingId1'],
+    expect(db.query).toBeCalledWith({
+      text:
+        'update form f set form_response = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+      values: [{}, 'STARTED', 'bookingId1'],
+    })
   })
 })
