@@ -90,7 +90,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId)
-    res.locals.formObject = formData.form_response || {}
+    res.locals.formObject = formData.formObject || {}
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
@@ -150,7 +150,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const formPageConfig = formConfig.openConditions[form]
 
       const formData = await formService.getCategorisationRecord(bookingId)
-      const data = formData.form_response
+      const data = formData.formObject
       const oc = data.openConditions
       if (
         oc &&

@@ -17,7 +17,7 @@ describe('getFormDataForUser', () => {
     formClient.getFormDataForUser('bookingId1')
 
     expect(db.query).toBeCalledWith({
-      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy"
         from form f where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['bookingId1'],
     })
@@ -29,7 +29,7 @@ describe('getCategorisationRecordsByStatus', () => {
     formClient.getCategorisationRecordsByStatus('MDI', ['APPROVED', 'AWAITING_APPROVAL'])
 
     expect(db.query).toBeCalledWith({
-      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy"
         from form f where f.prison_id = $1 and f.status = ANY ($2) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['MDI', ['APPROVED', 'AWAITING_APPROVAL']],
     })
@@ -41,7 +41,7 @@ describe('getSecurityReviewedCategorisationRecords', () => {
     formClient.getSecurityReviewedCategorisationRecords('MDI')
 
     expect(db.query).toBeCalledWith({
-      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy"
         from form f where f.prison_id = $1 and security_reviewed_date is not null and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['MDI'],
     })
@@ -60,14 +60,9 @@ describe('securityReviewed', () => {
   })
 })
 
-describe('update', () => {
-  test('it should call query on db', () => {
-    formClient.update('formId', {}, 'bookingId', null)
-    expect(db.query).toBeCalledTimes(1)
-  })
-
-  test('it should insert if no formId passed in', () => {
-    formClient.update(undefined, {}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS')
+describe('create categorisation record', () => {
+  test('create categorisation record', () => {
+    formClient.create('bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS')
 
     expect(db.query).toBeCalledWith({
       text:
@@ -75,9 +70,11 @@ describe('update', () => {
       values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS'],
     })
   })
+})
 
-  test('it should update if formId passed in', () => {
-    formClient.update('formId', {}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123')
+describe('categorisation record update', () => {
+  test('it should update the categorisation record', () => {
+    formClient.update('formId', {}, 'bookingId1', 'STARTED')
 
     expect(db.query).toBeCalledWith({
       text:

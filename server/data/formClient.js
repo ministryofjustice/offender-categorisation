@@ -7,7 +7,7 @@ const sequenceClause =
 module.exports = {
   getFormDataForUser(bookingId) {
     const query = {
-      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy"
         from form f where f.booking_id = $1 ${sequenceClause}`,
       values: [bookingId],
     }
@@ -17,7 +17,7 @@ module.exports = {
   getCategorisationRecordsByStatus(agencyId, statusList) {
     logger.debug(`getCategorisationRecordsByStatus called for ${agencyId}, status ${statusList}`)
     const query = {
-      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy"
         from form f where f.prison_id = $1 and f.status = ANY ($2) ${sequenceClause}`,
       values: [agencyId, statusList],
     }
@@ -27,7 +27,7 @@ module.exports = {
   getSecurityReviewedCategorisationRecords(agencyId) {
     logger.debug(`getSecurityReviewedOffenders called for ${agencyId}`)
     const query = {
-      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy"
         from form f where f.prison_id = $1 and security_reviewed_date is not null ${sequenceClause}`,
       values: [agencyId],
     }
@@ -70,18 +70,22 @@ module.exports = {
     return db.query(query)
   },
 
-  update(formId, formResponse, bookingId, userId, status, assignedUserId, prisonId, offenderNo) {
+  update(formId, formResponse, bookingId, status) {
     logger.debug(`updating record for booking id ${bookingId}`)
-    const query = formId
-      ? {
-          text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
-          values: [formResponse, status, bookingId],
-        }
-      : {
-          text:
-            'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, 1, $6, $7, CURRENT_TIMESTAMP)',
-          values: [formResponse, bookingId, userId, status, assignedUserId, prisonId, offenderNo],
-        }
+    const query = {
+      text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
+      values: [formResponse, status, bookingId],
+    }
+    return db.query(query)
+  },
+
+  create(bookingId, userId, status, assignedUserId, prisonId, offenderNo) {
+    logger.debug(`creating categorisation record for booking id ${bookingId}`)
+    const query = {
+      text:
+        'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, 1, $6, $7, CURRENT_TIMESTAMP)',
+      values: [{}, bookingId, userId, status, assignedUserId, prisonId, offenderNo],
+    }
     return db.query(query)
   },
 }
