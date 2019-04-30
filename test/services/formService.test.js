@@ -4,6 +4,7 @@ const Status = require('../../server/utils/statusEnum')
 const formClient = {
   getFormDataForUser: jest.fn(),
   update: jest.fn(),
+  create: jest.fn(),
   referToSecurity: jest.fn(),
   updateStatus: jest.fn(),
   securityReviewed: jest.fn(),
@@ -14,6 +15,7 @@ beforeEach(() => {
   service = serviceCreator(formClient)
   formClient.getFormDataForUser.mockReturnValue({ rows: [{ a: 'b' }, { c: 'd' }] })
   formClient.update.mockReturnValue({})
+  formClient.create.mockReturnValue({})
   formClient.referToSecurity.mockReturnValue({})
   formClient.updateStatus.mockReturnValue({})
   formClient.securityReviewed.mockReturnValue({})
@@ -22,6 +24,7 @@ beforeEach(() => {
 afterEach(() => {
   formClient.getFormDataForUser.mockReset()
   formClient.update.mockReset()
+  formClient.create.mockReset()
   formClient.referToSecurity.mockReset()
   formClient.updateStatus.mockReset()
   formClient.securityReviewed.mockReset({})
@@ -86,7 +89,6 @@ describe('update', () => {
       }
 
       const output = await service.update({
-        userId: 'user1',
         config: { fields: fieldMap },
         userInput,
         formSection: 'section4',
@@ -106,7 +108,7 @@ describe('update', () => {
       })
     })
 
-    test('should call update and pass in the user', async () => {
+    test('should call update', async () => {
       formClient.getFormDataForUser.mockReturnValue({
         rows: [
           {
@@ -125,7 +127,6 @@ describe('update', () => {
 
       const output = await service.update({
         bookingId: 1234,
-        userId: 'MEEEE',
         config: { fields: fieldMap },
         userInput,
         formSection: 'section4',
@@ -133,7 +134,16 @@ describe('update', () => {
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'MEEEE', 'STARTED', 'MEEEE')
+      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'STARTED')
+    })
+
+    test('should call create and pass in the user', async () => {
+      formClient.getFormDataForUser.mockReturnValue({ rows: [] })
+
+      await service.createOrRetrieveCategorisationRecord(1234, 'User', 'LEI', 'OFFno')
+
+      expect(formClient.create).toBeCalledTimes(1)
+      expect(formClient.create).toBeCalledWith(1234, 'User', 'STARTED', 'User', 'LEI', 'OFFno')
     })
 
     test('should reject update if invalid status transition - SECURITY_BACK - APPROVED', async () => {
@@ -157,7 +167,6 @@ describe('update', () => {
       expect(
         service.update({
           bookingId: 1234,
-          userId: 'MEEEE',
           config: { fields: fieldMap },
           userInput,
           formSection: 'section4',
@@ -580,24 +589,6 @@ describe('createOrRetrieveCategorisationRecord', () => {
 
     await service.createOrRetrieveCategorisationRecord(bookingId, userId, 'MDI', 'A4567RS')
 
-    expect(formClient.update).toBeCalledWith(undefined, {}, bookingId, userId, 'STARTED', userId, 'MDI', 'A4567RS')
+    expect(formClient.create).toBeCalledWith(bookingId, userId, 'STARTED', userId, 'MDI', 'A4567RS')
   })
 })
-/*
- async function securityReviewed(bookingId) {
-    const currentCategorisation = await getCategorisationRecord(bookingId)
-    const currentStatus = currentCategorisation.status
-    const status = Status[currentStatus]
-    if (Status.SECURITY_BACK.previous.includes(status) && currentStatus !== Status.SECURITY_BACK) {
-      try {
-        await formClient.securityReviewed(bookingId)
-      } catch (error) {
-        logger.error(error)
-        throw error
-      }
-    } else {
-      logger.warn(`Cannot transition from status ${status && status.name} to SECURITY_BACK, bookingId=${bookingId}`)
-    }
-    return {}
-  }
- */
