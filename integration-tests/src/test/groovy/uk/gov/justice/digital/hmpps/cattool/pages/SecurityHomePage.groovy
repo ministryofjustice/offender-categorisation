@@ -20,7 +20,7 @@ class SecurityHomePage extends Page {
     referredBy { bodyRows*.$('td', 4)*.text()  }
     startButtons { bodyRows*.$('td', 5)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
-    noOffendersText { $('h3.govuk-heading-s').text() }
+    noOffendersText(required: false) { $('#no-results-message').text() }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/securityDone')}
   }
