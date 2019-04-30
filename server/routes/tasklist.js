@@ -27,7 +27,7 @@ module.exports = function Index({
         details.agencyId,
         details.offenderNo
       )
-      res.locals.formObject = categorisationRecord.form_response || {}
+      res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formId = categorisationRecord.id
 
       // only load the soc profile once - then it is saved against the record
@@ -53,8 +53,9 @@ module.exports = function Index({
         ...res.locals.formObject,
         status: categorisationRecord.status,
         displayStatus: categorisationRecord.status && Status[categorisationRecord.status].value,
-        referredDate:
-          categorisationRecord.referred_date && moment(categorisationRecord.referred_date).format('DD/MM/YYYY'),
+        securityReferredDate:
+          categorisationRecord.securityReferredDate &&
+          moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
       }
       res.render('pages/tasklist', { data })
     })

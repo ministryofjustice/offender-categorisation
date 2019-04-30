@@ -69,7 +69,7 @@ describe('update', () => {
       formClient.getFormDataForUser.mockReturnValue({
         rows: [
           {
-            form_response: {
+            formObject: {
               section1: '',
               section2: '',
               section3: {},
@@ -202,7 +202,7 @@ describe('update', () => {
       formClient.getFormDataForUser.mockReturnValue({
         rows: [
           {
-            form_response: {
+            formObject: {
               ...baseForm,
             },
           },
@@ -270,7 +270,7 @@ describe('update', () => {
       formClient.getFormDataForUser.mockReturnValue({
         rows: [
           {
-            form_response: {
+            formObject: {
               ...baseForm,
             },
           },
@@ -311,7 +311,7 @@ describe('update', () => {
       formClient.getFormDataForUser.mockReturnValue({
         rows: [
           {
-            form_response: {
+            formObject: {
               ...baseForm,
             },
           },
