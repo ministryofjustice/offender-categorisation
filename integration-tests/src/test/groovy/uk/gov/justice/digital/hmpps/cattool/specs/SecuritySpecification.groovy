@@ -81,7 +81,7 @@ class SecuritySpecification extends GebReportingSpec {
 
     elite2api.stubCategorised()
     elite2api.stubGetOffenderDetailsByBookingIdList('LEI')
-    elite2api.stubGetSecurityStaffDetailsByUsername()
+    elite2api.stubGetSecurityStaffDetailsByUsernameList()
 
     doneTabLink.click()
 

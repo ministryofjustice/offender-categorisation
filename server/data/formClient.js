@@ -7,7 +7,7 @@ const sequenceClause =
 module.exports = {
   getFormDataForUser(bookingId) {
     const query = {
-      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
         from form f where f.booking_id = $1 ${sequenceClause}`,
       values: [bookingId],
     }
@@ -17,7 +17,7 @@ module.exports = {
   getCategorisationRecordsByStatus(agencyId, statusList) {
     logger.debug(`getCategorisationRecordsByStatus called for ${agencyId}, status ${statusList}`)
     const query = {
-      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
         from form f where f.prison_id = $1 and f.status = ANY ($2) ${sequenceClause}`,
       values: [agencyId, statusList],
     }
@@ -27,7 +27,7 @@ module.exports = {
   getSecurityReviewedCategorisationRecords(agencyId) {
     logger.debug(`getSecurityReviewedOffenders called for ${agencyId}`)
     const query = {
-      text: `select id, booking_id, user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
+      text: `select id, booking_id as "bookingId", user_id, status, form_response, assigned_user_id, referred_date, referred_by, security_reviewed_date, security_reviewed_by
         from form f where f.prison_id = $1 and security_reviewed_date is not null ${sequenceClause}`,
       values: [agencyId],
     }
