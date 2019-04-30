@@ -15,7 +15,7 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function update({ bookingId, userId, config, userInput, formSection, formName, status }) {
+  async function update({ bookingId, config, userInput, formSection, formName, status }) {
     const currentCategorisation = await getCategorisationRecord(bookingId)
 
     const newCategorisationForm = buildCategorisationForm({
@@ -31,9 +31,7 @@ module.exports = function createFormService(formClient) {
         currentCategorisation.id,
         newCategorisationForm,
         bookingId,
-        userId,
-        calculateStatus(currentCategorisation.status, status),
-        userId
+        calculateStatus(currentCategorisation.status, status)
       )
       return newCategorisationForm
     }
@@ -41,7 +39,7 @@ module.exports = function createFormService(formClient) {
   }
 
   async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo) {
-    await formClient.update(undefined, {}, bookingId, userId, Status.STARTED.name, userId, prisonId, offenderNo)
+    await formClient.create(bookingId, userId, Status.STARTED.name, userId, prisonId, offenderNo)
     return getCategorisationRecord(bookingId)
   }
 
