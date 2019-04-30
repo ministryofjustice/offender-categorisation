@@ -101,7 +101,7 @@ describe('open conditions', () => {
   test('furtherCharges both exist', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      form_response: {
+      formObject: {
         ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
         openConditions: { furtherCharges: { furtherChargesText: 'new stuff' } },
       },
@@ -118,7 +118,7 @@ describe('open conditions', () => {
   test('furtherCharges previous Charges exist', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      form_response: {
+      formObject: {
         ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
       },
     })
@@ -134,7 +134,7 @@ describe('open conditions', () => {
   test('furtherCharges furtherChargesText exist', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      form_response: {
+      formObject: {
         openConditions: { furtherCharges: { furtherChargesText: 'new stuff' } },
       },
     })
@@ -150,7 +150,7 @@ describe('open conditions', () => {
   test('furtherCharges neither exists', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      form_response: {},
+      formObject: {},
     })
     return request(app)
       .get('/furtherCharges/12345')
@@ -170,7 +170,7 @@ describe('open conditions', () => {
   `('should render $expectedContent for $sectionName/$formName', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      form_response: {},
+      formObject: {},
     })
     request(app)
       .post(`/${formName}/12345`)
@@ -241,7 +241,7 @@ describe('open conditions', () => {
   `('should redirect from reviewOpenConditions page', ({ data, expectedPage }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      form_response: data,
+      formObject: data,
     })
     return request(app)
       .post(`/reviewOpenConditions/12345`)
@@ -258,7 +258,7 @@ describe('open conditions', () => {
   `('should render notRecommended page', ({ data, expectedContent }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      form_response: data,
+      formObject: data,
     })
     return request(app)
       .get(`/notRecommended/12345`)

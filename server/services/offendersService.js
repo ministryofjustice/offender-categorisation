@@ -158,22 +158,24 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           securityReferredFromDB.map(c => c.bookingId)
         )
 
-        const userDetailFromElite = await nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.referred_by))
+        const userDetailFromElite = await nomisClient.getUserDetailList(
+          securityReferredFromDB.map(c => c.securityReferredBy)
+        )
 
         const decoratedResults = securityReferredFromDB.map(o => {
           const offenderDetail = offenderDetailsFromElite.find(record => record.bookingId === o.bookingId)
 
-          let referredBy
-          if (o.referred_by) {
-            const referrer = userDetailFromElite.find(record => record.username === o.referred_by)
-            referredBy = `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`
+          let securityReferredBy
+          if (o.securityReferredBy) {
+            const referrer = userDetailFromElite.find(record => record.username === o.securityReferredBy)
+            securityReferredBy = `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`
           }
 
           return {
             ...o,
             offenderNo: offenderDetail.offenderNo,
             displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
-            referredBy,
+            securityReferredBy,
             ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
           }
         })
@@ -199,13 +201,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         )
 
         const userDetailFromElite = await nomisClient.getUserDetailList(
-          securityReviewedFromDB.map(c => c.security_reviewed_by)
+          securityReviewedFromDB.map(c => c.securityReviewedBy)
         )
 
         const decoratedResults = securityReviewedFromDB.map(o => {
-          const reviewedMoment = moment(o.security_reviewed_date, 'YYYY-MM-DD')
+          const reviewedMoment = moment(o.securityReviewedDate, 'YYYY-MM-DD')
           const offenderDetail = offenderDetailsFromElite.find(record => record.bookingId === o.bookingId)
-          const userDetail = userDetailFromElite.find(record => record.username === o.security_reviewed_by)
+          const userDetail = userDetailFromElite.find(record => record.username === o.securityReviewedBy)
           return {
             ...o,
             offenderNo: offenderDetail.offenderNo,
@@ -283,14 +285,14 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     if (categorisation.status) {
       statusText = statusTextDisplay(categorisation.status)
       logger.debug(`retrieving status ${categorisation.status} for booking id ${offender.bookingId}`)
-      if (categorisation.assigned_user_id && categorisation.status === Status.STARTED.name) {
-        if (categorisation.assigned_user_id !== user.username) {
+      if (categorisation.assignedUserId && categorisation.status === Status.STARTED.name) {
+        if (categorisation.assignedUserId !== user.username) {
           // need to retrieve name details for non-current user
           try {
-            const assignedUser = await nomisClient.getUserByUserId(categorisation.assigned_user_id)
+            const assignedUser = await nomisClient.getUserByUserId(categorisation.assignedUserId)
             statusText += ` (${properCaseName(assignedUser.firstName)} ${properCaseName(assignedUser.lastName)})`
           } catch (error) {
-            logger.warn(error, `No assigned user details found for ${categorisation.assigned_user_id}`)
+            logger.warn(error, `No assigned user details found for ${categorisation.assignedUserId}`)
           }
         } else {
           statusText += ` (${properCaseName(user.firstName)} ${properCaseName(user.lastName)})`
@@ -299,7 +301,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       return {
         dbRecordExists: true,
         displayStatus: statusText,
-        assignedUserId: categorisation.assigned_user_id,
+        assignedUserId: categorisation.assignedUserId,
       }
     }
     statusText = statusTextDisplay(offender.status)
