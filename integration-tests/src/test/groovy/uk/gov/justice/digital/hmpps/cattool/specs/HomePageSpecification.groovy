@@ -92,7 +92,7 @@ class HomePageSpecification extends GebReportingSpec {
     days == [daysSinceSentence12, daysSinceSentence11]
     dates == ['14/02/2019', '11/02/2019']
     catBy == ['Bugs Bunny', 'Roger Rabbit']
-    statuses == ['Review in NOMIS', 'B']
+    statuses == ['PNOMIS', 'B']
   }
 
   def "The status of 'Started' for an offender is calculated correctly"() {
