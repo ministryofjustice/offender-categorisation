@@ -70,18 +70,22 @@ module.exports = {
     return db.query(query)
   },
 
-  update(formId, formResponse, bookingId, userId, status, assignedUserId, prisonId, offenderNo) {
+  update(formId, formResponse, bookingId, status) {
     logger.debug(`updating record for booking id ${bookingId}`)
-    const query = formId
-      ? {
-          text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
-          values: [formResponse, status, bookingId],
-        }
-      : {
-          text:
-            'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, 1, $6, $7, CURRENT_TIMESTAMP)',
-          values: [formResponse, bookingId, userId, status, assignedUserId, prisonId, offenderNo],
-        }
+    const query = {
+      text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
+      values: [formResponse, status, bookingId],
+    }
+    return db.query(query)
+  },
+
+  create(bookingId, userId, status, assignedUserId, prisonId, offenderNo) {
+    logger.debug(`creating categorisation record for booking id ${bookingId}`)
+    const query = {
+      text:
+        'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, 1, $6, $7, CURRENT_TIMESTAMP)',
+      values: [{}, bookingId, userId, status, assignedUserId, prisonId, offenderNo],
+    }
     return db.query(query)
   },
 }

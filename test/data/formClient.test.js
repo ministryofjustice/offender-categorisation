@@ -60,14 +60,9 @@ describe('securityReviewed', () => {
   })
 })
 
-describe('update', () => {
-  test('it should call query on db', () => {
-    formClient.update('formId', {}, 'bookingId', null)
-    expect(db.query).toBeCalledTimes(1)
-  })
-
-  test('it should insert if no formId passed in', () => {
-    formClient.update(undefined, {}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS')
+describe('create categorisation record', () => {
+  test('create categorisation record', () => {
+    formClient.create('bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS')
 
     expect(db.query).toBeCalledWith({
       text:
@@ -75,9 +70,11 @@ describe('update', () => {
       values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS'],
     })
   })
+})
 
-  test('it should update if formId passed in', () => {
-    formClient.update('formId', {}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123')
+describe('categorisation record update', () => {
+  test('it should update the categorisation record', () => {
+    formClient.update('formId', {}, 'bookingId1', 'STARTED')
 
     expect(db.query).toBeCalledWith({
       text:
