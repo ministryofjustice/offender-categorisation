@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.EarliestReleasePage
 
@@ -84,7 +85,9 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     form.otherInformationText == "other info  Text"
     form.overriddenCategoryText == "Some Text"
 
-    db.getData(12).status == ["AWAITING_APPROVAL"]
+    def data = db.getData(12)
+    data.status == ["AWAITING_APPROVAL"]
+    data.form_response.value[0].contains("provisionalCategory")
   }
 
   def 'Validation test'() {
@@ -230,5 +233,39 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     at ProvisionalCategoryPage
     !appropriateNo.displayed
     indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - Cat J not available'
+  }
+
+  def 'Rollback on elite2api failure'() {
+    given: 'I am at the Provisional Category page'
+    db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
+      ratings: [
+        furtherCharges  : [furtherCharges: "some charges"],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeCatB: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ]
+    ]))
+    elite2api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-3).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    fixture.loginAs(UserAccount.CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2api.stubGetOffenderDetails(12)
+    to ProvisionalCategoryPage, '12'
+
+    when: 'I save some data, but an api error occurs'
+    elite2api.stubCategoriseError()
+    appropriateYes.click()
+    submitButton.click()
+
+    then: 'An error is displayed and the data is not persisted'
+    at ErrorPage
+    at new ErrorPage(url: 'form/categoriser/provisionalCategory/12')
+    errorSummaryTitle.text() == 'Server Error'
+
+    def data = db.getData(12)
+    data.status == ["STARTED"]
+    !data.form_response.value[0].contains("provisionalCategory")
   }
 }

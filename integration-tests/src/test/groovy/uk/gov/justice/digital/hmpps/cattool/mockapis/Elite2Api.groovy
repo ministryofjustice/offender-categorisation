@@ -538,6 +538,17 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubCategoriseError() {
+
+    this.stubFor(
+      post("/api/offender-assessments/category/categorise")
+        .willReturn(
+          aResponse()
+            .withStatus(500)
+        )
+    )
+  }
+
   def stubSupervisorApprove(String expectedCat) {
 
     this.stubFor(

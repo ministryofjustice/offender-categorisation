@@ -4,6 +4,7 @@ const { firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
+const db = require('../data/dataAccess/db')
 
 const ratings = require('../config/ratings')
 const categoriser = require('../config/categoriser')
@@ -302,17 +303,18 @@ module.exports = function Index({
       if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
         return
       }
-
-      const updatedFormObject = await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
-        formSection: section,
-        formName: form,
+      await db.doTransactional(async client => {
+        const updatedFormObject = await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput: clearConditionalFields(req.body),
+          formSection: section,
+          formName: form,
+          transactionalClient: client,
+        })
+        await formService.referToSecurityIfRequested(bookingId, req.user.username, updatedFormObject, client)
       })
-      await formService.referToSecurityIfRequested(bookingId, req.user.username, updatedFormObject)
-
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
     })
@@ -386,16 +388,18 @@ module.exports = function Index({
         if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
           return
         }
-        await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
-
-        await formService.update({
-          bookingId: parseInt(bookingId, 10),
-          userId: req.user.username,
-          config: formPageConfig,
-          userInput,
-          formSection: section,
-          formName: form,
-          status: Status.AWAITING_APPROVAL.name,
+        await db.doTransactional(async client => {
+          await formService.update({
+            bookingId: parseInt(bookingId, 10),
+            userId: req.user.username,
+            config: formPageConfig,
+            userInput,
+            formSection: section,
+            formName: form,
+            status: Status.AWAITING_APPROVAL.name,
+            transactionalClient: client,
+          })
+          await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
         })
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
@@ -421,17 +425,18 @@ module.exports = function Index({
         if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
           return
         }
-
-        await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
-
-        await formService.update({
-          bookingId: parseInt(bookingId, 10),
-          userId: req.user.username,
-          config: formPageConfig,
-          userInput,
-          formSection: section,
-          formName: form,
-          status: Status.APPROVED.name,
+        await db.doTransactional(async client => {
+          await formService.update({
+            bookingId: parseInt(bookingId, 10),
+            userId: req.user.username,
+            config: formPageConfig,
+            userInput,
+            formSection: section,
+            formName: form,
+            status: Status.APPROVED.name,
+            transactionalClient: client,
+          })
+          await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
         })
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
