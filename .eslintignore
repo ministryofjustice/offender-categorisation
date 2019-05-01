@@ -1,3 +1,4 @@
 node_modules
 public
 assets
+integration-tests/build

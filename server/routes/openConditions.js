@@ -8,6 +8,7 @@ const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
 const { redirectUsingRole } = require('../utils/routes')
 const Status = require('../utils/statusEnum')
+const db = require('../data/dataAccess/db')
 
 const formConfig = {
   openConditions,
@@ -218,16 +219,19 @@ module.exports = function Index({ formService, offendersService, userService, au
       }
 
       const userInput = clearConditionalFields(req.body)
-      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
 
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        status: Status.AWAITING_APPROVAL.name,
+      await db.doTransactional(async client => {
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput,
+          formSection: section,
+          formName: form,
+          status: Status.AWAITING_APPROVAL.name,
+          transactionalClient: client,
+        })
+        await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
       })
 
       const nextPath = getPathFor({ data: userInput, config: formPageConfig })
