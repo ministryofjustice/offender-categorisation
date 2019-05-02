@@ -5,9 +5,9 @@ const Status = require('../utils/statusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
 
 module.exports = function createFormService(formClient) {
-  async function getCategorisationRecord(bookingId) {
+  async function getCategorisationRecord(bookingId, transactionalClient) {
     try {
-      const data = await formClient.getFormDataForUser(bookingId)
+      const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
       return data.rows[0] || {}
     } catch (error) {
       logger.error(error)
@@ -15,8 +15,8 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function update({ bookingId, config, userInput, formSection, formName, status }) {
-    const currentCategorisation = await getCategorisationRecord(bookingId)
+  async function update({ bookingId, config, userInput, formSection, formName, status, transactionalClient }) {
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
     const newCategorisationForm = buildCategorisationForm({
       formObject: currentCategorisation.formObject || {},
@@ -31,7 +31,8 @@ module.exports = function createFormService(formClient) {
         currentCategorisation.id,
         newCategorisationForm,
         bookingId,
-        calculateStatus(currentCategorisation.status, status)
+        calculateStatus(currentCategorisation.status, status),
+        transactionalClient
       )
       return newCategorisationForm
     }
@@ -139,13 +140,13 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function referToSecurityIfRequested(bookingId, userId, updatedFormObject) {
+  async function referToSecurityIfRequested(bookingId, userId, updatedFormObject, transactionalClient) {
     if (updatedFormObject.ratings.securityInput.securityInputNeeded === 'Yes') {
-      const currentCategorisation = await getCategorisationRecord(bookingId)
+      const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
       const currentStatus = currentCategorisation.status
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_MANUAL.name)) {
         try {
-          await formClient.referToSecurity(bookingId, userId, Status.SECURITY_MANUAL.name)
+          await formClient.referToSecurity(bookingId, userId, Status.SECURITY_MANUAL.name, transactionalClient)
         } catch (error) {
           logger.error(error)
           throw error

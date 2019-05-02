@@ -27,4 +27,20 @@ pool.on('error', error => {
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
+
+  doTransactional: async callback => {
+    const client = await pool.connect()
+    try {
+      await client.query('BEGIN')
+      await callback(client)
+      await client.query('COMMIT')
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw error
+    } finally {
+      client.release()
+    }
+  },
+
+  pool, // for testing only
 }
