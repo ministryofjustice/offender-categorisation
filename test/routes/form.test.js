@@ -2,6 +2,7 @@ const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const createRouter = require('../../server/routes/form')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
+const db = require('../../server/data/dataAccess/db')
 
 const ratings = require('../../server/config/ratings')
 const supervisor = require('../../server/config/supervisor')
@@ -72,6 +73,8 @@ beforeEach(() => {
   riskProfilerService.getViolenceProfile.mockResolvedValue({})
   riskProfilerService.getExtremismProfile.mockResolvedValue({})
   riskProfilerService.getEscapeProfile.mockResolvedValue({})
+  db.pool.connect = jest.fn()
+  db.pool.connect.mockResolvedValue({ query: jest.fn(), release: jest.fn() })
 })
 
 afterEach(() => {

@@ -41,4 +41,6 @@ module.exports = {
       client.release()
     }
   },
+
+  pool, // for testing only
 }
