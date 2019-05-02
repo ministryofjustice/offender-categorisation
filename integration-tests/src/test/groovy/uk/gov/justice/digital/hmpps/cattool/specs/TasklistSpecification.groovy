@@ -10,14 +10,11 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
 
 import java.time.LocalDate
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_USER
 
 class TasklistSpecification extends GebReportingSpec {
@@ -45,6 +42,9 @@ class TasklistSpecification extends GebReportingSpec {
 
   def "The tasklist for a categoriser is present"() {
     when: 'I go to the tasklist page'
+    db.createRiskProfileData(12, JsonOutput.toJson([
+      "escapeProfile": [nomsId: "Dummy"]
+    ]))
     fixture.gotoTasklist()
 
     then: 'The tasklist page is displayed'
@@ -65,6 +65,12 @@ class TasklistSpecification extends GebReportingSpec {
                             '6 years, 3 months']
     !continueButton
     continueButtonDisabled.displayed
+
+    and: 'SOC data is stored and merged correctly'
+    def response = db.getData(12)[0].risk_profile
+    def json = response.toString()
+    json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
+    json.contains '"escapeProfile": {"nomsId": "Dummy"'
   }
 
   def "The continue button behaves correctly"() {
