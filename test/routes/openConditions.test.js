@@ -1,6 +1,7 @@
 const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
+const db = require('../../server/data/dataAccess/db')
 
 const ratings = require('../../server/config/ratings')
 const supervisor = require('../../server/config/supervisor')
@@ -68,6 +69,8 @@ beforeEach(() => {
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
+  db.pool.connect = jest.fn()
+  db.pool.connect.mockResolvedValue({ query: jest.fn(), release: jest.fn() })
 })
 
 afterEach(() => {
