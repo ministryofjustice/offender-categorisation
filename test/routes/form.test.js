@@ -24,6 +24,7 @@ const formService = {
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
   updateFormData: jest.fn(),
+  mergeRiskProfileData: jest.fn(),
   backToCategoriser: jest.fn(),
   isValid: jest.fn(),
 }
@@ -237,9 +238,7 @@ describe('GET /categoriser/review', () => {
       .get('/categoriser/review/12345')
       .expect(200)
       .expect(() => {
-        expect(formService.updateFormData).toBeCalledWith('12345', {
-          categoriser: 'other things',
-          ratings: 'stuff',
+        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', {
           escapeProfile: {
             flagA: 'B2345XY',
           },
@@ -253,6 +252,7 @@ describe('GET /categoriser/review', () => {
             catARisk: true,
           },
         })
+        expect(formService.updateFormData).not.toBeCalled()
       })
   })
 })

@@ -8,6 +8,7 @@ const formClient = {
   referToSecurity: jest.fn(),
   updateStatus: jest.fn(),
   securityReviewed: jest.fn(),
+  updateRiskProfileData: jest.fn(),
 }
 let service
 
@@ -28,6 +29,7 @@ afterEach(() => {
   formClient.referToSecurity.mockReset()
   formClient.updateStatus.mockReset()
   formClient.securityReviewed.mockReset({})
+  formClient.updateRiskProfileData.mockReset()
 })
 
 describe('getCategorisationRecord', () => {
@@ -354,6 +356,31 @@ describe('update', () => {
         },
       })
     })
+  })
+})
+
+describe('mergeRiskProfileData', () => {
+  test('happy path', async () => {
+    const existingData = {
+      section1: { value: 'old' },
+      section3: { value: 'existing' },
+    }
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ riskProfile: existingData }] })
+    const data = {
+      section1: { value: 'new1' },
+      section2: { value: 'new2' },
+    }
+
+    await service.mergeRiskProfileData(bookingId, data)
+
+    expect(formClient.updateRiskProfileData.mock.calls[0]).toEqual([
+      bookingId,
+      {
+        section1: { value: 'new1' },
+        section2: { value: 'new2' },
+        section3: { value: 'existing' },
+      },
+    ])
   })
 })
 
