@@ -2,6 +2,7 @@ const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const createRouter = require('../../server/routes/form')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
+const db = require('../../server/data/dataAccess/db')
 
 const ratings = require('../../server/config/ratings')
 const supervisor = require('../../server/config/supervisor')
@@ -72,6 +73,8 @@ beforeEach(() => {
   riskProfilerService.getViolenceProfile.mockResolvedValue({})
   riskProfilerService.getExtremismProfile.mockResolvedValue({})
   riskProfilerService.getEscapeProfile.mockResolvedValue({})
+  db.pool.connect = jest.fn()
+  db.pool.connect.mockResolvedValue({ query: jest.fn(), release: jest.fn() })
 })
 
 afterEach(() => {
@@ -272,14 +275,9 @@ describe('POST /section/form', () => {
       .expect(() => {
         expect(formService.update).toBeCalledTimes(1)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-        expect(formService.update).toBeCalledWith({
-          bookingId: 12345,
-          userId: 'CA_USER_TEST',
-          config: formConfig[sectionName][formName],
-          userInput,
-          formSection: sectionName,
-          formName,
-        })
+        const updateArg = formService.update.mock.calls[0][0]
+        expect(updateArg.bookingId).toBe(12345)
+        expect(updateArg.config).toBe(formConfig[sectionName][formName])
       })
   )
 })
@@ -298,15 +296,9 @@ describe('POST /supervisor/review', () => {
         expect(formService.update).toBeCalledTimes(1)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(offendersService.createSupervisorApproval).toBeCalledWith('ABCDEF', '12345', userInput)
-        expect(formService.update).toBeCalledWith({
-          bookingId: 12345,
-          userId: 'CA_USER_TEST',
-          config: formConfig[sectionName][formName],
-          userInput,
-          formSection: sectionName,
-          formName,
-          status: 'APPROVED',
-        })
+        const updateArg = formService.update.mock.calls[0][0]
+        expect(updateArg.bookingId).toBe(12345)
+        expect(updateArg.status).toBe('APPROVED')
       })
   )
 })
@@ -345,15 +337,9 @@ describe('POST /categoriser/provisionalCategory', () => {
           expect(formService.update).toBeCalledTimes(1)
           expect(offendersService.getCatAInformation).toBeCalledTimes(0)
           expect(offendersService.createInitialCategorisation).toBeCalledWith('ABCDEF', '12345', userInput)
-          expect(formService.update).toBeCalledWith({
-            bookingId: 12345,
-            userId: 'CA_USER_TEST',
-            config: formConfig[sectionName][formName],
-            userInput,
-            formSection: sectionName,
-            formName,
-            status: 'AWAITING_APPROVAL',
-          })
+          const updateArg = formService.update.mock.calls[0][0]
+          expect(updateArg.bookingId).toBe(12345)
+          expect(updateArg.status).toBe('AWAITING_APPROVAL')
         })
   )
 })

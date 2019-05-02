@@ -134,7 +134,7 @@ describe('update', () => {
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'STARTED')
+      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'STARTED', undefined)
     })
 
     test('should call create and pass in the user', async () => {
@@ -488,10 +488,16 @@ describe('referToSecurityIfRequested', () => {
 
   test('happy path', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
+    const mockTransactionalClient = {}
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
 
-    expect(formClient.referToSecurity.mock.calls[0]).toEqual([bookingId, userId, Status.SECURITY_MANUAL.name])
+    expect(formClient.referToSecurity.mock.calls[0]).toEqual([
+      bookingId,
+      userId,
+      Status.SECURITY_MANUAL.name,
+      mockTransactionalClient,
+    ])
   })
 
   test('no record in db', async () => {

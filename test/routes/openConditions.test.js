@@ -1,6 +1,7 @@
 const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
+const db = require('../../server/data/dataAccess/db')
 
 const ratings = require('../../server/config/ratings')
 const supervisor = require('../../server/config/supervisor')
@@ -68,6 +69,8 @@ beforeEach(() => {
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
+  db.pool.connect = jest.fn()
+  db.pool.connect.mockResolvedValue({ query: jest.fn(), release: jest.fn() })
 })
 
 afterEach(() => {
@@ -204,15 +207,10 @@ describe('open conditions', () => {
           expect(formService.update).toBeCalledTimes(1)
           expect(offendersService.getCatAInformation).toBeCalledTimes(0)
           expect(offendersService.createInitialCategorisation).toBeCalledWith('ABCDEF', '12345', userInput)
-          expect(formService.update).toBeCalledWith({
-            bookingId: 12345,
-            userId: 'CA_USER_TEST',
-            config: formConfig[sectionName][formName],
-            userInput,
-            formSection: 'categoriser', // persist the provisional categorisation against the categoriser section
-            formName,
-            status: 'AWAITING_APPROVAL',
-          })
+          const updateArg = formService.update.mock.calls[0][0]
+          expect(updateArg.bookingId).toBe(12345)
+          expect(updateArg.config).toEqual(formConfig[sectionName][formName])
+          expect(updateArg.status).toBe('AWAITING_APPROVAL')
         })
   )
 
