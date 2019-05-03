@@ -164,10 +164,7 @@ module.exports = function Index({
         res.locals.user.username
       )
 
-      const { details, ...dataWithoutOffenderDetails } = result.data  // eslint-disable-line
-
       const dataToStore = {
-        ...dataWithoutOffenderDetails,
         history,
         escapeProfile,
         extremismProfile,
@@ -182,7 +179,7 @@ module.exports = function Index({
         violenceProfile,
       }
 
-      await formService.updateFormData(bookingId, dataToStore)
+      await formService.mergeRiskProfileData(bookingId, dataToStore)
 
       res.render('formPages/categoriser/review', { ...result, data: dataToDisplay })
     })
@@ -235,6 +232,7 @@ module.exports = function Index({
 
     const formData = await formService.getCategorisationRecord(bookingId)
     res.locals.formObject = formData.formObject || {}
+    res.locals.formObject = { ...res.locals.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')

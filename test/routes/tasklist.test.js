@@ -10,6 +10,7 @@ const formService = {
   getValidationErrors: jest.fn().mockReturnValue([]),
   createOrRetrieveCategorisationRecord: jest.fn(),
   updateFormData: jest.fn(),
+  mergeRiskProfileData: jest.fn(),
   referToSecurityIfRiskAssessed: jest.fn(),
 }
 
@@ -114,8 +115,7 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
         expect(res.text).toContain('href="/form/ratings/offendingHistory/12345"')
 
-        expect(formService.updateFormData).toBeCalledWith('12345', {
-          sample: 'string',
+        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', {
           socProfile: sampleSocProfile,
         })
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(
@@ -124,6 +124,7 @@ describe('GET /tasklist/', () => {
           sampleSocProfile,
           'STARTED'
         )
+        expect(formService.updateFormData).not.toBeCalled()
       })
   })
 
