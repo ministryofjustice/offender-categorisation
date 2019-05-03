@@ -5,7 +5,7 @@ metadata:
  namespace: categorisation-tool-preprod
  annotations:
    kubernetes.io/ingress.class: "nginx"
-   nginx.ingress.kubernetes.io/whitelist-source-range: "62.25.109.197/32,195.92.38.16/28,81.134.202.29/32,217.33.148.208/29,35.177.252.195/32"
+   nginx.ingress.kubernetes.io/whitelist-source-range: "212.137.36.230/32,62.25.109.197/32,195.92.38.16/28,81.134.202.29/32,217.33.148.208/29,35.177.252.195/32"
 spec:
   tls:
   - hosts:
