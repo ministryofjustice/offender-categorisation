@@ -8,7 +8,6 @@ const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
 const { redirectUsingRole } = require('../utils/routes')
 const Status = require('../utils/statusEnum')
-const db = require('../data/dataAccess/db')
 
 const formConfig = {
   openConditions,
@@ -30,10 +29,10 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/furtherCharges/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'furtherCharges'
-      const result = await buildFormData(res, req, 'openConditions', form, bookingId)
+      const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
 
       // Copy offending history charges or skip ?
       const textExists =
@@ -65,11 +64,11 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/provisionalCategory/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, section, form, bookingId)
+      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
       const suggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
       const data = { ...result.data, suggestedCat }
 
@@ -79,18 +78,18 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/:form/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
-      const result = await buildFormData(res, req, 'openConditions', form, bookingId)
+      const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
       res.render(`formPages/openConditions/${form}`, result)
     })
   )
 
-  const buildFormData = async (res, req, section, form, bookingId) => {
+  const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient) => {
     const user = await userService.getUser(res.locals.user.token)
     res.locals.user = { ...user, ...res.locals.user }
 
-    const formData = await formService.getCategorisationRecord(bookingId)
+    const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
     res.locals.formObject = formData.formObject || {}
     res.locals.formObject = { ...res.locals.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
@@ -146,12 +145,12 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/reviewOpenConditions/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'reviewOpenConditions'
       const formPageConfig = formConfig.openConditions[form]
 
-      const formData = await formService.getCategorisationRecord(bookingId)
+      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
       const data = formData.formObject
       const oc = data.openConditions
       if (
@@ -170,7 +169,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/notRecommended/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'openConditions'
       const form = 'notRecommended'
@@ -188,6 +187,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         userInput,
         formSection: section,
         formName: form,
+        transactionalClient: transactionalDbClient,
       })
       if (userInput.stillRefer === 'No') {
         redirectUsingRole(
@@ -207,7 +207,7 @@ module.exports = function Index({ formService, offendersService, userService, au
    * cat data being stored in separate locations */
   router.post(
     '/provisionalCategory/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'categoriser' // persisting the categorisation data in one place
       const form = 'provisionalCategory'
@@ -221,19 +221,17 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const userInput = clearConditionalFields(req.body)
 
-      await db.doTransactional(async client => {
-        await formService.update({
-          bookingId: parseInt(bookingId, 10),
-          userId: req.user.username,
-          config: formPageConfig,
-          userInput,
-          formSection: section,
-          formName: form,
-          status: Status.AWAITING_APPROVAL.name,
-          transactionalClient: client,
-        })
-        await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput,
+        formSection: section,
+        formName: form,
+        status: Status.AWAITING_APPROVAL.name,
+        transactionalClient: transactionalDbClient,
       })
+      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
 
       const nextPath = getPathFor({ data: userInput, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
@@ -242,7 +240,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/:form/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const section = 'openConditions'
       const formPageConfig = formConfig.openConditions[form]
@@ -259,6 +257,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         userInput,
         formSection: section,
         formName: form,
+        transactionalClient: transactionalDbClient,
       })
 
       if (userInput.justify === 'No') {

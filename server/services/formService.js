@@ -39,15 +39,15 @@ module.exports = function createFormService(formClient) {
     throw new Error(`Invalid state transition from ${currentCategorisation.status} to ${status}`)
   }
 
-  async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo) {
-    await formClient.create(bookingId, userId, Status.STARTED.name, userId, prisonId, offenderNo)
-    return getCategorisationRecord(bookingId)
+  async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo, transactionalClient) {
+    await formClient.create(bookingId, userId, Status.STARTED.name, userId, prisonId, offenderNo, transactionalClient)
+    return getCategorisationRecord(bookingId, transactionalClient)
   }
 
-  async function createOrRetrieveCategorisationRecord(bookingId, userId, prisonId, offenderNo) {
-    const currentRecord = await getCategorisationRecord(bookingId)
+  async function createOrRetrieveCategorisationRecord(bookingId, userId, prisonId, offenderNo, transactionalClient) {
+    const currentRecord = await getCategorisationRecord(bookingId, transactionalClient)
     if (!currentRecord.status) {
-      const record = await createCategorisationRecord(bookingId, userId, prisonId, offenderNo)
+      const record = await createCategorisationRecord(bookingId, userId, prisonId, offenderNo, transactionalClient)
       return record
     }
     return currentRecord
@@ -77,15 +77,16 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function updateFormData(bookingId, data) {
-    await formClient.updateFormData(bookingId, data)
+  async function updateFormData(bookingId, data, transactionalClient) {
+    await formClient.updateFormData(bookingId, data, transactionalClient)
   }
 
-  async function mergeRiskProfileData(bookingId, data) {
-    const oldRecord = await getCategorisationRecord(bookingId)
+  async function mergeRiskProfileData(bookingId, data, transactionalClient) {
+    const oldRecord = await getCategorisationRecord(bookingId, transactionalClient)
     await formClient.updateRiskProfileData(
       bookingId,
-      oldRecord && oldRecord.riskProfile ? { ...oldRecord.riskProfile, ...data } : data
+      oldRecord && oldRecord.riskProfile ? { ...oldRecord.riskProfile, ...data } : data,
+      transactionalClient
     )
   }
 
@@ -133,11 +134,11 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile, currentStatus) {
+  async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile, currentStatus, transactionalClient) {
     if (socProfile.transferToSecurity && currentStatus !== Status.SECURITY_BACK.name) {
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_AUTO.name)) {
         try {
-          await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name)
+          await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name, transactionalClient)
         } catch (error) {
           logger.error(error)
           throw error
@@ -166,12 +167,12 @@ module.exports = function createFormService(formClient) {
     return {}
   }
 
-  async function backToCategoriser(bookingId) {
-    const currentCategorisation = await getCategorisationRecord(bookingId)
+  async function backToCategoriser(bookingId, transactionalClient) {
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     const currentStatus = currentCategorisation.status
     if (validateStatusIfProvided(currentStatus, Status.SUPERVISOR_BACK.name)) {
       try {
-        await formClient.updateStatus(bookingId, Status.SUPERVISOR_BACK.name)
+        await formClient.updateStatus(bookingId, Status.SUPERVISOR_BACK.name, transactionalClient)
       } catch (error) {
         logger.error(error)
         throw error
@@ -181,12 +182,12 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function securityReviewed(bookingId, userId) {
-    const currentCategorisation = await getCategorisationRecord(bookingId)
+  async function securityReviewed(bookingId, userId, transactionalClient) {
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     const currentStatus = currentCategorisation.status
     if (validateStatusIfProvided(currentStatus, Status.SECURITY_BACK.name)) {
       try {
-        await formClient.securityReviewed(bookingId, Status.SECURITY_BACK.name, userId)
+        await formClient.securityReviewed(bookingId, Status.SECURITY_BACK.name, userId, transactionalClient)
       } catch (error) {
         logger.error(error)
         throw error
@@ -197,9 +198,13 @@ module.exports = function createFormService(formClient) {
     return {}
   }
 
-  async function getCategorisedOffenders(agencyId) {
+  async function getCategorisedOffenders(agencyId, transactionalClient) {
     try {
-      const data = await formClient.getCategorisationRecordsByStatus(agencyId, [Status.APPROVED.name])
+      const data = await formClient.getCategorisationRecordsByStatus(
+        agencyId,
+        [Status.APPROVED.name],
+        transactionalClient
+      )
       return data.rows || []
     } catch (error) {
       logger.error(error)
@@ -207,9 +212,9 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function getSecurityReviewedOffenders(agencyId) {
+  async function getSecurityReviewedOffenders(agencyId, transactionalClient) {
     try {
-      const data = await formClient.getSecurityReviewedCategorisationRecords(agencyId)
+      const data = await formClient.getSecurityReviewedCategorisationRecords(agencyId, transactionalClient)
       return data.rows || []
     } catch (error) {
       logger.error(error)
@@ -217,12 +222,13 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function getSecurityReferredOffenders(agencyId) {
+  async function getSecurityReferredOffenders(agencyId, transactionalClient) {
     try {
-      const data = await formClient.getCategorisationRecordsByStatus(agencyId, [
-        Status.SECURITY_MANUAL.name,
-        Status.SECURITY_AUTO.name,
-      ])
+      const data = await formClient.getCategorisationRecordsByStatus(
+        agencyId,
+        [Status.SECURITY_MANUAL.name, Status.SECURITY_AUTO.name],
+        transactionalClient
+      )
 
       return data.rows || []
     } catch (error) {

@@ -9,6 +9,8 @@ const supervisor = require('../../server/config/supervisor')
 const categoriser = require('../../server/config/categoriser')
 const security = require('../../server/config/security')
 
+const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+
 const formConfig = {
   ratings,
   categoriser,
@@ -75,13 +77,15 @@ beforeEach(() => {
   riskProfilerService.getExtremismProfile.mockResolvedValue({})
   riskProfilerService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
-  db.pool.connect.mockResolvedValue({ query: jest.fn(), release: jest.fn() })
+  db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
 
 afterEach(() => {
   formService.getCategorisationRecord.mockReset()
   formService.referToSecurityIfRiskAssessed.mockReset()
   formService.referToSecurityIfRequested.mockReset()
+  formService.mergeRiskProfileData.mockReset()
+  formService.update.mockReset()
   offendersService.getOffenderDetails.mockReset()
   offendersService.getCatAInformation.mockReset()
   offendersService.getOffenceHistory.mockReset()
@@ -238,20 +242,24 @@ describe('GET /categoriser/review', () => {
       .get('/categoriser/review/12345')
       .expect(200)
       .expect(() => {
-        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', {
-          escapeProfile: {
-            flagA: 'B2345XY',
+        expect(formService.mergeRiskProfileData).toBeCalledWith(
+          '12345',
+          {
+            escapeProfile: {
+              flagA: 'B2345XY',
+            },
+            extremismProfile: {
+              exFlag: true,
+            },
+            violenceProfile: {
+              violenceFlag: true,
+            },
+            history: {
+              catARisk: true,
+            },
           },
-          extremismProfile: {
-            exFlag: true,
-          },
-          violenceProfile: {
-            violenceFlag: true,
-          },
-          history: {
-            catARisk: true,
-          },
-        })
+          mockTransactionalClient
+        )
         expect(formService.updateFormData).not.toBeCalled()
       })
   })
@@ -317,7 +325,7 @@ describe('POST /supervisor/confirmBack', () => {
       .expect(302)
       .expect('Location', `/supervisorHome`)
       .expect(() => {
-        expect(formService.backToCategoriser).toBeCalledWith('12345')
+        expect(formService.backToCategoriser).toBeCalledWith('12345', mockTransactionalClient)
       }))
 })
 

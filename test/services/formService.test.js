@@ -1,6 +1,8 @@
 const serviceCreator = require('../../server/services/formService')
 const Status = require('../../server/utils/statusEnum')
 
+const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+
 const formClient = {
   getFormDataForUser: jest.fn(),
   update: jest.fn(),
@@ -34,12 +36,12 @@ afterEach(() => {
 
 describe('getCategorisationRecord', () => {
   test('it should call query on db', async () => {
-    await service.getCategorisationRecord('user1')
+    await service.getCategorisationRecord('user1', mockTransactionalClient)
     expect(formClient.getFormDataForUser).toBeCalledTimes(1)
   })
 
   test('it should return the first row', async () => {
-    const output = await service.getCategorisationRecord('user1')
+    const output = await service.getCategorisationRecord('user1', mockTransactionalClient)
     expect(output).toEqual({ a: 'b' })
   })
 })
@@ -95,6 +97,7 @@ describe('update', () => {
         userInput,
         formSection: 'section4',
         formName: 'form3',
+        transactionalClient: mockTransactionalClient,
       })
 
       expect(output).toEqual({
@@ -133,19 +136,20 @@ describe('update', () => {
         userInput,
         formSection: 'section4',
         formName: 'form3',
+        transactionalClient: mockTransactionalClient,
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'STARTED', undefined)
+      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'STARTED', mockTransactionalClient)
     })
 
     test('should call create and pass in the user', async () => {
       formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-      await service.createOrRetrieveCategorisationRecord(1234, 'User', 'LEI', 'OFFno')
+      await service.createOrRetrieveCategorisationRecord(1234, 'User', 'LEI', 'OFFno', mockTransactionalClient)
 
       expect(formClient.create).toBeCalledTimes(1)
-      expect(formClient.create).toBeCalledWith(1234, 'User', 'STARTED', 'User', 'LEI', 'OFFno')
+      expect(formClient.create).toBeCalledWith(1234, 'User', 'STARTED', 'User', 'LEI', 'OFFno', mockTransactionalClient)
     })
 
     test('should reject update if invalid status transition - SECURITY_BACK - APPROVED', async () => {
@@ -174,6 +178,7 @@ describe('update', () => {
           formSection: 'section4',
           formName: 'form3',
           status: 'APPROVED',
+          transactionalClient: mockTransactionalClient,
         })
       ).rejects.toEqual(new Error('Invalid state transition from SECURITY_BACK to APPROVED'))
     })
@@ -183,7 +188,7 @@ describe('update', () => {
         rows: [
           {
             id: 'form1',
-            status: 'SECURITY_BACK',
+            status: 'APPROVED',
             ...baseForm,
           },
           { c: 'd' },
@@ -199,12 +204,12 @@ describe('update', () => {
       expect(
         service.update({
           bookingId: 1234,
-          userId: 'MEEEE',
           config: { fields: fieldMap },
           userInput,
           formSection: 'section4',
           formName: 'form3',
-          status: 'APPROVED',
+          status: 'STARTED',
+          transactionalClient: mockTransactionalClient,
         })
       ).rejects.toEqual(new Error('Invalid state transition from APPROVED to STARTED'))
     })
@@ -232,6 +237,7 @@ describe('update', () => {
         userInput,
         formSection: 'section5',
         formName: 'form1',
+        transactionalClient: mockTransactionalClient,
       })
 
       const expectedLicence = {
@@ -303,6 +309,7 @@ describe('update', () => {
         userInput,
         formSection,
         formName,
+        transactionalClient: mockTransactionalClient,
       })
 
       expect(output).toEqual({
@@ -344,6 +351,7 @@ describe('update', () => {
         userInput,
         formSection,
         formName,
+        transactionalClient: mockTransactionalClient,
       })
 
       expect(output).toEqual({
@@ -371,7 +379,7 @@ describe('mergeRiskProfileData', () => {
       section2: { value: 'new2' },
     }
 
-    await service.mergeRiskProfileData(bookingId, data)
+    await service.mergeRiskProfileData(bookingId, data, mockTransactionalClient)
 
     expect(formClient.updateRiskProfileData.mock.calls[0]).toEqual([
       bookingId,
@@ -380,6 +388,7 @@ describe('mergeRiskProfileData', () => {
         section2: { value: 'new2' },
         section3: { value: 'existing' },
       },
+      mockTransactionalClient,
     ])
   })
 })
@@ -489,24 +498,31 @@ describe('referToSecurityIfRiskAssessed', () => {
   const socProfile = { transferToSecurity: true }
 
   test(' valid status', async () => {
-    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED')
-    expect(formClient.referToSecurity.mock.calls[0]).toEqual([bookingId, null, Status.SECURITY_AUTO.name])
+    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED', mockTransactionalClient)
+    expect(formClient.referToSecurity.mock.calls[0]).toEqual([
+      bookingId,
+      null,
+      Status.SECURITY_AUTO.name,
+      mockTransactionalClient,
+    ])
   })
 
   test('invalid status', async () => {
-    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED')
+    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED', mockTransactionalClient)
     expect(formClient.referToSecurity).not.toBeCalled()
   })
 
   test('invalid SECURITY_AUTO status', async () => {
-    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'SECURITY_AUTO')
+    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'SECURITY_AUTO', mockTransactionalClient)
     expect(formClient.referToSecurity).not.toBeCalled()
   })
 
   test('database error', async () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
-    expect(service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED')).rejects.toThrow('TEST')
+    expect(
+      service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED', mockTransactionalClient)
+    ).rejects.toThrow('TEST')
   })
 })
 
@@ -515,7 +531,6 @@ describe('referToSecurityIfRequested', () => {
 
   test('happy path', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
-    const mockTransactionalClient = {}
 
     await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
 
@@ -530,7 +545,7 @@ describe('referToSecurityIfRequested', () => {
   test('no record in db', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -538,7 +553,7 @@ describe('referToSecurityIfRequested', () => {
   test('invalid status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'APPROVED' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -546,7 +561,7 @@ describe('referToSecurityIfRequested', () => {
   test('invalid SECURITY_MANUAL status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -554,7 +569,9 @@ describe('referToSecurityIfRequested', () => {
   test('database error', async () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
-    expect(service.referToSecurityIfRequested(bookingId, userId, updatedFormObject)).rejects.toThrow('TEST')
+    expect(
+      service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
+    ).rejects.toThrow('TEST')
   })
 })
 
@@ -562,9 +579,14 @@ describe('securityReviewed', () => {
   test('happy path', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_AUTO' }] })
 
-    await service.securityReviewed(bookingId, userId)
+    await service.securityReviewed(bookingId, userId, mockTransactionalClient)
 
-    expect(formClient.securityReviewed.mock.calls[0]).toEqual([bookingId, 'SECURITY_BACK', userId])
+    expect(formClient.securityReviewed.mock.calls[0]).toEqual([
+      bookingId,
+      'SECURITY_BACK',
+      userId,
+      mockTransactionalClient,
+    ])
   })
 })
 
@@ -572,15 +594,15 @@ describe('updateStatus', () => {
   test('happy path', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'AWAITING_APPROVAL' }] })
 
-    await service.backToCategoriser(bookingId)
+    await service.backToCategoriser(bookingId, mockTransactionalClient)
 
-    expect(formClient.updateStatus.mock.calls[0]).toEqual([bookingId, 'SUPERVISOR_BACK'])
+    expect(formClient.updateStatus.mock.calls[0]).toEqual([bookingId, 'SUPERVISOR_BACK', mockTransactionalClient])
   })
 
   test('no record in db', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.backToCategoriser(bookingId)
+    await service.backToCategoriser(bookingId, mockTransactionalClient)
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -588,7 +610,7 @@ describe('updateStatus', () => {
   test('invalid status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
 
-    await service.backToCategoriser(bookingId)
+    await service.backToCategoriser(bookingId, mockTransactionalClient)
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -596,7 +618,7 @@ describe('updateStatus', () => {
   test('invalid SECURITY_BACK status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_BACK' }] })
 
-    await service.backToCategoriser(bookingId)
+    await service.backToCategoriser(bookingId, mockTransactionalClient)
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -604,7 +626,7 @@ describe('updateStatus', () => {
   test('database error', async () => {
     formClient.updateStatus.mockRejectedValue(new Error('TEST'))
 
-    expect(service.backToCategoriser(bookingId)).rejects.toThrow('TEST')
+    expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow('TEST')
   })
 })
 
@@ -612,7 +634,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
   test('record exists', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
 
-    await service.createOrRetrieveCategorisationRecord(bookingId, userId)
+    await service.createOrRetrieveCategorisationRecord(bookingId, userId, mockTransactionalClient)
 
     expect(formClient.update).not.toBeCalled()
   })
@@ -620,8 +642,16 @@ describe('createOrRetrieveCategorisationRecord', () => {
   test('no record exists', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.createOrRetrieveCategorisationRecord(bookingId, userId, 'MDI', 'A4567RS')
+    await service.createOrRetrieveCategorisationRecord(bookingId, userId, 'MDI', 'A4567RS', mockTransactionalClient)
 
-    expect(formClient.create).toBeCalledWith(bookingId, userId, 'STARTED', userId, 'MDI', 'A4567RS')
+    expect(formClient.create).toBeCalledWith(
+      bookingId,
+      userId,
+      'STARTED',
+      userId,
+      'MDI',
+      'A4567RS',
+      mockTransactionalClient
+    )
   })
 })
