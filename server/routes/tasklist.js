@@ -28,16 +28,14 @@ module.exports = function Index({
         details.offenderNo
       )
       res.locals.formObject = categorisationRecord.formObject || {}
+      res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
 
       // only load the soc profile once - then it is saved against the record
       if (!res.locals.formObject.socProfile) {
         const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals.user.username)
-        const dataToStore = {
-          ...res.locals.formObject, // merge any existing form data
-          socProfile,
-        }
-        await formService.updateFormData(bookingId, dataToStore)
+
+        await formService.mergeRiskProfileData(bookingId, { socProfile })
 
         await formService.referToSecurityIfRiskAssessed(
           bookingId,

@@ -81,6 +81,14 @@ module.exports = function createFormService(formClient) {
     await formClient.updateFormData(bookingId, data)
   }
 
+  async function mergeRiskProfileData(bookingId, data) {
+    const oldRecord = await getCategorisationRecord(bookingId)
+    await formClient.updateRiskProfileData(
+      bookingId,
+      oldRecord && oldRecord.riskProfile ? { ...oldRecord.riskProfile, ...data } : data
+    )
+  }
+
   function isYoungOffender(details) {
     const dob = details && details.dateOfBirth
     if (!dob) {
@@ -252,6 +260,7 @@ module.exports = function createFormService(formClient) {
     getCategorisationRecord,
     update,
     updateFormData,
+    mergeRiskProfileData,
     computeSuggestedCat,
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,

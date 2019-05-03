@@ -62,6 +62,7 @@ class ReviewSpecification extends GebReportingSpec {
         ]
       ]
     ]))
+
     when: 'The task list is displayed for a fully completed set of ratings'
     fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
@@ -93,8 +94,8 @@ class ReviewSpecification extends GebReportingSpec {
     changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
 
-    def response = db.getData(12)[0].form_response
-    def json = response.toString()
+    def data = db.getData(12)[0].risk_profile
+    def json = data.toString()
     json.contains '"history": {"catAType": "A",'
     json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
     json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'

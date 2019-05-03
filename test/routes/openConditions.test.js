@@ -31,6 +31,7 @@ const formService = {
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
   updateFormData: jest.fn(),
+  mergeRiskProfileData: jest.fn(),
   backToCategoriser: jest.fn(),
   isValid: jest.fn(),
 }
@@ -77,10 +78,16 @@ afterEach(() => {
   formService.getCategorisationRecord.mockReset()
   formService.referToSecurityIfRiskAssessed.mockReset()
   formService.referToSecurityIfRequested.mockReset()
+  formService.update.mockReset()
+  formService.getValidationErrors.mockReset()
+  formService.computeSuggestedCat.mockReset()
+  formService.updateFormData.mockReset()
+  formService.mergeRiskProfileData.mockReset()
+  formService.backToCategoriser.mockReset()
+  formService.isValid.mockReset()
   offendersService.getOffenderDetails.mockReset()
   offendersService.getCatAInformation.mockReset()
   offendersService.getOffenceHistory.mockReset()
-  formService.update.mockReset()
   userService.getUser.mockReset()
 })
 

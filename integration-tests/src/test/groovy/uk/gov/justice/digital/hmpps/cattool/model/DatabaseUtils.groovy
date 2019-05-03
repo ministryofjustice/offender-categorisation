@@ -18,7 +18,7 @@ class DatabaseUtils {
   def clearDb() {
 
     def sql = Sql.newInstance(dbConnParams)
-    sql.executeUpdate("delete from form ")
+    sql.executeUpdate("delete from form where booking_id < 1000")
   }
 
   def getData(bookingId) {
@@ -38,6 +38,10 @@ class DatabaseUtils {
     doCreateData(id, bookingId, 'STARTED', json)
   }
 
+  def createRiskProfileData(bookingId, json) {
+    doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
+  }
+
   def createDataWithStatus(id, bookingId, status, json) {
     doCreateData(id, bookingId, status, json)
   }
@@ -52,6 +56,8 @@ class DatabaseUtils {
 
   private doCreateCompleteRow(id, bookingId, json, userId, status, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate, securityReviewedBy, securityReviewedDate) {
     def sql = Sql.newInstance(dbConnParams)
-    sql.executeUpdate("insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId', $referredDate, '$referredBy',$seq, $riskProfile, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', ?::date)", json, securityReviewedDate)
+    sql.executeUpdate("""insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId',
+      $referredDate, '$referredBy', $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', ?::date)""",
+      json, riskProfile, securityReviewedDate)
   }
 }

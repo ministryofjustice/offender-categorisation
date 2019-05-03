@@ -92,6 +92,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
     const formData = await formService.getCategorisationRecord(bookingId)
     res.locals.formObject = formData.formObject || {}
+    res.locals.formObject = { ...res.locals.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
