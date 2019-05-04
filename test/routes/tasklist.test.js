@@ -3,6 +3,9 @@ const appSetup = require('./utils/appSetup')
 const createRouter = require('../../server/routes/tasklist')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const moment = require('moment')
+const db = require('../../server/data/dataAccess/db')
+
+const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
 const formService = {
   getCategorisationRecord: jest.fn(),
@@ -58,6 +61,8 @@ beforeEach(() => {
       sentenceExpiryDate: '2020-06-17',
     },
   })
+  db.pool.connect = jest.fn()
+  db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
 
 afterEach(() => {
@@ -115,14 +120,19 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
         expect(res.text).toContain('href="/form/ratings/offendingHistory/12345"')
 
-        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', {
-          socProfile: sampleSocProfile,
-        })
+        expect(formService.mergeRiskProfileData).toBeCalledWith(
+          '12345',
+          {
+            socProfile: sampleSocProfile,
+          },
+          mockTransactionalClient
+        )
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(
           '12345',
           'CA_USER_TEST',
           sampleSocProfile,
-          'STARTED'
+          'STARTED',
+          mockTransactionalClient
         )
         expect(formService.updateFormData).not.toBeCalled()
       })

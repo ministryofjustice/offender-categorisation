@@ -9,6 +9,8 @@ const categoriser = require('../../server/config/categoriser')
 const security = require('../../server/config/security')
 const openConditions = require('../../server/config/openConditions')
 
+const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+
 let roles
 // This needs mocking early, before 'requiring' jwt-decode (via home.js)
 jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
@@ -71,7 +73,7 @@ beforeEach(() => {
   offendersService.getOffenceHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
   db.pool.connect = jest.fn()
-  db.pool.connect.mockResolvedValue({ query: jest.fn(), release: jest.fn() })
+  db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
 
 afterEach(() => {
