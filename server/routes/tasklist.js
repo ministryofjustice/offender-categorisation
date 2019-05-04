@@ -16,7 +16,7 @@ module.exports = function Index({
 
   router.get(
     '/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals.user.token)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
@@ -25,7 +25,8 @@ module.exports = function Index({
         bookingId,
         req.user.username,
         details.agencyId,
-        details.offenderNo
+        details.offenderNo,
+        transactionalDbClient
       )
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
@@ -35,15 +36,16 @@ module.exports = function Index({
       if (!res.locals.formObject.socProfile) {
         const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals.user.username)
 
-        await formService.mergeRiskProfileData(bookingId, { socProfile })
+        await formService.mergeRiskProfileData(bookingId, { socProfile }, transactionalDbClient)
 
         await formService.referToSecurityIfRiskAssessed(
           bookingId,
           req.user.username,
           socProfile,
-          categorisationRecord.status
+          categorisationRecord.status,
+          transactionalDbClient
         )
-        categorisationRecord = await formService.getCategorisationRecord(bookingId)
+        categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
       }
 
       const data = {

@@ -1,12 +1,15 @@
 const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
+const db = require('../../server/data/dataAccess/db')
 
 let roles
 // This needs mocking early, before 'requiring' jwt-decode
 jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
 
 const createRouter = require('../../server/routes/home')
+
+const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
 const offendersService = {
   getUncategorisedOffenders: jest.fn(),
@@ -40,6 +43,8 @@ beforeEach(() => {
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI' })
+  db.pool.connect = jest.fn()
+  db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
 
 afterEach(() => {

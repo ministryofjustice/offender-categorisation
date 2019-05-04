@@ -26,8 +26,6 @@ pool.on('error', error => {
 })
 
 module.exports = {
-  query: (text, params) => pool.query(text, params),
-
   doTransactional: async callback => {
     const client = await pool.connect()
     try {

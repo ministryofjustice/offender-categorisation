@@ -71,7 +71,7 @@ async function getSentenceMap(offenderList, nomisClient) {
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
-  async function getUncategorisedOffenders(token, agencyId, user) {
+  async function getUncategorisedOffenders(token, agencyId, user, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
@@ -86,7 +86,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         uncategorisedResult
           .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
           .map(async o => {
-            const dbRecord = await formService.getCategorisationRecord(o.bookingId)
+            const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
             return {
               ...o,
               displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
@@ -103,11 +103,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getCategorisedOffenders(token, agencyId, user) {
+  async function getCategorisedOffenders(token, agencyId, user, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
 
-      const categorisedFromDB = await formService.getCategorisedOffenders(agencyId)
+      const categorisedFromDB = await formService.getCategorisedOffenders(agencyId, transactionalDbClient)
       if (!isNilOrEmpty(categorisedFromDB)) {
         const categorisedFromElite = await nomisClient.getCategorisedOffenders(
           agencyId,
@@ -141,14 +141,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getReferredOffenders(token, agencyId) {
+  async function getReferredOffenders(token, agencyId, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
 
-      const securityReferredFromDB = await formService.getSecurityReferredOffenders(agencyId, [
-        Status.SECURITY_MANUAL.name,
-        Status.SECURITY_AUTO.name,
-      ])
+      const securityReferredFromDB = await formService.getSecurityReferredOffenders(agencyId, transactionalDbClient)
 
       if (!isNilOrEmpty(securityReferredFromDB)) {
         const sentenceMap = await getSentenceMap(securityReferredFromDB, nomisClient)
@@ -189,11 +186,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getSecurityReviewedOffenders(token, agencyId) {
+  async function getSecurityReviewedOffenders(token, agencyId, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
 
-      const securityReviewedFromDB = await formService.getSecurityReviewedOffenders(agencyId)
+      const securityReviewedFromDB = await formService.getSecurityReviewedOffenders(agencyId, transactionalDbClient)
       if (!isNilOrEmpty(securityReviewedFromDB)) {
         const offenderDetailsFromElite = await nomisClient.getOffenderDetailList(
           agencyId,
@@ -226,7 +223,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getUnapprovedOffenders(token, agencyId) {
+  async function getUnapprovedOffenders(token, agencyId, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
       const uncategorisedResult = (await nomisClient.getUncategorisedOffenders(agencyId)).filter(
@@ -235,7 +232,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const unapprovedWithDbRecord = await Promise.all(
         uncategorisedResult.map(async s => {
-          const dbRecord = await formService.getCategorisationRecord(s.bookingId)
+          const dbRecord = await formService.getCategorisationRecord(s.bookingId, transactionalDbClient)
           return {
             ...s,
             dbRecord,
