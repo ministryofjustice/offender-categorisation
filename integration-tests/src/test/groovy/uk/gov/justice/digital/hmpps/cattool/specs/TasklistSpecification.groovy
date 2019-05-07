@@ -83,13 +83,32 @@ class TasklistSpecification extends GebReportingSpec {
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
-      ]]))
+      ],
+      openConditions: [riskLevels: [likelyToAbscond: "Yes"]]]))
     fixture.gotoTasklist()
     at(new CategoriserTasklistPage(bookingId: '12'))
 
     then: 'The continue button takes me to the review page'
     continueButton.displayed
     !continueButtonDisabled
+  }
+
+  def "The continue button behaves correctly when openconditions is added to list items"() {
+    when: 'I go to the tasklist page with all sections complete'
+    db.createData(12, JsonOutput.toJson([
+      ratings: [
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
+        furtherCharges  : [furtherCharges: "No"],
+        securityInput   : [securityInputNeeded: "No"],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+        escapeRating    : [escapeOtherEvidence: "Yes"],
+        extremismRating : [previousTerrorismOffences: "Yes"]
+      ], openConditionsRequested: true]))
+    fixture.gotoTasklist()
+    at(new CategoriserTasklistPage(bookingId: '12'))
+
+    then: 'The continue button takes me to the review page'
+    continueButtonDisabled
   }
 
   def "The tasklist page displays an alert when status is transferred to security"() {
