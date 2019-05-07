@@ -171,14 +171,13 @@ describe('open conditions', () => {
   })
 
   test.each`
-    formName                  | userInput                     | nextPath
-    ${'earliestReleaseDate'}  | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNational/'}
-    ${'foreignNational'}      | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
-    ${'riskOfHarm'}           | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
-    ${'furtherCharges'}       | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
-    ${'riskLevels'}           | ${{ day: '12' }}              | ${'/form/openConditions/suitability/'}
-    ${'suitability'}          | ${{ day: '12' }}              | ${'/form/openConditions/reviewOpenConditions/'}
-    ${'reviewOpenConditions'} | ${{ day: '12' }}              | ${'/form/openConditions/provisionalCategory/'}
+    formName                 | userInput                     | nextPath
+    ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNational/'}
+    ${'foreignNational'}     | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
+    ${'riskOfHarm'}          | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
+    ${'furtherCharges'}      | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
+    ${'riskLevels'}          | ${{ day: '12' }}              | ${'/form/openConditions/suitability/'}
+    ${'suitability'}         | ${{ day: '12' }}              | ${'//tasklist/'}
   `('should render $expectedContent for $sectionName/$formName', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
@@ -202,28 +201,6 @@ describe('open conditions', () => {
   })
 
   test.each`
-    sectionName         | formName                 | userInput        | nextPath
-    ${'openConditions'} | ${'provisionalCategory'} | ${{ day: '12' }} | ${'/tasklist/categoriserSubmitted/'}
-  `(
-    'should render $expectedContent for /openConditions/provisionalCategory',
-    ({ sectionName, formName, userInput, nextPath }) =>
-      request(app)
-        .post(`/${formName}/12345`)
-        .send(userInput)
-        .expect(302)
-        .expect('Location', `${nextPath}12345`)
-        .expect(() => {
-          expect(formService.update).toBeCalledTimes(1)
-          expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-          expect(offendersService.createInitialCategorisation).toBeCalledWith('ABCDEF', '12345', userInput)
-          const updateArg = formService.update.mock.calls[0][0]
-          expect(updateArg.bookingId).toBe(12345)
-          expect(updateArg.config).toEqual(formConfig[sectionName][formName])
-          expect(updateArg.status).toBe('AWAITING_APPROVAL')
-        })
-  )
-
-  test.each`
     formName                 | userInput                                     | expectedContent
     ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }} | ${'no special circumstances to warrant them moving into open conditions'}
     ${'foreignNational'}     | ${{ formCompleted: 'No' }}                    | ${'cannot be sent to open conditions without a CCD3 form'}
@@ -238,24 +215,6 @@ describe('open conditions', () => {
         expect(res.text).toContain(expectedContent)
       })
   )
-
-  test.each`
-    data                                                                | expectedPage
-    ${{ openConditions: { riskOfHarm: { harmManaged: 'No' } } }}        | ${'notRecommended'}
-    ${{ openConditions: { furtherCharges: { increasedRisk: 'Yes' } } }} | ${'notRecommended'}
-    ${{ openConditions: { riskLevels: { likelyToAbscond: 'Yes' } } }}   | ${'notRecommended'}
-    ${{ openConditions: {} }}                                           | ${'provisionalCategory'}
-  `('should redirect from reviewOpenConditions page', ({ data, expectedPage }) => {
-    formService.getCategorisationRecord.mockResolvedValue({
-      bookingId: 12,
-      formObject: data,
-    })
-    return request(app)
-      .post(`/reviewOpenConditions/12345`)
-      .send({})
-      .expect(302)
-      .expect('Location', `/form/openConditions/${expectedPage}/12345`)
-  })
 
   test.each`
     data                                                                | expectedContent
@@ -281,7 +240,7 @@ describe('open conditions', () => {
       .post(`/notRecommended/12345`)
       .send({ stillRefer: 'Yes' })
       .expect(302)
-      .expect('Location', `/form/openConditions/provisionalCategory/12345`))
+      .expect('Location', `/tasklist/12345`))
 
   test('should redirect from notRecommended page to categoriser', () => {
     roles = ['ROLE_CREATE_CATEGORISATION']

@@ -7,10 +7,17 @@
 <div class="govuk-grid-row govuk-body-s">
   <div>
 
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Check your answers before you continue</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8 main-heading">Check your answers before you continue</h1>
 
     {% set showChangeLinks = true %}
     {% include "../../partials/reviewContents.html" %}
+
+    {% if (data.openConditions.earliestReleaseDate.threeOrMoreYears) %}
+      <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+
+      {% set showOpenConditionChangeLinks = true %}
+      {% include "../../partials/reviewContentsOpenConditions.html" %}
+    {% endif %}
 
   </div>
 </div>

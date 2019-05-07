@@ -131,10 +131,17 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const suggestedCat = formService.computeSuggestedCat(result.data)
-      const data = { ...result.data, suggestedCat }
 
-      res.render(`formPages/${section}/${form}`, { ...result, data })
+      if (result.data.openConditionsRequested) {
+        const suggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+        const data = { ...result.data, suggestedCat }
+
+        res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
+      } else {
+        const suggestedCat = formService.computeSuggestedCat(result.data)
+        const data = { ...result.data, suggestedCat }
+        res.render(`formPages/${section}/${form}`, { ...result, data })
+      }
     })
   )
 
@@ -289,6 +296,16 @@ module.exports = function Index({
     return updated
   }
 
+  const requiresOpenConditions = async (bookingId, transactionalDbClient) => {
+    const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+    const dataToStore = {
+      ...categorisationRecord.formObject, // merge any existing form data
+      openConditionsRequested: true,
+    }
+    await formService.updateFormData(bookingId, dataToStore, transactionalDbClient)
+  }
+
   router.post(
     '/ratings/securityInput/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
@@ -408,8 +425,10 @@ module.exports = function Index({
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
-        // redirect to open conditions flow
-        res.redirect(`/form/openConditions/earliestReleaseDate/${bookingId}`)
+        await requiresOpenConditions(bookingId, transactionalDbClient)
+
+        // redirect to tasklist for open conditions
+        res.redirect(`/tasklist/${bookingId}`)
       }
     })
   )
@@ -444,6 +463,8 @@ module.exports = function Index({
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
+        await requiresOpenConditions(bookingId, transactionalDbClient)
+
         // send back to the categoriser for open conditions completion
         await formService.backToCategoriser(bookingId, transactionalDbClient)
         res.redirect(`/supervisorHome`)

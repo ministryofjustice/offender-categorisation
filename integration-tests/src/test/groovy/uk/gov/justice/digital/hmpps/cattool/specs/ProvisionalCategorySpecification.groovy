@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.EarliestReleasePage
@@ -66,7 +67,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     !overriddenCategoryB.displayed
     !overriddenCategoryC.displayed
     !overriddenCategoryD.displayed
-    warning.text() contains 'Based on the information provided, the provisional category is B'
+    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
 
     when: 'I enter some data, save and return to the page'
     elite2api.stubCategorise('C')
@@ -159,11 +160,17 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     when: 'Changing to Cat J'
     elite2api.stubCategorise('J')
     overriddenCategoryText << "Some Text"
+    elite2api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
 
-    then: 'user is redirected to open conditions flow, without persisting the category'
-    at EarliestReleasePage
-    db.getData(12).status == ["STARTED"]
+    then: 'user is redirected to the categoriser tasklist with the open conditions flow available'
+    at CategoriserTasklistPage
+
+    def data = db.getData(12)
+    data.status == ["STARTED"]
+    def response = data.form_response
+    response[0].toString() contains '"openConditionsRequested": true}'
   }
 
   def 'Category D redirects to open conditions flow'() {
@@ -191,11 +198,17 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     !newCatMessage.displayed
     appropriateNo.click()
     overriddenCategoryD.click()
+    elite2api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
 
     then: 'user is redirected to open conditions flow, without persisting the category'
-    at EarliestReleasePage
-    db.getData(12).status == ["STARTED"]
+    at CategoriserTasklistPage
+
+    def data = db.getData(12)
+    data.status == ["STARTED"]
+    def response = data.form_response
+    response[0].toString() contains '"openConditionsRequested": true}'
   }
 
   def 'indefinite sentence test'() {
