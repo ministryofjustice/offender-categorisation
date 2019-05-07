@@ -111,6 +111,8 @@ class SupervisorSpecification extends GebReportingSpec {
     def dbData = db.getData(12).form_response
     !dbData[0].toString().contains('"supervisor"')
     db.getData(12).status == ["SUPERVISOR_BACK"]
+    def response = db.getData(12).form_response
+    response[0].toString() contains '"openConditionsRequested": true}'
   }
 
   def "The supervisor review page displays Open conditions data when category is D"() {

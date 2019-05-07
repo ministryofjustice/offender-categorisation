@@ -11,7 +11,7 @@ class ReviewPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
+    headingText { $('h1.main-heading').text() }
 
     form {$('form')}
 
