@@ -143,6 +143,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     return updated
   }
 
+  // todo remove for openconditions
   router.post(
     '/reviewOpenConditions/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
@@ -190,6 +191,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         transactionalClient: transactionalDbClient,
       })
       if (userInput.stillRefer === 'No') {
+        // todo OPEN CONDITIONS CHANGES HERE   jira - not recommended
         redirectUsingRole(
           res,
           `/form/categoriser/provisionalCategory/${bookingId}`,
