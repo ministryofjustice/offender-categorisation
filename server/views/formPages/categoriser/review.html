@@ -12,7 +12,7 @@
     {% set showChangeLinks = true %}
     {% include "../../partials/reviewContents.html" %}
 
-    {% if (data.openConditions.earliestReleaseDate.threeOrMoreYears) %}
+    {% if (data.openConditionsRequested) %}
       <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
 
       {% set showOpenConditionChangeLinks = true %}
