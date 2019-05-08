@@ -249,16 +249,6 @@ describe('open conditions', () => {
       .post(`/notRecommended/12345`)
       .send({ stillRefer: 'No' })
       .expect(302)
-      .expect('Location', `/form/categoriser/provisionalCategory/12345`)
-  })
-
-  test('should redirect from notRecommended page to supervisor', () => {
-    roles = ['ROLE_APPROVE_CATEGORISATION']
-
-    return request(app)
-      .post(`/notRecommended/12345`)
-      .send({ stillRefer: 'No' })
-      .expect(302)
-      .expect('Location', `/form/supervisor/review/12345`)
+      .expect('Location', `/tasklist/12345`)
   })
 })
