@@ -104,12 +104,13 @@ class SupervisorSpecification extends GebReportingSpec {
     newCatMessage.text() == 'Changing to Cat J'
 
     when: 'The supervisor clicks continue'
+    overriddenCategoryText << "reason text"
     submitButton.click()
 
     then: 'The record is sent back to the categoriser'
 
     def dbData = db.getData(12).form_response
-    !dbData[0].toString().contains('"supervisor"')
+    dbData[0].toString().contains('"supervisor"')
     db.getData(12).status == ["SUPERVISOR_BACK"]
     def response = db.getData(12).form_response
     response[0].toString() contains '"openConditionsRequested": true}'
@@ -272,13 +273,14 @@ class SupervisorSpecification extends GebReportingSpec {
     warnings[1].text() contains "Making this category change means that the categoriser will have to provide more information."
 
     when: 'The continue button is clicked'
+    overriddenCategoryText << "should be a D"
     submitButton.click()
 
     then: 'the record is returned to categoriser without persisting supervisor approval or any validation of the form'
     at SupervisorHomePage
 
     def dbData = db.getData(12).form_response
-    !dbData[0].toString().contains('"supervisor"')
+    dbData[0].toString().contains('"supervisor"')
     db.getData(12).status == ["SUPERVISOR_BACK"]
   }
 

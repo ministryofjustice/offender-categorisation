@@ -17,11 +17,8 @@ class ProvisionalCategoryPage extends Page {
 
     warning { $('div.govuk-warning-text') }
     form { $('form') }
-    appropriateYes(required: false) { $('#categoryAppropriate-1') }
-    appropriateNo(required: false) { $('#categoryAppropriate-2') }
-    overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
-    overriddenCategoryC(required: false) { $('#overriddenCategoryC') }
-    overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
+    appropriateYes(required: false) { $('#openConditionsCategoryAppropriate-1') }
+    appropriateNo(required: false) { $('#openConditionsCategoryAppropriate-2') }
     newCatMessage(required: false) { $('h2.govuk-heading-m') }
     overriddenCategoryText(required: false) { $('#overriddenCategoryText') }
     otherInformationText(required: false) { $('#otherInformationText') }
