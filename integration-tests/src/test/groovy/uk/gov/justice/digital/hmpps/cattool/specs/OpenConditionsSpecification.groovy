@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
 import groovy.json.JsonOutput
-import groovy.mock.interceptor.Ignore
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -15,13 +14,13 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalVie
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.*
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
-@org.junit.Ignore
 class OpenConditionsSpecification extends GebReportingSpec {
 
   def setup() {
@@ -51,7 +50,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
         escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'No'],
         extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text']
-      ]
+      ], openConditionsRequested : true
     ]))
 
     when: 'I go to the first open conditions page'
@@ -225,19 +224,28 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the Risk Levels page is completed'
     likelyToAbscondText << 'likelyToAbscondText details'
+    submitButton.click()
+////////////////////////////////////////////////////////////////////////////
 
 
+    then: 'I am diverted to the not recommended page'
+    at NotRecommendedPage
+    reasons*.text() == ['They have further charges which pose an increased risk in open conditions',
+                        'They are likely to abscond or otherwise abuse the lower security of open conditions']
+
+    when: 'No is selected and continue button is clicked'
     elite2api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
     elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     elite2api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    stillReferNo.click()
     submitButton.click()
-////////////////////////////////////////////////////////////////////////////
 
-    then: 'tasklist page is displayed'
+    then: 'tasklist page is displayed without the open conditions section'
     at CategoriserTasklistPage
+    !openConditionsButton.isDisplayed()
 
 
     when: 'the continue button is clicked'
@@ -249,9 +257,9 @@ class OpenConditionsSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
     continueButton.click()
 
-    then: 'the review page is displayed and Data is stored correctly'
-    at uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
-    changeLinks.size() == 14
+    then: 'the review page is displayed and Data is stored correctly. Data is persisted - regardless of the decision to end the open conditions flow'
+    at ReviewPage
+    changeLinks.size() == 9
 
     def response = db.getData(12).form_response
     def data = response[0].toString()
@@ -260,22 +268,19 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.contains '"riskOfHarm": {"harmManaged": "Yes", "seriousHarm": "Yes", "harmManagedText": "harmManagedText details"}'
     data.contains '"furtherCharges": {"increasedRisk": "Yes", "furtherChargesText": "some charges,furtherChargesText details"}'
     data.contains '"riskLevels": {"likelyToAbscond": "Yes", "likelyToAbscondText": "likelyToAbscondText details"}'
-
-    when: 'I try to continue to the provision category page'
-    submitButton.click()
-
-    then: 'I am diverted to the not recommended page'
-    at NotRecommendedPage
-    reasons*.text() == ['They have further charges which pose an increased risk in open conditions',
-                        'They are likely to abscond or otherwise abuse the lower security of open conditions']
   }
 
   def "The happy path is correct for categoriser, all nos"() {
     when: 'I go to the first open conditions page'
     db.createData(-1, 12, JsonOutput.toJson([
       ratings: [
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         furtherCharges: [furtherCharges: "Yes", furtherChargesText: "some charges"],
-      ]]))
+        securityInput   : [securityInputNeeded: 'No'],
+        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
+        escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'No'],
+        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text']
+      ], openConditionsRequested : true]))
 
     elite2api.stubUncategorised()
     elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
@@ -322,15 +327,34 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'I submit page after likelyToAbscondNo'
     likelyToAbscondNo.click()
+    elite2api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-4).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
+
+
+    then: 'tasklist page is displayed with the open conditions section'
+    at CategoriserTasklistPage
+    elite2api.stubAssessments('B2345YZ')
+    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2api.stubOffenceHistory('B2345YZ')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    openConditionsButton.isDisplayed()
+    continueButton.click()
+
     then: 'the review page is displayed and Data is stored correctly'
     at ReviewPage
-    values*.text() == ['', 'No', 'Not applicable', // 1 line per section
+    /*values*.text() == ['', 'No', 'Not applicable', // 1 line per section
                        '', 'No', 'Not applicable', 'Not applicable', 'Not applicable',
                        '', 'No', 'Not applicable',
                        '', 'some charges,furtherChargesText details', 'No',
-                       '', 'No']
+                       '', 'No']*/
 
     def response = db.getData(12).form_response
     def data = response[0].toString()
@@ -345,27 +369,15 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'I am at the provision category page'
     at ProvisionalCategoryPage
-    !overriddenCategoryB.displayed
-    !overriddenCategoryC.displayed
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
-    when: 'I enter some data, save and return to the page'
-    elite2api.stubCategorise('C')
-    appropriateNo.click()
-    overriddenCategoryC.click()
-    overriddenCategoryText << "Some Text"
-    otherInformationText << "other info  Text"
+    when: 'I confirm the cat D category'
+    elite2api.stubCategorise('D')
+    appropriateYes.click()
     submitButton.click()
+
+    then: 'the category is submitted'
     at CategoriserSubmittedPage
-    to ProvisionalCategoryPage, '12'
-
-    then: 'The data is shown on return'
-    at ProvisionalCategoryPage
-    form.categoryAppropriate == "No"
-    form.overriddenCategory == "C"
-    form.otherInformationText == "other info  Text"
-    form.overriddenCategoryText == "Some Text"
-
     db.getData(12).status == ["AWAITING_APPROVAL"]
 
     when: 'The record is viewed by the categoriser'

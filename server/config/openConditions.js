@@ -137,4 +137,38 @@ module.exports = {
     },
     validate: true,
   },
+  provisionalCategory: {
+    nextPath: {
+      path: '/tasklist/categoriserSubmitted/',
+    },
+    fields: [
+      {
+        categoryAppropriate: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        overriddenCategory: {
+          responseType: 'optionalString',
+        },
+      },
+      {
+        overriddenCategoryText: {
+          responseType: 'optionalString',
+        },
+      },
+      {
+        suggestedCategory: {
+          responseType: 'optionalString',
+        },
+      },
+      {
+        otherInformationText: {
+          responseType: 'optionalString',
+        },
+      },
+    ],
+    validate: true,
+  },
 }

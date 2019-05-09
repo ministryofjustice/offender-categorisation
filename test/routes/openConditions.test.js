@@ -205,8 +205,12 @@ describe('open conditions', () => {
     ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }} | ${'no special circumstances to warrant them moving into open conditions'}
     ${'foreignNational'}     | ${{ formCompleted: 'No' }}                    | ${'cannot be sent to open conditions without a CCD3 form'}
     ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}                 | ${'they are due to be deported'}
-  `('should render openConditionsNotSuitable page', ({ formName, userInput, expectedContent }) =>
-    request(app)
+  `('should render openConditionsNotSuitable page', ({ formName, userInput, expectedContent }) => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: userInput,
+    })
+    return request(app)
       .post(`/${formName}/12345`)
       .send(userInput)
       .expect(200)
@@ -214,7 +218,7 @@ describe('open conditions', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
       })
-  )
+  })
 
   test.each`
     data                                                                | expectedContent
@@ -244,21 +248,15 @@ describe('open conditions', () => {
 
   test('should redirect from notRecommended page to categoriser', () => {
     roles = ['ROLE_CREATE_CATEGORISATION']
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: { categoriser: {} },
+    })
 
     return request(app)
       .post(`/notRecommended/12345`)
       .send({ stillRefer: 'No' })
       .expect(302)
-      .expect('Location', `/form/categoriser/provisionalCategory/12345`)
-  })
-
-  test('should redirect from notRecommended page to supervisor', () => {
-    roles = ['ROLE_APPROVE_CATEGORISATION']
-
-    return request(app)
-      .post(`/notRecommended/12345`)
-      .send({ stillRefer: 'No' })
-      .expect(302)
-      .expect('Location', `/form/supervisor/review/12345`)
+      .expect('Location', `/tasklist/12345`)
   })
 })

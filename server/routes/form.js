@@ -133,10 +133,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
 
       if (result.data.openConditionsRequested) {
-        const suggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
-        const data = { ...result.data, suggestedCat }
-
-        res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
+        res.redirect(`/form/openConditions/provisionalCategory/${bookingId}`)
       } else {
         const suggestedCat = formService.computeSuggestedCat(result.data)
         const data = { ...result.data, suggestedCat }
@@ -405,11 +402,11 @@ module.exports = function Index({
 
       const userInput = clearConditionalFields(req.body)
 
-      if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
-        if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
-          return
-        }
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+        return
+      }
 
+      if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
@@ -420,11 +417,27 @@ module.exports = function Index({
           status: Status.AWAITING_APPROVAL.name,
           transactionalClient: transactionalDbClient,
         })
-        await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
+        await offendersService.createInitialCategorisation({
+          token: res.locals.user.token,
+          bookingId,
+          overriddenCategory: userInput.overriddenCategory,
+          suggestedCategory: userInput.suggestedCategory,
+          overriddenCategoryText: userInput.overriddenCategoryText,
+        })
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
+        // persist the open conditions override and return to complete the open conditions route
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput,
+          formSection: section,
+          formName: form,
+          transactionalClient: transactionalDbClient,
+        })
         await requiresOpenConditions(bookingId, transactionalDbClient)
 
         // redirect to tasklist for open conditions
