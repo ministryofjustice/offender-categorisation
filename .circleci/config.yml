@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/app
   docker:
-  - image: circleci/node:10.15.0-browsers
+  - image: circleci/node:10.15.3-browsers
 
 deploy_container_config: &deploy_container_config
   docker:
@@ -13,6 +13,7 @@ install_aws_cli: &install_aws_cli
   run:
     name: Set up aws
     command: |
+      sudo apt-get update
       sudo apt-get --assume-yes install python3-pip
       sudo pip3 install awscli
       $(aws ecr get-login --region eu-west-1 --no-include-email)
