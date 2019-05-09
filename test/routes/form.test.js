@@ -331,8 +331,8 @@ describe('POST /supervisor/confirmBack', () => {
 
 describe('POST /categoriser/provisionalCategory', () => {
   test.each`
-    sectionName      | formName                 | userInput        | nextPath
-    ${'categoriser'} | ${'provisionalCategory'} | ${{ day: '12' }} | ${'/tasklist/categoriserSubmitted/'}
+    sectionName      | formName                 | userInput                                                                             | nextPath
+    ${'categoriser'} | ${'provisionalCategory'} | ${{ suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH' }} | ${'/tasklist/categoriserSubmitted/'}
   `(
     'should render $expectedContent for /categoriser/provisionalCategory',
     ({ sectionName, formName, userInput, nextPath }) =>
@@ -344,7 +344,13 @@ describe('POST /categoriser/provisionalCategory', () => {
         .expect(() => {
           expect(formService.update).toBeCalledTimes(1)
           expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-          expect(offendersService.createInitialCategorisation).toBeCalledWith('ABCDEF', '12345', userInput)
+          expect(offendersService.createInitialCategorisation).toBeCalledWith({
+            token: 'ABCDEF',
+            bookingId: '12345',
+            overriddenCategory: 'F',
+            overriddenCategoryText: 'HHH',
+            suggestedCategory: 'B',
+          })
           const updateArg = formService.update.mock.calls[0][0]
           expect(updateArg.bookingId).toBe(12345)
           expect(updateArg.status).toBe('AWAITING_APPROVAL')

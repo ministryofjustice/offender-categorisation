@@ -6,7 +6,8 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "details/macro.njk" import govukDetails %}
 
-{% set cat = data.suggestedCat %}
+{% set cat = data.openConditionsSuggestedCat %}
+{% set suggestedCat = data.categoriser.provisionalCategory.suggestedCategory if data.categoriser.provisionalCategory.suggestedCategory else data.openConditionsSuggestedCat%}
 {% set greenButtonText = "Submit" %}
 
 {% block formItems %}
@@ -21,7 +22,11 @@
   </strong>
 </div>
 
-<input type="hidden" name="suggestedCategory" value="{{ cat }}" />
+<input type="hidden" name="suggestedCategory" value="{{ suggestedCat }}" />
+<input type="hidden" name="overriddenCategoryText" value="{{ data.categoriser.provisionalCategory.overriddenCategoryText }}"/>
+<input type="hidden" name="overriddenCategory" value="{{ data.categoriser.provisionalCategory.overriddenCategory }}"/>
+<input type="hidden" name="otherInformationText" value="{{ data.categoriser.provisionalCategory.otherInformationText }}"/>
+<input type="hidden" name="openConditionsSuggestedCategory" value="{{ cat }}"/>
 
 {{ govukRadios({
   name: "categoryAppropriate",
@@ -38,12 +43,10 @@
   items: [
     {
       value: "Yes",
-      checked: data.categoriser.provisionalCategory.categoryAppropriate === 'Yes',
       text: "Yes"
     },
     {
       value: "No",
-      checked: data.categoriser.provisionalCategory.categoryAppropriate === 'No',
       text: "No"
     }
   ]
