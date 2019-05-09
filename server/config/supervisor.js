@@ -23,6 +23,11 @@ module.exports = {
         },
       },
       {
+        previousOverrideCategoryText: {
+          responseType: 'optionalString',
+        },
+      },
+      {
         proposedCategory: {
           responseType: 'optionalString',
         },

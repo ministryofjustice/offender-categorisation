@@ -290,6 +290,9 @@ module.exports = function Index({
     if (body.previousConvictions === 'No') {
       delete updated.previousConvictionsText
     }
+    if (body.previousOverrideCategoryText === '') {
+      delete updated.previousOverrideCategoryText
+    }
     return updated
   }
 
@@ -456,11 +459,11 @@ module.exports = function Index({
 
       const userInput = clearConditionalFields(req.body)
 
-      if (userInput.supervisorOverriddenCategory !== 'D' && userInput.supervisorOverriddenCategory !== 'J') {
-        if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
-          return
-        }
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+        return
+      }
 
+      if (userInput.supervisorOverriddenCategory !== 'D' && userInput.supervisorOverriddenCategory !== 'J') {
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
@@ -476,6 +479,20 @@ module.exports = function Index({
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
+        // persist the open conditions override and return to categoriser to complete the open conditions route.
+        const userInputAdditionalAudit = {
+          supervisorSentBackOverriddenCategoryText: userInput.supervisorOverriddenCategoryText,
+          ...userInput,
+        }
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput: userInputAdditionalAudit,
+          formSection: section,
+          formName: form,
+          transactionalClient: transactionalDbClient,
+        })
         await requiresOpenConditions(bookingId, transactionalDbClient)
 
         // send back to the categoriser for open conditions completion

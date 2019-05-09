@@ -252,7 +252,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const userInput = req.body
 
-      if (userInput.categoryAppropriate === 'Yes') {
+      if (userInput.openConditionsCategoryAppropriate === 'Yes') {
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
