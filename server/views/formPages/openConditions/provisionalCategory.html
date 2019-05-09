@@ -8,6 +8,7 @@
 
 {% set cat = data.openConditionsSuggestedCat %}
 {% set suggestedCat = data.categoriser.provisionalCategory.suggestedCategory if data.categoriser.provisionalCategory.suggestedCategory else data.openConditionsSuggestedCat%}
+{% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory if data.categoriser.provisionalCategory.overriddenCategory else data.openConditionsSuggestedCat%}
 {% set greenButtonText = "Submit" %}
 
 {% block formItems %}
@@ -23,13 +24,14 @@
 </div>
 
 <input type="hidden" name="suggestedCategory" value="{{ suggestedCat }}" />
+<input type="hidden" name="categoryAppropriate" value="{{ categoryAppropriate }}" />
 <input type="hidden" name="overriddenCategoryText" value="{{ data.categoriser.provisionalCategory.overriddenCategoryText }}"/>
-<input type="hidden" name="overriddenCategory" value="{{ data.categoriser.provisionalCategory.overriddenCategory }}"/>
+<input type="hidden" name="overriddenCategory" value="{{ overriddenCat }}"/>
 <input type="hidden" name="otherInformationText" value="{{ data.categoriser.provisionalCategory.otherInformationText }}"/>
 <input type="hidden" name="openConditionsSuggestedCategory" value="{{ cat }}"/>
 
 {{ govukRadios({
-  name: "categoryAppropriate",
+  name: "openConditionsCategoryAppropriate",
   classes: "govuk-radios--inline",
   fieldset: {
     legend: {
@@ -39,7 +41,7 @@
   },
   errorMessage: {
     text: "Please select yes or no"
-  } if (errors | findError('categoryAppropriate')),
+  } if (errors | findError('openConditionsCategoryAppropriate')),
   items: [
     {
       value: "Yes",
