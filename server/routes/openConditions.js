@@ -6,7 +6,6 @@ const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
-const { redirectUsingRole } = require('../utils/routes')
 const Status = require('../utils/statusEnum')
 
 const formConfig = {
@@ -69,8 +68,8 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const suggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
-      const data = { ...result.data, suggestedCat }
+      const openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      const data = { ...result.data, openConditionsSuggestedCat }
 
       res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
     })
@@ -143,13 +142,48 @@ module.exports = function Index({ formService, offendersService, userService, au
     return updated
   }
 
-  // todo remove for openconditions
+  const clearProvisionalCategory = form => {
+    const updated = Object.assign({}, form)
+    if (form.categoriser && form.categoriser.provisionalCategory) {
+      delete updated.categoriser.provisionalCategory
+    }
+    return updated
+  }
+
+  const cancelOpenConditions = async (bookingId, transactionalDbClient) => {
+    const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+    const formToUpdate = clearProvisionalCategory(categorisationRecord.formObject)
+
+    const dataToStore = {
+      ...formToUpdate, // merge any existing form data
+      openConditionsRequested: false,
+    }
+    await formService.updateFormData(bookingId, dataToStore, transactionalDbClient)
+  }
+
   router.post(
-    '/reviewOpenConditions/:bookingId',
+    '/riskLevels/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const form = 'reviewOpenConditions'
+      const form = 'riskLevels'
+      const section = 'openConditions'
       const formPageConfig = formConfig.openConditions[form]
+
+      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+        return
+      }
+
+      const userInput = clearConditionalFields(req.body)
+      const bookingIdInt = parseInt(bookingId, 10)
+      await formService.update({
+        bookingId: bookingIdInt,
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput,
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
 
       const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
       const data = formData.formObject
@@ -191,13 +225,8 @@ module.exports = function Index({ formService, offendersService, userService, au
         transactionalClient: transactionalDbClient,
       })
       if (userInput.stillRefer === 'No') {
-        // todo OPEN CONDITIONS CHANGES HERE   jira - not recommended
-        redirectUsingRole(
-          res,
-          `/form/categoriser/provisionalCategory/${bookingId}`,
-          `/form/supervisor/review/${bookingId}`,
-          '/securityHome'
-        )
+        await cancelOpenConditions(parseInt(bookingId, 10), transactionalDbClient)
+        res.redirect(`/tasklist/${bookingId}`)
       } else {
         const nextPath = getPathFor({ data: userInput, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
@@ -221,22 +250,33 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
-      const userInput = clearConditionalFields(req.body)
+      const userInput = req.body
 
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        status: Status.AWAITING_APPROVAL.name,
-        transactionalClient: transactionalDbClient,
-      })
-      await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
+      if (userInput.categoryAppropriate === 'Yes') {
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput,
+          formSection: section,
+          formName: form,
+          status: Status.AWAITING_APPROVAL.name,
+          transactionalClient: transactionalDbClient,
+        })
+        await offendersService.createInitialCategorisation({
+          token: res.locals.user.token,
+          bookingId,
+          suggestedCategory: userInput.openConditionsSuggestedCategory,
+          overriddenCategoryText: userInput.overriddenCategoryText,
+        })
 
-      const nextPath = getPathFor({ data: userInput, config: formPageConfig })
-      res.redirect(`${nextPath}${bookingId}`)
+        const nextPath = getPathFor({ data: userInput, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      } else {
+        // if user selects no - clear provisional cat data and cancel open conditions
+        await cancelOpenConditions(parseInt(bookingId, 10), transactionalDbClient)
+        res.redirect(`/tasklist/${bookingId}`)
+      }
     })
   )
 
@@ -252,8 +292,9 @@ module.exports = function Index({ formService, offendersService, userService, au
       }
 
       const userInput = clearConditionalFields(req.body)
+      const bookingIdInt = parseInt(bookingId, 10)
       await formService.update({
-        bookingId: parseInt(bookingId, 10),
+        bookingId: bookingIdInt,
         userId: req.user.username,
         config: formPageConfig,
         userInput,
@@ -263,6 +304,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       })
 
       if (userInput.justify === 'No') {
+        await cancelOpenConditions(bookingIdInt, transactionalDbClient)
         res.render('pages/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because they have more than three years to their' +
@@ -270,11 +312,13 @@ module.exports = function Index({ formService, offendersService, userService, au
           bookingId,
         })
       } else if (userInput.formCompleted === 'No') {
+        await cancelOpenConditions(bookingIdInt, transactionalDbClient)
         res.render('pages/openConditionsNotSuitable', {
           warningText: 'This person cannot be sent to open conditions without a CCD3 form',
           bookingId,
         })
       } else if (userInput.exhaustedAppeal === 'Yes') {
+        await cancelOpenConditions(bookingIdInt, transactionalDbClient)
         res.render('pages/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because they are due to be deported and have exhausted' +

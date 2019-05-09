@@ -28,6 +28,7 @@ class CategoriserTasklistPage extends Page {
     extremismButton { $('#extremismButton') }
     backLink { $('a.govuk-back-link') }
     summarySection (required: true) { $('#review div') }
+    openConditionsButton (required: false){ $('#openConditionsButton') }
   }
 
   def logout() {
