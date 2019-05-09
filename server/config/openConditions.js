@@ -143,7 +143,7 @@ module.exports = {
     },
     fields: [
       {
-        categoryAppropriate: {
+        openConditionsCategoryAppropriate: {
           responseType: 'requiredString',
           validationMessage: 'Please select yes or no',
         },

@@ -131,7 +131,6 @@
         label: {
           text: "Explain why you changed the category"
         },
-        value: data.supervisor.review.supervisorOverriddenCategoryText,
         errorMessage: {
           text: "Please enter the reason why you changed the category"
         } if (errors | findError('supervisorOverriddenCategoryText'))
@@ -159,12 +158,10 @@
         items: [
           {
             value: "Yes",
-            checked: data.supervisor.review.supervisorCategoryAppropriate === 'Yes',
             text: "Yes"
           },
           {
             value: "No",
-            checked: data.supervisor.review.supervisorCategoryAppropriate === 'No',
             text: "No",
             conditional: {
               html:overriddenCategoryTextHtml
@@ -175,6 +172,7 @@
     {% endif %}
 
     <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
+    <input type="hidden" name="previousOverrideCategoryText" value="{{ data.supervisor.review.supervisorOverriddenCategoryText }}"/>
 </div>
 
 {% endblock %}
