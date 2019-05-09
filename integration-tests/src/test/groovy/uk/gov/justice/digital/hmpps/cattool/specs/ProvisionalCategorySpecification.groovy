@@ -197,6 +197,8 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     at ProvisionalCategoryPage
     !newCatMessage.displayed
     appropriateNo.click()
+    overriddenCategoryText << "Some Text"
+    otherInformationText << "other info  Text"
     overriddenCategoryD.click()
     elite2api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)

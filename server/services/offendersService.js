@@ -414,9 +414,15 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function createInitialCategorisation(token, bookingId, form) {
-    const category = form.overriddenCategory || form.suggestedCategory
-    const comment = form.overriddenCategoryText || ''
+  async function createInitialCategorisation({
+    token,
+    bookingId,
+    overriddenCategory,
+    suggestedCategory,
+    overriddenCategoryText,
+  }) {
+    const category = overriddenCategory || suggestedCategory
+    const comment = overriddenCategoryText || ''
     const nomisClient = nomisClientBuilder(token)
     try {
       await nomisClient.createInitialCategorisation({ bookingId, category, committee: 'Cat-tool', comment })

@@ -68,8 +68,8 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const suggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
-      const data = { ...result.data, suggestedCat }
+      const openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      const data = { ...result.data, openConditionsSuggestedCat }
 
       res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
     })
@@ -142,11 +142,20 @@ module.exports = function Index({ formService, offendersService, userService, au
     return updated
   }
 
+  const clearProvisionalCategory = form => {
+    const updated = Object.assign({}, form)
+    if (form.categoriser && form.categoriser.provisionalCategory) {
+      delete updated.categoriser.provisionalCategory
+    }
+    return updated
+  }
+
   const cancelOpenConditions = async (bookingId, transactionalDbClient) => {
     const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+    const formToUpdate = clearProvisionalCategory(categorisationRecord.formObject)
 
     const dataToStore = {
-      ...categorisationRecord.formObject, // merge any existing form data
+      ...formToUpdate, // merge any existing form data
       openConditionsRequested: false,
     }
     await formService.updateFormData(bookingId, dataToStore, transactionalDbClient)
@@ -241,9 +250,9 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
-      const userInput = clearConditionalFields(req.body)
+      const userInput = req.body
 
-      if (userInput.categoryAppropriate) {
+      if (userInput.categoryAppropriate === 'Yes') {
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
@@ -254,11 +263,17 @@ module.exports = function Index({ formService, offendersService, userService, au
           status: Status.AWAITING_APPROVAL.name,
           transactionalClient: transactionalDbClient,
         })
-        await offendersService.createInitialCategorisation(res.locals.user.token, bookingId, userInput)
+        await offendersService.createInitialCategorisation({
+          token: res.locals.user.token,
+          bookingId,
+          suggestedCategory: userInput.openConditionsSuggestedCategory,
+          overriddenCategoryText: userInput.overriddenCategoryText,
+        })
 
         const nextPath = getPathFor({ data: userInput, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
+        // if user selects no - clear provisional cat data and cancel open conditions
         await cancelOpenConditions(parseInt(bookingId, 10), transactionalDbClient)
         res.redirect(`/tasklist/${bookingId}`)
       }
