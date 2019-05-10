@@ -4,22 +4,20 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorConfirmBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
-import wiremock.org.apache.commons.lang3.StringUtils
 
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
@@ -50,19 +48,18 @@ class SupervisorSpecification extends GebReportingSpec {
   def "The supervisor review page can be confirmed"() {
     when: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
     navigateToReview()
 
-    then: 'the change links are not displayed'
+    then: 'the change links are not displayed and the buttons omit the current cat'
     changeLinks.size() == 0
+    // the displayed property does not work on these radios for some reason
+    overriddenCategoryB.@type == 'radio'
+    overriddenCategoryC.@type == null
+    overriddenCategoryD.@type == 'radio'
+
 
     when: 'the supervisor selects yes (after changing their mind)'
     elite2api.stubSupervisorApprove("C")
@@ -76,21 +73,19 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the review outcome page is displayed and review choices persisted'
     at SupervisorReviewOutcomePage
 
-    def response = db.getData(12).form_response
-    response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorCategoryAppropriate": "Yes"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
-    db.getData(12).status == ["APPROVED"]
+    def data = db.getData(12)
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatings
+    response.supervisor == [review: [proposedCategory: 'C', supervisorCategoryAppropriate: 'Yes']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'C', categoryAppropriate: 'Yes']]
+    response.openConditionsRequested == null
+    data.status == ["APPROVED"]
   }
 
   def "The supervisor review page can be confirmed - youth offender"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
 
     navigateToReview(true, false)
@@ -108,26 +103,23 @@ class SupervisorSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'The record is sent back to the categoriser'
+    at SupervisorHomePage
 
-    def dbData = db.getData(12).form_response
-    dbData[0].toString().contains('"supervisor"')
-    db.getData(12).status == ["SUPERVISOR_BACK"]
-    def response = db.getData(12).form_response
-    response[0].toString() contains '"openConditionsRequested": true}'
+    def data = db.getData(12)
+    data.status == ["SUPERVISOR_BACK"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatings
+    response.supervisor == [review: [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'reason text']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'I', categoryAppropriate: 'Yes']]
+    response.openConditionsRequested
   }
 
-  def "The supervisor review page displays Open conditions data when category is D"() {
+  def "The supervisor review page displays Open conditions data when category is D or J"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
 
     when: 'The supervisor views the review page for a category D'
     navigateToReview(false, false)
@@ -143,15 +135,9 @@ class SupervisorSpecification extends GebReportingSpec {
     when: 'The supervisor views the review page for a category J'
     db.clearDb()
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "J", categoryAppropriate: "Yes"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "I", overriddenCategory: "J", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
 
     to SupervisorHomePage
 
@@ -163,16 +149,25 @@ class SupervisorSpecification extends GebReportingSpec {
     openConditionsHeader.isDisplayed()
   }
 
+  def "The categoriser has overridden - not open conditions"() {
+    given: 'supervisor is viewing the review page for B2345YZ'
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings    : TestFixture.defaultRatings,
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+
+    when: 'The supervisor views the review page for an overridden category B'
+    navigateToReview(false, false)
+
+    then: 'the review page includes changed category and normal answers but not open conditions information'
+    !openConditionsHeader.isDisplayed()
+    warning.text() == 'C\nB\nWarning\nThe category was originally C and is now B'
+    values[2].text() == 'some convictions'
+  }
+
   def "The supervisor review page can be confirmed - indeterminate sentence"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
     navigateToReview(false, true)
@@ -185,6 +180,7 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'The page shows info Changing to Cat'
     warnings[0].text().contains 'the provisional category is C'
     newCatMessage.text() == 'Changing to Cat B'
+    indeterminateMessage.text() == 'Prisoner has indeterminate sentence - Cat D not available'
 
     when: 'Changing to Cat B'
     elite2api.stubCategorise('B')
@@ -196,9 +192,13 @@ class SupervisorSpecification extends GebReportingSpec {
     userHeader.text().contains 'User, Test'
 
 
-    def dbData = db.getData(12).form_response
-    dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "C", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "Some Text"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "C", "categoryAppropriate": "Yes"}}}'
-    db.getData(12).status == ["APPROVED"]
+    def data = db.getData(12)
+    data.status == ["APPROVED"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatings
+    response.supervisor ==  [review: [proposedCategory: 'C', supervisorOverriddenCategory: 'B', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'Some Text']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'C', categoryAppropriate: 'Yes']]
+    response.openConditionsRequested == null
 
     when: 'the supervisor clicks finish'
     finishButton.click()
@@ -210,13 +210,7 @@ class SupervisorSpecification extends GebReportingSpec {
   def "The supervisor can send the case back to the categoriser"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
     navigateToReview(false, false)
@@ -254,13 +248,7 @@ class SupervisorSpecification extends GebReportingSpec {
   def "Overriding to an Open conditions category returns the record to the categoriser"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "B", categoryAppropriate: "Yes"]]]))
 
     navigateToReview(false, false)
@@ -279,21 +267,19 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the record is returned to categoriser without persisting supervisor approval or any validation of the form'
     at SupervisorHomePage
 
-    def dbData = db.getData(12).form_response
-    dbData[0].toString().contains('"supervisor"')
-    db.getData(12).status == ["SUPERVISOR_BACK"]
+    def data = db.getData(12)
+    data.status == ["SUPERVISOR_BACK"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatings
+    response.supervisor == [review: [proposedCategory: 'B', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'B', categoryAppropriate: 'Yes']]
+    response.openConditionsRequested
   }
 
   def "The supervisor review page can be confirmed - youth offender and indeterminate sentence"() {
     when: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
 
     navigateToReview(true, true)
@@ -308,21 +294,19 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the review outcome page is displayed and review choices persisted'
     at SupervisorReviewOutcomePage
 
-    def dbData = db.getData(12).form_response
-    dbData[0].toString() contains '"supervisor": {"review": {"proposedCategory": "I", "supervisorCategoryAppropriate": "Yes"}}, "categoriser": {"provisionalCategory": {"suggestedCategory": "I", "categoryAppropriate": "Yes"}}}'
-    db.getData(12).status == ["APPROVED"]
+    def data = db.getData(12)
+    data.status == ["APPROVED"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatings
+    response.supervisor ==  [review: [proposedCategory: 'I', supervisorCategoryAppropriate: 'Yes']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'I', categoryAppropriate: 'Yes']]
+    response.openConditionsRequested == null
   }
 
   def "The supervisor review page validates input, suggested category C overridden with D"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
 
     navigateToReview()
@@ -342,9 +326,10 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the review page is displayed with errors - enter a category and a reason'
     at SupervisorReviewPage
 
-    //overriddenCategoryB.displayed
-    //overriddenCategoryC.displayed
-    //!overriddenCategoryD.displayed
+    // the displayed property does not work on these radios for some reason
+    overriddenCategoryB.@type == 'radio'
+    overriddenCategoryC.@type == 'radio'
+    overriddenCategoryD.@type == null
 
     errorSummaries*.text() == ['Please enter the new category', 'Please enter the reason why you changed the category']
 
@@ -368,9 +353,13 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the review outcome page is displayed and review choices persisted'
     at SupervisorReviewOutcomePage
 
-    def response = db.getData(12).form_response
-    response[0].toString() contains '"supervisor": {"review": {"proposedCategory": "D", "supervisorOverriddenCategory": "B", "supervisorCategoryAppropriate": "No", "supervisorOverriddenCategoryText": "A good reason"}}'
-    db.getData(12).status == ["APPROVED"]
+    def data = db.getData(12)
+    data.status == ["APPROVED"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatings
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'C', overriddenCategory: 'D', categoryAppropriate: 'No', overriddenCategoryText: 'Some Text']]
+    response.supervisor ==  [review: [proposedCategory: 'D', supervisorOverriddenCategory: 'B', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'A good reason']]
+    response.openConditionsRequested == null
   }
 
   def navigateToReview(youngOffender = false, indeterminateSentence = false){
@@ -402,23 +391,11 @@ class SupervisorSpecification extends GebReportingSpec {
     when: 'I go to the home page as supervisor and select the done tab'
 
     db.createDataWithStatus(-2, 12, 'APPROVED', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        securityInput   : [securityInputNeeded: "No"],
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
 
     db.createDataWithStatus(-1,11, 'APPROVED', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
-        securityInput   : [securityInputNeeded: "No"],
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeFurtherCharges: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
@@ -444,7 +421,5 @@ class SupervisorSpecification extends GebReportingSpec {
     categorisers == ['Lamb, John', 'Fan, Jane']
     approvers == ['Helly, James', 'Helly, James']
     outcomes == ['C', 'C']
-
   }
-
 }
