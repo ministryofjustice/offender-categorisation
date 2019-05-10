@@ -44,12 +44,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   def 'The Provisional Category page is present'() {
     given: 'Ratings data exists for for B2345YZ'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
-      ratings: [
-        furtherCharges  : [furtherCharges: "some charges"],
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeCatB: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ]
+      ratings: TestFixture.defaultRatings
     ]))
 
     when: 'I go to the Provisional Category page'
@@ -64,14 +59,17 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     then: 'The page is displayed correctly'
     at ProvisionalCategoryPage
-    !overriddenCategoryB.displayed
-    !overriddenCategoryC.displayed
-    !overriddenCategoryD.displayed
     warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
 
     when: 'I enter some data, save and return to the page'
     elite2api.stubCategorise('C')
     appropriateNo.click()
+
+    // the displayed property does not work on these radios for some reason
+    overriddenCategoryB.@type == null
+    overriddenCategoryC.@type == 'radio'
+    overriddenCategoryD.@type == 'radio'
+
     overriddenCategoryC.click()
     overriddenCategoryText << "Some Text"
     otherInformationText << "other info  Text"
@@ -131,13 +129,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   def 'young offender test'() {
     given: 'Ratings data exists for for B2345YZ'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
-      ratings: [
-        furtherCharges  : [furtherCharges: "Yes", furtherChargesText: "some charges"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
 
     when: 'I go to the Provisional Category page for young offender'
@@ -176,13 +168,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   def 'Category D redirects to open conditions flow'() {
     given: 'Ratings data exists for for B2345YZ'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
-      ratings: [
-        furtherCharges  : [furtherCharges: "Yes", furtherChargesText: "some charges"],
-        // securityInput omitted
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ],
+      ratings: TestFixture.defaultRatings,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
     when: 'I go to the Provisional Category page for the offender'
@@ -253,12 +239,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   def 'Rollback on elite2api failure'() {
     given: 'I am at the Provisional Category page'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
-      ratings: [
-        furtherCharges  : [furtherCharges: "some charges"],
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-        escapeRating    : [escapeCatB: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
-      ]
+      ratings: TestFixture.defaultRatings
     ]))
     elite2api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
