@@ -293,6 +293,9 @@ module.exports = function Index({
     if (body.previousOverrideCategoryText === '') {
       delete updated.previousOverrideCategoryText
     }
+    if (body.otherInformationText === '') {
+      delete updated.otherInformationText
+    }
     return updated
   }
 
