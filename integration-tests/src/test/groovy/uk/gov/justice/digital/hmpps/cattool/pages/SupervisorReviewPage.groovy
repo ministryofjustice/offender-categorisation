@@ -36,7 +36,7 @@ class SupervisorReviewPage extends Page {
     foreignNational { $('.foreignNationalSummary .govuk-summary-list__value') }
     earliestReleaseDate { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
     warnings { $('div.govuk-warning-text') }
-
+    values { $('dd.govuk-summary-list__value')}
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }

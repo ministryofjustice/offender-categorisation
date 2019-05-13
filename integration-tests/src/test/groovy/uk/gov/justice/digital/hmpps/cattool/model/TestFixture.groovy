@@ -23,6 +23,15 @@ class TestFixture {
 
   UserAccount currentUser
 
+  public static final defaultRatings = [
+    offendingHistory: [previousConvictions: "some convictions"],
+    securityInput   : [securityInputNeeded: "No"],
+    furtherCharges  : [furtherCharges: "No"],
+    violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
+    escapeRating    : [escapeOtherEvidence: "Yes"],
+    extremismRating : [previousTerrorismOffences: "Yes"]
+  ]
+
   TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1) {
     this.browser = browser
     this.elite2Api = elite2Api
