@@ -90,3 +90,5 @@ spec:
                 secretKeyRef:
                   name: categorisation-tool-secrets
                   key: api_client_secret
+            - name: GOOGLE_ANALYTICS_ID
+              value: "GTM-MVD7G3F"
