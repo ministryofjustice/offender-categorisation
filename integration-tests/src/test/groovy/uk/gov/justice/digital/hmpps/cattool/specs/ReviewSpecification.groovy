@@ -84,13 +84,13 @@ class ReviewSpecification extends GebReportingSpec {
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewPage
     changeLinks.size() == 9
-    // 1 line per section:
-    values*.text() == ['Cat A (2012)', '''Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence''', 'Yes\nsome convictions',
-                       'Yes\ncharges text', 'No',
-                       '5', '2', 'No', '''Yes\nHere are the serious threat details''',
-                       'Yes', 'Yes', '''Yes\nEscape Other Evidence Text''', '''Yes\nReason why Cat B''',
-                       'Yes', '''Yes\nPrevious Terrorism Offences Text''',
-                       'No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
+    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
+    furtherChargesSummary*.text() == ['Yes\ncharges text', 'No']
+    violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes\nHere are the serious threat details']
+    escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes\nEscape Other Evidence Text', 'Yes\nReason why Cat B']
+    extremismRatingSummary*.text() == ['Yes', 'Yes\nPrevious Terrorism Offences Text']
+    securityInputSummary*.text() == ['No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
+
     changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
 

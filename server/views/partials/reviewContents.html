@@ -12,7 +12,7 @@
 <h2 class="govuk-heading-m">Offending history</h2>
 {% set catAValue %}Cat {{ data.history.catAType }} ({{ data.history.catAStartYear }}){% endset %}
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 offendingHistorySummary',
     rows: [
       {
         key: { text: "Previous Cat A" },
@@ -39,7 +39,7 @@
 
 <h2 class="govuk-heading-m">Further charges</h2>
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 furtherChargesSummary',
     rows: [
       {
         key: { text: "Further serious charges" },
@@ -75,7 +75,7 @@
 #}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 violenceRatingSummary',
     rows: [
       {
         key: { text: "Previous assaults in custody recorded" },
@@ -112,7 +112,7 @@
 
 <h2 class="govuk-heading-m">Risk of escape</h2>
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 escapeRatingSummary',
     rows: [
       {
         key: { text: "Escape list" },
@@ -149,7 +149,7 @@
 
 <h2 class="govuk-heading-m">Extremism</h2>
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 extremismRatingSummary',
     rows: [
       {
         key: { text: "Identified at risk of engaging in or vulnerable to extremism" },
@@ -172,7 +172,7 @@
 {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityInput.securityInputNeeded == 'Yes' %}
 <h2 class="govuk-heading-m">Security information</h2>
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9',
+    classes: 'govuk-!-margin-bottom-9 securityInputSummary',
     rows: [
       {
         key: { text: "Automatic referral to security team" },
