@@ -29,14 +29,21 @@ class SupervisorReviewPage extends Page {
     errors(required: false) { $('span.govuk-error-message') }
     openConditionsHeader(required: false) { $('.openConditionsHeader') }
     backToCategoriserButton { $('.rightAlignedButton') }
-    suitability { $('dl.suitabilitySummary .govuk-summary-list__value') }
+
+    offendingHistorySummary { $('.offendingHistorySummary .govuk-summary-list__value') }
+    furtherChargesSummary { $('.furtherChargesSummary .govuk-summary-list__value') }
+    violenceRatingSummary { $('.violenceRatingSummary .govuk-summary-list__value') }
+    escapeRatingSummary { $('.escapeRatingSummary .govuk-summary-list__value') }
+    extremismRatingSummary { $('.extremismRatingSummary .govuk-summary-list__value') }
+    securityInputSummary { $('.securityInputSummary .govuk-summary-list__value') }
+
     riskLevel { $('.riskLevelSummary .govuk-summary-list__value') }
-    furtherCharges { $('.furtherChargesSummary .govuk-summary-list__value') }
+    furtherCharges { $('.furtherChargesOpenSummary .govuk-summary-list__value') }
     riskOfHarm { $('.riskOfHarmSummary .govuk-summary-list__value') }
     foreignNational { $('.foreignNationalSummary .govuk-summary-list__value') }
     earliestReleaseDate { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
+
     warnings { $('div.govuk-warning-text') }
-    values { $('dd.govuk-summary-list__value')}
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }

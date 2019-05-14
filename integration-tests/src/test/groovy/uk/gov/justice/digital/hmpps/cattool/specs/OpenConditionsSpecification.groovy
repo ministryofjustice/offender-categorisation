@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -43,14 +44,10 @@ class OpenConditionsSpecification extends GebReportingSpec {
   def "The happy path is correct for categoriser, all yeses"() {
     given:
     db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
-        furtherCharges: [furtherCharges: "Yes", furtherChargesText: "some charges"],
-        securityInput   : [securityInputNeeded: 'No'],
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
-        escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'No'],
-        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text']
-      ], openConditionsRequested : true
+      ratings                : TestFixture.defaultRatingsB,
+      categoriser            : [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
+                                                      categoryAppropriate: 'No', otherInformationText: 'change to D', overriddenCategoryText: 'Some Text']],
+      openConditionsRequested: true
     ]))
 
     when: 'I go to the first open conditions page'
@@ -261,26 +258,39 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at ReviewPage
     changeLinks.size() == 9
 
-    def response = db.getData(12).form_response
-    def data = response[0].toString()
-    data.contains '"earliestReleaseDate": {"justify": "Yes", "justifyText": "details text", "threeOrMoreYears": "Yes"}'
-    data.contains '"foreignNational": {"dueDeported": "Yes", "formCompleted": "Yes", "exhaustedAppeal": "No", "isForeignNational": "Yes"}'
-    data.contains '"riskOfHarm": {"harmManaged": "Yes", "seriousHarm": "Yes", "harmManagedText": "harmManagedText details"}'
-    data.contains '"furtherCharges": {"increasedRisk": "Yes", "furtherChargesText": "some charges,furtherChargesText details"}'
-    data.contains '"riskLevels": {"likelyToAbscond": "Yes", "likelyToAbscondText": "likelyToAbscondText details"}'
+    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'some convictions']
+    furtherChargesSummary*.text() == ['Yes\nsome charges', '']
+    violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes']
+    escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes', '']
+    extremismRatingSummary*.text() == ['Yes', 'Yes']
+    securityInputSummary*.text() == ['No', 'No', '', '']
+
+    !earliestReleaseDate.displayed
+
+    def data = db.getData(12)
+    data.status == ["SECURITY_BACK"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatingsB
+    response.categoriser == [:] // data cleared
+    response.supervisor == null
+    response.openConditions == [
+      earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
+      foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
+      riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
+      furtherCharges     : [increasedRisk: 'Yes', furtherChargesText: 'some charges,furtherChargesText details'],
+      riskLevels         : [likelyToAbscond: 'Yes', likelyToAbscondText: 'likelyToAbscondText details'],
+      notRecommended     : [stillRefer: 'No']
+    ]
+    response.openConditionsRequested == false
   }
 
   def "The happy path is correct for categoriser, all nos"() {
     when: 'I go to the first open conditions page'
     db.createData(-1, 12, JsonOutput.toJson([
-      ratings: [
-        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
-        furtherCharges: [furtherCharges: "Yes", furtherChargesText: "some charges"],
-        securityInput   : [securityInputNeeded: 'No'],
-        violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
-        escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'No'],
-        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text']
-      ], openConditionsRequested : true]))
+      ratings                : TestFixture.defaultRatingsB,
+      categoriser            : [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
+                                                      categoryAppropriate: 'No', otherInformationText: 'Some Text', overriddenCategoryText: 'change to D']],
+      openConditionsRequested: true]))
 
     elite2api.stubUncategorised()
     elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
@@ -350,19 +360,36 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'the review page is displayed and Data is stored correctly'
     at ReviewPage
-    /*values*.text() == ['', 'No', 'Not applicable', // 1 line per section
-                       '', 'No', 'Not applicable', 'Not applicable', 'Not applicable',
-                       '', 'No', 'Not applicable',
-                       '', 'some charges,furtherChargesText details', 'No',
-                       '', 'No']*/
 
-    def response = db.getData(12).form_response
-    def data = response[0].toString()
-    data.contains '"earliestReleaseDate": {"threeOrMoreYears": "No"}'
-    data.contains '"foreignNational": {"isForeignNational": "No"}'
-    data.contains '"riskOfHarm": {"seriousHarm": "No"}'
-    data.contains '"furtherCharges": {"increasedRisk": "No", "furtherChargesText": "some charges,furtherChargesText details"}'
-    data.contains '"riskLevels": {"likelyToAbscond": "No"}'
+    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'some convictions']
+    furtherChargesSummary*.text() == ['Yes\nsome charges', '']
+    violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes']
+    escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes', '']
+    extremismRatingSummary*.text() == ['Yes', 'Yes']
+    securityInputSummary*.text() == ['No', 'No', '', '']
+
+    earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
+    foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
+    riskOfHarm*.text() == ['', 'No', 'Not applicable']
+    furtherCharges*.text() == ['', 'some charges,furtherChargesText details', 'No']
+    riskLevel*.text() == ['', 'No']
+
+    def data = db.getData(12)
+    data.status == ["STARTED"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatingsB
+    response.categoriser == [
+                             provisionalCategory: [suggestedCategory   : 'B', overriddenCategory: 'D', categoryAppropriate: 'No',
+                                                   otherInformationText: 'Some Text', overriddenCategoryText: 'change to D']]
+    response.supervisor == null
+    response.openConditions == [
+      earliestReleaseDate: [threeOrMoreYears: 'No'],
+      foreignNational    : [isForeignNational: 'No'],
+      riskOfHarm         : [seriousHarm: 'No'],
+      furtherCharges     : [increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
+      riskLevels         : [likelyToAbscond: 'No'],
+    ]
+    response.openConditionsRequested
 
     when: 'I continue to the provision category page'
     submitButton.click()
@@ -378,14 +405,31 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'the category is submitted'
     at CategoriserSubmittedPage
-    db.getData(12).status == ["AWAITING_APPROVAL"]
 
     when: 'The record is viewed by the categoriser'
+    data = db.getData(12)
+    response = new JsonSlurper().parseText(data.form_response[0].toString())
+
     to CategoriserHomePage
     startButtons[0].click()
 
-    then: 'The correct category is retrieved'
+    then: 'The correct category is retrieved and data is correct'
     at CategoriserAwaitingApprovalViewPage
     categoryDiv.text() contains 'Category for approval is D'
+
+    data.status == ["AWAITING_APPROVAL"]
+    response.ratings == TestFixture.defaultRatingsB
+    response.categoriser == [review             : [:],
+                             provisionalCategory: [suggestedCategory   : 'B', overriddenCategory: 'D', categoryAppropriate: 'No',
+                                                   otherInformationText: 'Some Text', overriddenCategoryText: 'change to D']]
+    response.supervisor == null
+    response.openConditions == [
+      earliestReleaseDate: [threeOrMoreYears: 'No'],
+      foreignNational    : [isForeignNational: 'No'],
+      riskOfHarm         : [seriousHarm: 'No'],
+      furtherCharges     : [increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
+      riskLevels         : [likelyToAbscond: 'No'],
+    ]
+    response.openConditionsRequested
   }
 }
