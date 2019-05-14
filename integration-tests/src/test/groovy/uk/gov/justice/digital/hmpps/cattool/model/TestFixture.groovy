@@ -23,13 +23,30 @@ class TestFixture {
 
   UserAccount currentUser
 
-  public static final defaultRatings = [
+  public static final defaultRatingsB = [
     offendingHistory: [previousConvictions: "some convictions"],
     securityInput   : [securityInputNeeded: "No"],
     furtherCharges  : [furtherCharges: "No"],
     violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
     escapeRating    : [escapeOtherEvidence: "Yes"],
     extremismRating : [previousTerrorismOffences: "Yes"]
+  ]
+
+  public static final defaultRatingsC = [
+    offendingHistory: [previousConvictions: "some convictions"],
+    securityInput   : [securityInputNeeded: "No"],
+    furtherCharges  : [furtherCharges: "No"],
+    violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
+    escapeRating    : [escapeOtherEvidence: "No"],
+    extremismRating : [previousTerrorismOffences: "No"]
+  ]
+
+  public static final defaultOpenConditions = [
+    earliestReleaseDate: ['threeOrMoreYears': 'No'],
+    foreignNational    : ['isForeignNational': 'No'],
+    riskOfHarm         : ['seriousHarm': 'No'],
+    furtherCharges     : ['increasedRisk': 'No', 'furtherChargesText': 'some charges,furtherChargesText details'],
+    riskLevels         : ['likelyToAbscond': 'No']
   ]
 
   TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1) {

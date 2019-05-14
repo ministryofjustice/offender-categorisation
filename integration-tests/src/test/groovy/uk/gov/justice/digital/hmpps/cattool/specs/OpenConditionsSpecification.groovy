@@ -368,7 +368,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'I am at the provision category page'
-    at ProvisionalCategoryPage
+    at new ProvisionalCategoryPage(bookingId: '12')
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
     when: 'I confirm the cat D category'
