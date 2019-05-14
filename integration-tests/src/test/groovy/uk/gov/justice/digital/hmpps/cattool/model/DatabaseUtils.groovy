@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.cattool.model
 
 import groovy.sql.Sql
 
+import java.sql.Date
+
 class DatabaseUtils {
   Map dbConnParams = [
     url: 'jdbc:postgresql://localhost:5432/form-builder',
@@ -56,8 +58,9 @@ class DatabaseUtils {
 
   private doCreateCompleteRow(id, bookingId, json, userId, status, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate, securityReviewedBy, securityReviewedDate) {
     def sql = Sql.newInstance(dbConnParams)
+    def approvalDate = status == 'APPROVED' ? new Date(Calendar.getInstance().getTimeInMillis()) : null
     sql.executeUpdate("""insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId',
-      $referredDate, '$referredBy', $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', ?::date)""",
-      json, riskProfile, securityReviewedDate)
+      $referredDate, '$referredBy', $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', ?::date, ?::date)""",
+      json, riskProfile, securityReviewedDate, approvalDate)
   }
 }

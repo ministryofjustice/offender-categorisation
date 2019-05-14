@@ -1,4 +1,5 @@
 const formClient = require('../../server/data/formClient')
+const moment = require('moment')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
@@ -28,7 +29,8 @@ describe('getFormDataForUser', () => {
                     referred_date          as "securityReferredDate",
                     referred_by            as "securityReferredBy",
                     security_reviewed_date as "securityReviewedDate",
-                    security_reviewed_by   as "securityReviewedBy"
+                    security_reviewed_by   as "securityReviewedBy",
+                    approval_date          as "approvalDate"
              from form f
       where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['bookingId1'],
@@ -41,9 +43,22 @@ describe('getCategorisationRecordsByStatus', () => {
     formClient.getCategorisationRecordsByStatus('MDI', ['APPROVED', 'AWAITING_APPROVAL'], mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy"
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate"
         from form f where f.prison_id = $1 and f.status = ANY ($2) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['MDI', ['APPROVED', 'AWAITING_APPROVAL']],
+    })
+  })
+})
+
+describe('supervisorApproval', () => {
+  test('it should pass on the correct sql', () => {
+    const fromDate = moment('2013-03-01', 'YYYY-MM-DD').toDate()
+    formClient.getApprovedCategorisations('MDI', fromDate, mockTransactionalClient)
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate"
+        from form f where f.prison_id = $1 and f.status = $2 and approval_date >= $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
+      values: ['MDI', 'APPROVED', fromDate],
     })
   })
 })
@@ -53,7 +68,7 @@ describe('getSecurityReviewedCategorisationRecords', () => {
     formClient.getSecurityReviewedCategorisationRecords('MDI', mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy"
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate"
         from form f where f.prison_id = $1 and security_reviewed_date is not null and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['MDI'],
     })
@@ -92,6 +107,18 @@ describe('categorisation record update', () => {
       text:
         'update form f set form_response = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
       values: [{}, 'STARTED', 'bookingId1'],
+    })
+  })
+})
+
+describe('supervisorApproval update', () => {
+  test('it should update the categorisation record with a supervisor approval', () => {
+    formClient.supervisorApproval('formId', {}, 'bookingId1', mockTransactionalClient)
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text:
+        'update form f set form_response = $1, status = $2, approval_date = CURRENT_DATE where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+      values: [{}, 'APPROVED', 'bookingId1'],
     })
   })
 })
