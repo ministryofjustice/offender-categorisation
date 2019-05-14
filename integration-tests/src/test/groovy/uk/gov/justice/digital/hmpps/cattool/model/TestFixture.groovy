@@ -26,7 +26,7 @@ class TestFixture {
   public static final defaultRatingsB = [
     offendingHistory: [previousConvictions: "some convictions"],
     securityInput   : [securityInputNeeded: "No"],
-    furtherCharges  : [furtherCharges: "No"],
+    furtherCharges  : [furtherCharges: "Yes", furtherChargesText: "some charges"],
     violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
     escapeRating    : [escapeOtherEvidence: "Yes"],
     extremismRating : [previousTerrorismOffences: "Yes"]
@@ -87,9 +87,9 @@ class TestFixture {
 
   def simulateLogin() {
     browser.waitFor { browser.$('h1').text() == 'Sign in' }
-    List<LoggedRequest> requests = oauthApi.getAllServeEvents()
+    def requests = oauthApi.getAllServeEvents()
     // print JsonOutput.toJson(requests)
-    // Capture 'state' param for passport ( -1 = last server request)
+    // Capture 'state' param for passport (-2 = last but one server request)
     def stateParam = requests[-1].request.queryParams['state']
     def state = stateParam ? stateParam.values[0] : requests[-2].request.queryParams['state'].values[0]
     // Simulate auth server calling the callback, which then gets a token (from wiremock) and goes to homepage
