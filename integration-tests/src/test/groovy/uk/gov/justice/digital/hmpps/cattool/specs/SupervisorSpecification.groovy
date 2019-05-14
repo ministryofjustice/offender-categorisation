@@ -161,7 +161,7 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the review page includes changed category and normal answers but not open conditions information'
     !openConditionsHeader.isDisplayed()
     warning.text() == 'C\nB\nWarning\nThe category was originally C and is now B'
-    values[2].text() == 'some convictions'
+    offendingHistorySummary[2].text() == 'some convictions'
   }
 
   def "The supervisor review page can be confirmed - indeterminate sentence"() {
