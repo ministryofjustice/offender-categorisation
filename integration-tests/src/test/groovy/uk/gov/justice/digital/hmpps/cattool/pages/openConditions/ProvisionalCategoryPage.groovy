@@ -4,10 +4,13 @@ import geb.Page
 
 class ProvisionalCategoryPage extends Page {
 
+  static String bookingId
+
   static url = '/form/openConditions/provisionalCategory'
 
   static at = {
     headingText == 'Provisional category'
+    url + '/' + bookingId == '/' + (browser.getCurrentUrl() - browser.getBaseUrl())
   }
 
   static content = {
