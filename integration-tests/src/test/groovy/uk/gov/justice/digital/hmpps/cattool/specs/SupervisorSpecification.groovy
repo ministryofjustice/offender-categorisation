@@ -355,6 +355,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     def data = db.getData(12)
     data.status == ["APPROVED"]
+    data.approval_date != null
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.categoriser == [provisionalCategory: [suggestedCategory: 'C', overriddenCategory: 'D', categoryAppropriate: 'No', overriddenCategoryText: 'Some Text']]

@@ -23,6 +23,7 @@ const formService = {
   referToSecurityIfRiskAssessed: jest.fn(),
   referToSecurityIfRequested: jest.fn(),
   update: jest.fn(),
+  supervisorApproval: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
   updateFormData: jest.fn(),
@@ -301,12 +302,11 @@ describe('POST /supervisor/review', () => {
       .expect(302)
       .expect('Location', `${nextPath}12345`)
       .expect(() => {
-        expect(formService.update).toBeCalledTimes(1)
+        expect(formService.supervisorApproval).toBeCalledTimes(1)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(offendersService.createSupervisorApproval).toBeCalledWith('ABCDEF', '12345', userInput)
-        const updateArg = formService.update.mock.calls[0][0]
+        const updateArg = formService.supervisorApproval.mock.calls[0][0]
         expect(updateArg.bookingId).toBe(12345)
-        expect(updateArg.status).toBe('APPROVED')
       })
   )
 })

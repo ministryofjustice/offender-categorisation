@@ -467,14 +467,13 @@ module.exports = function Index({
       }
 
       if (userInput.supervisorOverriddenCategory !== 'D' && userInput.supervisorOverriddenCategory !== 'J') {
-        await formService.update({
+        await formService.supervisorApproval({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
           config: formPageConfig,
           userInput,
           formSection: section,
           formName: form,
-          status: Status.APPROVED.name,
           transactionalClient: transactionalDbClient,
         })
         await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
