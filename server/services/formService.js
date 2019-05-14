@@ -3,6 +3,7 @@ const moment = require('moment')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
+const conf = require('../../server/config')
 
 module.exports = function createFormService(formClient) {
   async function getCategorisationRecord(bookingId, transactionalClient) {
@@ -37,6 +38,31 @@ module.exports = function createFormService(formClient) {
       return newCategorisationForm
     }
     throw new Error(`Invalid state transition from ${currentCategorisation.status} to ${status}`)
+  }
+
+  async function supervisorApproval({ bookingId, config, userInput, formSection, formName, transactionalClient }) {
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
+
+    const newCategorisationForm = buildCategorisationForm({
+      formObject: currentCategorisation.formObject || {},
+      fieldMap: config.fields,
+      userInput,
+      formSection,
+      formName,
+    })
+
+    if (validateStatusIfProvided(currentCategorisation.status, Status.APPROVED.name)) {
+      await formClient.supervisorApproval(
+        currentCategorisation.id,
+        newCategorisationForm,
+        bookingId,
+        transactionalClient
+      )
+      return newCategorisationForm
+    }
+    throw new Error(
+      `Invalid state transition in supervisorApproval from ${currentCategorisation.status} to ${Status.APPROVED.name}`
+    )
   }
 
   async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo, transactionalClient) {
@@ -199,12 +225,12 @@ module.exports = function createFormService(formClient) {
   }
 
   async function getCategorisedOffenders(agencyId, transactionalClient) {
+    const displayMonths = conf.approvedDisplayMonths
+    const fromDate = moment()
+      .subtract(displayMonths, 'months')
+      .toDate()
     try {
-      const data = await formClient.getCategorisationRecordsByStatus(
-        agencyId,
-        [Status.APPROVED.name],
-        transactionalClient
-      )
+      const data = await formClient.getApprovedCategorisations(agencyId, fromDate, transactionalClient)
       return data.rows || []
     } catch (error) {
       logger.error(error)
@@ -280,5 +306,6 @@ module.exports = function createFormService(formClient) {
     getSecurityReviewedOffenders,
     getSecurityReferredOffenders,
     isYoungOffender,
+    supervisorApproval,
   }
 }
