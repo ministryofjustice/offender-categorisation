@@ -10,12 +10,12 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserFurtherChargesPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 
 class FurtherChargesSpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -24,7 +24,7 @@ class FurtherChargesSpecification extends GebReportingSpec {
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def setup() {
@@ -35,9 +35,9 @@ class FurtherChargesSpecification extends GebReportingSpec {
     given: 'I am at the further charges page'
 
     fixture.gotoTasklist()
-    at new CategoriserTasklistPage(bookingId: '12')
-    elite2api.stubAssessments('B2345YZ')
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    at new TasklistPage(bookingId: '12')
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     furtherChargesButton.click()
     at new CategoriserFurtherChargesPage(bookingId: '12')
 
@@ -53,7 +53,7 @@ class FurtherChargesSpecification extends GebReportingSpec {
     furtherChargesCatBYes.click()
     furtherChargesText << "There are further charges"
     saveButton.click()
-    at CategoriserTasklistPage
+    at TasklistPage
     furtherChargesButton.click()
 
     then: "data is correctly retrieved"

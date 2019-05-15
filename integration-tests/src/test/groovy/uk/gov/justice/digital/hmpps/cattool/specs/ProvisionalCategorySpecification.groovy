@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
 
@@ -26,7 +26,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   public static final TRICKY_TEXT = '!"£$%^&*()_+-={}[]:@~;\'#<>?,./|\\'
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -35,7 +35,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def setup() {
@@ -49,20 +49,20 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     ]))
 
     when: 'I go to the Provisional Category page'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
 
     then: 'The page is displayed correctly'
     warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
 
     when: 'I enter some data, save and return to the page'
-    elite2api.stubCategorise('C')
+    elite2Api.stubCategorise('C')
     appropriateNo.click()
 
     // the displayed property does not work on these radios for some reason
@@ -95,13 +95,13 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
   def 'Validation test'() {
     when: 'I submit the Provisional Category page without selecting anything'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     submitButton.click()
 
@@ -137,13 +137,13 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
 
     when: 'I go to the Provisional Category page for young offender'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12, 'B2345YZ', true)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', true)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     !newCatMessage.displayed
     appropriateNo.click()
@@ -153,14 +153,14 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     newCatMessage.text() == 'Changing to Cat J'
 
     when: 'Changing to Cat J'
-    elite2api.stubCategorise('J')
+    elite2Api.stubCategorise('J')
     overriddenCategoryText << "Some Text"
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
 
     then: 'user is redirected to the categoriser tasklist with the open conditions flow available'
-    at CategoriserTasklistPage
+    at TasklistPage
 
     def data = db.getData(12)
     data.status == ["STARTED"]
@@ -179,25 +179,25 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
 
     when: 'I go to the Provisional Category page for the offender'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12, 'B2345YZ', false)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     !newCatMessage.displayed
     appropriateNo.click()
     overriddenCategoryText << "Some Text"
     otherInformationText << TRICKY_TEXT
     overriddenCategoryD.click()
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
 
     then: 'user is redirected to open conditions flow'
-    at CategoriserTasklistPage
+    at TasklistPage
     openConditionsButton.displayed
 
     def data = db.getData(12)
@@ -216,13 +216,13 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
       ratings: TestFixture.defaultRatingsC]))
 
     when: 'I go to the Provisional Category page'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12, 'B2345YZ', false, true)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, true)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
 
     then: 'The page is displayed correctly'
@@ -233,7 +233,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     newCatMessage.text() == 'Changing to Cat B'
 
     when: 'Changing to Cat B'
-    elite2api.stubCategorise('B')
+    elite2Api.stubCategorise('B')
     overriddenCategoryText << "Explanation"
     otherInformationText << "other info"
     submitButton.click()
@@ -253,13 +253,13 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
   def 'indefinite sentence test for young offender'() {
     when: 'I go to the Provisional Category page'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12, 'B2345YZ', true, true)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', true, true)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
 
     then: 'The page is displayed correctly'
@@ -268,22 +268,22 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - Cat J not available'
   }
 
-  def 'Rollback on elite2api failure'() {
+  def 'Rollback on elite2Api failure'() {
     given: 'I am at the Provisional Category page'
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB
     ]))
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
 
     when: 'I save some data, but an api error occurs'
-    elite2api.stubCategoriseError()
+    elite2Api.stubCategoriseError()
     appropriateYes.click()
     submitButton.click()
 
@@ -309,13 +309,13 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     ]))
 
     when: 'I go to the Provisional Category page'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     via ProvisionalCategoryPage, '12'
 
     then: 'The page redirects to the open conditions version and shows cat D'
@@ -323,7 +323,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     warning[0].text() == 'D\nWarning\nBased on the information provided, the provisional category is D'
 
     when: 'I confirm Cat D'
-    elite2api.stubCategorise('D')
+    elite2Api.stubCategorise('D')
     appropriateYes.click()
 
     submitButton.click()
@@ -357,13 +357,13 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     ]))
 
     when: 'I go to the Provisional Category page'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     via ProvisionalCategoryPage, '12'
 
     then: 'The page redirects to the open conditions version and shows cat D'
@@ -376,7 +376,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     submitButton.click()
 
     then: 'The tasklist is shown with open conditions task removed but form data retained in database'
-    at CategoriserTasklistPage
+    at TasklistPage
     !openConditionsButton.displayed
 
     def data = db.getData(12)

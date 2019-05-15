@@ -24,7 +24,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
   }
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -33,7 +33,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The done page for a categoriser is present"() {
@@ -57,15 +57,15 @@ class CategoriserDoneSpecification extends GebReportingSpec {
       ]]))
 
     def now = LocalDate.now()
-    elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     fixture.loginAs(CATEGORISER_USER)
 
 
     at CategoriserHomePage
 
-    elite2api.stubCategorised()
+    elite2Api.stubCategorised()
 
     doneTabLink.click()
 
@@ -85,14 +85,14 @@ class CategoriserDoneSpecification extends GebReportingSpec {
     when: 'I go to the home page as categoriser'
 
     def now = LocalDate.now()
-    elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     fixture.loginAs(CATEGORISER_USER)
 
     at CategoriserHomePage
 
-    elite2api.stubCategorised()
+    elite2Api.stubCategorised()
 
     doneTabLink.click()
 

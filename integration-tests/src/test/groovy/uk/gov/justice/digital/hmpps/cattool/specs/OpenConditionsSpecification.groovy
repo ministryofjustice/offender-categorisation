@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.*
 
@@ -29,7 +29,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
   }
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -38,7 +38,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The happy path is correct for categoriser, all yeses"() {
@@ -52,11 +52,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'I go to the first open conditions page'
 
-    elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     to EarliestReleasePage, 12
 
     then: 'the Earliest Release page is displayed'
@@ -231,24 +231,24 @@ class OpenConditionsSpecification extends GebReportingSpec {
                         'They are likely to abscond or otherwise abuse the lower security of open conditions']
 
     when: 'No is selected and continue button is clicked'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     stillReferNo.click()
     submitButton.click()
 
     then: 'tasklist page is displayed without the open conditions section'
-    at CategoriserTasklistPage
+    at TasklistPage
     !openConditionsButton.isDisplayed()
 
 
     when: 'the continue button is clicked'
-    elite2api.stubAssessments('B2345YZ')
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    elite2api.stubOffenceHistory('B2345YZ')
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
@@ -292,11 +292,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
                                                       categoryAppropriate: 'No', otherInformationText: 'Some Text', overriddenCategoryText: 'change to D']],
       openConditionsRequested: true]))
 
-    elite2api.stubUncategorised()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     to EarliestReleasePage, 12
 
     then: 'the Earliest Release page is displayed'
@@ -337,21 +337,21 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'I submit page after likelyToAbscondNo'
     likelyToAbscondNo.click()
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
 
 
     then: 'tasklist page is displayed with the open conditions section'
-    at CategoriserTasklistPage
-    elite2api.stubAssessments('B2345YZ')
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    elite2api.stubOffenceHistory('B2345YZ')
+    at TasklistPage
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
@@ -399,7 +399,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
     when: 'I confirm the cat D category'
-    elite2api.stubCategorise('D')
+    elite2Api.stubCategorise('D')
     appropriateYes.click()
     submitButton.click()
 
