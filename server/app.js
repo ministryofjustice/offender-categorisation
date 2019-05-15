@@ -217,7 +217,13 @@ module.exports = function createApp({
   )
   app.use(
     '/tasklistRecat/',
-    createTasklistRecatRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService })
+    createTasklistRecatRouter({
+      formService,
+      offendersService,
+      userService,
+      authenticationMiddleware,
+      riskProfilerService,
+    })
   )
   const formRouter = createFormRouter({
     formService,
