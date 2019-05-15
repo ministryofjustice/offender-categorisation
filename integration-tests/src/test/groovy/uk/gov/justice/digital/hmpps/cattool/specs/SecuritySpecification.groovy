@@ -20,7 +20,7 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_US
 class SecuritySpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
@@ -33,11 +33,7 @@ class SecuritySpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  def cleanup() {
-    db.clearDb()
-  }
-
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
 
@@ -71,17 +67,17 @@ class SecuritySpecification extends GebReportingSpec {
 
 
     // 14 days after sentenceStartDate
-    elite2api.stubUncategorisedForSupervisor()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
-    elite2api.stubUncategorised()
-    elite2api.stubGetUserDetails(SECURITY_USER, 'LEI')
+    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorised()
+    elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
 
     fixture.loginAs(SECURITY_USER)
     at SecurityHomePage
 
-    elite2api.stubCategorised()
-    elite2api.stubGetOffenderDetailsByBookingIdList('LEI')
-    elite2api.stubGetSecurityStaffDetailsByUsernameList()
+    elite2Api.stubCategorised()
+    elite2Api.stubGetOffenderDetailsByBookingIdList('LEI')
+    elite2Api.stubGetSecurityStaffDetailsByUsernameList()
 
     doneTabLink.click()
 

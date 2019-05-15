@@ -10,12 +10,12 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserOffendingHistoryPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 
 class OffendingHistorySpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -24,7 +24,7 @@ class OffendingHistorySpecification extends GebReportingSpec {
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def setup() {
@@ -35,10 +35,10 @@ class OffendingHistorySpecification extends GebReportingSpec {
     when: 'I go to the Offending history page'
 
     fixture.gotoTasklist()
-    at new CategoriserTasklistPage(bookingId: '12')
-    elite2api.stubAssessments('B2345YZ')
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    elite2api.stubOffenceHistory('B2345YZ')
+    at new TasklistPage(bookingId: '12')
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
     offendingHistoryButton.click()
 
     then: 'a Cat A warning and offence history is displayed'
@@ -58,7 +58,7 @@ class OffendingHistorySpecification extends GebReportingSpec {
     previousConvictionsYes.click()
     previousConvictionsText << "some convictions details"
     saveButton.click()
-    at CategoriserTasklistPage
+    at TasklistPage
     offendingHistoryButton.click()
 
     then: "data is correctly retrieved"
@@ -73,10 +73,10 @@ class OffendingHistorySpecification extends GebReportingSpec {
     when: 'I go to the Offending history page'
 
     fixture.gotoTasklist()
-    at new CategoriserTasklistPage(bookingId: '12')
-    elite2api.stubAssessments('B2345YZ', true)
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    elite2api.stubOffenceHistory('B2345YZ')
+    at new TasklistPage(bookingId: '12')
+    elite2Api.stubAssessments('B2345YZ', true)
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
     offendingHistoryButton.click()
 
     then: 'a non Cat A info message is displayed'

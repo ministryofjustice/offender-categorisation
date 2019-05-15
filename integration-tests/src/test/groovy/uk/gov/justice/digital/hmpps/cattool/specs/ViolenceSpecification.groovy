@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ViolencePage
 
 import java.time.LocalDate
@@ -20,7 +20,7 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER
 class ViolenceSpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -33,23 +33,23 @@ class ViolenceSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The violence page saves details correctly"() {
     when: 'I go to the violence page'
 
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
 
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     selectFirstPrisoner()
-    at CategoriserTasklistPage
+    at TasklistPage
 
 
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
@@ -68,7 +68,7 @@ class ViolenceSpecification extends GebReportingSpec {
     seriousThreatYes.click()
     seriousThreatText << "Some threat text"
     submitButton.click()
-    at CategoriserTasklistPage
+    at TasklistPage
     to ViolencePage, '12'
 
     then: "data is correctly retrieved"
@@ -82,17 +82,17 @@ class ViolenceSpecification extends GebReportingSpec {
   def "The violence page shows warning correctly"() {
     when: 'I go to the violence page'
 
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
 
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     selectFirstPrisoner()
-    at CategoriserTasklistPage
+    at TasklistPage
 
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
     to ViolencePage, '12'
@@ -116,13 +116,13 @@ class ViolenceSpecification extends GebReportingSpec {
 
   def 'Validation test'() {
     when: 'I submit the page with empty details'
-    elite2api.stubUncategorised()
+    elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
     to ViolencePage, '12'
     submitButton.click()

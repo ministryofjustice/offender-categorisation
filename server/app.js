@@ -14,6 +14,7 @@ const cookieSession = require('cookie-session')
 const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
+const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const sassMiddleware = require('node-sass-middleware')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const moment = require('moment')
@@ -213,6 +214,16 @@ module.exports = function createApp({
   app.use(
     '/tasklist/',
     createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService })
+  )
+  app.use(
+    '/tasklistRecat/',
+    createTasklistRecatRouter({
+      formService,
+      offendersService,
+      userService,
+      authenticationMiddleware,
+      riskProfilerService,
+    })
   )
   const formRouter = createFormRouter({
     formService,
