@@ -149,7 +149,16 @@ describe('update', () => {
       await service.createOrRetrieveCategorisationRecord(1234, 'User', 'LEI', 'OFFno', mockTransactionalClient)
 
       expect(formClient.create).toBeCalledTimes(1)
-      expect(formClient.create).toBeCalledWith(1234, 'User', 'STARTED', 'User', 'LEI', 'OFFno', 1, mockTransactionalClient)
+      expect(formClient.create).toBeCalledWith(
+        1234,
+        'User',
+        'STARTED',
+        'User',
+        'LEI',
+        'OFFno',
+        1,
+        mockTransactionalClient
+      )
     })
 
     test('should reject update if invalid status transition - SECURITY_BACK - APPROVED', async () => {

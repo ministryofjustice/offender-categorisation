@@ -60,21 +60,30 @@ function getWhereKeyLike(url, roleList) {
   )(roleList)[0]
 }
 
-async function addSocProfile({res, riskProfilerService, details, formService, bookingId, transactionalDbClient, req, categorisationRecord}) {
-// only load the soc profile once - then it is saved against the record
-  if (!res.locals.formObject.socProfile) {
-    const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals.user.username)
-
-    await formService.mergeRiskProfileData(bookingId, {socProfile}, transactionalDbClient)
-
-    await formService.referToSecurityIfRiskAssessed(
-      bookingId,
-      req.user.username,
-      socProfile,
-      categorisationRecord.status,
-      transactionalDbClient
-    )
-    categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+async function addSocProfile({
+  res,
+  riskProfilerService,
+  details,
+  formService,
+  bookingId,
+  transactionalDbClient,
+  req,
+  categorisationRecord,
+}) {
+  // only load the soc profile once - then it is saved against the record
+  if (res.locals.formObject.socProfile) {
+    return categorisationRecord
   }
-  return categorisationRecord
+  const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals.user.username)
+
+  await formService.mergeRiskProfileData(bookingId, { socProfile }, transactionalDbClient)
+
+  await formService.referToSecurityIfRiskAssessed(
+    bookingId,
+    req.user.username,
+    socProfile,
+    categorisationRecord.status,
+    transactionalDbClient
+  )
+  return formService.getCategorisationRecord(bookingId, transactionalDbClient)
 }
