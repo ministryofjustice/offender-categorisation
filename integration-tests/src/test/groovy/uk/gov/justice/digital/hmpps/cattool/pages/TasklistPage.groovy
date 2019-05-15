@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.cattool.pages
 
 import geb.Page
 
-class CategoriserTasklistPage extends Page {
+class TasklistPage extends Page {
 
   static String bookingId
 

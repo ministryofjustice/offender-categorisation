@@ -2,6 +2,8 @@ const serviceCreator = require('../../server/services/offendersService')
 const moment = require('moment')
 const Status = require('../../server/utils/statusEnum')
 
+const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+
 const nomisClient = {
   getUncategorisedOffenders: jest.fn(),
   getSentenceDatesForOffenders: jest.fn(),
@@ -14,6 +16,7 @@ const nomisClient = {
   getMainOffence: jest.fn(),
   createInitialCategorisation: jest.fn(),
   createSupervisorApproval: jest.fn(),
+  getCategory: jest.fn(),
 }
 
 const formService = {
@@ -405,5 +408,40 @@ describe('getOffenderDetails should format sentence length correctly', () => {
     nomisClient.getSentenceTerms.mockReturnValue(apiData)
     const result = await service.getOffenderDetails('token', -5)
     expect(result.sentence.length).toEqual(expectedContent)
+  })
+})
+
+describe('isRecat', () => {
+  test('it should return true when local and approved', async () => {
+    formService.getCategorisationRecord.mockReturnValue({ status: Status.APPROVED.name })
+    const result = await service.isRecat('token', 12345, mockTransactionalClient)
+    expect(result).toBe(true)
+  })
+
+  test('it should return false when local and not approved', async () => {
+    formService.getCategorisationRecord.mockReturnValue({ status: Status.STARTED.name })
+    const result = await service.isRecat('token', 12345, mockTransactionalClient)
+    expect(result).toBe(false)
+  })
+
+  test('it should return true when not local and cat in nomis', async () => {
+    formService.getCategorisationRecord.mockReturnValue({})
+    nomisClient.getCategory.mockReturnValue({ classificationCode: 'B' })
+    const result = await service.isRecat('token', 12345, mockTransactionalClient)
+    expect(result).toBe(true)
+  })
+
+  test('it should return false when not local and missing in nomis', async () => {
+    formService.getCategorisationRecord.mockReturnValue({})
+    nomisClient.getCategory.mockRejectedValue(new Error('404'))
+    const result = await service.isRecat('token', 12345, mockTransactionalClient)
+    expect(result).toBe(false)
+  })
+
+  test('it should return false when not local and cat Z in nomis', async () => {
+    formService.getCategorisationRecord.mockReturnValue({})
+    nomisClient.getCategory.mockReturnValue({ classificationCode: 'Z' })
+    const result = await service.isRecat('token', 12345, mockTransactionalClient)
+    expect(result).toBe(false)
   })
 })

@@ -7,7 +7,6 @@ const states = {
   AWAITING_APPROVAL: { name: 'AWAITING_APPROVAL', value: 'Awaiting approval' },
   APPROVED: { name: 'APPROVED', value: 'Approved' },
   SUPERVISOR_BACK: { name: 'SUPERVISOR_BACK', value: 'Back from Supervisor' },
-  STARTED_OPEN: { name: 'STARTED_OPEN', value: 'Started Open Conditions' },
 }
 states.SECURITY_MANUAL.previous = [states.STARTED, states.SECURITY_AUTO, states.SECURITY_BACK]
 states.SECURITY_AUTO.previous = [undefined, states.STARTED]
@@ -16,6 +15,5 @@ states.AWAITING_APPROVAL.previous = [states.STARTED, states.SECURITY_BACK, state
 states.APPROVED.previous = [states.AWAITING_APPROVAL]
 states.STARTED.previous = [undefined]
 states.SUPERVISOR_BACK.previous = [states.AWAITING_APPROVAL]
-states.STARTED_OPEN.previous = [states.STARTED, states.SECURITY_BACK, states.SUPERVISOR_BACK]
 
 module.exports = Object.freeze(states)

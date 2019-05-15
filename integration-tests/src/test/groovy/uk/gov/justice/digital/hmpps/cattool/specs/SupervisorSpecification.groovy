@@ -24,7 +24,7 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_
 class SupervisorSpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -37,11 +37,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  def cleanup() {
-    db.clearDb()
-  }
-
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
 
@@ -62,7 +58,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
 
     when: 'the supervisor selects yes (after changing their mind)'
-    elite2api.stubSupervisorApprove("C")
+    elite2Api.stubSupervisorApprove("C")
 
     appropriateNo.click()
     overriddenCategoryB.click()
@@ -174,7 +170,7 @@ class SupervisorSpecification extends GebReportingSpec {
     !openConditionsHeader.isDisplayed()
 
     when: 'the supervisor selects no'
-    elite2api.stubSupervisorApprove("B")
+    elite2Api.stubSupervisorApprove("B")
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
@@ -183,7 +179,7 @@ class SupervisorSpecification extends GebReportingSpec {
     indeterminateMessage.text() == 'Prisoner has indeterminate sentence - Cat D not available'
 
     when: 'Changing to Cat B'
-    elite2api.stubCategorise('B')
+    elite2Api.stubCategorise('B')
     overriddenCategoryText << "Some Text"
     submitButton.click()
 
@@ -232,7 +228,7 @@ class SupervisorSpecification extends GebReportingSpec {
     backToCategoriserButton.click()
     at SupervisorConfirmBackPage
     answerYes.click()
-    elite2api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
 
     submitButton.click()
 
@@ -285,7 +281,7 @@ class SupervisorSpecification extends GebReportingSpec {
     navigateToReview(true, true)
 
     then: 'the supervisor sees an info message'
-    elite2api.stubSupervisorApprove('I')
+    elite2Api.stubSupervisorApprove('I')
     indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - Cat J not available'
 
     when: 'Approving'
@@ -344,7 +340,7 @@ class SupervisorSpecification extends GebReportingSpec {
     errorSummaries*.text() == ['Please enter the reason why you changed the category']
 
     and: 'the supervisor selects a category, reason and submits'
-    elite2api.stubSupervisorApprove('B')
+    elite2Api.stubSupervisorApprove('B')
     appropriateNo.click()
     overriddenCategoryB.click()
     overriddenCategoryText << 'A good reason'
@@ -368,16 +364,16 @@ class SupervisorSpecification extends GebReportingSpec {
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
     // 14 days after sentenceStartDate
-    elite2api.stubUncategorisedForSupervisor()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(SUPERVISOR_USER)
 
     at SupervisorHomePage
 
-    elite2api.stubGetOffenderDetails(12, 'B2345YZ', youngOffender, indeterminateSentence)
-    elite2api.stubAssessments(['B2345YZ'])
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', youngOffender, indeterminateSentence)
+    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
@@ -402,13 +398,13 @@ class SupervisorSpecification extends GebReportingSpec {
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
 
-    elite2api.stubUncategorisedForSupervisor()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
 
-    elite2api.stubCategorised()
+    elite2Api.stubCategorised()
 
     doneTabLink.click()
 

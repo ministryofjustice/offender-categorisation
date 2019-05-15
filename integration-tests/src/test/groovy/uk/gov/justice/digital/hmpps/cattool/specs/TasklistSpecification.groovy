@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
 
 import java.time.LocalDate
@@ -20,7 +20,7 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_US
 class TasklistSpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -29,14 +29,10 @@ class TasklistSpecification extends GebReportingSpec {
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def setup() {
-    db.clearDb()
-  }
-
-  def cleanup() {
     db.clearDb()
   }
 
@@ -48,7 +44,7 @@ class TasklistSpecification extends GebReportingSpec {
     fixture.gotoTasklist()
 
     then: 'The tasklist page is displayed'
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    at(new TasklistPage(bookingId: '12'))
 
     headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
                             'C-04-02', 'Coventry',
@@ -86,7 +82,7 @@ class TasklistSpecification extends GebReportingSpec {
       ],
       openConditions: [riskLevels: [likelyToAbscond: "Yes"]]]))
     fixture.gotoTasklist()
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    at(new TasklistPage(bookingId: '12'))
 
     then: 'The continue button takes me to the review page'
     continueButton.displayed
@@ -105,7 +101,7 @@ class TasklistSpecification extends GebReportingSpec {
         extremismRating : [previousTerrorismOffences: "Yes"]
       ], openConditionsRequested: true]))
     fixture.gotoTasklist()
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    at(new TasklistPage(bookingId: '12'))
 
     then: 'The continue button takes me to the review page'
     continueButtonDisabled
@@ -115,12 +111,10 @@ class TasklistSpecification extends GebReportingSpec {
     when: 'I go to the tasklist page'
 
     fixture.gotoTasklist(true)
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    at(new TasklistPage(bookingId: '12'))
 
-    elite2api.stubAssessments(['B2345YZ'])
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-
-    at new CategoriserTasklistPage(bookingId: '12')
+    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
 
     then: 'the prisoner start button is locked'
     securityButton.tag() == 'button'
@@ -131,10 +125,10 @@ class TasklistSpecification extends GebReportingSpec {
     summarySection[1].text() == 'Tasks not yet complete'
 
     when: 'a security user views their homepage'
-    elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     logoutLink.click()
-    elite2api.stubGetCategoriserStaffDetailsByUsernameList()
-    elite2api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
+    elite2Api.stubGetCategoriserStaffDetailsByUsernameList()
+    elite2Api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
     fixture.loginAs(SECURITY_USER)
 
     then: 'this prisoner is present with automatic referral'

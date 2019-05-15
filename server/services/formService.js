@@ -65,15 +65,24 @@ module.exports = function createFormService(formClient) {
     )
   }
 
-  async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo, transactionalClient) {
-    await formClient.create(bookingId, userId, Status.STARTED.name, userId, prisonId, offenderNo, transactionalClient)
+  async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo, seq, transactionalClient) {
+    await formClient.create(
+      bookingId,
+      userId,
+      Status.STARTED.name,
+      userId,
+      prisonId,
+      offenderNo,
+      seq,
+      transactionalClient
+    )
     return getCategorisationRecord(bookingId, transactionalClient)
   }
 
   async function createOrRetrieveCategorisationRecord(bookingId, userId, prisonId, offenderNo, transactionalClient) {
     const currentRecord = await getCategorisationRecord(bookingId, transactionalClient)
     if (!currentRecord.status) {
-      const record = await createCategorisationRecord(bookingId, userId, prisonId, offenderNo, transactionalClient)
+      const record = await createCategorisationRecord(bookingId, userId, prisonId, offenderNo, 1, transactionalClient)
       return record
     }
     return currentRecord
@@ -299,6 +308,7 @@ module.exports = function createFormService(formClient) {
     securityReviewed,
     validateStatus: validateStatusIfProvided,
     createOrRetrieveCategorisationRecord,
+    createCategorisationRecord,
     backToCategoriser,
     validate,
     isValid,
