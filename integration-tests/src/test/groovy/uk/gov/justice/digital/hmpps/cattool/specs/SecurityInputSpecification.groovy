@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityBackPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityReviewPage
@@ -22,7 +22,7 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_US
 class SecurityInputSpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -35,7 +35,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
 
@@ -43,10 +43,10 @@ class SecurityInputSpecification extends GebReportingSpec {
     given: 'the security input page has been completed'
 
     fixture.gotoTasklist()
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    at(new TasklistPage(bookingId: '12'))
 
-    elite2api.stubAssessments(['B2345YZ'])
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
 
     securityButton.click()
@@ -55,7 +55,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     securityRadio = 'No'
     saveButton.click()
 
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    at(new TasklistPage(bookingId: '12'))
 
     when: 'The edit link is selected'
 
@@ -72,25 +72,25 @@ class SecurityInputSpecification extends GebReportingSpec {
     given: 'the security input page has been completed'
 
     fixture.gotoTasklist()
-    at(new CategoriserTasklistPage(bookingId: '12'))
-    elite2api.stubAssessments(['B2345YZ'])
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    at(new TasklistPage(bookingId: '12'))
+    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     securityButton.click()
     at(new CategoriserSecurityInputPage(bookingId: '12'))
     securityRadio = 'Yes'
     securityText << 'Some text'
     saveButton.click()
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    at(new TasklistPage(bookingId: '12'))
     securityButton.tag() == 'button'
     securityButton.@disabled
     def today = LocalDate.now().format('dd/MM/yyyy')
     $('#securitySection').text().contains("Manually referred to Security ($today)")
 
     when: 'a security user views their homepage'
-    elite2api.stubGetCategoriserStaffDetailsByUsernameList()
+    elite2Api.stubGetCategoriserStaffDetailsByUsernameList()
     logout()
-    elite2api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
-    elite2api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    elite2Api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
+    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     fixture.loginAs(SECURITY_USER)
 
     then: 'this prisoner is present'
@@ -113,7 +113,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     when: 'the categoriser revisits the page and enters a category decision'
     logout()
     fixture.gotoTasklist()
-    at new CategoriserTasklistPage(bookingId: '12')
+    at new TasklistPage(bookingId: '12')
     $('#securitySection').text().contains("Completed Security ($today)")
     securityButton.click()
     at new CategoriserSecurityBackPage(bookingId: '12')
@@ -123,7 +123,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     saveButton.click()
 
     then: 'the security rating section is complete'
-    at new CategoriserTasklistPage(bookingId: '12')
+    at new TasklistPage(bookingId: '12')
     securityButton.text() == 'Edit'
 
     db.getData(12).status == ["SECURITY_BACK"]

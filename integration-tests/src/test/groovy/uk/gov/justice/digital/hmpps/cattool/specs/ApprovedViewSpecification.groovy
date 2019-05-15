@@ -21,7 +21,7 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_
 class ApprovedViewSpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -34,7 +34,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   def "The approved view page is correctly displayed (suggested Cat)"() {
@@ -90,19 +90,19 @@ class ApprovedViewSpecification extends GebReportingSpec {
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
     // 14 days after sentenceStartDate
-    elite2api.stubUncategorisedForSupervisor()
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
 
-    elite2api.stubCategorised()
+    elite2Api.stubCategorised()
     doneTabLink.click()
     at SupervisorDonePage
 
-    elite2api.stubGetOffenderDetails(12, 'B2345YZ', false, false)
-    elite2api.stubAssessments(['B2345YZ'])
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false)
+    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)

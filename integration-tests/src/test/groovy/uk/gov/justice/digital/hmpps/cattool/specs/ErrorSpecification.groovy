@@ -18,7 +18,7 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_
 class ErrorSpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -27,12 +27,12 @@ class ErrorSpecification extends GebReportingSpec {
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
 
   def "The error page is displayed when an unexpected error occurs"() {
     when: 'A 500 error occurs in an API call'
-    elite2api.stubUncategorisedForSupervisor()
-    elite2api.stubSentenceDataError()
+    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubSentenceDataError()
     fixture.loginAs(SUPERVISOR_USER)
 
     then: 'the error page is displayed'
@@ -43,10 +43,10 @@ class ErrorSpecification extends GebReportingSpec {
 
   def "The auth page is displayed when a user does not have the correct role for the url"() {
     when: 'The user hits a page not for their role'
-    elite2api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedForSupervisor()
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-    elite2api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     fixture.loginAs(SUPERVISOR_USER)
     go 'tasklist/12'
 

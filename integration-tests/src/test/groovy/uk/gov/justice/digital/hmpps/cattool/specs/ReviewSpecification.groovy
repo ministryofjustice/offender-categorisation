@@ -10,13 +10,13 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
 
 class ReviewSpecification extends GebReportingSpec {
 
   @Rule
-  Elite2Api elite2api = new Elite2Api()
+  Elite2Api elite2Api = new Elite2Api()
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
@@ -29,7 +29,7 @@ class ReviewSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
 
@@ -54,11 +54,11 @@ class ReviewSpecification extends GebReportingSpec {
 
     when: 'The task list is displayed for a fully completed set of ratings'
     fixture.gotoTasklist()
-    at(new CategoriserTasklistPage(bookingId: '12'))
+    at(new TasklistPage(bookingId: '12'))
 
-    elite2api.stubAssessments('B2345YZ')
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    elite2api.stubOffenceHistory('B2345YZ')
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
@@ -106,13 +106,13 @@ class ReviewSpecification extends GebReportingSpec {
     ]))
     when: 'The review page is displayed for a fully completed set of ratings'
     fixture.gotoTasklist()
-    elite2api.stubAssessments('B2345YZ')
-    elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    elite2api.stubOffenceHistory('B2345YZ')
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
-    at new CategoriserTasklistPage(bookingId: '12')
+    at new TasklistPage(bookingId: '12')
     continueButton.click()
 
     then: 'the review page is displayed with manual security link enabled'
