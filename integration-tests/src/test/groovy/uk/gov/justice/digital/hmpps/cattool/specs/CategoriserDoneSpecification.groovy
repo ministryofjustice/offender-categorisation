@@ -8,17 +8,12 @@ import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
-import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserOffendingHistoryPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 

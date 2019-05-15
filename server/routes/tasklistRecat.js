@@ -29,6 +29,17 @@ module.exports = function Index({
         details.offenderNo,
         transactionalDbClient
       )
+      // If retrieved - check if APPROVED and if it is, create new
+      if (categorisationRecord.status === Status.APPROVED.name) {
+        categorisationRecord = await formService.createCategorisationRecord(
+          bookingId,
+          req.user.username,
+          details.agencyId,
+          details.offenderNo,
+          categorisationRecord.sequence + 1,
+          transactionalDbClient
+        )
+      }
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
@@ -53,32 +64,7 @@ module.exports = function Index({
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
       }
-      res.render('pages/tasklist', { data })
-    })
-  )
-
-  router.get(
-    '/categoriserSubmitted/:bookingId',
-    asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals.user.token)
-      res.locals.user = { ...user, ...res.locals.user }
-      res.render('pages/categoriserSubmitted')
-    })
-  )
-
-  router.get(
-    '/supervisor/outcome/:bookingId',
-    asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals.user.token)
-      res.locals.user = { ...user, ...res.locals.user }
-      res.render('pages/supervisorReviewOutcome')
-    })
-  )
-
-  router.get(
-    '/images/:imageId/data',
-    asyncMiddleware(async (req, res) => {
-      await offendersService.getImage(res.locals.user.token, req.params.imageId, res)
+      res.render('pages/tasklistRecat', { data })
     })
   )
 

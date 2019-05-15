@@ -71,6 +71,10 @@ module.exports = token => {
       const path = `${apiUrl}api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false`
       return nomisGet({ path })
     },
+    getCategory(bookingId) {
+      const path = `${apiUrl}api/bookings/${bookingId}/assessment/CATEGORY`
+      return nomisGet({ path })
+    },
     createSupervisorApproval(details) {
       const path = `${apiUrl}api/offender-assessments/category/approve`
       return nomisPut({ path, body: details })
