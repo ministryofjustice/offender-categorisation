@@ -33,10 +33,6 @@ class SecuritySpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  def cleanup() {
-    db.clearDb()
-  }
-
   TestFixture fixture = new TestFixture(browser, elite2api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 

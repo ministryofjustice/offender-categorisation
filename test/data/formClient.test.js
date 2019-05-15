@@ -30,7 +30,8 @@ describe('getFormDataForUser', () => {
                     referred_by            as "securityReferredBy",
                     security_reviewed_date as "securityReviewedDate",
                     security_reviewed_by   as "securityReviewedBy",
-                    approval_date          as "approvalDate"
+                    approval_date          as "approvalDate",
+                    sequence_no            as "sequence"
              from form f
       where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['bookingId1'],
@@ -89,12 +90,12 @@ describe('securityReviewed', () => {
 
 describe('create categorisation record', () => {
   test('create categorisation record', () => {
-    formClient.create('bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS', mockTransactionalClient)
+    formClient.create('bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS', 5, mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, 1, $6, $7, CURRENT_TIMESTAMP)',
-      values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS'],
+        'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)',
+      values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 5, 'MDI', 'A4567RS'],
     })
   })
 })

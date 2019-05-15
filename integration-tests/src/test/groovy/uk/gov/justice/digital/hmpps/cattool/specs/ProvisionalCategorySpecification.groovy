@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserTasklistPage
@@ -164,7 +163,6 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     at CategoriserTasklistPage
 
     def data = db.getData(12)
-
     data.status == ["STARTED"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB

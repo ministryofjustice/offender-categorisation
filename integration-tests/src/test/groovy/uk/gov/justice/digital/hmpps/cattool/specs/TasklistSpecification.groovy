@@ -36,10 +36,6 @@ class TasklistSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  def cleanup() {
-    db.clearDb()
-  }
-
   def "The tasklist for a categoriser is present"() {
     when: 'I go to the tasklist page'
     db.createRiskProfileData(12, JsonOutput.toJson([
@@ -119,8 +115,6 @@ class TasklistSpecification extends GebReportingSpec {
 
     elite2api.stubAssessments(['B2345YZ'])
     elite2api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-
-    at new CategoriserTasklistPage(bookingId: '12')
 
     then: 'the prisoner start button is locked'
     securityButton.tag() == 'button'

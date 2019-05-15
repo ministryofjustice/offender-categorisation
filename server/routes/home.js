@@ -119,5 +119,17 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
     })
   )
 
+  router.get(
+    '/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+      const { bookingId } = req.params
+
+      const recat = await offendersService.isRecat(res.locals.user.token, bookingId, transactionalDbClient)
+      res.redirect(recat ? `/tasklistRecat/${bookingId}` : `/tasklist/${bookingId}`)
+    })
+  )
+
   return router
 }
