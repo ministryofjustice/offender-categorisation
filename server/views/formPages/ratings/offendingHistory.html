@@ -14,7 +14,7 @@
   {% include "../../partials/warningOffendingHistory.html" %}
 
   {% if data.offences | length %}
-    <h2 class="govuk-heading-m">Previous convictions</h2>
+    <h2 class="govuk-heading-m">Convictions</h2>
     <div class="govuk-!-margin-bottom-3">
       <p>The following convictions are listed on NOMIS:</p>
          <div class="govuk-body-s forms-comments-text">{{ listOffences(data.offences) }}</div>

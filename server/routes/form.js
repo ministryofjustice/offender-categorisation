@@ -277,6 +277,10 @@ module.exports = function Index({
     }
     if (body.categoryAppropriate === 'Yes') {
       delete updated.overriddenCategory
+    }
+
+    // awkward scenario where we don't want to clear the override text in the case of open conditions
+    if (body.categoryAppropriate === 'Yes' && !body.openConditionsSuggestedCategory) {
       delete updated.overriddenCategoryText
     }
     if (body.supervisorCategoryAppropriate === 'Yes') {
