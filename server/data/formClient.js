@@ -8,6 +8,7 @@ module.exports = {
     const query = {
       text: `select id,
                     booking_id             as "bookingId",
+                    sequence_no            as "sequence",
                     user_id                as "userId",
                     status,
                     form_response          as "formObject",
@@ -18,7 +19,7 @@ module.exports = {
                     security_reviewed_date as "securityReviewedDate",
                     security_reviewed_by   as "securityReviewedBy",
                     approval_date          as "approvalDate",
-                    sequence_no            as "sequence"
+                    cat_type               as "catType"
              from form f
       where f.booking_id = $1 ${sequenceClause}`,
       values: [bookingId],
@@ -119,12 +120,12 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  create(bookingId, userId, status, assignedUserId, prisonId, offenderNo, sequence, transactionalClient) {
+  create({ bookingId, sequence, catType, userId, status, assignedUserId, prisonId, offenderNo, transactionalClient }) {
     logger.debug(`creating categorisation record for booking id ${bookingId}`)
     const query = {
       text:
-        'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date) values ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)',
-      values: [{}, bookingId, userId, status, assignedUserId, sequence, prisonId, offenderNo],
+        'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type) values ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, $9)',
+      values: [{}, bookingId, userId, status, assignedUserId, sequence, prisonId, offenderNo, catType],
     }
     return transactionalClient.query(query)
   },

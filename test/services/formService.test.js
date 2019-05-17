@@ -146,19 +146,27 @@ describe('update', () => {
     test('should call create and pass in the user', async () => {
       formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-      await service.createOrRetrieveCategorisationRecord(1234, 'User', 'LEI', 'OFFno', mockTransactionalClient)
-
-      expect(formClient.create).toBeCalledTimes(1)
-      expect(formClient.create).toBeCalledWith(
+      await service.createOrRetrieveCategorisationRecord(
         1234,
-        'User',
-        'STARTED',
         'User',
         'LEI',
         'OFFno',
-        1,
+        'INITIAL',
         mockTransactionalClient
       )
+
+      expect(formClient.create).toBeCalledTimes(1)
+      expect(formClient.create).toBeCalledWith({
+        bookingId: 1234,
+        sequence: 1,
+        catType: 'INITIAL',
+        userId: 'User',
+        status: 'STARTED',
+        assignedUserId: 'User',
+        prisonId: 'LEI',
+        offenderNo: 'OFFno',
+        transactionalClient: mockTransactionalClient,
+      })
     })
 
     test('should reject update if invalid status transition - SECURITY_BACK - APPROVED', async () => {
@@ -651,17 +659,25 @@ describe('createOrRetrieveCategorisationRecord', () => {
   test('no record exists', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.createOrRetrieveCategorisationRecord(bookingId, userId, 'MDI', 'A4567RS', mockTransactionalClient)
-
-    expect(formClient.create).toBeCalledWith(
+    await service.createOrRetrieveCategorisationRecord(
       bookingId,
-      userId,
-      'STARTED',
       userId,
       'MDI',
       'A4567RS',
-      1,
+      'RECAT',
       mockTransactionalClient
     )
+
+    expect(formClient.create).toBeCalledWith({
+      bookingId,
+      sequence: 1,
+      catType: 'RECAT',
+      userId,
+      status: 'STARTED',
+      assignedUserId: userId,
+      prisonId: 'MDI',
+      offenderNo: 'A4567RS',
+      transactionalClient: mockTransactionalClient,
+    })
   })
 })
