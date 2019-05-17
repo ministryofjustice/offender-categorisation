@@ -40,9 +40,11 @@
     <div class="govuk-!-width-two-thirds">
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
+    {% set overriddenCatText = data.categoriser.provisionalCategory.overriddenCategoryText %}
     {% set categoriserCat = overriddenCat or cat %}
     {% set superCat = data.supervisor.review.supervisorOverriddenCategory if data.supervisor.review.supervisorCategoryAppropriate == 'No' %}
     {% set superOtherComments = data.supervisor.review.otherInformationText %}
+    {% set superPreviousOverrideComments = data.supervisor.review.previousOverrideCategoryText %}
     {% set currentCat = superCat or overriddenCat or cat %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
@@ -64,11 +66,13 @@
         The recommended category was changed from a {{ cat }} to a {{ overriddenCat }}
       </div>
     </div>
-    <div class="govuk-!-margin-bottom-6">
-      <label for="overriddenText" class="govuk-!-font-weight-bold" >Comments</label>
-      <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
+      {% if overriddenCatText %}
+        <div class="govuk-!-margin-bottom-6">
+        <label for="overriddenText" class="govuk-!-font-weight-bold" >Comments</label>
+        <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
+        </div>
       </div>
-    </div>
+      {% endif %}
     {% else %}
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
@@ -100,14 +104,17 @@
     </div>
     {% endif %}
 
-    {% if superCat or superOtherComments %}
+    {% if superCat or superOtherComments or superPreviousOverrideComments %}
     <div class="govuk-!-margin-bottom-6">
       <label for="overriddenText-2" class="no-print govuk-!-font-weight-bold">Comments</label>
       {% if superCat %}
         <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}  </div>
       {% endif %}
+      {% if superPreviousOverrideComments %}
+      <div class="forms-comments-text govuk-!-margin-bottom-1" id="previous-overriddenText">{{ superPreviousOverrideComments }}  </div>
+      {% endif %}
       {% if superOtherComments %}
-        <div class="forms-comments-text govuk-!-margin-bottom-1" id="other-text-supervisor">{{ data.supervisor.review.otherInformationText }}  </div>
+        <div class="forms-comments-text govuk-!-margin-bottom-1" id="other-text-supervisor">{{ superOtherComments }}  </div>
       {% endif %}
 
       </div>
