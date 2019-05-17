@@ -11,12 +11,10 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 
 import java.time.LocalDate
-
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
 class TasklistRecatSpecification extends GebReportingSpec {
 
@@ -39,11 +37,9 @@ class TasklistRecatSpecification extends GebReportingSpec {
 
   def "The recat tasklist for a categoriser is present"() {
     when: 'I go to the recat tasklist page'
-    db.createRiskProfileData(12, JsonOutput.toJson([
-      "escapeProfile": [nomsId: "Dummy"]
-    ]))
 
-    gotoTasklistRecat()
+    fixture.gotoTasklistRecat()
+    at TasklistRecatPage
 
     then: 'The tasklist page is displayed'
     headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
@@ -66,17 +62,17 @@ class TasklistRecatSpecification extends GebReportingSpec {
     def data = db.getData(12)
     data.status == ["STARTED"]
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile   : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
-                 escapeProfile: [nomsId: "Dummy"]]
+    response == [socProfile: [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C']]
   }
 
   def "The tasklist page displays an alert when status is transferred to security"() {
     when: 'I go to the tasklist page'
 
-    gotoTasklistRecat(true)
+    fixture.gotoTasklistRecat(true)
+    at TasklistRecatPage
 
-    elite2Api.stubAssessments(['B2345YZ'])
-    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+//    elite2Api.stubAssessments(['B2345YZ'])
+//    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
 
     then: 'the prisoner start button is locked'
     securityButton.tag() == 'button'
@@ -87,16 +83,57 @@ class TasklistRecatSpecification extends GebReportingSpec {
     summarySection[1].text() == 'Tasks not yet complete'
   }
 
-  def gotoTasklistRecat(transferToSecurity = false) {
-    elite2Api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-4).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+  def "The recat tasklist correctly creates a subsequent database sequence when init record present"() {
+    when: 'I go to the recat tasklist page'
+    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
+      ratings: TestFixture.defaultRatingsC]))
 
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', transferToSecurity)
-    to TasklistRecatPage, '12'
+    fixture.gotoTasklistRecat()
+    at TasklistRecatPage
+
+    then: 'The database row is created correctly'
+    def data = db.getData(12)
+    data.status == ['APPROVED', 'STARTED']
+    data.cat_type*.toString() == ['INITIAL', 'RECAT']
+    data.sequence_no == [1, 2]
+  }
+
+  def "The recat tasklist correctly creates a subsequent database sequence when a completed recat record present"() {
+    when: 'I go to the recat tasklist page'
+    db.createDataWithStatusAndCatType(12, 'APPROVED', '{}', 'RECAT')
+
+    fixture.gotoTasklistRecat()
+    at TasklistRecatPage
+
+    then: 'The database row is created correctly'
+    def data = db.getData(12)
+    data.status == ['APPROVED', 'STARTED']
+    data.cat_type*.toString() == ['RECAT', 'RECAT']
+    data.sequence_no == [1, 2]
+  }
+
+  def "The recat tasklist shows an error when an incomplete init record present"() {
+    when: 'I go to the recat tasklist page'
+    db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', '{}', 'INITIAL')
+
+    fixture.gotoTasklistRecat()
+
+    then: 'The correct error is displayed'
+    at ErrorPage
+    errorSummaryTitle.text() == 'Initial categorisation is still in progress'
+  }
+
+  def "The recat tasklist correctly continues the current recat when an incomplete recat record present"() {
+    when: 'I go to the recat tasklist page'
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT')
+
+    fixture.gotoTasklistRecat()
+    at TasklistRecatPage
+
+    then: 'The single database row is used'
+    def data = db.getData(12)
+    data.status == ['STARTED']
+    data.cat_type*.toString() == ['RECAT']
+    data.sequence_no == [1]
   }
 }

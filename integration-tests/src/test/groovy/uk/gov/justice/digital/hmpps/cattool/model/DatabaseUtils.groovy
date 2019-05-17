@@ -25,7 +25,7 @@ class DatabaseUtils {
 
   def getData(bookingId) {
     def sql = Sql.newInstance(dbConnParams)
-    return sql.rows("select * from form where booking_id = $bookingId")
+    return sql.rows("select * from form where booking_id = $bookingId order by sequence_no")
   }
 
   def createData(bookingId, json) {
@@ -36,12 +36,16 @@ class DatabaseUtils {
     doCreateData(-1, bookingId, status, json)
   }
 
+  def createDataWithStatusAndCatType(bookingId, status, json, catType) {
+    doCreateCompleteRow(-1, bookingId, json, 'CATEGORISER_USER', status, catType, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
+  }
+
   def createData(id, bookingId, json) {
     doCreateData(id, bookingId, 'STARTED', json)
   }
 
   def createRiskProfileData(bookingId, json) {
-    doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
+    doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
 
   def createDataWithStatus(id, bookingId, status, json) {
@@ -49,18 +53,18 @@ class DatabaseUtils {
   }
 
   def createSecurityReviewedData(id, bookingId, status, json, reviewedBy, reviewDate) {
-    doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', reviewedBy, reviewDate)
+    doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, 'INITIAL', null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', reviewedBy, reviewDate)
   }
 
   private doCreateData(id, bookingId, status, json) {
-    doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
+    doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, 'INITIAL', null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
 
-  private doCreateCompleteRow(id, bookingId, json, userId, status, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate, securityReviewedBy, securityReviewedDate) {
+  private doCreateCompleteRow(id, bookingId, json, userId, status, catType, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate, securityReviewedBy, securityReviewedDate) {
     def sql = Sql.newInstance(dbConnParams)
     def approvalDate = status == 'APPROVED' ? new Date(Calendar.getInstance().getTimeInMillis()) : null
     sql.executeUpdate("""insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId',
-      $referredDate, '$referredBy', $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', ?::date, ?::date)""",
+      $referredDate, '$referredBy', $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', ?::date, ?::date, '$catType')""",
       json, riskProfile, securityReviewedDate, approvalDate)
   }
 }

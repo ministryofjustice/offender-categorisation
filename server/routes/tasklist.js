@@ -27,6 +27,7 @@ module.exports = function Index({
         req.user.username,
         details.agencyId,
         details.offenderNo,
+        'INITIAL',
         transactionalDbClient
       )
       res.locals.formObject = categorisationRecord.formObject || {}

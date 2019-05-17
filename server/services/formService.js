@@ -5,11 +5,15 @@ const Status = require('../utils/statusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
 const conf = require('../../server/config')
 
+function dataIfExists(data) {
+  return data.rows[0]
+}
+
 module.exports = function createFormService(formClient) {
   async function getCategorisationRecord(bookingId, transactionalClient) {
     try {
       const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
-      return data.rows[0] || {}
+      return dataIfExists(data) || {}
     } catch (error) {
       logger.error(error)
       throw error
@@ -65,24 +69,44 @@ module.exports = function createFormService(formClient) {
     )
   }
 
-  async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo, seq, transactionalClient) {
-    await formClient.create(
+  async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo, catType, transactionalClient) {
+    const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
+    const currentRecord = dataIfExists(data)
+    const sequence = currentRecord ? currentRecord.sequence + 1 : 1
+    await formClient.create({
       bookingId,
+      sequence,
+      catType,
       userId,
-      Status.STARTED.name,
-      userId,
+      status: Status.STARTED.name,
+      assignedUserId: userId,
       prisonId,
       offenderNo,
-      seq,
-      transactionalClient
-    )
+      transactionalClient,
+    })
     return getCategorisationRecord(bookingId, transactionalClient)
   }
 
-  async function createOrRetrieveCategorisationRecord(bookingId, userId, prisonId, offenderNo, transactionalClient) {
-    const currentRecord = await getCategorisationRecord(bookingId, transactionalClient)
-    if (!currentRecord.status) {
-      const record = await createCategorisationRecord(bookingId, userId, prisonId, offenderNo, 1, transactionalClient)
+  async function createOrRetrieveCategorisationRecord(
+    bookingId,
+    userId,
+    prisonId,
+    offenderNo,
+    catType,
+    transactionalClient
+  ) {
+    const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
+    const currentRecord = dataIfExists(data)
+
+    if (!currentRecord) {
+      const record = await createCategorisationRecord(
+        bookingId,
+        userId,
+        prisonId,
+        offenderNo,
+        catType,
+        transactionalClient
+      )
       return record
     }
     return currentRecord
