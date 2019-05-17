@@ -42,6 +42,7 @@
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
     {% set categoriserCat = overriddenCat or cat %}
     {% set superCat = data.supervisor.review.supervisorOverriddenCategory if data.supervisor.review.supervisorCategoryAppropriate == 'No' %}
+    {% set superOtherComments = data.supervisor.review.otherInformationText %}
     {% set currentCat = superCat or overriddenCat or cat %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
@@ -64,7 +65,7 @@
       </div>
     </div>
     <div class="govuk-!-margin-bottom-6">
-      <label for="overriddenText">Comments</label>
+      <label for="overriddenText" class="govuk-!-font-weight-bold" >Comments</label>
       <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
       </div>
     </div>
@@ -89,11 +90,6 @@
         The recommended category was changed from a {{ categoriserCat }} to a {{ superCat }}
       </div>
     </div>
-    <div class="govuk-!-margin-bottom-6">
-      <label for="overriddenText-2"{% if overriddenCat %} class="no-print"{% endif %}>Comments</label>
-      <div class="forms-comments-text" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}
-      </div>
-    </div>
     {% else %}
     <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
@@ -103,6 +99,24 @@
       </div>
     </div>
     {% endif %}
+
+    {% if superCat or superOtherComments %}
+    <div class="govuk-!-margin-bottom-6">
+      <label for="overriddenText-2" class="no-print govuk-!-font-weight-bold">Comments</label>
+      {% if superCat %}
+        <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}  </div>
+      {% endif %}
+      {% if superOtherComments %}
+        <div class="forms-comments-text govuk-!-margin-bottom-1" id="other-text-supervisor">{{ data.supervisor.review.otherInformationText }}  </div>
+      {% endif %}
+
+      </div>
+    {% endif %}
+
+
+
+
+
 
     {% set showChangeLinks = false %}
 

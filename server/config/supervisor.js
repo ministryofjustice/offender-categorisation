@@ -32,6 +32,11 @@ module.exports = {
           responseType: 'optionalString',
         },
       },
+      {
+        otherInformationText: {
+          responseType: 'optionalString',
+        },
+      },
     ],
     validate: true,
   },

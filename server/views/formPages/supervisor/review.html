@@ -131,6 +131,9 @@
         label: {
           text: "Explain why you changed the category"
         },
+        hint: {
+        text: "Your comments will be disclosed to the prisoner"
+        },
         errorMessage: {
           text: "Please enter the reason why you changed the category"
         } if (errors | findError('supervisorOverriddenCategoryText'))
@@ -170,6 +173,21 @@
         ]
       }) }}
     {% endif %}
+
+  {{ govukCharacterCount({
+    name: "otherInformationText",
+    type: "otherInformationText",
+    id: "otherInformationText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+    text: "Is there any other relevant information that you want to record?"
+    },
+    hint: {
+    text: "Your comments will be disclosed to the prisoner"
+    },
+    value: data.supervisor.review.otherInformationText
+  }) }}
 
     <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
     <input type="hidden" name="previousOverrideCategoryText" value="{{ data.supervisor.review.supervisorOverriddenCategoryText }}"/>
