@@ -57,7 +57,8 @@
   {% endblock %}
 
   {{ govukButton({
-    text: greenButtonText or "Save and return"
+    text: greenButtonText or "Save and return",
+    classes: extraButtonClasses
   }) }}
 
   {% block additionalItems %}
