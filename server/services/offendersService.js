@@ -457,12 +457,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function isRecat(token, bookingId, transactionalDbClient) {
-    // Decide whether initial or recat.
-    // If there is a local record then if that is APPROVED it is a recat, otherwise initial (continue existing)
-    // If no local record, get cat from nomis. if missing or UXZ it is initial, otherwise recat.
+    // Decide whether INITIAL or RECAT.
+    // If there is a local record then if that is APPROVED it is a RECAT,
+    //   otherwise its the type of the existing (continue existing)
+    // If no local record, get cat from nomis. if missing or UXZ it is INITIAL, otherwise RECAT.
     const localRecord = formService.getCategorisationRecord(bookingId, transactionalDbClient)
     if (localRecord.status) {
-      return localRecord.status === Status.APPROVED.name
+      return localRecord.status === Status.APPROVED.name || localRecord.catType === 'RECAT'
     }
     const nomisClient = nomisClientBuilder(token)
     try {

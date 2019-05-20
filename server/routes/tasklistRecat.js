@@ -27,8 +27,14 @@ module.exports = function Index({
         req.user.username,
         details.agencyId,
         details.offenderNo,
+        'RECAT',
         transactionalDbClient
       )
+
+      if (categorisationRecord.catType === 'INITIAL' && categorisationRecord.status !== Status.APPROVED.name) {
+        throw new Error('Initial categorisation is still in progress')
+      }
+
       // If retrieved - check if APPROVED and if it is, create new
       if (categorisationRecord.status === Status.APPROVED.name) {
         categorisationRecord = await formService.createCategorisationRecord(
@@ -36,7 +42,7 @@ module.exports = function Index({
           req.user.username,
           details.agencyId,
           details.offenderNo,
-          categorisationRecord.sequence + 1,
+          'RECAT',
           transactionalDbClient
         )
       }

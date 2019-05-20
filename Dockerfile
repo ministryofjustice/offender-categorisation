@@ -3,6 +3,9 @@ MAINTAINER HMPPS Digital Studio <info@digital.justice.gov.uk>
 ARG BUILD_NUMBER
 ARG GIT_REF
 
+RUN addgroup --gid 2000 --system appgroup && \
+    adduser --uid 2000 --system appuser --gid 2000
+
 # Create app directory
 RUN mkdir -p /app
 WORKDIR /app
@@ -20,4 +23,9 @@ RUN npm install && \
 ENV PORT=3000
 
 EXPOSE 3000
+
+RUN chown -R appuser:appgroup /app
+
+USER 2000
+
 CMD [ "npm", "start" ]
