@@ -104,9 +104,13 @@ describe('create categorisation record', () => {
     })
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        'insert into form (form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type) values ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, $9)',
-      values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 5, 'MDI', 'A4567RS', 'RECAT'],
+      text: `insert into form (
+              form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type
+             ) values ($1, $2, $3, $4, $5, (
+              select COALESCE(MAX(sequence_no), 0) + 1 from form where booking_id = $2
+                 ), $6, $7, CURRENT_TIMESTAMP, $8
+             )`,
+      values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS', 'RECAT'],
     })
   })
 })
