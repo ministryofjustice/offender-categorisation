@@ -58,6 +58,11 @@ spec:
               value: "https://gateway.t3.nomis-api.hmpps.dsd.io/custodyapi/"
             - name: RISK_PROFILER_ENDPOINT_URL
               value: "http://offender-risk-profiler-svc:8080/"
+            - name: APPINSIGHTS_INSTRUMENTATIONKEY
+              valueFrom:
+                secretKeyRef:
+                  name: categorisation-tool-secrets
+                  key: application-insights-ikey
             - name: INGRESS_URL
               value: "https://categorisation-tool-dev.apps.cloud-platform-live-0.k8s.integration.dsd.io"
             - name: DB_PASS
