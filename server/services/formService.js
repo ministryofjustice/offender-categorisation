@@ -70,12 +70,8 @@ module.exports = function createFormService(formClient) {
   }
 
   async function createCategorisationRecord(bookingId, userId, prisonId, offenderNo, catType, transactionalClient) {
-    const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
-    const currentRecord = dataIfExists(data)
-    const sequence = currentRecord ? currentRecord.sequence + 1 : 1
     await formClient.create({
       bookingId,
-      sequence,
       catType,
       userId,
       status: Status.STARTED.name,

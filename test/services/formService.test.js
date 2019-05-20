@@ -158,7 +158,6 @@ describe('update', () => {
       expect(formClient.create).toBeCalledTimes(1)
       expect(formClient.create).toBeCalledWith({
         bookingId: 1234,
-        sequence: 1,
         catType: 'INITIAL',
         userId: 'User',
         status: 'STARTED',
@@ -670,7 +669,6 @@ describe('createOrRetrieveCategorisationRecord', () => {
 
     expect(formClient.create).toBeCalledWith({
       bookingId,
-      sequence: 1,
       catType: 'RECAT',
       userId,
       status: 'STARTED',
