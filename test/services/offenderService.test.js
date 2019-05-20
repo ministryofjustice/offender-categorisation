@@ -418,10 +418,16 @@ describe('isRecat', () => {
     expect(result).toBe(true)
   })
 
-  test('it should return false when local and not approved', async () => {
-    formService.getCategorisationRecord.mockReturnValue({ status: Status.STARTED.name })
+  test('it should return false when local, not approved and initial', async () => {
+    formService.getCategorisationRecord.mockReturnValue({ status: Status.STARTED.name, catType: 'INITIAL' })
     const result = await service.isRecat('token', 12345, mockTransactionalClient)
     expect(result).toBe(false)
+  })
+
+  test('it should return true when local, not approved and recat', async () => {
+    formService.getCategorisationRecord.mockReturnValue({ status: Status.STARTED.name, catType: 'RECAT' })
+    const result = await service.isRecat('token', 12345, mockTransactionalClient)
+    expect(result).toBe(true)
   })
 
   test('it should return true when not local and cat in nomis', async () => {

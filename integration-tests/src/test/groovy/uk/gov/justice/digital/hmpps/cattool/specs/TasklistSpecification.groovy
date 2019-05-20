@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -63,10 +64,11 @@ class TasklistSpecification extends GebReportingSpec {
     continueButtonDisabled.displayed
 
     and: 'SOC data is stored and merged correctly'
-    def response = db.getData(12)[0].risk_profile
-    def json = response.toString()
-    json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
-    json.contains '"escapeProfile": {"nomsId": "Dummy"'
+    def data = db.getData(12)
+    data.status == ["STARTED"]
+    def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
+    response == [socProfile   : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
+                 escapeProfile: [nomsId: "Dummy"]]
   }
 
   def "The continue button behaves correctly"() {
