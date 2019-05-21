@@ -2,9 +2,10 @@ const appInsights = require('applicationinsights')
 const applicationVersion = require('../application-version')
 
 const { packageData } = applicationVersion
-if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
+const key = process.env.APPINSIGHTS_INSTRUMENTATIONKEY
+if (key) {
   // eslint-disable-next-line no-console
-  console.log('Enabling azure application insights')
+  console.log(`Enabling azure application insights using key [${key}]`)
   appInsights.setup().start()
   module.exports = appInsights.defaultClient
   appInsights.defaultClient.context.tags['ai.cloud.role'] = `${packageData.name}`
