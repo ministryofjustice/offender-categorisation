@@ -21,7 +21,7 @@ describe('nomisClient', () => {
 
   describe('getUncategorisedOffenders', () => {
     it('should return data from api', async () => {
-      fakeElite2Api.get(`/api/offender-assessments/category/LEI/uncategorised`).reply(200, uncatResponse)
+      fakeElite2Api.get(`/api/offender-assessments/category/LEI?type=UNCATEGORISED`).reply(200, uncatResponse)
 
       const output = await nomisClient.getUncategorisedOffenders('LEI')
       return expect(output).toEqual(uncatResponse)
