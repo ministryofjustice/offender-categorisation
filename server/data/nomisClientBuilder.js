@@ -16,12 +16,16 @@ module.exports = token => {
 
   return {
     getUncategorisedOffenders(agencyId) {
-      const path = `${apiUrl}api/offender-assessments/category/${agencyId}/uncategorised`
+      const path = `${apiUrl}api/offender-assessments/category/${agencyId}?type=UNCATEGORISED`
       return nomisGet({ path })
     },
     getCategorisedOffenders(agencyId, bookingIds) {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}`
       return nomisPost({ path, body: bookingIds })
+    },
+    getRecategoriseOffenders(agencyId) {
+      const path = `${apiUrl}api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS` // &date=${cutoff}`
+      return nomisGet({ path })
     },
     getSentenceDatesForOffenders(bookingIds) {
       const path = `${apiUrl}api/offender-sentences/bookings`

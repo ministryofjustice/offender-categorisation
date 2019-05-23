@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserOffendingHistoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
@@ -23,6 +24,7 @@ import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER_COLLEAGUE
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
 class HomePageSpecification extends GebReportingSpec {
@@ -93,6 +95,23 @@ class HomePageSpecification extends GebReportingSpec {
     dates == ['14/02/2019', '11/02/2019']
     catBy == ['Bugs Bunny', 'Roger Rabbit']
     statuses == ['PNOMIS', 'B']
+  }
+
+  def "The home page for a recategoriser is present"() {
+    when: 'I go to the home page as recategoriser'
+
+    elite2Api.stubRecategorise()
+
+    fixture.loginAs(RECATEGORISER_USER)
+
+    then: 'The recategoriser home page is displayed'
+    at RecategoriserHomePage
+    prisonNos == ['B2345XY','B2345YZ']
+    names == ['Pitstop, Penelope', 'Hillmob, Ant']
+    dates == ['25/07/2019','27/07/2019']
+    reasons == ['Categorisation review due', 'Categorisation review due']
+    statuses == ['Not started', 'Not started']
+    startButtons[0].text() == 'Start'
   }
 
   def "The status of 'Started' for an offender is calculated correctly"() {

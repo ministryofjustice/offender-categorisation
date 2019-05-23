@@ -102,7 +102,7 @@ class Elite2Api extends WireMockRule {
 
   void stubUncategorised() {
     this.stubFor(
-      get("/api/offender-assessments/category/LEI/uncategorised")
+      get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
         .willReturn(
         aResponse()
           .withBody(JsonOutput.toJson([
@@ -124,6 +124,35 @@ class Elite2Api extends WireMockRule {
         ))
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
+    )
+  }
+
+  void stubRecategorise() {
+    this.stubFor(
+      get("/api/offender-assessments/category/LEI?type=RECATEGORISATIONS")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [
+                bookingId    : 12,
+                offenderNo   : 'B2345XY',
+                firstName    : 'PENELOPE',
+                lastName     : 'PITSTOP',
+                category     : 'C',
+                nextRecatDate: '2019-07-25'
+              ],
+              [
+                bookingId    : 11,
+                offenderNo   : 'B2345YZ',
+                firstName    : 'ANT',
+                lastName     : 'HILLMOB',
+                category     : 'D',
+                nextRecatDate: '2019-07-27'
+              ],
+            ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
     )
   }
 
@@ -170,7 +199,7 @@ class Elite2Api extends WireMockRule {
 
   void stubUncategorisedForSupervisor() {
     this.stubFor(
-      get("/api/offender-assessments/category/LEI/uncategorised")
+      get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
         .willReturn(
         aResponse()
           .withBody(JsonOutput.toJson([
@@ -203,7 +232,7 @@ class Elite2Api extends WireMockRule {
 
   void stubUncategorisedNoStatus(bookingId) {
     this.stubFor(
-      get("/api/offender-assessments/category/LEI/uncategorised")
+      get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
         .willReturn(
         aResponse()
           .withBody(JsonOutput.toJson([
