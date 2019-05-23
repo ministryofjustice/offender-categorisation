@@ -5,11 +5,13 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 
 class TestFixture {
 
@@ -83,13 +85,10 @@ class TestFixture {
   }
 
   def gotoTasklistRecat(transferToSecurity = false) {
-    elite2Api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-4).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubRecategorise()
 
-    loginAs(CATEGORISER_USER)
-    browser.at CategoriserHomePage
+    loginAs(RECATEGORISER_USER)
+    browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', transferToSecurity)
     browser.via TasklistRecatPage, '12'

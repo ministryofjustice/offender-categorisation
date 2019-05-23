@@ -7,6 +7,7 @@ const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 const nomisClient = {
   getUncategorisedOffenders: jest.fn(),
   getSentenceDatesForOffenders: jest.fn(),
+  getRecategoriseOffenders: jest.fn(),
   getUserByUserId: jest.fn(),
   getOffenderDetails: jest.fn(),
   getOffenderDetailList: jest.fn(),
@@ -53,6 +54,77 @@ function todaySubtract(days) {
     .subtract(days, 'day')
     .format('YYYY-MM-DD')
 }
+
+describe('getRecategoriseOffenders', () => {
+  test('it should return a list of offenders and sentence information', async () => {
+    const data = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        category: 'B',
+        nextRecatDate: '2019-06-20',
+      },
+      {
+        offenderNo: 'H12345',
+        firstName: 'Danny',
+        lastName: 'Doyle',
+        bookingId: 111,
+        category: 'B',
+        nextRecatDate: '2019-06-21',
+      },
+      {
+        offenderNo: 'G55345',
+        firstName: 'Alan',
+        lastName: 'Allen',
+        bookingId: 122,
+        category: 'B',
+        nextRecatDate: '2019-06-22',
+      },
+    ]
+    const expected = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        displayName: 'Brown, Jane',
+        bookingId: 123,
+        displayStatus: Status.SECURITY_MANUAL.value,
+        nextRecatDate: '2019-06-20',
+      },
+      {
+        offenderNo: 'H12345',
+        firstName: 'Danny',
+        lastName: 'Doyle',
+        displayName: 'Doyle, Danny',
+        bookingId: 111,
+        displayStatus: 'Not started',
+        nextRecatDate: '2019-06-21',
+      },
+      {
+        offenderNo: 'G55345',
+        firstName: 'Alan',
+        lastName: 'Allen',
+        displayName: 'Allen, Alan',
+        bookingId: 122,
+        displayStatus: 'Not started',
+        nextRecatDate: '2019-06-22',
+      },
+    ]
+    nomisClient.getRecategoriseOffenders.mockReturnValue(data)
+    formService.getCategorisationRecord.mockReturnValue({}).mockReturnValueOnce({
+      bookingId: 123,
+      status: Status.SECURITY_MANUAL.name,
+    })
+
+    const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
+    expect(nomisClient.getRecategoriseOffenders).toBeCalledWith('LEI')
+    expect(formService.getCategorisationRecord).toBeCalledTimes(3)
+    expect(formService.getCategorisationRecord).nthCalledWith(1, 123, mockTransactionalClient)
+    expect(result).toMatchObject(expected)
+  })
+})
 
 describe('getUncategorisedOffenders', () => {
   test('it should return a list of offenders and sentence information', async () => {
