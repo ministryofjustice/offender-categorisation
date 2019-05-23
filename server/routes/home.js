@@ -10,7 +10,7 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
   router.get(
     '/',
     asyncMiddleware(async (req, res) => {
-      redirectUsingRole(res, '/categoriserHome', '/supervisorHome', '/securityHome')
+      redirectUsingRole(res, '/categoriserHome', '/supervisorHome', '/securityHome', '/recategoriserHome')
     })
   )
 
@@ -116,6 +116,24 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
           )
         : []
       res.render('pages/securityHome', { offenders })
+    })
+  )
+
+  router.get(
+    '/recategoriserHome',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+
+      const offenders = res.locals.user.activeCaseLoad
+        ? await offendersService.getRecategoriseOffenders(
+            res.locals.user.token,
+            res.locals.user.activeCaseLoad.caseLoadId,
+            user,
+            transactionalDbClient
+          )
+        : []
+      res.render('pages/recategoriserHome', { offenders })
     })
   )
 

@@ -269,6 +269,38 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  async function getRecategoriseOffenders(token, agencyId, user, transactionalDbClient) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+      const rawResult = await nomisClient.getRecategoriseOffenders(agencyId)
+
+      if (isNilOrEmpty(rawResult)) {
+        logger.info(`No recat offenders found for ${agencyId}`)
+        return []
+      }
+
+      const decoratedResults = await Promise.all(
+        rawResult.map(async o => {
+          const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
+          const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
+          return {
+            ...o,
+            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+            displayStatus: decorated.displayStatus || 'Not started',
+            reason: 'Categorisation review due',
+          }
+        })
+      )
+      // TODO: append others in the db with recat started - these will be manual reviews (or possibly risk level changes?)
+      // They wont have a due date shown (it would be after the cutoff)
+
+      return decoratedResults
+    } catch (error) {
+      logger.error(error, 'Error during getUncategorisedOffenders')
+      throw error
+    }
+  }
+
   function buildSentenceData(sentenceDate) {
     const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
     const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
@@ -478,6 +510,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getUncategorisedOffenders,
     getUnapprovedOffenders,
     getReferredOffenders,
+    getRecategoriseOffenders,
     getOffenderDetails,
     getImage,
     getCatAInformation,

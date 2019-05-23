@@ -9,12 +9,15 @@ import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
+import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 
 import java.time.LocalDate
+
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
 class TasklistRecatSpecification extends GebReportingSpec {
 
@@ -126,7 +129,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
   def "The recat tasklist correctly continues the current recat when an incomplete recat record present"() {
     when: 'I go to the recat tasklist page'
     db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT')
-
+    elite2Api.stubGetUserDetails(CATEGORISER_USER, Caseload.LEI.id)
     fixture.gotoTasklistRecat()
     at TasklistRecatPage
 
