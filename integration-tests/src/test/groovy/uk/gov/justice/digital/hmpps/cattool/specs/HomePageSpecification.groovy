@@ -215,6 +215,7 @@ class HomePageSpecification extends GebReportingSpec {
     waitFor { $('h1').text() == 'Sign in' }
 
     when: "I login"
+    elite2Api.stubCategorised([])
     fixture.simulateLogin()
 
     then:"I arrive at the originally specified page"
