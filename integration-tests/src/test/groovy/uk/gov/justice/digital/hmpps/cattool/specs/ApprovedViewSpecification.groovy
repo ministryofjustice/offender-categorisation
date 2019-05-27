@@ -96,7 +96,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
 
-    elite2Api.stubCategorised()
+    elite2Api.stubCategorised([12])
     doneTabLink.click()
     at SupervisorDonePage
 
