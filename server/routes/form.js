@@ -1,5 +1,7 @@
 const express = require('express')
 const flash = require('connect-flash')
+const R = require('ramda')
+
 const { firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
@@ -290,11 +292,20 @@ module.exports = function Index({
     if (body.previousConvictions === 'No') {
       delete updated.previousConvictionsText
     }
+    if (body.previousTerrorismOffences === 'No') {
+      delete updated.previousTerrorismOffencesText
+    }
     if (body.previousOverrideCategoryText === '') {
       delete updated.previousOverrideCategoryText
     }
     if (body.otherInformationText === '') {
       delete updated.otherInformationText
+    }
+    if (body.overriddenCategory === '') {
+      delete updated.overriddenCategory
+    }
+    if (body.overriddenCategoryText === '') {
+      delete updated.overriddenCategoryText
     }
     return updated
   }
@@ -496,6 +507,20 @@ module.exports = function Index({
           transactionalClient: transactionalDbClient,
         })
         await requiresOpenConditions(bookingId, transactionalDbClient)
+
+        // Reset cat so it appears the categoriser originally chose open conditions!
+        const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+        const { formObject } = categorisationRecord
+        const newData = R.assocPath(
+          ['categoriser', 'provisionalCategory'],
+          {
+            suggestedCategory: userInput.supervisorOverriddenCategory,
+            categoryAppropriate: 'Yes',
+            otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
+          },
+          formObject
+        )
+        await formService.updateFormData(bookingId, newData, transactionalDbClient)
 
         // send back to the categoriser for open conditions completion
         await formService.backToCategoriser(bookingId, transactionalDbClient)

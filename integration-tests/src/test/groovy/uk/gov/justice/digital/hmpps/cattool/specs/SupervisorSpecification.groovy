@@ -106,7 +106,7 @@ class SupervisorSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == [review: [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'reason text']]
-    response.categoriser == [provisionalCategory: [suggestedCategory: 'I', categoryAppropriate: 'Yes']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
 
@@ -115,7 +115,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
 
     when: 'The supervisor views the review page for a category D'
     navigateToReview(false, false)
@@ -133,7 +133,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "I", overriddenCategory: "J", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "J", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
 
     to SupervisorHomePage
 
@@ -260,7 +260,7 @@ class SupervisorSpecification extends GebReportingSpec {
     overriddenCategoryText << "should be a D"
     submitButton.click()
 
-    then: 'the record is returned to categoriser with open conditions requested'
+    then: 'the record is returned to categoriser with open conditions requested and suggestedCategory forced to D'
     at SupervisorHomePage
 
     def data = db.getData(12)
@@ -268,7 +268,37 @@ class SupervisorSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == [review: [proposedCategory: 'B', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D']]
-    response.categoriser == [provisionalCategory: [suggestedCategory: 'B', categoryAppropriate: 'Yes']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'D', categoryAppropriate: 'Yes']]
+    response.openConditionsRequested
+  }
+
+  def "Overriding to an Open conditions category returns the record to the categoriser (youth offender)"() {
+    given: 'supervisor is viewing the review page for a youth offender'
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: TestFixture.defaultRatingsB,
+      categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
+
+    navigateToReview(false, false)
+
+    when: 'Supervisor chooses to override to category J'
+    appropriateNo.click()
+
+    then: 'A warning is displayed'
+    warnings[1].text() contains "Making this category change means that the categoriser will have to provide more information."
+
+    when: 'The continue button is clicked'
+    overriddenCategoryText << "should be a J"
+    submitButton.click()
+
+    then: 'the record is returned to categoriser with open conditions requested and suggestedCategory forced to J'
+    at SupervisorHomePage
+
+    def data = db.getData(12)
+    data.status == ["SUPERVISOR_BACK"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.ratings == TestFixture.defaultRatingsB
+    response.supervisor == [review: [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a J']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
 
@@ -299,11 +329,11 @@ class SupervisorSpecification extends GebReportingSpec {
     response.openConditionsRequested == null
   }
 
-  def "The supervisor review page validates input, suggested category C overridden with D"() {
+  def "The supervisor review page validates input, suggested category B overridden with D"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "Some Text"]]]))
 
     navigateToReview()
 
@@ -354,7 +384,7 @@ class SupervisorSpecification extends GebReportingSpec {
     data.approval_date != null
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
-    response.categoriser == [provisionalCategory: [suggestedCategory: 'C', overriddenCategory: 'D', categoryAppropriate: 'No', overriddenCategoryText: 'Some Text']]
+    response.categoriser == [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "Some Text"]]
     response.supervisor ==  [review: [proposedCategory: 'D', supervisorOverriddenCategory: 'B', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'A good reason']]
     response.openConditionsRequested == null
   }

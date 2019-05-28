@@ -156,41 +156,46 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  void stubCategorised() {
+  void stubCategorised(bookingIds = [11,12]) {
+    def response = []
+    if (bookingIds.contains(11)) {
+      response.add ( [
+        offenderNo: 'B2345YZ',
+        bookingId: 11,
+        firstName: 'SARAH',
+        lastName: 'HEMMEL',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2019-02-20',
+        assessmentSeq: 7,
+        categoriserFirstName: 'JANE',
+        categoriserLastName: 'FAN',
+        approverFirstName: 'JAMES',
+        approverLastName: 'HELLY',
+        category: 'C'
+      ])
+    }
+    if (bookingIds.contains(12)) {
+      response.add([
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        firstName: 'TIM',
+        lastName: 'SCRAMBLE',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2019-02-21',
+        assessmentSeq: 7,
+        categoriserFirstName: 'JOHN',
+        categoriserLastName: 'LAMB',
+        approverFirstName: 'JAMES',
+        approverLastName: 'HELLY',
+        category: 'C'
+      ])
+    }
     this.stubFor(
       post("/api/offender-assessments/category/LEI")
+        .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, true))
         .willReturn(
         aResponse()
-          .withBody(JsonOutput.toJson([
-          [
-            offenderNo: 'B2345YZ',
-            bookingId: 11,
-            firstName: 'SARAH',
-            lastName: 'HEMMEL',
-            assessmentDate: '2017-03-27',
-            approvalDate: '2019-02-20',
-            assessmentSeq: 7,
-            categoriserFirstName: 'JANE',
-            categoriserLastName: 'FAN',
-            approverFirstName: 'JAMES',
-            approverLastName: 'HELLY',
-            category: 'C'
-          ],
-          [
-            offenderNo: 'B2345XY',
-            bookingId: 12,
-            firstName: 'TIM',
-            lastName: 'SCRAMBLE',
-            assessmentDate: '2017-03-27',
-            approvalDate: '2019-02-21',
-            assessmentSeq: 7,
-            categoriserFirstName: 'JOHN',
-            categoriserLastName: 'LAMB',
-            approverFirstName: 'JAMES',
-            approverLastName: 'HELLY',
-            category: 'C'
-          ],
-        ]
+          .withBody(JsonOutput.toJson(response
         ))
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
@@ -201,32 +206,32 @@ class Elite2Api extends WireMockRule {
     this.stubFor(
       get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
         .willReturn(
-        aResponse()
-          .withBody(JsonOutput.toJson([
-          [
-            bookingId : 11,
-            offenderNo: 'B2345XY',
-            firstName : 'PENELOPE',
-            lastName  : 'PITSTOP',
-            status    : 'AWAITING_APPROVAL',
-            category  : 'B',
-            categoriserFirstName: 'Roger',
-            categoriserLastName: 'Rabbit',
-          ],
-          [
-            bookingId : 12,
-            offenderNo: 'B2345YZ',
-            firstName : 'ANT',
-            lastName  : 'HILLMOB',
-            status    : 'AWAITING_APPROVAL',
-            category  : 'C',
-            categoriserFirstName: 'Bugs',
-            categoriserLastName: 'Bunny',
-          ],
-        ]
-        ))
-          .withHeader('Content-Type', 'application/json')
-          .withStatus(200))
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [
+                bookingId : 11,
+                offenderNo: 'B2345XY',
+                firstName : 'PENELOPE',
+                lastName  : 'PITSTOP',
+                status    : 'AWAITING_APPROVAL',
+                category  : 'B',
+                categoriserFirstName: 'Roger',
+                categoriserLastName: 'Rabbit',
+              ],
+              [
+                bookingId : 12,
+                offenderNo: 'B2345YZ',
+                firstName : 'ANT',
+                lastName  : 'HILLMOB',
+                status    : 'AWAITING_APPROVAL',
+                category  : 'C',
+                categoriserFirstName: 'Bugs',
+                categoriserLastName: 'Bunny',
+              ],
+            ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
     )
   }
 
