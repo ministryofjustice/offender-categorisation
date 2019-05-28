@@ -134,9 +134,13 @@
 
   {% set guidanceIsForeignNational %}
 <div class="govuk-!-font-weight-bold">You should check:</div>
+<ul class="govuk-list govuk-list--bullet">
   <li>the completed CCD3 form (this should be on file or ask the case admin)</li>
-<div class="govuk-!-font-weight-bold">You are looking for:</div>
+</ul>
+<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
+<ul class="govuk-list govuk-list--bullet">
   <li>if they have any appeals against deportation left</li>
+</ul>
   {% endset %}
 
   {{ govukDetails({

@@ -82,15 +82,19 @@
 
   {% set guidanceSeriousHarm %}
 <div class="govuk-!-font-weight-bold">You should check:</div>
+<ul class="govuk-list govuk-list--bullet">
   <li>risk of serious harm (ROSH) score</li>
   <li>MAPPA level</li>
   <li>court documents</li>
   <li>PNC record</li>
   <li>index offence</li>
-<div class="govuk-!-font-weight-bold">You are looking for:</div>
+</ul>
+<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
+<ul class="govuk-list govuk-list--bullet">
   <li>high ROSH score</li>
   <li>risk management plan</li>
   <li>measures to safely manage risk</li>
+</ul>
   {% endset %}
 
   {{ govukDetails({
