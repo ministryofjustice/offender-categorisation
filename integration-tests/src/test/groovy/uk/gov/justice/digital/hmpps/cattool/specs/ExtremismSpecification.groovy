@@ -57,7 +57,7 @@ class ExtremismSpecification extends GebReportingSpec {
 
     then: 'The extremism page is displayed'
     at ExtremismPage
-    warningMessage.text() contains 'This person is at risk of engaging in or vulnerable to extremism'
+    warningMessage.text() contains 'This person is at risk of engaging in, or vulnerable to, extremism'
     !info.displayed
     !previousTerrorismOffencesText.displayed
 
@@ -96,7 +96,7 @@ class ExtremismSpecification extends GebReportingSpec {
 
     then: 'The extremism page is displayed'
     at ExtremismPage
-    info.text() contains 'This person is not at risk of engaging in or vulnerable to extremism.'
+    info.text() contains 'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.'
     !warningMessage.displayed
   }
 

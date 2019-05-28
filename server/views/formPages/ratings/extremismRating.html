@@ -28,13 +28,13 @@
 
   {% if data.extremismProfile.increasedRiskOfExtremism %}
     {{ govukWarningText({
-      text: "This person is at risk of engaging in or vulnerable to extremism",
+      text: "This person is at risk of engaging in, or vulnerable to, extremism",
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
   {% else %}
     {{ govukInsetText({
-      text: "This person is not at risk of engaging in or vulnerable to extremism."
+      text: "This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism."
     }) }}
   {% endif %}
 
