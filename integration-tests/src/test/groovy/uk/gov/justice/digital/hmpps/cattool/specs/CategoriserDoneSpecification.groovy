@@ -84,7 +84,6 @@ class CategoriserDoneSpecification extends GebReportingSpec {
   def "The done page does not display offenders that haven't been categorised through the Categorisation tool"() {
     when: 'I go to the home page as categoriser'
 
-    def now = LocalDate.now()
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
 
@@ -92,7 +91,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
 
     at CategoriserHomePage
 
-    elite2Api.stubCategorised()
+    elite2Api.stubCategorised([])
 
     doneTabLink.click()
 

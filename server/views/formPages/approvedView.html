@@ -16,12 +16,6 @@
   </div>
   <script>
     function handlePrint() {
-      raiseAnalyticsEvent({
-        event_category: 'Cat tool',
-        action: 'Print cat',
-        event_label: 'Print cat',
-        value: '{{ data.details.agencyId }}'
-      })
       window.print()
     }
 
@@ -106,23 +100,18 @@
 
     {% if superCat or superOtherComments or superPreviousOverrideComments %}
     <div class="govuk-!-margin-bottom-6">
-      <label for="overriddenText-2" class="no-print govuk-!-font-weight-bold">Comments</label>
+      <label for="overriddenText-2" class="{% if overriddenCat and overriddenCatText %}no-print {% endif %}govuk-!-font-weight-bold">Comments</label>
       {% if superCat %}
-        <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}  </div>
+        <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}</div>
       {% endif %}
       {% if superPreviousOverrideComments %}
-      <div class="forms-comments-text govuk-!-margin-bottom-1" id="previous-overriddenText">{{ superPreviousOverrideComments }}  </div>
+        <div class="forms-comments-text govuk-!-margin-bottom-1" id="previous-overriddenText">{{ superPreviousOverrideComments }}</div>
       {% endif %}
       {% if superOtherComments %}
-        <div class="forms-comments-text govuk-!-margin-bottom-1" id="other-text-supervisor">{{ superOtherComments }}  </div>
+        <div class="forms-comments-text govuk-!-margin-bottom-1" id="other-text-supervisor">{{ superOtherComments }}</div>
       {% endif %}
-
-      </div>
+    </div>
     {% endif %}
-
-
-
-
 
 
     {% set showChangeLinks = false %}

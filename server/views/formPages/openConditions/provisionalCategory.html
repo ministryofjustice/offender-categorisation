@@ -8,7 +8,7 @@
 
 {% set cat = data.openConditionsSuggestedCat %}
 {% set suggestedCat = data.categoriser.provisionalCategory.suggestedCategory if data.categoriser.provisionalCategory.suggestedCategory else data.openConditionsSuggestedCat%}
-{% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory if data.categoriser.provisionalCategory.overriddenCategory else data.openConditionsSuggestedCat%}
+{% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
 {% set greenButtonText = "Submit" %}
 
 {% block formItems %}
