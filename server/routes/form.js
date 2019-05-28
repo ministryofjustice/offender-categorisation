@@ -292,11 +292,20 @@ module.exports = function Index({
     if (body.previousConvictions === 'No') {
       delete updated.previousConvictionsText
     }
+    if (body.previousTerrorismOffences === 'No') {
+      delete updated.previousTerrorismOffencesText
+    }
     if (body.previousOverrideCategoryText === '') {
       delete updated.previousOverrideCategoryText
     }
     if (body.otherInformationText === '') {
       delete updated.otherInformationText
+    }
+    if (body.overriddenCategory === '') {
+      delete updated.overriddenCategory
+    }
+    if (body.overriddenCategoryText === '') {
+      delete updated.overriddenCategoryText
     }
     return updated
   }
@@ -508,7 +517,6 @@ module.exports = function Index({
             suggestedCategory: userInput.supervisorOverriddenCategory,
             categoryAppropriate: 'Yes',
             otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
-            sentBackOverriddenCategoryText: formObject.categoriser.provisionalCategory.overriddenCategoryText,
           },
           formObject
         )
