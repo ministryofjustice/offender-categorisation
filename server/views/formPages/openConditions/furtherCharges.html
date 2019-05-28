@@ -51,10 +51,14 @@
 
   {% set guidanceIncreasedRisk %}
 <div class="govuk-!-font-weight-bold">You should check:</div>
+<ul class="govuk-list govuk-list--bullet">
   <li>the amount of these charges</li>
   <li>the seriousness of these charges</li>
-<div class="govuk-!-font-weight-bold">You are looking for:</div>
+</ul>
+<div class="govuk-!-font-weight-bol govuk-!-padding-top-1">You are looking for:</div>
+<ul class="govuk-list govuk-list--bullet">
   <li>whether they might abscond to avoid further sentencing</li>
+</ul>
   {% endset %}
 
   {{ govukDetails({

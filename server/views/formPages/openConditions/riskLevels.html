@@ -57,14 +57,18 @@
 
 {% set guidanceLikelyToAbscond %}
 <div class="govuk-!-font-weight-bold">You should check:</div>
+<ul class="govuk-list govuk-list--bullet">
   <li>any confiscation, serious crime prevention and/or restraining orders that are in force</li>
   <li>any ongoing proceedings</li>
   <li>escape history</li>
   <li>responses to court orders or requirements</li>
-<div class="govuk-!-font-weight-bold">You are looking for:</div>
+</ul>
+<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
+<ul class="govuk-list govuk-list--bullet">
   <li>if they owe money</li>
   <li>if they have time to serve in lieu</li>
   <li>if they have escaped or absconded in the past</li>
+</ul>
 {% endset %}
 
   {{ govukDetails({
