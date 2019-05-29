@@ -23,10 +23,6 @@ class CategoriserDonePage extends Page {
     noResultsDiv { $('#no-results-message') }
   }
 
-  def logout() {
-    logoutLink.click()
-  }
-
   def selectFirstPrisoner() {
     viewButtons[0].click()
   }

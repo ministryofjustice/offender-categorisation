@@ -30,8 +30,4 @@ class TasklistPage extends Page {
     summarySection (required: true) { $('#review div') }
     openConditionsButton (required: false){ $('#openConditionsButton') }
   }
-
-  def logout() {
-    logoutLink.click()
-  }
 }

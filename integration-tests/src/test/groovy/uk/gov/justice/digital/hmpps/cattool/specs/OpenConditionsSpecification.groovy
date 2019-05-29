@@ -11,9 +11,15 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.ApprovedViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.*
@@ -21,8 +27,24 @@ import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.*
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
 class OpenConditionsSpecification extends GebReportingSpec {
+
+  static allNoAnswersWithFurtherCharges = [
+    earliestReleaseDate: [threeOrMoreYears: 'No'],
+    foreignNational    : [isForeignNational: 'No'],
+    riskOfHarm         : [seriousHarm: 'No'],
+    furtherCharges     : [increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
+    riskLevels         : [likelyToAbscond: 'No'],
+  ]
+
+  static allNoAnswers = [
+    earliestReleaseDate: [threeOrMoreYears: 'No'],
+    foreignNational    : [isForeignNational: 'No'],
+    riskOfHarm         : [seriousHarm: 'No'],
+    riskLevels         : [likelyToAbscond: 'No'],
+  ]
 
   def setup() {
     db.clearDb()
@@ -41,23 +63,31 @@ class OpenConditionsSpecification extends GebReportingSpec {
   TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
-  def "The happy path is correct for categoriser, all yeses"() {
+  def "The happy path is correct for categoriser overriding to D, all yeses, then cancelling open conditions"() {
     given:
-    db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
-      ratings                : TestFixture.defaultRatingsB,
-      categoriser            : [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                      categoryAppropriate: 'No', otherInformationText: 'change to D', overriddenCategoryText: 'Some Text']],
-      openConditionsRequested: true
-    ]))
+    db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([ratings: TestFixture.defaultRatingsB]))
 
-    when: 'I go to the first open conditions page'
+    when: 'The categoriser overrides to D'
 
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    to EarliestReleasePage, 12
+    to new ProvisionalCategoryPage(bookingId: '12'), '12'
+    appropriateNo.click()
+    overriddenCategoryD.click()
+    overriddenCategoryText << 'categoriser override to D comment'
+    otherInformationText << 'categoriser relevant info 1'
+    elite2Api.stubCategorise('D')
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    submitButton.click()
+
+    then: 'the tasklist page is displayed with open conditions section added'
+    at(new TasklistPage(bookingId: '12'))
+
+    when: 'open conditions task is selected'
+    openConditionsButton.click()
 
     then: 'the Earliest Release page is displayed'
     at EarliestReleasePage
@@ -284,68 +314,29 @@ class OpenConditionsSpecification extends GebReportingSpec {
     response.openConditionsRequested == false
   }
 
-  def "The happy path is correct for categoriser, all nos"() {
-    when: 'I go to the first open conditions page'
-    db.createData(-1, 12, JsonOutput.toJson([
-      ratings                : TestFixture.defaultRatingsB,
-      categoriser            : [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                      categoryAppropriate: 'No', otherInformationText: 'Some Text', overriddenCategoryText: 'change to D']],
-      openConditionsRequested: true]))
+  def "The happy path is correct for categoriser overriding to D, all nos"() {
+    when: 'The categoriser overrides to D'
+    db.createData(-1, 12, JsonOutput.toJson([ratings: TestFixture.defaultRatingsB]))
 
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    to EarliestReleasePage, 12
-
-    then: 'the Earliest Release page is displayed'
-    at EarliestReleasePage
-
-    when: 'I submit the page with just threeOrMoreYears=No'
-    threeOrMoreYearsNo.click()
-    submitButton.click()
-
-///////////////////////////////////////////////////////////////////////////////
-    then: 'the Foreign National page is displayed'
-    at ForeignNationalPage
-
-    when: 'I submit page after isForeignNationalNo'
-    isForeignNationalNo.click()
-    submitButton.click()
-
-////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk of Serious Harm page is displayed'
-    at RiskOfHarmPage
-
-    when: 'I submit page after seriousHarmNo'
-    seriousHarmNo.click()
-    submitButton.click()
-
-////////////////////////////////////////////////////////////////////////////
-    then: 'the Further Charges page is displayed'
-    at FurtherChargesPage
-
-    when: 'the Further Charges page is completed'
-    furtherChargesText << ',furtherChargesText details'
-    increasedRiskNo.click()
-
-    submitButton.click()
-////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk Levels page is displayed'
-    at RiskLevelsPage
-
-    when: 'I submit page after likelyToAbscondNo'
-    likelyToAbscondNo.click()
-    elite2Api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-4).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
-    elite2Api.stubGetOffenderDetails(12)
+    to new ProvisionalCategoryPage(bookingId: '12'), '12'
+    appropriateNo.click()
+    overriddenCategoryD.click()
+    overriddenCategoryText << 'categoriser override to D comment'
+    otherInformationText << 'categoriser relevant info 1'
+    elite2Api.stubCategorise('D')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
-////////////////////////////////////////////////////////////////////////////
 
+    then: 'the tasklist page is displayed with open conditions section added'
+    at(new TasklistPage(bookingId: '12'))
+
+    when: 'open conditions forms are completed'
+    completeOpenConditionsWorkflow(true)
 
     then: 'tasklist page is displayed with the open conditions section'
     at TasklistPage
@@ -378,24 +369,17 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.status == ["STARTED"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
-    response.categoriser == [
-                             provisionalCategory: [suggestedCategory   : 'B', overriddenCategory: 'D', categoryAppropriate: 'No',
-                                                   otherInformationText: 'Some Text', overriddenCategoryText: 'change to D']]
+    response.categoriser == [provisionalCategory: [suggestedCategory   : 'B', overriddenCategory: 'D', categoryAppropriate: 'No',
+                                                   otherInformationText: 'categoriser relevant info 1', overriddenCategoryText: 'categoriser override to D comment']]
     response.supervisor == null
-    response.openConditions == [
-      earliestReleaseDate: [threeOrMoreYears: 'No'],
-      foreignNational    : [isForeignNational: 'No'],
-      riskOfHarm         : [seriousHarm: 'No'],
-      furtherCharges     : [increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
-      riskLevels         : [likelyToAbscond: 'No'],
-    ]
+    response.openConditions == allNoAnswersWithFurtherCharges
     response.openConditionsRequested
 
     when: 'I continue to the provision category page'
     submitButton.click()
 
     then: 'I am at the provision category page'
-    at new ProvisionalCategoryPage(bookingId: '12')
+    at new ProvisionalCategoryOpenPage(bookingId: '12')
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
     when: 'I confirm the cat D category'
@@ -421,15 +405,298 @@ class OpenConditionsSpecification extends GebReportingSpec {
     response.ratings == TestFixture.defaultRatingsB
     response.categoriser == [review             : [:],
                              provisionalCategory: [suggestedCategory   : 'B', overriddenCategory: 'D', categoryAppropriate: 'No',
-                                                   otherInformationText: 'Some Text', overriddenCategoryText: 'change to D']]
+                                                   otherInformationText: 'categoriser relevant info 1', overriddenCategoryText: 'categoriser override to D comment']]
     response.supervisor == null
-    response.openConditions == [
-      earliestReleaseDate: [threeOrMoreYears: 'No'],
-      foreignNational    : [isForeignNational: 'No'],
-      riskOfHarm         : [seriousHarm: 'No'],
-      furtherCharges     : [increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
-      riskLevels         : [likelyToAbscond: 'No'],
-    ]
+    response.openConditions == allNoAnswersWithFurtherCharges
     response.openConditionsRequested
+
+    when: 'the supervisor reviews and accepts the cat D'
+    fixture.logout()
+    elite2Api.stubUncategorisedForSupervisor()
+    fixture.loginAs(SUPERVISOR_USER)
+    at SupervisorHomePage
+    startButtons[0].click()
+    at SupervisorReviewPage
+    elite2Api.stubSupervisorApprove('D')
+    appropriateYes.click()
+    submitButton.click()
+    data = db.getData(12)
+    response = new JsonSlurper().parseText(data.form_response[0].toString())
+
+    then: 'Data is stored correctly'
+    at SupervisorReviewOutcomePage
+    data.status == ["APPROVED"]
+    response.ratings == TestFixture.defaultRatingsB
+    response.categoriser == [review             : [:],
+                             provisionalCategory: [suggestedCategory   : 'B', overriddenCategory: 'D', categoryAppropriate: 'No',
+                                                   otherInformationText: 'categoriser relevant info 1', overriddenCategoryText: 'categoriser override to D comment']]
+    response.supervisor == [review: [proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes']]
+    response.openConditions == allNoAnswersWithFurtherCharges
+    response.openConditionsRequested
+
+    when: 'the approved view page is shown'
+    finishButton.click()
+    at SupervisorHomePage
+    elite2Api.stubCategorised([12])
+    doneTabLink.click()
+    at SupervisorDonePage
+    viewButtons[0].click()
+
+    then: 'details are correct'
+    at ApprovedViewPage
+    categories*.text() == ['D\nWarning\nCategory D', 'B\nD\nWarning\nThe recommended category was changed from a B to a D','D\nWarning\nThe supervisor also recommends category D']
+    comments*.text() == ['categoriser override to D comment']
+    otherInformationSummary.text() == 'categoriser relevant info 1'
+    commentLabel.size() == 1
+  }
+
+  def "categoriser overriding to D, supervisor overrides to C"() {
+    when: 'The categoriser overrides to D'
+    db.createData(-1, 12, JsonOutput.toJson([ratings: TestFixture.defaultRatingsB]))
+
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2Api.stubGetOffenderDetails(12)
+    to new ProvisionalCategoryPage(bookingId: '12'), '12'
+    appropriateNo.click()
+    overriddenCategoryD.click()
+    overriddenCategoryText << 'categoriser override to D comment'
+    otherInformationText << 'categoriser relevant info 1'
+    elite2Api.stubCategorise('D')
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    submitButton.click()
+
+    then: 'the tasklist page is displayed with open conditions section added'
+    at(new TasklistPage(bookingId: '12'))
+
+    when: 'open conditions forms are completed'
+    completeOpenConditionsWorkflow(true)
+
+    then: 'tasklist page is displayed with the open conditions section'
+    at TasklistPage
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    openConditionsButton.isDisplayed()
+    continueButton.click()
+
+    then: 'the review page is displayed and Data is stored correctly'
+    at ReviewPage
+
+    when: 'I continue to the provision category page'
+    submitButton.click()
+
+    then: 'I am at the provision category page'
+    at new ProvisionalCategoryOpenPage(bookingId: '12')
+    warning.text() contains 'Based on the information provided, the provisional category is D'
+
+    when: 'I confirm the cat D category'
+    elite2Api.stubCategorise('D')
+    appropriateYes.click()
+    submitButton.click()
+
+    then: 'the category is submitted'
+    at CategoriserSubmittedPage
+
+    when: 'the supervisor reviews and overrides to cat C'
+    fixture.logout()
+    elite2Api.stubUncategorisedForSupervisor()
+    fixture.loginAs(SUPERVISOR_USER)
+    at SupervisorHomePage
+    startButtons[0].click()
+    at SupervisorReviewPage
+    elite2Api.stubSupervisorApprove('C')
+    appropriateNo.click()
+    overriddenCategoryC.click()
+    overriddenCategoryText << 'super changed D to C'
+    otherInformationText << 'super other info'
+    submitButton.click()
+    def data = db.getData(12)
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+
+    then: 'Data is stored correctly'
+    at SupervisorReviewOutcomePage
+    data.status == ["APPROVED"]
+    response.ratings == TestFixture.defaultRatingsB
+    response.categoriser == [review             : [:],
+                             provisionalCategory: [suggestedCategory   : 'B', overriddenCategory: 'D', categoryAppropriate: 'No',
+                                                   otherInformationText: 'categoriser relevant info 1', overriddenCategoryText: 'categoriser override to D comment']]
+    response.supervisor == [review: [proposedCategory             : 'D', otherInformationText: 'super other info', supervisorOverriddenCategory: 'C',
+                                     supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'super changed D to C']]
+
+
+    response.openConditions == allNoAnswersWithFurtherCharges
+    response.openConditionsRequested // TODO is this ok?
+
+    when: 'the approved view page is shown'
+    finishButton.click()
+    at SupervisorHomePage
+    elite2Api.stubCategorised([12])
+    doneTabLink.click()
+    at SupervisorDonePage
+    viewButtons[0].click()
+
+    then: 'details are correct'
+    at ApprovedViewPage
+    categories*.text() == ['C\nWarning\nCategory C',
+                           'B\nD\nWarning\nThe recommended category was changed from a B to a D',
+                           'D\nC\nWarning\nThe recommended category was changed from a D to a C']
+    comments*.text() == ['categoriser override to D comment','super changed D to C','super other info']
+    otherInformationSummary.text() == 'categoriser relevant info 1'
+    commentLabel.size() == 2
+  }
+
+  def "The happy path is correct for supervisor overriding to D"() {
+    when: 'The categoriser accepts a cat C'
+    db.createData(-1, 12, JsonOutput.toJson([ratings: TestFixture.defaultRatingsC]))
+
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2Api.stubGetOffenderDetails(12)
+    to new ProvisionalCategoryPage(bookingId: '12'), '12'
+    appropriateYes.click()
+    otherInformationText << 'categoriser relevant info for accept'
+    elite2Api.stubCategorise('C')
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    submitButton.click()
+
+    then: 'the cat C is submitted'
+    at CategoriserSubmittedPage
+
+    when: 'the supervisor overrides to cat D'
+    fixture.logout()
+    elite2Api.stubUncategorisedForSupervisor()
+    fixture.loginAs(SUPERVISOR_USER)
+    at SupervisorHomePage
+    startButtons[1].click() // B2345YZ / 12
+    at SupervisorReviewPage
+    elite2Api.stubSupervisorApprove('D')
+    appropriateNo.click()
+    overriddenCategoryD.click()
+    overriddenCategoryText << "super overriding C to D"
+    otherInformationText << "super other info 1"
+    submitButton.click()
+
+    then: 'supervisor is returned to home'
+    at SupervisorHomePage
+
+    when: 'open conditions forms are completed by categoriser'
+    fixture.logout()
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+    startButtons[1].click() // B2345YZ / 12
+    at(new TasklistPage(bookingId: '12'))
+
+    completeOpenConditionsWorkflow(false)
+
+    then: 'tasklist page is displayed with the open conditions section'
+    at TasklistPage
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
+    openConditionsButton.isDisplayed()
+    continueButton.click()
+
+    then: 'the review page is displayed'
+    at ReviewPage
+
+    when: 'I continue to the provisional category page'
+    submitButton.click()
+
+    then: 'I am at the provision category page for open conditions'
+    at new ProvisionalCategoryOpenPage(bookingId: '12')
+    warning.text() contains 'Based on the information provided, the provisional category is D'
+
+    when: 'I confirm the cat D category'
+    elite2Api.stubCategorise('D')
+    appropriateYes.click()
+    submitButton.click() // *************************
+
+    then: 'the category is submitted'
+    at CategoriserSubmittedPage
+
+    when: 'The record is viewed by the categoriser'
+    to CategoriserHomePage
+    startButtons[0].click()
+
+    then: 'The correct category is retrieved'
+    at CategoriserAwaitingApprovalViewPage
+    categoryDiv.text() contains 'Category for approval is D'
+
+    when: 'the supervisor reviews and accepts the cat D'
+    fixture.logout()
+    elite2Api.stubUncategorisedForSupervisor()
+    fixture.loginAs(SUPERVISOR_USER)
+    at SupervisorHomePage
+    startButtons[0].click()
+    at SupervisorReviewPage
+    elite2Api.stubSupervisorApprove('D')
+    appropriateYes.click()
+    submitButton.click()
+    def data = db.getData(12)
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+
+    then: 'Data is stored correctly'
+    at SupervisorReviewOutcomePage
+    data.status == ["APPROVED"]
+    response.ratings == TestFixture.defaultRatingsC
+    response.categoriser == [review             : [:],
+                             provisionalCategory: [suggestedCategory: 'D', categoryAppropriate: 'Yes', otherInformationText: 'categoriser relevant info for accept']]
+    response.supervisor == [review: [proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes', otherInformationText: 'super other info 1', previousOverrideCategoryText: 'super overriding C to D',]]
+    response.openConditions == allNoAnswers
+    response.openConditionsRequested
+
+    when: 'the approved view page is shown'
+    finishButton.click()
+    at SupervisorHomePage
+    elite2Api.stubCategorised([12])
+    doneTabLink.click()
+    at SupervisorDonePage
+    viewButtons[0].click()
+
+    then: 'details are correct'
+    at ApprovedViewPage
+    categories*.text() == ['D\nWarning\nCategory D', 'D\nWarning\nThe categoriser recommends category D','D\nWarning\nThe supervisor also recommends category D']
+    comments*.text() == ['super overriding C to D','super other info 1']
+    otherInformationSummary.text() == 'categoriser relevant info for accept'
+    commentLabel.size() == 1
+  }
+
+  def completeOpenConditionsWorkflow(boolean furtherChargesExist) {
+    openConditionsButton.click()
+    at EarliestReleasePage
+    threeOrMoreYearsNo.click()
+    submitButton.click()
+    at ForeignNationalPage
+    isForeignNationalNo.click()
+    submitButton.click()
+    at RiskOfHarmPage
+    seriousHarmNo.click()
+    submitButton.click()
+    if (furtherChargesExist) {
+      at FurtherChargesPage
+      furtherChargesText << ',furtherChargesText details'
+      increasedRiskNo.click()
+      submitButton.click()
+    }
+    at RiskLevelsPage
+    likelyToAbscondNo.click()
+    elite2Api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-4).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    elite2Api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    submitButton.click()
   }
 }

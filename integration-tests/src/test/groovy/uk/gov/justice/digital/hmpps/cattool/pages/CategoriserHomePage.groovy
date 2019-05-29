@@ -23,10 +23,6 @@ class CategoriserHomePage extends Page {
     doneTabLink { $('a', href: '/categoriserDone')}
   }
 
-  def logout() {
-    logoutLink.click()
-  }
-
   def selectFirstPrisoner() {
     startButtons[0].click() // should select B2345YZ
   }
