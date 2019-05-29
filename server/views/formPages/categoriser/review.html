@@ -2,8 +2,20 @@
 {% set greenButtonText = "Continue" %}
 {% set extraButtonClasses = "govuk-grid-row" %}
 
-{% block formItems %}
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink
+  }) }}
 
+  <div class="govuk-body-m govuk-!-margin-left-4">
+    {% include "../../partials/offenderDetails.html" %}
+    <hr/>
+  </div>
+
+{% endblock %}
+
+{% block formItems %}
 
 <div class="govuk-grid-row govuk-body-s">
   <div>
@@ -22,6 +34,5 @@
 
   </div>
 </div>
-
 
 {% endblock %}

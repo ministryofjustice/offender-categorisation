@@ -12,6 +12,8 @@ class ReviewPage extends Page {
 
   static content = {
     headingText { $('h1.main-heading').text() }
+    headerBlock { $('div.govuk-grid-column-one-third') }
+    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
 
     form { $('form') }
 

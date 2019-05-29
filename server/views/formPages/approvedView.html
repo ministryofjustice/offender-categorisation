@@ -1,9 +1,22 @@
 {% extends "./formTemplate.html" %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
+{% block beforeContent %}
+{{ govukBackLink({
+text: "Back",
+href: backLink
+}) }}
+
+{% endblock %}
+
 {% block content %}
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+<div class="govuk-grid-row">
+  {% include "../partials/offenderDetails.html" %}
+  <hr/>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
     <h1 class="govuk-!-width-two-thirds govuk-heading-l govuk-!-display-inline mainHeading">
      Categorisation outcome
     </h1>
@@ -17,16 +30,6 @@
   <script>
     function handlePrint() {
       window.print()
-    }
-
-    function raiseAnalyticsEvent(event) {
-      if (event && gtag) {
-        gtag('event', event.action, {
-          'event_category': event.event_category,
-          'event_label': event.event_label,
-          'value': event.value
-        })
-      }
     }
   </script>
   <div class="govuk-grid-row govuk-body-s">
