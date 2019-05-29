@@ -64,6 +64,16 @@ const linkOnClick = handlerFn => ({
   },
 })
 
+const filterJsonObjectForLogging = json => {
+  const dup = {}
+  Object.keys(json).forEach(key => {
+    if (key !== '_csrf') {
+      dup[key] = json[key]
+    }
+  })
+  return dup
+}
+
 module.exports = {
   dateConverter,
   properCase,
@@ -73,4 +83,5 @@ module.exports = {
   stripAgencyPrefix,
   getLongDateFormat,
   linkOnClick,
+  filterJsonObjectForLogging,
 }
