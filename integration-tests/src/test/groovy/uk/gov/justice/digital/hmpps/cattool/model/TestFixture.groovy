@@ -104,4 +104,9 @@ class TestFixture {
     // Simulate auth server calling the callback, which then gets a token (from wiremock) and goes to homepage
     browser.go "/login/callback?code=codexxxx&state=$state"
   }
+
+  def logout() {
+    browser.$('a', href: '/logout').click()
+    browser.waitFor { browser.$('h1').text() == 'Sign in' }
+  }
 }

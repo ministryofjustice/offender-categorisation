@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ProvisionalCategoryOpenPage
 
 import java.time.LocalDate
 
@@ -319,7 +320,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     via ProvisionalCategoryPage, '12'
 
     then: 'The page redirects to the open conditions version and shows cat D'
-    at new uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ProvisionalCategoryPage(bookingId: '12')
+    at new ProvisionalCategoryOpenPage(bookingId: '12')
     warning[0].text() == 'D\nWarning\nBased on the information provided, the provisional category is D'
 
     when: 'I confirm Cat D'
@@ -331,7 +332,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     via ProvisionalCategoryPage, '12'
 
     then: 'The data is correct and is shown on return'
-    at new uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ProvisionalCategoryPage(bookingId: '12')
+    at new ProvisionalCategoryOpenPage(bookingId: '12')
     // blank   form.categoryAppropriate == ""
 
     def data = db.getData(12)
@@ -367,7 +368,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     via ProvisionalCategoryPage, '12'
 
     then: 'The page redirects to the open conditions version and shows cat D'
-    at new uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ProvisionalCategoryPage(bookingId: '12')
+    at new ProvisionalCategoryOpenPage(bookingId: '12')
     warning[0].text() == 'D\nWarning\nBased on the information provided, the provisional category is D'
 
     when: 'I reject Cat D'

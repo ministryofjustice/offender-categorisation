@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.cattool.pages.openConditions
 
 import geb.Page
 
-class ProvisionalCategoryPage extends Page {
+class ProvisionalCategoryOpenPage extends Page {
 
   static String bookingId
 

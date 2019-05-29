@@ -143,8 +143,8 @@ class HomePageSpecification extends GebReportingSpec {
 
     when: 'A second user views the uncategorised list'
 
-    logout()
-    waitFor { $('h1').text() == 'Sign in' }
+    fixture.logout()
+
     fixture.setBrowser(createBrowser())
     oauthApi.resetAll()
     // call to retrieve another users's details for assigned user name
@@ -200,10 +200,10 @@ class HomePageSpecification extends GebReportingSpec {
     at CategoriserHomePage
 
     when: "I log out"
-    logout()
+    fixture.logout()
 
     then: "I am taken back to the Login page."
-    waitFor { $('h1').text() == 'Sign in' }
+    $('h1').text() == 'Sign in'
   }
 
   def "Deep urls work"() {
