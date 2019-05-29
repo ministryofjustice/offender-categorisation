@@ -23,10 +23,6 @@ class RecategoriserHomePage extends Page {
     // doneTabLink { $('a', href: '/categoriserDone')}
   }
 
-  def logout() {
-    logoutLink.click()
-  }
-
   def selectFirstPrisoner() {
     startButtons[0].click() // should select 12 / B2345XY
   }

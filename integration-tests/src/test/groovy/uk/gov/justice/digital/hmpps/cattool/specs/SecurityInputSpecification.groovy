@@ -88,7 +88,7 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     when: 'a security user views their homepage'
     elite2Api.stubGetCategoriserStaffDetailsByUsernameList()
-    logout()
+    fixture.logout()
     elite2Api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     fixture.loginAs(SECURITY_USER)
@@ -111,7 +111,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     noOffendersText == 'There are no referrals to review.'
 
     when: 'the categoriser revisits the page and enters a category decision'
-    logout()
+    fixture.logout()
     fixture.gotoTasklist()
     at new TasklistPage(bookingId: '12')
     $('#securitySection').text().contains("Completed Security ($today)")
