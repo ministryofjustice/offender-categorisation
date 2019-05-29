@@ -4,6 +4,8 @@ const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
 const conf = require('../../server/config')
+const log = require('../../log')
+const { filterJsonObjectForLogging } = require('../utils/utils')
 
 function dataIfExists(data) {
   return data.rows[0]
@@ -20,7 +22,16 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function update({ bookingId, config, userInput, formSection, formName, status, transactionalClient }) {
+  async function update({
+    bookingId,
+    config,
+    userInput,
+    formSection,
+    formName,
+    status,
+    transactionalClient,
+    logUpdate,
+  }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
     const newCategorisationForm = buildCategorisationForm({
@@ -32,6 +43,15 @@ module.exports = function createFormService(formClient) {
     })
 
     if (validateStatusIfProvided(currentCategorisation.status, status)) {
+      if (logUpdate) {
+        log.info(
+          `Updating Categorisation for booking Id: ${bookingId}, offender No: ${
+            currentCategorisation.offenderNo
+          }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
+            filterJsonObjectForLogging(userInput)
+          )}`
+        )
+      }
       await formClient.update(
         currentCategorisation.id,
         newCategorisationForm,
@@ -56,6 +76,13 @@ module.exports = function createFormService(formClient) {
     })
 
     if (validateStatusIfProvided(currentCategorisation.status, Status.APPROVED.name)) {
+      log.info(
+        `Supervisor approval for booking Id: ${bookingId}, offender No: ${
+          currentCategorisation.offenderNo
+        }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
+          filterJsonObjectForLogging(userInput)
+        )}`
+      )
       await formClient.supervisorApproval(
         currentCategorisation.id,
         newCategorisationForm,
@@ -228,6 +255,11 @@ module.exports = function createFormService(formClient) {
     if (validateStatusIfProvided(currentStatus, Status.SUPERVISOR_BACK.name)) {
       try {
         await formClient.updateStatus(bookingId, Status.SUPERVISOR_BACK.name, transactionalClient)
+        log.info(
+          `Supervisor sent back categorisation record for : ${bookingId}, offender No: ${
+            currentCategorisation.offenderNo
+          }. user name: ${currentCategorisation.userId}`
+        )
       } catch (error) {
         logger.error(error)
         throw error
