@@ -12,6 +12,8 @@ class ApprovedViewPage extends Page {
 
   static content = {
     headingText { $('h1.mainHeading').text() }
+    headerBlock { $('div.govuk-grid-column-one-third') }
+    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     categories { $('.govuk-warning-text') }
     commentLabel { $('label', text:'Comments')}
     comments(required: false) { $('.forms-comments-text') }
