@@ -7,6 +7,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
 const Status = require('../utils/statusEnum')
+const log = require('../../log')
 
 const formConfig = {
   openConditions,
@@ -150,7 +151,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     return updated
   }
 
-  const cancelOpenConditions = async (bookingId, transactionalDbClient) => {
+  const cancelOpenConditions = async (bookingId, userId, transactionalDbClient) => {
     const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
     const formToUpdate = clearProvisionalCategory(categorisationRecord.formObject)
 
@@ -158,6 +159,11 @@ module.exports = function Index({ formService, offendersService, userService, au
       ...formToUpdate, // merge any existing form data
       openConditionsRequested: false,
     }
+    log.info(
+      `Open conditions cancelled for booking Id: ${bookingId}, offender No: ${
+        categorisationRecord.offenderNo
+      }. user name: ${userId}`
+    )
     await formService.updateFormData(bookingId, dataToStore, transactionalDbClient)
   }
 
@@ -225,7 +231,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         transactionalClient: transactionalDbClient,
       })
       if (userInput.stillRefer === 'No') {
-        await cancelOpenConditions(parseInt(bookingId, 10), transactionalDbClient)
+        await cancelOpenConditions(parseInt(bookingId, 10), req.user.username, transactionalDbClient)
         res.redirect(`/tasklist/${bookingId}`)
       } else {
         const nextPath = getPathFor({ data: userInput, config: formPageConfig })
@@ -253,6 +259,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const userInput = req.body
 
       if (userInput.openConditionsCategoryAppropriate === 'Yes') {
+        log.info(`Categoriser creating initial categorisation record:`)
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
@@ -262,6 +269,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           formName: form,
           status: Status.AWAITING_APPROVAL.name,
           transactionalClient: transactionalDbClient,
+          logUpdate: true,
         })
         await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
@@ -274,7 +282,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         res.redirect(`${nextPath}${bookingId}`)
       } else {
         // if user selects no - clear provisional cat data and cancel open conditions
-        await cancelOpenConditions(parseInt(bookingId, 10), transactionalDbClient)
+        await cancelOpenConditions(parseInt(bookingId, 10), req.user.username, transactionalDbClient)
         res.redirect(`/tasklist/${bookingId}`)
       }
     })

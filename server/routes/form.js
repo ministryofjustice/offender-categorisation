@@ -1,6 +1,7 @@
 const express = require('express')
 const flash = require('connect-flash')
 const R = require('ramda')
+const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
@@ -310,8 +311,13 @@ module.exports = function Index({
     return updated
   }
 
-  const requiresOpenConditions = async (bookingId, transactionalDbClient) => {
+  const requiresOpenConditions = async (bookingId, userId, transactionalDbClient) => {
     const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+    log.info(
+      `Open conditions requested for booking Id: ${bookingId}, offender No: ${
+        categorisationRecord.offenderNo
+      }. user name: ${userId}`
+    )
 
     const dataToStore = {
       ...categorisationRecord.formObject, // merge any existing form data
@@ -424,6 +430,7 @@ module.exports = function Index({
       }
 
       if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
+        log.info(`Categoriser creating initial categorisation record:`)
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
@@ -433,6 +440,7 @@ module.exports = function Index({
           formName: form,
           status: Status.AWAITING_APPROVAL.name,
           transactionalClient: transactionalDbClient,
+          logUpdate: true,
         })
         await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
@@ -446,6 +454,7 @@ module.exports = function Index({
         res.redirect(`${nextPath}${bookingId}`)
       } else {
         // persist the open conditions override and return to complete the open conditions route
+        log.info(`Categoriser overriding to Category ${userInput.overriddenCategory}`)
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
@@ -454,8 +463,9 @@ module.exports = function Index({
           formSection: section,
           formName: form,
           transactionalClient: transactionalDbClient,
+          logUpdate: true,
         })
-        await requiresOpenConditions(bookingId, transactionalDbClient)
+        await requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
 
         // redirect to tasklist for open conditions
         res.redirect(`/tasklist/${bookingId}`)
@@ -497,6 +507,7 @@ module.exports = function Index({
           supervisorSentBackOverriddenCategoryText: userInput.supervisorOverriddenCategoryText,
           ...userInput,
         }
+        log.info(`Supervisor overriding to Category ${userInput.supervisorOverriddenCategory}`)
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
@@ -505,8 +516,9 @@ module.exports = function Index({
           formSection: section,
           formName: form,
           transactionalClient: transactionalDbClient,
+          logUpdate: true,
         })
-        await requiresOpenConditions(bookingId, transactionalDbClient)
+        await requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
 
         // Reset cat so it appears the categoriser originally chose open conditions!
         const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
