@@ -24,8 +24,4 @@ class SecurityHomePage extends Page {
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/securityDone')}
   }
-
-  def logout() {
-    logoutLink.click()
-  }
 }

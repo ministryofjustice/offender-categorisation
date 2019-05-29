@@ -140,6 +140,10 @@ module.exports = function Index({ formService, offendersService, userService, au
     if (body.isOtherInformation === 'No') {
       delete updated.otherInformationText
     }
+    if (body.categoryAppropriate === 'Yes') {
+      delete updated.overriddenCategory
+      delete updated.overriddenCategoryText
+    }
     return updated
   }
 
@@ -256,7 +260,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
-      const userInput = req.body
+      const userInput = clearConditionalFields(req.body)
 
       if (userInput.openConditionsCategoryAppropriate === 'Yes') {
         log.info(`Categoriser creating initial categorisation record:`)
