@@ -64,7 +64,7 @@ describe('getRecategoriseOffenders', () => {
         lastName: 'Brown',
         bookingId: 123,
         category: 'B',
-        nextRecatDate: '2019-06-20',
+        nextReviewDate: '2019-06-20',
       },
       {
         offenderNo: 'H12345',
@@ -72,7 +72,7 @@ describe('getRecategoriseOffenders', () => {
         lastName: 'Doyle',
         bookingId: 111,
         category: 'B',
-        nextRecatDate: '2019-06-21',
+        nextReviewDate: '2019-06-21',
       },
       {
         offenderNo: 'G55345',
@@ -80,7 +80,7 @@ describe('getRecategoriseOffenders', () => {
         lastName: 'Allen',
         bookingId: 122,
         category: 'B',
-        nextRecatDate: '2019-06-22',
+        nextReviewDate: '2019-06-22',
       },
     ]
     const expected = [
@@ -91,7 +91,7 @@ describe('getRecategoriseOffenders', () => {
         displayName: 'Brown, Jane',
         bookingId: 123,
         displayStatus: Status.SECURITY_MANUAL.value,
-        nextRecatDate: '2019-06-20',
+        nextReviewDate: '2019-06-20',
       },
       {
         offenderNo: 'H12345',
@@ -100,7 +100,7 @@ describe('getRecategoriseOffenders', () => {
         displayName: 'Doyle, Danny',
         bookingId: 111,
         displayStatus: 'Not started',
-        nextRecatDate: '2019-06-21',
+        nextReviewDate: '2019-06-21',
       },
       {
         offenderNo: 'G55345',
@@ -109,7 +109,7 @@ describe('getRecategoriseOffenders', () => {
         displayName: 'Allen, Alan',
         bookingId: 122,
         displayStatus: 'Not started',
-        nextRecatDate: '2019-06-22',
+        nextReviewDate: '2019-06-22',
       },
     ]
     nomisClient.getRecategoriseOffenders.mockReturnValue(data)
