@@ -49,7 +49,21 @@ class SupervisorSpecification extends GebReportingSpec {
 
     navigateToReview()
 
-    then: 'the change links are not displayed and the buttons omit the current cat'
+    then: 'the header is correct, change links are not displayed and the buttons omit the current cat'
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
+                            'C-04-02', 'Coventry',
+                            'Latvian',
+                            'A Felony', 'Another Felony',
+                            '10/06/2020',
+                            '11/06/2020',
+                            '02/02/2020',
+                            '13/06/2020',
+                            '14/06/2020',
+                            '15/06/2020',
+                            '16/06/2020',
+                            '17/06/2020',
+                            '6 years, 3 months']
+
     changeLinks.size() == 0
     // the displayed property does not work on these radios for some reason
     overriddenCategoryB.@type == 'radio'
