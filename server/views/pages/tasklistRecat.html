@@ -29,9 +29,11 @@ href: backLink or "/"
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
   {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No') or data.ratings.securityBack.catB %}
   {% set mainFlowCompleted = data.recat.mainFlow.tbc %}
+  {% set higherSecurityReviewCompleted = data.recat.higherSecurityReview.conditions %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
   {% set openConditionsRequested = data.openConditionsRequested %}
-  {% set allSectionsCompleted = securityInputCompleted and not locked and mainFlowCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
+  {% set allSectionsCompleted = securityInputCompleted and not locked and higherSecurityReviewCompleted and mainFlowCompleted
+                                and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
   <div class="govuk-grid-row govuk-!-width-two-thirds">
     <div class="govuk-grid-column-full">
@@ -39,24 +41,36 @@ href: backLink or "/"
         <li>
           <ul class="app-task-list__items">
             <li class="app-task-list__item">
-              {% set buttonTextEx = "Edit" if mainFlowCompleted else "Start" %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if mainFlowCompleted else buttonClassesDefault %}
               {{ govukButton({
-                text: buttonTextEx,
+                text: "Edit" if mainFlowCompleted else "Start",
                 href: "/form/recat/mainFlow/" + data.details.bookingId,
                 classes: buttonClasses,
                 attributes:
-                  {  'id': 'mainFlowButton' }
+                  { 'id': 'mainFlowButton' }
               }) }}
               <div class="govuk-heading-m">Main Flow TBC</div>
               <div class="govuk-!-margin-top-2">{% if mainFlowCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
+            {% if true or going.up.tbd %}
+              <li class="app-task-list__item">
+                {% set buttonClasses = buttonClassesDefault + " grey-button" if higherSecurityReviewCompleted else buttonClassesDefault %}
+                {{ govukButton({
+                  text: "Edit" if higherSecurityReviewCompleted else "Start",
+                  href: "/form/recat/higherSecurityReview/" + data.details.bookingId,
+                  classes: buttonClasses,
+                  attributes:
+                    { 'id': 'higherSecurityReviewButton' }
+                }) }}
+                <div class="govuk-heading-m">Higher Security Review</div>
+                <div class="govuk-!-margin-top-2">{% if higherSecurityReviewCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+              </li>
+            {% endif %}
             <li class="app-task-list__item" id="securitySection">
               {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
-              {% set buttonTextSec = "Edit" if securityInputCompleted else "Start" %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if securityInputCompleted else buttonClassesDefault %}
               {{ govukButton({
-                text: buttonTextSec,
+                text: "Edit" if securityInputCompleted else "Start",
                 href: null if locked else ("/form/ratings/securityBack/" + data.details.bookingId if backFromSecurity else "/form/ratings/securityInput/" + data.details.bookingId),
                 disabled: locked,
                 classes: buttonClasses,
@@ -70,14 +84,13 @@ href: backLink or "/"
 
             {% if openConditionsRequested %}
             <li class="app-task-list__item" id="openConditionsSection">
-              {% set buttonTextSec = "Edit" if openConditionsCompleted else "Start" %}
-                {% set buttonClasses = buttonClassesDefault + " grey-button" if openConditionsCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                text: buttonTextSec,
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if openConditionsCompleted else buttonClassesDefault %}
+              {{ govukButton({
+                text: "Edit" if openConditionsCompleted else "Start",
                 href: "/form/openConditions/earliestReleaseDate/" + data.details.bookingId,
                 classes: buttonClasses,
                 attributes:
-                { 'id': 'openConditionsButton' }
+                  { 'id': 'openConditionsButton' }
                 })
               }}
               <div class="govuk-heading-m">Open conditions</div>
