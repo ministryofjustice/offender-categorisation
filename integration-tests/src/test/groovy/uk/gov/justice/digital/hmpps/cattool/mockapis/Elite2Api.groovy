@@ -139,7 +139,7 @@ class Elite2Api extends WireMockRule {
                 firstName    : 'PENELOPE',
                 lastName     : 'PITSTOP',
                 category     : 'C',
-                nextRecatDate: '2019-07-25'
+                nextReviewDate: '2019-07-25'
               ],
               [
                 bookingId    : 11,
@@ -147,7 +147,7 @@ class Elite2Api extends WireMockRule {
                 firstName    : 'ANT',
                 lastName     : 'HILLMOB',
                 category     : 'D',
-                nextRecatDate: '2019-07-27'
+                nextReviewDate: '2019-07-27'
               ],
             ]
             ))
