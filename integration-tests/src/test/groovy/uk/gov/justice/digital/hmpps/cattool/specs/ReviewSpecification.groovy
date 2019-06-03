@@ -131,7 +131,7 @@ class ReviewSpecification extends GebReportingSpec {
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewPage
-    changeLinks.size() == 9
+    changeLinks.size() == 8
     changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
   }
