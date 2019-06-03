@@ -1,10 +1,8 @@
-package uk.gov.justice.digital.hmpps.cattool.pages
-
-import geb.Page
+package uk.gov.justice.digital.hmpps.cattool.pages.ratings
 
 class CategoriserSecurityBackPage extends CategoriserSecurityInputPage {
 
-  static url = '/form/ratings/securityBack/' + bookingId
+  static url = '/form/ratings/securityBack/' + CategoriserSecurityInputPage.bookingId
 
   static content = {
     catBRadio { $('input', name: 'catB') }

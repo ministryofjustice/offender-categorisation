@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cattool.specs
+package uk.gov.justice.digital.hmpps.cattool.specs.ratings
 
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
@@ -9,9 +9,9 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityBackPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserSecurityBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserSecurityInputPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityReviewPage
 
