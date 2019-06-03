@@ -24,7 +24,7 @@ module.exports = function Index({ formService, offendersService, userService, au
   })
 
   router.get(
-    '/ratings/securityInput/:bookingId',
+    '/securityInput/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId, transactionalDbClient)
@@ -88,7 +88,7 @@ module.exports = function Index({ formService, offendersService, userService, au
   }
 
   router.post(
-    '/ratings/securityInput/:bookingId',
+    '/securityInput/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const section = 'recat'
       const form = 'securityInput'
@@ -121,7 +121,7 @@ module.exports = function Index({ formService, offendersService, userService, au
   )
 
   router.post(
-    '/ratings/securityBack/:bookingId',
+    '/securityBack/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const section = 'ratings'
       const form = 'securityBack'
