@@ -176,14 +176,13 @@ describe('open conditions', () => {
     ${'foreignNational'}     | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
     ${'riskOfHarm'}          | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
     ${'furtherCharges'}      | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
-    ${'riskLevels'}          | ${{ day: '12' }}              | ${'/form/openConditions/suitability/'}
-    ${'suitability'}         | ${{ day: '12' }}              | ${'//tasklist/'}
-  `('should render $expectedContent for $sectionName/$formName', ({ formName, userInput, nextPath }) => {
+    ${'riskLevels'}          | ${{ day: '12' }}              | ${'/tasklist/'}
+  `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {},
     })
-    request(app)
+    return request(app)
       .post(`/${formName}/12345`)
       .send(userInput)
       .expect(302)
@@ -196,6 +195,7 @@ describe('open conditions', () => {
           userInput,
           formSection: 'openConditions',
           formName,
+          transactionalClient: mockTransactionalClient,
         })
       })
   })
