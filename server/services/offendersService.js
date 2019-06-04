@@ -167,7 +167,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           let securityReferredBy
           if (o.securityReferredBy) {
             const referrer = userDetailFromElite.find(record => record.username === o.securityReferredBy)
-            securityReferredBy = `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`
+            securityReferredBy = referrer
+              ? `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`
+              : o.securityReferredBy
           }
 
           return {

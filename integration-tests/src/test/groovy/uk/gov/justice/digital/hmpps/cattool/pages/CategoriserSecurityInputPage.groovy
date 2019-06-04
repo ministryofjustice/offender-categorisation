@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cattool.pages.ratings
+package uk.gov.justice.digital.hmpps.cattool.pages;
 
 import geb.Page
 

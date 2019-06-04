@@ -37,4 +37,31 @@ module.exports = {
     },
     validate: true,
   },
+  securityInput: {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    fields: [
+      {
+        securityInputNeeded: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        securityInputNeededText: {
+          responseType: 'requiredStringIf_securityInputNeeded_Yes',
+          validationMessage: 'Please enter the reason why referral is needed',
+        },
+      },
+    ],
+    validate: true,
+  },
+  securityBack: {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    fields: [],
+    validate: true,
+  },
 }

@@ -109,4 +109,8 @@ class TestFixture {
     browser.$('a', href: '/logout').click()
     browser.waitFor { browser.$('h1').text() == 'Sign in' }
   }
+
+  def sameDate(LocalDate expected, actual) {
+    return actual[0].toLocalDate().equals(expected)
+  }
 }

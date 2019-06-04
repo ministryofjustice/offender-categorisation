@@ -28,12 +28,14 @@
   }) }}
 {% endif %}
 
-{% if data.ratings.securityInput.securityInputNeeded and data.ratings.securityInput.securityInputNeededText %}
+{% set manuallyReferred = (data.ratings.securityInput.securityInputNeeded and data.ratings.securityInput.securityInputNeededText) or
+  (data.recat.securityInput.securityInputNeeded and data.recat.securityInput.securityInputNeededText) %}
+{% if manuallyReferred %}
   {{ govukPanel({
     titleText: "Manually referred for review"
   }) }}
   <p>The case has been referred to Security because:</p>
-  <p class="forms-comments-text">{{ data.ratings.securityInput.securityInputNeededText }}</p>
+  <p class="forms-comments-text">{{ data.ratings.securityInput.securityInputNeededText or data.recat.securityInput.securityInputNeededText }}</p>
 {% endif %}
 
 <form method="post">
