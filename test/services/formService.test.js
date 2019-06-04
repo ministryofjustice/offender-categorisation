@@ -1,5 +1,6 @@
 const serviceCreator = require('../../server/services/formService')
 const Status = require('../../server/utils/statusEnum')
+const CatType = require('../../server/utils/catTypeEnum')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
@@ -151,14 +152,14 @@ describe('update', () => {
         'User',
         'LEI',
         'OFFno',
-        'INITIAL',
+        CatType.INITIAL.name,
         mockTransactionalClient
       )
 
       expect(formClient.create).toBeCalledTimes(1)
       expect(formClient.create).toBeCalledWith({
         bookingId: 1234,
-        catType: 'INITIAL',
+        catType: CatType.INITIAL.name,
         userId: 'User',
         status: 'STARTED',
         assignedUserId: 'User',

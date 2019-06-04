@@ -19,7 +19,8 @@ class SupervisorHomePage extends Page {
     dates { bodyRows*.$('td', 3)*.text()  }
     catBy { bodyRows*.$('td', 4)*.text()  }
     statuses { bodyRows*.$('td', 5)*.text()  }
-    startButtons { bodyRows*.$('td', 6)*.find('*')  }
+    catTypes { bodyRows*.$('td', 6)*.text()  }
+    startButtons { bodyRows*.$('td', 7)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/supervisorDone')}
     multipleRoleDiv(required: false) { $('#multiple-role') }

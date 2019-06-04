@@ -424,6 +424,7 @@ describe('getReferredOffenders', () => {
         // assigned_user_id not present
         securityReferredDate: '2019-02-04',
         securityReferredBy: 'JSMITH',
+        catType: 'INITIAL',
       },
       {
         id: -3,
@@ -433,6 +434,7 @@ describe('getReferredOffenders', () => {
         formObject: '',
         securityReferredDate: '2019-02-04',
         securityReferredBy: 'BMAY',
+        catType: 'INITIAL',
       },
     ])
 
@@ -445,6 +447,7 @@ describe('getReferredOffenders', () => {
         daysSinceSentence: 4,
         dateRequired: expect.stringMatching(DATE_MATCHER),
         securityReferredBy: 'John Smith',
+        catTypeDisplay: 'Initial',
       },
       {
         offenderNo: 'G55345',
@@ -453,6 +456,7 @@ describe('getReferredOffenders', () => {
         daysSinceSentence: 10,
         dateRequired: expect.stringMatching(DATE_MATCHER),
         securityReferredBy: 'Brian May',
+        catTypeDisplay: 'Initial',
       },
     ]
 
