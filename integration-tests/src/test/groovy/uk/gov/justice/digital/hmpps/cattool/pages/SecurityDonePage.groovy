@@ -17,6 +17,7 @@ class SecurityDonePage extends Page {
     prisonNos { bodyRows*.$('td', 1)*.text()  }
     reviewedDates { bodyRows*.$('td', 2)*.text()  }
     reviewer { bodyRows*.$('td', 3)*.text()  }
+    catTypes { bodyRows*.$('td', 4)*.text()  }
     logoutLink { $('a', href: '/logout')}
     homeTabLink { $('a', href: '/securityHome')}
   }
