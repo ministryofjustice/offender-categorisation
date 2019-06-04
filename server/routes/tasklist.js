@@ -2,6 +2,7 @@ const moment = require('moment')
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
+const CatType = require('../utils/catTypeEnum')
 const { addSocProfile } = require('../utils/functionalHelpers')
 
 module.exports = function Index({
@@ -27,7 +28,7 @@ module.exports = function Index({
         req.user.username,
         details.agencyId,
         details.offenderNo,
-        'INITIAL',
+        CatType.INITIAL.name,
         transactionalDbClient
       )
       res.locals.formObject = categorisationRecord.formObject || {}

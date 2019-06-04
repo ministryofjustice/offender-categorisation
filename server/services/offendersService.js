@@ -1,6 +1,7 @@
 const path = require('path')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
+const CatType = require('../utils/catTypeEnum')
 const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName } = require('../utils/utils.js')
 const moment = require('moment')
@@ -117,7 +118,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         const decoratedResults = await Promise.all(
           categorisedFromElite.map(async o => {
             const approvalMoment = moment(o.approvalDate, 'YYYY-MM-DD')
-            const dbRecord = categorisedFromDB.filter(record => record.bookingId === o.bookingId)
+            const dbRecord = categorisedFromDB.find(record => record.bookingId === o.bookingId)
             return {
               ...o,
               dbRecord,
@@ -128,6 +129,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
                 o.categoriserFirstName
               )}`,
               displayApproverName: `${properCaseName(o.approverLastName)}, ${properCaseName(o.approverFirstName)}`,
+              catTypeDisplay: CatType[dbRecord.catType].value,
             }
           })
         )
@@ -174,6 +176,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
             securityReferredBy,
             ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+            catTypeDisplay: CatType[o.catType].value,
           }
         })
 
@@ -211,6 +214,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
             displayReviewedDate: reviewedMoment.format('DD/MM/YYYY'),
             displayReviewerName: `${properCaseName(userDetail.lastName)}, ${properCaseName(userDetail.firstName)}`,
+            catTypeDisplay: CatType[o.catType].value,
           }
         })
 
@@ -253,11 +257,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const decoratedResults = unapprovedOffenders.map(o => {
         const sentencedOffender = sentenceMap.find(s => s.bookingId === o.bookingId)
         const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
+        const dbRecordExists = !!o.dbRecord.bookingId
         return {
           ...o,
           displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
           categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(o.categoriserLastName)}`,
-          dbRecordExists: !!o.dbRecord.bookingId,
+          dbRecordExists,
+          catType: dbRecordExists ? CatType[o.dbRecord.catType].value : '',
           ...sentenceData,
         }
       })
@@ -495,7 +501,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     // If no local record, get cat from nomis. if missing or UXZ it is INITIAL, otherwise RECAT.
     const localRecord = formService.getCategorisationRecord(bookingId, transactionalDbClient)
     if (localRecord.status) {
-      return localRecord.status === Status.APPROVED.name || localRecord.catType === 'RECAT'
+      return localRecord.status === Status.APPROVED.name || localRecord.catType === CatType.RECAT.name
     }
     const nomisClient = nomisClientBuilder(token)
     try {

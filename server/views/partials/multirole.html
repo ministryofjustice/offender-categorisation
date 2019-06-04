@@ -9,16 +9,16 @@
 
               <select class="govuk-select govuk-!-margin-left-1" id="roleSwitch" name="roleSwitch" onchange="location = '/switchRole/' + this.value">
                 {% if user.multipleRoles.categoriser %}
-                  <option value="categoriser" {{ "selected" if currentRole === 'categoriser' }}>Categoriser Role</option>
+                  <option value="categoriser" {{ "selected" if currentRole === 'categoriser' }}>Categoriser</option>
                 {% endif %}
                 {% if user.multipleRoles.supervisor %}
-                  <option value="supervisor" {{ "selected" if currentRole === 'supervisor' }}>Supervisor Role</option>
+                  <option value="supervisor" {{ "selected" if currentRole === 'supervisor' }}>Supervisor</option>
                 {% endif %}
                 {% if user.multipleRoles.security %}
-                  <option value="security" {{ "selected" if currentRole === 'security' }}>Security Role</option>
+                  <option value="security" {{ "selected" if currentRole === 'security' }}>Security</option>
                 {% endif %}
                 {% if user.multipleRoles.recategoriser %}
-                  <option value="recategoriser" {{ "selected" if currentRole === 'recategoriser' }}>Recategoriser Role</option>
+                  <option value="recategoriser" {{ "selected" if currentRole === 'recategoriser' }}>Recategoriser</option>
                 {% endif %}
               </select>
           <hr class="govuk-section-break govuk-!-padding-top-2 govuk-section-break--visible">

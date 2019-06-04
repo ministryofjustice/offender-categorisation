@@ -90,6 +90,7 @@ class SecuritySpecification extends GebReportingSpec {
     def today = LocalDate.now().format('dd/MM/yyyy')
     reviewedDates == ['31/01/2019','28/01/2019']
     reviewer == ['Security, Amy', 'Security, Amy']
+    catTypes == ['Initial', 'Initial']
   }
 
 }
