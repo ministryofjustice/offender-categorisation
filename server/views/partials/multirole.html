@@ -1,0 +1,31 @@
+
+{% if user.multipleRoles %}
+
+      <div id="multiple-role" class="govuk-width-container">
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-!-display-inline" for="roleSwitch">
+            Current role
+          </label>
+
+              <select class="govuk-select govuk-!-margin-left-1" id="roleSwitch" name="roleSwitch" onchange="location = '/switchRole/' + this.value">
+                {% if user.multipleRoles.categoriser %}
+                  <option value="categoriser" {{ "selected" if currentRole === 'categoriser' }}>Categoriser Role</option>
+                {% endif %}
+                {% if user.multipleRoles.supervisor %}
+                  <option value="supervisor" {{ "selected" if currentRole === 'supervisor' }}>Supervisor Role</option>
+                {% endif %}
+                {% if user.multipleRoles.security %}
+                  <option value="security" {{ "selected" if currentRole === 'security' }}>Security Role</option>
+                {% endif %}
+                {% if user.multipleRoles.recategoriser %}
+                  <option value="recategoriser" {{ "selected" if currentRole === 'recategoriser' }}>Recategoriser Role</option>
+                {% endif %}
+              </select>
+          <hr class="govuk-section-break govuk-!-padding-top-2 govuk-section-break--visible">
+        </div>
+
+      </div>
+
+
+{% endif %}
+
