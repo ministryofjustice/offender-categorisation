@@ -462,5 +462,6 @@ class SupervisorSpecification extends GebReportingSpec {
     categorisers == ['Lamb, John', 'Fan, Jane']
     approvers == ['Helly, James', 'Helly, James']
     outcomes == ['C', 'C']
+    catTypes == ['Initial', 'Initial']
   }
 }

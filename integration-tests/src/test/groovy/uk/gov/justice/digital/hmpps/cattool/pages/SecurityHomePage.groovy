@@ -18,7 +18,8 @@ class SecurityHomePage extends Page {
     days { bodyRows*.$('td', 2)*.text()  }
     dates { bodyRows*.$('td', 3)*.text()  }
     referredBy { bodyRows*.$('td', 4)*.text()  }
-    startButtons { bodyRows*.$('td', 5)*.find('*')  }
+    catTypes { bodyRows*.$('td', 5)*.text()  }
+    startButtons { bodyRows*.$('td', 6)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
     noOffendersText(required: false) { $('#no-results-message').text() }
     logoutLink { $('a', href: '/logout')}
