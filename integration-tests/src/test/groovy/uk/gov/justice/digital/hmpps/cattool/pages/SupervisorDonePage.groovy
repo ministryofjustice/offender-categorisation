@@ -19,7 +19,8 @@ class SupervisorDonePage extends Page {
     categorisers { bodyRows*.$('td', 3)*.text()  }
     approvers { bodyRows*.$('td', 4)*.text()  }
     outcomes { bodyRows*.$('td', 5)*.text()  }
-    viewButtons { bodyRows*.$('td', 6)*.find('*')  }
+    catTypes { bodyRows*.$('td', 6)*.text()  }
+    viewButtons { bodyRows*.$('td', 7)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
   }
 }

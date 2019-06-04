@@ -47,6 +47,7 @@
       <th class="govuk-table__header" scope="col">Categorised by</th>
       <th class="govuk-table__header" scope="col">Approved by</th>
       <th class="govuk-table__header" scope="col">Outcome</th>
+      <th class="govuk-table__header" scope="col">Type</th>
       <th class="govuk-table__header" scope="col"></th>
     </tr>
     </thead>
@@ -59,6 +60,7 @@
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
       <td class="govuk-table__cell">{{ row.category }}</td>
+      <td class="govuk-table__cell">{{ row.catTypeDisplay }}</td>
       <td class="govuk-table__cell">
         {{ govukButton({
           text: "View",
