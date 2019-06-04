@@ -112,6 +112,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         bookingId,
         req.user.username,
         updatedFormObject,
+        true,
         transactionalDbClient
       )
 
@@ -123,7 +124,7 @@ module.exports = function Index({ formService, offendersService, userService, au
   router.post(
     '/securityBack/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const section = 'ratings'
+      const section = 'recat'
       const form = 'securityBack'
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]

@@ -231,8 +231,12 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function referToSecurityIfRequested(bookingId, userId, updatedFormObject, transactionalClient) {
-    if (updatedFormObject.ratings.securityInput.securityInputNeeded === 'Yes') {
+  async function referToSecurityIfRequested(bookingId, userId, updatedFormObject, isRecat, transactionalClient) {
+    if (
+      (isRecat
+        ? updatedFormObject.recat.securityInput.securityInputNeeded
+        : updatedFormObject.ratings.securityInput.securityInputNeeded) === 'Yes'
+    ) {
       const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
       const currentStatus = currentCategorisation.status
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_MANUAL.name)) {
