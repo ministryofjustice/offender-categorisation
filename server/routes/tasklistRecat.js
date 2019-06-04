@@ -32,7 +32,10 @@ module.exports = function Index({
         transactionalDbClient
       )
 
-      if (categorisationRecord.catType === CatType.INITIAL.name && categorisationRecord.status !== Status.APPROVED.name) {
+      if (
+        categorisationRecord.catType === CatType.INITIAL.name &&
+        categorisationRecord.status !== Status.APPROVED.name
+      ) {
         throw new Error('Initial categorisation is still in progress')
       }
 
