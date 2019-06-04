@@ -2,6 +2,7 @@ const { validate } = require('../utils/fieldValidation')
 const moment = require('moment')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
+const CatType = require('../utils/catTypeEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
 const conf = require('../../server/config')
 const log = require('../../log')
@@ -232,8 +233,10 @@ module.exports = function createFormService(formClient) {
   }
 
   async function referToSecurityIfRequested(bookingId, userId, updatedFormObject, transactionalClient) {
-    if (updatedFormObject.ratings.securityInput.securityInputNeeded === 'Yes') {
-      const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
+    const section =
+      currentCategorisation.catType === CatType.RECAT.name ? updatedFormObject.recat : updatedFormObject.ratings
+    if (section.securityInput.securityInputNeeded === 'Yes') {
       const currentStatus = currentCategorisation.status
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_MANUAL.name)) {
         try {

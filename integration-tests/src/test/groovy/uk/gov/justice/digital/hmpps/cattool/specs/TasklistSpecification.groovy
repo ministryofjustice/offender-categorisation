@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
 
 import java.time.LocalDate
 
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_USER
 
 class TasklistSpecification extends GebReportingSpec {
@@ -129,7 +130,7 @@ class TasklistSpecification extends GebReportingSpec {
     when: 'a security user views their homepage'
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     logoutLink.click()
-    elite2Api.stubGetCategoriserStaffDetailsByUsernameList()
+    elite2Api.stubGetCategoriserStaffDetailsByUsernameList(CATEGORISER_USER)
     elite2Api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
     fixture.loginAs(SECURITY_USER)
 

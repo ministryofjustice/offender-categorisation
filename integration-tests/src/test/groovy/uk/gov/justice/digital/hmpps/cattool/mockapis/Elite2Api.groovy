@@ -387,7 +387,7 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  def stubGetCategoriserStaffDetailsByUsernameList() {
+  def stubGetCategoriserStaffDetailsByUsernameList(UserAccount user) {
     this.stubFor(
       post("/api/users/list")
         .willReturn(
@@ -395,7 +395,7 @@ class Elite2Api extends WireMockRule {
           .withBody(JsonOutput.toJson([
           [
             staffId         : 123,
-            username        : 'CATEGORISER_USER',
+            username        : user.username,
             firstName       : 'Api',
             lastName        : 'User',
             email           : 'itaguser@syscon.net',

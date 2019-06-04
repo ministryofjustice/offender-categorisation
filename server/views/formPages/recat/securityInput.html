@@ -19,7 +19,7 @@
     label: {
       text: "Provide specific reasons for your referral"
     },
-    value: data.ratings.securityInput.securityInputNeededText,
+    value: data.recat.securityInput.securityInputNeededText,
     errorMessage: {
       text: "Please enter details"
     } if (errors | findError('securityInputNeededText'))
@@ -43,14 +43,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.ratings.securityInput.securityInputNeeded === 'Yes',
+        checked: data.recat.securityInput.securityInputNeeded === 'Yes',
         conditional: {
           html:securityInputTextHtml
         }
       },
       {
         value: "No",
-        checked: data.ratings.securityInput.securityInputNeeded === 'No',
+        checked: data.recat.securityInput.securityInputNeeded === 'No',
         text: "No"
       }
     ]
