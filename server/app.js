@@ -214,7 +214,6 @@ module.exports = function createApp({
 
   const homeRouter = createHomeRouter({ userService, offendersService, authenticationMiddleware })
   app.use('/', homeRouter)
-  app.use('/switchRole/', homeRouter)
   app.use(
     '/tasklist/',
     createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService })
