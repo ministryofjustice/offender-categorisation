@@ -14,4 +14,12 @@ module.exports = {
   '/form/security/.+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
   '/form/approvedView/.+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'] },
   '/\\d+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
+  '/switchRole/.+': {
+    authorised: [
+      'ROLE_CREATE_CATEGORISATION',
+      'ROLE_CREATE_RECATEGORISATION',
+      'ROLE_APPROVE_CATEGORISATION',
+      'ROLE_CATEGORISATION_SECURITY',
+    ],
+  },
 }
