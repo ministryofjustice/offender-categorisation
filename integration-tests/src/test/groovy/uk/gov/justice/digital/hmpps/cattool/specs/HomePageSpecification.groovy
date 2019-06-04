@@ -96,6 +96,7 @@ class HomePageSpecification extends GebReportingSpec {
     dates == ['14/02/2019', '11/02/2019']
     catBy == ['Bugs Bunny', 'Roger Rabbit']
     statuses == ['PNOMIS', 'B']
+    catTypes == ['', 'Initial']
     !multipleRoleDiv.isDisplayed()
   }
 
@@ -135,8 +136,8 @@ class HomePageSpecification extends GebReportingSpec {
     at SupervisorHomePage
     elite2Api.stubUncategorised()
     multipleRoleDiv.isDisplayed()
-    roleSwitchSelect.find('option', value: 'supervisor').text() == 'Supervisor Role'
-    roleSwitchSelect.find('option', value: 'categoriser').text() == 'Categoriser Role'
+    roleSwitchSelect.find('option', value: 'supervisor').text() == 'Supervisor'
+    roleSwitchSelect.find('option', value: 'categoriser').text() == 'Categoriser'
 
     when: 'I select categoriser from the Current role select box'
     roleSwitchSelect = "categoriser"

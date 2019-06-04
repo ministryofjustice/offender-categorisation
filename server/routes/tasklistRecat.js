@@ -2,6 +2,7 @@ const moment = require('moment')
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
+const CatType = require('../utils/catTypeEnum')
 const { addSocProfile } = require('../utils/functionalHelpers')
 
 module.exports = function Index({
@@ -27,11 +28,11 @@ module.exports = function Index({
         req.user.username,
         details.agencyId,
         details.offenderNo,
-        'RECAT',
+        CatType.RECAT.name,
         transactionalDbClient
       )
 
-      if (categorisationRecord.catType === 'INITIAL' && categorisationRecord.status !== Status.APPROVED.name) {
+      if (categorisationRecord.catType === CatType.INITIAL.name && categorisationRecord.status !== Status.APPROVED.name) {
         throw new Error('Initial categorisation is still in progress')
       }
 
@@ -42,7 +43,7 @@ module.exports = function Index({
           req.user.username,
           details.agencyId,
           details.offenderNo,
-          'RECAT',
+          CatType.RECAT.name,
           transactionalDbClient
         )
       }
