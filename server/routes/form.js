@@ -360,7 +360,6 @@ module.exports = function Index({
         bookingId,
         req.user.username,
         updatedFormObject,
-        false,
         transactionalDbClient
       )
 
