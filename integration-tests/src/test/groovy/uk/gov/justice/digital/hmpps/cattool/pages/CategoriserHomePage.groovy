@@ -21,6 +21,7 @@ class CategoriserHomePage extends Page {
     startButtons { bodyRows*.$('td', 5)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/categoriserDone')}
+    roleSwitchSelect(required: false) { $('#roleSwitch') }
   }
 
   def selectFirstPrisoner() {
