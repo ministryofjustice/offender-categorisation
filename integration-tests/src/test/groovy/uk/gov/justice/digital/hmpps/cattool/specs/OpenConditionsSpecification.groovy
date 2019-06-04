@@ -293,7 +293,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes']
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes', '']
     extremismRatingSummary*.text() == ['Yes', 'Yes']
-    securityInputSummary*.text() == ['No', 'No', '', '']
+    securityInputSummary*.text() == ['No', 'No']
 
     !earliestReleaseDate.displayed
 
@@ -357,7 +357,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes']
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes', '']
     extremismRatingSummary*.text() == ['Yes', 'Yes']
-    securityInputSummary*.text() == ['No', 'No', '', '']
+    securityInputSummary*.text() == ['No', 'No']
 
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
