@@ -112,7 +112,6 @@ module.exports = function Index({ formService, offendersService, userService, au
         bookingId,
         req.user.username,
         updatedFormObject,
-        true,
         transactionalDbClient
       )
 

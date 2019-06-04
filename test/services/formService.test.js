@@ -544,12 +544,26 @@ describe('referToSecurityIfRiskAssessed', () => {
 })
 
 describe('referToSecurityIfRequested', () => {
-  const updatedFormObject = { ratings: { securityInput: { securityInputNeeded: 'Yes' } } }
+  const updatedFormObjectInitial = { ratings: { securityInput: { securityInputNeeded: 'Yes' } } }
+  const updatedFormObjectRecat = { recat: { securityInput: { securityInputNeeded: 'Yes' } } }
 
-  test('happy path', async () => {
+  test('happy path initial', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
+
+    expect(formClient.referToSecurity.mock.calls[0]).toEqual([
+      bookingId,
+      userId,
+      Status.SECURITY_MANUAL.name,
+      mockTransactionalClient,
+    ])
+  })
+
+  test('happy path recat', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED', catType: 'RECAT' }] })
+
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectRecat, mockTransactionalClient)
 
     expect(formClient.referToSecurity.mock.calls[0]).toEqual([
       bookingId,
@@ -562,7 +576,7 @@ describe('referToSecurityIfRequested', () => {
   test('no record in db', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -570,7 +584,7 @@ describe('referToSecurityIfRequested', () => {
   test('invalid status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'APPROVED' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -578,7 +592,7 @@ describe('referToSecurityIfRequested', () => {
   test('invalid SECURITY_MANUAL status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -587,7 +601,7 @@ describe('referToSecurityIfRequested', () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
     expect(
-      service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
+      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
     ).rejects.toThrow('TEST')
   })
 })
