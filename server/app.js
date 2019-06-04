@@ -138,6 +138,7 @@ module.exports = function createApp({
 
   function addTemplateVariables(req, res, next) {
     res.locals.user = req.user
+    res.locals.currentRole = req.session && req.session.currentRole
     next()
   }
 
@@ -204,13 +205,15 @@ module.exports = function createApp({
   app.use('/logout', (req, res) => {
     if (req.user) {
       req.logout()
+      req.session = null
     }
     res.redirect(authLogoutUrl)
   })
 
   app.use(authorisationMiddleware)
 
-  app.use('/', createHomeRouter({ userService, offendersService, authenticationMiddleware }))
+  const homeRouter = createHomeRouter({ userService, offendersService, authenticationMiddleware })
+  app.use('/', homeRouter)
   app.use(
     '/tasklist/',
     createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService })

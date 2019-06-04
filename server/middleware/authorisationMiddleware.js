@@ -19,9 +19,26 @@ module.exports = (req, res, next) => {
     if (!authorisedRoles.length) {
       return next(unauthorisedError())
     }
+
+    const applicationRoles = buildApplicationRoles(roles)
+
+    if (Object.keys(applicationRoles).length > 1) {
+      res.locals.user = { multipleRoles: applicationRoles, ...res.locals.user }
+    }
+
     return next()
   }
   // No session: get one created
   req.session.returnTo = req.originalUrl
   return res.redirect('/login')
+}
+
+const buildApplicationRoles = roles => {
+  const applicationRoles = {
+    ...(roles.includes('ROLE_APPROVE_CATEGORISATION') && { supervisor: true }),
+    ...(roles.includes('ROLE_CREATE_CATEGORISATION') && { categoriser: true }),
+    ...(roles.includes('ROLE_CREATE_RECATEGORISATION') && { recategoriser: true }),
+    ...(roles.includes('ROLE_CATEGORISATION_SECURITY') && { security: true }),
+  }
+  return applicationRoles
 }

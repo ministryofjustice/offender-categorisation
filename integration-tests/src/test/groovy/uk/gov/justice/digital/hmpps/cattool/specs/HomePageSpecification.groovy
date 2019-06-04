@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER_COLLEAGUE
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.MULTIROLE_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
@@ -95,6 +96,7 @@ class HomePageSpecification extends GebReportingSpec {
     dates == ['14/02/2019', '11/02/2019']
     catBy == ['Bugs Bunny', 'Roger Rabbit']
     statuses == ['PNOMIS', 'B']
+    !multipleRoleDiv.isDisplayed()
   }
 
   def "The home page for a recategoriser is present"() {
@@ -113,6 +115,44 @@ class HomePageSpecification extends GebReportingSpec {
     statuses == ['Not started', 'Not started']
     startButtons[0].text() == 'Start'
   }
+
+  def "The home page for a multiple role user is present"() {
+
+    db.createDataWithStatus(11, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]
+    ]))
+    when: 'I go to the home page as multi-role user (categoriser and supervisor)'
+
+    def now = LocalDate.now()
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+
+    fixture.loginAs(MULTIROLE_USER)
+
+    then: 'The supervisor home page is displayed as it has precedence over the categoriser home page'
+    at SupervisorHomePage
+    elite2Api.stubUncategorised()
+    multipleRoleDiv.isDisplayed()
+    roleSwitchSelect.find('option', value: 'supervisor').text() == 'Supervisor Role'
+    roleSwitchSelect.find('option', value: 'categoriser').text() == 'Categoriser Role'
+
+    when: 'I select categoriser from the Current role select box'
+    roleSwitchSelect = "categoriser"
+
+    then: 'The categoriser home page is displayed'
+    at CategoriserHomePage
+
+    when: 'I select supervisor from the Current role select box'
+    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    roleSwitchSelect = "supervisor"
+
+    then: 'The new role - supervisor home page is displayed'
+    at SupervisorHomePage
+  }
+
 
   def "The status of 'Started' for an offender is calculated correctly"() {
     when: 'A user starts a categorisation'
