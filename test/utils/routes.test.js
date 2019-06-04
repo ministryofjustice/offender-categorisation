@@ -1,4 +1,43 @@
-const { getPathFor } = require('../../server/utils/routes')
+const { getPathFor, redirectUsingRole } = require('../../server/utils/routes')
+
+describe('redirectUsingRole', () => {
+  const res = {
+    locals: {
+      user: {
+        // categoriser and security roles only
+        token:
+          'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJDVF9TRUMiLCJzY29wZSI6WyJyZWFkIl0sImF1dGhfc291cmNlIjoibm9taXMiLCJleHAiOjE1NTk1NzEzMjAsImF1dGhvcml0aWVzIjpbIlJPTEVfQ0FURUdPUklTQVRJT05fU0VDVVJJVFkiLCJST0xFX0NSRUFURV9DQVRFR09SSVNBVElPTiJdLCJqdGkiOiI2NjFkYWRjNS0wZjY3LTRiYmMtYmZlMS04MWI1YzUwMDQzNDMiLCJjbGllbnRfaWQiOiJjYXRlZ29yaXNhdGlvbi10b29sIn0.lyISMyKmmB6vLv-_R1TkwXkJ6x0bdYJdLX7rpYHOV_C__zv68_YzHJaVDjmerpkJc-Rt6VzAgBjZ-oJRLExFbrmV4MWHUGfUKTU7APzt1-58ANhAepw9bQa5IGMLuZ9rXZ6L2IU6T3fYo5j8FcYSgqUNj_oqzyLIG-2boq6oSkfvSuhmhKz9yX29PyVIF-rec0ZrNRBX_L_sLf8EBanUcguXs7G7KXlhggh9jYZsdzFsdDpzABJ5LhGFzq65jJlSIIqhudO88Wl0vKTOf9NCoImh1JqZWgR5ddy3rM1KbelkSlHgA3Q2AN3kCqiU3xFI70uM3yeFV3k14z5EnIpN9Q',
+      },
+    },
+    redirect: jest.fn(),
+  }
+  it('redirects to security home page', () => {
+    const req = {
+      session: { currentRole: 'security' },
+    }
+
+    redirectUsingRole(req, res, '/cat', '/sup', '/sec', '/recat')
+
+    expect(res.redirect).toBeCalledWith('/sec')
+  })
+  it('redirects to categoriser home page', () => {
+    const req = {
+      session: { currentRole: 'categoriser' },
+    }
+
+    redirectUsingRole(req, res, '/cat', '/sup', '/sec', '/recat')
+
+    expect(res.redirect).toBeCalledWith('/cat')
+  })
+  it('If no current role, redirects to categoriser (choice is categoriser and security)', () => {
+    const req = { session: {} }
+
+    redirectUsingRole(req, res, '/cat', '/sup', '/sec', '/recat')
+
+    expect(res.redirect).toBeCalledWith('/cat')
+    expect(req.session.currentRole).toEqual('categoriser')
+  })
+})
 
 describe('getPathFor', () => {
   describe('when the nextPath is a string', () => {
