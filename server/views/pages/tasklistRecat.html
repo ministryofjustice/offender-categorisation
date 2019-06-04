@@ -27,7 +27,7 @@ href: backLink or "/"
   <hr/>
 
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
-  {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No') or data.ratings.securityBack.catB %}
+  {% set securityInputCompleted = data.recat.securityInput.securityInputNeeded === 'No' or data.recat.securityBack %}
   {% set mainFlowCompleted = data.recat.mainFlow.tbc %}
   {% set higherSecurityReviewCompleted = data.recat.higherSecurityReview.conditions %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
@@ -71,7 +71,7 @@ href: backLink or "/"
               {% set buttonClasses = buttonClassesDefault + " grey-button" if securityInputCompleted else buttonClassesDefault %}
               {{ govukButton({
                 text: "Edit" if securityInputCompleted else "Start",
-                href: null if locked else ("/form/ratings/securityBack/" + data.details.bookingId if backFromSecurity else "/form/ratings/securityInput/" + data.details.bookingId),
+                href: null if locked else ("/form/recat/securityBack/" + data.details.bookingId if backFromSecurity else "/form/recat/securityInput/" + data.details.bookingId),
                 disabled: locked,
                 classes: buttonClasses,
                 attributes:

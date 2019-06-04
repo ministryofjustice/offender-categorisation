@@ -548,7 +548,7 @@ describe('referToSecurityIfRequested', () => {
   test('happy path', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
 
     expect(formClient.referToSecurity.mock.calls[0]).toEqual([
       bookingId,
@@ -561,7 +561,7 @@ describe('referToSecurityIfRequested', () => {
   test('no record in db', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -569,7 +569,7 @@ describe('referToSecurityIfRequested', () => {
   test('invalid status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'APPROVED' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -577,7 +577,7 @@ describe('referToSecurityIfRequested', () => {
   test('invalid SECURITY_MANUAL status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
+    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -586,7 +586,7 @@ describe('referToSecurityIfRequested', () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
     expect(
-      service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, mockTransactionalClient)
+      service.referToSecurityIfRequested(bookingId, userId, updatedFormObject, false, mockTransactionalClient)
     ).rejects.toThrow('TEST')
   })
 })
