@@ -50,7 +50,7 @@ class SupervisorSpecification extends GebReportingSpec {
     navigateToReview()
 
     then: 'the header is correct, change links are not displayed and the buttons omit the current cat'
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
                             'C-04-02', 'Coventry',
                             'Latvian',
                             'A Felony', 'Another Felony',
