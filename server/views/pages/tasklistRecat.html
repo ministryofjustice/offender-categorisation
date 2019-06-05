@@ -27,45 +27,37 @@ href: backLink or "/"
   <hr/>
 
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
+
+  {% set prisonerBackgroundCompleted = data.recat.prisonerBackground.tbc %}
   {% set securityInputCompleted = data.recat.securityInput.securityInputNeeded === 'No' or data.recat.securityBack %}
-  {% set mainFlowCompleted = data.recat.mainFlow.tbc %}
-  {% set higherSecurityReviewCompleted = data.recat.higherSecurityReview.conditions %}
+  {% set riskAssessmentCompleted = data.recat.riskAssessment.tbc %}
+  {% set categoryDecisionCompleted = data.recat.higherSecurityReview.conditions %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
+  {% set nextReviewDateCompleted = data.recat.nextReviewDate.tbc %}
+
   {% set openConditionsRequested = data.openConditionsRequested %}
-  {% set allSectionsCompleted = securityInputCompleted and not locked and higherSecurityReviewCompleted and mainFlowCompleted
-                                and ( (not openConditionsRequested) or openConditionsCompleted)%}
+  {% set allSectionsCompleted = prisonerBackgroundCompleted and securityInputCompleted and not locked and categoryDecisionCompleted and riskAssessmentCompleted
+                                and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
   <div class="govuk-grid-row govuk-!-width-two-thirds">
     <div class="govuk-grid-column-full">
       <ul class="app-task-list">
         <li>
           <ul class="app-task-list__items">
+
             <li class="app-task-list__item">
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if mainFlowCompleted else buttonClassesDefault %}
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if prisonerBackgroundCompleted else buttonClassesDefault %}
               {{ govukButton({
-                text: "Edit" if mainFlowCompleted else "Start",
-                href: "/form/recat/mainFlow/" + data.details.bookingId,
+                text: "Edit" if prisonerBackgroundCompleted else "Start",
+                href: "/form/recat/prisonerBackground/" + data.details.bookingId,
                 classes: buttonClasses,
                 attributes:
-                  { 'id': 'mainFlowButton' }
+                  { 'id': 'prisonerBackgroundButton' }
               }) }}
-              <div class="govuk-heading-m">Main Flow TBC</div>
-              <div class="govuk-!-margin-top-2">{% if mainFlowCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+              <div class="govuk-heading-m">Prisoner background</div>
+              <div class="govuk-!-margin-top-2">{% if prisonerBackgroundCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
-            {% if true or going.up.tbd %}
-              <li class="app-task-list__item">
-                {% set buttonClasses = buttonClassesDefault + " grey-button" if higherSecurityReviewCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                  text: "Edit" if higherSecurityReviewCompleted else "Start",
-                  href: "/form/recat/higherSecurityReview/" + data.details.bookingId,
-                  classes: buttonClasses,
-                  attributes:
-                    { 'id': 'higherSecurityReviewButton' }
-                }) }}
-                <div class="govuk-heading-m">Higher Security Review</div>
-                <div class="govuk-!-margin-top-2">{% if higherSecurityReviewCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-              </li>
-            {% endif %}
+
             <li class="app-task-list__item" id="securitySection">
               {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if securityInputCompleted else buttonClassesDefault %}
@@ -80,6 +72,32 @@ href: backLink or "/"
               }}
               <div class="govuk-heading-m">Security information</div>
               <div class="govuk-!-margin-top-2">{% if locked or backFromSecurity %}{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}{% elseif securityInputCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+            </li>
+
+            <li class="app-task-list__item">
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if riskAssessmentCompleted else buttonClassesDefault %}
+              {{ govukButton({
+                text: "Edit" if riskAssessmentCompleted else "Start",
+                href: "/form/recat/riskAssessment/" + data.details.bookingId,
+                classes: buttonClasses,
+                attributes:
+                  { 'id': 'riskAssessmentButton' }
+              }) }}
+              <div class="govuk-heading-m">Risk assessment</div>
+              <div class="govuk-!-margin-top-2">{% if riskAssessmentCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+            </li>
+
+            <li class="app-task-list__item">
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if categoryDecisionCompleted else buttonClassesDefault %}
+              {{ govukButton({
+                text: "Edit" if categoryDecisionCompleted else "Start",
+                href: "/form/recat/categoryDecision/" + data.details.bookingId,
+                classes: buttonClasses,
+                attributes:
+                  { 'id': 'categoryDecisionButton' }
+              }) }}
+              <div class="govuk-heading-m">Category decision</div>
+              <div class="govuk-!-margin-top-2">{% if categoryDecisionCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
 
             {% if openConditionsRequested %}
@@ -97,16 +115,30 @@ href: backLink or "/"
               <div class="govuk-!-margin-top-2">{% if openConditionsCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
             {% endif %}
+
+            <li class="app-task-list__item">
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if nextReviewDateCompleted else buttonClassesDefault %}
+              {{ govukButton({
+                text: "Edit" if nextReviewDateCompleted else "Start",
+                href: "/form/recat/nextReviewDate/" + data.details.bookingId,
+                classes: buttonClasses,
+                attributes:
+                  { 'id': 'nextReviewDateButton' }
+              }) }}
+              <div class="govuk-heading-m">Set next category review date</div>
+              <div class="govuk-!-margin-top-2">{% if nextReviewDateCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+            </li>
+
             <li id="review" class="app-task-list__item">
               {% set completionText = "Completed" if allSectionsCompleted else "Tasks not yet complete" %}
-                {{ govukButton({
-                  text: "Continue",
-                  href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
-                  disabled: not allSectionsCompleted,
-                  classes: "govuk-button tableButton app-task-list__task-completed"
-                }) }}
-                <div class="govuk-heading-m">Review and categorisation</div>
-                <div class="govuk-!-margin-top-2">{{ completionText }}</div>
+              {{ govukButton({
+                text: "Continue",
+                href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
+                disabled: not allSectionsCompleted,
+                classes: "govuk-button tableButton app-task-list__task-completed"
+              }) }}
+              <div class="govuk-heading-m">Check and submit</div>
+              <div class="govuk-!-margin-top-2">{{ completionText }}</div>
             </li>
           </ul>
         </li>

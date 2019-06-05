@@ -36,11 +36,12 @@ class HigherSecurityReviewSpecification extends GebReportingSpec {
     when: 'I go to the Higher Security Review page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    higherSecurityReviewButton.click()
+    to HigherSecurityReviewPage, '12'
+    // higherSecurityReviewButton.click()
 
     then: 'The page is displayed'
     at HigherSecurityReviewPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970']
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
 
     when: 'Details are entered, saved and accessed'
     behaviour << "Some behaviour text"
@@ -51,7 +52,8 @@ class HigherSecurityReviewSpecification extends GebReportingSpec {
 
     submitButton.click()
     at TasklistRecatPage
-    higherSecurityReviewButton.click()
+    to HigherSecurityReviewPage, '12'
+    // higherSecurityReviewButton.click()
     at HigherSecurityReviewPage
 
     then: "data is correctly retrieved"
@@ -76,7 +78,9 @@ class HigherSecurityReviewSpecification extends GebReportingSpec {
     when: 'I submit the page with empty details'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    higherSecurityReviewButton.click()
+    // higherSecurityReviewButton.click()
+    to HigherSecurityReviewPage, '12'
+
     at HigherSecurityReviewPage
     submitButton.click()
 

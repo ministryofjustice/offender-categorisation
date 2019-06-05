@@ -47,7 +47,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     navigateToView()
 
     then: 'the cat details are correct'
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
                             'C-04-02', 'Coventry',
                             'Latvian',
                             'A Felony', 'Another Felony',

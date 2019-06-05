@@ -72,7 +72,7 @@ class ReviewSpecification extends GebReportingSpec {
 
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
                             'C-04-02', 'Coventry',
                             'Latvian',
                             'A Felony', 'Another Felony',

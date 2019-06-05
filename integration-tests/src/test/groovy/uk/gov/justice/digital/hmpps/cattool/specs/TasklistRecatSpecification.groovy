@@ -45,7 +45,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     at TasklistRecatPage
 
     then: 'The tasklist page is displayed'
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
                             'C-04-02', 'Coventry',
                             'Latvian',
                             'A Felony', 'Another Felony',
@@ -82,7 +82,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     securityButton.@disabled
     def today = LocalDate.now().format('dd/MM/yyyy')
     $('#securitySection').text().contains("Automatically referred to Security ($today)")
-    summarySection[0].text() == 'Review and categorisation'
+    summarySection[0].text() == 'Check and submit'
     summarySection[1].text() == 'Tasks not yet complete'
   }
 
