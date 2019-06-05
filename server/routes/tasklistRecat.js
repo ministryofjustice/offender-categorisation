@@ -78,5 +78,14 @@ module.exports = function Index({
     })
   )
 
+  router.get(
+    '/recategoriserSubmitted/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+      res.render('pages/recategoriserSubmitted')
+    })
+  )
+
   return router
 }
