@@ -64,4 +64,9 @@ module.exports = {
     fields: [],
     validate: true,
   },
+  review: {
+    nextPath: {
+      path: '/tasklistRecat/recategoriserSubmitted/',
+    },
+  },
 }

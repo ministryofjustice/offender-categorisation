@@ -152,4 +152,13 @@ describe('GET /tasklistRecat/', () => {
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
       })
   })
+
+  test('should render recategoriserSubmitted page', () =>
+    request(app)
+      .get('/recategoriserSubmitted/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Submitted for approval')
+      }))
 })
