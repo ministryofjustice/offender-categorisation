@@ -118,7 +118,7 @@ describe('GET /tasklistRecat/', () => {
       .expect(res => {
         expect(res.text).toContain('Re-categorisation task list')
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
-        expect(res.text).toContain('href="/form/recat/mainFlow/12345"')
+        expect(res.text).toContain('href="/form/recat/riskAssessment/12345"')
 
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
