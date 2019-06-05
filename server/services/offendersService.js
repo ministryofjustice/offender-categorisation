@@ -296,6 +296,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
             displayStatus: decorated.displayStatus || 'Not started',
             reason: 'Categorisation review due',
+            dbRecordExists: decorated.dbRecordExists,
           }
         })
       )

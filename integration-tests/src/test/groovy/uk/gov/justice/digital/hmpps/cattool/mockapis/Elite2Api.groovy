@@ -420,6 +420,7 @@ class Elite2Api extends WireMockRule {
             firstName         : 'ANT',
             lastName          : 'HILLMOB',
             dateOfBirth       : youngOffender ? '2018-01-01' : '1970-02-17',
+            categoryCode      : 'C',
             assignedLivingUnit:
               [
                 description: 'C-04-02',

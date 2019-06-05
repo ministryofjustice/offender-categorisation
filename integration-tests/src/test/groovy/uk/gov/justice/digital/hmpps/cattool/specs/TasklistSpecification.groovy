@@ -48,7 +48,7 @@ class TasklistSpecification extends GebReportingSpec {
     then: 'The tasklist page is displayed'
     at(new TasklistPage(bookingId: '12'))
 
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970',
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
                             'C-04-02', 'Coventry',
                             'Latvian',
                             'A Felony', 'Another Felony',

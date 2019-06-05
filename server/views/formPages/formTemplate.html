@@ -13,25 +13,31 @@
 
 <hr/>
 <div class="govuk-grid-row govuk-!-padding-left-3 govuk-body-s">
-  <div class="govuk-grid-column-one-third govuk-label" for="offenderDisplayName">
+  <div class="govuk-grid-column-one-quarter govuk-label" for="offenderDisplayName">
     Name
   </div>
-  <div class="govuk-grid-column-one-third govuk-label" for="offenderNo">
+  <div class="govuk-grid-column-one-quarter govuk-label" for="offenderNo">
     NOMIS ID
   </div>
-  <div class="govuk-grid-column-one-third govuk-label" for="dob">
+  <div class="govuk-grid-column-one-quarter govuk-label" for="dob">
     Date of birth
+  </div>
+  <div class="govuk-grid-column-one-quarter govuk-label" for="category">
+    Current category
   </div>
 </div>
 <div class="govuk-grid-row govuk-!-padding-left-3 govuk-body-s">
-  <div id="offenderDisplayName" class="govuk-grid-column-one-third govuk-!-font-weight-bold">{{
+  <div id="offenderDisplayName" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">{{
     data.details.displayName }}
   </div>
-  <div id="offenderNo" class="govuk-grid-column-one-third govuk-!-font-weight-bold">{{
+  <div id="offenderNo" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">{{
     data.details.offenderNo }}
   </div>
-  <div id="dob" class="govuk-grid-column-one-third govuk-!-font-weight-bold">{{
+  <div id="dob" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">{{
     dateConverter(data.details.dateOfBirth) }}
+  </div>
+  <div id="category" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">{{
+    data.details.categoryCode }}
   </div>
 </div>
 <hr/>

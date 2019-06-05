@@ -14,14 +14,18 @@ class TasklistRecatPage extends Page {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-grid-column-one-third') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
-    logoutLink { $('a', href: '/logout')}
-    mainFlowButton { $('#mainFlowButton') }
-    higherSecurityReviewButton { $('#higherSecurityReviewButton') }
+    logoutLink { $('a', href: '/logout') }
+
+    prisonerBackgroundButton { $('#prisonerBackgroundButton') }
     securityButton { $('#securityButton') }
+    riskAssessmentButton { $('#riskAssessmentButton') }
+    categoryDecisionButton { $('#categoryDecisionButton') }
+    openConditionsButton(required: false) { $('#openConditionsButton') }
+    nextReviewDateButton { $('#nextReviewDateButton') }
+
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }
     backLink { $('a.govuk-back-link') }
-    summarySection (required: true) { $('#review div') }
-    openConditionsButton (required: false){ $('#openConditionsButton') }
+    summarySection(required: true) { $('#review div') }
   }
 }

@@ -21,6 +21,11 @@
 
     {{ headerTitle('Date of birth') }}
     {{ headerValue(dateConverter(data.details.dateOfBirth)) }}
+
+    {% if data.details.categoryCode %}
+      {{ headerTitle('Current category') }}
+      {{ headerValue(data.details.categoryCode) }}
+    {% endif %}
   </div>
   <div class="govuk-grid-column-one-third">
     {{ headerTitle('Location') }}
@@ -29,58 +34,58 @@
 
     {{ headerTitle('Nationality') }}
     {% set nationality %}
-    {% for profileInformation in data.details.profileInformation %}
-    {% if profileInformation.type === 'NAT' %}
-    {{ profileInformation.resultValue }}
-    {% endif %}
-    {% endfor %}
+      {% for profileInformation in data.details.profileInformation %}
+        {% if profileInformation.type === 'NAT' %}
+          {{ profileInformation.resultValue }}
+        {% endif %}
+      {% endfor %}
     {% endset %}
     {{ headerValue(nationality | trim) }}
 
     {{ headerTitle('Type of offence(s)') }}
     {% if data.details.offence | length == 0 %}
-    {{ headerValue('-') }}
+      {{ headerValue('-') }}
     {% else %}
-    {% for offence in data.details.offence %}
-    {{ headerValue(offence.offenceDescription) }}
-    {% endfor %}
+      {% for offence in data.details.offence %}
+        {{ headerValue(offence.offenceDescription) }}
+      {% endfor %}
     {% endif %}
   </div>
   <div class="govuk-grid-column-one-third">
     {% if data.details.sentence.homeDetentionCurfewEligibilityDate %}
-    {{ headerTitle('HDC Eligibility Date') }}
-    {{ headerValue(dateConverter(data.details.sentence.homeDetentionCurfewEligibilityDate)) }}
+      {{ headerTitle('HDC Eligibility Date') }}
+      {{ headerValue(dateConverter(data.details.sentence.homeDetentionCurfewEligibilityDate)) }}
     {% endif %}
     {% if data.details.sentence.automaticReleaseDate %}
-    {{ headerTitle('Automatic Release Date') }}
-    {{ headerValue(dateConverter(data.details.sentence.automaticReleaseDate)) }}
+      {{ headerTitle('Automatic Release Date') }}
+      {{ headerValue(dateConverter(data.details.sentence.automaticReleaseDate)) }}
     {% endif %}
     {% if data.details.sentence.conditionalReleaseDate %}
-    {{ headerTitle('Conditional Release Date') }}
-    {{ headerValue(dateConverter(data.details.sentence.conditionalReleaseDate)) }}
+      {{ headerTitle('Conditional Release Date') }}
+      {{ headerValue(dateConverter(data.details.sentence.conditionalReleaseDate)) }}
     {% endif %}
     {% if data.details.sentence.paroleEligibilityDate %}
-    {{ headerTitle('Parole Eligibility Date') }}
-    {{ headerValue(dateConverter(data.details.sentence.paroleEligibilityDate)) }}
+      {{ headerTitle('Parole Eligibility Date') }}
+      {{ headerValue(dateConverter(data.details.sentence.paroleEligibilityDate)) }}
     {% endif %}
     {% if data.details.sentence.nonParoleDate %}
-    {{ headerTitle('Non Parole Date') }}
-    {{ headerValue(dateConverter(data.details.sentence.nonParoleDate)) }}
+      {{ headerTitle('Non Parole Date') }}
+      {{ headerValue(dateConverter(data.details.sentence.nonParoleDate)) }}
     {% endif %}
     {% if data.details.sentence.tariffDate %}
-    {{ headerTitle('ISP Tariff End Date') }}
-    {{ headerValue(dateConverter(data.details.sentence.tariffDate)) }}
+      {{ headerTitle('ISP Tariff End Date') }}
+      {{ headerValue(dateConverter(data.details.sentence.tariffDate)) }}
     {# ISP means indeterminate sentenced prisoners - instead of a sentence length, they have a "tariff", which is the
     minimum amount of time their sentence is supposed to last for, so their tariff end date is the earliest date
     they could be released #}
     {% endif %}
     {% if data.details.sentence.licenceExpiryDate %}
-    {{ headerTitle('Licence Expiry Date') }}
-    {{ headerValue(dateConverter(data.details.sentence.licenceExpiryDate)) }}
+      {{ headerTitle('Licence Expiry Date') }}
+      {{ headerValue(dateConverter(data.details.sentence.licenceExpiryDate)) }}
     {% endif %}
     {% if data.details.sentence.sentenceExpiryDate %}
-    {{ headerTitle('Sentence Expiry Date') }}
-    {{ headerValue(dateConverter(data.details.sentence.sentenceExpiryDate)) }}
+      {{ headerTitle('Sentence Expiry Date') }}
+      {{ headerValue(dateConverter(data.details.sentence.sentenceExpiryDate)) }}
     {% endif %}
 
     {{ headerTitle('Court-issued sentence') }}
