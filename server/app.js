@@ -28,6 +28,8 @@ const config = require('../server/config')
 const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
+const createOpenConditionsRouter = require('./routes/openConditions')
+const createRecatRouter = require('./routes/recat')
 
 module.exports = function createApp({
   signInService,
@@ -228,6 +230,23 @@ module.exports = function createApp({
       riskProfilerService,
     })
   )
+
+  const openConditionsRouter = createOpenConditionsRouter({
+    formService,
+    offendersService,
+    userService,
+    authenticationMiddleware,
+  })
+  app.use('/form/openConditions/', openConditionsRouter)
+
+  const recatRouter = createRecatRouter({
+    formService,
+    offendersService,
+    userService,
+    authenticationMiddleware,
+  })
+  app.use('/form/recat/', recatRouter)
+
   const formRouter = createFormRouter({
     formService,
     offendersService,

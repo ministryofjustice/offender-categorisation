@@ -296,6 +296,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     '/:form/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
+      const userId = req.user.username
       const section = 'openConditions'
       const formPageConfig = formConfig.openConditions[form]
 
@@ -307,7 +308,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const bookingIdInt = parseInt(bookingId, 10)
       await formService.update({
         bookingId: bookingIdInt,
-        userId: req.user.username,
+        userId,
         config: formPageConfig,
         userInput,
         formSection: section,
@@ -316,7 +317,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       })
 
       if (userInput.justify === 'No') {
-        await cancelOpenConditions(bookingIdInt, transactionalDbClient)
+        await cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
         res.render('pages/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because they have more than three years to their' +
@@ -324,13 +325,13 @@ module.exports = function Index({ formService, offendersService, userService, au
           bookingId,
         })
       } else if (userInput.formCompleted === 'No') {
-        await cancelOpenConditions(bookingIdInt, transactionalDbClient)
+        await cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
         res.render('pages/openConditionsNotSuitable', {
           warningText: 'This person cannot be sent to open conditions without a CCD3 form',
           bookingId,
         })
       } else if (userInput.exhaustedAppeal === 'Yes') {
-        await cancelOpenConditions(bookingIdInt, transactionalDbClient)
+        await cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
         res.render('pages/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because they are due to be deported and have exhausted' +
