@@ -24,6 +24,7 @@ const formService = {
   referToSecurityIfRiskAssessed: jest.fn(),
   referToSecurityIfRequested: jest.fn(),
   update: jest.fn(),
+  isYoungOffender: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
   updateFormData: jest.fn(),
@@ -62,6 +63,7 @@ beforeEach(() => {
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
   formService.isValid.mockResolvedValue(true)
+  formService.isYoungOffender.mockReturnValue(false)
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
@@ -78,6 +80,7 @@ afterEach(() => {
   formService.getValidationErrors.mockReset()
   formService.computeSuggestedCat.mockReset()
   formService.updateFormData.mockReset()
+  formService.isYoungOffender.mockReset()
   formService.mergeRiskProfileData.mockReset()
   formService.backToCategoriser.mockReset()
   formService.isValid.mockReset()
@@ -124,6 +127,57 @@ describe('recat', () => {
           formName,
           transactionalClient: mockTransactionalClient,
         })
+      })
+  })
+
+  test('Post category decision)', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+    })
+
+    const userInput = { category: 'B' }
+    return request(app)
+      .post(`/decision/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect('Location', `/tasklistRecat/12345`)
+      .expect(() => {
+        expect(formService.update).toBeCalledWith({
+          bookingId: 12345,
+          userId: 'CA_USER_TEST',
+          config: formConfig.recat.decision,
+          userInput,
+          formSection: 'recat',
+          formName: 'decision',
+          transactionalClient: mockTransactionalClient,
+        })
+      })
+  })
+
+  test('Get category decision for offender 21 or over)', () => {
+    formService.isYoungOffender.mockReturnValue(false)
+    return request(app)
+      .get(`/decision/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Category decision')
+        expect(res.text).not.toContain('catIOption')
+      })
+  })
+
+  test('Get category decision for offender under 21)', () => {
+    formService.isYoungOffender.mockReturnValue(true)
+    return request(app)
+      .get(`/decision/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Category decision')
+        expect(res.text).toContain('catIOption')
       })
   })
 })

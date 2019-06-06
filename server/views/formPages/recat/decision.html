@@ -1,0 +1,49 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% block formItems %}
+
+<h1 id="securityInputHeader" class="govuk-heading-l">Category decision</h1>
+
+<div class="govuk-form-group">
+  <fieldset class="govuk-fieldset" aria-describedby="changed-name-hint">
+    <legend class="govuk-fieldset__legend">
+      What security conditions are suitable for this person?
+    </legend>
+    <div class="govuk-radios">
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="catBOption" name="category" type="radio" value="B">
+        <label class="govuk-label govuk-radios__label" for="catBOption">
+          Category B
+        </label></div>
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="catCOption" name="category" type="radio" value="C">
+        <label class="govuk-label govuk-radios__label" for="catCOption">
+          Category C
+        </label></div>
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="catDOption" name="category" type="radio" value="D">
+        <label class="govuk-label govuk-radios__label" for="catDOption">
+          Category D
+        </label></div>
+
+      {% if data.details.youngOffender %}
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="catIOption" name="category" type="radio" value="I">
+        <label class="govuk-label govuk-radios__label" for="catIOption">
+          YOI (closed)
+        </label></div>
+      <div class="govuk-radios__item">
+        <input class="govuk-radios__input" id="catJOption" name="category" type="radio" value="J">
+        <label class="govuk-label govuk-radios__label" for="catJOption">
+          YOI (open)
+        </label></div>
+      {% endif %}
+    </div>
+  </fieldset>
+</div>
+
+
+{% endblock %}

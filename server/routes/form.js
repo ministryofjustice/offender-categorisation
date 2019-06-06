@@ -13,8 +13,6 @@ const categoriser = require('../config/categoriser')
 const supervisor = require('../config/supervisor')
 const security = require('../config/security')
 const openConditions = require('../config/openConditions')
-const createOpenConditionsRouter = require('./openConditions')
-const createRecatRouter = require('./recat')
 
 const formConfig = {
   ratings,
@@ -42,22 +40,6 @@ module.exports = function Index({
     }
     next()
   })
-
-  const openConditionsRouter = createOpenConditionsRouter({
-    formService,
-    offendersService,
-    userService,
-    authenticationMiddleware,
-  })
-  router.use('/openConditions/', openConditionsRouter)
-
-  const recatRouter = createRecatRouter({
-    formService,
-    offendersService,
-    userService,
-    authenticationMiddleware,
-  })
-  router.use('/recat/', recatRouter)
 
   router.get(
     '/ratings/offendingHistory/:bookingId',
