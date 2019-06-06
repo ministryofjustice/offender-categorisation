@@ -24,7 +24,12 @@
 
     {% if data.details.categoryCode %}
       {{ headerTitle('Current category') }}
-      {{ headerValue(data.details.categoryCode) }}
+      {% if data.details.categoryCode == 'U' or data.details.categoryCode == 'X' or data.details.categoryCode == 'Z' %}
+        {% set codeDetails %}{{ data.details.categoryCode }} ({{ data.details.category }}){% endset %}
+        {{ headerValue(codeDetails) }}
+      {% else %}
+        {{ headerValue(data.details.categoryCode) }}
+      {% endif %}
     {% endif %}
   </div>
   <div class="govuk-grid-column-one-third">

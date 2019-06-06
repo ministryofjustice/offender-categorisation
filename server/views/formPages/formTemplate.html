@@ -36,8 +36,14 @@
   <div id="dob" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">{{
     dateConverter(data.details.dateOfBirth) }}
   </div>
-  <div id="category" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">{{
-    data.details.categoryCode }}
+  <div id="category" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">
+    {% if data.details.categoryCode %}
+      {% if data.details.categoryCode == 'U' or data.details.categoryCode == 'X' or data.details.categoryCode == 'Z' %}
+        {{ data.details.categoryCode }} ({{ data.details.category }})
+      {% else %}
+        {{ data.details.categoryCode }}
+      {% endif %}
+    {% endif %}
   </div>
 </div>
 <hr/>
