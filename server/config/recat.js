@@ -57,6 +57,20 @@ module.exports = {
     ],
     validate: true,
   },
+  decision: {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    fields: [
+      {
+        category: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select a security condition',
+        },
+      },
+    ],
+    validate: true,
+  },
   securityBack: {
     nextPath: {
       path: '/tasklistRecat/',

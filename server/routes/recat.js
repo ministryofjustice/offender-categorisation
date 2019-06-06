@@ -66,9 +66,10 @@ module.exports = function Index({ formService, offendersService, userService, au
 
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+    const youngOffender = formService.isYoungOffender(details)
 
     return {
-      data: { ...pageData, details },
+      data: { ...pageData, details: { ...details, youngOffender } },
       formName: form,
       status: formData.status,
       backLink,
@@ -114,33 +115,6 @@ module.exports = function Index({ formService, offendersService, userService, au
         updatedFormObject,
         transactionalDbClient
       )
-
-      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      res.redirect(`${nextPath}${bookingId}`)
-    })
-  )
-
-  router.post(
-    '/securityBack/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const section = 'recat'
-      const form = 'securityBack'
-      const { bookingId } = req.params
-      const formPageConfig = formConfig[section][form]
-
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
-        return
-      }
-
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
-        formSection: section,
-        formName: form,
-        transactionalClient: transactionalDbClient,
-      })
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)

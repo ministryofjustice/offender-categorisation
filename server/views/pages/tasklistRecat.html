@@ -31,11 +31,10 @@ href: backLink or "/"
   {% set prisonerBackgroundCompleted = data.recat.prisonerBackground.tbc %}
   {% set securityInputCompleted = data.recat.securityInput.securityInputNeeded === 'No' or data.recat.securityBack %}
   {% set riskAssessmentCompleted = data.recat.riskAssessment.tbc %}
-  {% set categoryDecisionCompleted = data.recat.higherSecurityReview.conditions %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
   {% set nextReviewDateCompleted = data.recat.nextReviewDate.tbc %}
-
   {% set openConditionsRequested = data.openConditionsRequested %}
+  {% set decisionCompleted = data.recat.decision.category %}
   {% set allSectionsCompleted = prisonerBackgroundCompleted and securityInputCompleted and not locked and categoryDecisionCompleted and riskAssessmentCompleted
                                 and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
@@ -88,17 +87,19 @@ href: backLink or "/"
             </li>
 
             <li class="app-task-list__item">
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if categoryDecisionCompleted else buttonClassesDefault %}
+              {% set buttonTextEx = "Edit" if decisionCompleted else "Start" %}
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if decisionCompleted else buttonClassesDefault %}
               {{ govukButton({
-                text: "Edit" if categoryDecisionCompleted else "Start",
-                href: "/form/recat/categoryDecision/" + data.details.bookingId,
+                text: buttonTextEx,
+                href: "/form/recat/decision/" + data.details.bookingId,
                 classes: buttonClasses,
                 attributes:
-                  { 'id': 'categoryDecisionButton' }
+              {  'id': 'decisionButton' }
               }) }}
               <div class="govuk-heading-m">Category decision</div>
-              <div class="govuk-!-margin-top-2">{% if categoryDecisionCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+              <div class="govuk-!-margin-top-2">{% if decisionCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
+
 
             {% if openConditionsRequested %}
             <li class="app-task-list__item" id="openConditionsSection">
@@ -128,6 +129,7 @@ href: backLink or "/"
               <div class="govuk-heading-m">Set next category review date</div>
               <div class="govuk-!-margin-top-2">{% if nextReviewDateCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
+
 
             <li id="review" class="app-task-list__item">
               {% set completionText = "Completed" if allSectionsCompleted else "Tasks not yet complete" %}
