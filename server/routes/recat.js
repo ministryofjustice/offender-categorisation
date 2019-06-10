@@ -9,6 +9,7 @@ const Status = require('../utils/statusEnum')
 const formConfig = {
   recat,
 }
+const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB'])
 
 module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()
@@ -120,6 +121,44 @@ module.exports = function Index({ formService, offendersService, userService, au
       res.redirect(`${nextPath}${bookingId}`)
     })
   )
+
+  router.post(
+    '/decision/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'recat'
+      const form = 'decision'
+      const formPageConfig = formConfig[section][form]
+
+      const valid = formService.isValid(formPageConfig, req, res, section, form, bookingId)
+      if (!valid) {
+        return
+      }
+
+      const userInput = clearConditionalFields(req.body)
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput,
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
+
+      if (userInput.currentCategory === 'I' && userInput.category === 'B') {
+        res.redirect(`/form/recat/miniHigherSecurityReview/${bookingId}`)
+      } else if (choosingHigherCategory(userInput.currentCategory, userInput.category)) {
+        res.redirect(`/form/recat/higherSecurityReview/${bookingId}`)
+      } else {
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      }
+    })
+  )
+
+  const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
   router.post(
     '/:form/:bookingId',

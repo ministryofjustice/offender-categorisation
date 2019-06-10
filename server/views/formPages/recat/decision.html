@@ -7,43 +7,51 @@
 
 <h1 id="securityInputHeader" class="govuk-heading-l">Category decision</h1>
 
-<div class="govuk-form-group">
-  <fieldset class="govuk-fieldset" aria-describedby="changed-name-hint">
-    <legend class="govuk-fieldset__legend">
-      What security conditions are suitable for this person?
-    </legend>
-    <div class="govuk-radios">
-      <div class="govuk-radios__item">
-        <input class="govuk-radios__input" id="catBOption" name="category" type="radio" value="B">
-        <label class="govuk-label govuk-radios__label" for="catBOption">
-          Category B
-        </label></div>
-      <div class="govuk-radios__item">
-        <input class="govuk-radios__input" id="catCOption" name="category" type="radio" value="C">
-        <label class="govuk-label govuk-radios__label" for="catCOption">
-          Category C
-        </label></div>
-      <div class="govuk-radios__item">
-        <input class="govuk-radios__input" id="catDOption" name="category" type="radio" value="D">
-        <label class="govuk-label govuk-radios__label" for="catDOption">
-          Category D
-        </label></div>
+  <input type="hidden" name="currentCategory" value="{{data.details.categoryCode}}"/>
 
-      {% if data.details.youngOffender %}
-      <div class="govuk-radios__item">
-        <input class="govuk-radios__input" id="catIOption" name="category" type="radio" value="I">
-        <label class="govuk-label govuk-radios__label" for="catIOption">
-          YOI (closed)
-        </label></div>
-      <div class="govuk-radios__item">
-        <input class="govuk-radios__input" id="catJOption" name="category" type="radio" value="J">
-        <label class="govuk-label govuk-radios__label" for="catJOption">
-          YOI (open)
-        </label></div>
-      {% endif %}
-    </div>
-  </fieldset>
-</div>
+{% set optionB =  {
+    value: "B",
+    id: "catBOption",
+    checked: data.recat.decision.category == 'B',
+    text: "B"
+  } %}
+{% set optionC =  {
+    value: "C",
+    id: "catCOption",
+    checked: data.recat.decision.category == 'C',
+    text: "C"
+  } %}
+{% set optionD =  {
+    value: "D",
+    id: "catDOption",
+    checked: data.recat.decision.category == 'D',
+    text: "D"
+  } %}
+{% set optionI =  {
+    value: "I",
+    id: "catIOption",
+    checked: data.recat.decision.category == 'I',
+    text: "YOI (closed)"
+  } %}
+{% set optionJ =  {
+    value: "J",
+    id: "catJOption",
+    checked: data.recat.decision.category == 'J',
+    text: "YOI (open)"
+  } %}
 
+  {{ govukRadios({
+    name: "category",
+    classes: "govuk-radios",
+    fieldset: {
+      legend: {
+        text: "What security conditions are suitable for this person?"
+      }
+    },
+    errorMessage: {
+      text: "Please select a security condition"
+    } if (errors | findError('category')),
+    items: [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ]
+  }) }}
 
 {% endblock %}
