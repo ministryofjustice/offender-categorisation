@@ -6,6 +6,8 @@ import groovy.json.JsonOutput
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 
+import java.time.LocalDate
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 
 class Elite2Api extends WireMockRule {
@@ -153,6 +155,35 @@ class Elite2Api extends WireMockRule {
             ))
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
+    )
+  }
+
+  void stubRecategoriseWithCatI() {
+    this.stubFor(
+      get("/api/offender-assessments/category/LEI?type=RECATEGORISATIONS")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            bookingId    : 12,
+            offenderNo   : 'B2345XY',
+            firstName    : 'PENELOPE',
+            lastName     : 'PITSTOP',
+            category     : 'I',
+            nextReviewDate: '2019-07-25',
+          ],
+          [
+            bookingId    : 11,
+            offenderNo   : 'B2345YZ',
+            firstName    : 'ANT',
+            lastName     : 'HILLMOB',
+            category     : 'D',
+            nextReviewDate: '2019-07-27'
+          ],
+        ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
     )
   }
 
@@ -407,7 +438,7 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  def stubGetOffenderDetails(int bookingId, offenderNo='B2345YZ', youngOffender = false, indeterminateSentence = false) {
+  def stubGetOffenderDetails(int bookingId, offenderNo='B2345YZ', youngOffender = false, indeterminateSentence = false, category = 'C') {
     this.stubFor(
       get("/api/bookings/$bookingId?basicInfo=false")
         .willReturn(
@@ -420,7 +451,7 @@ class Elite2Api extends WireMockRule {
             firstName         : 'ANT',
             lastName          : 'HILLMOB',
             dateOfBirth       : youngOffender ? '2018-01-01' : '1970-02-17',
-            categoryCode      : 'C',
+            categoryCode      : category,
             assignedLivingUnit:
               [
                 description: 'C-04-02',

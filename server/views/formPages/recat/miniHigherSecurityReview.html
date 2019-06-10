@@ -1,0 +1,25 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+
+{% block formItems %}
+
+<h1 id="higherSecurityReviewHeader" class="govuk-heading-l">Higher Security Review</h1>
+
+
+ {{ govukCharacterCount({
+    name: "conditions",
+    type: "conditions",
+    id: "conditions",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "What security conditions in the higher category prison are necessary to manage this person safely and securely?"
+    },
+    value: data.recat.higherSecurityReview.conditions,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('conditions'))
+  }) }}
+
+{% endblock %}
