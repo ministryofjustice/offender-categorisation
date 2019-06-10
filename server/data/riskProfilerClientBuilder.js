@@ -2,8 +2,8 @@
 const logger = require('../../log')
 const config = require('../config')
 const superagent = require('superagent')
-const querystring = require('querystring')
-const { generateOauthClientToken } = require('../authentication/clientCredentials')
+const { getApiClientToken } = require('../authentication/clientCredentials')
+const { getNamespace } = require('cls-hooked')
 
 const timeoutSpec = {
   response: config.apis.riskProfiler.timeout.response,
@@ -11,7 +11,6 @@ const timeoutSpec = {
 }
 
 const apiUrl = `${config.apis.riskProfiler.url}risk-profile/`
-const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
 
 module.exports = username => {
   const apiGet = riskProfilerGetBuilder(username)
@@ -47,20 +46,22 @@ module.exports = username => {
 function riskProfilerGetBuilder(username) {
   return async ({ path, query = '', headers = {}, responseType = '' } = {}) => {
     try {
-      const oauthResult = await getRiskProfilerApiClientToken(username)
+      const oauthResult = await getApiClientToken(username)
+      const ns = getNamespace('page.scope')
+      const correlationId = ns.get('correlationId')
 
       const result = await superagent
         .get(path)
         .query(query)
         .set('Authorization', `Bearer ${oauthResult.body.access_token}`)
+        .set('correlationId', correlationId)
         .set(headers)
         .responseType(responseType)
         .timeout(timeoutSpec)
 
       return result.body
     } catch (error) {
-      logger.warn('Error calling riskProfiler api')
-      logger.warn(error)
+      logger.warn(error, 'Error calling riskProfiler api')
 
       throw error
     }
@@ -75,7 +76,7 @@ function riskProfilerPushBuilder(verb, username) {
 
   return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
     try {
-      const oauthResult = await getRiskProfilerApiClientToken(username)
+      const oauthResult = await getApiClientToken(username)
       const result = await updateMethod[verb](oauthResult.body.access_token, path, body, headers, responseType)
       return result.body
     } catch (error) {
@@ -88,35 +89,29 @@ function riskProfilerPushBuilder(verb, username) {
 }
 
 async function post(token, path, body, headers, responseType) {
+  const ns = getNamespace('page.scope')
+  const correlationId = ns.get('correlationId')
+
   return superagent
     .post(path)
     .send(body)
     .set('Authorization', `Bearer ${token}`)
+    .set('correlationId', correlationId)
     .set(headers)
     .responseType(responseType)
     .timeout(timeoutSpec)
 }
 
 async function put(token, path, body, headers, responseType) {
+  const ns = getNamespace('page.scope')
+  const correlationId = ns.get('correlationId')
+
   return superagent
     .put(path)
     .send(body)
     .set('Authorization', `Bearer ${token}`)
+    .set('correlationId', correlationId)
     .set(headers)
     .responseType(responseType)
-    .timeout(timeoutSpec)
-}
-
-async function getRiskProfilerApiClientToken(username) {
-  const oauthRiskProfilerClientToken = generateOauthClientToken()
-  const oauthRequest = querystring.stringify({ grant_type: 'client_credentials', username })
-
-  logger.info(`Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}'`)
-
-  return superagent
-    .post(oauthUrl)
-    .set('Authorization', oauthRiskProfilerClientToken)
-    .set('content-type', 'application/x-www-form-urlencoded')
-    .send(oauthRequest)
     .timeout(timeoutSpec)
 }
