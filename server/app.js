@@ -3,6 +3,7 @@ const addRequestId = require('express-request-id')()
 const catToolSerialisers = require('./catToolSerialisers')
 const helmet = require('helmet')
 const csurf = require('csurf')
+const uuidv4 = require('uuid/v4')
 const compression = require('compression')
 const passport = require('passport')
 const auth = require('./authentication/auth')
@@ -22,6 +23,7 @@ const path = require('path')
 const log = require('bunyan-request-logger')({ name: 'Cat tool http', serializers: catToolSerialisers })
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
+const { createNamespace } = require('cls-hooked')
 
 const config = require('../server/config')
 
@@ -141,6 +143,11 @@ module.exports = function createApp({
   function addTemplateVariables(req, res, next) {
     res.locals.user = req.user
     res.locals.currentRole = req.session && req.session.currentRole
+    res.locals.correlationId = uuidv4()
+
+    // TODO will do for now, need to come back and set correlationId for *all logging though:
+    logger.info(`Request started with correlationId=${res.locals.correlationId}`)
+
     next()
   }
 
@@ -213,6 +220,22 @@ module.exports = function createApp({
   })
 
   app.use(authorisationMiddleware)
+
+  const ns = createNamespace('page.scope')
+
+  // Setup thread-locals for services under main routers
+  app.use(async (req, res, next) => {
+    ns.bindEmitter(req)
+    ns.bindEmitter(res)
+    return ns.run(() => {
+      if (req.user && req.user.username) {
+        ns.set('user', req.user.username)
+      }
+      ns.set('correlationId', res.locals.correlationId)
+
+      return next()
+    })
+  })
 
   const homeRouter = createHomeRouter({ userService, offendersService, authenticationMiddleware })
   app.use('/', homeRouter)
