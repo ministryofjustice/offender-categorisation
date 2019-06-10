@@ -19,7 +19,7 @@ class TasklistRecatPage extends Page {
     prisonerBackgroundButton { $('#prisonerBackgroundButton') }
     securityButton { $('#securityButton') }
     riskAssessmentButton { $('#riskAssessmentButton') }
-    categoryDecisionButton { $('#categoryDecisionButton') }
+    decisionButton { $('#decisionButton') }
     openConditionsButton(required: false) { $('#openConditionsButton') }
     nextReviewDateButton { $('#nextReviewDateButton') }
 
