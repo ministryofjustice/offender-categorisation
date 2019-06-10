@@ -130,33 +130,6 @@ describe('recat', () => {
       })
   })
 
-  test('Post category decision)', () => {
-    formService.getCategorisationRecord.mockResolvedValue({
-      status: 'STARTED',
-      bookingId: 12,
-      displayName: 'Tim Handle',
-      displayStatus: 'Any other status',
-    })
-
-    const userInput = { category: 'B' }
-    return request(app)
-      .post(`/decision/12345`)
-      .send(userInput)
-      .expect(302)
-      .expect('Location', `/tasklistRecat/12345`)
-      .expect(() => {
-        expect(formService.update).toBeCalledWith({
-          bookingId: 12345,
-          userId: 'CA_USER_TEST',
-          config: formConfig.recat.decision,
-          userInput,
-          formSection: 'recat',
-          formName: 'decision',
-          transactionalClient: mockTransactionalClient,
-        })
-      })
-  })
-
   test('Get category decision for offender 21 or over)', () => {
     formService.isYoungOffender.mockReturnValue(false)
     return request(app)
@@ -178,6 +151,50 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).toContain('Category decision')
         expect(res.text).toContain('catIOption')
+      })
+  })
+})
+
+describe('POST /form/recat/decision', () => {
+  test.each`
+    formName      | userInput                                  | nextPath
+    ${'decision'} | ${{ currentCategory: 'I', category: 'B' }} | ${'/form/recat/miniHigherSecurityReview/'}
+    ${'decision'} | ${{ currentCategory: 'J', category: 'I' }} | ${'/form/recat/higherSecurityReview/'}
+    ${'decision'} | ${{ currentCategory: 'J', category: 'C' }} | ${'/form/recat/higherSecurityReview/'}
+    ${'decision'} | ${{ currentCategory: 'J', category: 'B' }} | ${'/form/recat/higherSecurityReview/'}
+    ${'decision'} | ${{ currentCategory: 'D', category: 'C' }} | ${'/form/recat/higherSecurityReview/'}
+    ${'decision'} | ${{ currentCategory: 'D', category: 'B' }} | ${'/form/recat/higherSecurityReview/'}
+    ${'decision'} | ${{ currentCategory: 'D', category: 'C' }} | ${'/form/recat/higherSecurityReview/'}
+    ${'decision'} | ${{ currentCategory: 'I', category: 'C' }} | ${'/tasklistRecat/'}
+    ${'decision'} | ${{ currentCategory: 'D', category: 'D' }} | ${'/tasklistRecat/'}
+    ${'decision'} | ${{ currentCategory: 'I', category: 'J' }} | ${'/tasklistRecat/'}
+    ${'decision'} | ${{ currentCategory: 'I', category: 'I' }} | ${'/tasklistRecat/'}
+    ${'decision'} | ${{ currentCategory: 'B', category: 'D' }} | ${'/tasklistRecat/'}
+    ${'decision'} | ${{ currentCategory: 'B', category: 'C' }} | ${'/tasklistRecat/'}
+    ${'decision'} | ${{ currentCategory: 'B', category: 'B' }} | ${'/tasklistRecat/'}
+    ${'decision'} | ${{ currentCategory: 'C', category: 'C' }} | ${'/tasklistRecat/'}
+  `('Post for input $userInput should go to $nextPath', ({ formName, userInput, nextPath }) => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+    })
+    return request(app)
+      .post(`/${formName}/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect('Location', `${nextPath}12345`)
+      .expect(() => {
+        expect(formService.update).toBeCalledWith({
+          bookingId: 12345,
+          userId: 'CA_USER_TEST',
+          config: formConfig.recat[formName],
+          userInput,
+          formSection: 'recat',
+          formName,
+          transactionalClient: mockTransactionalClient,
+        })
       })
   })
 })
