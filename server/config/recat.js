@@ -37,6 +37,20 @@ module.exports = {
     },
     validate: true,
   },
+  miniHigherSecurityReview: {
+    fields: [
+      {
+        conditions: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter security conditions details',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    validate: true,
+  },
   securityInput: {
     nextPath: {
       path: '/tasklistRecat/',
