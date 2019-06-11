@@ -47,7 +47,7 @@ function riskProfilerGetBuilder(username) {
   return async ({ path, query = '', headers = {}, responseType = '' } = {}) => {
     try {
       const oauthResult = await getApiClientToken(username)
-      const ns = getNamespace('page.scope')
+      const ns = getNamespace('request.scope')
       const correlationId = ns.get('correlationId')
 
       const result = await superagent
@@ -89,7 +89,7 @@ function riskProfilerPushBuilder(verb, username) {
 }
 
 async function post(token, path, body, headers, responseType) {
-  const ns = getNamespace('page.scope')
+  const ns = getNamespace('request.scope')
   const correlationId = ns.get('correlationId')
 
   return superagent
@@ -103,7 +103,7 @@ async function post(token, path, body, headers, responseType) {
 }
 
 async function put(token, path, body, headers, responseType) {
-  const ns = getNamespace('page.scope')
+  const ns = getNamespace('request.scope')
   const correlationId = ns.get('correlationId')
 
   return superagent

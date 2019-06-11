@@ -126,7 +126,7 @@ function nomisClientGetBuilder(username) {
     logger.info(`nomis Get using clientId credentials: calling elite2api: ${path} ${query}`)
     try {
       const clientToken = await getApiClientToken(username)
-      const ns = getNamespace('page.scope')
+      const ns = getNamespace('request.scope')
       const correlationId = ns.get('correlationId')
 
       const result = await superagent
@@ -168,7 +168,7 @@ function nomisPushBuilder(verb, token) {
 }
 
 async function post(token, path, body, headers, responseType) {
-  const ns = getNamespace('page.scope')
+  const ns = getNamespace('request.scope')
   const correlationId = ns.get('correlationId')
 
   return superagent
@@ -182,7 +182,7 @@ async function post(token, path, body, headers, responseType) {
 }
 
 async function put(token, path, body, headers, responseType) {
-  const ns = getNamespace('page.scope')
+  const ns = getNamespace('request.scope')
   const correlationId = ns.get('correlationId')
 
   return superagent
