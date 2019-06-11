@@ -136,9 +136,10 @@ module.exports = function Index({ formService, offendersService, userService, au
       }
 
       const userInput = clearConditionalFields(req.body)
+      const bookingIdInt = parseInt(bookingId, 10)
 
       await formService.update({
-        bookingId: parseInt(bookingId, 10),
+        bookingId: bookingIdInt,
         userId: req.user.username,
         config: formPageConfig,
         userInput,
@@ -152,9 +153,91 @@ module.exports = function Index({ formService, offendersService, userService, au
       } else if (choosingHigherCategory(userInput.currentCategory, userInput.category)) {
         res.redirect(`/form/recat/higherSecurityReview/${bookingId}`)
       } else {
+        await formService.deleteFormData({
+          bookingId: bookingIdInt,
+          formSection: 'recat',
+          formName: 'higherSecurityReview',
+          transactionalClient: transactionalDbClient,
+        })
+        await formService.deleteFormData({
+          bookingId: bookingIdInt,
+          formSection: 'recat',
+          formName: 'miniHigherSecurityReview',
+          transactionalClient: transactionalDbClient,
+        })
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
+    })
+  )
+
+  router.post(
+    '/higherSecurityReview/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'recat'
+      const form = 'higherSecurityReview'
+      const formPageConfig = formConfig[section][form]
+
+      const valid = formService.isValid(formPageConfig, req, res, section, form, bookingId)
+      if (!valid) {
+        return
+      }
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
+
+      await formService.deleteFormData({
+        bookingId: parseInt(bookingId, 10),
+        formSection: 'recat',
+        formName: 'miniHigherSecurityReview',
+        transactionalClient: transactionalDbClient,
+      })
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      res.redirect(`${nextPath}${bookingId}`)
+    })
+  )
+
+  router.post(
+    '/miniHigherSecurityReview/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'recat'
+      const form = 'miniHigherSecurityReview'
+      const formPageConfig = formConfig[section][form]
+
+      const valid = formService.isValid(formPageConfig, req, res, section, form, bookingId)
+      if (!valid) {
+        return
+      }
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
+
+      await formService.deleteFormData({
+        bookingId: parseInt(bookingId, 10),
+        formSection: 'recat',
+        formName: 'higherSecurityReview',
+        transactionalClient: transactionalDbClient,
+      })
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
