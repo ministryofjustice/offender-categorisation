@@ -96,6 +96,22 @@ class DecisionSpecification extends GebReportingSpec {
     response.recat == [decision: [category : "B"], miniHigherSecurityReview:[conditions:'some text']]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
+
+    when: 'user changes their mind - higher security data is cleared'
+    categoryDOption.click()
+
+    submitButton.click()
+    at TasklistRecatPage
+
+    then: "data no longer includes higher security data"
+
+    def dataAfterClear = db.getData(12)
+    def responseAfterClear = new JsonSlurper().parseText(dataAfterClear.form_response[0].toString())
+    dataAfterClear.status == ['STARTED']
+    dataAfterClear.cat_type.value == ['RECAT']
+    responseAfterClear.recat == [decision: [category : "D"]]
+    dataAfterClear.user_id == ['RECATEGORISER_USER']
+    dataAfterClear.assigned_user_id == ['RECATEGORISER_USER']
   }
 
   def "The correct higher security page is displayed for C->B"() {
@@ -145,6 +161,26 @@ class DecisionSpecification extends GebReportingSpec {
                                                                            conditions: "Some conditions text", transferText: "Some transfer text"]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
+
+    when: 'user changes their mind - higher security data is cleared'
+    submitButton.click()
+    at TasklistRecatPage
+    decisionButton.click()
+    at DecisionPage
+    categoryDOption.click()
+
+    submitButton.click()
+    at TasklistRecatPage
+
+    then: "data no longer includes higher security data"
+
+    def dataAfterClear = db.getData(12)
+    def responseAfterClear = new JsonSlurper().parseText(dataAfterClear.form_response[0].toString())
+    dataAfterClear.status == ['STARTED']
+    dataAfterClear.cat_type.value == ['RECAT']
+    responseAfterClear.recat == [decision: [category : "D"]]
+    dataAfterClear.user_id == ['RECATEGORISER_USER']
+    dataAfterClear.assigned_user_id == ['RECATEGORISER_USER']
   }
 
   def 'Validation test'() {

@@ -31,6 +31,7 @@ const formService = {
   mergeRiskProfileData: jest.fn(),
   backToCategoriser: jest.fn(),
   isValid: jest.fn(),
+  deleteFormData: jest.fn(),
 }
 
 const offendersService = {
@@ -64,6 +65,7 @@ beforeEach(() => {
   formService.referToSecurityIfRequested.mockResolvedValue({})
   formService.isValid.mockResolvedValue(true)
   formService.isYoungOffender.mockReturnValue(false)
+  formService.deleteFormData.mockReturnValue({})
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
@@ -84,6 +86,7 @@ afterEach(() => {
   formService.mergeRiskProfileData.mockReset()
   formService.backToCategoriser.mockReset()
   formService.isValid.mockReset()
+  formService.deleteFormData.mockReset()
   offendersService.getOffenderDetails.mockReset()
   offendersService.getCatAInformation.mockReset()
   offendersService.getOffenceHistory.mockReset()
