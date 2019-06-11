@@ -7,6 +7,7 @@ const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 const formClient = {
   getFormDataForUser: jest.fn(),
   update: jest.fn(),
+  updateFormData: jest.fn(),
   create: jest.fn(),
   referToSecurity: jest.fn(),
   updateStatus: jest.fn(),
@@ -19,6 +20,7 @@ beforeEach(() => {
   service = serviceCreator(formClient)
   formClient.getFormDataForUser.mockReturnValue({ rows: [{ a: 'b' }, { c: 'd' }] })
   formClient.update.mockReturnValue({})
+  formClient.updateFormData.mockReturnValue({})
   formClient.create.mockReturnValue({})
   formClient.referToSecurity.mockReturnValue({})
   formClient.updateStatus.mockReturnValue({})
@@ -28,6 +30,7 @@ beforeEach(() => {
 afterEach(() => {
   formClient.getFormDataForUser.mockReset()
   formClient.update.mockReset()
+  formClient.updateFormData.mockReset()
   formClient.create.mockReset()
   formClient.referToSecurity.mockReset()
   formClient.updateStatus.mockReset()
@@ -692,5 +695,56 @@ describe('createOrRetrieveCategorisationRecord', () => {
       offenderNo: 'A4567RS',
       transactionalClient: mockTransactionalClient,
     })
+  })
+})
+
+describe('deleteFormData', () => {
+  test('happy path', async () => {
+    formClient.getFormDataForUser.mockReturnValue({
+      rows: [{ formObject: { a1: { b1: { c1: '123', c2: '321' }, b2ToRemove: { c1: '444' } } } }],
+    })
+
+    await service.deleteFormData({
+      bookingId,
+      formSection: 'a1',
+      formName: 'b2ToRemove',
+      transactionalClient: mockTransactionalClient,
+    })
+
+    expect(formClient.updateFormData).toBeCalledWith(
+      34,
+      { a1: { b1: { c1: '123', c2: '321' } } },
+      mockTransactionalClient
+    )
+  })
+
+  test('attempt to delete a form from a non existant section', async () => {
+    formClient.getFormDataForUser.mockReturnValue({
+      rows: [{ formObject: { a1: { b1: { c1: '123', c2: '321' }, b2ToRemove: { c1: '444' } } } }],
+    })
+
+    await service.deleteFormData({
+      bookingId,
+      formSection: 'a1NotThere',
+      formName: 'b2ToRemove',
+      transactionalClient: mockTransactionalClient,
+    })
+
+    expect(formClient.updateFormData).not.toBeCalled()
+  })
+
+  test('attempt to delete a non existant form', async () => {
+    formClient.getFormDataForUser.mockReturnValue({
+      rows: [{ formObject: { a1: { b1: { c1: '123', c2: '321' }, b2ToRemove: { c1: '444' } } } }],
+    })
+
+    await service.deleteFormData({
+      bookingId,
+      formSection: 'a1',
+      formName: 'b2NotThere',
+      transactionalClient: mockTransactionalClient,
+    })
+
+    expect(formClient.updateFormData).not.toBeCalled()
   })
 })

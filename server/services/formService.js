@@ -65,6 +65,31 @@ module.exports = function createFormService(formClient) {
     throw new Error(`Invalid state transition from ${currentCategorisation.status} to ${status}`)
   }
 
+  async function deleteFormData({ bookingId, formSection, formName, transactionalClient }) {
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
+
+    const updatedFormObject = removeFormdata(bookingId, currentCategorisation.formObject, formSection, formName)
+
+    if (updatedFormObject) {
+      await formClient.updateFormData(bookingId, updatedFormObject, transactionalClient)
+    }
+  }
+
+  function removeFormdata(bookingId, formObject, formSection, formName) {
+    const updated = Object.assign({}, formObject)
+    if (updated[formSection]) {
+      if (updated[formSection][formName]) {
+        log.debug(`deleting form for booking Id: ${bookingId}, form section: ${formSection}, form name: ${formName}`)
+        delete updated[formSection][formName]
+        return updated
+      }
+    }
+    log.debug(
+      `Unrequired call to remove form data for booking Id: ${bookingId}, form section: ${formSection}, form name: ${formName}`
+    )
+    return false
+  }
+
   async function supervisorApproval({ bookingId, config, userInput, formSection, formName, transactionalClient }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
@@ -372,5 +397,6 @@ module.exports = function createFormService(formClient) {
     getSecurityReferredOffenders,
     isYoungOffender,
     supervisorApproval,
+    deleteFormData,
   }
 }
