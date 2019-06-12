@@ -3,7 +3,6 @@ const addRequestId = require('express-request-id')()
 const catToolSerialisers = require('./catToolSerialisers')
 const helmet = require('helmet')
 const csurf = require('csurf')
-const uuidv4 = require('uuid/v4')
 const compression = require('compression')
 const passport = require('passport')
 const auth = require('./authentication/auth')
@@ -62,6 +61,15 @@ module.exports = function createApp({
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
   // 2. https://www.npmjs.com/package/helmet
   app.use(helmet())
+
+  // Setup thread-locals for services under main routers (must occur before requestLogger)
+  const ns = createNamespace('request.scope')
+  app.use(async (req, res, next) => {
+    // const ns = getNamespace('request.scope')
+    ns.bindEmitter(req)
+    ns.bindEmitter(res)
+    return ns.run(() => next())
+  })
 
   app.use(addRequestId)
 
@@ -143,11 +151,6 @@ module.exports = function createApp({
   function addTemplateVariables(req, res, next) {
     res.locals.user = req.user
     res.locals.currentRole = req.session && req.session.currentRole
-    res.locals.correlationId = uuidv4()
-
-    // TODO will do for now, need to come back and set correlationId for *all logging though:
-    logger.info(`Request started with correlationId=${res.locals.correlationId}`)
-
     next()
   }
 
@@ -221,20 +224,12 @@ module.exports = function createApp({
 
   app.use(authorisationMiddleware)
 
-  const ns = createNamespace('page.scope')
-
-  // Setup thread-locals for services under main routers
+  // Setup user thread-local
   app.use(async (req, res, next) => {
-    ns.bindEmitter(req)
-    ns.bindEmitter(res)
-    return ns.run(() => {
-      if (req.user && req.user.username) {
-        ns.set('user', req.user.username)
-      }
-      ns.set('correlationId', res.locals.correlationId)
-
-      return next()
-    })
+    if (req.user && req.user.username) {
+      ns.set('user', req.user.username)
+    }
+    return next()
   })
 
   const homeRouter = createHomeRouter({ userService, offendersService, authenticationMiddleware })

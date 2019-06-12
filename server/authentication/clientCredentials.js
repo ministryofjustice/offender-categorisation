@@ -29,7 +29,7 @@ function generate(clientId, clientSecret) {
 
 async function getApiClientToken() {
   const oauthRiskProfilerClientToken = generateOauthClientToken()
-  const handle = getNamespace('page.scope')
+  const handle = getNamespace('request.scope')
   const username = handle.get('user')
   const correlationId = handle.get('correlationId')
   const oauthRequest = querystring.stringify({ grant_type: 'client_credentials', username })
