@@ -305,9 +305,7 @@ module.exports = function Index({
   const requiresOpenConditions = async (bookingId, userId, transactionalDbClient) => {
     const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
     log.info(
-      `Open conditions requested for booking Id: ${bookingId}, offender No: ${
-        categorisationRecord.offenderNo
-      }. user name: ${userId}`
+      `Open conditions requested for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
     )
 
     const dataToStore = {
