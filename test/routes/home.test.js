@@ -91,7 +91,7 @@ describe('GET /categoriserDone', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('No categorised offenders found')
+        expect(res.text).toContain('No categorised prisoners found')
         expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
       }))
 })

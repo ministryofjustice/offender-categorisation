@@ -43,7 +43,7 @@ class OffendingHistorySpecification extends GebReportingSpec {
 
     then: 'a Cat A warning and offence history is displayed'
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    catAWarning.text() contains 'This offender was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
+    catAWarning.text() contains 'This prisoner was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
     !catAInfo.displayed
     history*.text() == ['Libel (21/02/2019)', 'Slander (22/02/2019 - 24/02/2019)', 'Undated offence']
 
