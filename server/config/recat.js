@@ -124,6 +124,20 @@ module.exports = {
     fields: [],
     validate: true,
   },
+  nextReviewDate: {
+    fields: [
+      {
+        date: {
+          responseType: 'futureDate',
+          validationMessage: 'Enter a valid date that is after today',
+        },
+      },
+    ],
+    validate: true,
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+  },
   review: {
     nextPath: {
       path: '/tasklistRecat/recategoriserSubmitted/',

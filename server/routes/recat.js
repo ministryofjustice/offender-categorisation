@@ -241,6 +241,41 @@ module.exports = function Index({ formService, offendersService, userService, au
     })
   )
 
+  router.post(
+    '/nextReviewReview/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'recat'
+      const form = 'miniHigherSecurityReview'
+      const formPageConfig = formConfig[section][form]
+
+      const valid = formService.isValid(formPageConfig, req, res, section, form, bookingId)
+      if (!valid) {
+        return
+      }
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: clearConditionalFields(req.body),
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
+
+      await formService.deleteFormData({
+        bookingId: parseInt(bookingId, 10),
+        formSection: 'recat',
+        formName: 'higherSecurityReview',
+        transactionalClient: transactionalDbClient,
+      })
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      res.redirect(`${nextPath}${bookingId}`)
+    })
+  )
+
   const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
   router.post(

@@ -2,6 +2,11 @@ const baseJoi = require('joi')
 const dateExtend = require('joi-date-extensions')
 const postcodeExtend = require('joi-postcode')
 const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
+const moment = require('moment')
+
+const today = moment()
+  .startOf('day')
+  .format('MM/DD/YYYY')
 
 const joi = baseJoi.extend(dateExtend).extend(postcodeExtend)
 
@@ -22,6 +27,11 @@ const fieldOptions = {
   requiredYear: joi
     .date()
     .format('YYYY')
+    .required(),
+  futureDate: joi
+    .date()
+    .format('D/M/YYYY')
+    .min(today)
     .required(),
   requiredPostcode: joi.postcode().required(),
   requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
