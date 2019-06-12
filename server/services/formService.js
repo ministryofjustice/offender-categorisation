@@ -284,9 +284,7 @@ module.exports = function createFormService(formClient) {
       try {
         await formClient.updateStatus(bookingId, Status.SUPERVISOR_BACK.name, transactionalClient)
         log.info(
-          `Supervisor sent back categorisation record for : ${bookingId}, offender No: ${
-            currentCategorisation.offenderNo
-          }. user name: ${currentCategorisation.userId}`
+          `Supervisor sent back categorisation record for : ${bookingId}, offender No: ${currentCategorisation.offenderNo}. user name: ${currentCategorisation.userId}`
         )
       } catch (error) {
         logger.error(error)

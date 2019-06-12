@@ -164,9 +164,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       openConditionsRequested: false,
     }
     log.info(
-      `Open conditions cancelled for booking Id: ${bookingId}, offender No: ${
-        categorisationRecord.offenderNo
-      }. user name: ${userId}`
+      `Open conditions cancelled for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
     )
     await formService.updateFormData(bookingId, dataToStore, transactionalDbClient)
   }
