@@ -91,7 +91,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', transferToSecurity)
-    browser.via TasklistRecatPage, '12'
+    browser.selectFirstPrisoner()
   }
 
   def gotoTasklistRecatForCatI(transferToSecurity = false) {
@@ -101,7 +101,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', true, false, 'I')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'I', transferToSecurity)
-    browser.via TasklistRecatPage, '12'
+    browser.selectFirstPrisoner()
   }
 
   def simulateLogin() {

@@ -1,0 +1,126 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set guidance %}<div class="govuk-!-font-weight-bold govuk-!-margin-top-2">Consider information from:</div>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>OASys</li>
+    <li>CSIP notes</li>
+    <li>Adjudications</li>
+    <li>The individual’s keyworker</li>
+    <li>NOMIS case notes</li>
+  </ul>
+{% endset %}
+
+{% set otherRelevantTextHtml %}
+  {{ govukCharacterCount({
+    name: "otherRelevantText",
+    type: "otherRelevantText",
+    id: "otherRelevantText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Please enter details"
+    },
+    value: data.recat.riskAssessment.otherRelevantText,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('otherRelevantText'))
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+  <h1 class="govuk-heading-l">Risk assessment</h1>
+
+  <p>To help you make a decision, you are going to consider two different viewpoints. You will make your decision
+    afterwards.</p>
+  <p>
+    You should consider these risks:
+  <ul>
+    <li>Do you think they could escape?</li>
+    <li>If they escaped, would they be a risk to the public?</li>
+    <li>Are they likely to commit criminal activity in custody?</li>
+    <li>Are they a danger to the safety of prisoner officers or prisoners?</li>
+    <li>Do they disrupt the security or good order of the prison?</li>
+  </ul>
+  </p>
+
+  {{ govukCharacterCount({
+    name: "lowerCategory",
+    type: "lowerCategory",
+    id: "lowerCategory",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Could they be managed in a lower security category?"
+    },
+    hint: {
+      text: "Enter any information supporting this."
+    },
+    value: data.recat.riskAssessment.lowerCategory,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('lowerCategory'))
+  }) }}
+
+  {{ govukDetails({
+    summaryText: "Information sources to consider",
+    html: guidance
+  }) }}
+
+  {{ govukCharacterCount({
+    name: "higherCategory",
+    type: "higherCategory",
+    id: "higherCategory",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Could they be managed in a higher security category?"
+    },
+    hint: {
+      text: "Enter any information supporting this."
+    },
+    value: data.recat.riskAssessment.higherCategory,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('higherCategory'))
+  }) }}
+
+  {{ govukDetails({
+    summaryText: "Information sources to consider",
+    html: guidance
+  }) }}
+
+  {{ govukRadios({
+    name: "otherRelevant",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Is there any other relevant information you want to record?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('otherRelevant')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.recat.riskAssessment.otherRelevant === 'Yes',
+        conditional: {
+          html: otherRelevantTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.recat.riskAssessment.otherRelevant === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endblock %}
