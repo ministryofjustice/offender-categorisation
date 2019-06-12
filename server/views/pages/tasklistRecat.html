@@ -32,7 +32,7 @@ href: backLink or "/"
   {% set securityInputCompleted = data.recat.securityInput.securityInputNeeded === 'No' or data.recat.securityBack %}
   {% set riskAssessmentCompleted = data.recat.riskAssessment.otherRelevant %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
-  {% set nextReviewDateCompleted = data.recat.nextReviewDate.tbc %}
+  {% set nextReviewDateCompleted = data.recat.nextReviewDate.date %}
   {% set openConditionsRequested = data.openConditionsRequested %}
   {% set decisionCompleted = data.recat.decision.category %}
   {% set allSectionsCompleted = prisonerBackgroundCompleted and securityInputCompleted and not locked and categoryDecisionCompleted and riskAssessmentCompleted

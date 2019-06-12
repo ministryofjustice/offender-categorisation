@@ -112,6 +112,7 @@ describe('recat', () => {
     formName                  | userInput                  | nextPath
     ${'higherSecurityReview'} | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
     ${'riskAssessment'}       | ${{ otherRelevant: 'No' }} | ${'/tasklistRecat/'}
+    ${'nextReviewDate'}       | ${{ date: '23/05/2025' }}  | ${'/tasklistRecat/'}
   `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
