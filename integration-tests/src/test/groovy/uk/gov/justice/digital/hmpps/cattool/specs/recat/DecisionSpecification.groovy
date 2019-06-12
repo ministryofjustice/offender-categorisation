@@ -186,7 +186,7 @@ class DecisionSpecification extends GebReportingSpec {
   def 'Validation test'() {
     when: 'I submit the page with empty details'
     fixture.gotoTasklistRecat(false)
-
+    at TasklistRecatPage
     decisionButton.click()
     to DecisionPage, '12'
 
