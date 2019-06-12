@@ -109,7 +109,7 @@ class ViolenceSpecification extends GebReportingSpec {
     then: 'The violence page is displayed with the safer custody lead message'
     at ViolencePage
     waitFor {
-      warning.text() contains 'Please notify your safer custody lead about this offender'
+      warning.text() contains 'Please notify your safer custody lead about this prisoner'
       !info.displayed
     }
   }
