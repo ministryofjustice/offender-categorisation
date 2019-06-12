@@ -112,7 +112,7 @@ class HomePageSpecification extends GebReportingSpec {
     prisonNos == ['B2345XY','B2345YZ']
     names == ['Pitstop, Penelope', 'Hillmob, Ant']
     dates == ['25/07/2019','27/07/2019']
-    reasons == ['Categorisation review due', 'Categorisation review due']
+    reasons == ['Review due', 'Review due']
     statuses == ['Not started', 'Not started']
     startButtons[0].text() == 'Start'
   }
