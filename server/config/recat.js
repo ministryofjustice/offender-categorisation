@@ -1,4 +1,36 @@
 module.exports = {
+  riskAssessment: {
+    fields: [
+      {
+        lowerCategory: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter lower security category details',
+        },
+      },
+      {
+        higherCategory: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter higher security category details',
+        },
+      },
+      {
+        otherRelevant: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+      {
+        otherRelevantText: {
+          responseType: 'requiredStringIf_otherRelevant_Yes',
+          validationMessage: 'Please enter other relevant information',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    validate: true,
+  },
   higherSecurityReview: {
     fields: [
       {

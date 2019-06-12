@@ -97,6 +97,7 @@ describe('recat', () => {
   test.each`
     path                      | expectedContent
     ${'higherSecurityReview'} | ${'Higher Security Review'}
+    ${'riskAssessment'}       | ${'Risk assessment'}
   `('Get should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}/12345`)
@@ -108,8 +109,9 @@ describe('recat', () => {
   )
 
   test.each`
-    formName                  | userInput             | nextPath
-    ${'higherSecurityReview'} | ${{ transfer: 'No' }} | ${'/tasklistRecat/'}
+    formName                  | userInput                  | nextPath
+    ${'higherSecurityReview'} | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
+    ${'riskAssessment'}       | ${{ otherRelevant: 'No' }} | ${'/tasklistRecat/'}
   `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
