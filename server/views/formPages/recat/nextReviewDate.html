@@ -1,0 +1,42 @@
+{% extends "../../formPages/formTemplate.html" %}
+{% from "input/macro.njk" import govukInput %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "button/macro.njk" import govukButton %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% block formItems %}
+
+{% from "date-input/macro.njk" import govukDateInput %}
+
+<h1 id="higherSecurityReviewHeader" class="govuk-heading-l">Next category review date</h1>
+
+{{ govukInput({
+  id: "reviewDate",
+  name: "date",
+  label: {
+    text: "What date should they be reviewed by?"
+  },
+  errorMessage: {
+    text: "Enter a valid date that is after today"
+  } if (errors | findError('date')),
+  hint: {
+    text: "For example, 2/1/2018"
+  },
+  classes: "dateInputWidth",
+  value: data.recat.nextReviewDate.date
+}) }}
+
+ {% set guidance %}
+    <div class="govuk-!-font-weight-bold">Three or more years left in custody</div>
+    <div>They should be reviewed within the next 12 months</div>
+    <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Less than three years left in custody</div>
+    <div>They should be reviewed within the next 6 months</div>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "How to choose a date for a prisoner",
+    html: guidance
+  }) }}
+
+
+{% endblock %}
