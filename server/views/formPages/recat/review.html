@@ -1,0 +1,45 @@
+{% extends "../formTemplate.html" %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% set greenButtonText = "Save and submit" %}
+{% set extraButtonClasses = "govuk-grid-row" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink
+  }) }}
+
+  <div class="govuk-body-m govuk-!-margin-left-4">
+    {% include "../../partials/offenderDetails.html" %}
+    <hr/>
+  </div>
+
+{% endblock %}
+
+{% block formItems %}
+
+<div class="govuk-grid-row govuk-body-s">
+  <div>
+
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8 main-heading">Check your answers before submitting</h1>
+
+    {{ govukWarningText({
+      text: "Your answers may be disclosed to the prisoner",
+      iconFallbackText: "Warning",
+      classes: "warning-overrides"
+    }) }}
+
+    {% set showChangeLinks = true %}
+    {% include "../../partials/reviewContentsRecat.html" %}
+
+    {% if (data.openConditionsRequested) %}
+      <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+
+      {% set showOpenConditionChangeLinks = true %}
+      {% include "../../partials/reviewContentsOpenConditions.html" %}
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

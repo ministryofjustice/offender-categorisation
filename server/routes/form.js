@@ -302,19 +302,6 @@ module.exports = function Index({
     return updated
   }
 
-  const requiresOpenConditions = async (bookingId, userId, transactionalDbClient) => {
-    const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-    log.info(
-      `Open conditions requested for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
-    )
-
-    const dataToStore = {
-      ...categorisationRecord.formObject, // merge any existing form data
-      openConditionsRequested: true,
-    }
-    await formService.updateFormData(bookingId, dataToStore, transactionalDbClient)
-  }
-
   router.post(
     '/ratings/securityInput/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
@@ -387,7 +374,6 @@ module.exports = function Index({
         return
       }
 
-      // TODO tech debt - 1. no transaction boundary for these two db updates 2. investigate combining, status validation only performed on second part
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
@@ -454,7 +440,7 @@ module.exports = function Index({
           transactionalClient: transactionalDbClient,
           logUpdate: true,
         })
-        await requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
+        await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
 
         // redirect to tasklist for open conditions
         res.redirect(`/tasklist/${bookingId}`)
@@ -507,7 +493,7 @@ module.exports = function Index({
           transactionalClient: transactionalDbClient,
           logUpdate: true,
         })
-        await requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
+        await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
 
         // Reset cat so it appears the categoriser originally chose open conditions!
         const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)

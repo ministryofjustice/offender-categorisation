@@ -28,10 +28,19 @@ const formService = {
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
   updateFormData: jest.fn(),
+  setAwaitingApproval: jest.fn(),
+  requiresOpenConditions: jest.fn(),
   mergeRiskProfileData: jest.fn(),
   backToCategoriser: jest.fn(),
   isValid: jest.fn(),
   deleteFormData: jest.fn(),
+}
+
+const riskProfilerService = {
+  getSecurityProfile: jest.fn(),
+  getViolenceProfile: jest.fn(),
+  getEscapeProfile: jest.fn(),
+  getExtremismProfile: jest.fn(),
 }
 
 const offendersService = {
@@ -52,6 +61,7 @@ const formRoute = createRouter({
   formService,
   offendersService,
   userService,
+  riskProfilerService,
   authenticationMiddleware,
 })
 
@@ -70,6 +80,10 @@ beforeEach(() => {
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
+  riskProfilerService.getSecurityProfile.mockResolvedValue({})
+  riskProfilerService.getViolenceProfile.mockResolvedValue({})
+  riskProfilerService.getExtremismProfile.mockResolvedValue({})
+  riskProfilerService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
@@ -91,6 +105,10 @@ afterEach(() => {
   offendersService.getCatAInformation.mockReset()
   offendersService.getOffenceHistory.mockReset()
   userService.getUser.mockReset()
+  riskProfilerService.getSecurityProfile.mockReset()
+  riskProfilerService.getViolenceProfile.mockReset()
+  riskProfilerService.getExtremismProfile.mockReset()
+  riskProfilerService.getEscapeProfile.mockReset()
 })
 
 describe('recat', () => {
@@ -107,6 +125,34 @@ describe('recat', () => {
         expect(res.text).toContain(expectedContent)
       })
   )
+
+  describe('GET /form/recat/securityInput', () => {
+    test.each`
+      path                     | expectedContent
+      ${'securityInput/12345'} | ${'Security information'}
+    `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+      request(app)
+        .get(`/${path}`)
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toContain(expectedContent)
+          expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
+        })
+    )
+    test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
+      formService.getCategorisationRecord.mockResolvedValue({
+        status: 'SECURITY_MANUAL',
+        bookingId: 12,
+        displayName: 'Tim Handle',
+        displayStatus: 'Any other status',
+      })
+      return request(app)
+        .get('/securityInput/12345')
+        .expect(302)
+        .expect('Location', `/tasklistRecat/12345`)
+    })
+  })
 
   test.each`
     formName                  | userInput                  | nextPath
@@ -201,6 +247,50 @@ describe('POST /form/recat/decision', () => {
           formName,
           transactionalClient: mockTransactionalClient,
         })
+      })
+  })
+})
+
+describe('POST /form/recat/review', () => {
+  test.each`
+    formName    | userInput | nextPath
+    ${'review'} | ${{}}     | ${'/tasklistRecat/recategoriserSubmitted/'}
+  `('Post for $sectionName/$formName, input $userInput should go to $nextPath', ({ formName, userInput, nextPath }) => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'B' }, nextReviewDate: { date: '16/02/2020' } } },
+    })
+    return request(app)
+      .post(`/${formName}/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect('Location', `${nextPath}12345`)
+      .expect(() => {
+        expect(formService.update).toBeCalledTimes(0)
+        expect(offendersService.createInitialCategorisation).toBeCalledWith({
+          token: 'ABCDEF',
+          bookingId: '12345',
+          overriddenCategoryText: 'Cat-tool Recat',
+          suggestedCategory: 'B',
+          nextReviewDate: '16/02/2020',
+        })
+        expect(formService.setAwaitingApproval).toBeCalledWith('12345', mockTransactionalClient)
+      })
+  })
+
+  test('POST /form/recat/review open conditions', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'J' }, nextReviewDate: { date: '16/02/2020' } } },
+    })
+    return request(app)
+      .post(`/review/12345`)
+      .expect(302)
+      .expect('Location', `/tasklistRecat/12345`)
+      .expect(() => {
+        expect(formService.requiresOpenConditions).toBeCalledWith('12345', 'CA_USER_TEST', mockTransactionalClient)
       })
   })
 })
