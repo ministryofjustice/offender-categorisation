@@ -461,12 +461,20 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     overriddenCategory,
     suggestedCategory,
     overriddenCategoryText,
+    nextReviewDate,
   }) {
     const category = overriddenCategory || suggestedCategory
     const comment = overriddenCategoryText || ''
     const nomisClient = nomisClientBuilder(token)
+    const nextReviewDateConverted = nextReviewDate && moment(nextReviewDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
     try {
-      await nomisClient.createInitialCategorisation({ bookingId, category, committee: 'Cat-tool', comment })
+      await nomisClient.createInitialCategorisation({
+        bookingId,
+        category,
+        committee: 'Cat-tool',
+        comment,
+        nextReviewDate: nextReviewDateConverted,
+      })
     } catch (error) {
       logger.error(error, 'Error during createInitialCategorisation')
       throw error

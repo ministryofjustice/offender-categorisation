@@ -108,7 +108,7 @@ class ReviewSpecification extends GebReportingSpec {
 
   def "The review page can be displayed without security input"() {
     given: 'data has been entered for the ratings pages'
-    db.createDataWithStatus(12, 'SECURITY_BACK', JsonOutput.toJson([
+    db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         furtherCharges  : [furtherCharges: 'No', furtherChargesCatB: 'No'],

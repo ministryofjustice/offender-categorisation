@@ -592,11 +592,16 @@ class Elite2Api extends WireMockRule {
           .withStatus(200)))
   }
 
-  def stubCategorise(String expectedCat) {
+  def stubCategorise(String expectedCat, String nextReviewDate = '') {
+
+    def expectedBody = [category: expectedCat]
+    if (nextReviewDate) {
+      expectedBody.nextReviewDate = nextReviewDate
+    }
 
     this.stubFor(
       post("/api/offender-assessments/category/categorise")
-        .withRequestBody(equalToJson(JsonOutput.toJson([category : expectedCat]), true, true))
+        .withRequestBody(equalToJson(JsonOutput.toJson(expectedBody), true, true))
         .willReturn(
         aResponse()
           .withHeader('Content-Type', 'application/json')
