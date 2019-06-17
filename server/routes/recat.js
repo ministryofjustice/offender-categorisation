@@ -1,10 +1,12 @@
 const express = require('express')
 const flash = require('connect-flash')
+const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const recat = require('../config/recat')
 const Status = require('../utils/statusEnum')
+const log = require('../../log')
 
 const formConfig = {
   recat,
@@ -242,6 +244,48 @@ module.exports = function Index({ formService, offendersService, userService, au
   )
 
   const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
+
+  router.post(
+    '/review/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'recat'
+      const form = 'review'
+      const formPageConfig = formConfig[section][form]
+
+      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+      const suggestedCategory = R.path(['formObject', 'recat', 'decision', 'category'], formData)
+      if (suggestedCategory) {
+        if (suggestedCategory !== 'D' && suggestedCategory !== 'J') {
+          log.info(`Categoriser creating recat categorisation record:`)
+          await formService.setAwaitingApproval(bookingId, transactionalDbClient)
+
+          const nextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], formData)
+          await offendersService.createInitialCategorisation({
+            token: res.locals.user.token,
+            bookingId,
+            suggestedCategory,
+            overriddenCategoryText: 'Cat-tool Recat',
+            nextReviewDate,
+          })
+
+          const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+          res.redirect(`${nextPath}${bookingId}`)
+        } else {
+          // persist the open conditions override and return to complete the open conditions route
+          log.info(`Categoriser recat - adding open conditions`)
+
+          await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
+
+          // redirect to tasklist for open conditions
+          res.redirect(`/tasklistRecat/${bookingId}`)
+        }
+      } else {
+        throw new Error('category has not been specified')
+      }
+    })
+  )
 
   router.post(
     '/:form/:bookingId',

@@ -51,7 +51,7 @@ const stripAgencyPrefix = (location, agency) => {
 }
 
 const getLongDateFormat = date => {
-  if (date && date !== 'Today') return moment(date, 'DD/MM/YYYY').format('dddd Do MMMM')
+  if (date && date !== 'Today') return moment(date, 'DD/MM/YYYY').format('dddd Do MMMM YYYY')
   return moment().format('dddd Do MMMM')
 }
 
