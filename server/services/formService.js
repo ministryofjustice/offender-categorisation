@@ -295,6 +295,25 @@ module.exports = function createFormService(formClient) {
     }
   }
 
+  async function setAwaitingApproval(bookingId, transactionalClient) {
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
+    const currentStatus = currentCategorisation.status
+    if (validateStatusIfProvided(currentStatus, Status.AWAITING_APPROVAL.name)) {
+      try {
+        await formClient.updateStatus(bookingId, Status.AWAITING_APPROVAL.name, transactionalClient)
+        log.info(
+          `Supervisor sent back categorisation record for : ${bookingId}, offender No: ${currentCategorisation.offenderNo}. user name: ${currentCategorisation.userId}`
+        )
+      } catch (error) {
+        logger.error(error)
+        throw error
+      }
+    } else {
+      logger.error(`Cannot transition from status ${currentStatus} to AWAITING_APPROVAL, bookingId=${bookingId}`)
+      throw new Error(`Cannot transition from status ${currentStatus} to AWAITING_APPROVAL`)
+    }
+  }
+
   async function securityReviewed(bookingId, userId, transactionalClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     const currentStatus = currentCategorisation.status
@@ -375,6 +394,19 @@ module.exports = function createFormService(formClient) {
     return true
   }
 
+  async function requiresOpenConditions(bookingId, userId, transactionalDbClient) {
+    const categorisationRecord = await getCategorisationRecord(bookingId, transactionalDbClient)
+    log.info(
+      `Open conditions requested for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
+    )
+
+    const dataToStore = {
+      ...categorisationRecord.formObject, // merge any existing form data
+      openConditionsRequested: true,
+    }
+    await updateFormData(bookingId, dataToStore, transactionalDbClient)
+  }
+
   return {
     getCategorisationRecord,
     update,
@@ -388,8 +420,10 @@ module.exports = function createFormService(formClient) {
     createOrRetrieveCategorisationRecord,
     createCategorisationRecord,
     backToCategoriser,
+    setAwaitingApproval,
     validate,
     isValid,
+    requiresOpenConditions,
     getCategorisedOffenders,
     getSecurityReviewedOffenders,
     getSecurityReferredOffenders,

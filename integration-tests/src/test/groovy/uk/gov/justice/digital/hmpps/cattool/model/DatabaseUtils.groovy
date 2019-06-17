@@ -37,7 +37,8 @@ class DatabaseUtils {
   }
 
   def createDataWithStatusAndCatType(bookingId, status, json, catType) {
-    doCreateCompleteRow(-1, bookingId, json, 'CATEGORISER_USER', status, catType, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
+    def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
+    doCreateCompleteRow(-1, bookingId, json, userId, status, catType, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
 
   def createData(id, bookingId, json) {

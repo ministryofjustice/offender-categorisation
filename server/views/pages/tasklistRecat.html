@@ -28,14 +28,14 @@ href: backLink or "/"
 
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
 
-  {% set prisonerBackgroundCompleted = data.recat.prisonerBackground.tbc %}
+  {% set prisonerBackgroundCompleted = data.recat %} {# .prisonerBackground.tbc #}
   {% set securityInputCompleted = data.recat.securityInput.securityInputNeeded === 'No' or data.recat.securityBack %}
   {% set riskAssessmentCompleted = data.recat.riskAssessment.otherRelevant %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
   {% set nextReviewDateCompleted = data.recat.nextReviewDate.date %}
   {% set openConditionsRequested = data.openConditionsRequested %}
   {% set decisionCompleted = data.recat.decision.category %}
-  {% set allSectionsCompleted = prisonerBackgroundCompleted and securityInputCompleted and not locked and categoryDecisionCompleted and riskAssessmentCompleted
+  {% set allSectionsCompleted = prisonerBackgroundCompleted and securityInputCompleted and not locked and decisionCompleted and riskAssessmentCompleted
                                 and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
   <div class="govuk-grid-row govuk-!-width-two-thirds">
@@ -135,7 +135,7 @@ href: backLink or "/"
               {% set completionText = "Completed" if allSectionsCompleted else "Tasks not yet complete" %}
               {{ govukButton({
                 text: "Continue",
-                href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
+                href: "/form/recat/review/" + data.details.bookingId if allSectionsCompleted,
                 disabled: not allSectionsCompleted,
                 classes: "govuk-button tableButton app-task-list__task-completed"
               }) }}
