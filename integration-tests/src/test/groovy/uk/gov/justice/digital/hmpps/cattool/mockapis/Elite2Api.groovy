@@ -573,7 +573,9 @@ class Elite2Api extends WireMockRule {
               assessmentDescription: 'Categorisation',
               cellSharingAlertFlag : false,
               assessmentDate       : '2012-04-04',
-              nextReviewDate       : '2012-06-07'
+              nextReviewDate       : '2012-06-07',
+              approvalDate         : '2012-06-08',
+              assessmentAgencyId   : "LPI"
             ],
             [
               bookingId            : -45,
@@ -584,7 +586,9 @@ class Elite2Api extends WireMockRule {
               assessmentDescription: 'Categorisation',
               cellSharingAlertFlag : false,
               assessmentDate       : '2013-03-24',
-              nextReviewDate       : '2013-09-17'
+              nextReviewDate       : '2013-09-17',
+              approvalDate         : '2012-06-08',
+              assessmentAgencyId   : "LPI"
             ]
           ])
         )
@@ -627,6 +631,25 @@ class Elite2Api extends WireMockRule {
         .withRequestBody(equalToJson(JsonOutput.toJson([category : expectedCat]), true, true))
         .willReturn(
         aResponse()
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
+  def stubAgencyDetails(agency) {
+
+    this.stubFor(
+      get("/api/agencies/$agency")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+
+           agencyId: "MDI",
+           description: "Moorland (HMP & YOI)",
+           agencyType: "INST"
+
+        ]
+        ))
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
     )

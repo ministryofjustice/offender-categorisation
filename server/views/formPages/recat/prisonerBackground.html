@@ -1,0 +1,156 @@
+{% extends "../formTemplate.html" %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% macro renderAlert(alert) %}
+<p class="govuk-!-margin-bottom-1">{{ alert.alertCode }} {{ alert.comment }} <strong>{{ alert.dateCreated }}</strong>
+  {% if alert.expired %} (expired){% endif %}
+  {% if not alert.active %} (inactive){% endif %}
+</p>
+{% endmacro %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l" id="mainHeader">Prisoner background</h1>
+
+<h1 class="govuk-heading-m govuk-!-margin-bottom-0">Reason for categorisation review</h1>
+<p>todo</p>
+
+<h1 class="govuk-heading-m govuk-!-margin-top-7">Categorisation history for this sentence</h1>
+
+
+{% if data.categorisations | length > 0 %}
+ <table class="govuk-table" id="categoryHistory" >
+    <thead class="govuk-table__head">
+
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Categorisation date</th>
+      <th class="govuk-table__header" scope="col">Category decision</th>
+      <th class="govuk-table__header" scope="col">Review location</th>
+    </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    {% for row in data.categorisations %}
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">{{ row.assessmentDateDisplay }}</td>
+      <td class="govuk-table__cell">{{ row.classificationCode }}</td>
+      <td class="govuk-table__cell">{{ row.agencyDescription }}</td>
+    </tr>
+   {% endfor %}
+    </tbody>
+ </table>
+{% else %}
+   <div class="govuk-!-padding-top-4">
+     <div id="no-results-message">There are no previous categorisations.</div>
+   </div>
+{% endif %}
+
+<h1 class="govuk-heading-m govuk-!-padding-top-3">Known risks to consider</h1>
+
+<h1 class="govuk-heading-s">Safety and good order</h1>
+
+  {% if data.violenceProfile.displayAssaults %}
+    {% set warningText %}
+      This person has been reported as the perpetrator in {{ data.violenceProfile.numberOfAssaults }} assaults in custody before,
+      including {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults in the last 12 months
+    {% endset %}
+    {{ govukWarningText({
+      text: warningText,
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides",
+      attributes: {  'id': 'violenceWarning' }
+    }) }}
+  {% elif data.violenceProfile.notifySafetyCustodyLead %}
+    {{ govukWarningText({
+      text: 'Please notify your safer custody lead about this prisoner',
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides",
+      attributes: {  'id': 'violenceNotifyWarning' }
+    }) }}
+  {% else %}
+    {{ govukInsetText({
+      text: "This person has not been reported as the perpetrator in any assaults in custody before.",
+      attributes: {  'id': 'violenceInfo' }
+    }) }}
+  {% endif %}
+
+<h1 class="govuk-heading-s">Risk of escape</h1>
+
+{% if data.escapeProfile.activeEscapeList or data.escapeProfile.activeEscapeRisk %}
+  {{ govukWarningText({
+    text: 'This person is considered an escape risk',
+    iconFallbackText: "Warning",
+    classes: "forms-warning-text warning-overrides",
+    attributes: {  'id': 'escapeWarning' }
+  }) }}
+
+  <h2 class="govuk-heading-s">Alert notes</h2>
+  <div class="govuk-details__text govuk-!-margin-bottom-3" id="alertDetails">
+    {% for alert in data.escapeProfile.escapeListAlerts %}
+      {{ renderAlert(alert) }}
+    {% endfor %}
+    {% for alert in data.escapeProfile.escapeRiskAlerts %}
+      {{ renderAlert(alert) }}
+    {% endfor %}
+  </div>
+
+{% else %}
+  <input type="hidden" name="escapeCatB" value="No" />
+  {{ govukInsetText({
+    text: "This person is not considered an escape risk.",
+    attributes: {  'id': 'escapeInfo' }
+  }) }}
+{% endif %}
+
+<h1 class="govuk-heading-s">Extremism</h1>
+
+  {% if data.extremismProfile.increasedRiskOfExtremism %}
+    {{ govukWarningText({
+      text: "This person is at risk of engaging in, or vulnerable to, extremism",
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides",
+      attributes: {  'id': 'extremismWarning' }
+    }) }}
+  {% else %}
+    {{ govukInsetText({
+      text: "This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.",
+      attributes: {  'id': 'extremismInfo' }
+    }) }}
+  {% endif %}
+
+  {% if data.extremismProfile.notifyRegionalCTLead %}
+  <p class="govuk-heading-s">Please notify your regional CT lead that you have this person in custody</p>
+  {% endif %}
+
+<h1 class="govuk-heading-m">Other sources to check</h1>
+  <p>
+    If available, you may want to manually check the following sources:
+  <ul>
+    <li>Oasys</li>
+    <li>CSIP notes</li>
+    <li>VIPER</li>
+    <li>NOMIS case notes</li>
+  </ul>
+  </p>
+
+<h1 class="govuk-heading-m govuk-!-padding-top-3">Offence details for active sentences</h1>
+
+{{ govukCharacterCount({
+    name: "offenceDetails",
+    type: "offenceDetails",
+    id: "offenceDetails",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Copy them from another source."
+    },
+    value: data.recat.prisonerBackground.offenceDetails,
+    errorMessage: {
+      text: "Please enter details"
+    } if (errors | findError('offenceDetails'))
+  }) }}
+
+{% endblock %}
