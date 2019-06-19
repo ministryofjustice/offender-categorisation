@@ -34,7 +34,7 @@ class PrisonerBackgroundSpecification extends GebReportingSpec {
   DatabaseUtils db = new DatabaseUtils()
 
   def "The page displays all warnings and saves details correctly"() {
-    when: 'I go to the Higher Security Review page'
+    when: 'I go to the Prisoner background page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
 
@@ -81,7 +81,7 @@ class PrisonerBackgroundSpecification extends GebReportingSpec {
     data.assigned_user_id == ['RECATEGORISER_USER']
   }
 
-  def ''() {
+  def 'The page validates correctly'() {
     when: 'I submit the page with empty details'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
