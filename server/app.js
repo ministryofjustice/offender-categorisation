@@ -259,6 +259,7 @@ module.exports = function createApp({
     formService,
     offendersService,
     userService,
+    riskProfilerService,
     authenticationMiddleware,
   })
   app.use('/form/recat/', recatRouter)

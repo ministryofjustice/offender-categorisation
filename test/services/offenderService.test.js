@@ -18,6 +18,8 @@ const nomisClient = {
   createInitialCategorisation: jest.fn(),
   createSupervisorApproval: jest.fn(),
   getCategory: jest.fn(),
+  getCategoryHistory: jest.fn(),
+  getAgencyDetail: jest.fn(),
 }
 
 const formService = {
@@ -47,6 +49,8 @@ afterEach(() => {
   nomisClient.createSupervisorApproval.mockReset()
   formService.getCategorisationRecord.mockReset()
   formService.getSecurityReferredOffenders.mockReset()
+  nomisClient.getCategoryHistory.mockReset()
+  nomisClient.getAgencyDetail.mockReset()
 })
 
 function todaySubtract(days) {
@@ -525,5 +529,89 @@ describe('isRecat', () => {
     nomisClient.getCategory.mockReturnValue({ classificationCode: 'Z' })
     const result = await service.isRecat('token', 12345, mockTransactionalClient)
     expect(result).toBe(false)
+  })
+})
+
+describe('getPrisonerBackground', () => {
+  test('it should return a list of historical categorisations', async () => {
+    const cats = [
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        classification: 'Cat A',
+        assessmentDate: '2012-04-04',
+        assessmentAgencyId: 'MDI',
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'B',
+        classification: 'Cat B',
+        assessmentDate: '2013-03-24',
+        assessmentAgencyId: 'MDI',
+      },
+    ]
+
+    nomisClient.getCategoryHistory.mockReturnValue(cats)
+    nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
+
+    const expected = [
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        assessmentDate: '2012-04-04',
+        assessmentDateDisplay: '04/04/2012',
+        agencyDescription: 'Moorlands',
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'B',
+        assessmentDate: '2013-03-24',
+        assessmentDateDisplay: '24/03/2013',
+        assessmentAgencyId: 'MDI',
+        agencyDescription: 'Moorlands',
+      },
+    ]
+
+    const result = await service.getPrisonerBackground('token', 'ABC1')
+
+    expect(nomisClient.getAgencyDetail).toBeCalledTimes(2)
+    expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
+    expect(result).toMatchObject(expected)
+  })
+
+  test('it should handle a missing assessment agency', async () => {
+    const cats = [
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        classification: 'Cat A',
+        assessmentDate: '2012-04-04',
+      },
+    ]
+
+    nomisClient.getCategoryHistory.mockReturnValue(cats)
+    nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
+
+    const expected = [
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        assessmentDate: '2012-04-04',
+        assessmentDateDisplay: '04/04/2012',
+        agencyDescription: '',
+      },
+    ]
+
+    const result = await service.getPrisonerBackground('token', 'ABC1')
+
+    expect(nomisClient.getAgencyDetail).toBeCalledTimes(0)
+    expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
+    expect(result).toMatchObject(expected)
   })
 })

@@ -455,6 +455,38 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  async function getPrisonerBackground(token, offenderNo) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+      const currentCats = await nomisClient.getCategoryHistory(offenderNo)
+
+      const decoratedCats = await Promise.all(
+        currentCats.map(async o => {
+          const description = await getOptionalAssessmentAgencyDescription(nomisClient, o.assessmentAgencyId)
+          const assessmentMoment = moment(o.assessmentDate, 'YYYY-MM-DD')
+          return {
+            ...o,
+            agencyDescription: description,
+            assessmentDateDisplay: assessmentMoment.format('DD/MM/YYYY'),
+          }
+        })
+      )
+
+      return decoratedCats
+    } catch (error) {
+      logger.error(error, 'Error during getPrisonerBackground')
+      throw error
+    }
+  }
+
+  async function getOptionalAssessmentAgencyDescription(nomisClient, agencyId) {
+    if (agencyId) {
+      const agency = await nomisClient.getAgencyDetail(agencyId)
+      return agency.description
+    }
+    return ''
+  }
+
   async function createInitialCategorisation({
     token,
     bookingId,
@@ -539,5 +571,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     createSupervisorApproval,
     getCategorisedOffenders,
     getSecurityReviewedOffenders,
+    getPrisonerBackground,
   }
 }
