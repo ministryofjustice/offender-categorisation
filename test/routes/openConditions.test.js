@@ -36,6 +36,7 @@ const formService = {
   mergeRiskProfileData: jest.fn(),
   backToCategoriser: jest.fn(),
   isValid: jest.fn(),
+  cancelOpenConditions: jest.fn(),
 }
 
 const offendersService = {
@@ -173,10 +174,11 @@ describe('open conditions', () => {
   test.each`
     formName                 | userInput                     | nextPath
     ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNational/'}
-    ${'foreignNational'}     | ${{ day: '12' }}              | ${'/form/openConditions/riskOfHarm/'}
-    ${'riskOfHarm'}          | ${{ day: '12' }}              | ${'/form/openConditions/furtherCharges/'}
-    ${'furtherCharges'}      | ${{ day: '12' }}              | ${'/form/openConditions/riskLevels/'}
-    ${'riskLevels'}          | ${{ day: '12' }}              | ${'/tasklist/'}
+    ${'foreignNational'}     | ${{}}                         | ${'/form/openConditions/riskOfHarm/'}
+    ${'riskOfHarm'}          | ${{}}                         | ${'/form/openConditions/furtherCharges/'}
+    ${'furtherCharges'}      | ${{}}                         | ${'/form/openConditions/riskLevels/'}
+    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}     | ${'/tasklist/'}
+    ${'riskLevels'}          | ${{ catType: 'RECAT' }}       | ${'/tasklistRecat/'}
   `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
@@ -201,11 +203,11 @@ describe('open conditions', () => {
   })
 
   test.each`
-    formName                 | userInput                                     | expectedContent
-    ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }} | ${'no special circumstances to warrant them moving into open conditions'}
-    ${'foreignNational'}     | ${{ formCompleted: 'No' }}                    | ${'cannot be sent to open conditions without a CCD3 form'}
-    ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}                 | ${'they are due to be deported'}
-  `('should render openConditionsNotSuitable page', ({ formName, userInput, expectedContent }) => {
+    formName                 | userInput
+    ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }}
+    ${'foreignNational'}     | ${{ formCompleted: 'No' }}
+    ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}
+  `('should render openConditionsNotSuitable page for $formName', ({ formName, userInput }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: userInput,
@@ -213,10 +215,19 @@ describe('open conditions', () => {
     return request(app)
       .post(`/${formName}/12345`)
       .send(userInput)
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain(expectedContent)
+      .expect(302)
+      .expect('Location', `/form/openConditions/openConditionsNotSuitable/12345`)
+      .expect(() => {
+        expect(formService.update).toBeCalledWith({
+          bookingId: 12345,
+          userId: 'CA_USER_TEST',
+          config: formConfig.openConditions[formName],
+          userInput,
+          formSection: 'openConditions',
+          formName,
+          transactionalClient: mockTransactionalClient,
+        })
+        expect(formService.cancelOpenConditions).toBeCalledWith(12345, 'CA_USER_TEST', mockTransactionalClient)
       })
   })
 
@@ -242,7 +253,7 @@ describe('open conditions', () => {
   test('should redirect from notRecommended page to provisionalCategory', () =>
     request(app)
       .post(`/notRecommended/12345`)
-      .send({ stillRefer: 'Yes' })
+      .send({ stillRefer: 'Yes', catType: 'INITIAL' })
       .expect(302)
       .expect('Location', `/tasklist/12345`))
 
@@ -255,8 +266,8 @@ describe('open conditions', () => {
 
     return request(app)
       .post(`/notRecommended/12345`)
-      .send({ stillRefer: 'No' })
+      .send({ stillRefer: 'No', catType: 'RECAT' })
       .expect(302)
-      .expect('Location', `/tasklist/12345`)
+      .expect('Location', `/tasklistRecat/12345`)
   })
 })
