@@ -52,6 +52,7 @@ const offendersService = {
   getOffenceHistory: jest.fn(),
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
+  getPrisonerBackground: jest.fn(),
 }
 
 const userService = {
@@ -80,6 +81,7 @@ beforeEach(() => {
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
+  offendersService.getPrisonerBackground.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
   riskProfilerService.getViolenceProfile.mockResolvedValue({})
@@ -209,6 +211,17 @@ describe('recat', () => {
         expect(res.text).toContain('catIOption')
       })
   })
+
+  test('GET /form/recat/prisonerBackground', () =>
+    request(app)
+      .get(`/prisonerBackground/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('extremismInfo')
+        expect(res.text).toContain('escapeInfo')
+        expect(res.text).toContain('violenceInfo')
+      }))
 })
 
 describe('POST /form/recat/decision', () => {
