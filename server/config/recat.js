@@ -143,4 +143,18 @@ module.exports = {
       path: '/tasklistRecat/recategoriserSubmitted/',
     },
   },
+  prisonerBackground: {
+    fields: [
+      {
+        offenceDetails: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter details',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    validate: true,
+  },
 }
