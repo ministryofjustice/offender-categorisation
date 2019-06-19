@@ -40,6 +40,16 @@ describe('nomisClient', () => {
     })
   })
 
+  describe('getAgencyDetail', () => {
+    it('should construct an api call', async () => {
+      const agencyResponse = { description: 'Moorlands' }
+      fakeElite2Api.get(`/api/agencies/LEI`).reply(200, agencyResponse)
+
+      const output = await nomisClient.getAgencyDetail('LEI')
+      return expect(output).toEqual(agencyResponse)
+    })
+  })
+
   describe('getSentenceDatesForOffenders', () => {
     it('should return data from api', async () => {
       fakeElite2Api.post(`/api/offender-sentences/bookings`).reply(200, sentenceResponse)
