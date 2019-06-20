@@ -38,29 +38,17 @@ class TasklistSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  def "The tasklist for a categoriser is present"() {
+  def "The tasklist for a categoriser is present and can display multiple sentences"() {
     when: 'I go to the tasklist page'
     db.createRiskProfileData(12, JsonOutput.toJson([
       "escapeProfile": [nomsId: "Dummy"]
     ]))
-    fixture.gotoTasklist()
+    fixture.gotoTasklist(false, true)
 
-    then: 'The tasklist page is displayed'
+    then: 'The tasklist page is displayed with multiple sentences'
     at(new TasklistPage(bookingId: '12'))
-
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
-                            'C-04-02', 'Coventry',
-                            'Latvian',
-                            'A Felony', 'Another Felony',
-                            '10/06/2020',
-                            '11/06/2020',
-                            '02/02/2020',
-                            '13/06/2020',
-                            '14/06/2020',
-                            '15/06/2020',
-                            '16/06/2020',
-                            '17/06/2020',
-                            '6 years, 3 months']
+    sentenceTableRow1*.text() == ['2', '31/12/2018', '6 years, 3 months', '', 'Std sentence']
+    sentenceTableRow2*.text() == ['4', '31/03/2019', '4 years, 2 months', '2', 'Recall 14 days']
     !continueButton
     continueButtonDisabled.displayed
 

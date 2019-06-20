@@ -60,6 +60,20 @@ class TestFixture {
     riskLevels         : ['likelyToAbscond': 'No']
   ]
 
+  public static final FULL_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
+  'C-04-02', 'Coventry',
+  'Latvian',
+  'A Felony', 'Another Felony',
+  '10/06/2020',
+  '11/06/2020',
+  '02/02/2020',
+  '13/06/2020',
+  '14/06/2020',
+  '15/06/2020',
+  '16/06/2020',
+  '17/06/2020',
+  '6 years, 3 months (Std sentence)']
+
   TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1) {
     this.browser = browser
     this.elite2Api = elite2Api
@@ -83,7 +97,7 @@ class TestFixture {
     elite2Api.stubGetMyCaseloads currentUser.caseloads
   }
 
-  def gotoTasklist(transferToSecurity = false) {
+  def gotoTasklist(transferToSecurity = false, multipleSentences = false) {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
@@ -91,7 +105,7 @@ class TestFixture {
 
     loginAs(CATEGORISER_USER)
     browser.at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', multipleSentences)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', transferToSecurity)
     browser.selectFirstPrisoner()
   }
