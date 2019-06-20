@@ -4,7 +4,7 @@ import geb.Page
 
 class SecurityViewPage extends Page {
 
-  static url = '/supervisor/view'
+  static url = '/security/view'
 
   static at = {
     headingText == 'Security review outcome'
