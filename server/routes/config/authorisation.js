@@ -8,7 +8,9 @@ module.exports = {
   '/tasklistRecat/.+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/form/recat/.+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/form/ratings/.+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
-  '/form/openConditions/.+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'] },
+  '/form/openConditions/.+': {
+    authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'],
+  },
   '/form/categoriser/.+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/form/supervisor/.+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/form/security/.+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },

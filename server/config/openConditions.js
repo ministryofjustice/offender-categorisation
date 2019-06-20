@@ -119,9 +119,16 @@ module.exports = {
       },
     ],
     nextPath: {
-      path: '/tasklist/',
+      decisions: { discriminator: 'catType', INITIAL: '/tasklist/', RECAT: '/tasklistRecat/' },
     },
     validate: true,
+  },
+  openConditionsNotSuitable: {
+    fields: [],
+    nextPath: {
+      decisions: { discriminator: 'catType', INITIAL: '/tasklist/', RECAT: '/tasklistRecat/' },
+    },
+    validate: false,
   },
   notRecommended: {
     fields: [
@@ -133,7 +140,7 @@ module.exports = {
       },
     ],
     nextPath: {
-      path: '/tasklist/',
+      decisions: { discriminator: 'catType', INITIAL: '/tasklist/', RECAT: '/tasklistRecat/' },
     },
     validate: true,
   },

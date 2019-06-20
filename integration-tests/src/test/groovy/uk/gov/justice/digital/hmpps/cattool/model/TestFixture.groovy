@@ -40,6 +40,18 @@ class TestFixture {
     extremismRating : [previousTerrorismOffences: "No"]
   ]
 
+  public static final defaultRecat = [
+    decision      : [category: "C"],
+    securityInput : [securityInputNeeded: "No"],
+    nextReviewDate: [date: "14/12/2019"],
+    riskAssessment: [
+      lowerCategory    : "lower security category text",
+      otherRelevant    : "Yes",
+      higherCategory   : "higher security category text",
+      otherRelevantText: "other relevant information"
+    ]
+  ]
+
   public static final defaultOpenConditions = [
     earliestReleaseDate: ['threeOrMoreYears': 'No'],
     foreignNational    : ['isForeignNational': 'No'],

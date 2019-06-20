@@ -30,6 +30,7 @@ const formService = {
   updateFormData: jest.fn(),
   setAwaitingApproval: jest.fn(),
   requiresOpenConditions: jest.fn(),
+  cancelOpenConditions: jest.fn(),
   mergeRiskProfileData: jest.fn(),
   backToCategoriser: jest.fn(),
   isValid: jest.fn(),
@@ -115,9 +116,10 @@ afterEach(() => {
 
 describe('recat', () => {
   test.each`
-    path                      | expectedContent
-    ${'higherSecurityReview'} | ${'Higher Security Review'}
-    ${'riskAssessment'}       | ${'Risk assessment'}
+    path                          | expectedContent
+    ${'higherSecurityReview'}     | ${'Higher Security Review'}
+    ${'miniHigherSecurityReview'} | ${'Higher Security Review'}
+    ${'riskAssessment'}           | ${'Risk assessment'}
   `('Get should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}/12345`)
@@ -157,10 +159,12 @@ describe('recat', () => {
   })
 
   test.each`
-    formName                  | userInput                  | nextPath
-    ${'higherSecurityReview'} | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
-    ${'riskAssessment'}       | ${{ otherRelevant: 'No' }} | ${'/tasklistRecat/'}
-    ${'nextReviewDate'}       | ${{ date: '23/05/2025' }}  | ${'/tasklistRecat/'}
+    formName                      | userInput                  | nextPath
+    ${'securityInput'}            | ${{ dummy: 'No' }}         | ${'/tasklistRecat/'}
+    ${'higherSecurityReview'}     | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
+    ${'miniHigherSecurityReview'} | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
+    ${'riskAssessment'}           | ${{ otherRelevant: 'No' }} | ${'/tasklistRecat/'}
+    ${'nextReviewDate'}           | ${{ date: '23/05/2025' }}  | ${'/tasklistRecat/'}
   `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
@@ -289,21 +293,6 @@ describe('POST /form/recat/review', () => {
           nextReviewDate: '16/02/2020',
         })
         expect(formService.setAwaitingApproval).toBeCalledWith('12345', mockTransactionalClient)
-      })
-  })
-
-  test('POST /form/recat/review open conditions', () => {
-    formService.getCategorisationRecord.mockResolvedValue({
-      status: 'STARTED',
-      bookingId: 12345,
-      formObject: { recat: { decision: { category: 'J' }, nextReviewDate: { date: '16/02/2020' } } },
-    })
-    return request(app)
-      .post(`/review/12345`)
-      .expect(302)
-      .expect('Location', `/tasklistRecat/12345`)
-      .expect(() => {
-        expect(formService.requiresOpenConditions).toBeCalledWith('12345', 'CA_USER_TEST', mockTransactionalClient)
       })
   })
 })

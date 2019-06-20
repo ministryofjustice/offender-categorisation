@@ -77,6 +77,39 @@ module.exports = function Index({ formService, offendersService, userService, au
   )
 
   router.get(
+    '/openConditionsNotSuitable/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const section = 'openConditions'
+      const form = 'openConditionsNotSuitable'
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
+
+      if (result.data.openConditions.earliestReleaseDate.justify === 'No') {
+        res.render('formPages/openConditions/openConditionsNotSuitable', {
+          warningText:
+            'This person cannot be sent to open conditions because they have more than three years to their' +
+            ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
+          ...result,
+        })
+      } else if (result.data.openConditions.foreignNational.formCompleted === 'No') {
+        res.render('formPages/openConditions/openConditionsNotSuitable', {
+          warningText: 'This person cannot be sent to open conditions without a CCD3 form',
+          ...result,
+        })
+      } else if (result.data.openConditions.foreignNational.exhaustedAppeal === 'Yes') {
+        res.render('formPages/openConditions/openConditionsNotSuitable', {
+          warningText:
+            'This person cannot be sent to open conditions because they are due to be deported and have exhausted' +
+            ' all appeal rights in the UK',
+          ...result,
+        })
+      } else {
+        throw new Error('No openConditionsNotSuitable warning condition')
+      }
+    })
+  )
+
+  router.get(
     '/:form/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
@@ -109,6 +142,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       data: { ...pageData, details },
       formName: form,
       status: formData.status,
+      catType: formData.catType,
       backLink,
       errors,
     }
@@ -145,28 +179,6 @@ module.exports = function Index({ formService, offendersService, userService, au
       delete updated.overriddenCategoryText
     }
     return updated
-  }
-
-  const clearProvisionalCategory = form => {
-    const updated = Object.assign({}, form)
-    if (form.categoriser && form.categoriser.provisionalCategory) {
-      delete updated.categoriser.provisionalCategory
-    }
-    return updated
-  }
-
-  const cancelOpenConditions = async (bookingId, userId, transactionalDbClient) => {
-    const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-    const formToUpdate = clearProvisionalCategory(categorisationRecord.formObject)
-
-    const dataToStore = {
-      ...formToUpdate, // merge any existing form data
-      openConditionsRequested: false,
-    }
-    log.info(
-      `Open conditions cancelled for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
-    )
-    await formService.updateFormData(bookingId, dataToStore, transactionalDbClient)
   }
 
   router.post(
@@ -233,12 +245,10 @@ module.exports = function Index({ formService, offendersService, userService, au
         transactionalClient: transactionalDbClient,
       })
       if (userInput.stillRefer === 'No') {
-        await cancelOpenConditions(parseInt(bookingId, 10), req.user.username, transactionalDbClient)
-        res.redirect(`/tasklist/${bookingId}`)
-      } else {
-        const nextPath = getPathFor({ data: userInput, config: formPageConfig })
-        res.redirect(`${nextPath}${bookingId}`)
+        await formService.cancelOpenConditions(parseInt(bookingId, 10), req.user.username, transactionalDbClient)
       }
+      const nextPath = getPathFor({ data: userInput, config: formPageConfig })
+      res.redirect(`${nextPath}${bookingId}`)
     })
   )
 
@@ -284,7 +294,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         res.redirect(`${nextPath}${bookingId}`)
       } else {
         // if user selects no - clear provisional cat data and cancel open conditions
-        await cancelOpenConditions(parseInt(bookingId, 10), req.user.username, transactionalDbClient)
+        await formService.cancelOpenConditions(parseInt(bookingId, 10), req.user.username, transactionalDbClient)
         res.redirect(`/tasklist/${bookingId}`)
       }
     })
@@ -314,28 +324,9 @@ module.exports = function Index({ formService, offendersService, userService, au
         transactionalClient: transactionalDbClient,
       })
 
-      if (userInput.justify === 'No') {
-        await cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
-        res.render('pages/openConditionsNotSuitable', {
-          warningText:
-            'This person cannot be sent to open conditions because they have more than three years to their' +
-            ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
-          bookingId,
-        })
-      } else if (userInput.formCompleted === 'No') {
-        await cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
-        res.render('pages/openConditionsNotSuitable', {
-          warningText: 'This person cannot be sent to open conditions without a CCD3 form',
-          bookingId,
-        })
-      } else if (userInput.exhaustedAppeal === 'Yes') {
-        await cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
-        res.render('pages/openConditionsNotSuitable', {
-          warningText:
-            'This person cannot be sent to open conditions because they are due to be deported and have exhausted' +
-            ' all appeal rights in the UK',
-          bookingId,
-        })
+      if (userInput.justify === 'No' || userInput.formCompleted === 'No' || userInput.exhaustedAppeal === 'Yes') {
+        await formService.cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
+        res.redirect(`/form/openConditions/openConditionsNotSuitable/${bookingId}`)
       } else {
         const nextPath = getPathFor({ data: userInput, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)

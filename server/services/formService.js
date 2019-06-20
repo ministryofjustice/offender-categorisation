@@ -407,6 +407,30 @@ module.exports = function createFormService(formClient) {
     await updateFormData(bookingId, dataToStore, transactionalDbClient)
   }
 
+  const cancelOpenConditions = async (bookingId, userId, transactionalDbClient) => {
+    const categorisationRecord = await getCategorisationRecord(bookingId, transactionalDbClient)
+
+    const updated = Object.assign({}, categorisationRecord.formObject)
+    if (categorisationRecord.catType === 'INITIAL' && updated.categoriser && updated.categoriser.provisionalCategory) {
+      delete updated.categoriser.provisionalCategory
+    }
+    if (
+      categorisationRecord.catType === 'RECAT' &&
+      updated.recat &&
+      updated.recat.decision &&
+      (updated.recat.decision.category === 'D' || updated.recat.decision.category === 'J')
+    ) {
+      delete updated.recat.decision.category
+      delete updated.recat.decision
+    }
+    updated.openConditionsRequested = false
+
+    log.info(
+      `Open conditions cancelled for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
+    )
+    await updateFormData(bookingId, updated, transactionalDbClient)
+  }
+
   return {
     getCategorisationRecord,
     update,
@@ -424,6 +448,7 @@ module.exports = function createFormService(formClient) {
     validate,
     isValid,
     requiresOpenConditions,
+    cancelOpenConditions,
     getCategorisedOffenders,
     getSecurityReviewedOffenders,
     getSecurityReferredOffenders,

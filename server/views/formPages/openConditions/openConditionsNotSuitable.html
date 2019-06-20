@@ -1,9 +1,12 @@
-{% set mainClasses = 'govuk-!-width-two-thirds' %}
-{% extends "../partials/layout.html" %}
-{% from "button/macro.njk" import govukButton %}
+{% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 
-{% block content %}
+{% set greenButtonText = "Back to task list" %}
+
+{% block beforeContent %}
+{% endblock %}
+
+{% block formItems %}
 
 <h1 class="govuk-heading-l">Not suitable for open conditions</h1>
 
@@ -11,12 +14,6 @@
   text: warningText,
   iconFallbackText: "Warning",
   classes: "forms-warning-text warning-overrides"
-}) }}
-<br />
-<br />
-{{ govukButton({
-  text: "Back to task list",
-  href: "/tasklist/" + bookingId
 }) }}
 
 {% endblock %}
