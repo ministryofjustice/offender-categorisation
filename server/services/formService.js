@@ -407,34 +407,28 @@ module.exports = function createFormService(formClient) {
     await updateFormData(bookingId, dataToStore, transactionalDbClient)
   }
 
-  const clearProvisionalCategory = form => {
-    const updated = Object.assign({}, form)
-    if (form.categoriser && form.categoriser.provisionalCategory) {
+  const cancelOpenConditions = async (bookingId, userId, transactionalDbClient) => {
+    const categorisationRecord = await getCategorisationRecord(bookingId, transactionalDbClient)
+
+    const updated = Object.assign({}, categorisationRecord.formObject)
+    if (categorisationRecord.catType === 'INITIAL' && updated.categoriser && updated.categoriser.provisionalCategory) {
       delete updated.categoriser.provisionalCategory
     }
     if (
-      form.recat &&
-      form.recat.decision &&
-      (form.recat.decision.category === 'D' || form.recat.decision.category === 'J')
+      categorisationRecord.catType === 'RECAT' &&
+      updated.recat &&
+      updated.recat.decision &&
+      (updated.recat.decision.category === 'D' || updated.recat.decision.category === 'J')
     ) {
       delete updated.recat.decision.category
       delete updated.recat.decision
     }
-    return updated
-  }
+    updated.openConditionsRequested = false
 
-  const cancelOpenConditions = async (bookingId, userId, transactionalDbClient) => {
-    const categorisationRecord = await getCategorisationRecord(bookingId, transactionalDbClient)
-    const formToUpdate = clearProvisionalCategory(categorisationRecord.formObject)
-
-    const dataToStore = {
-      ...formToUpdate, // merge any existing form data
-      openConditionsRequested: false,
-    }
     log.info(
       `Open conditions cancelled for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
     )
-    await updateFormData(bookingId, dataToStore, transactionalDbClient)
+    await updateFormData(bookingId, updated, transactionalDbClient)
   }
 
   return {

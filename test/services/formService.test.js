@@ -758,15 +758,19 @@ describe('deleteFormData', () => {
 })
 
 describe('cancelOpenConditions', () => {
-  test('initial and recat', async () => {
+  test('initial', async () => {
     formClient.getFormDataForUser.mockReturnValue({
       rows: [
         {
           formObject: {
             openConditionsRequested: true,
-            categoriser: { provisionalCategory: 'B', other: 'stuff' },
+            categoriser: {
+              provisionalCategory: { suggestedCategory: 'B', categoryAppropriate: 'Yes' },
+              other: 'stuff',
+            },
             recat: { decision: { category: 'D', inner: 'value1' }, outer: 'value2' },
           },
+          catType: 'INITIAL',
         },
       ],
     })
@@ -775,7 +779,41 @@ describe('cancelOpenConditions', () => {
 
     expect(formClient.updateFormData).toBeCalledWith(
       bookingId,
-      { openConditionsRequested: false, categoriser: { other: 'stuff' }, recat: { outer: 'value2' } },
+      {
+        openConditionsRequested: false,
+        categoriser: { other: 'stuff' },
+        recat: { decision: { category: 'D', inner: 'value1' }, outer: 'value2' },
+      },
+      mockTransactionalClient
+    )
+  })
+
+  test('recat', async () => {
+    formClient.getFormDataForUser.mockReturnValue({
+      rows: [
+        {
+          formObject: {
+            openConditionsRequested: true,
+            categoriser: {
+              provisionalCategory: { suggestedCategory: 'B', categoryAppropriate: 'Yes' },
+              other: 'stuff',
+            },
+            recat: { decision: { category: 'D', inner: 'value1' }, outer: 'value2' },
+          },
+          catType: 'RECAT',
+        },
+      ],
+    })
+
+    await service.cancelOpenConditions(bookingId, userId, mockTransactionalClient)
+
+    expect(formClient.updateFormData).toBeCalledWith(
+      bookingId,
+      {
+        openConditionsRequested: false,
+        categoriser: { provisionalCategory: { suggestedCategory: 'B', categoryAppropriate: 'Yes' }, other: 'stuff' },
+        recat: { outer: 'value2' },
+      },
       mockTransactionalClient
     )
   })
