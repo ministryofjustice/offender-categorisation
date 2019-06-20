@@ -1,0 +1,46 @@
+{% extends "../formTemplate.html" %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+
+{% block beforeContent %}
+{{ govukBackLink({
+text: "Back",
+href: "/securityDone"
+}) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  {% include "../../partials/offenderDetails.html" %}
+  <hr/>
+</div>
+
+<h1 class="govuk-heading-l govuk-!-margin-top-9">Security review outcome</h1>
+  {% set referralType = {
+      key: { text: "Referral type" },
+      value: { text: 'Automatic' if data.socProfile.transferToSecurity else 'Manual' },
+      actions: { items: [] }
+    } %}
+  {% set catComments = {
+      key: { text: "Categoriser comments" },
+      value: { text: data.ratings.securityInput.securityInputNeededText if catType == 'INITIAL' else data.recat.securityInput.securityInputNeededText },
+      actions: { items: [] }
+    } %}
+  {% set comments = {
+      key: { text: "Security comments" },
+      value: { text: data.security.review.securityReview },
+      actions: { items: [] }
+    } %}
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 securitySummary',
+    rows: [ referralType, comments ] if data.socProfile.transferToSecurity else [ referralType, catComments, comments ]
+  }) }}
+
+{{ govukButton({
+  href: "/securityDone",
+  text: "Back to list",
+  classes: "govuk-grid-row"
+}) }}
+
+{% endblock %}

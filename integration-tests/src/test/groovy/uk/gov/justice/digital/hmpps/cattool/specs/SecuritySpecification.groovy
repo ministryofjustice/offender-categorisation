@@ -50,17 +50,22 @@ class SecuritySpecification extends GebReportingSpec {
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]),SECURITY_USER.username, Timestamp.valueOf(reviewDate1.atStartOfDay()))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]],
+      security: [review: [securityReview: "this is the text from the security team for a recat"]]]),SECURITY_USER.username, Timestamp.valueOf(reviewDate1.atStartOfDay()), 'RECAT')
+
+    db.createRiskProfileDataForExistingRow(13, JsonOutput.toJson([socProfile: [nomsId: "G1110GX", riskType: "SOC", transferToSecurity: true, provisionalCategorisation: "C"]]))
 
     db.createSecurityReviewedData(-1,14, 'APPROVED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "some convictions"],
-        securityInput   : [securityInputNeeded: "Yes"],
+        securityInput   : [securityInputNeeded: "Yes", securityInputNeededText: "Comments from Categoriser"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]),SECURITY_USER.username, Timestamp.valueOf(reviewDate2.atStartOfDay()))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]
+      ],
+      security: [review: [securityReview: "this is the text from the security team"]]]),SECURITY_USER.username, Timestamp.valueOf(reviewDate2.atStartOfDay()))
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
@@ -90,7 +95,25 @@ class SecuritySpecification extends GebReportingSpec {
     def today = LocalDate.now().format('dd/MM/yyyy')
     reviewedDates == ['31/01/2019','28/01/2019']
     reviewer == ['Security, Amy', 'Security, Amy']
-    catTypes == ['Initial', 'Initial']
-  }
+    catTypes == ['Initial', 'Recat']
 
+    when: 'user click the view button'
+    elite2Api.stubGetOffenderDetails(14)
+    viewButtons[0].click()
+
+    then: 'security details are displayed'
+    at SupervisorViewPage
+    securityInputSummary*.text() == ['Manual', 'Comments from Categoriser', 'this is the text from the security team']
+
+
+    when: 'user view a recat record'
+    to SecurityDonePage
+    elite2Api.stubGetOffenderDetails(13)
+    viewButtons[1].click()
+
+    then: 'security details are displayed'
+    at SupervisorViewPage
+    securityInputSummary*.text() == ['Automatic', 'this is the text from the security team for a recat']
+
+  }
 }
