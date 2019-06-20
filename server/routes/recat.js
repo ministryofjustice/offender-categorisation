@@ -178,6 +178,12 @@ module.exports = function Index({
         transactionalClient: transactionalDbClient,
       })
 
+      if (userInput.category === 'D' || userInput.category === 'J') {
+        await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
+      } else {
+        await formService.cancelOpenConditions(bookingIdInt, req.user.username, transactionalDbClient)
+      }
+
       if (userInput.currentCategory === 'I' && userInput.category === 'B') {
         res.redirect(`/form/recat/miniHigherSecurityReview/${bookingId}`)
       } else if (choosingHigherCategory(userInput.currentCategory, userInput.category)) {
@@ -285,30 +291,20 @@ module.exports = function Index({
 
       const suggestedCategory = R.path(['formObject', 'recat', 'decision', 'category'], formData)
       if (suggestedCategory) {
-        if (suggestedCategory !== 'D' && suggestedCategory !== 'J') {
-          log.info(`Categoriser creating recat categorisation record:`)
-          await formService.setAwaitingApproval(bookingId, transactionalDbClient)
+        log.info(`Categoriser creating recat categorisation record:`)
+        await formService.setAwaitingApproval(bookingId, transactionalDbClient)
 
-          const nextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], formData)
-          await offendersService.createInitialCategorisation({
-            token: res.locals.user.token,
-            bookingId,
-            suggestedCategory,
-            overriddenCategoryText: 'Cat-tool Recat',
-            nextReviewDate,
-          })
+        const nextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], formData)
+        await offendersService.createInitialCategorisation({
+          token: res.locals.user.token,
+          bookingId,
+          suggestedCategory,
+          overriddenCategoryText: 'Cat-tool Recat',
+          nextReviewDate,
+        })
 
-          const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-          res.redirect(`${nextPath}${bookingId}`)
-        } else {
-          // persist the open conditions override and return to complete the open conditions route
-          log.info(`Categoriser recat - adding open conditions`)
-
-          await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
-
-          // redirect to tasklist for open conditions
-          res.redirect(`/tasklistRecat/${bookingId}`)
-        }
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
       } else {
         throw new Error('category has not been specified')
       }

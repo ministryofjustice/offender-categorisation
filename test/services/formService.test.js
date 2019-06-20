@@ -662,6 +662,14 @@ describe('updateStatus', () => {
 
     expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow('TEST')
   })
+
+  test('setAwaitingApproval happy path', async () => {
+    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
+
+    await service.setAwaitingApproval(bookingId, mockTransactionalClient)
+
+    expect(formClient.updateStatus).toBeCalledWith(bookingId, 'AWAITING_APPROVAL', mockTransactionalClient)
+  })
 })
 
 describe('createOrRetrieveCategorisationRecord', () => {
@@ -746,5 +754,67 @@ describe('deleteFormData', () => {
     })
 
     expect(formClient.updateFormData).not.toBeCalled()
+  })
+})
+
+describe('cancelOpenConditions', () => {
+  test('initial', async () => {
+    formClient.getFormDataForUser.mockReturnValue({
+      rows: [
+        {
+          formObject: {
+            openConditionsRequested: true,
+            categoriser: {
+              provisionalCategory: { suggestedCategory: 'B', categoryAppropriate: 'Yes' },
+              other: 'stuff',
+            },
+            recat: { decision: { category: 'D', inner: 'value1' }, outer: 'value2' },
+          },
+          catType: 'INITIAL',
+        },
+      ],
+    })
+
+    await service.cancelOpenConditions(bookingId, userId, mockTransactionalClient)
+
+    expect(formClient.updateFormData).toBeCalledWith(
+      bookingId,
+      {
+        openConditionsRequested: false,
+        categoriser: { other: 'stuff' },
+        recat: { decision: { category: 'D', inner: 'value1' }, outer: 'value2' },
+      },
+      mockTransactionalClient
+    )
+  })
+
+  test('recat', async () => {
+    formClient.getFormDataForUser.mockReturnValue({
+      rows: [
+        {
+          formObject: {
+            openConditionsRequested: true,
+            categoriser: {
+              provisionalCategory: { suggestedCategory: 'B', categoryAppropriate: 'Yes' },
+              other: 'stuff',
+            },
+            recat: { decision: { category: 'D', inner: 'value1' }, outer: 'value2' },
+          },
+          catType: 'RECAT',
+        },
+      ],
+    })
+
+    await service.cancelOpenConditions(bookingId, userId, mockTransactionalClient)
+
+    expect(formClient.updateFormData).toBeCalledWith(
+      bookingId,
+      {
+        openConditionsRequested: false,
+        categoriser: { provisionalCategory: { suggestedCategory: 'B', categoryAppropriate: 'Yes' }, other: 'stuff' },
+        recat: { outer: 'value2' },
+      },
+      mockTransactionalClient
+    )
   })
 })
