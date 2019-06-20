@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.cattool.pages
 
 import geb.Page
 
-class SupervisorViewPage extends Page {
+class SecurityViewPage extends Page {
 
   static url = '/supervisor/view'
 
