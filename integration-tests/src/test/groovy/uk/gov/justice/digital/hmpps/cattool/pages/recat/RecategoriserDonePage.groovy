@@ -1,13 +1,13 @@
-package uk.gov.justice.digital.hmpps.cattool.pages
+package uk.gov.justice.digital.hmpps.cattool.pages.recat
 
 import geb.Page
 
-class CategoriserDonePage extends Page {
+class RecategoriserDonePage extends Page {
 
-  static url = '/categoriserDone'
+  static url = '/recategoriserDone'
 
   static at = {
-    headingText == 'Prisoner Categorisation'
+    headingText == 'Prisoner re-categorisation'
   }
 
   static content = {
@@ -18,8 +18,9 @@ class CategoriserDonePage extends Page {
     approvalDates { bodyRows*.$('td', 2)*.text()  }
     categorisers { bodyRows*.$('td', 3)*.text()  }
     approvers { bodyRows*.$('td', 4)*.text()  }
-    viewButtons { bodyRows*.$('td', 5)*.find('*')  }
-    todoTabLink { $('a', href: '/categoriserHome')}
+    categories { bodyRows*.$('td', 5)*.text()  }
+    viewButtons { bodyRows*.$('td', 6)*.find('*')  }
+    todoTabLink { $('a', href: '/recategoriserHome')}
     noResultsDiv { $('#no-results-message') }
   }
 }

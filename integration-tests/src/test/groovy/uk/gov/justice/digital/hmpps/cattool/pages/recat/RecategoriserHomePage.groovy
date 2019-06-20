@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cattool.pages
+package uk.gov.justice.digital.hmpps.cattool.pages.recat
 
 import geb.Page
 
@@ -20,7 +20,7 @@ class RecategoriserHomePage extends Page {
     statuses { bodyRows*.$('td', 4)*.text()  }
     startButtons { bodyRows*.$('td', 5)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
-    // doneTabLink { $('a', href: '/categoriserDone')}
+    doneTabLink { $('a', href: '/recategoriserDone')}
   }
 
   def selectFirstPrisoner() {

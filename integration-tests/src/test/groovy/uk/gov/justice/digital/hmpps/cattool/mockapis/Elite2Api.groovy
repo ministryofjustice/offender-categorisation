@@ -189,6 +189,22 @@ class Elite2Api extends WireMockRule {
 
   void stubCategorised(bookingIds = [11, 12]) {
     def response = []
+    if (bookingIds.contains(10)) {
+      response.add ( [
+        offenderNo: 'B1234AB',
+        bookingId: 10,
+        firstName: 'PETER',
+        lastName: 'PERFECT',
+        assessmentDate: '2018-03-28',
+        approvalDate: '2019-03-20',
+        assessmentSeq: 7,
+        categoriserFirstName: 'DICK',
+        categoriserLastName: 'DASTARDLY',
+        approverFirstName: 'PAT',
+        approverLastName: 'PENDING',
+        category: 'B'
+      ])
+    }
     if (bookingIds.contains(11)) {
       response.add([
         offenderNo          : 'B2345YZ',

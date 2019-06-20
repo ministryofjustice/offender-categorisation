@@ -330,13 +330,13 @@ module.exports = function createFormService(formClient) {
     return {}
   }
 
-  async function getCategorisedOffenders(agencyId, transactionalClient) {
+  async function getCategorisedOffenders(agencyId, catType, transactionalClient) {
     const displayMonths = conf.approvedDisplayMonths
     const fromDate = moment()
       .subtract(displayMonths, 'months')
       .toDate()
     try {
-      const data = await formClient.getApprovedCategorisations(agencyId, fromDate, transactionalClient)
+      const data = await formClient.getApprovedCategorisations(agencyId, fromDate, catType, transactionalClient)
       return data.rows || []
     } catch (error) {
       logger.error(error)

@@ -14,10 +14,12 @@ import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 
 class TasklistRecatSpecification extends GebReportingSpec {
 
@@ -62,9 +64,6 @@ class TasklistRecatSpecification extends GebReportingSpec {
     fixture.gotoTasklistRecat(true)
     at TasklistRecatPage
 
-//    elite2Api.stubAssessments(['B2345YZ'])
-//    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-
     then: 'the prisoner start button is locked'
     securityButton.tag() == 'button'
     securityButton.@disabled
@@ -76,11 +75,16 @@ class TasklistRecatSpecification extends GebReportingSpec {
 
   def "The recat tasklist correctly creates a subsequent database sequence when init record present"() {
     when: 'I go to the recat tasklist page'
-    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsC]))
+    db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([
+      ratings: TestFixture.defaultRatingsC]), 'INITIAL')
 
-    fixture.gotoTasklistRecat()
-    at TasklistRecatPage
+    // not in todo list so have to go directly
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    to TasklistRecatPage, '12'
 
     then: 'The database row is created correctly'
     def data = db.getData(12)
@@ -107,7 +111,13 @@ class TasklistRecatSpecification extends GebReportingSpec {
     when: 'I go to the recat tasklist page'
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', '{}', 'INITIAL')
 
-    fixture.gotoTasklistRecat()
+    // not in todo list so have to go directly
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    via TasklistRecatPage, '12'
 
     then: 'The correct error is displayed'
     at ErrorPage
