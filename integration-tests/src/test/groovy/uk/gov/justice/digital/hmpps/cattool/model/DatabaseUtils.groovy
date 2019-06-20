@@ -49,12 +49,17 @@ class DatabaseUtils {
     doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
 
+  def createRiskProfileDataForExistingRow(bookingId, json) {
+    def sql = Sql.newInstance(dbConnParams)
+    sql.executeUpdate("""update form set risk_profile = ?::JSON where booking_id = $bookingId""", json)
+  }
+
   def createDataWithStatus(id, bookingId, status, json) {
     doCreateData(id, bookingId, status, json)
   }
 
-  def createSecurityReviewedData(id, bookingId, status, json, reviewedBy, reviewDate) {
-    doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, 'INITIAL', null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', reviewedBy, reviewDate)
+  def createSecurityReviewedData(id, bookingId, status, json, reviewedBy, reviewDate, catType='INITIAL') {
+    doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, catType, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', reviewedBy, reviewDate)
   }
 
   private doCreateData(id, bookingId, status, json) {

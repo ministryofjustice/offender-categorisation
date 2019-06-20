@@ -47,6 +47,7 @@
       <th class="govuk-table__header" scope="col">Date reviewed</th>
       <th class="govuk-table__header" scope="col">Reviewed by</th>
       <th class="govuk-table__header" scope="col">Type</th>
+      <th class="govuk-table__header" scope="col"></th>
     </tr>
     </thead>
     <tbody class="govuk-table__body">
@@ -58,6 +59,13 @@
       <td class="govuk-table__cell">{{ row.displayReviewedDate }}</td>
       <td class="govuk-table__cell">{{ row.displayReviewerName }}</td>
       <td class="govuk-table__cell">{{ row.catTypeDisplay }}</td>
+      <td class="govuk-table__cell">
+        {{ govukButton({
+        text: "View",
+        href: "/form/security/view/" + row.bookingId,
+        classes: "tableButton grey-button govuk-!-padding-left-3 govuk-!-padding-right-3"
+        }) }}
+      </td>
     </tr>
     {% endfor %}
 
