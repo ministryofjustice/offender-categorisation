@@ -1,6 +1,6 @@
 const nunjucks = require('nunjucks')
 const Status = require('../utils/statusEnum')
-const { dateConverter, getLongDateFormat } = require('../utils/utils.js')
+const { dateConverter, formatLength, getLongDateFormat } = require('../utils/utils.js')
 const config = require('../config')
 
 const findError = (array, formFieldId) => {
@@ -31,5 +31,6 @@ module.exports = (app, path) => {
     .addGlobal('Status', Status)
     .addGlobal('dateConverter', dateConverter)
     .addGlobal('getLongDateFormat', getLongDateFormat)
+    .addGlobal('formatLength', formatLength)
     .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
 }

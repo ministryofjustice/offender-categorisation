@@ -2,6 +2,27 @@ const moment = require('moment')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 
+function plural(value) {
+  return value > 1 ? 's' : ''
+}
+
+function formatValue(value, label) {
+  return value > 0 ? `${value} ${label}${plural(value)}, ` : ''
+}
+
+const formatLength = sentenceTerms => {
+  if (sentenceTerms.lifeSentence) {
+    return 'Life'
+  }
+  const years = formatValue(sentenceTerms.years, 'year')
+  const months = formatValue(sentenceTerms.months, 'month')
+  const weeks = formatValue(sentenceTerms.weeks, 'week')
+  const days = formatValue(sentenceTerms.days, 'day')
+  const result = `${years}${months}${weeks}${days}`
+  // chop off any trailing comma
+  return result.endsWith(', ') ? result.substr(0, result.length - 2) : result
+}
+
 const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 
@@ -76,6 +97,7 @@ const filterJsonObjectForLogging = json => {
 
 module.exports = {
   dateConverter,
+  formatLength,
   properCase,
   properCaseName,
   getHoursMinutes,
