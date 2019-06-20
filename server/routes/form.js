@@ -247,6 +247,7 @@ module.exports = function Index({
       data: { ...pageData, details },
       formName: form,
       status: formData.status,
+      catType: formData.catType,
       backLink,
       errors,
     }
