@@ -102,7 +102,7 @@ class SecuritySpecification extends GebReportingSpec {
     viewButtons[0].click()
 
     then: 'security details are displayed'
-    at SupervisorViewPage
+    at SecurityViewPage
     securityInputSummary*.text() == ['Manual', 'Comments from Categoriser', 'this is the text from the security team']
 
 
@@ -112,7 +112,7 @@ class SecuritySpecification extends GebReportingSpec {
     viewButtons[1].click()
 
     then: 'security details are displayed'
-    at SupervisorViewPage
+    at SecurityViewPage
     securityInputSummary*.text() == ['Automatic', 'this is the text from the security team for a recat']
 
   }
