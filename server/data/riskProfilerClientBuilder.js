@@ -3,7 +3,6 @@ const logger = require('../../log')
 const config = require('../config')
 const superagent = require('superagent')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const { getNamespace } = require('cls-hooked')
 
 const timeoutSpec = {
   response: config.apis.riskProfiler.timeout.response,
@@ -47,14 +46,10 @@ function riskProfilerGetBuilder(username) {
   return async ({ path, query = '', headers = {}, responseType = '' } = {}) => {
     try {
       const oauthResult = await getApiClientToken(username)
-      const ns = getNamespace('request.scope')
-      const correlationId = ns.get('correlationId')
-
       const result = await superagent
         .get(path)
         .query(query)
         .set('Authorization', `Bearer ${oauthResult.body.access_token}`)
-        .set('correlationId', correlationId)
         .set(headers)
         .responseType(responseType)
         .timeout(timeoutSpec)
@@ -89,28 +84,20 @@ function riskProfilerPushBuilder(verb, username) {
 }
 
 async function post(token, path, body, headers, responseType) {
-  const ns = getNamespace('request.scope')
-  const correlationId = ns.get('correlationId')
-
   return superagent
     .post(path)
     .send(body)
     .set('Authorization', `Bearer ${token}`)
-    .set('correlationId', correlationId)
     .set(headers)
     .responseType(responseType)
     .timeout(timeoutSpec)
 }
 
 async function put(token, path, body, headers, responseType) {
-  const ns = getNamespace('request.scope')
-  const correlationId = ns.get('correlationId')
-
   return superagent
     .put(path)
     .send(body)
     .set('Authorization', `Bearer ${token}`)
-    .set('correlationId', correlationId)
     .set(headers)
     .responseType(responseType)
     .timeout(timeoutSpec)

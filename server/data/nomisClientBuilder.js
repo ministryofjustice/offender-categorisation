@@ -2,7 +2,6 @@ const logger = require('../../log')
 const config = require('../config')
 const superagent = require('superagent')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const { getNamespace } = require('cls-hooked')
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,
@@ -130,14 +129,11 @@ function nomisClientGetBuilder(username) {
     logger.info(`nomis Get using clientId credentials: calling elite2api: ${path} ${query}`)
     try {
       const clientToken = await getApiClientToken(username)
-      const ns = getNamespace('request.scope')
-      const correlationId = ns.get('correlationId')
 
       const result = await superagent
         .get(path)
         .query(query)
         .set('Authorization', `Bearer ${clientToken.body.access_token}`)
-        .set('correlationId', correlationId)
         .set(headers)
         .responseType(responseType)
         .timeout(timeoutSpec)
@@ -172,28 +168,20 @@ function nomisPushBuilder(verb, token) {
 }
 
 async function post(token, path, body, headers, responseType) {
-  const ns = getNamespace('request.scope')
-  const correlationId = ns.get('correlationId')
-
   return superagent
     .post(path)
     .send(body)
     .set('Authorization', `Bearer ${token}`)
-    .set('correlationId', correlationId)
     .set(headers)
     .responseType(responseType)
     .timeout(timeoutSpec)
 }
 
 async function put(token, path, body, headers, responseType) {
-  const ns = getNamespace('request.scope')
-  const correlationId = ns.get('correlationId')
-
   return superagent
     .put(path)
     .send(body)
     .set('Authorization', `Bearer ${token}`)
-    .set('correlationId', correlationId)
     .set(headers)
     .responseType(responseType)
     .timeout(timeoutSpec)
