@@ -72,20 +72,7 @@ class ReviewSpecification extends GebReportingSpec {
 
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
-                            'C-04-02', 'Coventry',
-                            'Latvian',
-                            'A Felony', 'Another Felony',
-                            '10/06/2020',
-                            '11/06/2020',
-                            '02/02/2020',
-                            '13/06/2020',
-                            '14/06/2020',
-                            '15/06/2020',
-                            '16/06/2020',
-                            '17/06/2020',
-                            '6 years, 3 months']
-
+    headerValue*.text() == fixture.FULL_HEADER
     changeLinks.size() == 9
     offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
     furtherChargesSummary*.text() == ['Yes\ncharges text', 'No']

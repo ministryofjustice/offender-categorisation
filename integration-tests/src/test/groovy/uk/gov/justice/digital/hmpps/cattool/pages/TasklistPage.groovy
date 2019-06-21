@@ -16,7 +16,9 @@ class TasklistPage extends Page {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-grid-column-one-third') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
-    logoutLink { $('a', href: '/logout')}
+    sentenceTableRow1 (required: false){ $('table#sentences tr', 1).find('td')}
+    sentenceTableRow2 (required: false){ $('table#sentences tr', 2).find('td')}
+    logoutLink { $('a', href: '/logout') }
     startButtons { bodyRows*.$('td', 5)*.find('a') }
     offendingHistoryButton { $('#offendingHistoryButton') }
     furtherChargesButton { $('#furtherChargesButton') }
@@ -27,7 +29,7 @@ class TasklistPage extends Page {
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }
     backLink { $('a.govuk-back-link') }
-    summarySection (required: true) { $('#review div') }
-    openConditionsButton (required: false){ $('#openConditionsButton') }
+    summarySection(required: true) { $('#review div') }
+    openConditionsButton(required: false) { $('#openConditionsButton') }
   }
 }
