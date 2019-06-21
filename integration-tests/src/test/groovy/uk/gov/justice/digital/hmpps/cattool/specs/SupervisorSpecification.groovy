@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorConfirmBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorRecatReviewPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.SupervisorRecatReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
 
