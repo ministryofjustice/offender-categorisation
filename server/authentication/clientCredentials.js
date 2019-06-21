@@ -31,7 +31,6 @@ async function getApiClientToken() {
   const oauthRiskProfilerClientToken = generateOauthClientToken()
   const handle = getNamespace('request.scope')
   const username = handle.get('user')
-  const correlationId = handle.get('correlationId')
   const oauthRequest = querystring.stringify({ grant_type: 'client_credentials', username })
 
   logger.info(
@@ -42,7 +41,6 @@ async function getApiClientToken() {
     .post(oauthUrl)
     .set('Authorization', oauthRiskProfilerClientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
-    .set('correlationId', correlationId)
     .send(oauthRequest)
     .timeout(timeoutSpec)
 }
