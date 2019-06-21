@@ -14,6 +14,8 @@ const supervisor = require('../config/supervisor')
 const security = require('../config/security')
 const openConditions = require('../config/openConditions')
 
+const CatType = require('../utils/catTypeEnum')
+
 const formConfig = {
   ratings,
   categoriser,
@@ -202,6 +204,21 @@ module.exports = function Index({
 
       const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`
       res.redirect(`${nextPath}`)
+    })
+  )
+
+  router.get(
+    '/supervisor/review/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'supervisor'
+      const result = await buildFormData(res, req, section, 'review', bookingId, transactionalDbClient)
+
+      if (result.catType === 'INITIAL') {
+        res.render(`formPages/${section}/review`, result)
+      } else {
+        res.render(`formPages/${section}/recatReview`, result)
+      }
     })
   )
 
@@ -497,18 +514,20 @@ module.exports = function Index({
         await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
 
         // Reset cat so it appears the categoriser originally chose open conditions!
-        const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-        const { formObject } = categorisationRecord
-        const newData = R.assocPath(
-          ['categoriser', 'provisionalCategory'],
-          {
-            suggestedCategory: userInput.supervisorOverriddenCategory,
-            categoryAppropriate: 'Yes',
-            otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
-          },
-          formObject
-        )
-        await formService.updateFormData(bookingId, newData, transactionalDbClient)
+        if (userInput.catType === CatType.INITIAL.name) {
+          const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+          const { formObject } = categorisationRecord
+          const newData = R.assocPath(
+            ['categoriser', 'provisionalCategory'],
+            {
+              suggestedCategory: userInput.supervisorOverriddenCategory,
+              categoryAppropriate: 'Yes',
+              otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
+            },
+            formObject
+          )
+          await formService.updateFormData(bookingId, newData, transactionalDbClient)
+        }
 
         // send back to the categoriser for open conditions completion
         await formService.backToCategoriser(bookingId, transactionalDbClient)
