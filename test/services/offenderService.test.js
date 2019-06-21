@@ -472,22 +472,23 @@ describe('getReferredOffenders', () => {
   })
 })
 
-describe('getOffenderDetails should format sentence length correctly', () => {
-  test.each`
-    apiData                                       | expectedContent
-    ${{ years: 2, months: 4 }}                    | ${'2 years, 4 months'}
-    ${{ months: 2, weeks: 4 }}                    | ${'2 months, 4 weeks'}
-    ${{ days: 4 }}                                | ${'4 days'}
-    ${{ years: 1, months: 1 }}                    | ${'1 year, 1 month'}
-    ${{ weeks: 1 }}                               | ${'1 week'}
-    ${{ weeks: 2, days: 4, years: null }}         | ${'2 weeks, 4 days'}
-    ${{ years: 5, months: 6, weeks: 7, days: 1 }} | ${'5 years, 6 months, 7 weeks, 1 day'}
-    ${{ years: 5, lifeSentence: true }}           | ${'Life'}
-  `('should render $expectedContent for $apiData', async ({ apiData, expectedContent }) => {
+describe('getOffenderDetails', () => {
+  test('should assemble details correctly', async () => {
+    const sentenceTerms = [{ years: 2, months: 4, lifeSentence: true }]
     nomisClient.getOffenderDetails.mockReturnValue({ firstName: 'SAM', lastName: 'SMITH' })
-    nomisClient.getSentenceTerms.mockReturnValue(apiData)
+    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+    nomisClient.getMainOffence.mockReturnValue({ mainOffence: 'stuff' })
+
     const result = await service.getOffenderDetails('token', -5)
-    expect(result.sentence.length).toEqual(expectedContent)
+
+    expect(result).toEqual({
+      sentence: { dummyDetails: 'stuff', list: sentenceTerms, indeterminate: true },
+      offence: { mainOffence: 'stuff' },
+      firstName: 'SAM',
+      lastName: 'SMITH',
+      displayName: 'Smith, Sam',
+    })
   })
 })
 

@@ -36,27 +36,6 @@ function get10BusinessDays(from) {
   return numberOfDays
 }
 
-function plural(value) {
-  return value > 1 ? 's' : ''
-}
-
-function formatValue(value, label) {
-  return value > 0 ? `${value} ${label}${plural(value)}, ` : ''
-}
-
-function formatLength(sentenceTerms) {
-  if (sentenceTerms.lifeSentence) {
-    return 'Life'
-  }
-  const years = formatValue(sentenceTerms.years, 'year')
-  const months = formatValue(sentenceTerms.months, 'month')
-  const weeks = formatValue(sentenceTerms.weeks, 'week')
-  const days = formatValue(sentenceTerms.days, 'day')
-  const result = `${years}${months}${weeks}${days}`
-  // chop off any trailing comma
-  return result.endsWith(', ') ? result.substr(0, result.length - 2) : result
-}
-
 async function getSentenceMap(offenderList, nomisClient) {
   const bookingIds = offenderList.map(o => o.bookingId)
 
@@ -373,8 +352,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         ...displayName,
         sentence: {
           ...sentenceDetails,
-          length: formatLength(sentenceTerms),
-          indeterminate: sentenceTerms.lifeSentence,
+          list: sentenceTerms,
+          indeterminate: !!sentenceTerms.find(e => e.lifeSentence),
         },
         offence,
       }
