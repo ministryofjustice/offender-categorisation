@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorConfirmBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.SupervisorRecatReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
 
@@ -390,7 +391,7 @@ class SupervisorSpecification extends GebReportingSpec {
     response.openConditionsRequested == null
   }
 
-  def navigateToReview(youngOffender = false, indeterminateSentence = false){
+  def navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true){
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
@@ -412,7 +413,11 @@ class SupervisorSpecification extends GebReportingSpec {
 
     startButtons[0].click()
 
-    at SupervisorReviewPage
+    if (initial) {
+      at SupervisorReviewPage
+    }else {
+      at SupervisorRecatReviewPage
+    }
   }
 
   def "The done page for a supervisor is present"() {
@@ -450,5 +455,117 @@ class SupervisorSpecification extends GebReportingSpec {
     approvers == ['Helly, James', 'Helly, James']
     outcomes == ['C', 'C']
     catTypes == ['Initial', 'Initial']
+  }
+
+  def "The supervisor review page for a recat can be confirmed"() {
+    when: 'supervisor is viewing the review page for B2345YZ'
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat: TestFixture.defaultRecat]), 'RECAT')
+
+    navigateToReview(false, false, false)
+
+    then: 'the header is correct, change links are not displayed and the buttons omit the current cat'
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
+                            'C-04-02', 'Coventry',
+                            'Latvian',
+                            'A Felony', 'Another Felony',
+                            '10/06/2020',
+                            '11/06/2020',
+                            '02/02/2020',
+                            '13/06/2020',
+                            '14/06/2020',
+                            '15/06/2020',
+                            '16/06/2020',
+                            '17/06/2020',
+                            '6 years, 3 months']
+
+    changeLinks.size() == 0
+    // the displayed property does not work on these radios for some reason
+    overriddenCategoryB.@type == 'radio'
+    overriddenCategoryC.@type == null
+    overriddenCategoryD.@type == 'radio'
+
+    // prisonerBackgroundSummary*.text() == ['TBC']
+    securityInputSummary*.text() == ['', 'No', 'No']
+    riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
+    assessmentSummary*.text() == ['', 'Category C']
+    nextReviewDateSummary*.text() == ['', 'Saturday 14th December 2019']
+
+
+    when: 'the supervisor selects yes (after changing their mind)'
+    elite2Api.stubSupervisorApprove("C")
+
+    appropriateNo.click()
+    overriddenCategoryB.click()
+    overriddenCategoryText << "Im not sure"
+    appropriateYes.click()
+    submitButton.click()
+
+    then: 'the review outcome page is displayed and review choices persisted'
+    at SupervisorReviewOutcomePage
+
+    def data = db.getData(12)
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.recat == TestFixture.defaultRecat
+    response.supervisor == [review: [proposedCategory: 'C', supervisorCategoryAppropriate: 'Yes']]
+    response.openConditionsRequested == null
+    data.status == ["APPROVED"]
+  }
+
+  def "The supervisor can send the case back to the recategoriser"() {
+    given: 'supervisor is viewing the review page for B2345YZ'
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat: TestFixture.defaultRecat]), 'RECAT')
+
+    navigateToReview(false, false, false)
+
+    when: 'the supervisor clicks the review page "send back to categoriser" button'
+    backToCategoriserButton.click()
+
+    then: 'The confirm page is displayed'
+    at SupervisorConfirmBackPage
+
+    when: 'the supervisor confirms to return to recategoriser'
+    answerYes.click()
+    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+
+    submitButton.click()
+
+    then: 'the supervisor home page is displayed'
+    at SupervisorHomePage
+
+    then: 'offender with booking id 12 has been removed'
+    names == ['Pitstop, Penelope']
+
+    db.getData(12).status == ["SUPERVISOR_BACK"]
+  }
+
+  def "Overriding to an Open conditions category returns the record to the recategoriser"() {
+    given: 'supervisor is viewing the review page for B2345YZ'
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat: TestFixture.defaultRecat]), 'RECAT')
+
+    navigateToReview(false, false, false)
+
+    when: 'Supervisor chooses to override to category D'
+    appropriateNo.click()
+    overriddenCategoryD.click()
+
+    then: 'A warning is displayed'
+    warnings[1].text() contains "Making this category change means that the categoriser will have to provide more information."
+
+    when: 'The continue button is clicked'
+    overriddenCategoryText << "should be a D"
+    submitButton.click()
+
+    then: 'the record is returned to categoriser with open conditions requested and suggestedCategory forced to D'
+    at SupervisorHomePage
+
+    def data = db.getData(12)
+    data.status == ["SUPERVISOR_BACK"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.recat == TestFixture.defaultRecat
+    response.supervisor == [review: [proposedCategory: 'C', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D']]
+    response.openConditionsRequested
   }
 }

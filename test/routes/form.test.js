@@ -177,6 +177,44 @@ describe('GET /security/review', () => {
   )
 })
 
+describe('GET /supervisor/review', () => {
+  test('initial categorisations', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Prisoner background')
+      })
+  })
+
+  test('Re-categorisations', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Prisoner background')
+      })
+  })
+})
+
 describe('GET /ratings/violence', () => {
   test.each`
     path                              | expectedContent
