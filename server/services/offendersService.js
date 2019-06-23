@@ -67,6 +67,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
           .map(async o => {
             const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
+            if (dbRecord.catType === 'RECAT') {
+              return null
+            }
             return {
               ...o,
               displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
@@ -76,18 +79,20 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           })
       )
 
-      return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
+      return decoratedResults
+        .filter(o => o) // ignore recats (set to null)
+        .sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
     } catch (error) {
       logger.error(error, 'Error during getUncategorisedOffenders')
       throw error
     }
   }
 
-  async function getCategorisedOffenders(token, agencyId, user, transactionalDbClient) {
+  async function getCategorisedOffenders(token, agencyId, user, catType, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
 
-      const categorisedFromDB = await formService.getCategorisedOffenders(agencyId, transactionalDbClient)
+      const categorisedFromDB = await formService.getCategorisedOffenders(agencyId, catType, transactionalDbClient)
       if (!isNilOrEmpty(categorisedFromDB)) {
         const categorisedFromElite = await nomisClient.getCategorisedOffenders(
           agencyId,
@@ -269,6 +274,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const decoratedResults = await Promise.all(
         rawResult.map(async o => {
           const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
+          if (dbRecord.catType === 'INITIAL') {
+            return null
+          }
           const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
           return {
             ...o,
@@ -280,9 +288,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         })
       )
       // TODO: append others in the db with recat started - these will be manual reviews (or possibly risk level changes?)
+      // Also approaching age 21
       // They wont have a due date shown (it would be after the cutoff)
 
-      return decoratedResults
+      return decoratedResults.filter(o => o) // ignore initial cats (set to null)
     } catch (error) {
       logger.error(error, 'Error during getUncategorisedOffenders')
       throw error
