@@ -1,0 +1,87 @@
+{% extends "../partials/layout.html" %}
+
+{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "button/macro.njk" import govukButton %}
+
+{% block beforeContent %}
+{{ govukBreadcrumbs({
+  items: [
+    {
+      text: "Home",
+      href: "#"
+    }
+  ]
+}) }}
+{% endblock %}
+
+{% block content %}
+
+<div >
+  <h1 class="govuk-heading-l">Prisoner re-categorisation</h1>
+</div>
+
+<div class="govuk-tabs">
+
+  <ul class="govuk-tabs__list">
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab " id="todo-tab" href="/recategoriserHome">
+        To do
+      </a>
+    </li>
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab govuk-tabs__tab--selected" id="done-tab" >
+        Done
+      </a>
+    </li>
+  </ul>
+
+  <section class="govuk-tabs__panel">
+
+  {% if offenders | length > 0 %}
+  <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
+    <thead class="govuk-table__head">
+
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Name</th>
+      <th class="govuk-table__header" scope="col">Prison no.</th>
+      <th class="govuk-table__header" scope="col">Approved on</th>
+      <th class="govuk-table__header" scope="col">Categorised by</th>
+      <th class="govuk-table__header" scope="col">Approved by</th>
+      <th class="govuk-table__header" scope="col">Category</th>
+      <th class="govuk-table__header" scope="col"></th>
+    </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    {% set regExp = r/referred to security/i %}
+    {% for row in offenders %}
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">{{ row.displayName }}</td>
+      <td class="govuk-table__cell">{{ row.offenderNo }}</td>
+      <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
+      <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
+      <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
+      <td class="govuk-table__cell">{{ row.category }}</td>
+      <td class="govuk-table__cell">
+        {% if row.statusTextDisplay != '' %}
+        {% set locked = regExp.test(row.displayStatus) %}
+        {{ govukButton({
+          text: "View",
+          href: "/form/approvedView/" + row.bookingId,
+          classes: "tableButton grey-button govuk-!-padding-left-3 govuk-!-padding-right-3"
+        }) }}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+  {% else %}
+  <div class="govuk-!-padding-top-7">
+    <div id="no-results-message" class="govuk-heading-m">No re-categorised prisoners found</div>
+  </div>
+  {% endif %}
+  </section>
+</div>
+
+{% endblock %}
