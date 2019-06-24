@@ -227,8 +227,35 @@ describe('GET /ratings/violence', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(riskProfilerService.getViolenceProfile).toBeCalledTimes(1)
+        expect(res.text).toContain(
+          'This person has not been reported as the perpetrator in any assaults in custody before.'
+        )
+        expect(res.text).not.toContain("'This person has been reported as the perpetrator")
       })
   )
+
+  test('violence flag logic - assaults and notify', () => {
+    riskProfilerService.getViolenceProfile.mockResolvedValue({
+      nomsId: '1234AN',
+      riskType: 'VIOLENCE',
+      veryHighRiskViolentOffender: false,
+      notifySafetyCustodyLead: true,
+      displayAssaults: true,
+      numberOfAssaults: 5,
+      numberOfSeriousAssaults: 2,
+    })
+    return request(app)
+      .get(`/ratings/violenceRating/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(
+          'This person has been reported as the perpetrator in 5 assaults in custody before,\n' +
+            '      including 2 serious assaults in the last 12 months'
+        )
+        expect(res.text).toContain('Please notify your safer custody lead about this prisoner')
+      })
+  })
 })
 
 describe('GET /ratings/extremism', () => {

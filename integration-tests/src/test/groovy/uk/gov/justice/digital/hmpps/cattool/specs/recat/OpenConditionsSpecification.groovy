@@ -151,7 +151,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, false)
+    elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
     then: 'the review page is displayed and Data is stored correctly. Data is persisted - regardless of the decision to end the open conditions flow'
@@ -205,10 +206,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at TasklistRecatPage
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-//    elite2Api.stubOffenceHistory('B2345YZ')
-//    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-//    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-//    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    elite2Api.stubOffenceHistory('B2345YZ')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, false)
+    elite2Api.stubAgencyDetails('LPI')
     openConditionsButton.isDisplayed()
     continueButton.click()
 
@@ -329,9 +331,10 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
-//    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-//    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-//    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
+    elite2Api.stubAgencyDetails('LPI')
     openConditionsButton.isDisplayed()
     continueButton.click()
 
@@ -410,6 +413,10 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
     elite2Api.stubCategorise('C')
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
+    elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
     at ReviewRecatPage
     submitButton.click()
@@ -424,6 +431,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubUncategorisedForSupervisor()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
+    elite2Api.stubAgencyDetails('LPI')
+    openConditionsButton.isDisplayed()
     startButtons[1].click() // B2345YZ / 12
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('D')

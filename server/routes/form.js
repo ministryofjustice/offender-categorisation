@@ -113,7 +113,7 @@ module.exports = function Index({
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         result.data.details.offenderNo,
         res.locals.user.username,
-        false // TODO
+        false // don't yet have the answer the question - will be populated correctly in the review route
       )
       const data = { ...result.data, extremismProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
