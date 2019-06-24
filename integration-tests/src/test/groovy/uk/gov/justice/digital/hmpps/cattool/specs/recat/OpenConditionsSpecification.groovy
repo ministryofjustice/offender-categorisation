@@ -435,7 +435,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
     elite2Api.stubAgencyDetails('LPI')
-    openConditionsButton.isDisplayed()
     startButtons[1].click() // B2345YZ / 12
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('D')

@@ -267,7 +267,7 @@ describe('recat', () => {
       })
   })
 
-  test('GET /form/recat/review extremism profile - increasedRiskOfExtremism and notifyRegionalCTLead', () => {
+  test('GET /form/recat/review extremism profile - increasedRiskOfExtremism', () => {
     riskProfilerService.getExtremismProfile.mockReturnValue({
       nomsId: '123AD',
       riskType: 'EXTREMISM',
@@ -286,7 +286,7 @@ describe('recat', () => {
       })
   })
 
-  test('GET /form/recat/review extremism profile - no increasedRiskOfExtremism', () => {
+  test('GET /form/recat/review extremism profile - all fine', () => {
     riskProfilerService.getExtremismProfile.mockReturnValue({
       nomsId: '123AD',
       riskType: 'EXTREMISM',
