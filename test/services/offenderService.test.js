@@ -8,6 +8,7 @@ const nomisClient = {
   getUncategorisedOffenders: jest.fn(),
   getSentenceDatesForOffenders: jest.fn(),
   getRecategoriseOffenders: jest.fn(),
+  getPrisonersAtLocation: jest.fn(),
   getUserByUserId: jest.fn(),
   getOffenderDetails: jest.fn(),
   getOffenderDetailList: jest.fn(),
@@ -68,7 +69,7 @@ describe('getRecategoriseOffenders', () => {
         lastName: 'Brown',
         bookingId: 123,
         category: 'B',
-        nextReviewDate: '2019-06-20',
+        nextReviewDate: '2019-04-20',
       },
       {
         offenderNo: 'H12345',
@@ -76,7 +77,7 @@ describe('getRecategoriseOffenders', () => {
         lastName: 'Doyle',
         bookingId: 111,
         category: 'B',
-        nextReviewDate: '2019-06-21',
+        nextReviewDate: '2019-05-21',
       },
       {
         offenderNo: 'G55345',
@@ -87,6 +88,12 @@ describe('getRecategoriseOffenders', () => {
         nextReviewDate: '2019-06-22',
       },
     ]
+
+    const u21Data = [
+      { bookingId: 21, offenderNo: 'U2101AA', firstName: 'PETER', lastName: 'PAN', dateOfBirth: '1998-05-01' },
+      { bookingId: 22, offenderNo: 'U2102AA', firstName: 'JUSTIN', lastName: 'BEIBER', dateOfBirth: '1998-06-01' },
+    ]
+
     const expected = [
       {
         offenderNo: 'G12345',
@@ -95,7 +102,18 @@ describe('getRecategoriseOffenders', () => {
         displayName: 'Brown, Jane',
         bookingId: 123,
         displayStatus: Status.SECURITY_MANUAL.value,
-        nextReviewDate: '2019-06-20',
+        nextReviewDateDisplay: '20/04/2019',
+        reason: 'Review due',
+      },
+      {
+        offenderNo: 'U2101AA',
+        firstName: 'PETER',
+        lastName: 'PAN',
+        displayName: 'Pan, Peter',
+        bookingId: 21,
+        displayStatus: 'Not started',
+        nextReviewDateDisplay: '01/05/2019',
+        reason: 'Age 21',
       },
       {
         offenderNo: 'H12345',
@@ -104,7 +122,18 @@ describe('getRecategoriseOffenders', () => {
         displayName: 'Doyle, Danny',
         bookingId: 111,
         displayStatus: 'Not started',
-        nextReviewDate: '2019-06-21',
+        nextReviewDateDisplay: '21/05/2019',
+        reason: 'Review due',
+      },
+      {
+        offenderNo: 'U2102AA',
+        firstName: 'JUSTIN',
+        lastName: 'BEIBER',
+        displayName: 'Beiber, Justin',
+        bookingId: 22,
+        displayStatus: 'Not started',
+        nextReviewDateDisplay: '01/06/2019',
+        reason: 'Age 21',
       },
       {
         offenderNo: 'G55345',
@@ -113,20 +142,64 @@ describe('getRecategoriseOffenders', () => {
         displayName: 'Allen, Alan',
         bookingId: 122,
         displayStatus: 'Not started',
-        nextReviewDate: '2019-06-22',
+        nextReviewDateDisplay: '22/06/2019',
+        reason: 'Review due',
       },
     ]
     nomisClient.getRecategoriseOffenders.mockReturnValue(data)
+    nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
     formService.getCategorisationRecord.mockReturnValue({}).mockReturnValueOnce({
       bookingId: 123,
       status: Status.SECURITY_MANUAL.name,
     })
 
     const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
-    expect(nomisClient.getRecategoriseOffenders).toBeCalledWith('LEI')
-    expect(formService.getCategorisationRecord).toBeCalledTimes(3)
+    expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
+    expect(nomisClient.getPrisonersAtLocation).toBeCalled()
+    expect(formService.getCategorisationRecord).toBeCalledTimes(5)
     expect(formService.getCategorisationRecord).nthCalledWith(1, 123, mockTransactionalClient)
     expect(result).toMatchObject(expected)
+  })
+
+  test('No results from elite', async () => {
+    nomisClient.getRecategoriseOffenders.mockReturnValue([])
+    nomisClient.getPrisonersAtLocation.mockReturnValue([])
+    const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
+    expect(result).toHaveLength(0)
+  })
+
+  test('No results due to INITIAL', async () => {
+    const data = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        category: 'B',
+        nextReviewDate: '2019-04-20',
+      },
+    ]
+    const u21Data = [
+      { bookingId: 21, offenderNo: 'U2101AA', firstName: 'PETER', lastName: 'PAN', dateOfBirth: '1998-05-01' },
+    ]
+    formService.getCategorisationRecord
+      .mockReturnValueOnce({
+        bookingId: 123,
+        status: Status.SECURITY_BACK.name,
+        catType: 'INITIAL',
+      })
+      .mockReturnValueOnce({
+        bookingId: 21,
+        status: Status.STARTED.name,
+        catType: 'INITIAL',
+      })
+    nomisClient.getRecategoriseOffenders.mockReturnValue(data)
+    nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
+
+    const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
+
+    expect(result).toHaveLength(0)
+    expect(formService.getCategorisationRecord).toBeCalledTimes(2)
   })
 })
 
