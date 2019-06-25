@@ -552,7 +552,17 @@ class SupervisorSpecification extends GebReportingSpec {
     def data = db.getData(12)
     data.status == ["SUPERVISOR_BACK"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
-    response.recat == TestFixture.defaultRecat
+    // decision is removed when open conditions introduced by supervisor
+    response.recat == [
+      securityInput : [securityInputNeeded: "No"],
+      nextReviewDate: [date: "14/12/2019"],
+      riskAssessment: [
+        lowerCategory    : "lower security category text",
+        otherRelevant    : "Yes",
+        higherCategory   : "higher security category text",
+        otherRelevantText: "other relevant information"
+      ]
+    ]
     response.supervisor == [review: [proposedCategory: 'C', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D']]
     response.openConditionsRequested
   }
