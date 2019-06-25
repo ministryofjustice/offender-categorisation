@@ -223,6 +223,26 @@ describe('recat', () => {
         expect(res.text).toContain('violenceInfo')
       }))
 
+  test('GET /form/recat/review persists profile data', () => {
+    const violenceProfile = { violence: 123 }
+    const escapeProfile = { escape: 123 }
+    const extremismProfile = { extremism: 123 }
+    riskProfilerService.getViolenceProfile.mockResolvedValue(violenceProfile)
+    riskProfilerService.getExtremismProfile.mockResolvedValue(extremismProfile)
+    riskProfilerService.getEscapeProfile.mockResolvedValue(escapeProfile)
+    return request(app)
+      .get(`/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(() => {
+        expect(formService.mergeRiskProfileData).toBeCalledWith(
+          '12345',
+          { escapeProfile, extremismProfile, violenceProfile },
+          mockTransactionalClient
+        )
+      })
+  })
+
   test('GET /form/recat/review violence profile - displayAssault', () => {
     riskProfilerService.getViolenceProfile.mockResolvedValue({
       nomsId: '1234AN',
