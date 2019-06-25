@@ -8,6 +8,79 @@
 <div>{{details}}</div>
 {% endmacro %}
 
+{% macro renderAlert(alert) %}
+<p class="govuk-!-margin-bottom-1">{{ alert.alertCode }} {{ alert.comment }} <strong>{{ alert.dateCreated }}</strong>
+  {% if alert.expired %} (expired){% endif %}
+  {% if not alert.active %} (inactive){% endif %}
+</p>
+{% endmacro %}
+
+
+{% set catHistory %}
+{% if data.categorisations | length > 0 %}
+<table class="govuk-table govuk-!-font-size-14" id="categoryHistory" >
+  <thead class="govuk-table__head">
+
+  <tr class="govuk-table__row">
+    <th class="govuk-table__header" scope="col">Categorisation date</th>
+    <th class="govuk-table__header" scope="col">Category decision</th>
+    <th class="govuk-table__header" scope="col">Review location</th>
+  </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+  {% for row in data.categorisations %}
+  <tr class="govuk-table__row ">
+    <td class="govuk-table__cell">{{ row.assessmentDateDisplay }}</td>
+    <td class="govuk-table__cell">{{ row.classificationCode }}</td>
+    <td class="govuk-table__cell">{{ row.agencyDescription }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="govuk-!-padding-top-4">
+  <div id="no-results-message">There are no previous categorisations.</div>
+</div>
+{% endif %}
+{% endset %}
+
+{% if data.violenceProfile.displayAssaults %}
+    {% set violenceText %}
+      This person has been reported as the perpetrator in {{ data.violenceProfile.numberOfAssaults }} assaults in custody before,
+      including {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults in the last 12 months
+    {% endset %}
+  {% else %}
+    {% set violenceText = "This person has not been reported as the perpetrator in any assaults in custody before" %}
+{% endif %}
+
+{% set escape %}
+{% if data.escapeProfile.activeEscapeList or data.escapeProfile.activeEscapeRisk %}
+<div>This person is considered an escape risk</div>
+
+<div class="govuk-details__text govuk-!-margin-bottom-3" id="alertDetails">
+  {% for alert in data.escapeProfile.escapeListAlerts %}
+  {{ renderAlert(alert) }}
+  {% endfor %}
+  {% for alert in data.escapeProfile.escapeRiskAlerts %}
+  {{ renderAlert(alert) }}
+  {% endfor %}
+</div>
+
+{% else %}
+<div>This person is not considered an escape risk."</div>
+{% endif %}
+{% endset %}
+
+{% set extremism %}
+  <div>
+  {% if data.extremismProfile.increasedRiskOfExtremism %}
+    This person is at risk of engaging in, or vulnerable to, extremism.
+  {% else %}
+   This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.
+  {% endif %}
+  </div>
+{% endset %}
+
 {{ govukSummaryList({
   classes: 'govuk-!-margin-bottom-9 prisonerBackgroundSummary',
   rows: [
@@ -19,10 +92,40 @@
             visuallyHiddenText: "Prisoner background"
           }] if showChangeLinks else []
       }
+    },
+    {
+      key: { text: "Reason for review" },
+      value: { text: "todo" },
+      actions: { items: [] }
+    },
+    {
+      key: { text: "Categorisation history" },
+      value: { classes: 'reviewTable', html: catHistory },
+      actions: { items: [] }
+    },
+    {
+      key: { text: "Safety and good order" },
+      value: { text: violenceText },
+      actions: { items: [] }
+    },
+    {
+      key: { text: "Risk of escape" },
+      value: { html: escape },
+      actions: { items: [] }
+    },
+    {
+      key: { text: "Extremism" },
+      value: { html: extremism },
+      actions: { items: [] }
+    },
+    {
+      key: { text: "Offence details for active sentences" },
+      value: { text: data.recat.prisonerBackground.offenceDetails },
+      actions: { items: [] }
     }
   ]
 }) }}
-  {# *** TBC #}
+
 
   {% set wasReferred = data.socProfile.transferToSecurity or data.recat.securityInput.securityInputNeeded == 'Yes' %}
   {% set title = {
@@ -90,7 +193,7 @@
     classes: 'govuk-!-margin-bottom-9 assessmentSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Assessment" },
+        key: { classes: 'summary-list-title', text: "Category decision" },
         actions: { items: [{
               href: '/form/recat/decision/' + data.details.bookingId,
               text: "Change",
@@ -110,7 +213,7 @@
     classes: 'govuk-!-margin-bottom-9 nextReviewDateSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Set next category review date" },
+        key: { classes: 'summary-list-title', text: "Next category review date" },
         actions: { items: [{
               href: '/form/recat/nextReviewDate/' + data.details.bookingId,
               text: "Change",
