@@ -57,7 +57,7 @@ module.exports = function Index({
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
         res.locals.user.username,
-        false // TODO
+        false // not used for recat (contributes towards recommended category)
       )
 
       const categorisations = await offendersService.getPrisonerBackground(res.locals.user.token, offenderNo)
@@ -65,6 +65,28 @@ module.exports = function Index({
       const data = { ...result.data, categorisations, escapeProfile, violenceProfile, extremismProfile }
 
       res.render(`formPages/recat/prisonerBackground`, { ...result, data })
+    })
+  )
+
+  router.get(
+    '/review/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
+      const { offenderNo } = result.data.details
+      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals.user.username)
+      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals.user.username)
+      const extremismProfile = await riskProfilerService.getExtremismProfile(
+        offenderNo,
+        res.locals.user.username,
+        false // contributes towards recommended category, only used in initial categorisations
+      )
+
+      const categorisations = await offendersService.getPrisonerBackground(res.locals.user.token, offenderNo)
+
+      const data = { ...result.data, categorisations, escapeProfile, violenceProfile, extremismProfile }
+
+      res.render(`formPages/recat/review`, { ...result, data })
     })
   )
 
