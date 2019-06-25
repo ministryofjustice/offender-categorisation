@@ -527,6 +527,14 @@ module.exports = function Index({
             formObject
           )
           await formService.updateFormData(bookingId, newData, transactionalDbClient)
+        } else {
+          // delete recat decision to force a new decision once open conditions completed
+          await formService.deleteFormData({
+            bookingId: parseInt(bookingId, 10),
+            formSection: 'recat',
+            formName: 'decision',
+            transactionalClient: transactionalDbClient,
+          })
         }
 
         // send back to the categoriser for open conditions completion
