@@ -588,12 +588,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getCatAInformation,
     getOffenceHistory,
     isRecat,
-    // just for tests:
-    buildSentenceData,
     createInitialCategorisation,
     createSupervisorApproval,
     getCategorisedOffenders,
     getSecurityReviewedOffenders,
     getPrisonerBackground,
+    // just for tests:
+    buildSentenceData,
   }
 }
