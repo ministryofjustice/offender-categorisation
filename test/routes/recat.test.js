@@ -222,6 +222,88 @@ describe('recat', () => {
         expect(res.text).toContain('escapeInfo')
         expect(res.text).toContain('violenceInfo')
       }))
+
+  test('GET /form/recat/review violence profile - displayAssault', () => {
+    riskProfilerService.getViolenceProfile.mockResolvedValue({
+      nomsId: '1234AN',
+      riskType: 'VIOLENCE',
+      veryHighRiskViolentOffender: false,
+      notifySafetyCustodyLead: false,
+      displayAssaults: true,
+      numberOfAssaults: 5,
+      numberOfSeriousAssaults: 2,
+    })
+    return request(app)
+      .get(`/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(
+          'This person has been reported as the perpetrator in 5 assaults in custody before,\n' +
+            '      including 2 serious assaults in the last 12 months'
+        )
+      })
+  })
+
+  test('GET /form/recat/review violence profile - all fine', () => {
+    riskProfilerService.getViolenceProfile.mockReturnValue({
+      nomsId: '1234AN',
+      riskType: 'VIOLENCE',
+      veryHighRiskViolentOffender: false,
+      notifySafetyCustodyLead: false,
+      displayAssaults: false,
+      numberOfAssaults: 5,
+      numberOfSeriousAssaults: 2,
+    })
+    return request(app)
+      .get(`/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('This person has been reported as the perpetrator')
+        expect(res.text).toContain(
+          'This person has not been reported as the perpetrator in any assaults in custody before'
+        )
+      })
+  })
+
+  test('GET /form/recat/review extremism profile - increasedRiskOfExtremism', () => {
+    riskProfilerService.getExtremismProfile.mockReturnValue({
+      nomsId: '123AD',
+      riskType: 'EXTREMISM',
+      increasedRiskOfExtremism: true,
+      notifyRegionalCTLead: true,
+    })
+    return request(app)
+      .get(`/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('This person is at risk of engaging in, or vulnerable to, extremism.')
+        expect(res.text).not.toContain(
+          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.'
+        )
+      })
+  })
+
+  test('GET /form/recat/review extremism profile - all fine', () => {
+    riskProfilerService.getExtremismProfile.mockReturnValue({
+      nomsId: '123AD',
+      riskType: 'EXTREMISM',
+      increasedRiskOfExtremism: false,
+      notifyRegionalCTLead: false,
+    })
+    return request(app)
+      .get(`/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('This person is at risk of engaging in, or vulnerable to, extremism.')
+        expect(res.text).toContain(
+          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.'
+        )
+      })
+  })
 })
 
 describe('POST /form/recat/decision', () => {
