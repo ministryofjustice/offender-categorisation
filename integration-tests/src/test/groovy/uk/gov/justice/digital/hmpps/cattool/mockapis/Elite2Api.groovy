@@ -158,10 +158,10 @@ class Elite2Api extends WireMockRule {
             .withStatus(200))
     )
 
-    final dobFrom = LocalDate.now().minusYears(21)
-    final dobTo = dobFrom.plusMonths(2)
+    final fromDob = LocalDate.now().minusYears(21)
+    final toDob = fromDob.plusMonths(2)
     this.stubFor(
-      get("/api/locations/description/LEI/inmates?dobFrom=$dobFrom&dobTo=$dobTo")
+      get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
@@ -217,10 +217,10 @@ class Elite2Api extends WireMockRule {
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )
-    final dobFrom = LocalDate.now().minusYears(21)
-    final dobTo = dobFrom.plusMonths(2)
+    final fromDob = LocalDate.now().minusYears(21)
+    final toDob = fromDob.plusMonths(2)
     this.stubFor(
-      get("/api/locations/description/LEI/inmates?dobFrom=$dobFrom&dobTo=$dobTo")
+      get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
