@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cattool.specs.recat
 
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
+import geb.interaction.InteractionsSupport
 import geb.spock.GebReportingSpec
 import groovy.json.JsonOutput
 import org.junit.Rule
@@ -69,13 +70,23 @@ class ReviewSpecification extends GebReportingSpec {
     summarySection[1].text() == 'Completed'
 
     when: 'The continue link is selected'
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage
     headerValue*.text() == fixture.FULL_HEADER
     changeLinks.size() == 4
-    // prisonerBackgroundSummary*.text() == ['TBC']
+    prisonerBackgroundSummary*.text() == ['',
+                                          'todo',
+                                          'Categorisation date Category decision Review location\n04/04/2012 A Moorland (HMP & YOI)\n24/03/2013 B Moorland (HMP & YOI)',
+                                          'This person has not been reported as the perpetrator in any assaults in custody before',
+                                          'This person is considered an escape risk\nXEL First xel comment 2016-09-14\nXEL Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nXER First xer comment 2016-09-16',
+                                          'This person is at risk of engaging in, or vulnerable to, extremism.',
+                                          '']
     securityInputSummary*.text() == ['', 'No', 'Yes', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
@@ -86,7 +97,7 @@ class ReviewSpecification extends GebReportingSpec {
     elite2Api.stubCategorise('C', '2019-12-14')
     submitButton.click()
 
-    then:'Submission is successful and nomis is updated'
+    then: 'Submission is successful and nomis is updated'
     at CategoriserSubmittedPage // bit of a cheat - pages are currently identical!
   }
 
@@ -111,6 +122,10 @@ class ReviewSpecification extends GebReportingSpec {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
     then: 'the review page is displayed with manual security link enabled'
