@@ -84,6 +84,14 @@ module.exports = function Index({
 
       const categorisations = await offendersService.getPrisonerBackground(res.locals.user.token, offenderNo)
 
+      const dataToStore = {
+        escapeProfile,
+        extremismProfile,
+        violenceProfile,
+      }
+
+      await formService.mergeRiskProfileData(bookingId, dataToStore, transactionalDbClient)
+
       const data = { ...result.data, categorisations, escapeProfile, violenceProfile, extremismProfile }
 
       res.render(`formPages/recat/review`, { ...result, data })

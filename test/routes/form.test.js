@@ -392,6 +392,12 @@ describe('POST /supervisor/review', () => {
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(formService.deleteFormData).toBeCalledTimes(1)
         expect(formService.requiresOpenConditions).toBeCalledTimes(1)
+        expect(formService.deleteFormData).toBeCalledWith({
+          bookingId: 12345,
+          formName: 'decision',
+          formSection: 'recat',
+          transactionalClient: mockTransactionalClient,
+        })
       })
   })
 })
