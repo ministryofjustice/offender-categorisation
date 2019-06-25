@@ -29,6 +29,8 @@ const formService = {
   updateFormData: jest.fn(),
   mergeRiskProfileData: jest.fn(),
   backToCategoriser: jest.fn(),
+  requiresOpenConditions: jest.fn(),
+  deleteFormData: jest.fn(),
   isValid: jest.fn(),
 }
 
@@ -374,6 +376,24 @@ describe('POST /supervisor/review', () => {
         expect(updateArg.bookingId).toBe(12345)
       })
   )
+  test('Should delete recat decision if overriding to open conditions', () => {
+    const userInput = {
+      supervisorCategoryAppropriate: 'no',
+      supervisorOverriddenCategory: 'D',
+      supervisorOverriddenCategoryText: 'bla',
+    }
+
+    return request(app)
+      .post(`/supervisor/review/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect(() => {
+        expect(formService.update).toBeCalledTimes(1)
+        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+        expect(formService.deleteFormData).toBeCalledTimes(1)
+        expect(formService.requiresOpenConditions).toBeCalledTimes(1)
+      })
+  })
 })
 
 describe('POST /supervisor/confirmBack', () => {
