@@ -424,7 +424,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     then: 'the cat C is submitted'
     at CategoriserSubmittedPage
 
-    return // TODO :  test needs supervisor work
+    return // TODO : test needs supervisor work
 
     when: 'the supervisor overrides to cat D'
     fixture.logout()
