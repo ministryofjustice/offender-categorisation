@@ -109,11 +109,11 @@ class HomePageSpecification extends GebReportingSpec {
 
     then: 'The recategoriser home page is displayed'
     at RecategoriserHomePage
-    prisonNos == ['B2345XY','B2345YZ']
-    names == ['Pitstop, Penelope', 'Hillmob, Ant']
-    dates == ['25/07/2019','27/07/2019']
-    reasons == ['Review due', 'Review due']
-    statuses == ['Not started', 'Not started']
+    prisonNos == ['B2345XY', 'C0001AA', 'B2345YZ', 'C0002AA']
+    names == ['Pitstop, Penelope', 'Tim, Tiny', 'Hillmob, Ant', 'Mole, Adrian']
+    dates == ['25/07/2019', '26/07/2019', '27/07/2019', '15/08/2019']
+    reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
+    statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     startButtons[0].text() == 'Start'
   }
 

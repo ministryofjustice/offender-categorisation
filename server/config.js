@@ -66,4 +66,5 @@ module.exports = {
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
   googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', null, true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 2, true)}`,
+  recatMarginMonths: `${get('RECAT_MARGIN_MONTHS', 2, true)}`,
 }
