@@ -130,8 +130,9 @@ class Elite2Api extends WireMockRule {
   }
 
   void stubRecategorise() {
+    final date = LocalDate.now().plusMonths(2)
     this.stubFor(
-      get("/api/offender-assessments/category/LEI?type=RECATEGORISATIONS")
+      get("/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=$date")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
@@ -156,11 +157,42 @@ class Elite2Api extends WireMockRule {
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )
+
+    final dobFrom = LocalDate.now().minusYears(21)
+    final dobTo = dobFrom.plusMonths(2)
+    this.stubFor(
+      get("/api/locations/description/LEI/inmates?dobFrom=$dobFrom&dobTo=$dobTo")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [
+                bookingId   : 21,
+                offenderNo  : 'C0001AA',
+                firstName   : 'TINY',
+                lastName    : 'TIM',
+                dateOfBirth : '1998-07-26',
+                age         : 20,
+                categoryCode: 'I',
+              ],
+              [
+                bookingId   : 22,
+                offenderNo  : 'C0002AA',
+                firstName   : 'ADRIAN',
+                lastName    : 'MOLE',
+                dateOfBirth : '1998-08-15',
+                age         : 20,
+                categoryCode: 'I',
+              ],]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
   }
 
   void stubRecategoriseWithCatI() {
+    final date = LocalDate.now().plusMonths(2)
     this.stubFor(
-      get("/api/offender-assessments/category/LEI?type=RECATEGORISATIONS")
+      get("/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=$date")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
@@ -181,6 +213,35 @@ class Elite2Api extends WireMockRule {
                 nextReviewDate: '2019-07-27'
               ],
             ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+    final dobFrom = LocalDate.now().minusYears(21)
+    final dobTo = dobFrom.plusMonths(2)
+    this.stubFor(
+      get("/api/locations/description/LEI/inmates?dobFrom=$dobFrom&dobTo=$dobTo")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [
+                bookingId   : 21,
+                offenderNo  : 'C0001AA',
+                firstName   : 'TINY',
+                lastName    : 'TIM',
+                dateOfBirth : '1998-07-26',
+                age         : 20,
+                categoryCode: 'I',
+              ],
+              [
+                bookingId   : 22,
+                offenderNo  : 'C0002AA',
+                firstName   : 'ADRIAN',
+                lastName    : 'MOLE',
+                dateOfBirth : '1998-08-15',
+                age         : 20,
+                categoryCode: 'I',
+              ],]
             ))
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
