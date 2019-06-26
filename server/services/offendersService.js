@@ -361,6 +361,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       }
       return {
         dbRecordExists: true,
+        dbStatus: categorisation.status,
         displayStatus: statusText,
         assignedUserId: categorisation.assignedUserId,
       }

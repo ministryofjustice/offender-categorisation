@@ -71,32 +71,39 @@ class HomePageSpecification extends GebReportingSpec {
   }
 
   def "The home page for a supervisor is present"() {
-    // Only one of the prisoners is in the DB
-    db.createDataWithStatus(11, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]
-    ]))
+    // Only some of the prisoners are in the DB
+    // Refer to table in https://dsdmoj.atlassian.net/browse/CAT-254
+    db.createDataWithStatus(-2, 32, 'STARTED', '{}')
+    db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
+    db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
     when: 'I go to the home page as supervisor'
 
     def now = LocalDate.now()
-    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
-    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-    def daysSinceSentence11 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate11, now))
-    def daysSinceSentence12 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate12, now))
+    def sentenceStartDate31 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate32 = LocalDate.of(2019, 1, 31)
+    def sentenceStartDate33 = LocalDate.of(2019, 2, 4)
+    def sentenceStartDate34 = LocalDate.of(2019, 2, 8)
+    def daysSinceSentence31 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate31, now))
+    def daysSinceSentence32 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate32, now))
+    def daysSinceSentence33 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate33, now))
+    def daysSinceSentence34 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate34, now))
     // 14 days after sentenceStartDate
-    elite2Api.stubUncategorisedForSupervisor()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedForSupervisorFull()
+    elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA'], [31, 32, 33, 34],
+      [sentenceStartDate31.toString(), sentenceStartDate32.toString(), sentenceStartDate33.toString(), sentenceStartDate34.toString()])
 
     fixture.loginAs(SUPERVISOR_USER)
 
     then: 'The supervisor home page is displayed'
     at SupervisorHomePage
-    prisonNos == ['B2345YZ', 'B2345XY']
-    names == ['Hillmob, Ant', 'Pitstop, Penelope']
-    days == [daysSinceSentence12, daysSinceSentence11]
-    dates == ['14/02/2019', '11/02/2019']
-    catBy == ['Bugs Bunny', 'Roger Rabbit']
-    statuses == ['PNOMIS', 'B']
-    catTypes == ['', 'Initial']
+    prisonNos == ['B0034AA', 'B0033AA', 'B0032AA', 'B0031AA']
+    names == ['Approved, Awaiting', 'Awaiting, Awaiting', 'Started, Awaiting', 'Missing, Awaiting']
+    days == [daysSinceSentence34, daysSinceSentence33, daysSinceSentence32, daysSinceSentence31]
+    dates == ['22/02/2019', '18/02/2019', '14/02/2019', '11/02/2019']
+    catBy == ['Bugs Bunny', 'Roger Rabbit', 'Bugs Bunny', 'Roger Rabbit']
+    statuses == ['C', 'B', 'C', 'B']
+    catTypes == ['Initial', 'Initial', 'Initial', '']
+    startButtons*.text() == [null, 'Start', null, null]
     !multipleRoleDiv.isDisplayed()
   }
 
