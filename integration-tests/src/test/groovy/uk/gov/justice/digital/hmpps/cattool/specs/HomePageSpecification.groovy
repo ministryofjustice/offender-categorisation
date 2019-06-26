@@ -48,26 +48,50 @@ class HomePageSpecification extends GebReportingSpec {
   DatabaseUtils db = new DatabaseUtils()
 
   def "The home page for a categoriser is present"() {
+    db.createDataWithStatus(-2, 32, 'STARTED', '{}')
+    db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
+    db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
+    db.createDataWithStatus(-5, 36, 'STARTED', '{}')
+    db.createDataWithStatus(-6, 37, 'AWAITING_APPROVAL', '{}')
+    db.createDataWithStatus(-7, 38, 'APPROVED', '{}')
+
     when: 'I go to the home page as categoriser'
 
     def now = LocalDate.now()
-    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
-    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-    def daysSinceSentence11 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate11, now))
-    def daysSinceSentence12 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate12, now))
+    def sentenceStartDate31 = LocalDate.of(2019, 3, 18)
+    def sentenceStartDate32 = LocalDate.of(2019, 3, 14)
+    def sentenceStartDate33 = LocalDate.of(2019, 3, 4)
+    def sentenceStartDate34 = LocalDate.of(2019, 2, 28)
+    def sentenceStartDate35 = LocalDate.of(2019, 2, 8)
+    def sentenceStartDate36 = LocalDate.of(2019, 2, 4)
+    def sentenceStartDate37 = LocalDate.of(2019, 1, 31)
+    def sentenceStartDate38 = LocalDate.of(2019, 1, 28)
+    def daysSinceSentence31 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate31, now))
+    def daysSinceSentence32 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate32, now))
+    def daysSinceSentence33 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate33, now))
+    def daysSinceSentence34 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate34, now))
+    def daysSinceSentence35 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate35, now))
+    def daysSinceSentence36 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate36, now))
+    def daysSinceSentence37 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate37, now))
+    def daysSinceSentence38 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate38, now))
     // 14 days after sentenceStartDate
-    elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedFull()
+    elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA'],
+      [31, 32, 33, 34, 35, 36, 37, 38],
+      [sentenceStartDate31.toString(), sentenceStartDate32.toString(), sentenceStartDate33.toString(), sentenceStartDate34.toString(),
+       sentenceStartDate35.toString(), sentenceStartDate36.toString(), sentenceStartDate37.toString(), sentenceStartDate38.toString()],
+    )
 
     fixture.loginAs(CATEGORISER_USER)
 
     then: 'The categoriser home page is displayed'
     at CategoriserHomePage
-    prisonNos == ['B2345XY','B2345YZ']
-    names == ['Pitstop, Penelope', 'Hillmob, Ant']
-    days == [daysSinceSentence12, daysSinceSentence11]
-    dates == ['14/02/2019','11/02/2019']
-    statuses == ['Not categorised', 'Awaiting approval']
+    prisonNos == ['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA']
+    names == ['Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised', 'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised']
+    days == [daysSinceSentence31, daysSinceSentence32, daysSinceSentence33, daysSinceSentence34, daysSinceSentence35, daysSinceSentence36, daysSinceSentence37, daysSinceSentence38]
+    dates == ['01/04/2019', '28/03/2019', '18/03/2019', '14/03/2019', '22/02/2019', '18/02/2019', '14/02/2019', '11/02/2019']
+    statuses == ['Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
+    startButtons*.text() == ['PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'View', 'Edit']
   }
 
   def "The home page for a supervisor is present"() {
@@ -76,6 +100,7 @@ class HomePageSpecification extends GebReportingSpec {
     db.createDataWithStatus(-2, 32, 'STARTED', '{}')
     db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
     db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
+
     when: 'I go to the home page as supervisor'
 
     def now = LocalDate.now()
@@ -103,7 +128,7 @@ class HomePageSpecification extends GebReportingSpec {
     catBy == ['Bugs Bunny', 'Roger Rabbit', 'Bugs Bunny', 'Roger Rabbit']
     statuses == ['C', 'B', 'C', 'B']
     catTypes == ['Initial', 'Initial', 'Initial', '']
-    startButtons*.text() == [null, 'Start', null, null]
+    startButtons*.text() == ['PNOMIS', 'Start', 'PNOMIS', 'PNOMIS']
     !multipleRoleDiv.isDisplayed()
   }
 
@@ -208,7 +233,7 @@ class HomePageSpecification extends GebReportingSpec {
   def "An offender Awaiting approval can be viewed"() {
 
     db.createDataWithStatus(11, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: [
+      ratings    : [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
@@ -266,7 +291,7 @@ class HomePageSpecification extends GebReportingSpec {
     elite2Api.stubCategorised([])
     fixture.simulateLogin()
 
-    then:"I arrive at the originally specified page"
+    then: "I arrive at the originally specified page"
     at CategoriserDonePage
   }
 }
