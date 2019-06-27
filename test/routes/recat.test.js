@@ -322,6 +322,40 @@ describe('recat', () => {
         )
       })
   })
+
+  test('GET /form/recat/review higherSecurityReview link is displayed', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12345,
+      formObject: { recat: { higherSecurityReview: { behaviour: 'good' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({ bookingId: '12345' })
+    return request(app)
+      .get(`/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('/higherSecurityReview/12345')
+        expect(res.text).not.toContain('/miniHigherSecurityReview/12345')
+      })
+  })
+
+  test('GET /form/recat/review miniHigherSecurityReview link is displayed', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12345,
+      formObject: { recat: { miniHigherSecurityReview: { conditions: 'text' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({ bookingId: '12345' })
+    return request(app)
+      .get(`/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('/miniHigherSecurityReview/12345')
+        expect(res.text).not.toContain('/higherSecurityReview/12345')
+      })
+  })
 })
 
 describe('POST /form/recat/decision', () => {
