@@ -405,6 +405,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', youngOffender, indeterminateSentence)
     elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubAgencyDetails('LPI')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
@@ -473,7 +474,12 @@ class SupervisorSpecification extends GebReportingSpec {
     overriddenCategoryC.@type == null
     overriddenCategoryD.@type == 'radio'
 
-    // prisonerBackgroundSummary*.text() == ['TBC']
+    prisonerBackgroundSummary*.text() == ['', 'todo', ('Categorisation date Category decision Review location\n' +
+                                          '04/04/2012 A Moorland (HMP & YOI)\n' +
+                                          '24/03/2013 B Moorland (HMP & YOI)'),
+                                          'This person has not been reported as the perpetrator in any assaults in custody before',
+                                          'This person is not considered an escape risk.',
+                                          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.', '']
     securityInputSummary*.text() == ['', 'No', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
