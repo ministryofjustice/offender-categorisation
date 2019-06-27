@@ -104,6 +104,7 @@ describe('GET /supervisorHome', () => {
         bookingId: 12,
         displayName: 'Tim Handle',
         category: 'C',
+        pnomis: true,
       },
     ])
     return request(app)
@@ -210,6 +211,7 @@ describe('GET /categoriserHome', () => {
         bookingId: 12,
         displayName: 'Tim Handle',
         displayStatus: 'Any other status',
+        pnomis: true,
       },
     ])
     return request(app)

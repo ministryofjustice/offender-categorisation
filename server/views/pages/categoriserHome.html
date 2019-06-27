@@ -62,9 +62,10 @@
         {% set buttonText = "Edit" if row.dbRecordExists else "Start" %}
         {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
         {% set classes = basicClasses + " grey-button" if row.dbRecordExists else basicClasses %}
-        {% set inconsistent = row.status === 'AWAITING_APPROVAL' and (row.dbStatus === 'STARTED' or row.dbStatus === 'APPROVED') %}
 
-        {% if (row.dbRecordExists and not inconsistent) or (row.displayStatus == 'Not categorised') %}
+        {% if row.pnomis %}
+          <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">PNOMIS</div>
+        {% else %}
           {% if row.displayStatus == 'Awaiting approval' %}
             {{ govukButton({
               text: "View",
@@ -78,8 +79,6 @@
               classes: classes
             }) }}
           {% endif %}
-        {% else %}
-          <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">PNOMIS</div>
         {% endif %}
       </td>
     </tr>

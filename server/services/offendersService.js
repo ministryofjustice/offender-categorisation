@@ -71,12 +71,27 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             if (dbRecord.catType === 'RECAT') {
               return null
             }
-            return {
+
+            const inconsistent =
+              (o.status === Status.AWAITING_APPROVAL.name &&
+                dbRecord.status &&
+                dbRecord.status !== Status.AWAITING_APPROVAL.name) ||
+              (o.status === Status.UNCATEGORISED.name &&
+                (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
+
+            const row = {
               ...o,
               displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
               ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
               ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
+              pnomis: inconsistent || (o.status === Status.AWAITING_APPROVAL.name && !dbRecord.status),
             }
+            if (inconsistent) {
+              logger.warn(
+                `Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, PG status=${dbRecord.status}`
+              )
+            }
+            return row
           })
       )
 
@@ -245,14 +260,21 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         const sentencedOffender = sentenceMap.find(s => s.bookingId === o.bookingId)
         const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
         const dbRecordExists = !!o.dbRecord.bookingId
-        return {
+        const row = {
           ...o,
           displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
           categoriserDisplayName: `${properCaseName(o.categoriserFirstName)} ${properCaseName(o.categoriserLastName)}`,
           dbRecordExists,
           catType: dbRecordExists ? CatType[o.dbRecord.catType].value : '',
           ...sentenceData,
+          pnomis: !(dbRecordExists && o.dbRecord.status === Status.AWAITING_APPROVAL.name),
         }
+        if (dbRecordExists && row.dbRecord.status !== Status.AWAITING_APPROVAL.name) {
+          logger.warn(
+            `Detected AWAITING_APPROVAL status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}`
+          )
+        }
+        return row
       })
 
       return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
