@@ -72,7 +72,7 @@ class SecuritySpecification extends GebReportingSpec {
 
 
     // 14 days after sentenceStartDate
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     elite2Api.stubUncategorised()
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
