@@ -41,6 +41,8 @@ class ReviewSpecification extends GebReportingSpec {
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
       recat   : [
         decision      : [category: "C"],
+        higherSecurityReview: [steps: "step", transfer: "No", behaviour: "good", conditions: "conditions"],
+        decision      : [category: "C"],
         securityBack  : [:],
         securityInput : [
           securityInputNeeded    : "Yes",
@@ -79,7 +81,8 @@ class ReviewSpecification extends GebReportingSpec {
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage
     headerValue*.text() == fixture.FULL_HEADER
-    changeLinks.size() == 4
+    changeLinks.size() == 5
+
     prisonerBackgroundSummary*.text() == ['',
                                           'todo',
                                           'Categorisation date Category decision Review location\n04/04/2012 A Moorland (HMP & YOI)\n24/03/2013 B Moorland (HMP & YOI)',
@@ -90,6 +93,7 @@ class ReviewSpecification extends GebReportingSpec {
     securityInputSummary*.text() == ['', 'No', 'Yes', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
+    higherSecurityReviewSummary*.text() == ['', 'good','step',  'No', 'conditions']
     nextReviewDateSummary*.text() == ['', 'Saturday 14th December 2019']
 
     !changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed

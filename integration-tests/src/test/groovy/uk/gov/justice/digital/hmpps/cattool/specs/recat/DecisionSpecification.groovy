@@ -66,7 +66,7 @@ class DecisionSpecification extends GebReportingSpec {
   }
 
   def "The correct mini higher security page is displayed for I->B"() {
-    when: 'I go to the Higher Security Review page'
+    when: 'I go to the Mini Higher Security Review page'
     fixture.gotoTasklistRecatForCatI(false)
     at TasklistRecatPage
     decisionButton.click()
@@ -97,7 +97,7 @@ class DecisionSpecification extends GebReportingSpec {
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
 
-    when: 'user changes their mind - higher security data is cleared'
+    when: 'user changes their mind - mini higher security data is cleared'
     categoryDOption.click()
 
     submitButton.click()
