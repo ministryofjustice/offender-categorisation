@@ -17,10 +17,11 @@ class SupervisorHomePage extends Page {
     prisonNos { bodyRows*.$('td', 1)*.text()  }
     days { bodyRows*.$('td', 2)*.text()  }
     dates { bodyRows*.$('td', 3)*.text()  }
-    catBy { bodyRows*.$('td', 4)*.text()  }
-    statuses { bodyRows*.$('td', 5)*.text()  }
-    catTypes { bodyRows*.$('td', 6)*.text()  }
-    startButtons { bodyRows*.$('td', 7)*.find('*')  }
+    nextReviewDate { bodyRows*.$('td', 4)*.text()  }
+    catBy { bodyRows*.$('td', 5)*.text()  }
+    statuses { bodyRows*.$('td', 6)*.text()  }
+    catTypes { bodyRows*.$('td', 7)*.text()  }
+    startButtons { bodyRows*.$('td', 8)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/supervisorDone')}
     multipleRoleDiv(required: false) { $('#multiple-role') }
