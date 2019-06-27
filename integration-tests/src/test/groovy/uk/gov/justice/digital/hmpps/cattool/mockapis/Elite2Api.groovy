@@ -434,6 +434,7 @@ class Elite2Api extends WireMockRule {
                 category            : 'B',
                 categoriserFirstName: 'ROGER',
                 categoriserLastName : 'RABBIT',
+                nextReviewDate      : '2019-01-15',
               ],
               [
                 bookingId           : 32,
@@ -444,6 +445,7 @@ class Elite2Api extends WireMockRule {
                 category            : 'C',
                 categoriserFirstName: 'BUGS',
                 categoriserLastName : 'BUNNY',
+                nextReviewDate      : '2019-01-16',
               ],
               [
                 bookingId           : 33,
@@ -454,6 +456,7 @@ class Elite2Api extends WireMockRule {
                 category            : 'B',
                 categoriserFirstName: 'ROGER',
                 categoriserLastName : 'RABBIT',
+                nextReviewDate      : '2019-01-17',
               ],
               [
                 bookingId           : 34,
@@ -464,6 +467,7 @@ class Elite2Api extends WireMockRule {
                 category            : 'C',
                 categoriserFirstName: 'BUGS',
                 categoriserLastName : 'BUNNY',
+                nextReviewDate      : '2019-01-18',
               ],
               [
                 bookingId           : 35,
@@ -474,6 +478,19 @@ class Elite2Api extends WireMockRule {
                 category            : 'B',
                 categoriserFirstName: 'ROGER',
                 categoriserLastName : 'RABBIT',
+                nextReviewDate      : '2019-01-19',
+
+              ],
+              [
+                bookingId           : 36,
+                offenderNo          : 'B0036AA',
+                firstName           : 'MR',
+                lastName            : 'RECAT',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'B',
+                categoriserFirstName: 'ROGER',
+                categoriserLastName : 'RABBIT',
+                nextReviewDate      : '2020-03-29',
               ],
             ]))
             .withHeader('Content-Type', 'application/json')

@@ -46,6 +46,7 @@
       <th class="govuk-table__header" scope="col">Prison no.</th>
       <th class="govuk-table__header" scope="col">Days since<br/> sentence</th>
       <th class="govuk-table__header" scope="col">Date due</th>
+      <th class="govuk-table__header" scope="col">Next review</th>
       <th class="govuk-table__header" scope="col">Categorised by</th>
       <th class="govuk-table__header" scope="col">Provisional<br/>category</th>
       <th class="govuk-table__header" scope="col">Type</th>
@@ -59,6 +60,7 @@
       <td class="govuk-table__cell">{{ row.offenderNo }}</td>
       <td class="govuk-table__cell">{{ row.daysSinceSentence }}</td>
       <td class="govuk-table__cell">{{ row.dateRequired }}</td>
+      <td class="govuk-table__cell">{{ row.nextReviewDate }}</td>
       <td class="govuk-table__cell">{{ row.categoriserDisplayName }}</td>
       <td class="govuk-table__cell govuk-!-padding-top-4 govuk-!-padding-bottom-4">{{ row.category }}</td>
       <td class="govuk-table__cell">{{ row.catType }}</td>
