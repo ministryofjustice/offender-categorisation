@@ -38,6 +38,7 @@ class SupervisorRecatReviewPage extends Page {
     securityInputSummary { $('.securityInputSummary .govuk-summary-list__value') }
     riskAssessmentSummary { $('.riskAssessmentSummary .govuk-summary-list__value') }
     assessmentSummary { $('.assessmentSummary .govuk-summary-list__value') }
+    higherSecurityReviewSummary { $('.higherSecurityReview .govuk-summary-list__value') }
     nextReviewDateSummary { $('.nextReviewDateSummary .govuk-summary-list__value') }
 
     riskLevel(required: false)  { $('.riskLevelSummary .govuk-summary-list__value') }
