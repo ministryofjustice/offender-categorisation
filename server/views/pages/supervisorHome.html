@@ -63,14 +63,14 @@
       <td class="govuk-table__cell govuk-!-padding-top-4 govuk-!-padding-bottom-4">{{ row.category }}</td>
       <td class="govuk-table__cell">{{ row.catType }}</td>
       <td class="govuk-table__cell">
-        {% if row.dbRecordExists and row.dbRecord.status === 'AWAITING_APPROVAL' %}
+        {% if row.pnomis %}
+          <div>PNOMIS</div>
+        {% else %}
           {{ govukButton({
             text: "Start",
             href: "/form/supervisor/review/" + row.bookingId,
             classes: "tableButton"
           }) }}
-        {% else %}
-          <div>PNOMIS</div>
         {% endif %}
       </td>
     </tr>

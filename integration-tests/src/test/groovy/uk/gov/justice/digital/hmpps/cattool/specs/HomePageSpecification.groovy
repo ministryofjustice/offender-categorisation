@@ -91,7 +91,7 @@ class HomePageSpecification extends GebReportingSpec {
     days == [daysSinceSentence31, daysSinceSentence32, daysSinceSentence33, daysSinceSentence34, daysSinceSentence35, daysSinceSentence36, daysSinceSentence37, daysSinceSentence38]
     dates == ['01/04/2019', '28/03/2019', '18/03/2019', '14/03/2019', '22/02/2019', '18/02/2019', '14/02/2019', '11/02/2019']
     statuses == ['Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
-    startButtons*.text() == ['PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'View', 'Edit']
+    startButtons*.text() == ['PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
   }
 
   def "The home page for a supervisor is present"() {
@@ -159,7 +159,7 @@ class HomePageSpecification extends GebReportingSpec {
     def now = LocalDate.now()
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(MULTIROLE_USER)
@@ -178,7 +178,7 @@ class HomePageSpecification extends GebReportingSpec {
     at CategoriserHomePage
 
     when: 'I select supervisor from the Current role select box'
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     roleSwitchSelect = "supervisor"
 

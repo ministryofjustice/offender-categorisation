@@ -269,7 +269,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -352,7 +352,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the supervisor reviews and overrides to cat C'
     fixture.logout()
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -428,7 +428,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the supervisor overrides to cat D'
     fixture.logout()
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
@@ -488,7 +488,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()

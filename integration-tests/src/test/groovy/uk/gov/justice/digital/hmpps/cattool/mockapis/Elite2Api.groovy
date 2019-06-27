@@ -387,7 +387,7 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  void stubUncategorisedForSupervisor() {
+  void stubUncategorisedAwaitingApproval() {
     this.stubFor(
       get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
         .willReturn(
