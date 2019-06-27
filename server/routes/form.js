@@ -217,7 +217,12 @@ module.exports = function Index({
       if (result.catType === 'INITIAL') {
         res.render(`formPages/${section}/review`, result)
       } else {
-        res.render(`formPages/${section}/recatReview`, result)
+        const categorisations = await offendersService.getPrisonerBackground(
+          res.locals.user.token,
+          result.data.details.offenderNo
+        )
+        const data = { ...result.data, categorisations }
+        res.render(`formPages/${section}/recatReview`, { ...result, data })
       }
     })
   )

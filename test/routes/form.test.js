@@ -49,6 +49,7 @@ const offendersService = {
   getOffenceHistory: jest.fn(),
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
+  getPrisonerBackground: jest.fn(),
 }
 
 const userService = {
