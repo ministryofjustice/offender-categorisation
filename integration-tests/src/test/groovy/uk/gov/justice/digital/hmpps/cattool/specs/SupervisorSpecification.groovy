@@ -98,6 +98,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     when: 'The supervisor clicks continue'
     overriddenCategoryText << "reason text"
+    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     submitButton.click()
 
     then: 'The record is sent back to the categoriser'
@@ -260,6 +261,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a D"
+    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     submitButton.click()
 
     then: 'the record is returned to categoriser with open conditions requested and suggestedCategory forced to D'
@@ -290,6 +292,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a J"
+    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     submitButton.click()
 
     then: 'the record is returned to categoriser with open conditions requested and suggestedCategory forced to J'
@@ -391,13 +394,17 @@ class SupervisorSpecification extends GebReportingSpec {
     response.openConditionsRequested == null
   }
 
-  def navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true){
+  private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true) {
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
-    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-    // 14 days after sentenceStartDate
+    if (initial) {
+      def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+      elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    } else {
+      // Recat does not request sentence data
+      elite2Api.stubSentenceData(['B2345XY'], [11], [sentenceStartDate11.toString()])
+    }
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(SUPERVISOR_USER)
 
@@ -412,11 +419,11 @@ class SupervisorSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
 
-    startButtons[0].click()
-
     if (initial) {
+      startButtons[0].click()
       at SupervisorReviewPage
-    }else {
+    } else {
+      startButtons[1].click()
       at SupervisorRecatReviewPage
     }
   }
