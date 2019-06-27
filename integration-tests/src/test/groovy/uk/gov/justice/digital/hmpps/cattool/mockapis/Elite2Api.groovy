@@ -129,6 +129,83 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  void stubUncategorisedFull() {
+    this.stubFor(
+      get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [
+                bookingId           : 31,
+                offenderNo          : 'B0031AA',
+                firstName           : 'AWAITING',
+                lastName            : 'MISSING',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'B',
+              ],
+              [
+                bookingId           : 32,
+                offenderNo          : 'B0032AA',
+                firstName           : 'AWAITING',
+                lastName            : 'STARTED',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'C',
+              ],
+              [
+                bookingId           : 33,
+                offenderNo          : 'B0033AA',
+                firstName           : 'AWAITING',
+                lastName            : 'AWAITING',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'B',
+              ],
+              [
+                bookingId           : 34,
+                offenderNo          : 'B0034AA',
+                firstName           : 'AWAITING',
+                lastName            : 'APPROVED',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'C',
+              ],
+              [
+                bookingId           : 35,
+                offenderNo          : 'B0035AA',
+                firstName           : 'UNCATEGORISED',
+                lastName            : 'MISSING',
+                status              : 'UNCATEGORISED',
+                category            : 'B',
+              ],
+              [
+                bookingId           : 36,
+                offenderNo          : 'B0036AA',
+                firstName           : 'UNCATEGORISED',
+                lastName            : 'STARTED',
+                status              : 'UNCATEGORISED',
+                category            : 'C',
+              ],
+              [
+                bookingId           : 37,
+                offenderNo          : 'B0037AA',
+                firstName           : 'UNCATEGORISED',
+                lastName            : 'AWAITING',
+                status              : 'UNCATEGORISED',
+                category            : 'B',
+              ],
+              [
+                bookingId           : 38,
+                offenderNo          : 'B0038AA',
+                firstName           : 'UNCATEGORISED',
+                lastName            : 'APPROVED',
+                status              : 'UNCATEGORISED',
+                category            : 'C',
+              ],
+            ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
   void stubRecategorise() {
     final date = LocalDate.now().plusMonths(2)
     this.stubFor(
@@ -310,7 +387,7 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  void stubUncategorisedForSupervisor() {
+  void stubUncategorisedAwaitingApproval() {
     this.stubFor(
       get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
         .willReturn(
@@ -323,8 +400,8 @@ class Elite2Api extends WireMockRule {
                 lastName            : 'PITSTOP',
                 status              : 'AWAITING_APPROVAL',
                 category            : 'B',
-                categoriserFirstName: 'Roger',
-                categoriserLastName : 'Rabbit',
+                categoriserFirstName: 'ROGER',
+                categoriserLastName : 'RABBIT',
               ],
               [
                 bookingId           : 12,
@@ -333,11 +410,72 @@ class Elite2Api extends WireMockRule {
                 lastName            : 'HILLMOB',
                 status              : 'AWAITING_APPROVAL',
                 category            : 'C',
-                categoriserFirstName: 'Bugs',
-                categoriserLastName : 'Bunny',
+                categoriserFirstName: 'BUGS',
+                categoriserLastName : 'BUNNY',
               ],
-            ]
-            ))
+            ]))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
+  void stubUncategorisedForSupervisorFull() {
+    this.stubFor(
+      get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [
+                bookingId           : 31,
+                offenderNo          : 'B0031AA',
+                firstName           : 'AWAITING',
+                lastName            : 'MISSING',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'B',
+                categoriserFirstName: 'ROGER',
+                categoriserLastName : 'RABBIT',
+              ],
+              [
+                bookingId           : 32,
+                offenderNo          : 'B0032AA',
+                firstName           : 'AWAITING',
+                lastName            : 'STARTED',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'C',
+                categoriserFirstName: 'BUGS',
+                categoriserLastName : 'BUNNY',
+              ],
+              [
+                bookingId           : 33,
+                offenderNo          : 'B0033AA',
+                firstName           : 'AWAITING',
+                lastName            : 'AWAITING',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'B',
+                categoriserFirstName: 'ROGER',
+                categoriserLastName : 'RABBIT',
+              ],
+              [
+                bookingId           : 34,
+                offenderNo          : 'B0034AA',
+                firstName           : 'AWAITING',
+                lastName            : 'APPROVED',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'C',
+                categoriserFirstName: 'BUGS',
+                categoriserLastName : 'BUNNY',
+              ],
+              [
+                bookingId           : 35,
+                offenderNo          : 'B0035AA',
+                firstName           : 'AWAITING',
+                lastName            : 'MISSING',
+                status              : 'UNCATEGORISED',
+                category            : 'B',
+                categoriserFirstName: 'ROGER',
+                categoriserLastName : 'RABBIT',
+              ],
+            ]))
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )

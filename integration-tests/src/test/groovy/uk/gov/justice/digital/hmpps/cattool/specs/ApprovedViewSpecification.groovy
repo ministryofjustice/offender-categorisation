@@ -91,7 +91,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
     // 14 days after sentenceStartDate
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(SUPERVISOR_USER)

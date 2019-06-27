@@ -258,10 +258,8 @@ describe('recat', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(
-          'This person has been reported as the perpetrator in 5 assaults in custody before,\n' +
-            '      including 2 serious assaults in the last 12 months'
-        )
+        expect(res.text).toContain('This person has been reported as the perpetrator in 5 assaults in custody before,')
+        expect(res.text).toContain('including 2 serious assaults in the last 12 months')
       })
   })
 

@@ -31,7 +31,7 @@ class ErrorSpecification extends GebReportingSpec {
 
   def "The error page is displayed when an unexpected error occurs"() {
     when: 'A 500 error occurs in an API call'
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceDataError()
     fixture.loginAs(SUPERVISOR_USER)
 
@@ -43,7 +43,7 @@ class ErrorSpecification extends GebReportingSpec {
 
   def "The auth page is displayed when a user does not have the correct role for the url"() {
     when: 'The user hits a page not for their role'
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])

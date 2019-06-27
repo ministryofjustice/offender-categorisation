@@ -394,6 +394,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data = db.getData(12)
     response = new JsonSlurper().parseText(data.form_response[0].toString())
 
+    elite2Api.stubUncategorisedAwaitingApproval()
     to CategoriserHomePage
     startButtons[0].click()
 
@@ -412,7 +413,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -505,7 +506,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the supervisor reviews and overrides to cat C'
     fixture.logout()
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -572,7 +573,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the supervisor overrides to cat D'
     fixture.logout()
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[1].click() // B2345YZ / 12
@@ -589,9 +590,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'open conditions forms are completed by categoriser'
     fixture.logout()
+
+    elite2Api.stubUncategorised()
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    startButtons[1].click() // B2345YZ / 12
+    startButtons[0].click()
     at(new TasklistPage(bookingId: '12'))
 
     completeOpenConditionsWorkflow(false)
@@ -626,6 +629,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at CategoriserSubmittedPage
 
     when: 'The record is viewed by the categoriser'
+    elite2Api.stubUncategorisedAwaitingApproval()
     to CategoriserHomePage
     startButtons[0].click()
 
@@ -635,7 +639,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
-    elite2Api.stubUncategorisedForSupervisor()
+    elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -672,7 +676,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     commentLabel.size() == 1
   }
 
-  def completeOpenConditionsWorkflow(boolean furtherChargesExist) {
+  private completeOpenConditionsWorkflow(boolean furtherChargesExist) {
     openConditionsButton.click()
     at EarliestReleasePage
     threeOrMoreYearsNo.click()
