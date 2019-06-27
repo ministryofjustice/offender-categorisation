@@ -88,7 +88,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             }
             if (inconsistent) {
               logger.warn(
-                `Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, PG status=${dbRecord.status}`
+                `getUncategorisedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, PG status=${dbRecord.status}`
               )
             }
             return row
@@ -271,7 +271,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         }
         if (dbRecordExists && row.dbRecord.status !== Status.AWAITING_APPROVAL.name) {
           logger.warn(
-            `Detected AWAITING_APPROVAL status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}`
+            `getUnapprovedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, PG status=${row.dbRecord.status}`
           )
         }
         return row
