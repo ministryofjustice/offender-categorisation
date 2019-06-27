@@ -26,6 +26,7 @@ class ReviewRecatPage extends Page {
     riskAssessmentSummary { $('.riskAssessmentSummary .govuk-summary-list__value') }
     assessmentSummary { $('.assessmentSummary .govuk-summary-list__value') }
     nextReviewDateSummary { $('.nextReviewDateSummary .govuk-summary-list__value') }
+    higherSecurityReviewSummary { $('.higherSecurityReview .govuk-summary-list__value') }
 
     riskLevel { $('.riskLevelSummary .govuk-summary-list__value') }
     furtherCharges { $('.furtherChargesOpenSummary .govuk-summary-list__value') }

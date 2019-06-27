@@ -209,6 +209,63 @@
     ]
   }) }}
 
+  {% set miniTitle = {
+    key: { classes: 'summary-list-title', text: "Higher Security Review" },
+    actions: { items: [{
+          href: '/form/recat/miniHigherSecurityReview/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else [] }
+    }
+  %}
+
+  {% set hsrTitle = {
+    key: { classes: 'summary-list-title', text: "Higher Security Review" },
+    actions: { items: [{
+          href: '/form/recat/higherSecurityReview/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else [] }
+    }
+  %}
+
+  {% set hsrBehaviour = {
+      key: { text: "What behaviour or incident has occurred to suggest the need for higher security conditions?" },
+      value: { text: data.recat.higherSecurityReview.behaviour },
+      actions: { items: [] }
+  } %}
+
+  {% set hsrSteps = {
+      key: { text: "What steps have been taken to manage the behaviour within the prison?" },
+      value: { text: data.recat.higherSecurityReview.steps },
+      actions: { items: [] }
+  } %}
+
+  {% set hsrTransfer = {
+      key: { text: "Could the behaviour be managed by transfer to another prison of the same category?" },
+      value: { text: data.recat.higherSecurityReview.transfer },
+      actions: { items: [] }
+  } %}
+
+  {% set hsrConditions = {
+      key: { text: "What security conditions in the higher category prison are necessary to manage this person safely and securely?" },
+      value: { text: data.recat.higherSecurityReview.conditions },
+      actions: { items: [] }
+  } %}
+
+  {% set miniConditions = {
+      key: { text: "What security conditions in the higher category prison are necessary to manage this person safely and securely?" },
+      value: { text: data.recat.miniHigherSecurityReview.conditions },
+      actions: { items: [] }
+  } %}
+
+  {% if data.recat.higherSecurityReview or data.recat.miniHigherSecurityReview %}
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 higherSecurityReview',
+    rows: [ hsrTitle, hsrBehaviour, hsrSteps, hsrTransfer, hsrConditions ] if data.recat.higherSecurityReview.behaviour else [ miniTitle, miniConditions ]
+  }) }}
+  {% endif %}
+
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 nextReviewDateSummary',
     rows: [
