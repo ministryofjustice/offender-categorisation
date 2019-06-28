@@ -10,41 +10,26 @@
 
     <h1 class="govuk-heading-l mainHeading">Provisional categorisation</h1>
 
-    {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
-    {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
-    {% set currentCat = overriddenCat if overriddenCat else cat %}
+    {% set cat = data.recat.decision.category %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        Category for approval is {{ currentCat }}
+        Category for approval is {{ cat }}
       </strong>
     </div>
 
     {% set showChangeLinks = false %}
+    {% include "../../partials/reviewContentsRecat.html" %}
 
-    {% include "../../partials/reviewContents.html" %}
-
-    {% if (currentCat == "D" or currentCat == "J") %}
+    {% if (cat == "D" or cat == "J") %}
 
       <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
       {% set showOpenConditionChangeLinks = false %}
       {% include "../../partials/reviewContentsOpenConditions.html" %}
 
     {% endif %}
-
-    <h2 class="govuk-heading-m">Other information</h2>
-    {{ govukSummaryList({
-      classes: 'govuk-!-margin-bottom-9',
-      rows: [
-      {
-      key: { text: "Other relevant information" },
-      value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
-      actions: { items: [] }
-      }
-      ]
-    }) }}
   </div>
 </div>
 
