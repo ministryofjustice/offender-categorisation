@@ -265,8 +265,10 @@ module.exports = function Index({
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
 
+    const youngOffender = formService.isYoungOffender(details)
+
     return {
-      data: { ...pageData, details },
+      data: { ...pageData, details: { ...details, youngOffender } },
       formName: form,
       status: formData.status,
       catType: formData.catType,
