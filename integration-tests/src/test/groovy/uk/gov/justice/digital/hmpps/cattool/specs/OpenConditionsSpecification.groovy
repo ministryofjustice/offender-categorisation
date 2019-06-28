@@ -579,6 +579,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     startButtons[1].click() // B2345YZ / 12
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('D')
+    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     appropriateNo.click()
     overriddenCategoryD.click()
     overriddenCategoryText << "super overriding C to D"

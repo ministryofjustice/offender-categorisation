@@ -100,6 +100,7 @@ class HomePageSpecification extends GebReportingSpec {
     db.createDataWithStatus(-2, 32, 'STARTED', '{}')
     db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
     db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
+    db.createDataWithStatusAndCatType(-6, 36, 'AWAITING_APPROVAL', '{}', 'RECAT')
 
     when: 'I go to the home page as supervisor'
 
@@ -121,14 +122,15 @@ class HomePageSpecification extends GebReportingSpec {
 
     then: 'The supervisor home page is displayed'
     at SupervisorHomePage
-    prisonNos == ['B0034AA', 'B0033AA', 'B0032AA', 'B0031AA']
-    names == ['Approved, Awaiting', 'Awaiting, Awaiting', 'Started, Awaiting', 'Missing, Awaiting']
-    days == [daysSinceSentence34, daysSinceSentence33, daysSinceSentence32, daysSinceSentence31]
-    dates == ['22/02/2019', '18/02/2019', '14/02/2019', '11/02/2019']
-    catBy == ['Bugs Bunny', 'Roger Rabbit', 'Bugs Bunny', 'Roger Rabbit']
-    statuses == ['C', 'B', 'C', 'B']
-    catTypes == ['Initial', 'Initial', 'Initial', '']
-    startButtons*.text() == ['PNOMIS', 'Start', 'PNOMIS', 'PNOMIS']
+    prisonNos == ['B0036AA', 'B0034AA', 'B0033AA', 'B0032AA', 'B0031AA']
+    names == ['Recat, Mr', 'Approved, Awaiting', 'Awaiting, Awaiting', 'Started, Awaiting', 'Missing, Awaiting']
+    days == ['', daysSinceSentence34, daysSinceSentence33, daysSinceSentence32, daysSinceSentence31]
+    dates == ['', '22/02/2019', '18/02/2019', '14/02/2019', '11/02/2019']
+    nextReviewDate == ['29/03/2020', '', '', '', '15/01/2019']
+    catBy == ['Roger Rabbit', 'Bugs Bunny', 'Roger Rabbit', 'Bugs Bunny', 'Roger Rabbit']
+    statuses == ['B', 'C', 'B', 'C', 'B']
+    catTypes == ['Recat', 'Initial', 'Initial', 'Initial', '']
+    startButtons*.text() == ['Start', 'PNOMIS', 'Start', 'PNOMIS', 'PNOMIS']
     !multipleRoleDiv.isDisplayed()
   }
 
