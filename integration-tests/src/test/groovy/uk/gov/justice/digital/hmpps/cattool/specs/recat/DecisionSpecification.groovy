@@ -65,6 +65,20 @@ class DecisionSpecification extends GebReportingSpec {
     data.assigned_user_id == ['RECATEGORISER_USER']
   }
 
+  def "Indeterminate offender doesn't display open conditions options (young offender)"() {
+
+    when: 'I go to the decision page'
+    fixture.gotoTasklistRecatForCatJIndeterminate(false)
+    at TasklistRecatPage
+    decisionButton.click()
+
+    then: 'The page is displayed without open condition options'
+    at DecisionPage
+    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '01/01/2018', 'J']
+    !categoryJOption.isDisplayed()
+    !categoryDOption.isDisplayed()
+  }
+
   def "The correct mini higher security page is displayed for I->B"() {
     when: 'I go to the Mini Higher Security Review page'
     fixture.gotoTasklistRecatForCatI(false)

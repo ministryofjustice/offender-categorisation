@@ -18,9 +18,9 @@ class DecisionPage extends Page {
     form { $('form') }
     behaviour { $('#behaviour') }
     categoryBOption { $('#catBOption') }
-    categoryJOption { $('#catJOption') }
-    categoryIOption { $('#catIOption') }
-    categoryDOption { $('#catDOption') }
+    categoryJOption (required: false){ $('#catJOption') }
+    categoryIOption (required: false){ $('#catIOption') }
+    categoryDOption (required: false){ $('#catDOption') }
     categoryCOption { $('#catCOption') }
 
     submitButton { $('button', type: 'submit') }
