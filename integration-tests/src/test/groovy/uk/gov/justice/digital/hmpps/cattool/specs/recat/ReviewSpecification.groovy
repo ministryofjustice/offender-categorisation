@@ -42,7 +42,6 @@ class ReviewSpecification extends GebReportingSpec {
       recat   : [
         decision      : [category: "C"],
         higherSecurityReview: [steps: "step", transfer: "No", behaviour: "good", conditions: "conditions"],
-        decision      : [category: "C"],
         securityBack  : [:],
         securityInput : [
           securityInputNeeded    : "Yes",

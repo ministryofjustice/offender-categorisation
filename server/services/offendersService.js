@@ -38,16 +38,20 @@ function get10BusinessDays(from) {
 }
 
 async function getSentenceMap(offenderList, nomisClient) {
-  const bookingIds = offenderList.map(o => o.bookingId)
+  const bookingIds = offenderList
+    .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === 'INITIAL')
+    .map(o => o.bookingId)
 
   const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
 
-  const sentenceMap = sentenceDates
-    .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
-    .map(s => {
-      const { sentenceDetail } = s
-      return { bookingId: sentenceDetail.bookingId, sentenceDate: sentenceDetail.sentenceStartDate }
-    })
+  const sentenceMap = new Map(
+    sentenceDates
+      .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
+      .map(s => {
+        const { sentenceDetail } = s
+        return [sentenceDetail.bookingId, { sentenceDate: sentenceDetail.sentenceStartDate }]
+      })
+  )
   return sentenceMap
 }
 
@@ -65,7 +69,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const decoratedResults = await Promise.all(
         uncategorisedResult
-          .filter(o => sentenceMap.find(s => s.bookingId === o.bookingId)) // filter out offenders without sentence
+          .filter(o => sentenceMap.get(o.bookingId)) // filter out offenders without sentence
           .map(async o => {
             const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
             if (dbRecord.catType === 'RECAT') {
@@ -82,7 +86,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             const row = {
               ...o,
               displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-              ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+              ...buildSentenceData(sentenceMap.get(o.bookingId).sentenceDate),
               ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
               pnomis: inconsistent || (o.status === Status.AWAITING_APPROVAL.name && !dbRecord.status),
             }
@@ -177,7 +181,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             offenderNo: offenderDetail.offenderNo,
             displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
             securityReferredBy,
-            ...buildSentenceData(sentenceMap.find(s => s.bookingId === o.bookingId).sentenceDate),
+            ...buildSentenceData(sentenceMap.get(o.bookingId).sentenceDate),
             catTypeDisplay: CatType[o.catType].value,
           }
         })
@@ -254,10 +258,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return []
       }
 
-      const sentenceMap = await getSentenceMap(uncategorisedResult, nomisClient)
+      const sentenceMap = await getSentenceMap(unapprovedOffenders, nomisClient)
 
       const decoratedResults = unapprovedOffenders.map(o => {
-        const sentencedOffender = sentenceMap.find(s => s.bookingId === o.bookingId)
+        const sentencedOffender = sentenceMap.get(o.bookingId)
         const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
         const dbRecordExists = !!o.dbRecord.bookingId
         const row = {
@@ -268,6 +272,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           catType: dbRecordExists ? CatType[o.dbRecord.catType].value : '',
           ...sentenceData,
           pnomis: !(dbRecordExists && o.dbRecord.status === Status.AWAITING_APPROVAL.name),
+          nextReviewDate: o.dbRecord.catType === 'RECAT' || !dbRecordExists ? dateConverter(o.nextReviewDate) : null,
         }
         if (dbRecordExists && row.dbRecord.status !== Status.AWAITING_APPROVAL.name) {
           logger.warn(
@@ -277,7 +282,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return row
       })
 
-      return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
+      return decoratedResults.sort((a, b) =>
+        sortByDateTimeDesc(
+          a.dateRequired ? a.dateRequired : a.nextReviewDate,
+          b.dateRequired ? b.dateRequired : b.nextReviewDate
+        )
+      )
     } catch (error) {
       logger.error(error, 'Error during getUnapprovedOffenders')
       throw error
