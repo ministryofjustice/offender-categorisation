@@ -398,9 +398,10 @@ class OpenConditionsSpecification extends GebReportingSpec {
     to CategoriserHomePage
     startButtons[0].click()
 
-    then: 'The correct category is retrieved and data is correct'
+    then: 'The correct category is retrieved, data is correct and open conditions section is displayed'
     at CategoriserAwaitingApprovalViewPage
     categoryDiv.text() contains 'Category for approval is D'
+    earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
 
     data.status == ["AWAITING_APPROVAL"]
     response.ratings == TestFixture.defaultRatingsB
