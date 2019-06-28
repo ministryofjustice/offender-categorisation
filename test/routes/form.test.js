@@ -32,6 +32,7 @@ const formService = {
   requiresOpenConditions: jest.fn(),
   deleteFormData: jest.fn(),
   isValid: jest.fn(),
+  isYoungOffender: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -214,6 +215,161 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
+      })
+  })
+
+  test('supervisor override decision options for young offender - proposed cat C', () => {
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'J' } } },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('overriddenCategoryB')
+        expect(res.text).toContain('overriddenCategoryC')
+        expect(res.text).toContain('overriddenCategoryD')
+        expect(res.text).toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryJ')
+      })
+  })
+
+  test('supervisor override decision options - proposed cat B', () => {
+    formService.isYoungOffender.mockReturnValue(false)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'B' } } },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).toContain('overriddenCategoryC')
+        expect(res.text).toContain('overriddenCategoryD')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryJ')
+      })
+  })
+
+  test('supervisor override decision options - proposed cat B and indeterminate sentence', () => {
+    formService.isYoungOffender.mockReturnValue(false)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'B' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      sentence: { indeterminate: true },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).toContain('Prisoner has indeterminate sentence - Cat D not available')
+        expect(res.text).toContain('Changing to Cat C')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryJ')
+      })
+  })
+
+  test('supervisor override decision options - proposed cat C and indeterminate sentence', () => {
+    formService.isYoungOffender.mockReturnValue(false)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'C' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      sentence: { indeterminate: true },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).toContain('Prisoner has indeterminate sentence - Cat D not available')
+        expect(res.text).toContain('Changing to Cat B')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryJ')
+      })
+  })
+
+  test('supervisor override decision options - young offender proposed cat I and indeterminate sentence', () => {
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'I' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      sentence: { indeterminate: true },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('overriddenCategoryB')
+        expect(res.text).toContain('overriddenCategoryC')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryD')
+      })
+  })
+
+  test('supervisor override decision options - young offender proposed cat I ', () => {
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'I' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      sentence: { indeterminate: false },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('overriddenCategoryB')
+        expect(res.text).toContain('overriddenCategoryC')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).toContain('overriddenCategoryD')
+      })
+  })
+
+  test('supervisor override decision options - young offender proposed cat B', () => {
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'B' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      sentence: { indeterminate: false },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('overriddenCategoryC')
+        expect(res.text).toContain('overriddenCategoryD')
+        expect(res.text).toContain('overriddenCategoryI')
+        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryB')
       })
   })
 })
