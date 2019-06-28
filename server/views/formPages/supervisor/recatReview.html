@@ -72,16 +72,39 @@
         conditional: {
           html: warningCategoryOpenConditions
         }
+      },
+      {
+        value: "J",
+        id: "overriddenCategoryJ",
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
+        text: "YOI (open)",
+        J: true,
+        conditional: {
+            html: warningCategoryOpenConditions
+          }
+      },
+      {
+        value: "I",
+        id: "overriddenCategoryI",
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'I',
+        text: "YOI (closed)",
+        I: true
       }
     ] %}
+
+    {% if not data.details.youngOffender%}
+      {% set radios = radios | rejectattr('I') | rejectattr('J')%}
+    {% elif data.details.sentence.indeterminate %}
+      {% set radios = radios | rejectattr('D') | rejectattr('J')%}
+    {% endif %}
+
     {% set overriddenCategoryTextHtml %}
-      {% if data.details.sentence.indeterminate %}
+      {% if data.details.sentence.indeterminate and not data.details.youngOffender %}
         {% set newCat = "C" if currentCat == "B" else "B" %}
         <p class="govuk-body">Prisoner has indeterminate sentence - Cat D not available</p>
         <h2 class="govuk-heading-m" id="newCatMessage">Changing to Cat {{ newCat }}</h2>
         <input type="hidden" name="supervisorOverriddenCategory" value="{{ newCat }}" />
       {% else %}
-        {% if (currentCat == "B" or currentCat == "C" or currentCat == "D") %}
           {{ govukRadios({
             name: "supervisorOverriddenCategory",
             classes: "govuk-radios--inline",
@@ -96,11 +119,6 @@
             text: "Please select the new category"
             } if (errors | findError('supervisorOverriddenCategory'))
           }) }}
-        {% else %}
-          <h2 class="govuk-heading-m" id="newCatMessage">Changing to Cat J</h2>
-          <input type="hidden" name="supervisorOverriddenCategory" value="J"/>
-          {{ warningCategoryOpenConditions | safe }}
-        {% endif %}
       {% endif %}
 
       {{ govukCharacterCount({
@@ -121,10 +139,6 @@
         }) }}
     {% endset %}
 
-    {% if data.details.sentence.indeterminate and currentCat == "I" %}
-      <p class="govuk-body">Prisoner has an indeterminate sentence - Cat J not available</p>
-      <input type="hidden" name="supervisorCategoryAppropriate" value="Yes"/>
-    {% else %}
       {{ govukRadios({
         name: "supervisorCategoryAppropriate",
         classes: "govuk-radios--inline",
@@ -153,7 +167,6 @@
           }
         ]
       }) }}
-    {% endif %}
 
   {{ govukCharacterCount({
     name: "otherInformationText",
