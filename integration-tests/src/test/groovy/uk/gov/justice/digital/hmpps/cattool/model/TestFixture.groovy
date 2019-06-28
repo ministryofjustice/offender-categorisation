@@ -129,6 +129,16 @@ class TestFixture {
     browser.selectFirstPrisoner()
   }
 
+  def gotoTasklistRecatForCatJIndeterminate(transferToSecurity = false) {
+    elite2Api.stubRecategoriseWithCatI()
+
+    loginAs(RECATEGORISER_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', true, true, 'J')
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', transferToSecurity)
+    browser.selectFirstPrisoner()
+  }
+
   def simulateLogin() {
     browser.waitFor { browser.$('h1').text() == 'Sign in' }
     def requests = oauthApi.getAllServeEvents()
