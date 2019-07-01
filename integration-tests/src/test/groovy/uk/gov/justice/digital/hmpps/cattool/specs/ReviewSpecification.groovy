@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -84,13 +85,27 @@ class ReviewSpecification extends GebReportingSpec {
     changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
 
-    def data = db.getData(12)[0].risk_profile
-    def json = data.toString()
-    json.contains '"history": {"catAType": "A",'
-    json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
-    json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'
-    json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": true}'
-    json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": false, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}'
+    def data = db.getData(12)
+    def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
+
+    response.history == [catAType: 'A', finalCat: 'Cat B', catAEndYear: '2013', releaseYear: '2014', catAStartYear: '2012']
+    response.offences == [[bookingId: 12, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
+                          [bookingId: 12, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
+                          [bookingId: 12, offenceDescription: 'Undated offence']]
+    response.socProfile == [nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C']
+    response.escapeProfile == [nomsId                   : 'B2345YZ', riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true,
+                               escapeListAlerts         : [[active: true, comment: 'First xel comment', expired: false, alertCode: 'XEL', dateCreated: '2016-09-14', alertCodeDescription: 'Escape List'],
+                                                           [active: false, comment: '''
+Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text
+ comment with lengthy text comment with lengthy text comment with lengthy text
+  comment with lengthy text comment with lengthy text comment with lengthy text
+   comment with lengthy text comment with lengthy text comment with lengthy text
+''', expired: true, alertCode: 'XEL', dateCreated: '2016-09-15', alertCodeDescription: 'Escape List']],
+                               escapeRiskAlerts         : [[active: true, comment: 'First xer comment', expired: false, alertCode: 'XER', dateCreated: '2016-09-16', alertCodeDescription: 'Escape Risk']],
+                               provisionalCategorisation: 'C']
+    response.violenceProfile == [nomsId                 : 'B2345YZ', riskType: 'VIOLENCE', displayAssaults: false, numberOfAssaults: 5, notifySafetyCustodyLead: true,
+                                 numberOfSeriousAssaults: 2, provisionalCategorisation: 'C', veryHighRiskViolentOffender: true]
+    response.extremismProfile == [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: true, provisionalCategorisation: 'C']
   }
 
   def "The review page can be displayed without security input"() {

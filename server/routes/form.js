@@ -165,6 +165,7 @@ module.exports = function Index({
 
       const dataToStore = {
         history,
+        offences,
         escapeProfile,
         extremismProfile,
         violenceProfile,

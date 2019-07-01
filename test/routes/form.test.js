@@ -480,6 +480,9 @@ describe('GET /categoriser/review', () => {
             history: {
               catARisk: true,
             },
+            offences: {
+              offence: 'details',
+            },
           },
           mockTransactionalClient
         )
