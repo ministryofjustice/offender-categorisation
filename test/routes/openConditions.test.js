@@ -118,6 +118,7 @@ describe('open conditions', () => {
         ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
         openConditions: { furtherCharges: { furtherChargesText: 'new stuff' } },
       },
+      catType: 'INITIAL',
     })
     return request(app)
       .get('/furtherCharges/12345')
@@ -134,6 +135,7 @@ describe('open conditions', () => {
       formObject: {
         ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
       },
+      catType: 'INITIAL',
     })
     return request(app)
       .get('/furtherCharges/12345')
@@ -160,15 +162,31 @@ describe('open conditions', () => {
       })
   })
 
-  test('furtherCharges neither exists', () => {
+  test('furtherCharges neither exists, INITIAL', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: {},
+      catType: 'INITIAL',
+    })
+    return request(app)
+      .get('/furtherCharges/12345')
+      .expect(302)
+      .expect('Location', `/form/openConditions/riskLevels/12345`)
+  })
+
+  test('furtherCharges neither exists, RECAT', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {},
     })
     return request(app)
       .get('/furtherCharges/12345')
-      .expect(302)
-      .expect('Location', `/form/openConditions/riskLevels/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Further charges')
+        expect(res.text).toContain('></textarea>') // textarea is empty
+      })
   })
 
   test.each`
