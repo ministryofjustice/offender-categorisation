@@ -241,7 +241,7 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient)
-      res.render(`formPages/approvedView`, result)
+      res.render(result.catType === 'INITIAL' ? `formPages/approvedView` : `formPages/recat/approvedView`, result)
     })
   )
 
