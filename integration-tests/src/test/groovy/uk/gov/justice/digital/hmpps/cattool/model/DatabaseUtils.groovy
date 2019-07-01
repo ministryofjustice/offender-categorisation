@@ -45,10 +45,6 @@ class DatabaseUtils {
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
 
-  def createData(id, bookingId, json) {
-    doCreateData(id, bookingId, 'STARTED', json)
-  }
-
   def createRiskProfileData(bookingId, json) {
     doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
