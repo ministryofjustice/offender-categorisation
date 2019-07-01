@@ -7,7 +7,7 @@ class RecategoriserDonePage extends Page {
   static url = '/recategoriserDone'
 
   static at = {
-    headingText == 'Prisoner re-categorisation'
+    headingText == 'Category reviews for prisoners'
   }
 
   static content = {
