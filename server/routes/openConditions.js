@@ -45,7 +45,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         result.data.ratings.furtherCharges &&
         result.data.ratings.furtherCharges.furtherCharges === 'Yes'
 
-      if (!furtherChargesExists && !textExists) {
+      if (!furtherChargesExists && !textExists && result.catType === 'INITIAL') {
         const formPageConfig = formConfig.openConditions[form]
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
