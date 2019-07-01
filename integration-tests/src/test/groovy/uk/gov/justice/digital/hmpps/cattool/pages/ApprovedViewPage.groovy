@@ -15,7 +15,7 @@ class ApprovedViewPage extends Page {
     headerBlock { $('div.govuk-grid-column-one-third') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     categories { $('.govuk-warning-text') }
-    commentLabel { $('label', text:'Comments')}
+    commentLabel(required: false) { $('label', text:'Comments')}
     comments(required: false) { $('.forms-comments-text') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
