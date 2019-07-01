@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cattool.specs
+package uk.gov.justice.digital.hmpps.cattool.specs.recat
 
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
@@ -10,11 +10,9 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.ApprovedViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
-
-import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
@@ -39,11 +37,16 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
   def "The approved view page is correctly displayed (suggested Cat)"() {
 
+    db.createDataWithStatusAndCatType(-1, 11, 'APPROVED', JsonOutput.toJson([
+      recat     : [decision: [category: "C"]],
+      supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
+    ]), 'RECAT')
+    db.createDataWithStatusAndCatType(-2, 12, 'APPROVED', JsonOutput.toJson([
+      recat     : [decision: [category: "C"]],
+      supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
+    ]), 'RECAT')
+
     when: 'the approved view page for B2345YZ is selected'
-    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
-      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]],
-      supervisor : [review: [supervisorCategoryAppropriate: "Yes"]]
-    ]))
     navigateToView()
 
     then: 'the cat details are correct'
@@ -57,26 +60,27 @@ class ApprovedViewSpecification extends GebReportingSpec {
     // NOTE reviewContents.html is tested by ReviewSpecification
   }
 
-  def "The approved view page is correctly displayed (Cat overridden by categoriser and supervisor)"() {
+  def "The approved view page is correctly displayed (Cat overridden by supervisor)"() {
 
-    when: 'the approved view page for B2345YZ is selected'
-    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
-      categoriser: [provisionalCategory: [suggestedCategory     : "B", categoryAppropriate: "No", overriddenCategory: "C",
-                                          overriddenCategoryText: "Here are the categoriser's comments on why the category was changed"]],
+    db.createDataWithStatusAndCatType(-1, 11, 'APPROVED', JsonOutput.toJson([
+      recat     : [decision: [category: "C"]],
+      supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
+    ]), 'RECAT')
+    db.createDataWithStatusAndCatType(-2, 12, 'APPROVED', JsonOutput.toJson([
+      recat     : [decision: [category: "C"]],
       supervisor : [review: [supervisorCategoryAppropriate   : "No", supervisorOverriddenCategory: "D",
                              supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"]],
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]]
-    ]))
-    navigateToView()
+    ]), 'RECAT')
 
+    when: 'the approved view page for B2345YZ is selected'
+    navigateToView()
 
     then: 'the cat details are correct'
     categories*.text() == ['D\nWarning\nCategory D',
-                           'B\nC\nWarning\nThe recommended category was changed from a B to a C',
+                           'C\nWarning\nThe categoriser recommends category C',
                            'C\nD\nWarning\nThe recommended category was changed from a C to a D']
-    comments*.text() == ['Here are the categoriser\'s comments on why the category was changed',
-                         'Here are the supervisor\'s comments on why the category was changed']
-
+    comments.text() == 'Here are the supervisor\'s comments on why the category was changed'
     openConditionsHeader.isDisplayed()
 
     when: "I click on the button"
@@ -88,12 +92,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
   private navigateToView() {
 
-    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
-    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-    // 14 days after sentenceStartDate
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
-
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
 
@@ -111,6 +110,6 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
     viewButtons[0].click()
 
-    at ApprovedViewPage
+    at ApprovedViewRecatPage
   }
 }
