@@ -47,7 +47,12 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
-
+    db.createRiskProfileDataForExistingRow(12, JsonOutput.toJson([
+      history : [catAType: 'A', finalCat: 'Cat B', catAEndYear: '2013', releaseYear: '2014', catAStartYear: '2012'],
+      offences: [[bookingId: 12, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
+                 [bookingId: 12, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
+                 [bookingId: 12, offenceDescription: 'Undated offence']]
+    ]))
     navigateToReview()
 
     then: 'the header is correct, change links are not displayed and the buttons omit the current cat'
@@ -57,7 +62,7 @@ class SupervisorSpecification extends GebReportingSpec {
     overriddenCategoryB.@type == 'radio'
     overriddenCategoryC.@type == null
     overriddenCategoryD.@type == 'radio'
-
+    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
 
     when: 'the supervisor selects yes (after changing their mind)'
     elite2Api.stubSupervisorApprove("C")
@@ -160,7 +165,7 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'the review page includes changed category and normal answers but not open conditions information'
     !openConditionsHeader.isDisplayed()
     warning.text() == 'C\nB\nWarning\nThe category was originally C and is now B'
-    offendingHistorySummary[2].text() == 'some convictions'
+    offendingHistorySummary[2].text() == 'Yes\nsome convictions'
   }
 
   def "The supervisor review page can be confirmed - indeterminate sentence"() {

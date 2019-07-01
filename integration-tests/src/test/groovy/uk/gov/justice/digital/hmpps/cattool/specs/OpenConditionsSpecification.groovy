@@ -288,7 +288,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at ReviewPage
     changeLinks.size() == 9
 
-    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'some convictions']
+    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
     furtherChargesSummary*.text() == ['Yes\nsome charges', '']
     violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes']
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes', '']
@@ -352,7 +352,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     then: 'the review page is displayed and Data is stored correctly'
     at ReviewPage
 
-    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'some convictions']
+    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
     furtherChargesSummary*.text() == ['Yes\nsome charges', '']
     violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes']
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes', '']

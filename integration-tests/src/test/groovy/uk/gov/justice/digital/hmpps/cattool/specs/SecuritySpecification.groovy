@@ -45,7 +45,7 @@ class SecuritySpecification extends GebReportingSpec {
 
     db.createSecurityReviewedData(-2, 13, 'SECURITY_BACK', JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
@@ -57,7 +57,7 @@ class SecuritySpecification extends GebReportingSpec {
 
     db.createSecurityReviewedData(-1,14, 'APPROVED', JsonOutput.toJson([
       ratings: [
-        offendingHistory: [previousConvictions: "some convictions"],
+        offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         securityInput   : [securityInputNeeded: "Yes", securityInputNeededText: "Comments from Categoriser"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeFurtherCharges: "Yes"],

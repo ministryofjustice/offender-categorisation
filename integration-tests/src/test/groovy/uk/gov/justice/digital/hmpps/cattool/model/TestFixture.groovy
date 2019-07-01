@@ -22,7 +22,7 @@ class TestFixture {
   UserAccount currentUser
 
   public static final defaultRatingsB = [
-    offendingHistory: [previousConvictions: "some convictions"],
+    offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
     securityInput   : [securityInputNeeded: "No"],
     furtherCharges  : [furtherCharges: "Yes", furtherChargesText: "some charges"],
     violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
@@ -31,7 +31,7 @@ class TestFixture {
   ]
 
   public static final defaultRatingsC = [
-    offendingHistory: [previousConvictions: "some convictions"],
+    offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
     securityInput   : [securityInputNeeded: "No"],
     furtherCharges  : [furtherCharges: "No"],
     violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
