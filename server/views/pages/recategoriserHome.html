@@ -67,7 +67,7 @@
           {% if row.displayStatus == 'Awaiting approval' %}
             {{ govukButton({
               text: "View",
-              href: "/form/recategoriser/awaitingApprovalView/" + row.bookingId,
+              href: "/form/recat/awaitingApprovalView/" + row.bookingId,
               classes: classes
             }) }}
           {% else %}
