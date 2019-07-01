@@ -11,8 +11,8 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.ApprovedViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
@@ -181,7 +181,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     response.openConditionsRequested == false
   }
 
-  def "The happy path is correct for categoriser overriding to D, all nos"() {
+  def "The happy path is correct for recategoriser setting cat D, all nos"() {
     when: 'The categoriser overrides to D'
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([recat: TestFixture.defaultRecat]), 'RECAT')
 
@@ -309,12 +309,12 @@ class OpenConditionsSpecification extends GebReportingSpec {
     viewButtons[0].click()
 
     then: 'details are correct'
-    at ApprovedViewPage
-    return //TODO
-    categories*.text() == ['D\nWarning\nCategory D', 'B\nD\nWarning\nThe recommended category was changed from a B to a D', 'D\nWarning\nThe supervisor also recommends category D']
-    comments*.text() == ['categoriser override to D comment']
-    otherInformationSummary.text() == 'categoriser relevant info 1'
-    commentLabel.size() == 1
+    at ApprovedViewRecatPage
+    categories*.text() == ['D\nWarning\nCategory D',
+                           'D\nWarning\nThe categoriser recommends category D',
+                           'D\nWarning\nThe supervisor also recommends category D']
+    !comments.displayed
+    !commentLabel.displayed
   }
 
   def "recategoriser sets D, supervisor overrides to C"() {
@@ -406,14 +406,12 @@ class OpenConditionsSpecification extends GebReportingSpec {
     viewButtons[0].click()
 
     then: 'details are correct'
-    at ApprovedViewPage
-    return //TODO
+    at ApprovedViewRecatPage
     categories*.text() == ['C\nWarning\nCategory C',
-                           'B\nD\nWarning\nThe recommended category was changed from a B to a D',
+                           'D\nWarning\nThe categoriser recommends category D',
                            'D\nC\nWarning\nThe recommended category was changed from a D to a C']
-    comments*.text() == ['categoriser override to D comment', 'super changed D to C', 'super other info']
-    otherInformationSummary.text() == 'categoriser relevant info 1'
-    commentLabel.size() == 2
+    comments*.text() == ['super changed D to C', 'super other info']
+    commentLabel.size() == 1
   }
 
   def "The happy path is correct for supervisor overriding to D"() {
@@ -544,12 +542,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
     viewButtons[0].click()
 
     then: 'details are correct'
-    at ApprovedViewPage
-    return // TODO
-
-    categories*.text() == ['D\nWarning\nCategory D', 'D\nWarning\nThe categoriser recommends category D', 'D\nWarning\nThe supervisor also recommends category D']
-    comments*.text() == ['super overriding C to D', 'super other info 1']
-    otherInformationSummary.text() == 'categoriser relevant info for accept'
+    at ApprovedViewRecatPage
+    categories*.text() == ['D\nWarning\nCategory D',
+                           'D\nWarning\nThe categoriser recommends category D',
+                           'D\nWarning\nThe supervisor also recommends category D']
+    comments*.text() == ['super overriding C to D', 'super other info 1 + 2']
     commentLabel.size() == 1
   }
 
