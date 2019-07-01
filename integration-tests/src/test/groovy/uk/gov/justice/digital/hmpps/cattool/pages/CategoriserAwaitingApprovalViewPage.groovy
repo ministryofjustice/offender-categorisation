@@ -11,12 +11,14 @@ class CategoriserAwaitingApprovalViewPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
+    headingText { $('h1.mainHeading').text() }
 
     warning { $('div.govuk-warning-text', 0) }
 
     backLink { $( 'a.govuk-back-link') }
 
     categoryDiv { $( '#category-div') }
+
+    earliestReleaseDate { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
   }
 }
