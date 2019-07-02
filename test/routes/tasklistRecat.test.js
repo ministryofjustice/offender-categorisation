@@ -81,7 +81,7 @@ describe('GET /tasklistRecat/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Re-categorisation task list')
+        expect(res.text).toContain('Category review task list')
         expect(res.text).toContain('Security information')
         expect(res.text).toContain('Not yet checked')
       }))
@@ -116,7 +116,7 @@ describe('GET /tasklistRecat/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Re-categorisation task list')
+        expect(res.text).toContain('Category review task list')
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
         expect(res.text).toContain('href="/form/recat/riskAssessment/12345"')
 
@@ -146,7 +146,7 @@ describe('GET /tasklistRecat/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Re-categorisation task list')
+        expect(res.text).toContain('Category review task list')
         expect(res.text).not.toContain(`Automatically referred to Security`)
         expect(res.text).toContain('Not yet checked')
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
