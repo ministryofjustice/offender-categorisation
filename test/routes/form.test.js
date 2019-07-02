@@ -33,6 +33,7 @@ const formService = {
   deleteFormData: jest.fn(),
   isValid: jest.fn(),
   isYoungOffender: jest.fn(),
+  recordNomisSeqNumber: jest.fn(),
 }
 
 const riskProfilerService = {
