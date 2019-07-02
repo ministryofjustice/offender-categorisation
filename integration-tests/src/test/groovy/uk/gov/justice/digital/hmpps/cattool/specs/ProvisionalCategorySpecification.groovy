@@ -86,6 +86,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     def data = db.getData(12)
     data.status == ["AWAITING_APPROVAL"]
+    data.nomis_sequence_no == [4]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == null
@@ -154,7 +155,6 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     newCatMessage.text() == 'Changing to Cat J'
 
     when: 'Changing to Cat J'
-    elite2Api.stubCategorise('J')
     overriddenCategoryText << "Some Text"
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
@@ -165,6 +165,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     def data = db.getData(12)
     data.status == ["STARTED"]
+    data.nomis_sequence_no == [null]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == null
@@ -244,6 +245,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     def data = db.getData(12)
     data.status == ["AWAITING_APPROVAL"]
+    data.nomis_sequence_no == [4]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsC
     response.supervisor == null

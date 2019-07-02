@@ -430,10 +430,12 @@ module.exports = function Index({
         return
       }
 
+      const bookingInt = parseInt(bookingId, 10)
+
       if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
         log.info(`Categoriser creating initial categorisation record:`)
         await formService.update({
-          bookingId: parseInt(bookingId, 10),
+          bookingId: bookingInt,
           userId: req.user.username,
           config: formPageConfig,
           userInput,
@@ -443,7 +445,7 @@ module.exports = function Index({
           transactionalClient: transactionalDbClient,
           logUpdate: true,
         })
-        await offendersService.createInitialCategorisation({
+        const nomisKeyMap = await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
           bookingId,
           overriddenCategory: userInput.overriddenCategory,
@@ -451,13 +453,15 @@ module.exports = function Index({
           overriddenCategoryText: userInput.overriddenCategoryText,
         })
 
+        await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)
+
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
         // persist the open conditions override and return to complete the open conditions route
         log.info(`Categoriser overriding to Category ${userInput.overriddenCategory}`)
         await formService.update({
-          bookingId: parseInt(bookingId, 10),
+          bookingId: bookingInt,
           userId: req.user.username,
           config: formPageConfig,
           userInput,

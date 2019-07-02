@@ -2,7 +2,7 @@ const path = require('path')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
-const { isNilOrEmpty } = require('../utils/functionalHelpers')
+const { isNilOrEmpty, replace } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter } = require('../utils/utils.js')
 const moment = require('moment')
 const { sortByDateTimeDesc } = require('./offenderSort.js')
@@ -108,6 +108,34 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  const matchEliteAndDBCategorisations = (categorisedFromElite, categorisedFromDB) =>
+    categorisedFromElite.reduce((store, eliteCat) => {
+      const matchedDbCat = categorisedFromDB.find(record => record.bookingId === eliteCat.bookingId)
+
+      if (matchedDbCat) {
+        const storedEliteCat = store.find(record => record.bookingId === eliteCat.bookingId)
+
+        if (!storedEliteCat) {
+          return store.concat(eliteCat)
+        }
+        if (eliteCat.assessmentSeq === matchedDbCat.nomisSeq) {
+          if (storedEliteCat) {
+            return replace(store, storedEliteCat, eliteCat)
+          }
+          return store.concat(eliteCat)
+        }
+        if (
+          // there isn't a nomis seq match - make sure highest elite seq wins
+          storedEliteCat.assessmentSeq !== matchedDbCat.nomisSeq &&
+          eliteCat.assessmentSeq > storedEliteCat.assessmentSeq
+        ) {
+          return replace(store, storedEliteCat, eliteCat)
+        }
+      }
+
+      return store
+    }, [])
+
   async function getCategorisedOffenders(token, agencyId, user, catType, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
@@ -119,8 +147,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           categorisedFromDB.map(c => c.bookingId)
         )
 
+        const matchedCategorisations = matchEliteAndDBCategorisations(categorisedFromElite, categorisedFromDB)
+
         const decoratedResults = await Promise.all(
-          categorisedFromElite.map(async o => {
+          matchedCategorisations.map(async o => {
             const approvalMoment = moment(o.approvalDate, 'YYYY-MM-DD')
             const dbRecord = categorisedFromDB.find(record => record.bookingId === o.bookingId)
             return {
@@ -556,7 +586,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const nomisClient = nomisClientBuilder(token)
     const nextReviewDateConverted = nextReviewDate && moment(nextReviewDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
     try {
-      await nomisClient.createInitialCategorisation({
+      return await nomisClient.createInitialCategorisation({
         bookingId,
         category,
         committee: 'Cat-tool',
@@ -628,5 +658,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getPrisonerBackground,
     // just for tests:
     buildSentenceData,
+    getMatchedCategorisations: matchEliteAndDBCategorisations,
   }
 }

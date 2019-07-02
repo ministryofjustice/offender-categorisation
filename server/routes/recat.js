@@ -325,13 +325,20 @@ module.exports = function Index({
         await formService.setAwaitingApproval(bookingId, transactionalDbClient)
 
         const nextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], formData)
-        await offendersService.createInitialCategorisation({
+
+        const nomisKeyMap = await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
           bookingId,
           suggestedCategory,
           overriddenCategoryText: 'Cat-tool Recat',
           nextReviewDate,
         })
+
+        await formService.recordNomisSeqNumber(
+          parseInt(bookingId, 10),
+          nomisKeyMap.sequenceNumber,
+          transactionalDbClient
+        )
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
