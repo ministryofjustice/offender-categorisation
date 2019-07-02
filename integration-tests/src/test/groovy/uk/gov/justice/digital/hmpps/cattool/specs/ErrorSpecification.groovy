@@ -7,6 +7,7 @@ import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
+import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
@@ -28,6 +29,12 @@ class ErrorSpecification extends GebReportingSpec {
     .extensions(new ResponseTemplateTransformer(false)))
 
   TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
+
+  DatabaseUtils db = new DatabaseUtils()
+
+  def setup() {
+    db.clearDb()
+  }
 
   def "The error page is displayed when an unexpected error occurs"() {
     when: 'A 500 error occurs in an API call'
