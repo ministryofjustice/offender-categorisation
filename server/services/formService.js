@@ -189,6 +189,15 @@ module.exports = function createFormService(formClient) {
     await formClient.updateFormData(bookingId, data, transactionalClient)
   }
 
+  async function recordNomisSeqNumber(bookingId, nomisSeq, transactionalClient) {
+    try {
+      await formClient.updateRecordWithNomisSeqNumber(bookingId, nomisSeq, transactionalClient)
+    } catch (error) {
+      logger.error(`Failed to record nomis seq number ${nomisSeq} for booking id ${bookingId}`)
+      throw error
+    }
+  }
+
   async function mergeRiskProfileData(bookingId, data, transactionalClient) {
     const oldRecord = await getCategorisationRecord(bookingId, transactionalClient)
     await formClient.updateRiskProfileData(
@@ -455,5 +464,6 @@ module.exports = function createFormService(formClient) {
     isYoungOffender,
     supervisorApproval,
     deleteFormData,
+    recordNomisSeqNumber,
   }
 }

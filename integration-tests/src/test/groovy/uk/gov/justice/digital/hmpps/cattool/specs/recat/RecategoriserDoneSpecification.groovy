@@ -50,21 +50,23 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     db.createDataWithStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'RECAT')
 
+    db.createNomisSeqNo(12, 8)
+
     elite2Api.stubRecategorise()
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
-    elite2Api.stubCategorised([12,10])
+    elite2Api.stubCategorisedMultiple([12,10])
     doneTabLink.click()
 
     then: 'The recategoriser done page is displayed, showing only approved recats'
     at RecategoriserDonePage
 
-    prisonNos == ['B1234AB', 'B2345XY']
-    names == ['Perfect, Peter', 'Scramble, Tim']
-    approvalDates == ['20/03/2019', '21/02/2019']
-    categorisers == ['Dastardly, Dick', 'Lamb, John']
-    approvers == ['Pending, Pat', 'Helly, James']
-    categories == ['B', 'C']
+    prisonNos == ['B2345XY','B1234AB']
+    names == ['Scramble, Tim','Perfect, Peter']
+    approvalDates == ['20/04/2019','20/03/2019']
+    categorisers == ['Lamb, John','Dastardly, Dick']
+    approvers == ['Helly, James','Pending, Pat']
+    categories == ['C','B']
   }
 
   def "The done page does not display offenders that haven't been categorised through the Categorisation tool"() {

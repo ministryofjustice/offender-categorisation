@@ -13,6 +13,7 @@ const formClient = {
   updateStatus: jest.fn(),
   securityReviewed: jest.fn(),
   updateRiskProfileData: jest.fn(),
+  updateRecordWithNomisSeqNumber: jest.fn(),
 }
 let service
 
@@ -410,6 +411,18 @@ describe('mergeRiskProfileData', () => {
       },
       mockTransactionalClient,
     ])
+  })
+})
+
+describe('recordNomisSeqNumber', () => {
+  test('happy path', async () => {
+    await service.recordNomisSeqNumber(bookingId, 3, mockTransactionalClient)
+
+    expect(formClient.updateRecordWithNomisSeqNumber.mock.calls[0]).toEqual([bookingId, 3, mockTransactionalClient])
+  })
+  test('failed', async () => {
+    formClient.updateRecordWithNomisSeqNumber.mockRejectedValue(new Error('TEST'))
+    await expect(service.recordNomisSeqNumber(bookingId, 3, mockTransactionalClient)).rejects.toThrow()
   })
 })
 

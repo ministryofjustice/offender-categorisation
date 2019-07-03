@@ -404,6 +404,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
 
     data.status == ["AWAITING_APPROVAL"]
+    data.nomis_sequence_no == [4]
     response.ratings == TestFixture.defaultRatingsB
     response.categoriser == [review             : [:],
                              provisionalCategory: [suggestedCategory   : 'B', overriddenCategory: 'D', categoryAppropriate: 'No',

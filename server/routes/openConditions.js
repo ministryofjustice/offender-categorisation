@@ -268,12 +268,14 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
+      const bookingInt = parseInt(bookingId, 10)
+
       const userInput = clearConditionalFields(req.body)
 
       if (userInput.openConditionsCategoryAppropriate === 'Yes') {
         log.info(`Categoriser creating initial categorisation record:`)
         await formService.update({
-          bookingId: parseInt(bookingId, 10),
+          bookingId: bookingInt,
           userId: req.user.username,
           config: formPageConfig,
           userInput,
@@ -283,18 +285,21 @@ module.exports = function Index({ formService, offendersService, userService, au
           transactionalClient: transactionalDbClient,
           logUpdate: true,
         })
-        await offendersService.createInitialCategorisation({
+
+        const nomisKeyMap = await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
           bookingId,
           suggestedCategory: userInput.openConditionsSuggestedCategory,
           overriddenCategoryText: userInput.overriddenCategoryText,
         })
 
+        await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)
+
         const nextPath = getPathFor({ data: userInput, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
         // if user selects no - clear provisional cat data and cancel open conditions
-        await formService.cancelOpenConditions(parseInt(bookingId, 10), req.user.username, transactionalDbClient)
+        await formService.cancelOpenConditions(bookingInt, req.user.username, transactionalDbClient)
         res.redirect(`/tasklist/${bookingId}`)
       }
     })

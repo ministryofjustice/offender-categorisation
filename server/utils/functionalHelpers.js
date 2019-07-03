@@ -12,6 +12,8 @@ module.exports = {
   lastItem,
   pickBy: R.pickBy,
   getWhereKeyLike,
+  replace,
+  groupBy,
   addSocProfile,
 }
 
@@ -58,6 +60,14 @@ function getWhereKeyLike(url, roleList) {
     R.pickBy(stringIncludesKey),
     R.values
   )(roleList)[0]
+}
+
+function replace(array, toReplace, newElement) {
+  return array.filter(o => o !== toReplace).concat(newElement)
+}
+
+function groupBy(array, groupByProperty) {
+  return R.groupBy(R.prop(groupByProperty), array)
 }
 
 async function addSocProfile({

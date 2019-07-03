@@ -47,6 +47,8 @@ class CategoriserDoneSpecification extends GebReportingSpec {
     db.createDataWithStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
       ratings: fixture.defaultRatingsC ]), 'RECAT')
 
+    db.createNomisSeqNo(11, 7)
+
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
 
@@ -55,7 +57,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
 
     at CategoriserHomePage
 
-    elite2Api.stubCategorised()
+    elite2Api.stubCategorisedMultiple()
 
     doneTabLink.click()
 
@@ -66,7 +68,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
     prisonNos == ['B2345XY', 'B2345YZ']
     names == ['Scramble, Tim', 'Hemmel, Sarah']
 
-    approvalDates == ['21/02/2019', '20/02/2019']
+    approvalDates == ['20/04/2019', '28/02/2019']
     categorisers == ['Lamb, John', 'Fan, Jane']
     approvers == ['Helly, James', 'Helly, James']
   }
