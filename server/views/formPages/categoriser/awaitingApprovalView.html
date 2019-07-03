@@ -15,7 +15,7 @@
     {% set currentCat = overriddenCat if overriddenCat else cat %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+      <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
         Category for approval is {{ currentCat }}
