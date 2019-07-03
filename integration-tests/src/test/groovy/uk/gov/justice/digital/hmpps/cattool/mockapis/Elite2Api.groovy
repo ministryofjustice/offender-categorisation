@@ -387,6 +387,96 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  void stubCategorisedMultiple(bookingIds = [11, 12]) {
+    def response = []
+    if (bookingIds.contains(10)) {
+      response.add ( [
+        offenderNo: 'B1234AB',
+        bookingId: 10,
+        firstName: 'PETER',
+        lastName: 'PERFECT',
+        assessmentDate: '2018-03-28',
+        approvalDate: '2019-03-20',
+        assessmentSeq: 7,
+        categoriserFirstName: 'DICK',
+        categoriserLastName: 'DASTARDLY',
+        approverFirstName: 'PAT',
+        approverLastName: 'PENDING',
+        category: 'B'
+      ])
+    }
+    if (bookingIds.contains(11)) {
+      response.add([
+        offenderNo          : 'B2345YZ',
+        bookingId           : 11,
+        firstName           : 'SARAH',
+        lastName            : 'HEMMEL',
+        assessmentDate      : '2017-03-27',
+        approvalDate        : '2019-02-28',
+        assessmentSeq       : 7,
+        categoriserFirstName: 'JANE',
+        categoriserLastName : 'FAN',
+        approverFirstName   : 'JAMES',
+        approverLastName    : 'HELLY',
+        category            : 'C'
+      ])
+      response.add([
+        offenderNo          : 'B2345YZ',
+        bookingId           : 11,
+        firstName           : 'SARAH',
+        lastName            : 'HEMMEL',
+        assessmentDate      : '2017-04-28',
+        approvalDate        : '2019-04-29',
+        assessmentSeq       : 8,
+        categoriserFirstName: 'JANE',
+        categoriserLastName : 'FAN',
+        approverFirstName   : 'JAMES',
+        approverLastName    : 'HELLY',
+        category            : 'C'
+      ])
+    }
+    if (bookingIds.contains(12)) {
+      response.add([
+        offenderNo          : 'B2345XY',
+        bookingId           : 12,
+        firstName           : 'TIM',
+        lastName            : 'SCRAMBLE',
+        assessmentDate      : '2017-03-27',
+        approvalDate        : '2019-02-21',
+        assessmentSeq       : 7,
+        categoriserFirstName: 'JOHN',
+        categoriserLastName : 'LAMB',
+        approverFirstName   : 'JAMES',
+        approverLastName    : 'HELLY',
+        category            : 'C'
+      ])
+      response.add([
+        offenderNo          : 'B2345XY',
+        bookingId           : 12,
+        firstName           : 'TIM',
+        lastName            : 'SCRAMBLE',
+        assessmentDate      : '2017-03-27',
+        approvalDate        : '2019-04-20',
+        assessmentSeq       : 8,
+        categoriserFirstName: 'JOHN',
+        categoriserLastName : 'LAMB',
+        approverFirstName   : 'JAMES',
+        approverLastName    : 'HELLY',
+        category            : 'C'
+      ])
+    }
+    this.stubFor(
+      post("/api/offender-assessments/category/LEI")
+        .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, true))
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson(response
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
   void stubUncategorisedAwaitingApproval() {
     this.stubFor(
       get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
@@ -849,7 +939,7 @@ class Elite2Api extends WireMockRule {
             .withStatus(200)))
   }
 
-  def stubCategorise(String expectedCat, String nextReviewDate = '') {
+  def stubCategorise(String expectedCat, String nextReviewDate = '', long bookingId = 12) {
 
     def expectedBody = [category: expectedCat]
     if (nextReviewDate) {
@@ -861,6 +951,10 @@ class Elite2Api extends WireMockRule {
         .withRequestBody(equalToJson(JsonOutput.toJson(expectedBody), true, true))
         .willReturn(
           aResponse()
+            .withBody(JsonOutput.toJson([
+              bookingId         : bookingId,
+              sequenceNumber    : 4
+            ]))
             .withHeader('Content-Type', 'application/json')
             .withStatus(201))
     )

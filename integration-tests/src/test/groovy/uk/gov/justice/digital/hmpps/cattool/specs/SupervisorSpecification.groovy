@@ -444,6 +444,9 @@ class SupervisorSpecification extends GebReportingSpec {
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
 
+    db.createNomisSeqNo(11, 7)
+
+
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
 
@@ -453,17 +456,17 @@ class SupervisorSpecification extends GebReportingSpec {
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
 
-    elite2Api.stubCategorised()
+    elite2Api.stubCategorisedMultiple()
 
     doneTabLink.click()
 
-    then: 'The supervisor done page is displayed'
+    then: 'The supervisor done page is displayed with correctly matched categorisations'
 
     at SupervisorDonePage
 
     prisonNos == ['B2345XY', 'B2345YZ']
     names == ['Scramble, Tim', 'Hemmel, Sarah']
-    approvalDates == ['21/02/2019', '20/02/2019']
+    approvalDates == ['20/04/2019', '28/02/2019']
     categorisers == ['Lamb, John', 'Fan, Jane']
     approvers == ['Helly, James', 'Helly, James']
     outcomes == ['C', 'C']

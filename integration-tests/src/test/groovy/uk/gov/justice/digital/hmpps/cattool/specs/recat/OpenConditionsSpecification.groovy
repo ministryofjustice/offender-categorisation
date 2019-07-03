@@ -249,6 +249,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'The record is viewed by the recategoriser'
     data = db.getData(12)
+    data.nomis_sequence_no == [4]
     response = new JsonSlurper().parseText(data.form_response[0].toString())
 
     to RecategoriserHomePage

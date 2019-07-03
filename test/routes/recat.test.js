@@ -35,6 +35,7 @@ const formService = {
   backToCategoriser: jest.fn(),
   isValid: jest.fn(),
   deleteFormData: jest.fn(),
+  recordNomisSeqNumber: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -78,6 +79,8 @@ beforeEach(() => {
   formService.isValid.mockResolvedValue(true)
   formService.isYoungOffender.mockReturnValue(false)
   formService.deleteFormData.mockReturnValue({})
+  formService.recordNomisSeqNumber.mockReturnValue({})
+  offendersService.createInitialCategorisation.mockReturnValue({ bookingId: 12, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})

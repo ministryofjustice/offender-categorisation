@@ -21,11 +21,13 @@ const nomisClient = {
   getCategory: jest.fn(),
   getCategoryHistory: jest.fn(),
   getAgencyDetail: jest.fn(),
+  getCategorisedOffenders: jest.fn(),
 }
 
 const formService = {
   getCategorisationRecord: jest.fn(),
   getSecurityReferredOffenders: jest.fn(),
+  getCategorisedOffenders: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -50,8 +52,10 @@ afterEach(() => {
   nomisClient.createSupervisorApproval.mockReset()
   formService.getCategorisationRecord.mockReset()
   formService.getSecurityReferredOffenders.mockReset()
+  formService.getCategorisedOffenders.mockReset()
   nomisClient.getCategoryHistory.mockReset()
   nomisClient.getAgencyDetail.mockReset()
+  nomisClient.getCategorisedOffenders.mockReset()
 })
 
 function todaySubtract(days) {
@@ -687,5 +691,135 @@ describe('getPrisonerBackground', () => {
     expect(nomisClient.getAgencyDetail).toBeCalledTimes(0)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
+  })
+})
+
+describe('getMatchedCategorisations', () => {
+  const eliteCats = [
+    {
+      offenderNo: 'B1234AB',
+      bookingId: 10,
+      assessmentDate: '2018-03-28',
+      assessmentSeq: 1,
+      category: 'C',
+    },
+    {
+      offenderNo: 'B1234AB',
+      bookingId: 10,
+      assessmentDate: '2018-03-28',
+      assessmentSeq: 2,
+      category: 'B',
+    },
+    {
+      offenderNo: 'B1234AB',
+      bookingId: 11,
+      assessmentDate: '2018-03-28',
+      assessmentSeq: 1,
+      category: 'D',
+    },
+    {
+      offenderNo: 'B1234AB',
+      bookingId: 11,
+      assessmentDate: '2018-03-28',
+      assessmentSeq: 2,
+      category: 'I',
+    },
+    {
+      offenderNo: 'B1234AB',
+      bookingId: 10,
+      assessmentDate: '2018-03-28',
+      assessmentSeq: 3,
+      category: 'B',
+    },
+    {
+      offenderNo: 'B1234AB',
+      bookingId: 99,
+      assessmentDate: '2018-03-28',
+      assessmentSeq: 3,
+      category: 'B',
+    },
+  ]
+  test('it should return the matched categorisation by nomis seq number', async () => {
+    const dbCats = [
+      {
+        bookingId: 10,
+        offenderNo: 'ABC1',
+        nomisSeq: 1,
+      },
+      {
+        bookingId: 11,
+        offenderNo: 'ABC1',
+        nomisSeq: 1,
+      },
+    ]
+
+    const expected = [
+      {
+        offenderNo: 'B1234AB',
+        bookingId: 10,
+        assessmentDate: '2018-03-28',
+        assessmentSeq: 1,
+        category: 'C',
+      },
+      {
+        offenderNo: 'B1234AB',
+        bookingId: 11,
+        assessmentDate: '2018-03-28',
+        assessmentSeq: 1,
+        category: 'D',
+      },
+    ]
+
+    const result = await service.getMatchedCategorisations(eliteCats, dbCats)
+
+    expect(result).toMatchObject(expected)
+  })
+
+  test("ignore returned results that don't match local booking ids - a can't happen in reality", async () => {
+    const dbCats = [
+      {
+        bookingId: 6,
+        offenderNo: 'ABC1',
+        nomisSeq: 1,
+      },
+    ]
+
+    const result = await service.getMatchedCategorisations(eliteCats, dbCats)
+
+    expect(result).toHaveLength(0)
+  })
+
+  test('if no corresponding seq held locally, it should return the latest (by seq) categorisation', async () => {
+    const dbCats = [
+      {
+        bookingId: 10,
+        offenderNo: 'ABC1',
+      },
+      {
+        bookingId: 11,
+        offenderNo: 'ABC1',
+      },
+    ]
+
+    const result = await service.getMatchedCategorisations(eliteCats, dbCats)
+
+    const expected = [
+      {
+        offenderNo: 'B1234AB',
+        bookingId: 11,
+        assessmentDate: '2018-03-28',
+        assessmentSeq: 2,
+        category: 'I',
+      },
+      {
+        offenderNo: 'B1234AB',
+        bookingId: 10,
+        assessmentDate: '2018-03-28',
+        assessmentSeq: 3,
+        category: 'B',
+      },
+    ]
+
+    expect(result.sort()).toMatchObject(expected.sort())
   })
 })

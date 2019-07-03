@@ -54,6 +54,11 @@ class DatabaseUtils {
     sql.executeUpdate("""update form set risk_profile = ?::JSON where booking_id = $bookingId""", json)
   }
 
+  def createNomisSeqNo(bookingId, seq) {
+    def sql = Sql.newInstance(dbConnParams)
+    sql.executeUpdate("""update form set nomis_sequence_no = $seq where booking_id = $bookingId""")
+  }
+
   def createDataWithStatus(id, bookingId, status, json) {
     doCreateData(id, bookingId, status, json)
   }
