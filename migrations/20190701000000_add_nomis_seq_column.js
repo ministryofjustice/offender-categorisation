@@ -6,6 +6,6 @@ exports.up = knex =>
 
 exports.down = knex =>
   knex.schema.table('form', table => {
-    table.dropColumn('nomis_sequence_no')
     table.dropUnique(['booking_id', 'nomis_sequence_no'], 'booking_nomis_sequence_index')
+    table.dropColumn('nomis_sequence_no')
   })
