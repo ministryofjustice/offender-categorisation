@@ -199,6 +199,14 @@ class Elite2Api extends WireMockRule {
                 status              : 'UNCATEGORISED',
                 category            : 'C',
               ],
+              [
+                bookingId           : 39,
+                offenderNo          : 'B0039AA',
+                firstName           : 'AWAITING',
+                lastName            : 'SUPERVISOR_BACK',
+                status              : 'AWAITING_APPROVAL',
+                category            : 'C',
+              ],
             ]
             ))
             .withHeader('Content-Type', 'application/json')
