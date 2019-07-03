@@ -54,6 +54,7 @@ class HomePageSpecification extends GebReportingSpec {
     db.createDataWithStatus(-5, 36, 'STARTED', '{}')
     db.createDataWithStatus(-6, 37, 'AWAITING_APPROVAL', '{}')
     db.createDataWithStatus(-7, 38, 'APPROVED', '{}')
+    db.createDataWithStatus(-8, 39, 'SUPERVISOR_BACK', '{}')
 
     when: 'I go to the home page as categoriser'
 
@@ -66,6 +67,7 @@ class HomePageSpecification extends GebReportingSpec {
     def sentenceStartDate36 = LocalDate.of(2019, 2, 4)
     def sentenceStartDate37 = LocalDate.of(2019, 1, 31)
     def sentenceStartDate38 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate39 = LocalDate.of(2019, 1, 23)
     def daysSinceSentence31 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate31, now))
     def daysSinceSentence32 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate32, now))
     def daysSinceSentence33 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate33, now))
@@ -74,24 +76,26 @@ class HomePageSpecification extends GebReportingSpec {
     def daysSinceSentence36 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate36, now))
     def daysSinceSentence37 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate37, now))
     def daysSinceSentence38 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate38, now))
+    def daysSinceSentence39 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate39, now))
     // 14 days after sentenceStartDate
     elite2Api.stubUncategorisedFull()
-    elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA'],
-      [31, 32, 33, 34, 35, 36, 37, 38],
+    elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA'],
+      [31, 32, 33, 34, 35, 36, 37, 38, 39],
       [sentenceStartDate31.toString(), sentenceStartDate32.toString(), sentenceStartDate33.toString(), sentenceStartDate34.toString(),
-       sentenceStartDate35.toString(), sentenceStartDate36.toString(), sentenceStartDate37.toString(), sentenceStartDate38.toString()],
+       sentenceStartDate35.toString(), sentenceStartDate36.toString(), sentenceStartDate37.toString(), sentenceStartDate38.toString(), sentenceStartDate39.toString()],
     )
 
     fixture.loginAs(CATEGORISER_USER)
 
     then: 'The categoriser home page is displayed'
     at CategoriserHomePage
-    prisonNos == ['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA']
-    names == ['Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised', 'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised']
-    days == [daysSinceSentence31, daysSinceSentence32, daysSinceSentence33, daysSinceSentence34, daysSinceSentence35, daysSinceSentence36, daysSinceSentence37, daysSinceSentence38]
-    dates == ['01/04/2019', '28/03/2019', '18/03/2019', '14/03/2019', '22/02/2019', '18/02/2019', '14/02/2019', '11/02/2019']
-    statuses == ['Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
-    startButtons*.text() == ['PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
+    prisonNos == ['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA']
+    names == ['Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised',
+              'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised', 'Supervisor_back, Awaiting']
+    days == [daysSinceSentence31, daysSinceSentence32, daysSinceSentence33, daysSinceSentence34, daysSinceSentence35, daysSinceSentence36, daysSinceSentence37, daysSinceSentence38, daysSinceSentence39]
+    dates == ['01/04/2019', '28/03/2019', '18/03/2019', '14/03/2019', '22/02/2019', '18/02/2019', '14/02/2019', '11/02/2019', '06/02/2019']
+    statuses == ['Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Back from Supervisor']
+    startButtons*.text() == ['PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS', 'Edit']
   }
 
   def "The home page for a supervisor is present"() {
@@ -242,7 +246,7 @@ class HomePageSpecification extends GebReportingSpec {
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"],
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]
     ]))
 
     when: 'A user starts a categorisation'
@@ -262,7 +266,7 @@ class HomePageSpecification extends GebReportingSpec {
     startButtons[1].click()
     then: 'The view page is displayed'
     at CategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is C'
+    categoryDiv.text() contains 'B\nWarning\nCategory for approval is B'
   }
 
   def "Log out"() {
