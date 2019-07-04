@@ -9,4 +9,8 @@ class ApprovedViewRecatPage extends ApprovedViewPage {
   static at = {
     headingText == 'Categorisation review outcome'
   }
+
+  static content = {
+    prisonerBackgroundSummary { $('.prisonerBackgroundSummary .govuk-summary-list__value') }
+  }
 }

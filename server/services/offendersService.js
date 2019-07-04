@@ -39,7 +39,7 @@ function get10BusinessDays(from) {
 
 async function getSentenceMap(offenderList, nomisClient) {
   const bookingIds = offenderList
-    .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === 'INITIAL')
+    .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
     .map(o => o.bookingId)
 
   const sentenceDates = bookingIds.length ? await nomisClient.getSentenceDatesForOffenders(bookingIds) : []
@@ -369,7 +369,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const decoratedResultsU21 = await Promise.all(
         resultsU21.map(async o => {
           const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-          if (dbRecord.catType === 'INITIAL') {
+          if (dbRecord.catType === CatType.INITIAL.name) {
             return null
           }
           const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
