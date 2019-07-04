@@ -215,7 +215,7 @@ module.exports = function Index({
       const section = 'supervisor'
       const result = await buildFormData(res, req, section, 'review', bookingId, transactionalDbClient)
 
-      if (result.catType === 'INITIAL') {
+      if (result.catType === CatType.INITIAL.name) {
         res.render(`formPages/${section}/review`, result)
       } else {
         const categorisations = await offendersService.getPrisonerBackground(
@@ -242,7 +242,17 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient)
-      res.render(result.catType === 'INITIAL' ? `formPages/approvedView` : `formPages/recat/approvedView`, result)
+
+      if (result.catType === CatType.INITIAL.name) {
+        res.render(`formPages/approvedView`, result)
+      } else {
+        const categorisations = await offendersService.getPrisonerBackground(
+          res.locals.user.token,
+          result.data.details.offenderNo
+        )
+        const data = { ...result.data, categorisations }
+        res.render(`formPages/recat/approvedView`, { ...result, data })
+      }
     })
   )
 
