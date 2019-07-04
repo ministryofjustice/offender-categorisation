@@ -419,10 +419,6 @@ class SupervisorSpecification extends GebReportingSpec {
     elite2Api.stubAssessments(['B2345YZ'])
     elite2Api.stubAgencyDetails('LPI')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
 
     if (initial) {
       startButtons[0].click()
@@ -478,6 +474,14 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecat]), 'RECAT')
 
+    db.createRiskProfileDataForExistingRow(12, '''{
+      "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
+      "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
+        "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": false, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]   
+      },
+      "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
+      "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}''')
+
     navigateToReview(false, false, false)
 
     then: 'the header is correct, change links are not displayed and the buttons omit the current cat'
@@ -489,12 +493,13 @@ class SupervisorSpecification extends GebReportingSpec {
     overriddenCategoryC.@type == null
     overriddenCategoryD.@type == 'radio'
 
-    prisonerBackgroundSummary*.text() == ['', 'todo', ('Categorisation date Category decision Review location\n' +
-                                          '04/04/2012 A Moorland (HMP & YOI)\n' +
-                                          '24/03/2013 B Moorland (HMP & YOI)'),
-                                          'This person has not been reported as the perpetrator in any assaults in custody before',
-                                          'This person is not considered an escape risk.',
-                                          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.', '']
+    prisonerBackgroundSummary*.text() == [
+      '', 'todo', ('Categorisation date Category decision Review location\n' +
+      '04/04/2012 A Moorland (HMP & YOI)\n' +
+      '24/03/2013 B Moorland (HMP & YOI)'),
+      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months',
+      'This person is considered an escape risk\nXEL First xel comment 2016-09-14',
+      'This person is at risk of engaging in, or vulnerable to, extremism.', '']
     securityInputSummary*.text() == ['', 'No', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']

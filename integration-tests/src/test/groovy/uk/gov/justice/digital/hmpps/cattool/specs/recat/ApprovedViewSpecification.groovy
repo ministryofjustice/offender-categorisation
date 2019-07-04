@@ -46,10 +46,18 @@ class ApprovedViewSpecification extends GebReportingSpec {
       supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
     ]), 'RECAT')
 
+    db.createRiskProfileDataForExistingRow(12, '''{
+      "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
+      "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
+        "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": true, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]   
+      },
+      "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
+      "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}''')
+
     when: 'the approved view page for B2345YZ is selected'
     navigateToView()
 
-    then: 'the cat details are correct'
+    then: 'the cat details are correct and full prisoner background data is shown'
     headerValue*.text() == fixture.FULL_HEADER
     categories*.text() == ['C\nWarning\nCategory C',
                            'C\nWarning\nThe categoriser recommends category C',
@@ -57,7 +65,13 @@ class ApprovedViewSpecification extends GebReportingSpec {
     !comments.displayed
     comments.size() == 0
     !openConditionsHeader.isDisplayed()
-    // NOTE reviewContents.html is tested by ReviewSpecification
+    prisonerBackgroundSummary*.text() == [
+      '', 'todo', ('Categorisation date Category decision Review location\n' +
+      '04/04/2012 A Moorland (HMP & YOI)\n' +
+      '24/03/2013 B Moorland (HMP & YOI)'),
+      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months',
+      'This person is considered an escape risk\nXEL First xel comment 2016-09-14 (expired)',
+      'This person is at risk of engaging in, or vulnerable to, extremism.', '']
   }
 
   def "The approved view page is correctly displayed (Cat overridden by supervisor)"() {
@@ -102,12 +116,8 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false)
     elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubAgencyDetails('LPI')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
-
     viewButtons[0].click()
 
     at ApprovedViewRecatPage

@@ -7,6 +7,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
 const Status = require('../utils/statusEnum')
+const CatType = require('../utils/catTypeEnum')
 const log = require('../../log')
 
 const formConfig = {
@@ -45,7 +46,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         result.data.ratings.furtherCharges &&
         result.data.ratings.furtherCharges.furtherCharges === 'Yes'
 
-      if (!furtherChargesExists && !textExists && result.catType === 'INITIAL') {
+      if (!furtherChargesExists && !textExists && result.catType === CatType.INITIAL.name) {
         const formPageConfig = formConfig.openConditions[form]
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
