@@ -781,6 +781,7 @@ class Elite2Api extends WireMockRule {
                 firstName         : 'ANT',
                 lastName          : 'HILLMOB',
                 dateOfBirth       : youngOffender ? '2018-01-01' : '1970-02-17',
+                category          : 'Cat ' + category,
                 categoryCode      : category,
                 assignedLivingUnit:
                   [
@@ -1003,6 +1004,21 @@ class Elite2Api extends WireMockRule {
               description: "Moorland (HMP & YOI)",
               agencyType : "INST"
 
+            ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
+  def stubGetCategory(bookingId, cat) {
+
+    this.stubFor(
+      get("/api/bookings/${bookingId}/assessment/CATEGORY")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              classificationCode   : cat,
             ]
             ))
             .withHeader('Content-Type', 'application/json')
