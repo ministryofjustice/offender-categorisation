@@ -78,7 +78,7 @@ module.exports = token => {
       return nomisUserGet({ path })
     },
     getCategoryHistory(offenderNo) {
-      const path = `${apiUrl}api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false`
+      const path = `${apiUrl}api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false`
       return nomisUserGet({ path })
     },
     getCategory(bookingId) {

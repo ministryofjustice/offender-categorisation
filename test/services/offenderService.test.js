@@ -596,7 +596,7 @@ describe('isRecat', () => {
 })
 
 describe('getPrisonerBackground', () => {
-  test('it should return a list of historical categorisations', async () => {
+  test('it should return a list of historical categorisations, filtering out any pending categorisations', async () => {
     const cats = [
       {
         bookingId: -45,
@@ -605,6 +605,16 @@ describe('getPrisonerBackground', () => {
         classification: 'Cat A',
         assessmentDate: '2012-04-04',
         assessmentAgencyId: 'MDI',
+        assessmentStatus: 'A',
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        classification: 'Cat A',
+        assessmentDate: '2012-04-04',
+        assessmentAgencyId: 'LEI',
+        assessmentStatus: 'P',
       },
       {
         bookingId: -45,
@@ -613,6 +623,7 @@ describe('getPrisonerBackground', () => {
         classification: 'Cat B',
         assessmentDate: '2013-03-24',
         assessmentAgencyId: 'MDI',
+        assessmentStatus: 'I',
       },
     ]
 
@@ -627,6 +638,7 @@ describe('getPrisonerBackground', () => {
         assessmentDate: '2012-04-04',
         assessmentDateDisplay: '04/04/2012',
         agencyDescription: 'Moorlands',
+        assessmentStatus: 'A',
       },
       {
         bookingId: -45,
@@ -636,6 +648,7 @@ describe('getPrisonerBackground', () => {
         assessmentDateDisplay: '24/03/2013',
         assessmentAgencyId: 'MDI',
         agencyDescription: 'Moorlands',
+        assessmentStatus: 'I',
       },
     ]
 
