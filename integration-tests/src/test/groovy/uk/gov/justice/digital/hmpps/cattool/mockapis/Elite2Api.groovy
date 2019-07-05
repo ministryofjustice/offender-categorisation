@@ -911,7 +911,7 @@ class Elite2Api extends WireMockRule {
 
   def stubAssessments(String offenderNo, Boolean emptyResponse = false) {
     this.stubFor(
-      get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false")
+      get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson(emptyResponse ? [] :
@@ -927,7 +927,22 @@ class Elite2Api extends WireMockRule {
                   assessmentDate       : '2012-04-04',
                   nextReviewDate       : '2012-06-07',
                   approvalDate         : '2012-06-08',
-                  assessmentAgencyId   : "LPI"
+                  assessmentAgencyId   : "LPI",
+                  assessmentStatus     : 'A'
+                ],
+                [
+                  bookingId            : -45,
+                  offenderNo           : offenderNo,
+                  classificationCode   : 'A',
+                  classification       : 'Cat B',
+                  assessmentCode       : 'CATEGORY',
+                  assessmentDescription: 'Categorisation',
+                  cellSharingAlertFlag : false,
+                  assessmentDate       : '2012-03-28',
+                  nextReviewDate       : '2012-06-07',
+                  approvalDate         : '2012-06-18',
+                  assessmentAgencyId   : "LPI",
+                  assessmentStatus     : 'P'
                 ],
                 [
                   bookingId            : -45,
@@ -940,7 +955,8 @@ class Elite2Api extends WireMockRule {
                   assessmentDate       : '2013-03-24',
                   nextReviewDate       : '2013-09-17',
                   approvalDate         : '2012-06-08',
-                  assessmentAgencyId   : "LPI"
+                  assessmentAgencyId   : "LPI",
+                  assessmentStatus     : 'I'
                 ]
               ])
             )

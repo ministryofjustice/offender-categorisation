@@ -503,7 +503,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   async function getCatAInformation(token, offenderNo) {
     try {
       const nomisClient = nomisClientBuilder(token)
-      const categories = await nomisClient.getCategoryHistory(offenderNo)
+      const categories = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
       const mostRecentCatA = categories
         .slice()
         .reverse()
@@ -545,7 +545,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   async function getPrisonerBackground(token, offenderNo) {
     try {
       const nomisClient = nomisClientBuilder(token)
-      const currentCats = await nomisClient.getCategoryHistory(offenderNo)
+      const currentCats = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
 
       const decoratedCats = await Promise.all(
         currentCats.map(async o => {
@@ -562,6 +562,16 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       return decoratedCats
     } catch (error) {
       logger.error(error, 'Error during getPrisonerBackground')
+      throw error
+    }
+  }
+
+  async function getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo) {
+    try {
+      const allCategorisation = await nomisClient.getCategoryHistory(offenderNo)
+      return allCategorisation.filter(c => c.assessmentStatus !== 'P')
+    } catch (error) {
+      logger.error(error, 'Error during getCategoryHistoryWithoutPendingCategories')
       throw error
     }
   }

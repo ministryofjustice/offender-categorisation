@@ -58,4 +58,15 @@ describe('nomisClient', () => {
       return expect(output).toEqual(sentenceResponse)
     })
   })
+
+  describe('getCategoryHistory', () => {
+    it('should construct an api call', async () => {
+      fakeElite2Api
+        .get(`/api/offender-assessments/CATEGORY?offenderNo=1234&latestOnly=false&activeOnly=false`)
+        .reply(200, uncatResponse)
+
+      const output = await nomisClient.getCategoryHistory(1234)
+      return expect(output).toEqual(uncatResponse)
+    })
+  })
 })
