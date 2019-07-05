@@ -1,0 +1,45 @@
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+{% block beforeContent %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: backLink or "/"
+}) }}
+
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">Start a category review early</h1>
+
+  <div>
+    {% if data.catType == 'RECAT' %}
+      <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
+      <p>Once started, you cannot cancel an early category review. However, you will have until their review due date to finish it.</p>
+      {{ govukButton({
+        text: 'Start Now',
+        href: "/tasklistRecat/" + data.details.bookingId,
+        classes: buttonClasses,
+        attributes:
+          { 'id': 'recatButton' }
+      }) }}
+      <p><a href="/form/approvedView/{{ data.details.bookingId }}">Click here to view existing categorisation, if any.</a></p>
+    {% elif data.catType == 'INITIAL' %}
+      {{ govukWarningText({
+        text: 'This prisoner seems to need an INITIAL category.',
+        iconFallbackText: "Warning",
+        classes: "forms-warning-text warning-overrides"
+      }) }}
+    {% else %}
+      {{ govukWarningText({
+        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here.',
+        iconFallbackText: "Warning",
+        classes: "forms-warning-text warning-overrides"
+      }) }}
+    {% endif %}
+  </div>
+
+{% endblock %}

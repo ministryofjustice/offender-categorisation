@@ -3,6 +3,11 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 
+const extractNextReviewDate = details => {
+  const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
+  return catRecord && catRecord.nextReviewDate
+}
+
 module.exports = function Index({ authenticationMiddleware, userService, offendersService }) {
   const router = express.Router()
 
@@ -173,13 +178,16 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
 
   router.get(
     '/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals.user.token)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
+      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
 
-      const recat = await offendersService.isRecat(res.locals.user.token, bookingId, transactionalDbClient)
-      res.redirect(recat ? `/tasklistRecat/${bookingId}` : `/tasklist/${bookingId}`)
+      const nextReviewDate = extractNextReviewDate(details)
+      const catType = await offendersService.isRecat(res.locals.user.token, bookingId)
+
+      res.render('pages/landing', { data: { catType, nextReviewDate, details } })
     })
   )
 
