@@ -26,7 +26,6 @@
         attributes:
           { 'id': 'recatButton' }
       }) }}
-      <p><a href="/form/approvedView/{{ data.details.bookingId }}">Click here to view existing categorisation, if any.</a></p>
     {% elif data.catType == 'INITIAL' %}
       {{ govukWarningText({
         text: 'This prisoner seems to need an INITIAL category.',
