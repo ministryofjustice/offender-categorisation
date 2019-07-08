@@ -268,9 +268,11 @@ describe('recat', () => {
     const violenceProfile = { violence: 123 }
     const escapeProfile = { escape: 123 }
     const extremismProfile = { extremism: 123 }
+    const catHistory = [{ history: 12 }, { history: 12 }]
     riskProfilerService.getViolenceProfile.mockResolvedValue(violenceProfile)
     riskProfilerService.getExtremismProfile.mockResolvedValue(extremismProfile)
     riskProfilerService.getEscapeProfile.mockResolvedValue(escapeProfile)
+    offendersService.getPrisonerBackground.mockResolvedValue(catHistory)
     return request(app)
       .get(`/review/12345`)
       .expect(200)
@@ -278,7 +280,7 @@ describe('recat', () => {
       .expect(() => {
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
-          { escapeProfile, extremismProfile, violenceProfile },
+          { catHistory, escapeProfile, extremismProfile, violenceProfile },
           mockTransactionalClient
         )
       })
