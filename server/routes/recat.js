@@ -88,6 +88,7 @@ module.exports = function Index({
         escapeProfile,
         extremismProfile,
         violenceProfile,
+        catHistory: categorisations,
       }
 
       await formService.mergeRiskProfileData(bookingId, dataToStore, transactionalDbClient)
