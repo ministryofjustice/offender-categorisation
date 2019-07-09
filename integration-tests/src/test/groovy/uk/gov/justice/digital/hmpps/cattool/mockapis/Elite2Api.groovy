@@ -286,7 +286,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo    : 'B2345XY',
                 firstName     : 'PENELOPE',
                 lastName      : 'PITSTOP',
-                category      : 'I',
+                category      : 'B',
                 nextReviewDate: '2019-07-25',
               ],
               [
@@ -294,7 +294,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo    : 'B2345YZ',
                 firstName     : 'ANT',
                 lastName      : 'HILLMOB',
-                category      : 'J',
+                category      : 'C',
                 nextReviewDate: '2019-07-27'
               ],
             ]
@@ -314,7 +314,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo  : 'C0001AA',
                 firstName   : 'TINY',
                 lastName    : 'TIM',
-                dateOfBirth : '1998-07-26',
+                dateOfBirth : '1998-07-24',
                 age         : 20,
                 categoryCode: 'I',
               ],

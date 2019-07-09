@@ -91,14 +91,6 @@ describe('getRecategoriseOffenders', () => {
         category: 'D',
         nextReviewDate: '2019-06-22',
       },
-      {
-        offenderNo: 'G6666XX',
-        firstName: 'EXTRA',
-        lastName: 'PERSON',
-        bookingId: 140,
-        category: 'I',
-        nextReviewDate: '2019-06-22',
-      },
     ]
 
     const u21Data = [

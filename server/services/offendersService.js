@@ -343,16 +343,15 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         nomisClient.getRecategoriseOffenders(agencyId, reviewTo),
         nomisClient.getPrisonersAtLocation(agencyId, u21From, u21To),
       ])
-      const resultsReviewBCD = resultsReview.filter(o => /[BCD]/.test(o.category))
       const resultsU21IJ = resultsU21.filter(o => /[IJ]/.test(o.categoryCode))
 
-      if (isNilOrEmpty(resultsReviewBCD) && isNilOrEmpty(resultsU21IJ)) {
+      if (isNilOrEmpty(resultsReview) && isNilOrEmpty(resultsU21IJ)) {
         logger.info(`No recat offenders found for ${agencyId}`)
         return []
       }
 
       const decoratedResultsReview = await Promise.all(
-        resultsReviewBCD.map(async o => {
+        resultsReview.map(async o => {
           const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
           if (dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name) {
             // Initial cat in progress
