@@ -6,7 +6,7 @@ const csurf = require('csurf')
 const compression = require('compression')
 const passport = require('passport')
 const auth = require('./authentication/auth')
-const { healthFactory } = require('./services/health')
+const healthFactory = require('./services/healthCheck')
 
 const { authenticationMiddleware } = auth
 const bodyParser = require('body-parser')
@@ -141,9 +141,24 @@ module.exports = function createApp({
   })
   app.use('/favicon.ico', express.static(path.join(__dirname, '../assets/images/favicon.ico'), cacheControl))
 
-  const { health } = healthFactory(config.apis.elite2.url, config.apis.riskProfiler.url)
-  app.use('/health', health)
-  app.use('/info', health)
+  const health = healthFactory(
+    config.apis.oauth2.url,
+    config.apis.elite2.url,
+    config.apis.custody.url,
+    config.apis.riskProfiler.url
+  )
+  app.get('/health', (req, res, next) => {
+    health((err, result) => {
+      if (err) {
+        return next(err)
+      }
+      if (!(result.status === 'UP')) {
+        res.status(503)
+      }
+      res.json(result)
+      return result
+    })
+  })
 
   // GovUK Template Configuration
   app.locals.asset_path = '/assets/'

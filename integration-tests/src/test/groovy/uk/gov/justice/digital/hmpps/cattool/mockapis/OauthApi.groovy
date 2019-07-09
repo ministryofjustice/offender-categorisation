@@ -50,4 +50,14 @@ class OauthApi extends WireMockRule {
 
     this.stubFor(get('/favicon.ico').willReturn(aResponse()))
   }
+
+  void stubHealth() {
+    this.stubFor(
+      get('/auth/ping')
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withHeader('Content-Type', 'text/plain')
+            .withBody("pong")))
+  }
 }
