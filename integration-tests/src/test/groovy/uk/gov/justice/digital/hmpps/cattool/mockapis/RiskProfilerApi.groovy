@@ -109,4 +109,23 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
           notifyRegionalCTLead     : notifyRegionalCTLead
         ]))))
   }
+
+  void stubHealth() {
+    this.stubFor(
+      get('/ping')
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withHeader('Content-Type', 'text/plain')
+            .withBody("pong")))
+  }
+
+  void stubDelayedError(url, status) {
+    this.stubFor(
+      get(url)
+        .willReturn(
+          aResponse()
+            .withStatus(status)
+            .withFixedDelay(3000)))
+  }
 }
