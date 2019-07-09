@@ -243,10 +243,10 @@ class Elite2Api extends WireMockRule {
             .withStatus(200))
     )
 
-    final fromDob = LocalDate.now().minusYears(21)
-    final toDob = fromDob.plusMonths(2)
+    final fromDob = LocalDate.now().minusYears(22)
+    final toDob = LocalDate.now().minusYears(21).plusMonths(2)
     this.stubFor(
-      get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob")
+      get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob&returnCategory=true")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
@@ -294,7 +294,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo    : 'B2345YZ',
                 firstName     : 'ANT',
                 lastName      : 'HILLMOB',
-                category      : 'D',
+                category      : 'J',
                 nextReviewDate: '2019-07-27'
               ],
             ]
@@ -302,10 +302,10 @@ class Elite2Api extends WireMockRule {
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )
-    final fromDob = LocalDate.now().minusYears(21)
-    final toDob = fromDob.plusMonths(2)
+    final fromDob = LocalDate.now().minusYears(22)
+    final toDob = LocalDate.now().minusYears(21).plusMonths(2)
     this.stubFor(
-      get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob")
+      get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob&returnCategory=true")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
