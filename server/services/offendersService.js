@@ -559,7 +559,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         })
       )
 
-      return decoratedCats
+      return decoratedCats.sort((a, b) => sortByDateTimeDesc(a.assessmentDateDisplay, b.assessmentDateDisplay))
     } catch (error) {
       logger.error(error, 'Error during getPrisonerBackground')
       throw error
