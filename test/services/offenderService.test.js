@@ -626,7 +626,7 @@ describe('isRecat', () => {
 })
 
 describe('getPrisonerBackground', () => {
-  test('it should return a list of historical categorisations, filtering out any pending categorisations', async () => {
+  test('it should return a list of historical categorisations, filtering out any pending categorisations, sorted by assessment date', async () => {
     const cats = [
       {
         bookingId: -45,
@@ -649,6 +649,15 @@ describe('getPrisonerBackground', () => {
       {
         bookingId: -45,
         offenderNo: 'ABC1',
+        classificationCode: 'A',
+        classification: 'Cat A',
+        assessmentDate: '2010-02-04',
+        assessmentAgencyId: 'LEI',
+        assessmentStatus: 'I',
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
         classificationCode: 'B',
         classification: 'Cat B',
         assessmentDate: '2013-03-24',
@@ -664,6 +673,16 @@ describe('getPrisonerBackground', () => {
       {
         bookingId: -45,
         offenderNo: 'ABC1',
+        classificationCode: 'B',
+        assessmentDate: '2013-03-24',
+        assessmentDateDisplay: '24/03/2013',
+        assessmentAgencyId: 'MDI',
+        agencyDescription: 'Moorlands',
+        assessmentStatus: 'I',
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
         classificationCode: 'A',
         assessmentDate: '2012-04-04',
         assessmentDateDisplay: '04/04/2012',
@@ -673,18 +692,17 @@ describe('getPrisonerBackground', () => {
       {
         bookingId: -45,
         offenderNo: 'ABC1',
-        classificationCode: 'B',
-        assessmentDate: '2013-03-24',
-        assessmentDateDisplay: '24/03/2013',
-        assessmentAgencyId: 'MDI',
-        agencyDescription: 'Moorlands',
+        classificationCode: 'A',
+        classification: 'Cat A',
+        assessmentDate: '2010-02-04',
+        assessmentAgencyId: 'LEI',
         assessmentStatus: 'I',
       },
     ]
 
     const result = await service.getPrisonerBackground('token', 'ABC1')
 
-    expect(nomisClient.getAgencyDetail).toBeCalledTimes(2)
+    expect(nomisClient.getAgencyDetail).toBeCalledTimes(3)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })

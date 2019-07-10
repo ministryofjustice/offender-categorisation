@@ -495,8 +495,8 @@ class SupervisorSpecification extends GebReportingSpec {
 
     prisonerBackgroundSummary*.text() == [
       '', 'todo', ('Categorisation date Category decision Review location\n' +
-      '04/04/2012 A Moorland (HMP & YOI)\n' +
-      '24/03/2013 B Moorland (HMP & YOI)'),
+      '24/03/2013 B Moorland (HMP & YOI)\n' +
+      '04/04/2012 A Moorland (HMP & YOI)'),
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months',
       'This person is considered an escape risk\nXEL First xel comment 2016-09-14',
       'This person is at risk of engaging in, or vulnerable to, extremism.', '']
