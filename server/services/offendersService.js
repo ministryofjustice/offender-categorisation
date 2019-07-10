@@ -329,7 +329,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       const nomisClient = nomisClientBuilder(token)
       const u21From = moment()
-        .subtract(21, 'years')
+        .subtract(22, 'years') // allow up to a year overdue
         .format('YYYY-MM-DD')
       const u21To = moment()
         .subtract(21, 'years')
@@ -343,7 +343,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         nomisClient.getRecategoriseOffenders(agencyId, reviewTo),
         nomisClient.getPrisonersAtLocation(agencyId, u21From, u21To),
       ])
-      if (isNilOrEmpty(resultsReview) && isNilOrEmpty(resultsU21)) {
+      const resultsU21IJ = resultsU21.filter(o => /[IJ]/.test(o.categoryCode))
+
+      if (isNilOrEmpty(resultsReview) && isNilOrEmpty(resultsU21IJ)) {
         logger.info(`No recat offenders found for ${agencyId}`)
         return []
       }
@@ -351,7 +353,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const decoratedResultsReview = await Promise.all(
         resultsReview.map(async o => {
           const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-          if (dbRecord.catType === 'INITIAL') {
+          if (dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name) {
+            // Initial cat in progress
             return null
           }
           const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
@@ -367,9 +370,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       )
 
       const decoratedResultsU21 = await Promise.all(
-        resultsU21.map(async o => {
+        resultsU21IJ.map(async o => {
           const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-          if (dbRecord.catType === CatType.INITIAL.name) {
+          if (dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name) {
+            // Initial cat in progress
             return null
           }
           const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
