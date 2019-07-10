@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.DecisionPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.HigherSecurityReviewPage
@@ -60,7 +59,7 @@ class DecisionSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type.value == ['RECAT']
-    response.recat == [decision: [category     : "C"]]
+    response.recat == [decision: [category: "C"]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
   }
@@ -68,15 +67,19 @@ class DecisionSpecification extends GebReportingSpec {
   def "Indeterminate offender doesn't display open conditions options (young offender)"() {
 
     when: 'I go to the decision page'
-    fixture.gotoTasklistRecatForCatJIndeterminate(false)
+    fixture.gotoTasklistRecatForCatIIndeterminate(false)
     at TasklistRecatPage
     decisionButton.click()
 
     then: 'The page is displayed without open condition options'
     at DecisionPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '01/01/2018', 'J']
-    !categoryJOption.isDisplayed()
-    !categoryDOption.isDisplayed()
+    headerValue[1].text() == 'C0001AA'
+    // Beware: the .displayed property doesnt work!!
+    categoryBOption.@type == 'radio'
+    categoryCOption.@type == 'radio'
+    categoryIOption.@type == 'radio'
+    categoryJOption.@type == null
+    categoryDOption.@type == null
   }
 
   def "The correct mini higher security page is displayed for I->B"() {
@@ -87,7 +90,7 @@ class DecisionSpecification extends GebReportingSpec {
 
     then: 'The page is displayed'
     at DecisionPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '01/01/2018', 'I']
+    headerValue[1].text() == 'C0001AA'
 
     when: 'Details are entered, saved and accessed'
     categoryBOption.click()
@@ -103,7 +106,7 @@ class DecisionSpecification extends GebReportingSpec {
     at DecisionPage
     form.category == "B"
 
-    def data = db.getData(12)
+    def data = db.getData(21)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type.value == ['RECAT']
@@ -119,7 +122,7 @@ class DecisionSpecification extends GebReportingSpec {
 
     then: "data no longer includes higher security data"
 
-    def dataAfterClear = db.getData(12)
+    def dataAfterClear = db.getData(21)
     def responseAfterClear = new JsonSlurper().parseText(dataAfterClear.form_response[0].toString())
     dataAfterClear.status == ['STARTED']
     dataAfterClear.cat_type.value == ['RECAT']

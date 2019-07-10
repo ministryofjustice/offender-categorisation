@@ -30,7 +30,7 @@ module.exports = token => {
       return nomisUserGet({ path })
     },
     getPrisonersAtLocation(agencyId, fromDob, toDob) {
-      const path = `${apiUrl}api/locations/description/${agencyId}/inmates?fromDob=${fromDob}&toDob=${toDob}`
+      const path = `${apiUrl}api/locations/description/${agencyId}/inmates?fromDob=${fromDob}&toDob=${toDob}&returnCategory=true`
       return nomisUserGet({ path })
     },
     getSentenceDatesForOffenders(bookingIds) {

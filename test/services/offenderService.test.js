@@ -80,7 +80,7 @@ describe('getRecategoriseOffenders', () => {
         firstName: 'Danny',
         lastName: 'Doyle',
         bookingId: 111,
-        category: 'B',
+        category: 'C',
         nextReviewDate: '2019-05-21',
       },
       {
@@ -88,14 +88,36 @@ describe('getRecategoriseOffenders', () => {
         firstName: 'Alan',
         lastName: 'Allen',
         bookingId: 122,
-        category: 'B',
+        category: 'D',
         nextReviewDate: '2019-06-22',
       },
     ]
 
     const u21Data = [
-      { bookingId: 21, offenderNo: 'U2101AA', firstName: 'PETER', lastName: 'PAN', dateOfBirth: '1998-05-01' },
-      { bookingId: 22, offenderNo: 'U2102AA', firstName: 'JUSTIN', lastName: 'BEIBER', dateOfBirth: '1998-06-01' },
+      {
+        bookingId: 21,
+        offenderNo: 'U2101AA',
+        firstName: 'PETER',
+        lastName: 'PAN',
+        dateOfBirth: '1998-05-01',
+        categoryCode: 'I',
+      },
+      {
+        bookingId: 22,
+        offenderNo: 'U2102AA',
+        firstName: 'JUSTIN',
+        lastName: 'BEIBER',
+        dateOfBirth: '1998-06-01',
+        categoryCode: 'J',
+      },
+      {
+        bookingId: 23,
+        offenderNo: 'U2103AA',
+        firstName: 'SOMEONE',
+        lastName: 'ELSE',
+        dateOfBirth: '1998-06-01',
+        categoryCode: 'B',
+      },
     ]
 
     const expected = [
@@ -158,6 +180,7 @@ describe('getRecategoriseOffenders', () => {
     })
 
     const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
+
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(nomisClient.getPrisonersAtLocation).toBeCalled()
     expect(formService.getCategorisationRecord).toBeCalledTimes(5)
@@ -184,7 +207,14 @@ describe('getRecategoriseOffenders', () => {
       },
     ]
     const u21Data = [
-      { bookingId: 21, offenderNo: 'U2101AA', firstName: 'PETER', lastName: 'PAN', dateOfBirth: '1998-05-01' },
+      {
+        bookingId: 21,
+        offenderNo: 'U2101AA',
+        firstName: 'PETER',
+        lastName: 'PAN',
+        dateOfBirth: '1998-05-01',
+        categoryCode: 'I',
+      },
     ]
     formService.getCategorisationRecord
       .mockReturnValueOnce({
