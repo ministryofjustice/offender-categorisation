@@ -6,7 +6,7 @@ import groovyx.net.http.HttpBuilder
 import groovyx.net.http.HttpException
 import org.junit.Rule
 import spock.lang.Specification
-import uk.gov.justice.digital.hmpps.cattool.mockapis.CustodyApi
+
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
@@ -17,9 +17,6 @@ class HealthSpecification extends Specification {
 
   @Rule
   RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  CustodyApi custodyApi = new CustodyApi()
 
   @Rule
   Elite2Api elite2Api = new Elite2Api()
@@ -40,7 +37,6 @@ class HealthSpecification extends Specification {
 
     given:
     riskProfilerApi.stubHealth()
-    custodyApi.stubHealth()
     elite2Api.stubHealth()
     oauthApi.stubHealth()
 
@@ -50,14 +46,13 @@ class HealthSpecification extends Specification {
     response.uptime > 0.0
     response.name == "categorisation-tool"
     !response.version.isEmpty()
-    response.api == [auth: 'UP', elite2: 'UP', custody:'UP', riskProfiler: 'UP']
+    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: 'UP']
   }
 
   def "Health page reports API down"() {
 
     given:
     riskProfilerApi.stubDelayedError('/ping', 500)
-    custodyApi.stubHealth()
     elite2Api.stubHealth()
     oauthApi.stubHealth()
 
@@ -72,6 +67,6 @@ class HealthSpecification extends Specification {
     then:
     response.name == "categorisation-tool"
     !response.version.isEmpty()
-    response.api == [auth: 'UP', elite2: 'UP', custody:'UP', riskProfiler: [timeout: 1000, code: 'ECONNABORTED', errno: 'ETIMEDOUT', retries: 2]]
+    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: [timeout: 1000, code: 'ECONNABORTED', errno: 'ETIMEDOUT', retries: 2]]
   }
 }
