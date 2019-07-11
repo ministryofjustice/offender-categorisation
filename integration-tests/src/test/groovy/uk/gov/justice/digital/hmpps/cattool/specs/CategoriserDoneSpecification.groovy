@@ -48,6 +48,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
       ratings: fixture.defaultRatingsC ]), 'RECAT')
 
     db.createNomisSeqNo(11, 7)
+    db.createNomisSeqNo(12, 8)
 
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])

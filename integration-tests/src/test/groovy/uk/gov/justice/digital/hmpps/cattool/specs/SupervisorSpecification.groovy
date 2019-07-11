@@ -441,6 +441,7 @@ class SupervisorSpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
 
     db.createNomisSeqNo(11, 7)
+    db.createNomisSeqNo(12, 8)
 
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)

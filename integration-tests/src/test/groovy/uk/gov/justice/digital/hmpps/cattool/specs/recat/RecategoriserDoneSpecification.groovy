@@ -50,6 +50,7 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     db.createDataWithStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'RECAT')
 
+    db.createNomisSeqNo(10, 7)
     db.createNomisSeqNo(12, 8)
 
     elite2Api.stubRecategorise()
