@@ -524,6 +524,7 @@ class SupervisorSpecification extends GebReportingSpec {
     response.supervisor == [review: [proposedCategory: 'C', supervisorCategoryAppropriate: 'Yes']]
     response.openConditionsRequested == null
     data.status == ["APPROVED"]
+    data.approved_by == ['SUPERVISOR_USER']
   }
 
   def "The supervisor can send the case back to the recategoriser"() {
@@ -551,7 +552,9 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'offender with booking id 12 has been removed'
     names == ['Pitstop, Penelope']
 
-    db.getData(12).status == ["SUPERVISOR_BACK"]
+    def data = db.getData(12)
+    data.status == ["SUPERVISOR_BACK"]
+    data.approved_by == [null]
   }
 
   def "Overriding to an Open conditions category returns the record to the recategoriser"() {

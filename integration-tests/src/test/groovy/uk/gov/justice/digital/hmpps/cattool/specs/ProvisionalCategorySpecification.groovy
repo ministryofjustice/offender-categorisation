@@ -86,6 +86,9 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     def data = db.getData(12)
     data.status == ["AWAITING_APPROVAL"]
+    data.assessed_by == ["CATEGORISER_USER"]
+    data.approved_by == [null]
+    data.assessment_date != null
     data.nomis_sequence_no == [4]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB

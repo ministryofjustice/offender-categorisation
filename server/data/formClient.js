@@ -112,16 +112,34 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  supervisorApproval(formId, formResponse, bookingId, transactionalClient) {
+  supervisorApproval(formResponse, bookingId, userId, transactionalClient) {
     logger.debug(`recording supervisor approval for booking id ${bookingId}`)
     const query = {
-      text: `update form f set form_response = $1, status = $2, approval_date = CURRENT_DATE where f.booking_id = $3 ${sequenceClause}`,
-      values: [formResponse, 'APPROVED', bookingId],
+      text: `update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 ${sequenceClause}`,
+      values: [formResponse, 'APPROVED', userId, bookingId],
     }
     return transactionalClient.query(query)
   },
 
-  update(formId, formResponse, bookingId, status, transactionalClient) {
+  categoriserDecisionWithFormResponse(formResponse, bookingId, userId, transactionalClient) {
+    logger.debug(`recording assessment decision (awaiting approval) for booking id ${bookingId}`)
+    const query = {
+      text: `update form f set form_response = $1, status = $2, assessed_by = $3, assessment_Date = CURRENT_DATE where f.booking_id = $4 ${sequenceClause}`,
+      values: [formResponse, 'AWAITING_APPROVAL', userId, bookingId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  categoriserDecision(bookingId, userId, transactionalClient) {
+    logger.debug(`recording assessment decision (awaiting approval) for booking id ${bookingId}`)
+    const query = {
+      text: `update form f set status = $1, assessed_by = $2, assessment_Date = CURRENT_DATE where f.booking_id = $3 ${sequenceClause}`,
+      values: ['AWAITING_APPROVAL', userId, bookingId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  update(formResponse, bookingId, status, transactionalClient) {
     logger.debug(`updating record for booking id ${bookingId}`)
     const query = {
       text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,

@@ -224,6 +224,9 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     def data = db.getData(12)
     data.status == ["STARTED"]
+    data.assessed_by == [null]
+    data.approved_by == [null]
+    data.assessment_date == [null]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.recat == [
       decision      : [category: "D"],
@@ -248,9 +251,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at CategoriserSubmittedPage
 
     when: 'The record is viewed by the recategoriser'
-    data = db.getData(12)
-    data.nomis_sequence_no == [4]
-    response = new JsonSlurper().parseText(data.form_response[0].toString())
 
     to RecategoriserHomePage
     startButtons[0].click()
@@ -260,8 +260,15 @@ class OpenConditionsSpecification extends GebReportingSpec {
     categoryDiv.text() contains 'Category for approval is D'
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
 
-    data.status == ["AWAITING_APPROVAL"]
-    response.recat == [
+    def afterSubmitData = db.getData(12)
+    afterSubmitData.assessed_by == ["RECATEGORISER_USER"]
+    afterSubmitData.approved_by == [null]
+    afterSubmitData.assessment_date != null
+    afterSubmitData.nomis_sequence_no == [4]
+    def afterSubmitResponse = new JsonSlurper().parseText(afterSubmitData.form_response[0].toString())
+
+    afterSubmitData.status == ["AWAITING_APPROVAL"]
+    afterSubmitResponse.recat == [
     decision      : [category: "D"],
     securityInput : [securityInputNeeded: "No"],
     nextReviewDate: [date: "14/12/2019"],
@@ -272,9 +279,9 @@ class OpenConditionsSpecification extends GebReportingSpec {
       otherRelevantText: "other relevant information"
     ]
   ]
-    response.supervisor == null
-    response.openConditions == uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification.allNoAnswersWithFurtherCharges
-    response.openConditionsRequested
+    afterSubmitResponse.supervisor == null
+    afterSubmitResponse.openConditions == uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification.allNoAnswersWithFurtherCharges
+    afterSubmitResponse.openConditionsRequested
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
