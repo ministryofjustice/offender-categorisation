@@ -392,6 +392,10 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'The record is viewed by the categoriser'
     data = db.getData(12)
+    data.status == ["AWAITING_APPROVAL"]
+    data.assessed_by == ["CATEGORISER_USER"]
+    data.approved_by == [null]
+    data.assessment_date != null
     response = new JsonSlurper().parseText(data.form_response[0].toString())
 
     elite2Api.stubUncategorisedAwaitingApproval()

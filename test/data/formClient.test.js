@@ -130,7 +130,7 @@ describe('create categorisation record', () => {
 
 describe('categorisation record update', () => {
   test('it should update the categorisation record', () => {
-    formClient.update('formId', {}, 'bookingId1', 'STARTED', mockTransactionalClient)
+    formClient.update({}, 'bookingId1', 'STARTED', mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
@@ -142,12 +142,12 @@ describe('categorisation record update', () => {
 
 describe('supervisorApproval update', () => {
   test('it should update the categorisation record with a supervisor approval', () => {
-    formClient.supervisorApproval('formId', {}, 'bookingId1', mockTransactionalClient)
+    formClient.supervisorApproval({}, 'bookingId1', 'Me', mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'update form f set form_response = $1, status = $2, approval_date = CURRENT_DATE where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
-      values: [{}, 'APPROVED', 'bookingId1'],
+        'update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+      values: [{}, 'APPROVED', 'Me', 'bookingId1'],
     })
   })
 })

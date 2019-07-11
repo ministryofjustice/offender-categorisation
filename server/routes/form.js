@@ -444,17 +444,16 @@ module.exports = function Index({
 
       if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
         log.info(`Categoriser creating initial categorisation record:`)
-        await formService.update({
+        await formService.categoriserDecisionWithFormResponse({
           bookingId: bookingInt,
-          userId: req.user.username,
           config: formPageConfig,
           userInput,
           formSection: section,
           formName: form,
-          status: Status.AWAITING_APPROVAL.name,
+          userId: req.user.username,
           transactionalClient: transactionalDbClient,
-          logUpdate: true,
         })
+
         const nomisKeyMap = await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
           bookingId,
