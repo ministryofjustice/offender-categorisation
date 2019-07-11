@@ -34,6 +34,7 @@ const formService = {
   isValid: jest.fn(),
   isYoungOffender: jest.fn(),
   recordNomisSeqNumber: jest.fn(),
+  categoriserDecisionWithFormResponse: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -594,7 +595,7 @@ describe('POST /categoriser/provisionalCategory', () => {
         .expect(302)
         .expect('Location', `${nextPath}12345`)
         .expect(() => {
-          expect(formService.update).toBeCalledTimes(1)
+          expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
           expect(offendersService.getCatAInformation).toBeCalledTimes(0)
           expect(offendersService.createInitialCategorisation).toBeCalledWith({
             token: 'ABCDEF',
@@ -603,9 +604,9 @@ describe('POST /categoriser/provisionalCategory', () => {
             overriddenCategoryText: 'HHH',
             suggestedCategory: 'B',
           })
-          const updateArg = formService.update.mock.calls[0][0]
+          const updateArg = formService.categoriserDecisionWithFormResponse.mock.calls[0][0]
           expect(updateArg.bookingId).toBe(12345)
-          expect(updateArg.status).toBe('AWAITING_APPROVAL')
+          expect(updateArg.userId).toBe('CA_USER_TEST')
         })
   )
 })

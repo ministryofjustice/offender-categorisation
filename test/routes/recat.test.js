@@ -36,6 +36,7 @@ const formService = {
   isValid: jest.fn(),
   deleteFormData: jest.fn(),
   recordNomisSeqNumber: jest.fn(),
+  categoriserDecision: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -80,6 +81,7 @@ beforeEach(() => {
   formService.isYoungOffender.mockReturnValue(false)
   formService.deleteFormData.mockReturnValue({})
   formService.recordNomisSeqNumber.mockReturnValue({})
+  formService.categoriserDecision.mockReturnValue({})
   offendersService.createInitialCategorisation.mockReturnValue({ bookingId: 12, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
@@ -469,7 +471,7 @@ describe('POST /form/recat/review', () => {
           suggestedCategory: 'B',
           nextReviewDate: '16/02/2020',
         })
-        expect(formService.setAwaitingApproval).toBeCalledWith('12345', mockTransactionalClient)
+        expect(formService.categoriserDecision).toBeCalledWith('12345', 'CA_USER_TEST', mockTransactionalClient)
       })
   })
 })

@@ -6,7 +6,6 @@ const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
-const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const log = require('../../log')
 
@@ -275,16 +274,14 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       if (userInput.openConditionsCategoryAppropriate === 'Yes') {
         log.info(`Categoriser creating initial categorisation record:`)
-        await formService.update({
+        await formService.categoriserDecisionWithFormResponse({
           bookingId: bookingInt,
-          userId: req.user.username,
           config: formPageConfig,
           userInput,
           formSection: section,
           formName: form,
-          status: Status.AWAITING_APPROVAL.name,
+          userId: req.user.username,
           transactionalClient: transactionalDbClient,
-          logUpdate: true,
         })
 
         const nomisKeyMap = await offendersService.createInitialCategorisation({
