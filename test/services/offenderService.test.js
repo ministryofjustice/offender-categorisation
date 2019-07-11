@@ -743,14 +743,22 @@ describe('getPrisonerBackground', () => {
 describe('getMatchedCategorisations', () => {
   const eliteCats = [
     {
-      offenderNo: 'B1234AB',
+      offenderNo: 'B1234AA',
       bookingId: 10,
       assessmentDate: '2018-03-28',
       assessmentSeq: 1,
       category: 'C',
+      firstName: 'THE',
+      lastName: 'PRISONER',
+      approvalDate: '2018-03-30',
+      nextReviewDate: '2018-09-28',
+      categoriserFirstName: 'THE',
+      categoriserLastName: 'CATEGORISER',
+      approverFirstName: 'AN',
+      approverLastName: 'APPROVER',
     },
     {
-      offenderNo: 'B1234AB',
+      offenderNo: 'B1234AA',
       bookingId: 10,
       assessmentDate: '2018-03-28',
       assessmentSeq: 2,
@@ -771,7 +779,7 @@ describe('getMatchedCategorisations', () => {
       category: 'I',
     },
     {
-      offenderNo: 'B1234AB',
+      offenderNo: 'B1234AA',
       bookingId: 10,
       assessmentDate: '2018-03-28',
       assessmentSeq: 3,
@@ -789,23 +797,31 @@ describe('getMatchedCategorisations', () => {
     const dbCats = [
       {
         bookingId: 10,
-        offenderNo: 'ABC1',
+        offenderNo: 'B1234AA',
         nomisSeq: 1,
       },
       {
         bookingId: 11,
-        offenderNo: 'ABC1',
+        offenderNo: 'B1234AB',
         nomisSeq: 1,
       },
     ]
 
     const expected = [
       {
-        offenderNo: 'B1234AB',
+        offenderNo: 'B1234AA',
         bookingId: 10,
         assessmentDate: '2018-03-28',
         assessmentSeq: 1,
         category: 'C',
+        firstName: 'THE',
+        lastName: 'PRISONER',
+        approvalDate: '2018-03-30',
+        nextReviewDate: '2018-09-28',
+        categoriserFirstName: 'THE',
+        categoriserLastName: 'CATEGORISER',
+        approverFirstName: 'AN',
+        approverLastName: 'APPROVER',
       },
       {
         offenderNo: 'B1234AB',
@@ -821,29 +837,12 @@ describe('getMatchedCategorisations', () => {
     expect(result).toMatchObject(expected)
   })
 
-  test("ignore returned results that don't match local booking ids - a can't happen in reality", async () => {
+  test("returned results that don't match local booking ids arent populated - can't happen in reality", async () => {
     const dbCats = [
       {
         bookingId: 6,
-        offenderNo: 'ABC1',
+        offenderNo: 'B1234AB',
         nomisSeq: 1,
-      },
-    ]
-
-    const result = await service.getMatchedCategorisations(eliteCats, dbCats)
-
-    expect(result).toHaveLength(0)
-  })
-
-  test('if no corresponding seq held locally, it should return the latest (by seq) categorisation', async () => {
-    const dbCats = [
-      {
-        bookingId: 10,
-        offenderNo: 'ABC1',
-      },
-      {
-        bookingId: 11,
-        offenderNo: 'ABC1',
       },
     ]
 
@@ -851,21 +850,43 @@ describe('getMatchedCategorisations', () => {
 
     const expected = [
       {
+        bookingId: 6,
         offenderNo: 'B1234AB',
-        bookingId: 11,
-        assessmentDate: '2018-03-28',
-        assessmentSeq: 2,
-        category: 'I',
+      },
+    ]
+    expect(result).toMatchObject(expected)
+  })
+
+  test('if no seq matches, it should return a record with no Nomis data', async () => {
+    const dbCats = [
+      {
+        bookingId: 10,
+        offenderNo: 'B1234AA',
+        nomisSeq: 51,
+        approvalDate: '2018-03-30',
       },
       {
+        bookingId: 11,
         offenderNo: 'B1234AB',
-        bookingId: 10,
-        assessmentDate: '2018-03-28',
-        assessmentSeq: 3,
-        category: 'B',
+        nomisSeq: 52,
+        approvalDate: '2018-03-29',
       },
     ]
 
-    expect(result.sort()).toMatchObject(expected.sort())
+    const result = await service.getMatchedCategorisations(eliteCats, dbCats)
+
+    const expected = [
+      {
+        offenderNo: 'B1234AA',
+        bookingId: 10,
+        approvalDate: '2018-03-30',
+      },
+      {
+        offenderNo: 'B1234AB',
+        bookingId: 11,
+        approvalDate: '2018-03-29',
+      },
+    ]
+    expect(result).toMatchObject(expected)
   })
 })

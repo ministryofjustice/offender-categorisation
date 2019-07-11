@@ -22,7 +22,7 @@ module.exports = token => {
       return nomisUserGet({ path })
     },
     getCategorisedOffenders(agencyId, bookingIds) {
-      const path = `${apiUrl}api/offender-assessments/category/${agencyId}`
+      const path = `${apiUrl}api/offender-assessments/category/${agencyId}?latestOnly=false`
       return nomisPost({ path, body: bookingIds })
     },
     getRecategoriseOffenders(agencyId, cutoff) {
