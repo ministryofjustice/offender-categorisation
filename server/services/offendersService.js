@@ -2,7 +2,7 @@ const path = require('path')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
-const { isNilOrEmpty, replace } = require('../utils/functionalHelpers')
+const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter } = require('../utils/utils.js')
 const moment = require('moment')
 const { sortByDateTimeDesc } = require('./offenderSort.js')
@@ -110,32 +110,26 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   const matchEliteAndDBCategorisations = (categorisedFromElite, categorisedFromDB) =>
-    categorisedFromElite.reduce((store, eliteCat) => {
-      const matchedDbCat = categorisedFromDB.find(record => record.bookingId === eliteCat.bookingId)
-
-      if (matchedDbCat) {
-        const storedEliteCat = store.find(record => record.bookingId === eliteCat.bookingId)
-
-        if (!storedEliteCat) {
-          return store.concat(eliteCat)
-        }
-        if (eliteCat.assessmentSeq === matchedDbCat.nomisSeq) {
-          if (storedEliteCat) {
-            return replace(store, storedEliteCat, eliteCat)
-          }
-          return store.concat(eliteCat)
-        }
-        if (
-          // there isn't a nomis seq match - make sure highest elite seq wins
-          storedEliteCat.assessmentSeq !== matchedDbCat.nomisSeq &&
-          eliteCat.assessmentSeq > storedEliteCat.assessmentSeq
-        ) {
-          return replace(store, storedEliteCat, eliteCat)
+    categorisedFromDB.map(dbRecord => {
+      const elite = categorisedFromElite.find(
+        record => record.bookingId === dbRecord.bookingId && record.assessmentSeq === dbRecord.nomisSeq
+      )
+      if (elite) {
+        return {
+          dbRecord,
+          ...elite,
         }
       }
-
-      return store
-    }, [])
+      logger.warn(
+        `matchEliteAndDBCategorisations: Found database record with no elite record, bookingId=${dbRecord.bookingId}, offenderNo=${dbRecord.offenderNo}, nomisSeq=${dbRecord.nomisSeq}`
+      )
+      return {
+        dbRecord,
+        bookingId: dbRecord.bookingId,
+        offenderNo: dbRecord.offenderNo,
+        approvalDate: dbRecord.approvalDate,
+      }
+    })
 
   async function getCategorisedOffenders(token, agencyId, user, catType, transactionalDbClient) {
     try {
@@ -151,22 +145,18 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         const matchedCategorisations = matchEliteAndDBCategorisations(categorisedFromElite, categorisedFromDB)
 
         const decoratedResults = await Promise.all(
-          matchedCategorisations.map(async o => {
-            const approvalMoment = moment(o.approvalDate, 'YYYY-MM-DD')
-            const dbRecord = categorisedFromDB.find(record => record.bookingId === o.bookingId)
-            return {
-              ...o,
-              dbRecord,
-              ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
-              displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-              displayApprovalDate: approvalMoment.format('DD/MM/YYYY'),
-              displayCategoriserName: `${properCaseName(o.categoriserLastName)}, ${properCaseName(
-                o.categoriserFirstName
-              )}`,
-              displayApproverName: `${properCaseName(o.approverLastName)}, ${properCaseName(o.approverFirstName)}`,
-              catTypeDisplay: CatType[dbRecord.catType].value,
-            }
-          })
+          matchedCategorisations.map(async o => ({
+            ...o,
+            ...(await decorateWithCategorisationData(o, user, nomisClient, o.dbRecord)),
+            displayName: o.lastName && `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+            displayApprovalDate: dateConverter(o.approvalDate),
+            displayCategoriserName:
+              o.categoriserLastName &&
+              `${properCaseName(o.categoriserLastName)}, ${properCaseName(o.categoriserFirstName)}`,
+            displayApproverName:
+              o.approverLastName && `${properCaseName(o.approverLastName)}, ${properCaseName(o.approverFirstName)}`,
+            catTypeDisplay: CatType[o.dbRecord.catType].value,
+          }))
         )
 
         return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.displayApprovalDate, b.displayApprovalDate))

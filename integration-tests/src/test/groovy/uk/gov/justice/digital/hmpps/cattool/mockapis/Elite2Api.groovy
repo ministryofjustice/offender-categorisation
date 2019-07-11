@@ -365,7 +365,7 @@ class Elite2Api extends WireMockRule {
       ])
     }
     this.stubFor(
-      post("/api/offender-assessments/category/LEI")
+      post("/api/offender-assessments/category/LEI?latestOnly=false")
         .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, true))
         .willReturn(
           aResponse()
@@ -455,7 +455,7 @@ class Elite2Api extends WireMockRule {
       ])
     }
     this.stubFor(
-      post("/api/offender-assessments/category/LEI")
+      post("/api/offender-assessments/category/LEI?latestOnly=false")
         .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, true))
         .willReturn(
         aResponse()
