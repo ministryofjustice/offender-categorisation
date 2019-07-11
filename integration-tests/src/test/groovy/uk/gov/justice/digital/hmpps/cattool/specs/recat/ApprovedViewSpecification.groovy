@@ -45,6 +45,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
       recat     : [decision: [category: "C"]],
       supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
     ]), 'RECAT')
+    db.createNomisSeqNo(12,7)
 
     db.createRiskProfileDataForExistingRow(12, '''{
       "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
@@ -86,6 +87,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
                              supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"]],
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]]
     ]), 'RECAT')
+    db.createNomisSeqNo(12,7)
 
     when: 'the approved view page for B2345YZ is selected'
     navigateToView()
@@ -118,7 +120,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     elite2Api.stubAssessments(['B2345YZ'])
     elite2Api.stubAgencyDetails('LPI')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    viewButtons[0].click()
+    viewButtons[1].click()
 
     at ApprovedViewRecatPage
   }
