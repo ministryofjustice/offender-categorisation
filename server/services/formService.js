@@ -54,7 +54,6 @@ module.exports = function createFormService(formClient) {
         )
       }
       await formClient.update(
-        currentCategorisation.id,
         newCategorisationForm,
         bookingId,
         calculateStatus(currentCategorisation.status, status),
@@ -63,6 +62,42 @@ module.exports = function createFormService(formClient) {
       return newCategorisationForm
     }
     throw new Error(`Invalid state transition from ${currentCategorisation.status} to ${status}`)
+  }
+
+  async function categoriserDecisionWithFormResponse({
+    bookingId,
+    config,
+    userInput,
+    formSection,
+    formName,
+    userId,
+    transactionalClient,
+  }) {
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
+
+    const newCategorisationForm = buildCategorisationForm({
+      formObject: currentCategorisation.formObject || {},
+      fieldMap: config.fields,
+      userInput,
+      formSection,
+      formName,
+    })
+
+    log.info(
+      `Updating Categorisation for booking Id: ${bookingId}, offender No: ${
+        currentCategorisation.offenderNo
+      }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
+        filterJsonObjectForLogging(userInput)
+      )}`
+    )
+
+    await formClient.categoriserDecisionWithFormResponse(newCategorisationForm, bookingId, userId, transactionalClient)
+    return newCategorisationForm
+  }
+
+  async function categoriserDecision(bookingId, userId, transactionalClient) {
+    log.info(`record 'awaiting_approval' for  booking Id: ${bookingId}`)
+    await formClient.categoriserDecision(bookingId, userId, transactionalClient)
   }
 
   async function deleteFormData({ bookingId, formSection, formName, transactionalClient }) {
@@ -90,7 +125,15 @@ module.exports = function createFormService(formClient) {
     return false
   }
 
-  async function supervisorApproval({ bookingId, config, userInput, formSection, formName, transactionalClient }) {
+  async function supervisorApproval({
+    bookingId,
+    config,
+    userInput,
+    formSection,
+    formName,
+    userId,
+    transactionalClient,
+  }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
     const newCategorisationForm = buildCategorisationForm({
@@ -109,12 +152,7 @@ module.exports = function createFormService(formClient) {
           filterJsonObjectForLogging(userInput)
         )}`
       )
-      await formClient.supervisorApproval(
-        currentCategorisation.id,
-        newCategorisationForm,
-        bookingId,
-        transactionalClient
-      )
+      await formClient.supervisorApproval(newCategorisationForm, bookingId, userId, transactionalClient)
       return newCategorisationForm
     }
     throw new Error(
@@ -465,5 +503,7 @@ module.exports = function createFormService(formClient) {
     supervisorApproval,
     deleteFormData,
     recordNomisSeqNumber,
+    categoriserDecisionWithFormResponse,
+    categoriserDecision,
   }
 }

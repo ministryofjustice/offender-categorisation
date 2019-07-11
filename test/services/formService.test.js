@@ -145,7 +145,7 @@ describe('update', () => {
       })
 
       expect(formClient.update).toBeCalledTimes(1)
-      expect(formClient.update).toBeCalledWith('form1', output, 1234, 'STARTED', mockTransactionalClient)
+      expect(formClient.update).toBeCalledWith(output, 1234, 'STARTED', mockTransactionalClient)
     })
 
     test('should call create and pass in the user', async () => {

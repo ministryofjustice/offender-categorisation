@@ -323,7 +323,7 @@ module.exports = function Index({
       const suggestedCategory = R.path(['formObject', 'recat', 'decision', 'category'], formData)
       if (suggestedCategory) {
         log.info(`Categoriser creating recat categorisation record:`)
-        await formService.setAwaitingApproval(bookingId, transactionalDbClient)
+        await formService.categoriserDecision(bookingId, req.user.username, transactionalDbClient)
 
         const nextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], formData)
 
