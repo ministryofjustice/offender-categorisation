@@ -38,13 +38,13 @@ class CategoriserDoneSpecification extends GebReportingSpec {
 
   def "The done page for a categoriser is present"() {
     when: 'I go to the home page as categoriser'
-    db.createDataWithStatusAndCatType(-1,12, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-1,12, 'APPROVED', JsonOutput.toJson([
       ratings: fixture.defaultRatingsC ]), 'INITIAL')
 
-    db.createDataWithStatusAndCatType(-2,11, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-2,11, 'APPROVED', JsonOutput.toJson([
       ratings: fixture.defaultRatingsC ]), 'INITIAL')
 
-    db.createDataWithStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
       ratings: fixture.defaultRatingsC ]), 'RECAT')
 
     db.createNomisSeqNo(11, 7)

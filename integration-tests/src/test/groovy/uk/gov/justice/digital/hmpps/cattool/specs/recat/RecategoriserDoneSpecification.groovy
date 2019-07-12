@@ -41,13 +41,13 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
 
   def "The done page for a recategoriser is present"() {
     when: 'I go to the home page as recategoriser'
-    db.createDataWithStatusAndCatType(-1, 12, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-1, 12, 'APPROVED', JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'RECAT')
 
-    db.createDataWithStatusAndCatType(-2,11, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-2,11, 'APPROVED', JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'INITIAL')
 
-    db.createDataWithStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'RECAT')
 
     db.createNomisSeqNo(10, 7)
