@@ -471,44 +471,43 @@ test('it should not return offenders without sentence data', async () => {
 })
 
 describe('getReferredOffenders', () => {
+  const offenderDetailList = [
+    {
+      offenderNo: 'G12345',
+      firstName: 'Jane',
+      lastName: 'Brown',
+      bookingId: 123,
+      status: Status.UNCATEGORISED.name,
+    },
+    {
+      offenderNo: 'H12345',
+      firstName: 'Danny',
+      lastName: 'Doyle',
+      bookingId: 111,
+      status: Status.UNCATEGORISED.name,
+    },
+    {
+      offenderNo: 'G55345',
+      firstName: 'Alan',
+      lastName: 'Allen',
+      bookingId: 122,
+      status: Status.UNCATEGORISED.name,
+    },
+  ]
+  const userDetailsList = [
+    {
+      username: 'JSMITH',
+      firstName: 'John',
+      lastName: 'Smith',
+    },
+    {
+      username: 'BMAY',
+      firstName: 'Brian',
+      lastName: 'May',
+    },
+  ]
+
   test('it should return a list of offenders and sentence information', async () => {
-    const offenderDetailList = [
-      {
-        offenderNo: 'G12345',
-        firstName: 'Jane',
-        lastName: 'Brown',
-        bookingId: 123,
-        status: Status.UNCATEGORISED.name,
-      },
-      {
-        offenderNo: 'H12345',
-        firstName: 'Danny',
-        lastName: 'Doyle',
-        bookingId: 111,
-        status: Status.UNCATEGORISED.name,
-      },
-      {
-        offenderNo: 'G55345',
-        firstName: 'Alan',
-        lastName: 'Allen',
-        bookingId: 122,
-        status: Status.UNCATEGORISED.name,
-      },
-    ]
-
-    const userDetailsList = [
-      {
-        username: 'JSMITH',
-        firstName: 'John',
-        lastName: 'Smith',
-      },
-      {
-        username: 'BMAY',
-        firstName: 'Brian',
-        lastName: 'May',
-      },
-    ]
-
     const sentenceDates = [
       {
         sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(4) },
@@ -567,6 +566,88 @@ describe('getReferredOffenders', () => {
         daysSinceSentence: 10,
         dateRequired: expect.stringMatching(DATE_MATCHER),
         securityReferredBy: 'Brian May',
+        catTypeDisplay: 'Initial',
+      },
+    ]
+
+    const result = await service.getReferredOffenders('user1', 'agency')
+
+    expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
+    expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(result).toMatchObject(expected)
+  })
+
+  test('it should not return offenders without a sentence (result of nomis change after referral', async () => {
+    const sentenceDates = [
+      {
+        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(4) },
+      },
+      {
+        sentenceDetail: { bookingId: 111, sentenceStartDate: todaySubtract(7) },
+      },
+    ]
+
+    nomisClient.getOffenderDetailList.mockReturnValue(offenderDetailList)
+    nomisClient.getUserDetailList.mockReturnValue(userDetailsList)
+    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+
+    formService.getSecurityReferredOffenders.mockImplementation(() => [
+      {
+        id: -1,
+        bookingId: 123,
+        userId: 'me',
+        status: Status.SECURITY_AUTO.name,
+        formObject: '',
+        // assigned_user_id not present
+        securityReferredDate: '2019-02-04',
+        securityReferredBy: 'JSMITH',
+        catType: 'INITIAL',
+      },
+      {
+        id: -3,
+        bookingId: 122,
+        userId: 'me',
+        status: Status.SECURITY_MANUAL.name,
+        formObject: '',
+        securityReferredDate: '2019-02-04',
+        securityReferredBy: 'BMAY',
+        catType: 'INITIAL',
+      },
+    ])
+
+    formService.getSecurityReferredOffenders.mockImplementation(() => [
+      {
+        id: -1,
+        bookingId: 123,
+        userId: 'me',
+        status: Status.SECURITY_AUTO.name,
+        formObject: '',
+        // assigned_user_id not present
+        securityReferredDate: '2019-02-04',
+        securityReferredBy: 'JSMITH',
+        catType: 'INITIAL',
+      },
+      {
+        id: -3,
+        bookingId: 122,
+        userId: 'me',
+        status: Status.SECURITY_MANUAL.name,
+        formObject: '',
+        securityReferredDate: '2019-02-04',
+        securityReferredBy: 'BMAY',
+        catType: 'INITIAL',
+      },
+    ])
+
+    const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
+    const expected = [
+      {
+        offenderNo: 'G12345',
+        displayName: 'Brown, Jane',
+        bookingId: 123,
+        daysSinceSentence: 4,
+        dateRequired: expect.stringMatching(DATE_MATCHER),
+        securityReferredBy: 'John Smith',
         catTypeDisplay: 'Initial',
       },
     ]

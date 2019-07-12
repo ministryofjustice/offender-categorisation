@@ -33,6 +33,7 @@ describe('getFormDataForUser', () => {
                     security_reviewed_date as "securityReviewedDate",
                     security_reviewed_by   as "securityReviewedBy",
                     approval_date          as "approvalDate",
+                    prison_id              as "prisonId",
                     cat_type               as "catType"
              from form f
       where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
@@ -46,7 +47,7 @@ describe('getCategorisationRecordsByStatus', () => {
     formClient.getCategorisationRecordsByStatus('MDI', ['APPROVED', 'AWAITING_APPROVAL'], mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType"
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType", prison_id as prisonId
         from form f where f.prison_id = $1 and f.status = ANY ($2) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['MDI', ['APPROVED', 'AWAITING_APPROVAL']],
     })
