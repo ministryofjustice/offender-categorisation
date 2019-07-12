@@ -111,8 +111,6 @@ class ReviewSpecification extends GebReportingSpec {
     json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'
     json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false}'
     json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}'
-    json.contains '"catHistory": [{"bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2013-03-24", "classification": "Cat B", "nextReviewDate": "2013-09-17", "assessmentStatus": "I", "agencyDescription": "Moorland (HMP & YOI)", "assessmentAgencyId": "LPI", "classificationCode": "B", "cellSharingAlertFlag": false, "assessmentDateDisplay": "24/03/2013", "assessmentDescription": "Categorisation"}, {"bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2012-04-04", "classification": "Cat A", "nextReviewDate": "2012-06-07", "assessmentStatus": "A", "agencyDescription": "Moorland (HMP & YOI)", "assessmentAgencyId": "LPI", "classificationCode": "A", "cellSharingAlertFlag": false, "assessmentDateDisplay": "04/04/2012", "assessmentDescription": "Categorisation"}]'
-
   }
 
   def "The recat review page can be displayed without security input"() {
