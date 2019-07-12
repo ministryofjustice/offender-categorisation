@@ -287,6 +287,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    elite2Api.stubAssessments('dummy')
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[1].click()
@@ -379,6 +380,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     startButtons[1].click()
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('C')
+    elite2Api.stubAssessments('dummy')
     appropriateNo.click()
     overriddenCategoryC.click()
     overriddenCategoryText << 'super changed D to C'
@@ -518,6 +520,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     otherInformationText == 'super other info 1'
     otherInformationText << ' + 2'
     elite2Api.stubSupervisorApprove('D')
+    elite2Api.stubAssessments('dummy')
     appropriateYes.click()
     submitButton.click()
     def data = db.getData(12)

@@ -473,7 +473,7 @@ class SupervisorSpecification extends GebReportingSpec {
   def "The supervisor review page for a recat can be confirmed"() {
     when: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      recat: TestFixture.defaultRecat]), 'RECAT')
+      recat: TestFixture.defaultRecat]), 'RECAT', 'B2345YZ')
 
     db.createRiskProfileDataForExistingRow(12, '''{
       "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
@@ -508,7 +508,8 @@ class SupervisorSpecification extends GebReportingSpec {
 
 
     when: 'the supervisor selects yes (after changing their mind)'
-    elite2Api.stubSupervisorApprove("C")
+    elite2Api.stubSupervisorApprove("C" )
+    elite2Api.stubAssessments('B2345YZ')
 
     appropriateNo.click()
     overriddenCategoryB.click()
@@ -521,11 +522,15 @@ class SupervisorSpecification extends GebReportingSpec {
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    def riskResponse = new JsonSlurper().parseText(data.risk_profile[0].toString())
     response.recat == TestFixture.defaultRecat
     response.supervisor == [review: [proposedCategory: 'C', supervisorCategoryAppropriate: 'Yes']]
+    riskResponse.catHistory == [["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2013-03-24", "classification": "Cat B", "nextReviewDate": "2013-09-17", "assessmentStatus": "I", "agencyDescription": "Moorland (HMP & YOI)", "assessmentAgencyId": "LPI", "classificationCode": "B", "cellSharingAlertFlag": false, "assessmentDateDisplay": "24/03/2013", "assessmentDescription": "Categorisation"], ["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2012-04-04", "classification": "Cat A", "nextReviewDate": "2012-06-07", "assessmentStatus": "A", "agencyDescription": "Moorland (HMP & YOI)", "assessmentAgencyId": "LPI", "classificationCode": "A", "cellSharingAlertFlag": false, "assessmentDateDisplay": "04/04/2012", "assessmentDescription": "Categorisation"]]
+
     response.openConditionsRequested == null
     data.status == ["APPROVED"]
     data.approved_by == ['SUPERVISOR_USER']
+
   }
 
   def "The supervisor can send the case back to the recategoriser"() {

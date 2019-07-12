@@ -37,11 +37,11 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
   def "The approved view page is correctly displayed (suggested Cat)"() {
 
-    db.createDataWithStatusAndCatType(-1, 11, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-1, 11, 'APPROVED', JsonOutput.toJson([
       recat     : [decision: [category: "C"]],
       supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
     ]), 'RECAT')
-    db.createDataWithStatusAndCatType(-2, 12, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-2, 12, 'APPROVED', JsonOutput.toJson([
       recat     : [decision: [category: "C"]],
       supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
     ]), 'RECAT')
@@ -77,11 +77,11 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
   def "The approved view page is correctly displayed (Cat overridden by supervisor)"() {
 
-    db.createDataWithStatusAndCatType(-1, 11, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-1, 11, 'APPROVED', JsonOutput.toJson([
       recat     : [decision: [category: "C"]],
       supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
     ]), 'RECAT')
-    db.createDataWithStatusAndCatType(-2, 12, 'APPROVED', JsonOutput.toJson([
+    db.createDataWithIdAndStatusAndCatType(-2, 12, 'APPROVED', JsonOutput.toJson([
       recat     : [decision: [category: "C"]],
       supervisor : [review: [supervisorCategoryAppropriate   : "No", supervisorOverriddenCategory: "D",
                              supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"]],

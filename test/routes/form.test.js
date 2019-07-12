@@ -98,6 +98,7 @@ afterEach(() => {
   offendersService.getOffenderDetails.mockReset()
   offendersService.getCatAInformation.mockReset()
   offendersService.getOffenceHistory.mockReset()
+  offendersService.getPrisonerBackground.mockReset()
   formService.update.mockReset()
   userService.getUser.mockReset()
   riskProfilerService.getSecurityProfile.mockReset()
@@ -560,6 +561,34 @@ describe('POST /supervisor/review', () => {
           formSection: 'recat',
           transactionalClient: mockTransactionalClient,
         })
+      })
+  })
+
+  test('Should get and persist prisoner background for recategorisation approvals', () => {
+    const userInput = { catType: 'RECAT' }
+    const catHistory = [{ history: 12 }, { history: 12 }]
+    offendersService.getPrisonerBackground.mockResolvedValue(catHistory)
+
+    return request(app)
+      .post(`/supervisor/review/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect(() => {
+        expect(offendersService.getPrisonerBackground).toBeCalledTimes(1)
+        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory }, mockTransactionalClient)
+      })
+  })
+
+  test('Should not get prisoner background for initial categorisation approvals', () => {
+    const userInput = { catType: 'INITIAL' }
+
+    return request(app)
+      .post(`/supervisor/review/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect(() => {
+        expect(offendersService.getPrisonerBackground).toBeCalledTimes(0)
+        expect(formService.mergeRiskProfileData).toBeCalledTimes(0)
       })
   })
 })

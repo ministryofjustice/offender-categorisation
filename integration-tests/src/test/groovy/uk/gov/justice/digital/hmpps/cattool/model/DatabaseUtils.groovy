@@ -36,13 +36,13 @@ class DatabaseUtils {
     doCreateData(-1, bookingId, status, json)
   }
 
-  def createDataWithStatusAndCatType(bookingId, status, json, catType) {
-    createDataWithStatusAndCatType(-1, bookingId, status, json, catType)
+  def createDataWithStatusAndCatType(bookingId, status, json, catType, offenderNo='dummy') {
+    createDataWithIdAndStatusAndCatType(-1, bookingId, status, json, catType, offenderNo)
   }
 
-  def createDataWithStatusAndCatType(id, bookingId, status, json, catType) {
+  def createDataWithIdAndStatusAndCatType(id, bookingId, status, json, catType, offenderNo='dummy') {
     def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
-    doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
+    doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, 1, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
   }
 
   def createRiskProfileData(bookingId, json) {
