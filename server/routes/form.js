@@ -513,6 +513,20 @@ module.exports = function Index({
         })
         await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
 
+        const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+        if (userInput.catType === CatType.RECAT.name) {
+          const categorisations = await offendersService.getPrisonerBackground(
+            res.locals.user.token,
+            categorisationRecord.offenderNo
+          )
+          const dataToStore = {
+            catHistory: categorisations,
+          }
+
+          await formService.mergeRiskProfileData(bookingId, dataToStore, transactionalDbClient)
+        }
+
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
