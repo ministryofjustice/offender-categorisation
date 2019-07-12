@@ -62,7 +62,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
-    elite2Api.stubCategorise('D')
+    elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
 
     then: 'the tasklist recat page is displayed with open conditions section added'
@@ -137,7 +137,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryCOption.click()
-    elite2Api.stubCategorise('C')
+    elite2Api.stubCategorise('C', '', 12, 5)
     submitButton.click()
     at TasklistRecatPage
     elite2Api.stubAssessments('B2345YZ')
@@ -191,7 +191,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
-    elite2Api.stubCategorise('D')
+    elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
 
     then: 'the tasklist page is displayed with open conditions section added'
@@ -244,7 +244,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     response.openConditionsRequested
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D')
+    elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
 
     then: 'the category is submitted'
@@ -264,21 +264,21 @@ class OpenConditionsSpecification extends GebReportingSpec {
     afterSubmitData.assessed_by == ["RECATEGORISER_USER"]
     afterSubmitData.approved_by == [null]
     afterSubmitData.assessment_date != null
-    afterSubmitData.nomis_sequence_no == [4]
+    afterSubmitData.nomis_sequence_no == [5]
     def afterSubmitResponse = new JsonSlurper().parseText(afterSubmitData.form_response[0].toString())
 
     afterSubmitData.status == ["AWAITING_APPROVAL"]
     afterSubmitResponse.recat == [
-    decision      : [category: "D"],
-    securityInput : [securityInputNeeded: "No"],
-    nextReviewDate: [date: "14/12/2019"],
-    riskAssessment: [
-      lowerCategory    : "lower security category text",
-      otherRelevant    : "Yes",
-      higherCategory   : "higher security category text",
-      otherRelevantText: "other relevant information"
+      decision      : [category: "D"],
+      securityInput : [securityInputNeeded: "No"],
+      nextReviewDate: [date: "14/12/2019"],
+      riskAssessment: [
+        lowerCategory    : "lower security category text",
+        otherRelevant    : "Yes",
+        higherCategory   : "higher security category text",
+        otherRelevantText: "other relevant information"
+      ]
     ]
-  ]
     afterSubmitResponse.supervisor == null
     afterSubmitResponse.openConditions == uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification.allNoAnswersWithFurtherCharges
     afterSubmitResponse.openConditionsRequested
@@ -339,7 +339,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
-    elite2Api.stubCategorise('D')
+    elite2Api.stubCategorise('D', '', 12, 5)
     //riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
 
@@ -365,7 +365,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at ReviewRecatPage
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D')
+    elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
 
     then: 'the category is submitted'
@@ -437,7 +437,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    elite2Api.stubCategorise('C')
+    elite2Api.stubCategorise('C', '', 12, 5)
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
@@ -495,7 +495,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at ReviewRecatPage
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D')
+    elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
 
     then: 'the category is submitted'

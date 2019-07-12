@@ -105,6 +105,8 @@ class HomePageSpecification extends GebReportingSpec {
     db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
     db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
     db.createDataWithIdAndStatusAndCatType(-6, 36, 'AWAITING_APPROVAL', '{}', 'RECAT')
+    db.createNomisSeqNo(33,3)
+    db.createNomisSeqNo(36,6)
 
     when: 'I go to the home page as supervisor'
 
