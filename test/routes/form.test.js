@@ -575,11 +575,7 @@ describe('POST /supervisor/review', () => {
       .expect(302)
       .expect(() => {
         expect(offendersService.getPrisonerBackground).toBeCalledTimes(1)
-        expect(formService.mergeRiskProfileData).toBeCalledWith(
-          '12345',
-          { catHistory },
-          mockTransactionalClient
-        )
+        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory }, mockTransactionalClient)
       })
   })
 
