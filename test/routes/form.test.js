@@ -566,6 +566,8 @@ describe('POST /supervisor/review', () => {
 
   test('Should get and persist prisoner background for recategorisation approvals', () => {
     const userInput = { catType: 'RECAT' }
+    const catHistory = [{ history: 12 }, { history: 12 }]
+    offendersService.getPrisonerBackground.mockResolvedValue(catHistory)
 
     return request(app)
       .post(`/supervisor/review/12345`)
@@ -573,7 +575,11 @@ describe('POST /supervisor/review', () => {
       .expect(302)
       .expect(() => {
         expect(offendersService.getPrisonerBackground).toBeCalledTimes(1)
-        expect(formService.mergeRiskProfileData).toBeCalledTimes(1)
+        expect(formService.mergeRiskProfileData).toBeCalledWith(
+          '12345',
+          { catHistory },
+          mockTransactionalClient
+        )
       })
   })
 
