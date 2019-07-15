@@ -953,7 +953,7 @@ class Elite2Api extends WireMockRule {
 
   def stubCategorise(String expectedCat, String nextReviewDate = '', long bookingId = 12, sequenceNumber = 4) {
 
-    def expectedBody = [category: expectedCat]
+    def expectedBody = [bookingId: bookingId, category: expectedCat, committee: 'OCA']
     if (nextReviewDate) {
       expectedBody.nextReviewDate = nextReviewDate
     }
@@ -987,7 +987,9 @@ class Elite2Api extends WireMockRule {
 
     this.stubFor(
       put("/api/offender-assessments/category/approve")
-        .withRequestBody(equalToJson(JsonOutput.toJson([category: expectedCat]), true, true))
+        .withRequestBody(equalToJson(JsonOutput.toJson([
+          category: expectedCat, reviewCommitteeCode: 'OCA'
+        ]), true, true))
         .willReturn(
           aResponse()
             .withHeader('Content-Type', 'application/json')

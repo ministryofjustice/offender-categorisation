@@ -610,7 +610,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       return await nomisClient.createInitialCategorisation({
         bookingId,
         category,
-        committee: 'Cat-tool',
+        committee: 'OCA',
         comment,
         nextReviewDate: nextReviewDateConverted,
       })
@@ -630,7 +630,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         category,
         evaluationDate: moment().format('YYYY-MM-DD'),
         reviewSupLevelText: comment,
-        reviewCommitteeCode: 'REVIEW',
+        reviewCommitteeCode: 'OCA',
       })
     } catch (error) {
       logger.error(error, 'Error during createSupervisorApproval')

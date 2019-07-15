@@ -456,7 +456,7 @@ module.exports = function Index({
 
         const nomisKeyMap = await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
-          bookingId,
+          bookingId: bookingInt,
           overriddenCategory: userInput.overriddenCategory,
           suggestedCategory: userInput.suggestedCategory,
           overriddenCategoryText: userInput.overriddenCategoryText,

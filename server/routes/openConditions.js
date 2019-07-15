@@ -286,7 +286,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
         const nomisKeyMap = await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
-          bookingId,
+          bookingId: bookingInt,
           suggestedCategory: userInput.openConditionsSuggestedCategory,
           overriddenCategoryText: userInput.overriddenCategoryText,
         })
