@@ -48,13 +48,6 @@ module.exports = {
         deadline: get('ELITE2API_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),
       },
     },
-    custody: {
-      url: get('CUSTODY_ENDPOINT_URL', 'http://localhost:8081/', true),
-      timeout: {
-        response: get('CUSTODY_ENDPOINT_TIMEOUT_RESPONSE', 30000, true),
-        deadline: get('CUSTODY_ENDPOINT_TIMEOUT_DEADLINE', 35000, true),
-      },
-    },
     riskProfiler: {
       url: get('RISK_PROFILER_ENDPOINT_URL', 'http://localhost:8082/', true),
       timeout: {

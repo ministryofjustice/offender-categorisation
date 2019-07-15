@@ -54,8 +54,6 @@ spec:
               value: "https://gateway.prod.nomis-api.service.hmpps.dsd.io/auth"
             - name: ELITE2API_ENDPOINT_URL
               value: "https://gateway.prod.nomis-api.service.hmpps.dsd.io/elite2api/"
-            - name: CUSTODY_ENDPOINT_URL
-              value: "https://gateway.prod.nomis-api.service.hmpps.dsd.io/custodyapi/"
             - name: RISK_PROFILER_ENDPOINT_URL
               value: "http://offender-risk-profiler-svc:8080/"
             - name: APPINSIGHTS_INSTRUMENTATIONKEY
