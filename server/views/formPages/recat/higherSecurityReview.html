@@ -73,15 +73,15 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.recat.higherSecurityReview.transfer === 'Yes',
-        conditional: {
-          html:transferTextHtml
-        }
+        checked: data.recat.higherSecurityReview.transfer === 'Yes'
       },
       {
         value: "No",
+        text: "No",
         checked: data.recat.higherSecurityReview.transfer === 'No',
-        text: "No"
+        conditional: {
+          html:transferTextHtml
+        }
       }
     ]
   }) }}

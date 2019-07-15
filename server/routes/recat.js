@@ -143,7 +143,7 @@ module.exports = function Index({
     if (body.securityInputNeeded === 'No') {
       delete updated.securityInputNeededText
     }
-    if (body.transfer === 'No') {
+    if (body.transfer === 'Yes') {
       delete updated.transferText
     }
     return updated
