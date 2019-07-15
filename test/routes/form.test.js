@@ -628,7 +628,7 @@ describe('POST /categoriser/provisionalCategory', () => {
           expect(offendersService.getCatAInformation).toBeCalledTimes(0)
           expect(offendersService.createInitialCategorisation).toBeCalledWith({
             token: 'ABCDEF',
-            bookingId: '12345',
+            bookingId: 12345,
             overriddenCategory: 'F',
             overriddenCategoryText: 'HHH',
             suggestedCategory: 'B',
