@@ -47,6 +47,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(12,5)
     db.createRiskProfileDataForExistingRow(12, JsonOutput.toJson([
       history : [catAType: 'A', finalCat: 'Cat B', catAEndYear: '2013', releaseYear: '2014', catAStartYear: '2012'],
       offences: [[bookingId: 12, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
@@ -90,6 +91,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(12,5)
 
     navigateToReview(true, false)
     !openConditionsHeader.isDisplayed()
@@ -124,6 +126,7 @@ class SupervisorSpecification extends GebReportingSpec {
       ratings: TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
       categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
+    db.createNomisSeqNo(12,5)
 
     when: 'The supervisor views the review page for a category D'
     navigateToReview(false, false)
@@ -142,6 +145,7 @@ class SupervisorSpecification extends GebReportingSpec {
       ratings: TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
       categoriser: [provisionalCategory: [suggestedCategory: "J", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
+    db.createNomisSeqNo(12,5)
 
     to SupervisorHomePage
 
@@ -158,6 +162,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+    db.createNomisSeqNo(12,5)
 
     when: 'The supervisor views the review page for an overridden category B'
     navigateToReview(false, false)
@@ -173,6 +178,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(12,5)
 
     navigateToReview(false, true)
     !openConditionsHeader.isDisplayed()
@@ -216,6 +222,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(12,5)
 
     navigateToReview(false, false)
 
@@ -254,6 +261,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "B", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(12,5)
 
     navigateToReview(false, false)
 
@@ -286,6 +294,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(12,5)
 
     navigateToReview(false, false)
 
@@ -317,6 +326,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(12,5)
 
     navigateToReview(true, true)
 
@@ -344,6 +354,7 @@ class SupervisorSpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "Some Text"]]]))
+    db.createNomisSeqNo(12,5)
 
     navigateToReview()
 
@@ -474,7 +485,7 @@ class SupervisorSpecification extends GebReportingSpec {
     when: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecat]), 'RECAT', 'B2345YZ')
-
+    db.createNomisSeqNo(12,5)
     db.createRiskProfileDataForExistingRow(12, '''{
       "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
       "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
@@ -537,6 +548,7 @@ class SupervisorSpecification extends GebReportingSpec {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecat]), 'RECAT')
+    db.createNomisSeqNo(12,5)
 
     navigateToReview(false, false, false)
 
@@ -567,6 +579,7 @@ class SupervisorSpecification extends GebReportingSpec {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecat]), 'RECAT')
+    db.createNomisSeqNo(12,5)
 
     navigateToReview(false, false, false)
 

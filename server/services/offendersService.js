@@ -272,10 +272,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const unapprovedWithDbRecord = await Promise.all(
         uncategorisedResult.map(async s => {
           const dbRecord = await formService.getCategorisationRecord(s.bookingId, transactionalDbClient)
-          return {
-            ...s,
-            dbRecord,
-          }
+          return { ...s, dbRecord }
         })
       )
 
@@ -283,7 +280,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const unapprovedOffenders = unapprovedWithDbRecord.filter(o => o.dbRecord.status !== Status.SUPERVISOR_BACK.name)
 
       if (isNilOrEmpty(unapprovedOffenders)) {
-        logger.info(`No unapproved offenders found for ${agencyId}`)
+        logger.info(`getUnapprovedOffenders: No unapproved offenders found for ${agencyId}`)
         return []
       }
 
@@ -300,12 +297,23 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           dbRecordExists,
           catType: dbRecordExists ? CatType[o.dbRecord.catType].value : '',
           ...sentenceData,
-          pnomis: !(dbRecordExists && o.dbRecord.status === Status.AWAITING_APPROVAL.name),
+          // Both the elite2 and the database record are the latest available for each booking so the nomis seq should always match.
+          // If the database one is earlier, then a cat has been subsequently done in P-Nomis, so ‘PNOMIS’ should be shown.
+          // If elite2 is earlier then it is out of date (somehow the insertion of a record failed earlier, and also the pre-existing record was also awaiting_approval).
+          // ‘PNOMIS’ should be shown and a warning logged.
+          pnomis:
+            !(dbRecordExists && o.dbRecord.status === Status.AWAITING_APPROVAL.name) ||
+            (dbRecordExists && o.dbRecord.nomisSeq !== o.assessmentSeq),
           nextReviewDate: o.dbRecord.catType === 'RECAT' || !dbRecordExists ? dateConverter(o.nextReviewDate) : null,
         }
         if (dbRecordExists && row.dbRecord.status !== Status.AWAITING_APPROVAL.name) {
           logger.warn(
             `getUnapprovedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, PG status=${row.dbRecord.status}`
+          )
+        }
+        if (dbRecordExists && row.dbRecord.nomisSeq !== row.assessmentSeq) {
+          logger.warn(
+            `getUnapprovedOffenders: sequence mismatch for bookingId=${row.bookingId}, offenderNo=${row.offenderNo}, nomisSeq=${row.dbRecord.nomisSeq}, assessmentSeq=${row.assessmentSeq}`
           )
         }
         return row
