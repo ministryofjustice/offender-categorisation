@@ -47,8 +47,8 @@ class HigherSecurityReviewSpecification extends GebReportingSpec {
     errorSummaries*.text() == ['Please enter behaviour details', 'Please enter steps details', 'Please select yes or no', 'Please enter security conditions details']
     errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease enter details', 'Error:\nPlease select yes or no', 'Error:\nPlease enter details']
 
-    when: 'I click yes but fail to add details'
-    transferYes.click()
+    when: 'I click no but fail to add details'
+    transferNo.click()
     submitButton.click()
 
     then: 'I stay on the page with an additional textarea validation error'

@@ -148,7 +148,7 @@ class DecisionSpecification extends GebReportingSpec {
     at HigherSecurityReviewPage
     behaviour << "Some behaviour text"
     steps << "Some steps text"
-    transferYes.click()
+    transferNo.click()
     transferText << "Some transfer text"
     conditions << "Some conditions text"
     submitButton.click()
@@ -166,7 +166,7 @@ class DecisionSpecification extends GebReportingSpec {
     at HigherSecurityReviewPage
     behaviour == "Some behaviour text"
     steps == "Some steps text"
-    form.transfer == "Yes"
+    form.transfer == "No"
     transferText == "Some transfer text"
     conditions == "Some conditions text"
 
@@ -174,8 +174,13 @@ class DecisionSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type.value == ['RECAT']
-    response.recat == [decision: [category : "B"], higherSecurityReview: [steps     : "Some steps text", transfer: "Yes", behaviour: "Some behaviour text",
-                                                                           conditions: "Some conditions text", transferText: "Some transfer text"]]
+    response.recat == [
+      decision            : [category: "B"],
+      higherSecurityReview: [steps       : "Some steps text",
+                             behaviour   : "Some behaviour text",
+                             conditions  : "Some conditions text",
+                             transfer    : "No",
+                             transferText: "Some transfer text"]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
 
