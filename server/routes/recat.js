@@ -335,11 +335,7 @@ module.exports = function Index({
           nextReviewDate,
         })
 
-        await formService.recordNomisSeqNumber(
-          bookingInt,
-          nomisKeyMap.sequenceNumber,
-          transactionalDbClient
-        )
+        await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
