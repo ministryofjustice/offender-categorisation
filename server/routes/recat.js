@@ -317,6 +317,7 @@ module.exports = function Index({
       const form = 'review'
       const formPageConfig = formConfig[section][form]
 
+      const bookingInt = parseInt(bookingId, 10)
       const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
       const suggestedCategory = R.path(['formObject', 'recat', 'decision', 'category'], formData)
@@ -328,17 +329,13 @@ module.exports = function Index({
 
         const nomisKeyMap = await offendersService.createInitialCategorisation({
           token: res.locals.user.token,
-          bookingId,
+          bookingId: bookingInt,
           suggestedCategory,
           overriddenCategoryText: 'Cat-tool Recat',
           nextReviewDate,
         })
 
-        await formService.recordNomisSeqNumber(
-          parseInt(bookingId, 10),
-          nomisKeyMap.sequenceNumber,
-          transactionalDbClient
-        )
+        await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
