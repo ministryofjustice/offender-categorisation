@@ -53,7 +53,7 @@ module.exports = {
       },
       {
         transferText: {
-          responseType: 'requiredStringIf_transfer_Yes',
+          responseType: 'requiredStringIf_transfer_No',
           validationMessage: 'Please enter transfer details',
         },
       },
