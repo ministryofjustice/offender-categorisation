@@ -146,7 +146,6 @@ jobs:
           destination: integration/geb
       - store_test_results:
           path: integration-tests/build/test-results
-
   build_docker:
     executor: deployer
     steps:
@@ -171,13 +170,13 @@ jobs:
               --label "build.url=$CIRCLE_BUILD_URL" \
               --label "build.gitref=$CIRCLE_SHA1"
 
-#            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+             #if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               # publish to docker hub as the tag
              docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
              docker tag mojdigitalstudio/categorisation-tool:$APP_VERSION mojdigitalstudio/categorisation-tool:latest
              docker push mojdigitalstudio/categorisation-tool:$APP_VERSION
              docker push mojdigitalstudio/categorisation-tool:latest
-#            fi
+             #fi
 
   deploy_dev:
     executor: deployer
@@ -212,9 +211,9 @@ workflows:
       - build_docker:
           requires:
             - integration_tests
-#          filters:
-#            branches:
-#              only: master
+          #filters:
+            #branches:
+              #only: master
       - deploy_dev:
           context: offender-categorisation-dev
           requires:
