@@ -95,16 +95,23 @@
     ]
   }) }}
 
-  {% set guidanceHighRisk %}<div class="govuk-!-font-weight-bold">You should check:</div>
-    <li>current and previous offences</li>
-    <li>pre-sentence reports</li>
-    <li>risk of serious harm (RoSH) rating</li>
-    <li>prisoner escort records (PER)</li>
-    <li>cell-sharing risk assessment</li>
-    <li>adjudication records</li>
-    <li>segregation history</li>
-    <li>court documents</li>
-    <li>alerts</li>
+  {% set guidanceHighRisk %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+<ul class="govuk-list govuk-list--bullet">
+<li>patterns of violent behaviour</li>
+<li>violence directed at particular groups</li>
+</ul>
+<div class="govuk-!-font-weight-bold govuk-!-margin-top-3">You should check:</div>
+<ul class="govuk-list govuk-list--bullet">
+<li>current and previous offences</li>
+<li>pre-sentence reports</li>
+<li>risk of serious harm (RoSH) rating</li>
+<li>prisoner escort records (PER)</li>
+<li>cell-sharing risk assessment</li>
+<li>adjudication records</li>
+<li>segregation history</li>
+<li>court documents</li>
+<li>alerts</li>
+</ul>
   {% endset %}
 
   {{ govukDetails({
@@ -141,12 +148,22 @@
   }) }}
 
 {% set guidanceGoodOrderThreat %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
-  <ul class="govuk-list govuk-list--bullet">
-    <li>patterns of violent behaviour</li>
-    <li>violence directed at particular groups</li>
-    <li>concerted indiscipline</li>
-    <li>coordinating others to acts of concerted indiscipline or violence</li>
-  </ul>
+<ul class="govuk-list govuk-list--bullet">
+<li>concerted indiscipline</li>
+<li>coordinating others to acts of concerted indiscipline or violence</li>
+</ul>
+<div class="govuk-!-font-weight-bold govuk-!-margin-top-3">You should check:</div>
+<ul class="govuk-list govuk-list--bullet">
+<li>current and previous offences</li>
+<li>pre-sentence reports</li>
+<li>risk of serious harm (RoSH) rating</li>
+<li>prisoner escort records (PER)</li>
+<li>cell-sharing risk assessment</li>
+<li>adjudication records</li>
+<li>segregation history</li>
+<li>court documents</li>
+<li>alerts</li>
+</ul>
   {% endset %}
 
   {{ govukDetails({
