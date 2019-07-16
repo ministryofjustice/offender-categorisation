@@ -34,7 +34,8 @@ describe('getFormDataForUser', () => {
                     security_reviewed_by   as "securityReviewedBy",
                     approval_date          as "approvalDate",
                     prison_id              as "prisonId",
-                    cat_type               as "catType"
+                    cat_type               as "catType",
+                    nomis_sequence_no      as "nomisSeq"
              from form f
       where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['bookingId1'],

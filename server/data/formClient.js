@@ -21,7 +21,8 @@ module.exports = {
                     security_reviewed_by   as "securityReviewedBy",
                     approval_date          as "approvalDate",
                     prison_id              as "prisonId",
-                    cat_type               as "catType"
+                    cat_type               as "catType",
+                    nomis_sequence_no      as "nomisSeq"
              from form f
       where f.booking_id = $1 ${sequenceClause}`,
       values: [bookingId],

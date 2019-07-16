@@ -90,18 +90,20 @@ class Elite2Api extends WireMockRule {
           aResponse()
             .withBody(JsonOutput.toJson([
               [
-                bookingId : 12,
-                offenderNo: 'B2345XY',
-                firstName : 'PENELOPE',
-                lastName  : 'PITSTOP',
-                status    : 'UNCATEGORISED',
+                bookingId    : 12,
+                offenderNo   : 'B2345XY',
+                firstName    : 'PENELOPE',
+                lastName     : 'PITSTOP',
+                status       : 'UNCATEGORISED',
+                assessmentSeq: 5,
               ],
               [
-                bookingId : 11,
-                offenderNo: 'B2345YZ',
-                firstName : 'ANT',
-                lastName  : 'HILLMOB',
-                status    : 'AWAITING_APPROVAL',
+                bookingId    : 11,
+                offenderNo   : 'B2345YZ',
+                firstName    : 'ANT',
+                lastName     : 'HILLMOB',
+                status       : 'AWAITING_APPROVAL',
+                assessmentSeq: 4,
               ],
             ]
             ))
@@ -541,6 +543,7 @@ class Elite2Api extends WireMockRule {
                 category            : 'B',
                 categoriserFirstName: 'ROGER',
                 categoriserLastName : 'RABBIT',
+                assessmentSeq       : 4,
               ],
               [
                 bookingId           : 12,
@@ -551,6 +554,7 @@ class Elite2Api extends WireMockRule {
                 category            : 'C',
                 categoriserFirstName: 'BUGS',
                 categoriserLastName : 'BUNNY',
+                assessmentSeq       : 5,
               ],
             ]))
             .withHeader('Content-Type', 'application/json')
@@ -596,6 +600,7 @@ class Elite2Api extends WireMockRule {
                 categoriserFirstName: 'ROGER',
                 categoriserLastName : 'RABBIT',
                 nextReviewDate      : '2019-01-17',
+                assessmentSeq       : 3,
               ],
               [
                 bookingId           : 34,
@@ -630,6 +635,7 @@ class Elite2Api extends WireMockRule {
                 categoriserFirstName: 'ROGER',
                 categoriserLastName : 'RABBIT',
                 nextReviewDate      : '2020-03-29',
+                assessmentSeq       : 6,
               ],
             ]))
             .withHeader('Content-Type', 'application/json')
@@ -1005,9 +1011,9 @@ class Elite2Api extends WireMockRule {
             .withStatus(200)))
   }
 
-  def stubCategorise(String expectedCat, String nextReviewDate = '', long bookingId = 12) {
+  def stubCategorise(String expectedCat, String nextReviewDate = '', long bookingId = 12, sequenceNumber = 4) {
 
-    def expectedBody = [category: expectedCat]
+    def expectedBody = [bookingId: bookingId, category: expectedCat, committee: 'OCA']
     if (nextReviewDate) {
       expectedBody.nextReviewDate = nextReviewDate
     }
@@ -1019,7 +1025,7 @@ class Elite2Api extends WireMockRule {
           aResponse()
             .withBody(JsonOutput.toJson([
               bookingId         : bookingId,
-              sequenceNumber    : 4
+              sequenceNumber    : sequenceNumber
             ]))
             .withHeader('Content-Type', 'application/json')
             .withStatus(201))
@@ -1041,7 +1047,9 @@ class Elite2Api extends WireMockRule {
 
     this.stubFor(
       put("/api/offender-assessments/category/approve")
-        .withRequestBody(equalToJson(JsonOutput.toJson([category: expectedCat]), true, true))
+        .withRequestBody(equalToJson(JsonOutput.toJson([
+          category: expectedCat, reviewCommitteeCode: 'OCA'
+        ]), true, true))
         .willReturn(
           aResponse()
             .withHeader('Content-Type', 'application/json')

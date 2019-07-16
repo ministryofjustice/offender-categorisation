@@ -2,6 +2,7 @@ const serviceCreator = require('../../server/services/offendersService')
 const moment = require('moment')
 const Status = require('../../server/utils/statusEnum')
 
+const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
 const nomisClient = {
@@ -270,6 +271,175 @@ describe('getRecategoriseOffenders', () => {
   })
 })
 
+describe('getUnapprovedOffenders', () => {
+  test('it should return a list of offenders and sentence information', async () => {
+    const data = [
+      {
+        offenderNo: 'G0001',
+        firstName: 'JANE',
+        lastName: 'BROWN',
+        bookingId: 1,
+        category: 'B',
+        categoriserFirstName: 'CATTER',
+        categoriserLastName: 'ONE',
+        nextReviewDate: '2019-04-20',
+        status: 'AWAITING_APPROVAL',
+        assessmentSeq: 11,
+      },
+      {
+        offenderNo: 'G0002',
+        firstName: 'Danny',
+        lastName: 'Doyle',
+        bookingId: 2,
+        category: 'C',
+        categoriserFirstName: 'Catter',
+        categoriserLastName: 'Two',
+        nextReviewDate: '2019-05-21',
+        status: 'AWAITING_APPROVAL',
+        assessmentSeq: 12,
+      },
+      {
+        offenderNo: 'G0003',
+        firstName: 'Alan',
+        lastName: 'Allen',
+        bookingId: 3,
+        category: 'D',
+        categoriserFirstName: 'Catter',
+        categoriserLastName: 'Three',
+        nextReviewDate: '2019-06-22',
+        status: 'AWAITING_APPROVAL',
+        assessmentSeq: 13,
+      },
+      {
+        offenderNo: 'G0004',
+        firstName: 'Steve',
+        lastName: 'Coogan',
+        bookingId: 4,
+        category: 'C',
+        nextReviewDate: '2019-06-22',
+        status: 'UNCATEGORISED',
+      },
+      {
+        offenderNo: 'G0005',
+        firstName: 'Supervisor',
+        lastName: 'Back',
+        bookingId: 5,
+        category: 'C',
+        nextReviewDate: '2019-06-22',
+        status: 'AWAITING_APPROVAL',
+      },
+      {
+        offenderNo: 'G0006',
+        firstName: 'Notin',
+        lastName: 'Database',
+        categoriserFirstName: 'CATTER',
+        categoriserLastName: 'SIX',
+        bookingId: 6,
+        category: 'C',
+        nextReviewDate: '2019-06-25',
+        status: 'AWAITING_APPROVAL',
+        assessmentSeq: 16,
+      },
+      {
+        offenderNo: 'G0007',
+        firstName: 'DIFFERENT',
+        lastName: 'SEQUENCES',
+        categoriserFirstName: 'CATTER',
+        categoriserLastName: 'SEVEN',
+        bookingId: 7,
+        category: 'C',
+        nextReviewDate: '2019-06-25',
+        status: 'AWAITING_APPROVAL',
+        assessmentSeq: 99,
+      },
+    ]
+
+    nomisClient.getUncategorisedOffenders.mockReturnValue(data)
+
+    formService.getCategorisationRecord
+      .mockReturnValueOnce({ bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: Status.AWAITING_APPROVAL.name })
+      .mockReturnValueOnce({ bookingId: 2, nomisSeq: 12, catType: 'RECAT', status: Status.APPROVED.name })
+      .mockReturnValueOnce({ bookingId: 3, nomisSeq: 13, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
+      .mockReturnValueOnce({ bookingId: 5, nomisSeq: 15, catType: 'RECAT', status: Status.SUPERVISOR_BACK.name })
+      .mockReturnValueOnce({})
+      .mockReturnValueOnce({ bookingId: 7, nomisSeq: 17, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
+
+    const sentenceDates = [
+      { sentenceDetail: { bookingId: 1, sentenceStartDate: todaySubtract(4) } },
+      { sentenceDetail: { bookingId: 2, sentenceStartDate: todaySubtract(7) } },
+      { sentenceDetail: { bookingId: 3, sentenceStartDate: todaySubtract(10) } },
+      { sentenceDetail: { bookingId: 6, sentenceStartDate: todaySubtract(11) } },
+    ]
+    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+
+    const expected = [
+      {
+        offenderNo: 'G0001',
+        displayName: 'Brown, Jane',
+        categoriserDisplayName: 'Catter One',
+        bookingId: 1,
+        dbRecordExists: true,
+        catType: 'Initial',
+        pnomis: false,
+        nextReviewDate: null,
+      },
+      {
+        offenderNo: 'G0002',
+        displayName: 'Doyle, Danny',
+        categoriserDisplayName: 'Catter Two',
+        bookingId: 2,
+        dbRecordExists: true,
+        catType: 'Recat',
+        pnomis: true,
+        nextReviewDate: '21/05/2019',
+      },
+      {
+        offenderNo: 'G0003',
+        displayName: 'Allen, Alan',
+        categoriserDisplayName: 'Catter Three',
+        bookingId: 3,
+        dbRecordExists: true,
+        catType: 'Recat',
+        pnomis: false,
+        nextReviewDate: '22/06/2019',
+      },
+      {
+        offenderNo: 'G0006',
+        displayName: 'Database, Notin',
+        categoriserDisplayName: 'Catter Six',
+        catType: '',
+        bookingId: 6,
+        dbRecordExists: false,
+        pnomis: true,
+        nextReviewDate: '25/06/2019',
+      },
+      {
+        offenderNo: 'G0007',
+        displayName: 'Sequences, Different',
+        categoriserDisplayName: 'Catter Seven',
+        catType: 'Recat',
+        bookingId: 7,
+        dbRecordExists: true,
+        pnomis: true,
+        nextReviewDate: '25/06/2019',
+      },
+    ]
+
+    const result = await service.getUnapprovedOffenders('token', 'LEI', mockTransactionalClient)
+
+    expect(nomisClient.getUncategorisedOffenders.mock.calls[0][0]).toEqual('LEI')
+    expect(formService.getCategorisationRecord).toBeCalledTimes(6)
+    expect(formService.getCategorisationRecord).nthCalledWith(1, 1, mockTransactionalClient)
+    expect(result).toMatchObject(expected)
+  })
+
+  test('No results from elite', async () => {
+    nomisClient.getUncategorisedOffenders.mockReturnValue([])
+    const result = await service.getUnapprovedOffenders('token', 'LEI', mockTransactionalClient)
+    expect(result).toHaveLength(0)
+  })
+})
+
 describe('getUncategorisedOffenders', () => {
   test('it should return a list of offenders and sentence information', async () => {
     const uncategorised = [
@@ -308,7 +478,6 @@ describe('getUncategorisedOffenders', () => {
       },
     ]
 
-    const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
     const expected = [
       {
         offenderNo: 'G12345',
@@ -581,7 +750,6 @@ describe('getReferredOffenders', () => {
       },
     ])
 
-    const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
     const expected = [
       {
         offenderNo: 'G12345',
@@ -672,7 +840,6 @@ describe('getReferredOffenders', () => {
       },
     ])
 
-    const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
     const expected = [
       {
         offenderNo: 'G12345',
