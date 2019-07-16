@@ -22,7 +22,6 @@ commands:
               --namespace="${KUBE_ENV_NAMESPACE}"
             # confirm setup is ok
             kubectl config use-context circleci
-            kubectl -n "${KUBE_ENV_NAMESPACE}" get deployments
   deploy_to_env:
     parameters:
       env:
