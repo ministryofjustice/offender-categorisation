@@ -252,6 +252,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'The record is viewed by the recategoriser'
 
+    elite2Api.stubRecategorise(['P','A','A','A'])
+
     to RecategoriserHomePage
     startButtons[0].click()
 
@@ -502,6 +504,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at CategoriserSubmittedPage
 
     when: 'The record is viewed by the recategoriser'
+    elite2Api.stubRecategorise(['P','A','A','A'])
     to RecategoriserHomePage
     startButtons[0].click()
 
