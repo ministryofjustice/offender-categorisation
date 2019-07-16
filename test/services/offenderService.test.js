@@ -128,18 +128,15 @@ describe('getRecategoriseOffenders', () => {
 
     const u21CatData = [
       {
-        offenderNo: 'G12345',
-        bookingId: 123,
+        bookingId: 21,
         assessStatus: 'A',
       },
       {
-        offenderNo: 'H12345',
-        bookingId: 111,
+        bookingId: 22,
         assessStatus: 'A',
       },
       {
-        offenderNo: 'G55345',
-        bookingId: 122,
+        bookingId: 23,
         assessStatus: 'A',
       },
     ]
