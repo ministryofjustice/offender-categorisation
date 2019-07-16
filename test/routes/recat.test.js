@@ -444,7 +444,7 @@ describe('POST /form/recat/review', () => {
         expect(formService.update).toBeCalledTimes(0)
         expect(offendersService.createInitialCategorisation).toBeCalledWith({
           token: 'ABCDEF',
-          bookingId: '12345',
+          bookingId: 12345,
           overriddenCategoryText: 'Cat-tool Recat',
           suggestedCategory: 'B',
           nextReviewDate: '16/02/2020',
