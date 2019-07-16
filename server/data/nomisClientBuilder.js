@@ -25,6 +25,10 @@ module.exports = token => {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}?latestOnly=false`
       return nomisPost({ path, body: bookingIds })
     },
+    getLatestCategorisationForOffenders(agencyId, bookingIds) {
+      const path = `${apiUrl}api/offender-assessments/category/${agencyId}?latestOnly=true`
+      return nomisPost({ path, body: bookingIds })
+    },
     getRecategoriseOffenders(agencyId, cutoff) {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS&date=${cutoff}`
       return nomisUserGet({ path })
