@@ -439,7 +439,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     )
 
     return resultsU21IJ.map(u21 => {
-      const categorisation = eliteCategorisationResultsU21.find(o => o.id === u21.id)
+      const categorisation = eliteCategorisationResultsU21.find(o => o.bookingId === u21.bookingId)
       return {
         assessStatus: categorisation.assessStatus,
         ...u21,
@@ -759,5 +759,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getMatchedCategorisations: matchEliteAndDBCategorisations,
     pnomisOrInconsistentWarning,
     calculateButtonStatus,
+    mergeU21ResultWithNomisCategorisationData,
   }
 }
