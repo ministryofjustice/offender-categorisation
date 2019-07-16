@@ -128,18 +128,15 @@ describe('getRecategoriseOffenders', () => {
 
     const u21CatData = [
       {
-        offenderNo: 'G12345',
-        bookingId: 123,
+        bookingId: 21,
         assessStatus: 'A',
       },
       {
-        offenderNo: 'H12345',
-        bookingId: 111,
+        bookingId: 22,
         assessStatus: 'A',
       },
       {
-        offenderNo: 'G55345',
-        bookingId: 122,
+        bookingId: 23,
         assessStatus: 'A',
       },
     ]
@@ -1250,5 +1247,51 @@ describe('getMatchedCategorisations', () => {
       },
     ]
     expect(result).toMatchObject(expected)
+  })
+
+  describe('mergeU21ResultWithNomisCategorisationData', () => {
+    test('it should merge in the assessStatus by booking Id', async () => {
+      const u21Cats = [
+        {
+          bookingId: 11,
+          firstName: 'Amos',
+        },
+        {
+          bookingId: 10,
+          firstName: 'Jane',
+        },
+      ]
+
+      const eliteU21Cats = [
+        {
+          offenderNo: 'B1234AA',
+          bookingId: 10,
+          assessStatus: 'A',
+        },
+        {
+          offenderNo: 'B1234AB',
+          bookingId: 11,
+          assessStatus: 'P',
+        },
+      ]
+
+      const expected = [
+        {
+          bookingId: 11,
+          firstName: 'Amos',
+          assessStatus: 'P',
+        },
+
+        {
+          bookingId: 10,
+          firstName: 'Jane',
+          assessStatus: 'A',
+        },
+      ]
+      nomisClient.getLatestCategorisationForOffenders.mockReturnValue(eliteU21Cats)
+      const result = await service.mergeU21ResultWithNomisCategorisationData(nomisClient, 'LEI', u21Cats)
+
+      expect(result).toMatchObject(expected)
+    })
   })
 })
