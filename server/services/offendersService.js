@@ -440,10 +440,15 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
     return resultsU21IJ.map(u21 => {
       const categorisation = eliteCategorisationResultsU21.find(o => o.bookingId === u21.bookingId)
-      return {
-        assessStatus: categorisation.assessStatus,
-        ...u21,
+      if (categorisation) {
+        return {
+          assessStatus: categorisation.assessStatus,
+          ...u21,
+        }
       }
+      // todo investigate how this can happen
+      logger.error(`No latest categorisation found for u21 offender ${u21.offenderNo} booking id: ${u21.bookingId}`)
+      return u21
     })
   }
 
