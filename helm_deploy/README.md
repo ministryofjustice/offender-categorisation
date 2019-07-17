@@ -1,7 +1,8 @@
 
-### Example deploy command
+### Example test deploy command
+
 ```
-helm --namespace offender-categorisation-dev  --tiller-namespace offender-categorisation-dev upgrade offender-categorisation ./offender-categorisation/ --install --values=values-dev.yaml --values=example-secrets.yaml
+helm --namespace offender-categorisation-dev  --tiller-namespace offender-categorisation-dev upgrade offender-risk-profiler ./offender-risk-profiler/ --install --values=values-dev.yaml --values=secrets-example.yaml --dry-run --debug
 ```
 
 ### Helm init

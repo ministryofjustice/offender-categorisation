@@ -42,6 +42,7 @@ commands:
               --tiller-namespace=${KUBE_ENV_NAMESPACE} \
               --namespace=${KUBE_ENV_NAMESPACE} \
               --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
+              --values ~/git/helm_deploy/values-whitelist.yaml \
               --values - \
               --set image.tag="${APP_VERSION}"
 executors:
