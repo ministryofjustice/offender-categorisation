@@ -20,4 +20,4 @@ env:
   NOMIS_AUTH_URL: https://gateway.t3.nomis-api.hmpps.dsd.io/auth
   ELITE2API_ENDPOINT_URL: https://gateway.t3.nomis-api.hmpps.dsd.io/elite2api/ 
   CUSTODY_ENDPOINT_URL: https://gateway.t3.nomis-api.hmpps.dsd.io/custodyapi/
-  RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler-svc:8080/
+  RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler:8080/
