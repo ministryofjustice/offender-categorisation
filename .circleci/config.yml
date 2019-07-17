@@ -36,7 +36,7 @@ commands:
           name: Deploy to << parameters.env >>
           command: |
             APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID2} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY2} aws secretsmanager --region ${AWS_DEFAULT_REGION} get-secret-value --secret-id ${KUBE_ENV_NAMESPACE} | jq -r .SecretString | \
+            aws secretsmanager get-secret-value --secret-id ${KUBE_ENV_NAMESPACE} | jq -r .SecretString | \
             helm upgrade offender-categorisation ~/git/helm_deploy/offender-categorisation/. \
               --install --wait --force --reset-values --timeout 360 \
               --tiller-namespace=${KUBE_ENV_NAMESPACE} \
