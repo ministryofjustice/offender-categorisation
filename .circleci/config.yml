@@ -171,11 +171,11 @@ jobs:
               --label "build.gitref=$CIRCLE_SHA1"
 
              if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-               publish to docker hub as the tag
-             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-             docker tag mojdigitalstudio/categorisation-tool:$APP_VERSION mojdigitalstudio/categorisation-tool:latest
-             docker push mojdigitalstudio/categorisation-tool:$APP_VERSION
-             docker push mojdigitalstudio/categorisation-tool:latest
+               #publish to docker hub as the tag
+               docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+               docker tag mojdigitalstudio/categorisation-tool:$APP_VERSION mojdigitalstudio/categorisation-tool:latest
+               docker push mojdigitalstudio/categorisation-tool:$APP_VERSION
+               docker push mojdigitalstudio/categorisation-tool:latest
              fi
 
   deploy_dev:
