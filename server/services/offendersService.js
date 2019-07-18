@@ -363,6 +363,14 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             // Initial cat in progress
             return null
           }
+
+          const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus)
+          if (requiresWarning) {
+            logger.warn(
+              `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
+            )
+          }
+
           const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
           return {
             ...o,
@@ -371,18 +379,36 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             reason: 'Review due',
             nextReviewDateDisplay: dateConverter(o.nextReviewDate),
             dbRecordExists: decorated.dbRecordExists,
+            pnomis,
+            buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
           }
         })
       )
 
+      // we meed the categorisation records for all the U21 offenders identified
+      const eliteCategorisationResultsU21 = await mergeU21ResultWithNomisCategorisationData(
+        nomisClient,
+        agencyId,
+        resultsU21IJ
+      )
+
       const decoratedResultsU21 = await Promise.all(
-        resultsU21IJ.map(async o => {
+        eliteCategorisationResultsU21.map(async o => {
           const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
           if (dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name) {
             // Initial cat in progress
             return null
           }
           const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
+
+          const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus)
+
+          if (requiresWarning) {
+            logger.warn(
+              `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
+            )
+          }
+
           return {
             ...o,
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
@@ -392,18 +418,38 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               .add(21, 'years')
               .format('DD/MM/YYYY'),
             dbRecordExists: decorated.dbRecordExists,
+            pnomis,
+            buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
           }
         })
       )
-      // TODO: append others in the db with recat started - these will be manual reviews (or possibly risk level changes?)
-
       return [...decoratedResultsReview, ...decoratedResultsU21]
         .filter(o => o) // ignore initial cats (set to null)
         .sort((a, b) => sortByDateTimeDesc(b.nextReviewDateDisplay, a.nextReviewDateDisplay))
     } catch (error) {
-      logger.error(error, 'Error during getUncategorisedOffenders')
+      logger.error(error, 'Error during getRecategorisedOffenders')
       throw error
     }
+  }
+
+  async function mergeU21ResultWithNomisCategorisationData(nomisClient, agencyId, resultsU21IJ) {
+    const eliteCategorisationResultsU21 = await nomisClient.getLatestCategorisationForOffenders(
+      agencyId,
+      resultsU21IJ.map(c => c.bookingId)
+    )
+
+    return resultsU21IJ.map(u21 => {
+      const categorisation = eliteCategorisationResultsU21.find(o => o.bookingId === u21.bookingId)
+      if (categorisation) {
+        return {
+          assessStatus: categorisation.assessStatus,
+          ...u21,
+        }
+      }
+      // todo investigate how this can happen
+      logger.error(`No latest categorisation found for u21 offender ${u21.offenderNo} booking id: ${u21.bookingId}`)
+      return u21
+    })
   }
 
   function buildSentenceData(sentenceDate) {
@@ -665,6 +711,39 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  function calculateButtonStatus(dbRecord, pnomisStatus) {
+    let buttonStatus = 'Start'
+    if (pnomisStatus === 'A') {
+      if (dbRecord && dbRecord.status) {
+        if (!(dbRecord.status in [Status.APPROVED.name, Status.AWAITING_APPROVAL.name])) {
+          buttonStatus = 'Edit'
+        }
+      }
+    } else if (dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status) {
+      buttonStatus = 'View'
+    }
+    return buttonStatus
+  }
+
+  function pnomisOrInconsistentWarning(dbRecord, pnomisStatus) {
+    const inconsistent = inconsistentCategorisation(dbRecord, pnomisStatus)
+
+    return {
+      requiresWarning: inconsistent,
+      pnomis: inconsistent || (pnomisStatus === 'P' && (!dbRecord || !dbRecord.status)),
+    }
+  }
+
+  function inconsistentCategorisation(dbRecord, pnomisStatus) {
+    if (pnomisStatus === 'A') {
+      return dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status
+    }
+    // record is pending, valid status is AWAITING_APPROVAL OR SUPERVISOR_BACK
+    return (
+      !!dbRecord && dbRecord.status !== Status.AWAITING_APPROVAL.name && dbRecord.status !== Status.SUPERVISOR_BACK.name
+    )
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -683,5 +762,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     // just for tests:
     buildSentenceData,
     getMatchedCategorisations: matchEliteAndDBCategorisations,
+    pnomisOrInconsistentWarning,
+    calculateButtonStatus,
+    mergeU21ResultWithNomisCategorisationData,
   }
 }

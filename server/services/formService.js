@@ -23,6 +23,16 @@ module.exports = function createFormService(formClient) {
     }
   }
 
+  async function getCategorisationRecordUsingNomisSeq(bookingId, seq, transactionalClient) {
+    try {
+      const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
+      return dataIfExists(data) || {}
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
   async function update({
     bookingId,
     config,
@@ -505,5 +515,6 @@ module.exports = function createFormService(formClient) {
     recordNomisSeqNumber,
     categoriserDecisionWithFormResponse,
     categoriserDecision,
+    getCategorisationRecordUsingNomisSeq,
   }
 }
