@@ -23,6 +23,7 @@ const nomisClient = {
   getCategoryHistory: jest.fn(),
   getAgencyDetail: jest.fn(),
   getCategorisedOffenders: jest.fn(),
+  getLatestCategorisationForOffenders: jest.fn(),
 }
 
 const formService = {
@@ -57,6 +58,7 @@ afterEach(() => {
   nomisClient.getCategoryHistory.mockReset()
   nomisClient.getAgencyDetail.mockReset()
   nomisClient.getCategorisedOffenders.mockReset()
+  nomisClient.getLatestCategorisationForOffenders.mockReset()
 })
 
 function todaySubtract(days) {
@@ -75,6 +77,7 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 123,
         category: 'B',
         nextReviewDate: '2019-04-20',
+        assessStatus: 'A',
       },
       {
         offenderNo: 'H12345',
@@ -83,6 +86,7 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 111,
         category: 'C',
         nextReviewDate: '2019-05-21',
+        assessStatus: 'A',
       },
       {
         offenderNo: 'G55345',
@@ -91,6 +95,7 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 122,
         category: 'D',
         nextReviewDate: '2019-06-22',
+        assessStatus: 'A',
       },
     ]
 
@@ -118,6 +123,21 @@ describe('getRecategoriseOffenders', () => {
         lastName: 'ELSE',
         dateOfBirth: '1998-06-01',
         categoryCode: 'B',
+      },
+    ]
+
+    const u21CatData = [
+      {
+        bookingId: 21,
+        assessStatus: 'A',
+      },
+      {
+        bookingId: 22,
+        assessStatus: 'A',
+      },
+      {
+        bookingId: 23,
+        assessStatus: 'A',
       },
     ]
 
@@ -175,6 +195,7 @@ describe('getRecategoriseOffenders', () => {
     ]
     nomisClient.getRecategoriseOffenders.mockReturnValue(data)
     nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
+    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
     formService.getCategorisationRecord.mockReturnValue({}).mockReturnValueOnce({
       bookingId: 123,
       status: Status.SECURITY_MANUAL.name,
@@ -217,6 +238,14 @@ describe('getRecategoriseOffenders', () => {
         categoryCode: 'I',
       },
     ]
+
+    const u21CatData = [
+      {
+        offenderNo: 'G12345',
+        bookingId: 21,
+        assessStatus: 'A',
+      },
+    ]
     formService.getCategorisationRecord
       .mockReturnValueOnce({
         bookingId: 123,
@@ -230,6 +259,7 @@ describe('getRecategoriseOffenders', () => {
       })
     nomisClient.getRecategoriseOffenders.mockReturnValue(data)
     nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
+    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
 
     const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
 
@@ -873,6 +903,87 @@ describe('isRecat', () => {
   })
 })
 
+describe('pnomisOrInconsistentWarning', () => {
+  test('should return true for nomis status is P but not locally FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'STARTED' }, 'P')
+    expect(result.pnomis).toBe(true)
+    expect(result.requiresWarning).toBe(true)
+  })
+
+  test('should return true for nomis status is A with local status AWAITING_APPROVAL FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'AWAITING_APPROVAL' }, 'A')
+    expect(result.pnomis).toBe(true)
+    expect(result.requiresWarning).toBe(true)
+  })
+
+  test('should return false for nomis status is A with local status STARTED FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'STARTED' }, 'A')
+    expect(result.pnomis).toBe(false)
+    expect(result.requiresWarning).toBe(false)
+  })
+
+  test('should return false for nomis status is A with local status SECURITY_AUTO FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_AUTO' }, 'A')
+    expect(result.pnomis).toBe(false)
+    expect(result.requiresWarning).toBe(false)
+  })
+
+  test('should return false for nomis status is P and local status is SUPERVISOR_BACK FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'SUPERVISOR_BACK' }, 'P')
+    expect(result.pnomis).toBe(false)
+    expect(result.requiresWarning).toBe(false)
+  })
+
+  test('should return false for nomis status is P and local status is SUPERVISOR_BACK FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'SUPERVISOR_BACK' }, 'P')
+    expect(result.pnomis).toBe(false)
+    expect(result.requiresWarning).toBe(false)
+  })
+
+  test('should return true for nomis status is P (without warning) but not locally FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'APPROVED' }, 'A')
+    expect(result.pnomis).toBe(false)
+    expect(result.requiresWarning).toBe(false)
+  })
+})
+
+describe('calculateButtonText', () => {
+  test('should return Start ', async () => {
+    const result = service.calculateButtonStatus({ status: 'STARTED' }, 'A')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return View for nomis status is P but not locally', async () => {
+    const result = service.calculateButtonStatus({ status: 'AWAITING_APPROVAL' }, 'P')
+    expect(result).toMatch('View')
+  })
+
+  test('should return Edit for nomis status is A with local status AWAITING_APPROVAL', async () => {
+    const result = service.calculateButtonStatus({ status: 'STARTED' }, 'A')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return Edit for nomis status is A with local status SECURITY_AUTO', async () => {
+    const result = service.calculateButtonStatus({ status: 'SECURITY_AUTO' }, 'A')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return Edit for nomis status is A with local status SECURITY_MANUAL', async () => {
+    const result = service.calculateButtonStatus({ status: 'SECURITY_MANUAL' }, 'A')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return Start when nomis status is A but dbrecord does not exist', async () => {
+    const result = service.calculateButtonStatus(null, 'A')
+    expect(result).toMatch('Start')
+  })
+
+  test('should return Edit for nomis status is P with local status SUPERVISOR_BACK', async () => {
+    const result = service.calculateButtonStatus({ status: 'SUPERVISOR_BACK' }, 'A')
+    expect(result).toMatch('Edit')
+  })
+})
+
 describe('getPrisonerBackground', () => {
   test('it should return a list of historical categorisations, filtering out any pending categorisations, sorted by assessment date', async () => {
     const cats = [
@@ -1136,5 +1247,51 @@ describe('getMatchedCategorisations', () => {
       },
     ]
     expect(result).toMatchObject(expected)
+  })
+
+  describe('mergeU21ResultWithNomisCategorisationData', () => {
+    test('it should merge in the assessStatus by booking Id', async () => {
+      const u21Cats = [
+        {
+          bookingId: 11,
+          firstName: 'Amos',
+        },
+        {
+          bookingId: 10,
+          firstName: 'Jane',
+        },
+      ]
+
+      const eliteU21Cats = [
+        {
+          offenderNo: 'B1234AA',
+          bookingId: 10,
+          assessStatus: 'A',
+        },
+        {
+          offenderNo: 'B1234AB',
+          bookingId: 11,
+          assessStatus: 'P',
+        },
+      ]
+
+      const expected = [
+        {
+          bookingId: 11,
+          firstName: 'Amos',
+          assessStatus: 'P',
+        },
+
+        {
+          bookingId: 10,
+          firstName: 'Jane',
+          assessStatus: 'A',
+        },
+      ]
+      nomisClient.getLatestCategorisationForOffenders.mockReturnValue(eliteU21Cats)
+      const result = await service.mergeU21ResultWithNomisCategorisationData(nomisClient, 'LEI', u21Cats)
+
+      expect(result).toMatchObject(expected)
+    })
   })
 })
