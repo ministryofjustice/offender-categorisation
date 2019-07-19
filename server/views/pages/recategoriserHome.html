@@ -56,11 +56,12 @@
       <td class="govuk-table__cell">{{ row.displayName }}</td>
       <td class="govuk-table__cell">{{ row.offenderNo }}</td>
       <td class="govuk-table__cell">{{ row.nextReviewDateDisplay }}</td>
-      <td class="govuk-table__cell">{{ row.reason }}</td>
+      <td class="govuk-table__cell">{{ row.reason.value }}</td>
       <td class="govuk-table__cell">{{ row.displayStatus }}</td>
       <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
         {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
-        {% set href = ("/form/recat/awaitingApprovalView/" + row.bookingId) if row.displayStatus == 'Awaiting approval' else ("/tasklistRecat/" + row.bookingId) %}
+        {% set href = ("/form/recat/awaitingApprovalView/" + row.bookingId) if row.displayStatus == 'Awaiting approval'
+                 else ("/tasklistRecat/" + row.bookingId + '?reason=' + row.reason.name) %}
         {% set classes = basicClasses + " grey-button" if row.dbRecordExists else basicClasses %}
         {% if row.pnomis %}
           <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">PNOMIS</div>

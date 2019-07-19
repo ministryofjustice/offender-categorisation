@@ -46,6 +46,7 @@ class LandingPageSpecification extends GebReportingSpec {
     then: 'The page contains a recat button'
     at LandingPage
     startButton.displayed
+    startButton.@href.contains('/tasklistRecat/12?reason=MANUAL')
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
@@ -54,6 +55,9 @@ class LandingPageSpecification extends GebReportingSpec {
     then: 'We are sent to the recat tasklist'
     at TasklistRecatPage
     currentUrl.contains '/tasklistRecat/12'
+    def data = db.getData(12)
+    data.status == ["STARTED"]
+    data.review_reason.value == ["MANUAL"]
   }
 
   def "A recategoriser user sees a warning for initial cat"() {

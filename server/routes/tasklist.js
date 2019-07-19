@@ -29,6 +29,7 @@ module.exports = function Index({
         details.agencyId,
         details.offenderNo,
         CatType.INITIAL.name,
+        null,
         transactionalDbClient
       )
       res.locals.formObject = categorisationRecord.formObject || {}

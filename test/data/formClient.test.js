@@ -35,6 +35,7 @@ describe('getFormDataForUser', () => {
                     approval_date          as "approvalDate",
                     prison_id              as "prisonId",
                     cat_type               as "catType",
+                    review_reason          as "reviewReason",
                     nomis_sequence_no      as "nomisSeq"
              from form f
       where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
@@ -115,17 +116,18 @@ describe('create categorisation record', () => {
       assignedUserId: 'colleague123',
       prisonId: 'MDI',
       offenderNo: 'A4567RS',
+      reviewReason: 'DUE',
       transactionalClient: mockTransactionalClient,
     })
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text: `insert into form (
-              form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type
+              form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type, review_reason
              ) values ($1, $2, $3, $4, $5, (
               select COALESCE(MAX(sequence_no), 0) + 1 from form where booking_id = $2
-                 ), $6, $7, CURRENT_TIMESTAMP, $8
+                 ), $6, $7, CURRENT_TIMESTAMP, $8, $9
              )`,
-      values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS', 'RECAT'],
+      values: [{}, 'bookingId1', 'Meeeee', 'STARTED', 'colleague123', 'MDI', 'A4567RS', 'RECAT', 'DUE'],
     })
   })
 })

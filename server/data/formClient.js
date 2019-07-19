@@ -22,6 +22,7 @@ module.exports = {
                     approval_date          as "approvalDate",
                     prison_id              as "prisonId",
                     cat_type               as "catType",
+                    review_reason          as "reviewReason",
                     nomis_sequence_no      as "nomisSeq"
              from form f
       where f.booking_id = $1 ${sequenceClause}`,
@@ -150,16 +151,26 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  create({ bookingId, catType, userId, status, assignedUserId, prisonId, offenderNo, transactionalClient }) {
+  create({
+    bookingId,
+    catType,
+    userId,
+    status,
+    assignedUserId,
+    prisonId,
+    offenderNo,
+    reviewReason,
+    transactionalClient,
+  }) {
     logger.debug(`creating categorisation record for booking id ${bookingId}`)
     const query = {
       text: `insert into form (
-              form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type
+              form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type, review_reason
              ) values ($1, $2, $3, $4, $5, (
               select COALESCE(MAX(sequence_no), 0) + 1 from form where booking_id = $2
-                 ), $6, $7, CURRENT_TIMESTAMP, $8
+                 ), $6, $7, CURRENT_TIMESTAMP, $8, $9
              )`,
-      values: [{}, bookingId, userId, status, assignedUserId, prisonId, offenderNo, catType],
+      values: [{}, bookingId, userId, status, assignedUserId, prisonId, offenderNo, catType, reviewReason],
     }
     return transactionalClient.query(query)
   },

@@ -57,6 +57,7 @@ class ReviewSpecification extends GebReportingSpec {
       ],
       security: [review: [securityReview: 'Here is the Security information held on this prisoner']]
     ]), 'RECAT')
+    db.createReviewReason(12, 'MANUAL')
 
     when: 'The task list is displayed for a fully completed set of forms'
     fixture.gotoTasklistRecat()
@@ -83,7 +84,7 @@ class ReviewSpecification extends GebReportingSpec {
     changeLinks.size() == 5
 
     prisonerBackgroundSummary*.text() == ['',
-                                          'todo',
+                                          'Manual',
                                           'Categorisation date Category decision Review location\n24/03/2013 B Moorland (HMP & YOI)\n04/04/2012 A Moorland (HMP & YOI)',
                                           'This person has not been reported as the perpetrator in any assaults in custody before',
                                           'This person is considered an escape risk\nXEL First xel comment 2016-09-14\nXEL Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nXER First xer comment 2016-09-16',
