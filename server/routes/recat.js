@@ -92,7 +92,14 @@ module.exports = function Index({
 
       await formService.mergeRiskProfileData(bookingId, dataToStore, transactionalDbClient)
 
-      const data = { ...result.data, categorisations, escapeProfile, violenceProfile, extremismProfile }
+      const data = {
+        ...result.data,
+        ...result.reviewReason,
+        categorisations,
+        escapeProfile,
+        violenceProfile,
+        extremismProfile,
+      }
 
       res.render(`formPages/recat/review`, { ...result, data })
     })
@@ -133,6 +140,7 @@ module.exports = function Index({
       data: { ...pageData, details: { ...details, youngOffender } },
       formName: form,
       status: formData.status,
+      reviewReason: formData.reviewReason,
       backLink,
       errors,
     }
