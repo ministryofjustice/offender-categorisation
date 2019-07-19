@@ -2,6 +2,7 @@ const path = require('path')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
+const ReviewReason = require('../utils/reviewReasonEnum')
 const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter } = require('../utils/utils.js')
 const moment = require('moment')
@@ -376,7 +377,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             ...o,
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
             displayStatus: decorated.displayStatus || 'Not started',
-            reason: 'Review due',
+            reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
             nextReviewDateDisplay: dateConverter(o.nextReviewDate),
             dbRecordExists: decorated.dbRecordExists,
             pnomis,
@@ -413,7 +414,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             ...o,
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
             displayStatus: decorated.displayStatus || 'Not started',
-            reason: 'Age 21',
+            reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.AGE,
             nextReviewDateDisplay: moment(o.dateOfBirth, 'YYYY-MM-DD')
               .add(21, 'years')
               .format('DD/MM/YYYY'),
