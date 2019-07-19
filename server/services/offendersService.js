@@ -314,7 +314,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         }
         if (dbRecordExists && row.dbRecord.nomisSeq !== row.assessmentSeq) {
           logger.warn(
-            `getUnapprovedOffenders: sequence mismatch for bookingId=${row.bookingId}, offenderNo=${row.offenderNo}, nomisSeq=${row.dbRecord.nomisSeq}, assessmentSeq=${row.assessmentSeq}`
+            `getUnapprovedOffenders: sequence mismatch for bookingId=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, nomisSeq=${row.dbRecord.nomisSeq}, assessmentSeq=${row.assessmentSeq}`
           )
         }
         return row
@@ -434,16 +434,19 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function mergeU21ResultWithNomisCategorisationData(nomisClient, agencyId, resultsU21IJ) {
-    const eliteCategorisationResultsU21 = await nomisClient.getLatestCategorisationForOffenders(
+    const eliteResultsRaw = await nomisClient.getLatestCategorisationForOffenders(
       agencyId,
-      resultsU21IJ.map(c => c.bookingId)
+      resultsU21IJ.map(c => c.offenderNo)
     )
 
+    // results can include inactive - need to remove
+    const eliteResultsFiltered = eliteResultsRaw.filter(c => c.assessmentStatus !== 'I')
+
     return resultsU21IJ.map(u21 => {
-      const categorisation = eliteCategorisationResultsU21.find(o => o.bookingId === u21.bookingId)
+      const categorisation = eliteResultsFiltered.find(o => o.bookingId === u21.bookingId)
       if (categorisation) {
         return {
-          assessStatus: categorisation.assessStatus,
+          assessStatus: categorisation.assessmentStatus,
           ...u21,
         }
       }

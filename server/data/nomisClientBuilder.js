@@ -25,9 +25,9 @@ module.exports = token => {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}?latestOnly=false`
       return nomisPost({ path, body: bookingIds })
     },
-    getLatestCategorisationForOffenders(agencyId, bookingIds) {
-      const path = `${apiUrl}api/offender-assessments/category/${agencyId}?latestOnly=true`
-      return nomisPost({ path, body: bookingIds })
+    getLatestCategorisationForOffenders(agencyId, offenderNos) {
+      const path = `${apiUrl}api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false`
+      return nomisPost({ path, body: offenderNos })
     },
     getRecategoriseOffenders(agencyId, cutoff) {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS&date=${cutoff}`
@@ -35,7 +35,8 @@ module.exports = token => {
     },
     getPrisonersAtLocation(agencyId, fromDob, toDob) {
       const path = `${apiUrl}api/locations/description/${agencyId}/inmates?fromDob=${fromDob}&toDob=${toDob}&returnCategory=true`
-      return nomisUserGet({ path })
+      const headers = { 'Page-Limit': 5000 }
+      return nomisUserGet({ path, headers })
     },
     getSentenceDatesForOffenders(bookingIds) {
       const path = `${apiUrl}api/offender-sentences/bookings`
@@ -90,7 +91,7 @@ module.exports = token => {
       return nomisUserGet({ path })
     },
     getAgencyDetail(agencyId) {
-      const path = `${apiUrl}api/agencies/${agencyId}`
+      const path = `${apiUrl}api/agencies/${agencyId}?activeOnly=false`
       return nomisUserGet({ path })
     },
     createSupervisorApproval(details) {
