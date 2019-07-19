@@ -1261,18 +1261,27 @@ describe('getMatchedCategorisations', () => {
           bookingId: 10,
           firstName: 'Jane',
         },
+        {
+          bookingId: 12,
+          firstName: 'Inactive',
+        },
       ]
 
       const eliteU21Cats = [
         {
           offenderNo: 'B1234AA',
           bookingId: 10,
-          assessStatus: 'A',
+          assessmentStatus: 'A',
+        },
+        {
+          offenderNo: 'B1234AA',
+          bookingId: 12,
+          assessmentStatus: 'I',
         },
         {
           offenderNo: 'B1234AB',
           bookingId: 11,
-          assessStatus: 'P',
+          assessmentStatus: 'P',
         },
       ]
 
@@ -1287,6 +1296,10 @@ describe('getMatchedCategorisations', () => {
           bookingId: 10,
           firstName: 'Jane',
           assessStatus: 'A',
+        },
+        {
+          bookingId: 12,
+          firstName: 'Inactive', // an inactive cat was returned here
         },
       ]
       nomisClient.getLatestCategorisationForOffenders.mockReturnValue(eliteU21Cats)
