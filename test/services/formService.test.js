@@ -157,6 +157,7 @@ describe('update', () => {
         'LEI',
         'OFFno',
         CatType.INITIAL.name,
+        'AGE',
         mockTransactionalClient
       )
 
@@ -169,6 +170,7 @@ describe('update', () => {
         assignedUserId: 'User',
         prisonId: 'LEI',
         offenderNo: 'OFFno',
+        reviewReason: 'AGE',
         transactionalClient: mockTransactionalClient,
       })
     })
@@ -689,7 +691,15 @@ describe('createOrRetrieveCategorisationRecord', () => {
   test('record exists', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
 
-    await service.createOrRetrieveCategorisationRecord(bookingId, userId, mockTransactionalClient)
+    await service.createOrRetrieveCategorisationRecord(
+      bookingId,
+      userId,
+      'MDI',
+      'A4567RS',
+      'RECAT',
+      'DUE',
+      mockTransactionalClient
+    )
 
     expect(formClient.update).not.toBeCalled()
   })
@@ -703,6 +713,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
       'MDI',
       'A4567RS',
       'RECAT',
+      'AGE',
       mockTransactionalClient
     )
 
@@ -714,6 +725,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
       assignedUserId: userId,
       prisonId: 'MDI',
       offenderNo: 'A4567RS',
+      reviewReason: 'AGE',
       transactionalClient: mockTransactionalClient,
     })
   })

@@ -22,6 +22,7 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals.user.token)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
+      const { reason } = req.query
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
       let categorisationRecord = await formService.createOrRetrieveCategorisationRecord(
         bookingId,
@@ -29,6 +30,7 @@ module.exports = function Index({
         details.agencyId,
         details.offenderNo,
         CatType.RECAT.name,
+        reason,
         transactionalDbClient
       )
 
@@ -47,6 +49,7 @@ module.exports = function Index({
           details.agencyId,
           details.offenderNo,
           CatType.RECAT.name,
+          reason,
           transactionalDbClient
         )
       }

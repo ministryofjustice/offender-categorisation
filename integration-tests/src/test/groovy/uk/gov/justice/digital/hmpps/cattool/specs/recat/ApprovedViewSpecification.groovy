@@ -54,6 +54,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
       },
       "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
       "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}''')
+    db.createReviewReason(12, 'AGE')
 
     when: 'the approved view page for B2345YZ is selected'
     navigateToView()
@@ -67,7 +68,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     comments.size() == 0
     !openConditionsHeader.isDisplayed()
     prisonerBackgroundSummary*.text() == [
-      '', 'todo', ('Categorisation date Category decision Review location\n' +
+      '', 'Age 21', ('Categorisation date Category decision Review location\n' +
       '24/03/2013 B Moorland (HMP & YOI)\n' +
       '04/04/2012 A Moorland (HMP & YOI)'),
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months',

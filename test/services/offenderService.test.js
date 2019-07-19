@@ -1,6 +1,7 @@
 const serviceCreator = require('../../server/services/offendersService')
 const moment = require('moment')
 const Status = require('../../server/utils/statusEnum')
+const ReviewReason = require('../../server/utils/reviewReasonEnum')
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -150,7 +151,7 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 123,
         displayStatus: Status.SECURITY_MANUAL.value,
         nextReviewDateDisplay: '20/04/2019',
-        reason: 'Review due',
+        reason: ReviewReason.DUE,
       },
       {
         offenderNo: 'U2101AA',
@@ -160,7 +161,7 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 21,
         displayStatus: 'Not started',
         nextReviewDateDisplay: '01/05/2019',
-        reason: 'Age 21',
+        reason: ReviewReason.AGE,
       },
       {
         offenderNo: 'H12345',
@@ -170,7 +171,7 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 111,
         displayStatus: 'Not started',
         nextReviewDateDisplay: '21/05/2019',
-        reason: 'Review due',
+        reason: ReviewReason.DUE,
       },
       {
         offenderNo: 'U2102AA',
@@ -180,7 +181,7 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 22,
         displayStatus: 'Not started',
         nextReviewDateDisplay: '01/06/2019',
-        reason: 'Age 21',
+        reason: ReviewReason.AGE,
       },
       {
         offenderNo: 'G55345',
@@ -190,7 +191,7 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 122,
         displayStatus: 'Not started',
         nextReviewDateDisplay: '22/06/2019',
-        reason: 'Review due',
+        reason: ReviewReason.DUE,
       },
     ]
     nomisClient.getRecategoriseOffenders.mockReturnValue(data)
