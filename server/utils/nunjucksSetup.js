@@ -1,5 +1,6 @@
 const nunjucks = require('nunjucks')
 const Status = require('../utils/statusEnum')
+const ReviewReason = require('../utils/reviewReasonEnum')
 const { dateConverter, formatLength, getLongDateFormat } = require('../utils/utils.js')
 const config = require('../config')
 
@@ -29,6 +30,7 @@ module.exports = (app, path) => {
   njkEnv
     .addFilter('findError', findError)
     .addGlobal('Status', Status)
+    .addGlobal('ReviewReason', ReviewReason)
     .addGlobal('dateConverter', dateConverter)
     .addGlobal('getLongDateFormat', getLongDateFormat)
     .addGlobal('formatLength', formatLength)

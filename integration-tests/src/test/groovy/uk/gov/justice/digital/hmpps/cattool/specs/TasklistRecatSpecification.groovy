@@ -54,6 +54,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     and: 'SOC data is stored and merged correctly'
     def data = db.getData(12)
     data.status == ["STARTED"]
+    data.review_reason.value == ["DUE"]
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
     response == [socProfile: [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C']]
   }

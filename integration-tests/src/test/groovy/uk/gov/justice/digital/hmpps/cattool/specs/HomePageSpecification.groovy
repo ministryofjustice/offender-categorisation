@@ -155,6 +155,7 @@ class HomePageSpecification extends GebReportingSpec {
     reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     startButtons[0].text() == 'Start'
+    startButtons[0].@href.contains('/tasklistRecat/12?reason=DUE')
   }
 
   def "The home page for a multiple role user is present"() {
