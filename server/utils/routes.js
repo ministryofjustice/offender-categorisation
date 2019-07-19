@@ -30,7 +30,7 @@ function determinePathFromDecisions({ decisions, data }) {
 
 function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl) {
   const roles = jwtDecode(res.locals.user.token).authorities
-
+  // NOTE: order must match multirole.html
   if (req.session && req.session.currentRole) {
     res.redirect(lookupRoleUrl(req.session.currentRole, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl))
   } else if (roles && roles.includes('ROLE_APPROVE_CATEGORISATION')) {
