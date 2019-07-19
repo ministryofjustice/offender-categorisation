@@ -259,27 +259,23 @@ class Elite2Api extends WireMockRule {
     )
 
     this.stubFor(
-      post("/api/offender-assessments/category/LEI?latestOnly=true")
+      post("/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false")
         .willReturn(
         aResponse()
           .withBody(JsonOutput.toJson([
           [
             bookingId     : 21,
             offenderNo    : 'C0001AA',
-            firstName     : 'TINY',
-            lastName      : 'TIM',
-            category      : 'C',
+            classificationCode      : 'C',
             nextReviewDate: '2019-07-25',
-            assessStatus: assessStatusList[2]
+            assessmentStatus: assessStatusList[2]
           ],
           [
             bookingId     : 22,
             offenderNo    : 'C0002AA',
-            firstName     : 'ADRIAN',
-            lastName      : 'MOLE',
-            category      : 'D',
+            classificationCode      : 'D',
             nextReviewDate: '2019-07-27',
-            assessStatus  : assessStatusList[3]
+            assessmentStatus  : assessStatusList[3]
           ],
         ]
         ))
@@ -347,27 +343,23 @@ class Elite2Api extends WireMockRule {
     )
 
     this.stubFor(
-      post("/api/offender-assessments/category/LEI?latestOnly=true")
+      post("/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false")
         .willReturn(
         aResponse()
           .withBody(JsonOutput.toJson([
           [
             bookingId     : 21,
             offenderNo    : 'C0001AA',
-            firstName     : 'TINY',
-            lastName      : 'TIM',
-            category      : 'C',
+            classificationCode      : 'C',
             nextReviewDate: '2019-07-25',
-            assessStatus: 'A'
+            assessmentStatus: 'A'
           ],
           [
             bookingId     : 22,
             offenderNo    : 'C0002AA',
-            firstName     : 'ADRIAN',
-            lastName      : 'MOLE',
-            category      : 'D',
+            classificationCode      : 'D',
             nextReviewDate: '2019-07-27',
-            assessStatus  : 'A'
+            assessmentStatus  : 'A'
           ],
         ]
         ))
@@ -1060,7 +1052,7 @@ class Elite2Api extends WireMockRule {
   def stubAgencyDetails(agency) {
 
     this.stubFor(
-      get("/api/agencies/$agency")
+      get("/api/agencies/$agency?activeOnly=false")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
