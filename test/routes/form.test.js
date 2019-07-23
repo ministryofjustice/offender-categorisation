@@ -186,6 +186,68 @@ describe('GET /security/review', () => {
   )
 })
 
+describe('GET /approvedView', () => {
+  test('Open conditions entry is displayed on done view (after being abandoned), with no change links - RECAT', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' } },
+    })
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+      })
+  })
+
+  test('Open conditions entry is displayed on done view (after being abandoned), with no change links - INITAL', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' } },
+    })
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+      })
+  })
+
+  test('Open conditions entry is displayed on done view , with no change links - INITAL', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' }, openConditionsRequested: true },
+    })
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+      })
+  })
+})
+
 describe('GET /supervisor/review', () => {
   test('initial categorisations', () => {
     formService.getCategorisationRecord.mockResolvedValue({
@@ -220,6 +282,25 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
+      })
+  })
+
+  test('Open conditions entry is always displayed after open conditions abandoned', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' } },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
       })
   })
 
@@ -492,6 +573,86 @@ describe('GET /categoriser/review', () => {
           mockTransactionalClient
         )
         expect(formService.updateFormData).not.toBeCalled()
+      })
+  })
+
+  test('Open conditions entry is displayed after being abandoned, with no change links - RECAT', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' } },
+    })
+
+    return request(app)
+      .get(`/categoriser/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+      })
+  })
+
+  test('Open conditions entry is displayed after chosen, with change links - RECAT', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' }, openConditionsRequested: true },
+    })
+
+    return request(app)
+      .get(`/categoriser/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('/form/openConditions/foreignNational/')
+      })
+  })
+
+  test('Open conditions entry is displayed after being abandoned, with no change links - INITAL', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' } },
+    })
+
+    return request(app)
+      .get(`/categoriser/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+      })
+  })
+
+  test('Open conditions entry is displayed after chosen, with change links - INITIAL', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'INITAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' }, openConditionsRequested: true },
+    })
+
+    return request(app)
+      .get(`/categoriser/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('/form/openConditions/foreignNational/')
       })
   })
 })
