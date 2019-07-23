@@ -149,7 +149,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
-    then: 'the review page is displayed and Data is stored correctly. Data is persisted - regardless of the decision to end the open conditions flow'
+    then: 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     at ReviewRecatPage
     changeLinks.size() == 5
 
@@ -158,7 +158,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14th December 2019']
 
-    !earliestReleaseDate.displayed
+    riskOfHarm*.text() == ['', 'Yes', 'Yes\nharmManagedText details']
 
     def data = db.getData(12)
     data.status == ["STARTED"]
