@@ -68,8 +68,8 @@ class DatabaseUtils {
     doCreateData(id, bookingId, status, json)
   }
 
-  def createSecurityReviewedData(id, bookingId, status, json, reviewedBy, reviewDate, catType='INITIAL') {
-    doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, catType, null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', reviewedBy, reviewDate)
+  def createSecurityReviewedData(id, bookingId, offenderNo, status, json, reviewedBy, reviewDate, catType='INITIAL') {
+    doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, catType, null, null, null, 1, null, 'LEI', offenderNo, 'current_timestamp(2)', reviewedBy, reviewDate)
   }
 
   private doCreateData(id, bookingId, status, json) {

@@ -707,6 +707,32 @@ describe('getReferredOffenders', () => {
     },
   ]
 
+  const securityReferredOffenders = [
+    {
+      id: -1,
+      bookingId: 123,
+      offenderNo: 'G12345',
+      userId: 'me',
+      status: Status.SECURITY_AUTO.name,
+      formObject: '',
+      // assigned_user_id not present
+      securityReferredDate: '2019-02-04',
+      securityReferredBy: 'JSMITH',
+      catType: 'INITIAL',
+    },
+    {
+      id: -3,
+      bookingId: 122,
+      offenderNo: 'G55345',
+      userId: 'me',
+      status: Status.SECURITY_MANUAL.name,
+      formObject: '',
+      securityReferredDate: '2019-02-04',
+      securityReferredBy: 'BMAY',
+      catType: 'INITIAL',
+    },
+  ]
+
   test('it should return a list of offenders and sentence information', async () => {
     const sentenceDates = [
       {
@@ -724,29 +750,7 @@ describe('getReferredOffenders', () => {
     nomisClient.getUserDetailList.mockReturnValue(userDetailsList)
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
 
-    formService.getSecurityReferredOffenders.mockImplementation(() => [
-      {
-        id: -1,
-        bookingId: 123,
-        userId: 'me',
-        status: Status.SECURITY_AUTO.name,
-        formObject: '',
-        // assigned_user_id not present
-        securityReferredDate: '2019-02-04',
-        securityReferredBy: 'JSMITH',
-        catType: 'INITIAL',
-      },
-      {
-        id: -3,
-        bookingId: 122,
-        userId: 'me',
-        status: Status.SECURITY_MANUAL.name,
-        formObject: '',
-        securityReferredDate: '2019-02-04',
-        securityReferredBy: 'BMAY',
-        catType: 'INITIAL',
-      },
-    ])
+    formService.getSecurityReferredOffenders.mockImplementation(() => securityReferredOffenders)
 
     const expected = [
       {
@@ -794,6 +798,7 @@ describe('getReferredOffenders', () => {
       {
         id: -1,
         bookingId: 123,
+        offenderNo: 'G12345',
         userId: 'me',
         status: Status.SECURITY_AUTO.name,
         formObject: '',
@@ -805,30 +810,7 @@ describe('getReferredOffenders', () => {
       {
         id: -3,
         bookingId: 122,
-        userId: 'me',
-        status: Status.SECURITY_MANUAL.name,
-        formObject: '',
-        securityReferredDate: '2019-02-04',
-        securityReferredBy: 'BMAY',
-        catType: 'INITIAL',
-      },
-    ])
-
-    formService.getSecurityReferredOffenders.mockImplementation(() => [
-      {
-        id: -1,
-        bookingId: 123,
-        userId: 'me',
-        status: Status.SECURITY_AUTO.name,
-        formObject: '',
-        // assigned_user_id not present
-        securityReferredDate: '2019-02-04',
-        securityReferredBy: 'JSMITH',
-        catType: 'INITIAL',
-      },
-      {
-        id: -3,
-        bookingId: 122,
+        offenderNo: 'G9999',
         userId: 'me',
         status: Status.SECURITY_MANUAL.name,
         formObject: '',
