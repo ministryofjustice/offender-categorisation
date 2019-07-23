@@ -193,7 +193,7 @@ module.exports = function Index({
       const form = 'confirmBack'
       const formPageConfig = formConfig[section][form]
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, req.body)) {
         return
       }
 
@@ -346,8 +346,9 @@ module.exports = function Index({
       const form = 'securityInput'
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
+      const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
@@ -355,7 +356,7 @@ module.exports = function Index({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
         transactionalClient: transactionalDbClient,
@@ -379,8 +380,9 @@ module.exports = function Index({
       const form = 'securityBack'
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
+      const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
@@ -388,7 +390,7 @@ module.exports = function Index({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
         transactionalClient: transactionalDbClient,
@@ -406,8 +408,9 @@ module.exports = function Index({
       const form = 'review'
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
+      const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
@@ -415,7 +418,7 @@ module.exports = function Index({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
         transactionalClient: transactionalDbClient,
@@ -434,10 +437,9 @@ module.exports = function Index({
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
-
       const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
@@ -495,10 +497,9 @@ module.exports = function Index({
       const section = 'supervisor'
       const form = 'review'
       const formPageConfig = formConfig[section][form]
-
       const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
@@ -585,8 +586,9 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[section][form]
+      const userInput = clearConditionalFields(req.body)
 
-      const valid = formService.isValid(formPageConfig, req, res, section, form, bookingId)
+      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
       if (!valid) {
         return
       }
@@ -595,7 +597,7 @@ module.exports = function Index({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: clearConditionalFields(req.body),
+        userInput,
         formSection: section,
         formName: form,
         transactionalClient: transactionalDbClient,

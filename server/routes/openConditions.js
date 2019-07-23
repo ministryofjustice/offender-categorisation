@@ -188,12 +188,12 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'riskLevels'
       const section = 'openConditions'
       const formPageConfig = formConfig.openConditions[form]
+      const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
-      const userInput = clearConditionalFields(req.body)
       const bookingIdInt = parseInt(bookingId, 10)
       await formService.update({
         bookingId: bookingIdInt,
@@ -229,12 +229,12 @@ module.exports = function Index({ formService, offendersService, userService, au
       const section = 'openConditions'
       const form = 'notRecommended'
       const formPageConfig = formConfig.openConditions[form]
+      const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
-      const userInput = clearConditionalFields(req.body)
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
@@ -263,14 +263,21 @@ module.exports = function Index({ formService, offendersService, userService, au
       const formPageConfig = formConfig[section][form]
       const sectionForValidation = 'openConditions' // validation uses open conditions config to return to open conditions on validation failure
       const formPageConfigForValidation = formConfig.openConditions[form]
+      const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfigForValidation, req, res, sectionForValidation, form, bookingId)) {
+      if (
+        !formService.isValid(
+          formPageConfigForValidation,
+          req,
+          res,
+          `/form/${sectionForValidation}/${form}/${bookingId}`,
+          userInput
+        )
+      ) {
         return
       }
 
       const bookingInt = parseInt(bookingId, 10)
-
-      const userInput = clearConditionalFields(req.body)
 
       if (userInput.openConditionsCategoryAppropriate === 'Yes') {
         log.info(`Categoriser creating initial categorisation record:`)
@@ -310,12 +317,12 @@ module.exports = function Index({ formService, offendersService, userService, au
       const userId = req.user.username
       const section = 'openConditions'
       const formPageConfig = formConfig.openConditions[form]
+      const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, section, form, bookingId)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
-      const userInput = clearConditionalFields(req.body)
       const bookingIdInt = parseInt(bookingId, 10)
       await formService.update({
         bookingId: bookingIdInt,
