@@ -190,14 +190,14 @@ describe('open conditions', () => {
   })
 
   test.each`
-    formName                 | userInput                     | nextPath
-    ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNational/'}
-    ${'foreignNational'}     | ${{}}                         | ${'/form/openConditions/riskOfHarm/'}
-    ${'riskOfHarm'}          | ${{}}                         | ${'/form/openConditions/furtherCharges/'}
-    ${'furtherCharges'}      | ${{}}                         | ${'/form/openConditions/riskLevels/'}
-    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}     | ${'/tasklist/'}
-    ${'riskLevels'}          | ${{ catType: 'RECAT' }}       | ${'/tasklistRecat/'}
-  `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
+    formName                 | userInput                                                                                     | updateInfo                     | nextPath
+    ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}                            | ${{ threeOrMoreYears: 'No' }}  | ${'/form/openConditions/foreignNational/'}
+    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }} | ${'/form/openConditions/riskOfHarm/'}
+    ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}       | ${'/form/openConditions/furtherCharges/'}
+    ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                          | ${'/form/openConditions/riskLevels/'}
+    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}      | ${'/tasklist/'}
+    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}        | ${'/tasklistRecat/'}
+  `('Post $formName should go to $nextPath', ({ formName, userInput, updateInfo, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {},
@@ -212,7 +212,7 @@ describe('open conditions', () => {
           bookingId: 12345,
           userId: 'CA_USER_TEST',
           config: formConfig.openConditions[formName],
-          userInput,
+          userInput: updateInfo,
           formSection: 'openConditions',
           formName,
           transactionalClient: mockTransactionalClient,
