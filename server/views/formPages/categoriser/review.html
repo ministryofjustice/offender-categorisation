@@ -30,6 +30,10 @@
 
       {% set showOpenConditionChangeLinks = true %}
       {% include "../../partials/reviewContentsOpenConditions.html" %}
+    {% elif (data.openConditions) %}
+      <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+      {% set showOpenConditionChangeLinks = false %}
+      {% include "../../partials/reviewContentsOpenConditions.html" %}
     {% endif %}
 
   </div>
