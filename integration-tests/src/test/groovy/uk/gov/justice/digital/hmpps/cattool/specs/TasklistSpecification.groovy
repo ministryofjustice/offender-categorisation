@@ -119,12 +119,12 @@ class TasklistSpecification extends GebReportingSpec {
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     logoutLink.click()
     elite2Api.stubGetCategoriserStaffDetailsByUsernameList(CATEGORISER_USER)
-    elite2Api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
     fixture.loginAs(SECURITY_USER)
 
     then: 'this prisoner is present with automatic referral'
     at SecurityHomePage
-    prisonNos[0] == 'B2345XY'
+    prisonNos[0] == 'B2345YZ'
     referredBy[0] == 'Automatic'
   }
 }

@@ -180,7 +180,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
         const offenderDetailsFromElite = await nomisClient.getOffenderDetailList(
           agencyId,
-          securityReferredFromDB.map(c => c.bookingId)
+          securityReferredFromDB.map(c => c.offenderNo)
         )
 
         const userDetailFromElite = await nomisClient.getUserDetailList(
@@ -188,7 +188,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         )
 
         const decoratedResults = securityReferredFromDB.map(o => {
-          const offenderDetail = offenderDetailsFromElite.find(record => record.bookingId === o.bookingId)
+          const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
 
           let securityReferredBy
           if (o.securityReferredBy) {
@@ -233,7 +233,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       if (!isNilOrEmpty(securityReviewedFromDB)) {
         const offenderDetailsFromElite = await nomisClient.getOffenderDetailList(
           agencyId,
-          securityReviewedFromDB.map(c => c.bookingId)
+          securityReviewedFromDB.map(c => c.offenderNo)
         )
 
         const userDetailFromElite = await nomisClient.getUserDetailList(
@@ -242,7 +242,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
         const decoratedResults = securityReviewedFromDB.map(o => {
           const reviewedMoment = moment(o.securityReviewedDate, 'YYYY-MM-DD')
-          const offenderDetail = offenderDetailsFromElite.find(record => record.bookingId === o.bookingId)
+          const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
           const userDetail = userDetailFromElite.find(record => record.username === o.securityReviewedBy)
           return {
             ...o,
