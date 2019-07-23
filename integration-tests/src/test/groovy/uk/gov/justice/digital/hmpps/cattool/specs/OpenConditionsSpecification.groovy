@@ -284,7 +284,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
     continueButton.click()
 
-    then: 'the review page is displayed and Data is stored correctly. Data is persisted - regardless of the decision to end the open conditions flow'
+    then: 'the review page is displayed and Data is stored correctly. Data is persisted and displayed - regardless of the decision to end the open conditions flow'
     at ReviewPage
     changeLinks.size() == 9
 
@@ -295,7 +295,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     extremismRatingSummary*.text() == ['Yes', 'Yes']
     securityInputSummary*.text() == ['No', 'No']
 
-    !earliestReleaseDate.displayed
+    riskOfHarm*.text() == ['', 'Yes', 'Yes\nharmManagedText details']
 
     def data = db.getData(12)
     data.status == ["SECURITY_BACK"]

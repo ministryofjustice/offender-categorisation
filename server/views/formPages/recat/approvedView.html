@@ -96,7 +96,7 @@
     {% set showChangeLinks = false %}
     {% include "../../partials/reviewContentsRecat.html" %}
 
-    {% if (currentCat == "D" or currentCat == "J") %}
+    {% if (currentCat == "D" or currentCat == "J" or data.openConditions) %}
 
       <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
       {% set showOpenConditionChangeLinks = false %}
