@@ -240,8 +240,13 @@ module.exports = function Index({
           formName: 'miniHigherSecurityReview',
           transactionalClient: transactionalDbClient,
         })
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-        res.redirect(`${nextPath}${bookingId}`)
+        if (userInput.category === 'D' || userInput.category === 'J') {
+          // redirect to tasklist for open conditions, via 'added' page
+          res.redirect(`/openConditionsAdded/${bookingId}?catType=RECAT`)
+        } else {
+          const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+          res.redirect(`${nextPath}${bookingId}`)
+        }
       }
     })
   )

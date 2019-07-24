@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.ApprovedViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
@@ -82,6 +83,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubCategorise('D', '', 12, 5)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
 
     then: 'the tasklist page is displayed with open conditions section added'
     at(new TasklistPage(bookingId: '12'))
@@ -331,6 +334,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubCategorise('D', '', 12, 5)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
 
     then: 'the tasklist page is displayed with open conditions section added'
     at(new TasklistPage(bookingId: '12'))
@@ -474,6 +479,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubCategorise('D', '', 12, 5)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
 
     then: 'the tasklist page is displayed with open conditions section added'
     at(new TasklistPage(bookingId: '12'))

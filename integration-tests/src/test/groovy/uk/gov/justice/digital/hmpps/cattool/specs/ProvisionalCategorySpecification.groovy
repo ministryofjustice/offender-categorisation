@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
@@ -162,6 +163,8 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
 
     then: 'user is redirected to the categoriser tasklist with the open conditions flow available'
     at TasklistPage
@@ -200,6 +203,8 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
 
     then: 'user is redirected to open conditions flow'
     at TasklistPage
