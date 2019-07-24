@@ -89,13 +89,13 @@ class SecurityInputSpecification extends GebReportingSpec {
     when: 'a security user views their homepage'
     elite2Api.stubGetCategoriserStaffDetailsByUsernameList(RECATEGORISER_USER)
     fixture.logout()
-    elite2Api.stubGetOffenderDetailsByBookingIdList('LEI', 12)
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     fixture.loginAs(SECURITY_USER)
 
     then: 'this prisoner is present'
     at SecurityHomePage
-    prisonNos[0] == 'B2345XY'
+    prisonNos[0] == 'B2345YZ'
     referredBy[0] == 'Api User'
 
     when: 'the security user enters data'

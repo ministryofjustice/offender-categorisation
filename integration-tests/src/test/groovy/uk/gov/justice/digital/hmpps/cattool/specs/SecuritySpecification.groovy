@@ -43,7 +43,7 @@ class SecuritySpecification extends GebReportingSpec {
     def reviewDate1 = LocalDate.of(2019, 1, 28)
     def reviewDate2 = LocalDate.of(2019, 1, 31)
 
-    db.createSecurityReviewedData(-2, 13, 'SECURITY_BACK', JsonOutput.toJson([
+    db.createSecurityReviewedData(-2, 13, 'B2345XY', 'SECURITY_BACK', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
@@ -55,7 +55,7 @@ class SecuritySpecification extends GebReportingSpec {
 
     db.createRiskProfileDataForExistingRow(13, JsonOutput.toJson([socProfile: [nomsId: "G1110GX", riskType: "SOC", transferToSecurity: true, provisionalCategorisation: "C"]]))
 
-    db.createSecurityReviewedData(-1,14, 'APPROVED', JsonOutput.toJson([
+    db.createSecurityReviewedData(-1,14, 'B2345YZ','APPROVED', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         securityInput   : [securityInputNeeded: "Yes", securityInputNeededText: "Comments from Categoriser"],
@@ -81,7 +81,7 @@ class SecuritySpecification extends GebReportingSpec {
     at SecurityHomePage
 
     elite2Api.stubCategorised()
-    elite2Api.stubGetOffenderDetailsByBookingIdList('LEI')
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(['B2345XY', 'B2345YZ'])
     elite2Api.stubGetSecurityStaffDetailsByUsernameList()
 
     doneTabLink.click()
@@ -90,7 +90,7 @@ class SecuritySpecification extends GebReportingSpec {
 
     at SecurityDonePage
 
-    prisonNos == ['AB321', 'AB123']
+    prisonNos == ['B2345YZ', 'B2345XY']
     names == ['Dent, Jane', 'Clark, Frank']
     def today = LocalDate.now().format('dd/MM/yyyy')
     reviewedDates == ['31/01/2019','28/01/2019']

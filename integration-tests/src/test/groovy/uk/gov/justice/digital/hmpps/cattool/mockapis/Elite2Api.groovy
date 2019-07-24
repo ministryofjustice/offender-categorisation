@@ -718,15 +718,15 @@ class Elite2Api extends WireMockRule {
   }
 
 
-  def stubGetOffenderDetailsByBookingIdList(String agency) {
+  def stubGetOffenderDetailsByOffenderNoList(List offenderNumbers) {
     this.stubFor(
-      post("/api/bookings/offenders/$agency/list")
+      post("/api/bookings/offenders")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
               [
                 bookingId  : 13,
-                offenderNo : 'AB123',
+                offenderNo : offenderNumbers[0],
                 agencyId   : 'LEI',
                 firstName  : 'FRANK',
                 lastName   : 'CLARK',
@@ -734,7 +734,7 @@ class Elite2Api extends WireMockRule {
               ],
               [
                 bookingId  : 14,
-                offenderNo : 'AB321',
+                offenderNo : offenderNumbers[1],
                 agencyId   : 'LEI',
                 firstName  : 'JANE',
                 lastName   : 'DENT',
@@ -746,15 +746,15 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  def stubGetOffenderDetailsByBookingIdList(String agency, bookingId) {
+  def stubGetOffenderDetailsByOffenderNoList(bookingId, offenderNo) {
     this.stubFor(
-      post("/api/bookings/offenders/$agency/list")
+      post("/api/bookings/offenders")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
               [
                 bookingId  : bookingId,
-                offenderNo : 'B2345XY',
+                offenderNo : offenderNo,
                 agencyId   : 'LEI',
                 firstName  : 'JANE',
                 lastName   : 'DENT',
