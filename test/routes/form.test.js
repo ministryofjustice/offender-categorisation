@@ -774,8 +774,9 @@ describe('POST /supervisor/confirmBack', () => {
 
 describe('POST /categoriser/provisionalCategory', () => {
   test.each`
-    sectionName      | formName                 | userInput                                                                             | nextPath
-    ${'categoriser'} | ${'provisionalCategory'} | ${{ suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH' }} | ${'/tasklist/categoriserSubmitted/'}
+    sectionName      | formName                 | userInput                                                                              | nextPath
+    ${'categoriser'} | ${'provisionalCategory'} | ${{ suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH' }}  | ${'/tasklist/categoriserSubmitted/12345'}
+    ${'categoriser'} | ${'provisionalCategory'} | ${{ suggestedCategory: 'C', overriddenCategory: 'D', overriddenCategoryText: 'text' }} | ${'/openConditionsAdded/12345?catType=INITIAL'}
   `(
     'should render $expectedContent for /categoriser/provisionalCategory',
     ({ sectionName, formName, userInput, nextPath }) =>
@@ -783,7 +784,7 @@ describe('POST /categoriser/provisionalCategory', () => {
         .post(`/${sectionName}/${formName}/12345`)
         .send(userInput)
         .expect(302)
-        .expect('Location', `${nextPath}12345`)
+        .expect('Location', `${nextPath}`)
         .expect(() => {
           expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
           expect(offendersService.getCatAInformation).toBeCalledTimes(0)

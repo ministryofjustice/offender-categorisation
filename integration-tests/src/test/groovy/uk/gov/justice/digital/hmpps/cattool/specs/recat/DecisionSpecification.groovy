@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.DecisionPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.HigherSecurityReviewPage
@@ -116,8 +117,9 @@ class DecisionSpecification extends GebReportingSpec {
 
     when: 'user changes their mind - mini higher security data is cleared'
     categoryDOption.click()
-
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
     at TasklistRecatPage
 
     then: "data no longer includes higher security data"
@@ -190,8 +192,9 @@ class DecisionSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
-
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
     at TasklistRecatPage
 
     then: "data no longer includes higher security data"
