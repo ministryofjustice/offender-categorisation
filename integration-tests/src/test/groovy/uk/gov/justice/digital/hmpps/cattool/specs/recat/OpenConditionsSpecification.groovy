@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
@@ -64,6 +65,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     categoryDOption.click()
     elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
 
     then: 'the tasklist recat page is displayed with open conditions section added'
     at TasklistRecatPage
@@ -193,6 +196,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     categoryDOption.click()
     elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
 
     then: 'the tasklist page is displayed with open conditions section added'
     at TasklistRecatPage
@@ -342,8 +347,9 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at DecisionPage
     categoryDOption.click()
     elite2Api.stubCategorise('D', '', 12, 5)
-    //riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
 
     then: 'the tasklist page is displayed with open conditions section added'
     at TasklistRecatPage
@@ -490,6 +496,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at DecisionPage
     categoryDOption.click()
     submitButton.click()
+    at OpenConditionsAddedPage
+    button.click()
     at TasklistRecatPage
     continueButton.click()
 

@@ -177,6 +177,18 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
   )
 
   router.get(
+    '/openConditionsAdded/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+      const { bookingId } = req.params
+      const { catType } = req.query
+
+      res.render('pages/openConditionsAdded', { data: { catType, details: { bookingId } } })
+    })
+  )
+
+  router.get(
     '/:bookingId',
     asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals.user.token)
