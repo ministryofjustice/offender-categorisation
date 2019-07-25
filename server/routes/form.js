@@ -185,29 +185,6 @@ module.exports = function Index({
     })
   )
 
-  router.post(
-    '/supervisor/confirmBack/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const { bookingId } = req.params
-      const section = 'supervisor'
-      const form = 'confirmBack'
-      const formPageConfig = formConfig[section][form]
-
-      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, req.body)) {
-        return
-      }
-
-      const changeConfirmed = req.body.confirmation === 'Yes'
-
-      if (changeConfirmed) {
-        await formService.backToCategoriser(bookingId, transactionalDbClient)
-      }
-
-      const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`
-      res.redirect(`${nextPath}`)
-    })
-  )
-
   router.get(
     '/supervisor/review/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
@@ -402,6 +379,29 @@ module.exports = function Index({
   )
 
   router.post(
+    '/supervisor/confirmBack/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'supervisor'
+      const form = 'confirmBack'
+      const formPageConfig = formConfig[section][form]
+
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, req.body)) {
+        return
+      }
+
+      const changeConfirmed = req.body.confirmation === 'Yes'
+
+      if (changeConfirmed) {
+        await formService.backToCategoriser(bookingId, transactionalDbClient)
+      }
+
+      const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`
+      res.redirect(`${nextPath}`)
+    })
+  )
+
+  router.post(
     '/security/review/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const section = 'security'
@@ -484,8 +484,8 @@ module.exports = function Index({
         })
         await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
 
-        // redirect to tasklist for open conditions
-        res.redirect(`/tasklist/${bookingId}`)
+        // redirect to tasklist for open conditions, via 'added' page
+        res.redirect(`/openConditionsAdded/${bookingId}?catType=INITIAL`)
       }
     })
   )

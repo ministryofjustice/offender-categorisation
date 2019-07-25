@@ -1,0 +1,28 @@
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
+
+{% block beforeContent %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: backLink or "/"
+}) }}
+
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row govuk-!-width-two-thirds">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l">Open Conditions Assessment added to your task list</h1>
+
+    <p>You need to answer additional questions to recommend this person for category D conditions.</p>
+
+    {{ govukButton({
+      text: 'Return to task list',
+      href: '/tasklistRecat/' + data.details.bookingId if data.catType == 'RECAT' else '/tasklist/' + data.details.bookingId,
+      classes: buttonClasses
+    }) }}
+  </div>
+</div>
+{% endblock %}

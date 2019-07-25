@@ -6,6 +6,7 @@ module.exports = {
   '/tasklist/supervisor/.+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/tasklist/.+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/tasklistRecat/.+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
+  '/openConditionsAdded/.+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
   '/form/recat/.+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/form/ratings/.+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/form/openConditions/.+': {

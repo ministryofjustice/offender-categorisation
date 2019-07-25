@@ -384,21 +384,21 @@ describe('recat', () => {
 describe('POST /form/recat/decision', () => {
   test.each`
     formName      | userInput                                  | nextPath
-    ${'decision'} | ${{ currentCategory: 'I', category: 'B' }} | ${'/form/recat/miniHigherSecurityReview/'}
-    ${'decision'} | ${{ currentCategory: 'J', category: 'I' }} | ${'/form/recat/higherSecurityReview/'}
-    ${'decision'} | ${{ currentCategory: 'J', category: 'C' }} | ${'/form/recat/higherSecurityReview/'}
-    ${'decision'} | ${{ currentCategory: 'J', category: 'B' }} | ${'/form/recat/higherSecurityReview/'}
-    ${'decision'} | ${{ currentCategory: 'D', category: 'C' }} | ${'/form/recat/higherSecurityReview/'}
-    ${'decision'} | ${{ currentCategory: 'D', category: 'B' }} | ${'/form/recat/higherSecurityReview/'}
-    ${'decision'} | ${{ currentCategory: 'D', category: 'C' }} | ${'/form/recat/higherSecurityReview/'}
-    ${'decision'} | ${{ currentCategory: 'I', category: 'C' }} | ${'/tasklistRecat/'}
-    ${'decision'} | ${{ currentCategory: 'D', category: 'D' }} | ${'/tasklistRecat/'}
-    ${'decision'} | ${{ currentCategory: 'I', category: 'J' }} | ${'/tasklistRecat/'}
-    ${'decision'} | ${{ currentCategory: 'I', category: 'I' }} | ${'/tasklistRecat/'}
-    ${'decision'} | ${{ currentCategory: 'B', category: 'D' }} | ${'/tasklistRecat/'}
-    ${'decision'} | ${{ currentCategory: 'B', category: 'C' }} | ${'/tasklistRecat/'}
-    ${'decision'} | ${{ currentCategory: 'B', category: 'B' }} | ${'/tasklistRecat/'}
-    ${'decision'} | ${{ currentCategory: 'C', category: 'C' }} | ${'/tasklistRecat/'}
+    ${'decision'} | ${{ currentCategory: 'I', category: 'B' }} | ${'/form/recat/miniHigherSecurityReview/12345'}
+    ${'decision'} | ${{ currentCategory: 'J', category: 'I' }} | ${'/form/recat/higherSecurityReview/12345'}
+    ${'decision'} | ${{ currentCategory: 'J', category: 'C' }} | ${'/form/recat/higherSecurityReview/12345'}
+    ${'decision'} | ${{ currentCategory: 'J', category: 'B' }} | ${'/form/recat/higherSecurityReview/12345'}
+    ${'decision'} | ${{ currentCategory: 'D', category: 'C' }} | ${'/form/recat/higherSecurityReview/12345'}
+    ${'decision'} | ${{ currentCategory: 'D', category: 'B' }} | ${'/form/recat/higherSecurityReview/12345'}
+    ${'decision'} | ${{ currentCategory: 'D', category: 'C' }} | ${'/form/recat/higherSecurityReview/12345'}
+    ${'decision'} | ${{ currentCategory: 'I', category: 'C' }} | ${'/tasklistRecat/12345'}
+    ${'decision'} | ${{ currentCategory: 'D', category: 'D' }} | ${'/openConditionsAdded/12345?catType=RECAT'}
+    ${'decision'} | ${{ currentCategory: 'I', category: 'J' }} | ${'/openConditionsAdded/12345?catType=RECAT'}
+    ${'decision'} | ${{ currentCategory: 'I', category: 'I' }} | ${'/tasklistRecat/12345'}
+    ${'decision'} | ${{ currentCategory: 'B', category: 'D' }} | ${'/openConditionsAdded/12345?catType=RECAT'}
+    ${'decision'} | ${{ currentCategory: 'B', category: 'C' }} | ${'/tasklistRecat/12345'}
+    ${'decision'} | ${{ currentCategory: 'B', category: 'B' }} | ${'/tasklistRecat/12345'}
+    ${'decision'} | ${{ currentCategory: 'C', category: 'C' }} | ${'/tasklistRecat/12345'}
   `('Post for input $userInput should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'STARTED',
@@ -410,7 +410,7 @@ describe('POST /form/recat/decision', () => {
       .post(`/${formName}/12345`)
       .send(userInput)
       .expect(302)
-      .expect('Location', `${nextPath}12345`)
+      .expect('Location', `${nextPath}`)
       .expect(() => {
         expect(formService.update).toBeCalledWith({
           bookingId: 12345,
