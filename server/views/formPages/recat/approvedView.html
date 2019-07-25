@@ -44,7 +44,7 @@
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        Category {{ currentCat }}
+        Category {{ catDisplay(currentCat) }}
       </strong>
     </div>
 
@@ -53,7 +53,7 @@
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
       <div class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The categoriser recommends category {{ categoriserCat }}
+        The categoriser recommends category {{ catDisplay(categoriserCat) }}
       </div>
     </div>
 
@@ -65,7 +65,7 @@
         <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
         <div class="govuk-warning-text__text override-icon-text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          The recommended category was changed from a {{ categoriserCat }} to a {{ superCat }}
+          The recommended category was changed from a {{ catDisplay(categoriserCat) }} to a {{ catDisplay(superCat) }}
         </div>
       </div>
     {% else %}
@@ -73,7 +73,7 @@
         <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
         <div class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          The supervisor also recommends category {{ categoriserCat }}
+          The supervisor also recommends category {{ catDisplay(categoriserCat) }}
         </div>
       </div>
     {% endif %}
