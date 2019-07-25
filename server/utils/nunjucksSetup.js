@@ -36,5 +36,4 @@ module.exports = (app, path) => {
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
     .addGlobal('catDisplay', catDisplay)
-
 }
