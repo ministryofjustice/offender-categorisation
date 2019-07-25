@@ -248,6 +248,28 @@ describe('GET /approvedView', () => {
   })
 })
 
+describe('GET /categoriser/awaitingApprovalView', () => {
+  test('Open conditions entry is displayed on awaiting approval view (after being abandoned), with no change links - INITAL', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { openConditions: { field: 'value' } },
+    })
+
+    return request(app)
+      .get(`/categoriser/awaitingApprovalView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+      })
+  })
+})
+
 describe('GET /supervisor/review', () => {
   test('initial categorisations', () => {
     formService.getCategorisationRecord.mockResolvedValue({
