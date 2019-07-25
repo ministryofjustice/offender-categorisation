@@ -37,7 +37,7 @@
       <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
       <strong class="govuk-warning-text__text override-icon-text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The category was originally {{ cat }} and is now {{ overriddenCat }}
+        The category was originally {{ catDisplay(cat) }} and is now {{ catDisplay(overriddenCat) }}
       </strong>
     </div>
     <div class="govuk-!-margin-bottom-8">
@@ -50,7 +50,7 @@
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        Based on the information provided, the provisional category is {{ cat }}
+        Based on the information provided, the provisional category is {{ catDisplay(cat) }}
       </strong>
     </div>
     {% endif %}
@@ -129,7 +129,7 @@
             } if (errors | findError('supervisorOverriddenCategory'))
           }) }}
         {% else %}
-          <h2 class="govuk-heading-m" id="newCatMessage">Changing to Cat J</h2>
+          <h2 class="govuk-heading-m" id="newCatMessage">Changing to YOI Open</h2>
           <input type="hidden" name="supervisorOverriddenCategory" value="J"/>
           {{ warningCategoryOpenConditions | safe }}
         {% endif %}
@@ -154,7 +154,7 @@
     {% endset %}
 
     {% if data.details.sentence.indeterminate and currentCat == "I" %}
-      <p class="govuk-body">Prisoner has an indeterminate sentence - Cat J not available</p>
+      <p class="govuk-body">Prisoner has an indeterminate sentence - YOI Open not available</p>
       <input type="hidden" name="supervisorCategoryAppropriate" value="Yes"/>
     {% else %}
       {{ govukRadios({
