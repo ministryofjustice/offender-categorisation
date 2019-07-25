@@ -155,8 +155,8 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat J'
-    warning.text().contains 'the provisional category is I'
-    newCatMessage.text() == 'Changing to Cat J'
+    warning.text().contains 'the provisional category is YOI Closed'
+    newCatMessage.text() == 'Changing to YOI Open'
 
     when: 'Changing to Cat J'
     overriddenCategoryText << "Some Text"
@@ -275,8 +275,8 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     then: 'The page is displayed correctly'
     !appropriateNo.displayed
-    warning.text() == 'I\nWarning\nBased on the information provided, the provisional category is I'
-    indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - Cat J not available'
+    warning.text() == 'I\nWarning\nBased on the information provided, the provisional category is YOI Closed'
+    indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - YOI Open not available'
   }
 
   def 'Rollback on elite2Api failure'() {
