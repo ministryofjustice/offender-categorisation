@@ -2,21 +2,20 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% block beforeContent %}
-{{ govukBackLink({
-text: "Back",
-href: backLink
-}) }}
-
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink
+  }) }}
 {% endblock %}
 
 {% block content %}
 
-<div class="govuk-grid-row">
-  {% include "../partials/offenderDetails.html" %}
-  <hr/>
-</div>
+  <div class="govuk-grid-row">
+    {% include "../partials/offenderDetails.html" %}
+    <hr/>
+  </div>
 
-<div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <h1 class="govuk-!-width-two-thirds govuk-heading-l govuk-!-display-inline mainHeading">
      Categorisation outcome
     </h1>
@@ -48,7 +47,7 @@ href: backLink
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        Category {{ currentCat }}
+        Category {{ catDisplay(currentCat) }}
       </strong>
     </div>
 
@@ -60,7 +59,7 @@ href: backLink
       <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
       <div class="govuk-warning-text__text override-icon-text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The recommended category was changed from a {{ cat }} to a {{ overriddenCat }}
+        The recommended category was changed from a {{ catDisplay(cat) }} to a {{ catDisplay(overriddenCat) }}
       </div>
     </div>
       {% if overriddenCatText %}
@@ -75,7 +74,7 @@ href: backLink
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
       <div class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The categoriser recommends category {{ cat }}
+        The categoriser recommends category {{ catDisplay(cat) }}
       </div>
     </div>
     {% endif %}
@@ -88,7 +87,7 @@ href: backLink
       <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
       <div class="govuk-warning-text__text override-icon-text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The recommended category was changed from a {{ categoriserCat }} to a {{ superCat }}
+        The recommended category was changed from a {{ catDisplay(categoriserCat) }} to a {{ catDisplay(superCat) }}
       </div>
     </div>
     {% else %}
@@ -96,7 +95,7 @@ href: backLink
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
       <div class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The supervisor also recommends category {{ categoriserCat }}
+        The supervisor also recommends category {{ catDisplay(categoriserCat) }}
       </div>
     </div>
     {% endif %}
@@ -116,17 +115,14 @@ href: backLink
     </div>
     {% endif %}
 
-
     {% set showChangeLinks = false %}
-
     {% include "../partials/reviewContents.html" %}
 
     {% if (currentCat == "D" or currentCat == "J" or data.openConditions) %}
 
-    <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
-
-    {% set showOpenConditionChangeLinks = false %}
-    {% include "../partials/reviewContentsOpenConditions.html" %}
+      <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+      {% set showOpenConditionChangeLinks = false %}
+      {% include "../partials/reviewContentsOpenConditions.html" %}
 
     {% endif %}
 

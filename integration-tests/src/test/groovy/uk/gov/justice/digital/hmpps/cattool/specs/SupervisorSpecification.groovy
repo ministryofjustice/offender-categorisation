@@ -100,8 +100,8 @@ class SupervisorSpecification extends GebReportingSpec {
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
-    warnings[0].text().contains 'the provisional category is I'
-    newCatMessage.text() == 'Changing to Cat J'
+    warnings[0].text().contains 'the provisional category is YOI Closed'
+    newCatMessage.text() == 'Changing to YOI Open'
 
     when: 'The supervisor clicks continue'
     overriddenCategoryText << "reason text"
@@ -332,7 +332,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     then: 'the supervisor sees an info message'
     elite2Api.stubSupervisorApprove('I')
-    indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - Cat J not available'
+    indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - YOI Open not available'
 
     when: 'Approving'
     submitButton.click()

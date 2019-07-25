@@ -95,6 +95,12 @@ const filterJsonObjectForLogging = json => {
   return dup
 }
 
+const catDisplay = cat => {
+  if (cat === 'I') return 'YOI Closed'
+  if (cat === 'J') return 'YOI Open'
+  return cat
+}
+
 module.exports = {
   dateConverter,
   formatLength,
@@ -106,4 +112,5 @@ module.exports = {
   getLongDateFormat,
   linkOnClick,
   filterJsonObjectForLogging,
+  catDisplay,
 }
