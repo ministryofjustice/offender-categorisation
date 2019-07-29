@@ -62,6 +62,9 @@ afterEach(() => {
   nomisClient.getLatestCategorisationForOffenders.mockReset()
 })
 
+moment.now = jest.fn()
+moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+
 function todaySubtract(days) {
   return moment()
     .subtract(days, 'day')
@@ -152,6 +155,7 @@ describe('getRecategoriseOffenders', () => {
         displayStatus: Status.SECURITY_MANUAL.value,
         nextReviewDateDisplay: '20/04/2019',
         reason: ReviewReason.DUE,
+        overdue: true,
       },
       {
         offenderNo: 'U2101AA',
@@ -162,6 +166,7 @@ describe('getRecategoriseOffenders', () => {
         displayStatus: 'Not started',
         nextReviewDateDisplay: '01/05/2019',
         reason: ReviewReason.AGE,
+        overdue: true,
       },
       {
         offenderNo: 'H12345',
@@ -172,6 +177,7 @@ describe('getRecategoriseOffenders', () => {
         displayStatus: 'Not started',
         nextReviewDateDisplay: '21/05/2019',
         reason: ReviewReason.DUE,
+        overdue: true,
       },
       {
         offenderNo: 'U2102AA',
@@ -182,6 +188,7 @@ describe('getRecategoriseOffenders', () => {
         displayStatus: 'Not started',
         nextReviewDateDisplay: '01/06/2019',
         reason: ReviewReason.AGE,
+        overdue: false,
       },
       {
         offenderNo: 'G55345',
@@ -192,6 +199,7 @@ describe('getRecategoriseOffenders', () => {
         displayStatus: 'Not started',
         nextReviewDateDisplay: '22/06/2019',
         reason: ReviewReason.DUE,
+        overdue: false,
       },
     ]
     nomisClient.getRecategoriseOffenders.mockReturnValue(data)
@@ -304,7 +312,7 @@ describe('getUnapprovedOffenders', () => {
         category: 'D',
         categoriserFirstName: 'Catter',
         categoriserLastName: 'Three',
-        nextReviewDate: '2019-06-22',
+        nextReviewDate: '2019-05-22',
         status: 'AWAITING_APPROVAL',
         assessmentSeq: 13,
       },
@@ -314,7 +322,7 @@ describe('getUnapprovedOffenders', () => {
         lastName: 'Coogan',
         bookingId: 4,
         category: 'C',
-        nextReviewDate: '2019-06-22',
+        nextReviewDate: '2019-05-22',
         status: 'UNCATEGORISED',
       },
       {
@@ -323,7 +331,7 @@ describe('getUnapprovedOffenders', () => {
         lastName: 'Back',
         bookingId: 5,
         category: 'C',
-        nextReviewDate: '2019-06-22',
+        nextReviewDate: '2019-05-22',
         status: 'AWAITING_APPROVAL',
       },
       {
@@ -334,7 +342,7 @@ describe('getUnapprovedOffenders', () => {
         categoriserLastName: 'SIX',
         bookingId: 6,
         category: 'C',
-        nextReviewDate: '2019-06-25',
+        nextReviewDate: '2019-05-25',
         status: 'AWAITING_APPROVAL',
         assessmentSeq: 16,
       },
@@ -346,7 +354,7 @@ describe('getUnapprovedOffenders', () => {
         categoriserLastName: 'SEVEN',
         bookingId: 7,
         category: 'C',
-        nextReviewDate: '2019-06-25',
+        nextReviewDate: '2019-05-25',
         status: 'AWAITING_APPROVAL',
         assessmentSeq: 99,
       },
@@ -399,7 +407,7 @@ describe('getUnapprovedOffenders', () => {
         dbRecordExists: true,
         catType: 'Recat',
         pnomis: false,
-        nextReviewDate: '22/06/2019',
+        nextReviewDate: '22/05/2019',
       },
       {
         offenderNo: 'G0006',
@@ -409,7 +417,7 @@ describe('getUnapprovedOffenders', () => {
         bookingId: 6,
         dbRecordExists: false,
         pnomis: true,
-        nextReviewDate: '25/06/2019',
+        nextReviewDate: '25/05/2019',
       },
       {
         offenderNo: 'G0007',
@@ -419,7 +427,7 @@ describe('getUnapprovedOffenders', () => {
         bookingId: 7,
         dbRecordExists: true,
         pnomis: true,
-        nextReviewDate: '25/06/2019',
+        nextReviewDate: '25/05/2019',
       },
     ]
 
@@ -543,6 +551,7 @@ describe('getUncategorisedOffenders', () => {
       daysSinceSentence: 2,
       dateRequired: '28/01/2019',
       sentenceDate: '2019-01-14',
+      overdue: false,
     })
   })
 
@@ -553,6 +562,7 @@ describe('getUncategorisedOffenders', () => {
       daysSinceSentence: 4,
       dateRequired: '28/01/2019',
       sentenceDate: '2019-01-12',
+      overdue: false,
     })
   })
 
@@ -563,6 +573,18 @@ describe('getUncategorisedOffenders', () => {
       daysSinceSentence: 3,
       dateRequired: '28/01/2019',
       sentenceDate: '2019-01-13',
+      overdue: false,
+    })
+  })
+
+  test('it should detect overdue record', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-01-29', 'YYYY-MM-DD'))
+    expect(service.buildSentenceData('2019-01-14')).toEqual({
+      daysSinceSentence: 15,
+      dateRequired: '28/01/2019',
+      sentenceDate: '2019-01-14',
+      overdue: true,
     })
   })
 

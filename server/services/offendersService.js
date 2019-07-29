@@ -333,6 +333,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function getRecategoriseOffenders(token, agencyId, user, transactionalDbClient) {
+    const today = moment(0, 'HH')
+
+    function isOverdue(dbDate) {
+      const date = moment(dbDate, 'YYYY-MM-DD')
+      return date.isBefore(today)
+    }
+
     try {
       const nomisClient = nomisClientBuilder(token)
       const u21From = moment()
@@ -379,6 +386,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             displayStatus: decorated.displayStatus || 'Not started',
             reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
             nextReviewDateDisplay: dateConverter(o.nextReviewDate),
+            overdue: isOverdue(o.nextReviewDate),
             dbRecordExists: decorated.dbRecordExists,
             pnomis,
             buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
@@ -409,15 +417,15 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
             )
           }
-
+          const nextReviewDate = moment(o.dateOfBirth, 'YYYY-MM-DD')
+          const nextReviewDateDisplay = nextReviewDate.add(21, 'years').format('DD/MM/YYYY')
           return {
             ...o,
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
             displayStatus: decorated.displayStatus || 'Not started',
             reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.AGE,
-            nextReviewDateDisplay: moment(o.dateOfBirth, 'YYYY-MM-DD')
-              .add(21, 'years')
-              .format('DD/MM/YYYY'),
+            nextReviewDateDisplay,
+            overdue: isOverdue(nextReviewDate),
             dbRecordExists: decorated.dbRecordExists,
             pnomis,
             buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
@@ -460,8 +468,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
     const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
     const actualDays = get10BusinessDays(sentenceDateMoment)
-    const dateRequired = sentenceDateMoment.add(actualDays, 'day').format('DD/MM/YYYY')
-    return { daysSinceSentence, dateRequired, sentenceDate }
+    const dateRequiredRaw = sentenceDateMoment.add(actualDays, 'day')
+    const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
+    const overdue = dateRequiredRaw.isBefore(moment(0, 'HH'))
+    return { daysSinceSentence, dateRequired, sentenceDate, overdue }
   }
 
   async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {

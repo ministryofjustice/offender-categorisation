@@ -120,7 +120,7 @@ module.exports = function createApp({
         outputStyle: 'compressed',
         indentedSyntax: true,
         prefix: '/stylesheets/',
-        includePaths: ['node_modules/govuk-frontend'],
+        includePaths: ['node_modules/govuk-frontend', 'node_modules/@ministryofjustice'],
       })
     )
   }
