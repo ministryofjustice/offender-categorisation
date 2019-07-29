@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.cattool.pages.recat
 
 import geb.Page
 
-class NextReviewDatePage extends Page {
+class NextReviewDateQuestionPage extends Page {
 
-  static url = '/form/recat/nextReviewDate'
+  static url = '/form/recat/nextReviewDateQuestion'
 
   static at = {
-    headingText == 'Confirm the date they should be reviewed by'
+    headingText == 'When should they next be reviewed by?'
   }
 
   static content = {
@@ -16,7 +16,9 @@ class NextReviewDatePage extends Page {
     headerValue { headerBlock.$('div.govuk-\\!-font-weight-bold') }
 
     form { $('form') }
-    reviewDate { $('#reviewDate') }
+    sixMonthsOption { $('#nextDateChoice-1') }
+    twelveMonthsOption { $('#nextDateChoice-2') }
+    specificOption { $('#nextDateChoice-3') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }

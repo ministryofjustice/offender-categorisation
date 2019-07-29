@@ -124,6 +124,20 @@ module.exports = {
     fields: [],
     validate: true,
   },
+  nextReviewDateQuestion: {
+    fields: [
+      {
+        nextDateChoice: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select a choice',
+        },
+      },
+    ],
+    validate: true,
+    nextPath: {
+      path: '/form/recat/nextReviewDate/',
+    },
+  },
   nextReviewDate: {
     fields: [
       {

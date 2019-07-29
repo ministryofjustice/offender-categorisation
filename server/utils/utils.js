@@ -1,4 +1,5 @@
 const moment = require('moment')
+const R = require('ramda')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 
@@ -101,6 +102,27 @@ const catDisplay = cat => {
   return cat
 }
 
+// R.cond is like a switch statement
+const calculateDate = R.cond([
+  [
+    R.equals('6'),
+    R.always(
+      moment()
+        .add(6, 'months')
+        .format('DD/MM/YYYY')
+    ),
+  ],
+  [
+    R.equals('12'),
+    R.always(
+      moment()
+        .add(1, 'years')
+        .format('DD/MM/YYYY')
+    ),
+  ],
+  [R.T, R.always('')],
+])
+
 module.exports = {
   dateConverter,
   formatLength,
@@ -113,4 +135,5 @@ module.exports = {
   linkOnClick,
   filterJsonObjectForLogging,
   catDisplay,
+  calculateDate,
 }
