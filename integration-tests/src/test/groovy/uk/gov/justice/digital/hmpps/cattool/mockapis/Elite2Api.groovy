@@ -198,7 +198,8 @@ class Elite2Api extends WireMockRule {
   }
 
   void stubRecategorise(assessStatusList=['A','A','A','A']) {
-    final date = LocalDate.now().plusMonths(2)
+    def today = LocalDate.now()
+    final date = today.plusMonths(2)
     this.stubFor(
       get("/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=$date")
         .willReturn(
@@ -210,7 +211,7 @@ class Elite2Api extends WireMockRule {
                 firstName     : 'PENELOPE',
                 lastName      : 'PITSTOP',
                 category      : 'C',
-                nextReviewDate: '2019-07-25',
+                nextReviewDate: today.minusDays(4).format('yyyy-MM-dd'),
                 assessStatus: assessStatusList[0]
               ],
               [
@@ -219,7 +220,7 @@ class Elite2Api extends WireMockRule {
                 firstName     : 'ANT',
                 lastName      : 'HILLMOB',
                 category      : 'D',
-                nextReviewDate: '2019-07-27',
+                nextReviewDate: today.minusDays(2).format('yyyy-MM-dd'),
                 assessStatus: assessStatusList[1]
               ],
             ]
@@ -228,8 +229,8 @@ class Elite2Api extends WireMockRule {
             .withStatus(200))
     )
 
-    final fromDob = LocalDate.now().minusYears(22)
-    final toDob = LocalDate.now().minusYears(21).plusMonths(2)
+    final fromDob = today.minusYears(22)
+    final toDob = today.minusYears(21).plusMonths(2)
     this.stubFor(
       get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob&returnCategory=true")
         .willReturn(
@@ -240,7 +241,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo  : 'C0001AA',
                 firstName   : 'TINY',
                 lastName    : 'TIM',
-                dateOfBirth : '1998-07-26',
+                dateOfBirth : today.minusYears(21).minusDays(3).format('yyyy-MM-dd'),
                 age         : 20,
                 categoryCode: 'I',
               ],
@@ -249,7 +250,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo  : 'C0002AA',
                 firstName   : 'ADRIAN',
                 lastName    : 'MOLE',
-                dateOfBirth : '1998-08-15',
+                dateOfBirth : today.minusYears(21).plusDays(17).format('yyyy-MM-dd'),
                 age         : 20,
                 categoryCode: 'I',
               ],]
@@ -261,26 +262,26 @@ class Elite2Api extends WireMockRule {
     this.stubFor(
       post("/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false")
         .willReturn(
-        aResponse()
-          .withBody(JsonOutput.toJson([
-          [
-            bookingId     : 21,
-            offenderNo    : 'C0001AA',
-            classificationCode      : 'C',
-            nextReviewDate: '2019-07-25',
-            assessmentStatus: assessStatusList[2]
-          ],
-          [
-            bookingId     : 22,
-            offenderNo    : 'C0002AA',
-            classificationCode      : 'D',
-            nextReviewDate: '2019-07-27',
-            assessmentStatus  : assessStatusList[3]
-          ],
-        ]
-        ))
-          .withHeader('Content-Type', 'application/json')
-          .withStatus(200))
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [
+                bookingId         : 21,
+                offenderNo        : 'C0001AA',
+                classificationCode: 'C',
+                nextReviewDate    : today.minusDays(4).format('yyyy-MM-dd'),
+                assessmentStatus  : assessStatusList[2]
+              ],
+              [
+                bookingId         : 22,
+                offenderNo        : 'C0002AA',
+                classificationCode: 'D',
+                nextReviewDate    : today.minusDays(2).format('yyyy-MM-dd'),
+                assessmentStatus  : assessStatusList[3]
+              ],
+            ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
     )
   }
 
