@@ -23,7 +23,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalField
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER_COLLEAGUE
@@ -49,6 +48,7 @@ class HomePageSpecification extends GebReportingSpec {
 
   TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
+  static final TODAY = LocalDate.now()
 
   def get10BusinessDays(LocalDate from) {
     def numberOfDays = 14
@@ -74,16 +74,15 @@ class HomePageSpecification extends GebReportingSpec {
 
     when: 'I go to the home page as categoriser'
 
-    def now = LocalDate.now()
-    def sentenceStartDate31 = now.minusDays(1)
-    def sentenceStartDate32 = now.minusDays(5)
-    def sentenceStartDate33 = now.minusDays(14)
-    def sentenceStartDate34 = now.minusDays(19)
-    def sentenceStartDate35 = now.minusDays(39)
-    def sentenceStartDate36 = now.minusDays(43)
-    def sentenceStartDate37 = now.minusDays(47)
-    def sentenceStartDate38 = now.minusDays(50)
-    def sentenceStartDate39 = now.minusDays(55)
+    def sentenceStartDate31 = TODAY.minusDays(1)
+    def sentenceStartDate32 = TODAY.minusDays(5)
+    def sentenceStartDate33 = TODAY.minusDays(14)
+    def sentenceStartDate34 = TODAY.minusDays(19)
+    def sentenceStartDate35 = TODAY.minusDays(39)
+    def sentenceStartDate36 = TODAY.minusDays(43)
+    def sentenceStartDate37 = TODAY.minusDays(47)
+    def sentenceStartDate38 = TODAY.minusDays(50)
+    def sentenceStartDate39 = TODAY.minusDays(55)
     elite2Api.stubUncategorisedFull()
     elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA'],
       [31, 32, 33, 34, 35, 36, 37, 38, 39],
@@ -119,15 +118,14 @@ class HomePageSpecification extends GebReportingSpec {
 
     when: 'I go to the home page as supervisor'
 
-    def now = LocalDate.now()
     def sentenceStartDate31 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate32 = LocalDate.of(2019, 1, 31)
     def sentenceStartDate33 = LocalDate.of(2019, 2, 4)
     def sentenceStartDate34 = LocalDate.of(2019, 2, 8)
-    def daysSinceSentence31 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate31, now))
-    def daysSinceSentence32 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate32, now))
-    def daysSinceSentence33 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate33, now))
-    def daysSinceSentence34 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate34, now))
+    def daysSinceSentence31 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate31, TODAY))
+    def daysSinceSentence32 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate32, TODAY))
+    def daysSinceSentence33 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate33, TODAY))
+    def daysSinceSentence34 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate34, TODAY))
     // 14 days after sentenceStartDate
     elite2Api.stubUncategorisedForSupervisorFull()
     elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA'], [31, 32, 33, 34],
@@ -160,7 +158,7 @@ class HomePageSpecification extends GebReportingSpec {
     at RecategoriserHomePage
     prisonNos == ['B2345XY', 'C0001AA', 'B2345YZ', 'C0002AA']
     names == ['Pitstop, Penelope', 'Tim, Tiny', 'Hillmob, Ant', 'Mole, Adrian']
-    dates == ['OVERDUE', 'OVERDUE', 'OVERDUE', '15/08/2019']
+    dates == ['OVERDUE', 'OVERDUE', 'OVERDUE', TODAY.plusDays(17).format('dd/MM/yyyy')]
     reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     startButtons[0].text() == 'Start'
@@ -174,7 +172,6 @@ class HomePageSpecification extends GebReportingSpec {
     ]))
     when: 'I go to the home page as multi-role user (categoriser and supervisor)'
 
-    def now = LocalDate.now()
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
     elite2Api.stubUncategorisedAwaitingApproval()
@@ -209,7 +206,7 @@ class HomePageSpecification extends GebReportingSpec {
     when: 'A user starts a categorisation'
 
     elite2Api.stubUncategorisedNoStatus(678)
-    elite2Api.stubSentenceData(['ON678'], [678], [LocalDate.now().plusDays(-3).toString()])
+    elite2Api.stubSentenceData(['ON678'], [678], [TODAY.plusDays(-3).toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(678, "ON678")
@@ -263,7 +260,6 @@ class HomePageSpecification extends GebReportingSpec {
 
     when: 'A user starts a categorisation'
 
-    def now = LocalDate.now()
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
 
@@ -283,8 +279,7 @@ class HomePageSpecification extends GebReportingSpec {
 
   def "Log out"() {
     given: "I have logged in"
-    def now = LocalDate.now()
-    def sentenceStartDate = now.plusDays(-3).toString()
+    def sentenceStartDate = TODAY.plusDays(-3).toString()
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate.toString(), sentenceStartDate.toString()])
     fixture.loginAs(CATEGORISER_USER)
