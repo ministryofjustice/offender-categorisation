@@ -175,10 +175,9 @@ dt.summary-list-title
   max-width: 15ex
 
 
-
 @media print
   header,footer,a.govuk-back-link,a.govuk-link,a.govuk-button,.no-print
-    display: none
+    display: none !important
   // force prisoner header to remain in 3 columns
   .govuk-grid-column-one-third
     width: 33.3333%
@@ -187,3 +186,9 @@ dt.summary-list-title
     padding: 0
     margin-top: 1em
 
+  dl.print-full-width
+    display: block
+    width: 100%
+    div.govuk-summary-list__row, dt.govuk-summary-list__key, dd.govuk-summary-list__value
+      display: block
+      width: 100%
