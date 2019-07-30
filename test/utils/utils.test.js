@@ -1,4 +1,5 @@
-const { filterJsonObjectForLogging, formatLength } = require('../../server/utils/utils')
+const moment = require('moment')
+const { filterJsonObjectForLogging, formatLength, calculateDate } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
   it('it removes the _csrf property from a json object', () => {
@@ -23,5 +24,20 @@ describe('formatLength formatting sentence length correctly', () => {
   `('should render $expectedContent for $apiData', async ({ apiData, expectedContent }) => {
     const result = formatLength(apiData)
     expect(result).toEqual(expectedContent)
+  })
+})
+
+describe('calculateDate', () => {
+  const SIX_MONTHS_AHEAD = moment().add(6, 'months')
+  const TWELVE_MONTHS_AHEAD = moment().add(1, 'years')
+  test.each`
+    nextDateChoice | expectedValue
+    ${'6'}         | ${SIX_MONTHS_AHEAD.format('DD/MM/YYYY')}
+    ${'12'}        | ${TWELVE_MONTHS_AHEAD.format('DD/MM/YYYY')}
+    ${'other'}     | ${''}
+    ${''}          | ${''}
+  `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {
+    const actualDate = calculateDate(nextDateChoice)
+    expect(actualDate).toEqual(expectedValue)
   })
 })
