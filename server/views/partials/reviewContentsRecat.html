@@ -1,6 +1,4 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "../macros/reviewSectionHeader.html" import reviewSectionHeader %}
-{% from "../macros/listOffences.html" import listOffences %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% macro formatAnswer(yesno, details) %}
@@ -82,10 +80,11 @@
 {% endset %}
 
 {{ govukSummaryList({
-  classes: 'govuk-!-margin-bottom-9 prisonerBackgroundSummary',
+  classes: 'govuk-!-margin-bottom-9 print-full-width prisonerBackgroundSummary',
   rows: [
     {
       key: { classes: 'summary-list-title', text: "Prisoner background" },
+      value: { classes: 'no-print'},
       actions: { items: [{
             href: '/form/recat/prisonerBackground/' + data.details.bookingId,
             text: "Change",
@@ -130,6 +129,7 @@
   {% set wasReferred = data.socProfile.transferToSecurity or data.recat.securityInput.securityInputNeeded == 'Yes' %}
   {% set title = {
     key: { classes: 'summary-list-title', text: "Security information" },
+    value: { classes: 'no-print'},
     actions: { items: [{
           href: '/form/recat/securityInput/' + data.details.bookingId,
           text: "Change",
@@ -155,15 +155,16 @@
     } %}
 
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 securityInputSummary',
+    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary',
     rows: [ title, auto, manual, comments ] if wasReferred else [ title, auto, manual ]
   }) }}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 riskAssessmentSummary',
+    classes: 'govuk-!-margin-bottom-9 print-full-width riskAssessmentSummary',
     rows: [
       {
         key: { classes: 'summary-list-title', text: "Risk assessment" },
+        value: { classes: 'no-print'},
         actions: { items: [{
               href: '/form/recat/riskAssessment/' + data.details.bookingId,
               text: "Change",
@@ -211,6 +212,7 @@
 
   {% set miniTitle = {
     key: { classes: 'summary-list-title', text: "Higher Security Review" },
+    value: { classes: 'no-print'},
     actions: { items: [{
           href: '/form/recat/miniHigherSecurityReview/' + data.details.bookingId,
           text: "Change",
@@ -221,6 +223,7 @@
 
   {% set hsrTitle = {
     key: { classes: 'summary-list-title', text: "Higher Security Review" },
+    value: { classes: 'no-print'},
     actions: { items: [{
           href: '/form/recat/higherSecurityReview/' + data.details.bookingId,
           text: "Change",
@@ -261,7 +264,7 @@
 
   {% if data.recat.higherSecurityReview or data.recat.miniHigherSecurityReview %}
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 higherSecurityReview',
+    classes: 'govuk-!-margin-bottom-9 print-full-width higherSecurityReview',
     rows: [ hsrTitle, hsrBehaviour, hsrSteps, hsrTransfer, hsrConditions ] if data.recat.higherSecurityReview.behaviour else [ miniTitle, miniConditions ]
   }) }}
   {% endif %}
