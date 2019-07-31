@@ -12,7 +12,7 @@
 <h2 class="govuk-heading-m">Offending history</h2>
 {% set catAValue %}Cat {{ data.history.catAType }} ({{ data.history.catAStartYear }}){% endset %}
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 offendingHistorySummary',
+    classes: 'govuk-!-margin-bottom-9 print-full-width offendingHistorySummary',
     rows: [
       {
         key: { text: "Previous Cat A" },
@@ -74,7 +74,7 @@
 #}
 
  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 violenceRatingSummary',
+    classes: 'govuk-!-margin-bottom-9 print-full-width violenceRatingSummary',
     rows: [
       {
         key: { text: "Previous assaults in custody recorded" },
@@ -203,6 +203,6 @@
       }
     } %}
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 securityInputSummary',
+    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary',
     rows: [ auto, manual, comments, warrantS ] if wasReferred else [ auto, manual ]
   }) }}
