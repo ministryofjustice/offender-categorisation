@@ -49,6 +49,12 @@ env:
         name: {{ template "app.name" . }}
         key: APPINSIGHTS_INSTRUMENTATIONKEY
 
+  - name: GOOGLE_ANALYTICS_ID
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "app.name" . }}
+        key: GOOGLE_ANALYTICS_ID
+
   - name: NOMIS_AUTH_URL
     value: {{ .Values.env.NOMIS_AUTH_URL | quote }}
 
@@ -61,7 +67,7 @@ env:
   - name: CUSTODY_ENDPOINT_URL
     value: {{ .Values.env.CUSTODY_ENDPOINT_URL | quote }}
 
-  - name: RISK_PROFILER_ENDPOINT_URL 
+  - name: RISK_PROFILER_ENDPOINT_URL
     value: {{ .Values.env.RISK_PROFILER_ENDPOINT_URL | quote }}
 
   - name: INGRESS_URL
