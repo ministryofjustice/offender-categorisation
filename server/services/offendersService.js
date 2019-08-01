@@ -43,7 +43,7 @@ async function getSentenceMap(offenderList, nomisClient) {
     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
     .map(o => o.bookingId)
 
-  const sentenceDates = bookingIds.length ? await nomisClient.getSentenceDatesForOffenders(bookingIds) : []
+  const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
 
   const sentenceMap = new Map(
     sentenceDates
