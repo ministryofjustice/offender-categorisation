@@ -242,13 +242,21 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'The review page is re-displayed'
     at SupervisorReviewPage
 
-    when: 'the supervisor confirms to return to categoriser'
+    when: 'the supervisor confirms without entering a message'
     backToCategoriserButton.click()
     at SupervisorConfirmBackPage
     answerYes.click()
+    submitButton.click()
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Please enter a message for the categorisor']
+      errors*.text() == ['Error:\nPlease enter a message']
+    }
+
+    when: 'the supervisor confirms to return to categoriser'
     messageText << "a message for categoriser"
     elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
-
     submitButton.click()
 
     then: 'the supervisor home page is displayed'
