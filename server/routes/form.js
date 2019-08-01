@@ -313,6 +313,9 @@ module.exports = function Index({
     if (body.overriddenCategoryText === '') {
       delete updated.overriddenCategoryText
     }
+    if (body.confirmation === 'No') {
+      delete updated.message
+    }
     return updated
   }
 
@@ -385,18 +388,41 @@ module.exports = function Index({
       const section = 'supervisor'
       const form = 'confirmBack'
       const formPageConfig = formConfig[section][form]
+      const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, req.body)) {
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
 
-      const changeConfirmed = req.body.confirmation === 'Yes'
+      const newData = R.assocPath(['supervisor', 'confirmBack', 'isRead'], false, userInput)
 
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: newData,
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
+      const changeConfirmed = userInput.confirmation === 'Yes'
       if (changeConfirmed) {
         await formService.backToCategoriser(bookingId, transactionalDbClient)
       }
 
       const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`
+      res.redirect(`${nextPath}`)
+    })
+  )
+
+  router.post(
+    '/supervisor/supervisorMessage/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const categorisationRecord = await formService.backToCategoriserMessageRead(bookingId, transactionalDbClient)
+
+      const nextPath =
+        categorisationRecord.catType === 'INITIAL' ? `/tasklist/${bookingId}` : `/tasklistRecat/${bookingId}`
       res.redirect(`${nextPath}`)
     })
   )

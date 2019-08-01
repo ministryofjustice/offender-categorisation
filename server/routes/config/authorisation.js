@@ -13,6 +13,9 @@ module.exports = {
     authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'],
   },
   '/form/categoriser/.+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
+  '/form/supervisor/supervisorMessage/.+': {
+    authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'],
+  },
   '/form/supervisor/.+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/form/security/.+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
   '/form/approvedView/.+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'] },
