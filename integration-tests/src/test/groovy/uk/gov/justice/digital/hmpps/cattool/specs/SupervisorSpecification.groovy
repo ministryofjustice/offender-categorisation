@@ -14,6 +14,9 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorConfirmBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorMessagePage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.SupervisorRecatReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
@@ -243,6 +246,7 @@ class SupervisorSpecification extends GebReportingSpec {
     backToCategoriserButton.click()
     at SupervisorConfirmBackPage
     answerYes.click()
+    messageText << "a message for categoriser"
     elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
 
     submitButton.click()
@@ -253,7 +257,27 @@ class SupervisorSpecification extends GebReportingSpec {
     then: 'offender with booking id 12 has been removed'
     names == ['Pitstop, Penelope']
 
-    db.getData(12).status == ["SUPERVISOR_BACK"]
+    def data = db.getData(12)
+    data.status == ["SUPERVISOR_BACK"]
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.supervisor == [confirmBack: [confirmation: 'Yes', messageText: 'a message for categoriser']]
+
+    when: 'the categorisor views the tasklist and clicks the message task'
+    fixture.logout()
+    fixture.gotoTasklist()
+    at TasklistPage
+    supervisorMessageButton.click()
+
+    then: 'the message is displayed'
+    at SupervisorMessagePage
+    messageText.text() == 'a message for categoriser'
+
+    when: 'the message is dismissed'
+    submitButton.click()
+
+    then: 'the supervisor message is flagged as read'
+    at TasklistPage
+    supervisorMessageButton.text() == 'View'
   }
 
   def "Overriding to an Open conditions category returns the record to the categoriser"() {
@@ -542,7 +566,6 @@ class SupervisorSpecification extends GebReportingSpec {
     response.openConditionsRequested == null
     data.status == ["APPROVED"]
     data.approved_by == ['SUPERVISOR_USER']
-
   }
 
   def "The supervisor can send the case back to the recategoriser"() {
@@ -561,6 +584,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     when: 'the supervisor confirms to return to recategoriser'
     answerYes.click()
+    messageText << "a message for re-categoriser"
     elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
 
     submitButton.click()
@@ -574,6 +598,23 @@ class SupervisorSpecification extends GebReportingSpec {
     def data = db.getData(12)
     data.status == ["SUPERVISOR_BACK"]
     data.approved_by == [null]
+
+    when: 'the categorisor views the tasklist and clicks the message task'
+    fixture.logout()
+    fixture.gotoTasklistRecat()
+    at TasklistRecatPage
+    supervisorMessageButton.click()
+
+    then: 'the message is displayed'
+    at SupervisorMessagePage
+    messageText.text() == 'a message for re-categoriser'
+
+    when: 'the message is dismissed'
+    submitButton.click()
+
+    then: 'the supervisor message is flagged as read'
+    at TasklistRecatPage
+    supervisorMessageButton.text() == 'View'
   }
 
   def "Overriding to an Open conditions category returns the record to the recategoriser"() {

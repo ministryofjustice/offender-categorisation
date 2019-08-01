@@ -28,6 +28,7 @@ href: backLink or "/"
 
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
 
+  {% set supervisorMessageCompleted = data.supervisor.confirmBack.messageText and data.supervisor.confirmBack.isRead %}
   {% set prisonerBackgroundCompleted = data.recat %} {# .prisonerBackground.tbc #}
   {% set securityInputCompleted = data.recat.securityInput.securityInputNeeded === 'No' or data.recat.securityBack %}
   {% set riskAssessmentCompleted = data.recat.riskAssessment.otherRelevant %}
@@ -35,14 +36,29 @@ href: backLink or "/"
   {% set nextReviewDateCompleted = data.recat.nextReviewDate.date %}
   {% set openConditionsRequested = data.openConditionsRequested %}
   {% set decisionCompleted = data.recat.decision.category %}
-  {% set allSectionsCompleted = prisonerBackgroundCompleted and securityInputCompleted and not locked and decisionCompleted and riskAssessmentCompleted
-                                and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
+  {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
+     and prisonerBackgroundCompleted and securityInputCompleted and not locked
+     and decisionCompleted and riskAssessmentCompleted
+     and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
   <div class="govuk-grid-row govuk-!-width-two-thirds">
     <div class="govuk-grid-column-full">
       <ul class="app-task-list">
         <li>
           <ul class="app-task-list__items">
+            {% if data.supervisor.confirmBack.messageText %}
+              <li class="app-task-list__item" id="supervisorMessageSection">
+                {% set buttonClasses = buttonClassesDefault + " grey-button" if supervisorMessageCompleted else buttonClassesDefault %}
+                {{ govukButton({
+                  text: "View" if supervisorMessageCompleted else "Start",
+                  href: "/form/supervisor/supervisorMessage/" + data.details.bookingId,
+                  classes: buttonClasses,
+                  attributes: { 'id': 'supervisorMessageButton' }
+                }) }}
+                <div class="govuk-heading-m">Message from supervisor</div>
+                <div class="govuk-!-margin-top-2">{% if supervisorMessageCompleted %}Completed{% else %}Not yet confirmed{% endif %}</div>
+              </li>
+            {% endif %}
 
             <li class="app-task-list__item">
               {% set buttonClasses = buttonClassesDefault + " grey-button" if prisonerBackgroundCompleted else buttonClassesDefault %}

@@ -1,5 +1,6 @@
 const { validate } = require('../utils/fieldValidation')
 const moment = require('moment')
+const R = require('ramda')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
@@ -363,6 +364,19 @@ module.exports = function createFormService(formClient) {
     }
   }
 
+  async function backToCategoriserMessageRead(bookingId, transactionalClient) {
+    try {
+      const categorisationRecord = await getCategorisationRecord(bookingId, transactionalClient)
+      const { formObject } = categorisationRecord
+      const newData = R.assocPath(['supervisor', 'confirmBack', 'isRead'], true, formObject)
+      await updateFormData(bookingId, newData, transactionalClient)
+      return { formObject: newData, ...categorisationRecord }
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
   async function setAwaitingApproval(bookingId, transactionalClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     const currentStatus = currentCategorisation.status
@@ -512,6 +526,7 @@ module.exports = function createFormService(formClient) {
     createOrRetrieveCategorisationRecord,
     createCategorisationRecord,
     backToCategoriser,
+    backToCategoriserMessageRead,
     setAwaitingApproval,
     validate,
     isValid,
