@@ -16,13 +16,14 @@ class TasklistPage extends Page {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-grid-column-one-third') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
-    sentenceTableRow1 (required: false){ $('table#sentences tr', 1).find('td')}
-    sentenceTableRow2 (required: false){ $('table#sentences tr', 2).find('td')}
+    sentenceTableRow1(required: false) { $('table#sentences tr', 1).find('td') }
+    sentenceTableRow2(required: false) { $('table#sentences tr', 2).find('td') }
     logoutLink { $('a', href: '/logout') }
-    startButtons { bodyRows*.$('td', 5)*.find('a') }
+    supervisorMessageButton { $('#supervisorMessageButton') }
     offendingHistoryButton { $('#offendingHistoryButton') }
     furtherChargesButton { $('#furtherChargesButton') }
     securityButton { $('#securityButton') }
+    openConditionsButton(required: false) { $('#openConditionsButton') }
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }
     violenceButton { $('#violenceButton') }
@@ -30,6 +31,5 @@ class TasklistPage extends Page {
     extremismButton { $('#extremismButton') }
     backLink { $('a.govuk-back-link') }
     summarySection(required: true) { $('#review div') }
-    openConditionsButton(required: false) { $('#openConditionsButton') }
   }
 }

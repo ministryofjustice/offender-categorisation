@@ -16,6 +16,7 @@ class TasklistRecatPage extends Page {
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     logoutLink { $('a', href: '/logout') }
 
+    supervisorMessageButton { $('#supervisorMessageButton') }
     prisonerBackgroundButton { $('#prisonerBackgroundButton') }
     securityButton { $('#securityButton') }
     riskAssessmentButton { $('#riskAssessmentButton') }
