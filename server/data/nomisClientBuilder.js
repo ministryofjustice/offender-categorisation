@@ -26,6 +26,7 @@ module.exports = token => {
       return nomisPost({ path, body: bookingIds })
     },
     getLatestCategorisationForOffenders(agencyId, offenderNos) {
+      if (offenderNos.length === 0) return []
       const path = `${apiUrl}api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false`
       return nomisPost({ path, body: offenderNos })
     },
@@ -39,6 +40,7 @@ module.exports = token => {
       return nomisUserGet({ path, headers })
     },
     getSentenceDatesForOffenders(bookingIds) {
+      if (bookingIds.length === 0) return []
       const path = `${apiUrl}api/offender-sentences/bookings`
       return nomisPost({ path, body: bookingIds })
     },
