@@ -102,7 +102,7 @@ class HomePageSpecification extends GebReportingSpec {
               sentenceStartDate32.plusDays(get10BusinessDays(sentenceStartDate32)).format('dd/MM/yyyy'),
               sentenceStartDate33.plusDays(get10BusinessDays(sentenceStartDate33)).format('dd/MM/yyyy'),
               'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE']
-    statuses == ['Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Back from Supervisor']
+    statuses == ['Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved', 'REJECTED BY\nSUPERVISOR']
     startButtons*.text() == ['PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS', 'Edit']
   }
 

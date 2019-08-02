@@ -1,10 +1,8 @@
 {% extends "../formTemplate.html" %}
 
-{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
-{% from "button/macro.njk" import govukButton %}
 {% from "radios/macro.njk" import govukRadios %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "details/macro.njk" import govukDetails %}
-
 
 {% block formItems %}
 
@@ -12,27 +10,49 @@
   <h1 class="govuk-heading-l">Confirm Status Change</h1>
 </div>
 
+{% set messageHtml %}
+
+  {{ govukCharacterCount({
+    name: "messageText",
+    type: "messageText",
+    id: "messageText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Please enter a message for the categorisor"
+    },
+    value: data.supervisor.confirmBack.messageText,
+    errorMessage: {
+      text: "Please enter a message"
+    } if (errors | findError('messageText'))
+  }) }}
+
+{% endset -%}
+
 {{ govukRadios({
   name: "confirmation",
   classes: "govuk-radios--inline",
   fieldset: {
-  legend: {
-  text: "Are you sure you want to send this case back to the categoriser?",
-  isPageHeading: false
-  }
+    legend: {
+      text: "Are you sure you want to send this case back to the categoriser?",
+      isPageHeading: false
+    }
   },
   errorMessage: {
-  text: "Select yes to return this case to the Categoriser To do list"
+    text: "Select yes to return this case to the Categoriser To do list"
   } if (errors | findError('confirmation')),
   items: [
-  {
-    value: "Yes",
-    text: "Yes"
-  },
-  {
-    value: "No",
-    text: "No"
-  }
+    {
+      value: 'Yes',
+      text: 'Yes',
+      checked: data.supervisor.confirmBack.confirmation === 'Yes',
+      conditional: { html:messageHtml }
+    },
+    {
+      value: 'No',
+      text: 'No',
+      checked: data.supervisor.confirmBack.confirmation === 'No'
+    }
   ]
 }) }}
 

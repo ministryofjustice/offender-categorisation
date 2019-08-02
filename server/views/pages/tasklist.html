@@ -26,6 +26,7 @@ href: backLink or "/"
   {% include "../partials/offenderDetails.html" %}
   <hr/>
 
+  {% set supervisorMessageCompleted = data.supervisor.confirmBack.messageText and data.supervisor.confirmBack.isRead %}
   {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
   {% set furtherChargesCompleted = data.ratings.furtherCharges.furtherCharges %}
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
@@ -35,7 +36,9 @@ href: backLink or "/"
   {% set extremismRatingCompleted = data.ratings.extremismRating.previousTerrorismOffences %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
   {% set openConditionsRequested = data.openConditionsRequested %}
-  {% set allSectionsCompleted = offendingHistoryCompleted and furtherChargesCompleted and securityInputCompleted and not locked and violenceRatingCompleted and escapeRatingCompleted
+  {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
+     and offendingHistoryCompleted and furtherChargesCompleted and securityInputCompleted and not locked
+     and violenceRatingCompleted and escapeRatingCompleted
      and extremismRatingCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
   <div class="govuk-grid-row govuk-!-width-two-thirds">
@@ -43,6 +46,19 @@ href: backLink or "/"
       <ul class="app-task-list">
         <li>
           <ul class="app-task-list__items">
+            {% if data.supervisor.confirmBack.messageText %}
+              <li class="app-task-list__item" id="supervisorMessageSection">
+                {% set buttonClasses = buttonClassesDefault + " grey-button" if supervisorMessageCompleted else buttonClassesDefault %}
+                {{ govukButton({
+                  text: "View" if supervisorMessageCompleted else "Start",
+                  href: "/form/supervisor/supervisorMessage/" + data.details.bookingId,
+                  classes: buttonClasses,
+                  attributes: { 'id': 'supervisorMessageButton' }
+                }) }}
+                <div class="govuk-heading-m">Message from supervisor</div>
+                <div class="govuk-!-margin-top-2">{% if supervisorMessageCompleted %}Completed{% else %}Not yet confirmed{% endif %}</div>
+              </li>
+            {% endif %}
             <li class="app-task-list__item">
               {% set buttonTextOH = "Edit" if offendingHistoryCompleted else "Start" %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if offendingHistoryCompleted else buttonClassesDefault %}
@@ -50,8 +66,7 @@ href: backLink or "/"
                 text: buttonTextOH,
                 href: "/form/ratings/offendingHistory/" + data.details.bookingId,
                 classes: buttonClasses,
-                attributes:
-                {  'id': 'offendingHistoryButton' }
+                attributes: { 'id': 'offendingHistoryButton' }
                 }) }}
                 <div class="govuk-heading-m">Offending history</div>
                 <div class="govuk-!-margin-top-2">{% if offendingHistoryCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
@@ -63,8 +78,7 @@ href: backLink or "/"
               text: buttonTextFC,
               href: "/form/ratings/furtherCharges/" + data.details.bookingId,
               classes: buttonClasses,
-              attributes:
-              {  'id': 'furtherChargesButton' }
+              attributes: { 'id': 'furtherChargesButton' }
               }) }}
               <div class="govuk-heading-m">Further charges</div>
               <div class="govuk-!-margin-top-2">{% if furtherChargesCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
@@ -76,8 +90,7 @@ href: backLink or "/"
                 text: buttonTextV,
                 href: "/form/ratings/violenceRating/" + data.details.bookingId,
                 classes: buttonClasses,
-                attributes:
-                  {  'id': 'violenceButton' }
+                attributes: { 'id': 'violenceButton' }
                 }) }}
                 <div class="govuk-heading-m">Safety and good order</div>
                 <div class="govuk-!-margin-top-2">{% if violenceRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
@@ -89,8 +102,7 @@ href: backLink or "/"
                 text: buttonTextE,
                 href: "/form/ratings/escapeRating/" + data.details.bookingId,
                 classes: buttonClasses,
-                attributes:
-                  {  'id': 'escapeButton' }
+                attributes: { 'id': 'escapeButton' }
                 }) }}
                 <div class="govuk-heading-m">Risk of escape</div>
                 <div class="govuk-!-margin-top-2">{% if escapeRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
@@ -102,8 +114,7 @@ href: backLink or "/"
                 text: buttonTextEx,
                 href: "/form/ratings/extremismRating/" + data.details.bookingId,
                 classes: buttonClasses,
-                attributes:
-                  {  'id': 'extremismButton' }
+                attributes: { 'id': 'extremismButton' }
               }) }}
               <div class="govuk-heading-m">Extremism</div>
               <div class="govuk-!-margin-top-2">{% if extremismRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
@@ -117,8 +128,7 @@ href: backLink or "/"
                 href: null if locked else ("/form/ratings/securityBack/" + data.details.bookingId if backFromSecurity else "/form/ratings/securityInput/" + data.details.bookingId),
                 disabled: locked,
                 classes: buttonClasses,
-                attributes:
-                  { 'id': 'securityButton' }
+                attributes: { 'id': 'securityButton' }
                 })
               }}
               <div class="govuk-heading-m">Security information</div>
@@ -133,8 +143,7 @@ href: backLink or "/"
                 text: buttonTextSec,
                 href: "/form/openConditions/earliestReleaseDate/" + data.details.bookingId,
                 classes: buttonClasses,
-                attributes:
-                { 'id': 'openConditionsButton' }
+                attributes: { 'id': 'openConditionsButton' }
                 })
               }}
               <div class="govuk-heading-m">Open conditions</div>
