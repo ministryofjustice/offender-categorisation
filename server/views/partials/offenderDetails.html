@@ -10,6 +10,7 @@
 </div>
 {% endmacro %}
 
+{% set sentence = data.details.sentence %}
 <div class="govuk-grid-row govuk-!-padding-left-3">
 
   <div class="govuk-grid-column-one-third">
@@ -57,56 +58,56 @@
     {% endif %}
   </div>
   <div class="govuk-grid-column-one-third">
-    {% if data.details.sentence.homeDetentionCurfewEligibilityDate %}
+    {% if sentence.homeDetentionCurfewEligibilityDate %}
       {{ headerTitle('HDC Eligibility Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.homeDetentionCurfewEligibilityDate)) }}
+      {{ headerValue(dateConverter(sentence.homeDetentionCurfewEligibilityDate)) }}
     {% endif %}
-    {% if data.details.sentence.automaticReleaseOverrideDate or data.details.sentence.automaticReleaseDate %}
+    {% if sentence.automaticReleaseOverrideDate or sentence.automaticReleaseDate %}
       {{ headerTitle('Automatic Release Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.automaticReleaseOverrideDate or data.details.sentence.automaticReleaseDate)) }}
+      {{ headerValue(dateConverter(sentence.automaticReleaseOverrideDate or sentence.automaticReleaseDate)) }}
     {% endif %}
-    {% if data.details.sentence.conditionalReleaseOverrideDate or data.details.sentence.conditionalReleaseDate %}
+    {% if sentence.conditionalReleaseOverrideDate or sentence.conditionalReleaseDate %}
       {{ headerTitle('Conditional Release Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.conditionalReleaseOverrideDate or data.details.sentence.conditionalReleaseDate)) }}
+      {{ headerValue(dateConverter(sentence.conditionalReleaseOverrideDate or sentence.conditionalReleaseDate)) }}
     {% endif %}
-    {% if data.details.sentence.paroleEligibilityDate %}
+    {% if sentence.paroleEligibilityDate %}
       {{ headerTitle('Parole Eligibility Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.paroleEligibilityDate)) }}
+      {{ headerValue(dateConverter(sentence.paroleEligibilityDate)) }}
     {% endif %}
-    {% if data.details.sentence.nonParoleOverrideDate or data.details.sentence.nonParoleDate %}
+    {% if sentence.nonParoleOverrideDate or sentence.nonParoleDate %}
       {{ headerTitle('Non Parole Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.nonParoleOverrideDate or data.details.sentence.nonParoleDate)) }}
+      {{ headerValue(dateConverter(sentence.nonParoleOverrideDate or sentence.nonParoleDate)) }}
     {% endif %}
-    {% if data.details.sentence.tariffDate %}
+    {% if sentence.tariffDate %}
       {{ headerTitle('ISP Tariff End Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.tariffDate)) }}
+      {{ headerValue(dateConverter(sentence.tariffDate)) }}
         {# ISP means indeterminate sentenced prisoners - instead of a sentence length, they have a "tariff", which is the
         minimum amount of time their sentence is supposed to last for, so their tariff end date is the earliest date
         they could be released #}
     {% endif %}
-    {% if data.details.sentence.licenceExpiryDate %}
+    {% if sentence.licenceExpiryDate %}
       {{ headerTitle('Licence Expiry Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.licenceExpiryDate)) }}
+      {{ headerValue(dateConverter(sentence.licenceExpiryDate)) }}
     {% endif %}
-    {% if data.details.sentence.sentenceExpiryDate %}
+    {% if sentence.sentenceExpiryDate %}
       {{ headerTitle('Sentence Expiry Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.sentenceExpiryDate)) }}
+      {{ headerValue(dateConverter(sentence.sentenceExpiryDate)) }}
     {% endif %}
 
-    {% if data.details.sentence.list | length == 1 %}
-      {% set first = data.details.sentence.list[0] %}
+    {% if sentence.list | length == 1 %}
+      {% set first = sentence.list[0] %}
       {{ headerTitle('Court-issued sentence') }}
       <div class="govuk-grid-row">
         <p class="govuk-!-font-weight-bold govuk-!-margin-top-1">{{ formatLength(first) }} ({{ first.sentenceTypeDescription }})</p>
       </div>
-    {% elif data.details.sentence.list | length == 0 %}
+    {% elif sentence.list | length == 0 %}
       {{ headerTitle('Court-issued sentence') }}
       {{ headerValue() }}
     {% endif %}
   </div>
 </div>
 
-{% if data.details.sentence.list | length > 1 %}
+{% if sentence.list | length > 1 %}
 <div class="govuk-grid-row govuk-!-padding-left-3">
   <div class="govuk-grid-column-full">
     {{ headerTitle('Court-issued sentences') }}
@@ -122,7 +123,7 @@
       </tr>
       </thead>
       <tbody class="govuk-table__body">
-      {% for row in data.details.sentence.list %}
+      {% for row in sentence.list %}
       <tr class="govuk-table__row ">
         <td class="govuk-table__cell">{{ row.sentenceSequence }}</td>
         <td class="govuk-table__cell">{{ dateConverter(row.startDate) }}</td>
