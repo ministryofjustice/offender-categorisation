@@ -1,11 +1,11 @@
 const path = require('path')
+const moment = require('moment')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
 const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter } = require('../utils/utils.js')
-const moment = require('moment')
 const { sortByDateTimeDesc } = require('./offenderSort.js')
 const config = require('../config')
 

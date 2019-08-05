@@ -1,5 +1,5 @@
-const formClient = require('../../server/data/formClient')
 const moment = require('moment')
+const formClient = require('../../server/data/formClient')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
