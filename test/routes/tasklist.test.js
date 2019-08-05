@@ -54,6 +54,7 @@ beforeEach(() => {
       homeDetentionCurfewEligibilityDate: '2020-06-10',
       automaticReleaseDate: '2020-06-11',
       conditionalReleaseDate: '2020-02-02',
+      conditionalReleaseOverrideDate: '2020-04-04',
       paroleEligibilityDate: '2020-06-13',
       nonParoleDate: '2020-06-14',
       tariffDate: '2020-06-15',
@@ -84,6 +85,8 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain('Categorisation task list')
         expect(res.text).toContain('Offending history')
         expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Conditional Release Date')
+        expect(res.text).toContain('04/04/2020')
       }))
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
