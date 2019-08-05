@@ -61,28 +61,28 @@
       {{ headerTitle('HDC Eligibility Date') }}
       {{ headerValue(dateConverter(data.details.sentence.homeDetentionCurfewEligibilityDate)) }}
     {% endif %}
-    {% if data.details.sentence.automaticReleaseDate %}
+    {% if data.details.sentence.automaticReleaseOverrideDate or data.details.sentence.automaticReleaseDate %}
       {{ headerTitle('Automatic Release Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.automaticReleaseDate)) }}
+      {{ headerValue(dateConverter(data.details.sentence.automaticReleaseOverrideDate or data.details.sentence.automaticReleaseDate)) }}
     {% endif %}
-    {% if data.details.sentence.conditionalReleaseDate %}
+    {% if data.details.sentence.conditionalReleaseOverrideDate or data.details.sentence.conditionalReleaseDate %}
       {{ headerTitle('Conditional Release Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.conditionalReleaseDate)) }}
+      {{ headerValue(dateConverter(data.details.sentence.conditionalReleaseOverrideDate or data.details.sentence.conditionalReleaseDate)) }}
     {% endif %}
     {% if data.details.sentence.paroleEligibilityDate %}
       {{ headerTitle('Parole Eligibility Date') }}
       {{ headerValue(dateConverter(data.details.sentence.paroleEligibilityDate)) }}
     {% endif %}
-    {% if data.details.sentence.nonParoleDate %}
+    {% if data.details.sentence.nonParoleOverrideDate or data.details.sentence.nonParoleDate %}
       {{ headerTitle('Non Parole Date') }}
-      {{ headerValue(dateConverter(data.details.sentence.nonParoleDate)) }}
+      {{ headerValue(dateConverter(data.details.sentence.nonParoleOverrideDate or data.details.sentence.nonParoleDate)) }}
     {% endif %}
     {% if data.details.sentence.tariffDate %}
       {{ headerTitle('ISP Tariff End Date') }}
       {{ headerValue(dateConverter(data.details.sentence.tariffDate)) }}
-    {# ISP means indeterminate sentenced prisoners - instead of a sentence length, they have a "tariff", which is the
-    minimum amount of time their sentence is supposed to last for, so their tariff end date is the earliest date
-    they could be released #}
+        {# ISP means indeterminate sentenced prisoners - instead of a sentence length, they have a "tariff", which is the
+        minimum amount of time their sentence is supposed to last for, so their tariff end date is the earliest date
+        they could be released #}
     {% endif %}
     {% if data.details.sentence.licenceExpiryDate %}
       {{ headerTitle('Licence Expiry Date') }}
