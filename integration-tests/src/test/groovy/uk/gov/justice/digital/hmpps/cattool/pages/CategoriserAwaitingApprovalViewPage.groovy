@@ -4,7 +4,7 @@ import geb.Page
 
 class CategoriserAwaitingApprovalViewPage extends Page {
 
-  static url = '/form/categoriser/awaitingApprovalView'
+  static url = '/form/awaitingApprovalView'
 
   static at = {
     headingText == 'Provisional categorisation'

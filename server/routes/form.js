@@ -215,6 +215,25 @@ module.exports = function Index({
   )
 
   router.get(
+    '/awaitingApprovalView/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient)
+
+      if (result.catType === CatType.INITIAL.name) {
+        res.render('formPages/categoriser/awaitingApprovalView', result)
+      } else {
+        const categorisations = await offendersService.getPrisonerBackground(
+          res.locals.user.token,
+          result.data.details.offenderNo
+        )
+        const data = { ...result.data, categorisations }
+        res.render('formPages/recat/awaitingApprovalView', { ...result, data })
+      }
+    })
+  )
+
+  router.get(
     '/approvedView/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
@@ -252,7 +271,6 @@ module.exports = function Index({
 
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
-
     const youngOffender = formService.isYoungOffender(details)
 
     return {
