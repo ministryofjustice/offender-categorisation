@@ -20,7 +20,7 @@ class ProvisionalCategoryPage extends Page {
 
     warning { $('div.govuk-warning-text') }
     form { $('form') }
-    appropriateYes(required: false) { $('#categoryAppropriate-1') }
+    appropriateYes(required: false) { $('#categoryAppropriate') }
     appropriateNo(required: false) { $('#categoryAppropriate-2') }
     overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
     overriddenCategoryC(required: false) { $('#overriddenCategoryC') }

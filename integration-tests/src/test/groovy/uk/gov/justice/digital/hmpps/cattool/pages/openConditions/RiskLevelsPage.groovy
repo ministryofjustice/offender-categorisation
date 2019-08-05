@@ -13,7 +13,7 @@ class RiskLevelsPage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     form { $('form') }
-    likelyToAbscondYes { $('#likelyToAbscond-1') }
+    likelyToAbscondYes { $('#likelyToAbscond') }
     likelyToAbscondNo { $('#likelyToAbscond-2') }
     likelyToAbscondText(required: false) { $('textarea', name: 'likelyToAbscondText') }
 

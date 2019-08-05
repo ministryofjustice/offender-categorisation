@@ -15,7 +15,7 @@ class SupervisorConfirmBackPage extends Page {
 
     form {$('form')}
 
-    answerYes { $('#confirmation-1') }
+    answerYes { $('#confirmation') }
     answerNo { $('#confirmation-2') }
     messageText {$('#messageText')}
 

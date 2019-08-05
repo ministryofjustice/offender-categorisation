@@ -20,7 +20,7 @@ class ProvisionalCategoryOpenPage extends Page {
 
     warning { $('div.govuk-warning-text') }
     form { $('form') }
-    appropriateYes(required: false) { $('#openConditionsCategoryAppropriate-1') }
+    appropriateYes(required: false) { $('#openConditionsCategoryAppropriate') }
     appropriateNo(required: false) { $('#openConditionsCategoryAppropriate-2') }
     newCatMessage(required: false) { $('h2.govuk-heading-m') }
     overriddenCategoryText(required: false) { $('#overriddenCategoryText') }

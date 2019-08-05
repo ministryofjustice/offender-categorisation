@@ -13,13 +13,13 @@ class ForeignNationalPage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     form { $('form') }
-    isForeignNationalYes { $('#isForeignNational-1') }
+    isForeignNationalYes { $('#isForeignNational') }
     isForeignNationalNo { $('#isForeignNational-2') }
-    formCompletedYes(required: false) { $('#formCompleted-1') }
+    formCompletedYes(required: false) { $('#formCompleted') }
     formCompletedNo(required: false) { $('#formCompleted-2') }
-    dueDeportedYes(required: false) { $('#dueDeported-1') }
+    dueDeportedYes(required: false) { $('#dueDeported') }
     dueDeportedNo(required: false) { $('#dueDeported-2') }
-    exhaustedAppealYes(required: false) { $('#exhaustedAppeal-1') }
+    exhaustedAppealYes(required: false) { $('#exhaustedAppeal') }
     exhaustedAppealNo(required: false) { $('#exhaustedAppeal-2') }
 
     submitButton { $('button', type: 'submit') }

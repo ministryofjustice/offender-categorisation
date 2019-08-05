@@ -19,10 +19,10 @@ class ViolencePage extends Page {
     info(required: false) { $('div.govuk-inset-text') }
 
     form {$('form')}
-    highRiskOfViolenceYes {$('#highRiskOfViolence-1')}
+    highRiskOfViolenceYes {$('#highRiskOfViolence')}
     highRiskOfViolenceNo {$('#highRiskOfViolence-2')}
     highRiskOfViolenceText {$('#highRiskOfViolenceText')}
-    seriousThreatYes {$('#seriousThreat-1')}
+    seriousThreatYes {$('#seriousThreat')}
     seriousThreatNo {$('#seriousThreat-2')}
     seriousThreatText {$('#seriousThreatText')}
 

@@ -120,7 +120,7 @@ module.exports = function createApp({
         outputStyle: 'compressed',
         indentedSyntax: true,
         prefix: '/stylesheets/',
-        includePaths: ['node_modules/govuk-frontend', 'node_modules/@ministryofjustice'],
+        includePaths: ['node_modules/govuk-frontend/govuk', 'node_modules/@ministryofjustice'],
       })
     )
   }
@@ -131,8 +131,8 @@ module.exports = function createApp({
   ;[
     '../assets',
     '../assets/stylesheets',
-    '../node_modules/govuk-frontend/assets',
-    '../node_modules/govuk-frontend',
+    '../node_modules/govuk-frontend/govuk/assets',
+    '../node_modules/govuk-frontend/govuk',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(__dirname, dir), cacheControl))
   })
