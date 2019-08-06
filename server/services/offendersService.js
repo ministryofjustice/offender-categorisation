@@ -6,7 +6,7 @@ const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
 const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter } = require('../utils/utils.js')
-const { sortByDateTimeDesc } = require('./offenderSort.js')
+const { sortByDateTime, sortByStatus } = require('./offenderSort.js')
 const config = require('../config')
 
 const dirname = process.cwd()
@@ -102,8 +102,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       )
 
       return decoratedResults
-        .filter(o => o) // ignore recats (set to null)
-        .sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
+        .filter(o => o) // ignore recats (which were set to null)
+        .sort((a, b) => {
+          const status = sortByStatus(b.dbStatus, a.dbStatus)
+          return status === 0 ? sortByDateTime(b.dateRequired, a.dateRequired) : status
+        })
     } catch (error) {
       logger.error(error, 'Error during getUncategorisedOffenders')
       throw error
@@ -160,7 +163,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           }))
         )
 
-        return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.displayApprovalDate, b.displayApprovalDate))
+        return decoratedResults.sort((a, b) => sortByDateTime(a.displayApprovalDate, b.displayApprovalDate))
       }
       return []
     } catch (error) {
@@ -216,7 +219,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         })
 
         // filter out offenders who no longer have a sentence (nomis change since referral)
-        return decoratedResults.filter(o => o).sort((a, b) => sortByDateTimeDesc(a.dateRequired, b.dateRequired))
+        return decoratedResults.filter(o => o).sort((a, b) => sortByDateTime(b.dateRequired, a.dateRequired))
       }
       return []
     } catch (error) {
@@ -254,7 +257,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           }
         })
 
-        return decoratedResults.sort((a, b) => sortByDateTimeDesc(a.displayReviewedDate, b.displayReviewedDate))
+        return decoratedResults.sort((a, b) => sortByDateTime(a.displayReviewedDate, b.displayReviewedDate))
       }
       return []
     } catch (error) {
@@ -321,9 +324,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       })
 
       return decoratedResults.sort((a, b) =>
-        sortByDateTimeDesc(
-          a.dateRequired ? a.dateRequired : a.nextReviewDate,
-          b.dateRequired ? b.dateRequired : b.nextReviewDate
+        sortByDateTime(
+          b.dateRequired ? b.dateRequired : b.nextReviewDate,
+          a.dateRequired ? a.dateRequired : a.nextReviewDate
         )
       )
     } catch (error) {
@@ -384,6 +387,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             ...o,
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
             displayStatus: decorated.displayStatus || 'Not started',
+            dbStatus: decorated.dbStatus,
             reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
             nextReviewDateDisplay: dateConverter(o.nextReviewDate),
             overdue: isOverdue(o.nextReviewDate),
@@ -423,6 +427,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             ...o,
             displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
             displayStatus: decorated.displayStatus || 'Not started',
+            dbStatus: decorated.dbStatus,
             reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.AGE,
             nextReviewDateDisplay,
             overdue: isOverdue(nextReviewDate),
@@ -433,8 +438,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         })
       )
       return [...decoratedResultsReview, ...decoratedResultsU21]
-        .filter(o => o) // ignore initial cats (set to null)
-        .sort((a, b) => sortByDateTimeDesc(b.nextReviewDateDisplay, a.nextReviewDateDisplay))
+        .filter(o => o) // ignore initial cats (which were set to null)
+        .sort((a, b) => {
+          const status = sortByStatus(b.dbStatus, a.dbStatus)
+          return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
+        })
     } catch (error) {
       logger.error(error, 'Error during getRecategorisedOffenders')
       throw error
@@ -629,7 +637,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         })
       )
 
-      return decoratedCats.sort((a, b) => sortByDateTimeDesc(a.assessmentDateDisplay, b.assessmentDateDisplay))
+      return decoratedCats.sort((a, b) => sortByDateTime(a.assessmentDateDisplay, b.assessmentDateDisplay))
     } catch (error) {
       logger.error(error, 'Error during getPrisonerBackground')
       throw error

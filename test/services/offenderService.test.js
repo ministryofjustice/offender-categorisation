@@ -288,7 +288,7 @@ describe('getUnapprovedOffenders', () => {
         category: 'B',
         categoriserFirstName: 'CATTER',
         categoriserLastName: 'ONE',
-        nextReviewDate: '2019-04-20',
+        nextReviewDate: '2020-04-20',
         status: 'AWAITING_APPROVAL',
         assessmentSeq: 11,
       },
@@ -371,10 +371,10 @@ describe('getUnapprovedOffenders', () => {
       .mockReturnValueOnce({ bookingId: 7, nomisSeq: 17, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
 
     const sentenceDates = [
-      { sentenceDetail: { bookingId: 1, sentenceStartDate: todaySubtract(4) } },
-      { sentenceDetail: { bookingId: 2, sentenceStartDate: todaySubtract(7) } },
-      { sentenceDetail: { bookingId: 3, sentenceStartDate: todaySubtract(10) } },
-      { sentenceDetail: { bookingId: 6, sentenceStartDate: todaySubtract(11) } },
+      { sentenceDetail: { bookingId: 1, sentenceStartDate: todaySubtract(11) } },
+      //   { sentenceDetail: { bookingId: 2, sentenceStartDate: todaySubtract(7) } },
+      //   { sentenceDetail: { bookingId: 3, sentenceStartDate: todaySubtract(10) } },
+      { sentenceDetail: { bookingId: 6, sentenceStartDate: todaySubtract(4) } },
     ]
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
 
@@ -387,7 +387,7 @@ describe('getUnapprovedOffenders', () => {
         dbRecordExists: true,
         catType: 'Initial',
         pnomis: false,
-        nextReviewDate: null,
+        dateRequired: '20/05/2019',
       },
       {
         offenderNo: 'G0002',
@@ -427,7 +427,7 @@ describe('getUnapprovedOffenders', () => {
         bookingId: 7,
         dbRecordExists: true,
         pnomis: true,
-        nextReviewDate: '25/05/2019',
+        nextReviewDate: '29/05/2019',
       },
     ]
 
@@ -436,6 +436,7 @@ describe('getUnapprovedOffenders', () => {
     expect(nomisClient.getUncategorisedOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(formService.getCategorisationRecord).toBeCalledTimes(6)
     expect(formService.getCategorisationRecord).nthCalledWith(1, 1, mockTransactionalClient)
+    expect(nomisClient.getSentenceDatesForOffenders).toBeCalledWith([1, 6])
     expect(result).toMatchObject(expected)
   })
 
