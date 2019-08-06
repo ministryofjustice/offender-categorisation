@@ -11,6 +11,17 @@ Test template output:
 helm template ./offender-categorisation/ --values=values-dev.yaml --values=secrets-example.yaml
 ```
 
+### Rolling back a release
+Find the revision number for the deployment you want to roll back:
+```
+helm --tiller-namespace offender-categorisation-dev history offender-categorisation -o yaml
+```
+(note, each revision has a description which has the app version and circleci build URL)
+
+Rollback
+```
+helm --tiller-namespace offender-categorisation-dev rollback offender-categorisation [INSERT REVISION NUMBER HERE] --wait
+```
 
 ### Helm init
 
