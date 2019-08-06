@@ -13,7 +13,10 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
 class ApprovedViewSpecification extends GebReportingSpec {
@@ -105,6 +108,27 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
     then: "I return to the supervisor done page"
     at SupervisorDonePage
+  }
+
+  def "The approved view page is correctly displayed (recat role)"() {
+    db.createDataWithIdAndStatusAndCatType(-1, 12, 'APPROVED', JsonOutput.toJson([
+      recat: fixture.defaultRecat]), 'RECAT')
+
+    when: 'the re-categoriser goes to the approved view page'
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubCategorised([12])
+    doneTabLink.click()
+    at RecategoriserDonePage
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false)
+    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubAgencyDetails('LPI')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    viewButtons[0].click()
+
+    then: 'the approved view page is shown'
+    at ApprovedViewRecatPage
   }
 
   private navigateToView() {
