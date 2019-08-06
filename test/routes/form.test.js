@@ -248,7 +248,7 @@ describe('GET /approvedView', () => {
   })
 })
 
-describe('GET /categoriser/awaitingApprovalView', () => {
+describe('GET /awaitingApprovalView', () => {
   test('Open conditions entry is displayed on awaiting approval view (after being abandoned), with no change links - INITAL', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'APPROVED',
@@ -260,7 +260,7 @@ describe('GET /categoriser/awaitingApprovalView', () => {
     })
 
     return request(app)
-      .get(`/categoriser/awaitingApprovalView/1234`)
+      .get(`/awaitingApprovalView/1234`)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
