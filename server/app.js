@@ -3,7 +3,7 @@ const addRequestId = require('express-request-id')()
 const { createNamespace } = require('cls-hooked')
 const moment = require('moment')
 const path = require('path')
-const log = require('bunyan-request-logger')({ name: 'Cat tool http', serializers: catToolSerialisers })
+const bunyanRequestLogger = require('bunyan-request-logger')
 const helmet = require('helmet')
 const csurf = require('csurf')
 const compression = require('compression')
@@ -14,8 +14,6 @@ const sassMiddleware = require('node-sass-middleware')
 const catToolSerialisers = require('./catToolSerialisers')
 const auth = require('./authentication/auth')
 const healthFactory = require('./services/healthCheck')
-
-const { authenticationMiddleware } = auth
 const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
@@ -23,14 +21,16 @@ const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
-
 const config = require('../server/config')
+const createOpenConditionsRouter = require('./routes/openConditions')
+const createRecatRouter = require('./routes/recat')
+
+const log = bunyanRequestLogger({ name: 'Cat tool http', serializers: catToolSerialisers })
+const { authenticationMiddleware } = auth
 
 const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
-const createOpenConditionsRouter = require('./routes/openConditions')
-const createRecatRouter = require('./routes/recat')
 
 module.exports = function createApp({
   signInService,
