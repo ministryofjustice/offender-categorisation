@@ -1,8 +1,7 @@
-const logger = require('../../../log')
-const config = require('../../config')
-
 const { Pool, types } = require('pg')
 const fs = require('fs')
+const logger = require('../../../log')
+const config = require('../../config')
 
 types.setTypeParser(20, val => parseInt(val, 10))
 

@@ -18,7 +18,7 @@ class HigherSecurityReviewPage extends Page {
     form { $('form') }
     behaviour { $('#behaviour') }
     steps { $('#steps') }
-    transferYes { $('#transfer-1') }
+    transferYes { $('#transfer') }
     transferNo { $('#transfer-2') }
     transferText { $('#transferText') }
     conditions { $('#conditions') }

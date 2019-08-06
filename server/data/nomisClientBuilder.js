@@ -1,6 +1,6 @@
+const superagent = require('superagent')
 const logger = require('../../log')
 const config = require('../config')
-const superagent = require('superagent')
 const { getApiClientToken } = require('../authentication/clientCredentials')
 
 const timeoutSpec = {

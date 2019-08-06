@@ -1,36 +1,36 @@
 const express = require('express')
 const addRequestId = require('express-request-id')()
-const catToolSerialisers = require('./catToolSerialisers')
+const { createNamespace } = require('cls-hooked')
+const moment = require('moment')
+const path = require('path')
+const bunyanRequestLogger = require('bunyan-request-logger')
 const helmet = require('helmet')
 const csurf = require('csurf')
 const compression = require('compression')
 const passport = require('passport')
-const auth = require('./authentication/auth')
-const healthFactory = require('./services/healthCheck')
-
-const { authenticationMiddleware } = auth
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
+const sassMiddleware = require('node-sass-middleware')
+const catToolSerialisers = require('./catToolSerialisers')
+const auth = require('./authentication/auth')
+const healthFactory = require('./services/healthCheck')
 const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
-const sassMiddleware = require('node-sass-middleware')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
-const moment = require('moment')
-const path = require('path')
-const log = require('bunyan-request-logger')({ name: 'Cat tool http', serializers: catToolSerialisers })
 const logger = require('../log.js')
 const nunjucksSetup = require('./utils/nunjucksSetup')
-const { createNamespace } = require('cls-hooked')
-
 const config = require('../server/config')
+const createOpenConditionsRouter = require('./routes/openConditions')
+const createRecatRouter = require('./routes/recat')
+
+const log = bunyanRequestLogger({ name: 'Cat tool http', serializers: catToolSerialisers })
+const { authenticationMiddleware } = auth
 
 const version = moment.now().toString()
 const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
-const createOpenConditionsRouter = require('./routes/openConditions')
-const createRecatRouter = require('./routes/recat')
 
 module.exports = function createApp({
   signInService,
@@ -120,7 +120,7 @@ module.exports = function createApp({
         outputStyle: 'compressed',
         indentedSyntax: true,
         prefix: '/stylesheets/',
-        includePaths: ['node_modules/govuk-frontend', 'node_modules/@ministryofjustice'],
+        includePaths: ['node_modules/govuk-frontend/govuk', 'node_modules/@ministryofjustice'],
       })
     )
   }
@@ -131,8 +131,8 @@ module.exports = function createApp({
   ;[
     '../assets',
     '../assets/stylesheets',
-    '../node_modules/govuk-frontend/assets',
-    '../node_modules/govuk-frontend',
+    '../node_modules/govuk-frontend/govuk/assets',
+    '../node_modules/govuk-frontend/govuk',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(__dirname, dir), cacheControl))
   })

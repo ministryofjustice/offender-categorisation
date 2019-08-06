@@ -18,7 +18,7 @@ class RiskAssessmentPage extends Page {
     form { $('form') }
     lowerCategory { $('#lowerCategory') }
     higherCategory { $('#higherCategory') }
-    otherRelevantYes { $('#otherRelevant-1') }
+    otherRelevantYes { $('#otherRelevant') }
     otherRelevantNo { $('#otherRelevant-2') }
     otherRelevantText { $('#otherRelevantText') }
 

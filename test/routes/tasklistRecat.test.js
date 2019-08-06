@@ -1,8 +1,8 @@
 const request = require('supertest')
+const moment = require('moment')
 const appSetup = require('./utils/appSetup')
 const createRouter = require('../../server/routes/tasklistRecat')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
-const moment = require('moment')
 const db = require('../../server/data/dataAccess/db')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
