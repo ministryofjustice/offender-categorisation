@@ -4,5 +4,5 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalVie
 
 class RecategoriserAwaitingApprovalViewPage extends CategoriserAwaitingApprovalViewPage {
 
-  static url = '/form/recat/awaitingApprovalView'
+  static url = '/form/awaitingApprovalView'
 }
