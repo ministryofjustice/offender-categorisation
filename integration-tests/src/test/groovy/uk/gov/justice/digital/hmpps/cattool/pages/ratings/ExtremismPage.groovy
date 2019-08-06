@@ -18,7 +18,7 @@ class ExtremismPage extends Page {
     info(required: false) { $('div.govuk-inset-text') }
 
     form { $('form') }
-    previousTerrorismOffencesYes { $('#previousTerrorismOffences-1') }
+    previousTerrorismOffencesYes { $('#previousTerrorismOffences') }
     previousTerrorismOffencesNo { $('#previousTerrorismOffences-2') }
     previousTerrorismOffencesText { $('#previousTerrorismOffencesText') }
 

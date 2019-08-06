@@ -13,9 +13,9 @@ class RiskOfHarmPage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     form { $('form') }
-    seriousHarmYes { $('#seriousHarm-1') }
+    seriousHarmYes { $('#seriousHarm') }
     seriousHarmNo { $('#seriousHarm-2') }
-    harmManagedYes(required: false) { $('#harmManaged-1') }
+    harmManagedYes(required: false) { $('#harmManaged') }
     harmManagedNo(required: false) { $('#harmManaged-2') }
     harmManagedText(required: false) { $('textarea', name: 'harmManagedText') }
 

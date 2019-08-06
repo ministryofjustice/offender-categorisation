@@ -18,7 +18,7 @@ class SupervisorRecatReviewPage extends Page {
     warning { $('div.govuk-warning-text', 0) }
     form { $('form') }
 
-    appropriateYes { $('#supervisorCategoryAppropriate-1') }
+    appropriateYes { $('#supervisorCategoryAppropriate') }
     appropriateNo { $('#supervisorCategoryAppropriate-2') }
     overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
     overriddenCategoryC(required: false) { $('#overriddenCategoryC') }

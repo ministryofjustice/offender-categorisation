@@ -1,8 +1,8 @@
 const baseJoi = require('joi')
 const dateExtend = require('joi-date-extensions')
 const postcodeExtend = require('joi-postcode')
-const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
 const moment = require('moment')
+const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
 
 const tomorrow = moment()
   .add(1, 'd')

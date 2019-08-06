@@ -1,6 +1,6 @@
-const { validate } = require('../utils/fieldValidation')
 const moment = require('moment')
 const R = require('ramda')
+const { validate } = require('../utils/fieldValidation')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')

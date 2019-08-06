@@ -1,8 +1,8 @@
-const config = require('../config')
 const querystring = require('querystring')
 const { getNamespace } = require('cls-hooked')
-const logger = require('../../log')
 const superagent = require('superagent')
+const logger = require('../../log')
+const config = require('../config')
 
 module.exports = {
   generateOauthClientToken,

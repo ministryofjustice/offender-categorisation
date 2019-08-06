@@ -1,5 +1,5 @@
-const serviceCreator = require('../../server/services/offendersService')
 const moment = require('moment')
+const serviceCreator = require('../../server/services/offendersService')
 const Status = require('../../server/utils/statusEnum')
 const ReviewReason = require('../../server/utils/reviewReasonEnum')
 

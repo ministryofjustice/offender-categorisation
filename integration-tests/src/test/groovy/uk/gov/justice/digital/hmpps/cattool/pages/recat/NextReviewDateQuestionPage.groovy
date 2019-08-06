@@ -16,7 +16,7 @@ class NextReviewDateQuestionPage extends Page {
     headerValue { headerBlock.$('div.govuk-\\!-font-weight-bold') }
 
     form { $('form') }
-    sixMonthsOption { $('#nextDateChoice-1') }
+    sixMonthsOption { $('#nextDateChoice') }
     twelveMonthsOption { $('#nextDateChoice-2') }
     specificOption { $('#nextDateChoice-3') }
 

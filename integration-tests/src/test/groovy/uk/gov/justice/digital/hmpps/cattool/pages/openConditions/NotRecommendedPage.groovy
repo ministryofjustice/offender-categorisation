@@ -13,7 +13,7 @@ class NotRecommendedPage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     form { $('form') }
-    stillReferYes { $('#stillRefer-1') }
+    stillReferYes { $('#stillRefer') }
     stillReferNo { $('#stillRefer-2') }
 
     reasons { $('ul.govuk-\\!-font-weight-bold').find('li') }

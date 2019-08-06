@@ -21,7 +21,7 @@ class CategoriserOffendingHistoryPage extends Page {
     form { $('form') }
     previousConvictionsText { $('#previousConvictionsText') }
     saveButton { $('button.govuk-button') }
-    previousConvictionsYes { $('#previousConvictions-1') }
+    previousConvictionsYes { $('#previousConvictions') }
     previousConvictionsNo { $('#previousConvictions-2') }
     history { $('div.forms-comments-text li') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }

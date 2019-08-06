@@ -18,9 +18,9 @@ class CategoriserFurtherChargesPage extends Page {
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     form { $('form') }
     saveButton { $('button.govuk-button') }
-    furtherChargesYes { $('#furtherCharges-1') }
+    furtherChargesYes { $('#furtherCharges') }
     furtherChargesNo { $('#furtherCharges-2') }
-    furtherChargesCatBYes { $('#furtherChargesCatB-1') }
+    furtherChargesCatBYes { $('#furtherChargesCatB') }
     furtherChargesCatBNo { $('#furtherChargesCatB-2') }
     furtherChargesText { $('#furtherChargesText') }
     history { $('div.forms-comments-text li') }
