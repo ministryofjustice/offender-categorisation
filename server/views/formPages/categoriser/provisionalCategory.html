@@ -109,6 +109,7 @@
 
 {% if data.details.sentence.indeterminate and cat == "I" %}
   <p class="govuk-body">Prisoner has an indeterminate sentence - YOI Open not available</p>
+  <input type="hidden" name="categoryAppropriate" value="Yes" />
 {% else %}
 {{ govukRadios({
   name: "categoryAppropriate",
