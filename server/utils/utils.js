@@ -103,22 +103,20 @@ const catDisplay = cat => {
 }
 
 // R.cond is like a switch statement
-const calculateDate = R.cond([
+const calculateNextReviewDate = R.cond([
   [
     R.equals('6'),
-    R.always(
+    () =>
       moment()
         .add(6, 'months')
-        .format('DD/MM/YYYY')
-    ),
+        .format('DD/MM/YYYY'),
   ],
   [
     R.equals('12'),
-    R.always(
+    () =>
       moment()
         .add(1, 'years')
-        .format('DD/MM/YYYY')
-    ),
+        .format('DD/MM/YYYY'),
   ],
   [R.T, R.always('')],
 ])
@@ -135,5 +133,5 @@ module.exports = {
   linkOnClick,
   filterJsonObjectForLogging,
   catDisplay,
-  calculateDate,
+  calculateNextReviewDate,
 }
