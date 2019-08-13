@@ -405,7 +405,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     elite2Api.stubUncategorisedAwaitingApproval()
     to CategoriserHomePage
-    startButtons[0].click()
+    startButtons[1].click()
 
     then: 'The correct category is retrieved, data is correct and open conditions section is displayed'
     at CategoriserAwaitingApprovalViewPage
@@ -427,7 +427,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
-    startButtons[0].click()
+    startButtons[1].click()
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('D')
     appropriateYes.click()
@@ -522,7 +522,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
-    startButtons[0].click()
+    startButtons[1].click()
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('C')
     appropriateNo.click()
@@ -645,7 +645,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     when: 'The record is viewed by the categoriser'
     elite2Api.stubUncategorisedAwaitingApproval()
     to CategoriserHomePage
-    startButtons[0].click()
+    startButtons[1].click()
 
     then: 'The correct category is retrieved'
     at CategoriserAwaitingApprovalViewPage
@@ -656,7 +656,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubUncategorisedAwaitingApproval()
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
-    startButtons[0].click()
+    startButtons[1].click()
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('D')
     appropriateYes.click()

@@ -627,7 +627,7 @@ class Elite2Api extends WireMockRule {
                 category            : 'B',
                 categoriserFirstName: 'ROGER',
                 categoriserLastName : 'RABBIT',
-                nextReviewDate      : '2020-03-29',
+                nextReviewDate      : '2019-02-01',
                 assessmentSeq       : 6,
               ],
             ]))
