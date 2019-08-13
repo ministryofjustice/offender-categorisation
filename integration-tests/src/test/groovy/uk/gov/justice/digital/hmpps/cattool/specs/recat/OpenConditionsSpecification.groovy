@@ -297,7 +297,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubAssessments('dummy')
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
-    startButtons[1].click()
+    startButtons[0].click()
     at SupervisorReviewPage
     warning.text() contains 'The categoriser recommends category D'
     elite2Api.stubSupervisorApprove('D')
@@ -385,7 +385,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
-    startButtons[1].click()
+    startButtons[0].click()
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('C')
     elite2Api.stubAssessments('dummy')
@@ -464,7 +464,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     elite2Api.stubAgencyDetails('LPI')
-    startButtons[1].click() // B2345YZ / 12
+    startButtons[0].click() // B2345YZ / 12
     at SupervisorReviewPage
     elite2Api.stubSupervisorApprove('D')
     appropriateNo.click()
@@ -526,7 +526,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
-    startButtons[1].click()
+    startButtons[0].click()
     at SupervisorReviewPage
     otherInformationText == 'super other info 1'
     otherInformationText << ' + 2'

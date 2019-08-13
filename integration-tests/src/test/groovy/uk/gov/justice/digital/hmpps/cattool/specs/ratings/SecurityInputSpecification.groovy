@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
@@ -114,7 +115,12 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     when: 'the categoriser revisits the page and enters a category decision'
     fixture.logout()
-    fixture.gotoTasklist()
+
+    elite2Api.stubUncategorised()
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+    selectFirstPrisoner() // has been sorted to top of list!
+
     at new TasklistPage(bookingId: '12')
     $('#securitySection').text().contains("Completed Security ($today)")
     securityButton.click()

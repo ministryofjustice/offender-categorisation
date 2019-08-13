@@ -39,21 +39,22 @@ class ExtremismSpecification extends GebReportingSpec {
   def "The extremism page saves details correctly"() {
     when: 'I go to the extremism page'
 
-    elite2Api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12)
-
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    selectFirstPrisoner()
+//    elite2Api.stubUncategorised()
+//    def date11 = LocalDate.now().plusDays(-3).toString()
+//    def date12 = LocalDate.now().plusDays(-1).toString()
+//    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+//    fixture.loginAs(CATEGORISER_USER)
+//    at CategoriserHomePage
+//    elite2Api.stubGetOffenderDetails(12)
+//
+//    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+//    selectFirstPrisoner()
+    fixture.gotoTasklist()
 
     at TasklistPage
 
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
-    to ExtremismPage, '12'
+    extremismButton.click()
 
     then: 'The extremism page is displayed'
     at ExtremismPage
@@ -78,21 +79,22 @@ class ExtremismSpecification extends GebReportingSpec {
   def "The extremism page correctly shows an info message when not increased risk"() {
     when: 'I go to the extremism page'
 
-    elite2Api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12)
-
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    selectFirstPrisoner()
-
+//    elite2Api.stubUncategorised()
+//    def date11 = LocalDate.now().plusDays(-3).toString()
+//    def date12 = LocalDate.now().plusDays(-1).toString()
+//    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+//    fixture.loginAs(CATEGORISER_USER)
+//    at CategoriserHomePage
+//    elite2Api.stubGetOffenderDetails(12)
+//
+//    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+//    selectFirstPrisoner()
+    fixture.gotoTasklist()
     at TasklistPage
 
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false)
-    to ExtremismPage, '12'
+    //to ExtremismPage, '12'
+    extremismButton.click()
 
     then: 'The extremism page is displayed'
     at ExtremismPage
