@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorConfirmBackPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
@@ -23,6 +24,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
 
 import java.time.LocalDate
 
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
 class SupervisorSpecification extends GebReportingSpec {
@@ -152,7 +154,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     to SupervisorHomePage
 
-    startButtons[0].click()
+    startButtons[1].click()
 
     at SupervisorReviewPage
 
@@ -272,7 +274,15 @@ class SupervisorSpecification extends GebReportingSpec {
 
     when: 'the categorisor views the tasklist and clicks the message task'
     fixture.logout()
-    fixture.gotoTasklist()
+    elite2Api.stubUncategorised()
+    def date11 = LocalDate.now().plusDays(-4).toString()
+    def date12 = LocalDate.now().plusDays(-1).toString()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    selectFirstPrisoner() // has been sorted to top of list!
     at TasklistPage
     supervisorMessageButton.click()
 
@@ -464,10 +474,10 @@ class SupervisorSpecification extends GebReportingSpec {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
 
     if (initial) {
-      startButtons[0].click()
+      startButtons[1].click()
       at SupervisorReviewPage
     } else {
-      startButtons[1].click()
+      startButtons[0].click()
       at SupervisorRecatReviewPage
     }
   }

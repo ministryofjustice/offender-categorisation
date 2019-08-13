@@ -25,10 +25,10 @@ class CategoriserHomePage extends Page {
   }
 
   def selectFirstPrisoner() {
-    startButtons[0].click() // should select B2345YZ
+    startButtons[0].click() // should select Hillmob, Ant	B2345YZ 11
   }
 
   def selectSecondPrisoner() {
-    startButtons[1].click() // should select B2345XY
+    startButtons[1].click() // should select Pitstop, Penelope	B2345XY 12
   }
 }
