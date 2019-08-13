@@ -2,7 +2,7 @@ const express = require('express')
 const flash = require('connect-flash')
 const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
-const { calculateDate } = require('../utils/utils')
+const { calculateNextReviewDate } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const recat = require('../config/recat')
@@ -116,7 +116,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
       res.render(
         `formPages/${section}/${form}`,
-        R.assocPath(['data', 'recat', 'nextReviewDate', 'date'], calculateDate(nextDateChoice), result)
+        R.assocPath(['data', 'recat', 'nextReviewDate', 'date'], calculateNextReviewDate(nextDateChoice), result)
       )
     })
   )
