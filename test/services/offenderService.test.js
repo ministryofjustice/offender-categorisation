@@ -63,9 +63,10 @@ afterEach(() => {
 })
 
 moment.now = jest.fn()
+// NOTE: mock current date!
 moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 
-function todaySubtract(days) {
+function mockTodaySubtract(days) {
   return moment()
     .subtract(days, 'day')
     .format('YYYY-MM-DD')
@@ -288,7 +289,7 @@ describe('getUnapprovedOffenders', () => {
         category: 'B',
         categoriserFirstName: 'CATTER',
         categoriserLastName: 'ONE',
-        nextReviewDate: '2019-04-20',
+        nextReviewDate: '2020-04-20',
         status: 'AWAITING_APPROVAL',
         assessmentSeq: 11,
       },
@@ -354,7 +355,7 @@ describe('getUnapprovedOffenders', () => {
         categoriserLastName: 'SEVEN',
         bookingId: 7,
         category: 'C',
-        nextReviewDate: '2019-05-25',
+        nextReviewDate: '2019-05-29',
         status: 'AWAITING_APPROVAL',
         assessmentSeq: 99,
       },
@@ -371,10 +372,8 @@ describe('getUnapprovedOffenders', () => {
       .mockReturnValueOnce({ bookingId: 7, nomisSeq: 17, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
 
     const sentenceDates = [
-      { sentenceDetail: { bookingId: 1, sentenceStartDate: todaySubtract(4) } },
-      { sentenceDetail: { bookingId: 2, sentenceStartDate: todaySubtract(7) } },
-      { sentenceDetail: { bookingId: 3, sentenceStartDate: todaySubtract(10) } },
-      { sentenceDetail: { bookingId: 6, sentenceStartDate: todaySubtract(11) } },
+      { sentenceDetail: { bookingId: 1, sentenceStartDate: mockTodaySubtract(30) } }, // 2019-05-01
+      { sentenceDetail: { bookingId: 6, sentenceStartDate: mockTodaySubtract(18) } }, // 2019-05-13
     ]
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
 
@@ -387,7 +386,9 @@ describe('getUnapprovedOffenders', () => {
         dbRecordExists: true,
         catType: 'Initial',
         pnomis: false,
-        nextReviewDate: null,
+        dateRequired: '15/05/2019',
+        daysSinceSentence: 30,
+        sentenceDate: '2019-05-01',
       },
       {
         offenderNo: 'G0002',
@@ -418,6 +419,9 @@ describe('getUnapprovedOffenders', () => {
         dbRecordExists: false,
         pnomis: true,
         nextReviewDate: '25/05/2019',
+        dateRequired: '27/05/2019',
+        daysSinceSentence: 18,
+        sentenceDate: '2019-05-13',
       },
       {
         offenderNo: 'G0007',
@@ -427,7 +431,7 @@ describe('getUnapprovedOffenders', () => {
         bookingId: 7,
         dbRecordExists: true,
         pnomis: true,
-        nextReviewDate: '25/05/2019',
+        nextReviewDate: '29/05/2019',
       },
     ]
 
@@ -436,6 +440,7 @@ describe('getUnapprovedOffenders', () => {
     expect(nomisClient.getUncategorisedOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(formService.getCategorisationRecord).toBeCalledTimes(6)
     expect(formService.getCategorisationRecord).nthCalledWith(1, 1, mockTransactionalClient)
+    expect(nomisClient.getSentenceDatesForOffenders).toBeCalledWith([1, 6])
     expect(result).toMatchObject(expected)
   })
 
@@ -473,29 +478,23 @@ describe('getUncategorisedOffenders', () => {
     ]
 
     const sentenceDates = [
-      {
-        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(4) },
-      },
-      {
-        sentenceDetail: { bookingId: 111, sentenceStartDate: todaySubtract(7) },
-      },
-      {
-        sentenceDetail: { bookingId: 122, sentenceStartDate: todaySubtract(10) },
-      },
+      { sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) } },
+      { sentenceDetail: { bookingId: 111, sentenceStartDate: mockTodaySubtract(7) } },
+      { sentenceDetail: { bookingId: 122, sentenceStartDate: mockTodaySubtract(10) } },
     ]
 
     const expected = [
       {
-        offenderNo: 'G12345',
-        firstName: 'Jane',
-        lastName: 'Brown',
-        displayName: 'Brown, Jane',
-        bookingId: 123,
-        status: Status.UNCATEGORISED.name,
-        displayStatus: Status.UNCATEGORISED.value,
-        sentenceDate: todaySubtract(4),
-        daysSinceSentence: 4,
-        dateRequired: expect.stringMatching(DATE_MATCHER),
+        offenderNo: 'G55345',
+        firstName: 'Alan',
+        lastName: 'Allen',
+        displayName: 'Allen, Alan',
+        bookingId: 122,
+        status: Status.AWAITING_APPROVAL.name,
+        displayStatus: Status.AWAITING_APPROVAL.value,
+        sentenceDate: '2019-05-21',
+        daysSinceSentence: 10,
+        dateRequired: '04/06/2019',
       },
       {
         offenderNo: 'H12345',
@@ -505,21 +504,21 @@ describe('getUncategorisedOffenders', () => {
         bookingId: 111,
         status: Status.UNCATEGORISED.name,
         displayStatus: Status.UNCATEGORISED.value,
-        sentenceDate: todaySubtract(7),
+        sentenceDate: '2019-05-24',
         daysSinceSentence: 7,
-        dateRequired: expect.stringMatching(DATE_MATCHER),
+        dateRequired: '07/06/2019',
       },
       {
-        offenderNo: 'G55345',
-        firstName: 'Alan',
-        lastName: 'Allen',
-        displayName: 'Allen, Alan',
-        bookingId: 122,
-        status: Status.AWAITING_APPROVAL.name,
-        displayStatus: Status.AWAITING_APPROVAL.value,
-        sentenceDate: todaySubtract(10),
-        daysSinceSentence: 10,
-        dateRequired: expect.stringMatching(DATE_MATCHER),
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        displayName: 'Brown, Jane',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+        displayStatus: Status.UNCATEGORISED.value,
+        sentenceDate: '2019-05-27',
+        daysSinceSentence: 4,
+        dateRequired: '10/06/2019',
       },
     ]
 
@@ -528,6 +527,7 @@ describe('getUncategorisedOffenders', () => {
     formService.getCategorisationRecord.mockReturnValue({})
 
     const result = await service.getUncategorisedOffenders('user1')
+
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
@@ -758,13 +758,13 @@ describe('getReferredOffenders', () => {
   test('it should return a list of offenders and sentence information', async () => {
     const sentenceDates = [
       {
-        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(4) },
+        sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
       },
       {
-        sentenceDetail: { bookingId: 111, sentenceStartDate: todaySubtract(7) },
+        sentenceDetail: { bookingId: 111, sentenceStartDate: mockTodaySubtract(7) },
       },
       {
-        sentenceDetail: { bookingId: 122, sentenceStartDate: todaySubtract(10) },
+        sentenceDetail: { bookingId: 122, sentenceStartDate: mockTodaySubtract(10) },
       },
     ]
 
@@ -776,21 +776,21 @@ describe('getReferredOffenders', () => {
 
     const expected = [
       {
-        offenderNo: 'G12345',
-        displayName: 'Brown, Jane',
-        bookingId: 123,
-        daysSinceSentence: 4,
-        dateRequired: expect.stringMatching(DATE_MATCHER),
-        securityReferredBy: 'John Smith',
-        catTypeDisplay: 'Initial',
-      },
-      {
         offenderNo: 'G55345',
         displayName: 'Allen, Alan',
         bookingId: 122,
         daysSinceSentence: 10,
         dateRequired: expect.stringMatching(DATE_MATCHER),
         securityReferredBy: 'Brian May',
+        catTypeDisplay: 'Initial',
+      },
+      {
+        offenderNo: 'G12345',
+        displayName: 'Brown, Jane',
+        bookingId: 123,
+        daysSinceSentence: 4,
+        dateRequired: expect.stringMatching(DATE_MATCHER),
+        securityReferredBy: 'John Smith',
         catTypeDisplay: 'Initial',
       },
     ]
@@ -805,10 +805,10 @@ describe('getReferredOffenders', () => {
   test('it should not return offenders without a sentence (result of nomis change after referral', async () => {
     const sentenceDates = [
       {
-        sentenceDetail: { bookingId: 123, sentenceStartDate: todaySubtract(4) },
+        sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
       },
       {
-        sentenceDetail: { bookingId: 111, sentenceStartDate: todaySubtract(7) },
+        sentenceDetail: { bookingId: 111, sentenceStartDate: mockTodaySubtract(7) },
       },
     ]
 

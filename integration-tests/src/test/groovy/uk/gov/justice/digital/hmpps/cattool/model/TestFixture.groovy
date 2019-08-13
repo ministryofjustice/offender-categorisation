@@ -106,7 +106,7 @@ class TestFixture {
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', multipleSentences)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', transferToSecurity)
-    browser.selectFirstPrisoner()
+    browser.selectSecondPrisoner()
   }
 
   def gotoTasklistRecat(transferToSecurity = false) {

@@ -74,15 +74,15 @@ class HomePageSpecification extends GebReportingSpec {
 
     when: 'I go to the home page as categoriser'
 
-    def sentenceStartDate31 = TODAY.minusDays(1)
-    def sentenceStartDate32 = TODAY.minusDays(5)
-    def sentenceStartDate33 = TODAY.minusDays(14)
-    def sentenceStartDate34 = TODAY.minusDays(19)
+    def sentenceStartDate31 = TODAY.minusDays(55)
+    def sentenceStartDate32 = TODAY.minusDays(50)
+    def sentenceStartDate33 = TODAY.minusDays(47)
+    def sentenceStartDate34 = TODAY.minusDays(43)
     def sentenceStartDate35 = TODAY.minusDays(39)
-    def sentenceStartDate36 = TODAY.minusDays(43)
-    def sentenceStartDate37 = TODAY.minusDays(47)
-    def sentenceStartDate38 = TODAY.minusDays(50)
-    def sentenceStartDate39 = TODAY.minusDays(55)
+    def sentenceStartDate36 = TODAY.minusDays(19)
+    def sentenceStartDate37 = TODAY.minusDays(14)
+    def sentenceStartDate38 = TODAY.minusDays(5)
+    def sentenceStartDate39 = TODAY.minusDays(1)
     elite2Api.stubUncategorisedFull()
     elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA'],
       [31, 32, 33, 34, 35, 36, 37, 38, 39],
@@ -94,16 +94,16 @@ class HomePageSpecification extends GebReportingSpec {
 
     then: 'The categoriser home page is displayed'
     at CategoriserHomePage
-    prisonNos == ['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA']
-    names == ['Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised',
-              'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised', 'Supervisor_back, Awaiting']
-    days == ['1', '5', '14', '19', '39', '43', '47', '50', '55']
-    dates == [sentenceStartDate31.plusDays(get10BusinessDays(sentenceStartDate31)).format('dd/MM/yyyy'),
-              sentenceStartDate32.plusDays(get10BusinessDays(sentenceStartDate32)).format('dd/MM/yyyy'),
-              sentenceStartDate33.plusDays(get10BusinessDays(sentenceStartDate33)).format('dd/MM/yyyy'),
-              'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE']
-    statuses == ['Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved', 'REJECTED BY\nSUPERVISOR']
-    startButtons*.text() == ['PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS', 'Edit']
+    prisonNos == ['B0039AA', 'B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA']
+    names == ['Supervisor_back, Awaiting', 'Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised',
+              'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised']
+    days == ['1', '55', '50', '47', '43', '39', '19', '14', '5']
+    dates == [sentenceStartDate39.plusDays(get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
+              'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE',
+              sentenceStartDate37.plusDays(get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
+              sentenceStartDate38.plusDays(get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
+    statuses == ['REJECTED BY\nSUPERVISOR', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
+    startButtons*.text() == ['Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
   }
 
   def "The home page for a supervisor is present"() {
@@ -113,15 +113,15 @@ class HomePageSpecification extends GebReportingSpec {
     db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
     db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
     db.createDataWithIdAndStatusAndCatType(-6, 36, 'AWAITING_APPROVAL', '{}', 'RECAT')
-    db.createNomisSeqNo(33,3)
-    db.createNomisSeqNo(36,6)
+    db.createNomisSeqNo(33, 3)
+    db.createNomisSeqNo(36, 6)
 
     when: 'I go to the home page as supervisor'
 
-    def sentenceStartDate31 = LocalDate.of(2019, 1, 28)
-    def sentenceStartDate32 = LocalDate.of(2019, 1, 31)
-    def sentenceStartDate33 = LocalDate.of(2019, 2, 4)
-    def sentenceStartDate34 = LocalDate.of(2019, 2, 8)
+    def sentenceStartDate31= LocalDate.of(2019, 2, 8)
+    def sentenceStartDate32 = LocalDate.of(2019, 2, 4)
+    def sentenceStartDate33 = LocalDate.of(2019, 1, 31)
+    def sentenceStartDate34 = LocalDate.of(2019, 1, 28)
     def daysSinceSentence31 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate31, TODAY))
     def daysSinceSentence32 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate32, TODAY))
     def daysSinceSentence33 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate33, TODAY))
@@ -138,8 +138,8 @@ class HomePageSpecification extends GebReportingSpec {
     prisonNos == ['B0036AA', 'B0034AA', 'B0033AA', 'B0032AA', 'B0031AA']
     names == ['Recat, Mr', 'Approved, Awaiting', 'Awaiting, Awaiting', 'Started, Awaiting', 'Missing, Awaiting']
     days == ['', daysSinceSentence34, daysSinceSentence33, daysSinceSentence32, daysSinceSentence31]
-    dates == ['', '22/02/2019', '18/02/2019', '14/02/2019', '11/02/2019']
-    nextReviewDate == ['29/03/2020', '', '', '', '15/01/2019']
+    dates == ['', '11/02/2019', '14/02/2019', '18/02/2019', '22/02/2019']
+    nextReviewDate == ['01/02/2019', '', '', '', '15/01/2019']
     catBy == ['Roger Rabbit', 'Bugs Bunny', 'Roger Rabbit', 'Bugs Bunny', 'Roger Rabbit']
     statuses == ['B', 'C', 'B', 'C', 'B']
     catTypes == ['Recat', 'Initial', 'Initial', 'Initial', '']
@@ -271,7 +271,7 @@ class HomePageSpecification extends GebReportingSpec {
     at CategoriserHomePage
 
     elite2Api.stubGetOffenderDetails(11, "ON678")
-    startButtons[1].click()
+    startButtons[0].click()
     then: 'The view page is displayed'
     at CategoriserAwaitingApprovalViewPage
     categoryDiv.text() contains 'B\nWarning\nCategory for approval is B'
