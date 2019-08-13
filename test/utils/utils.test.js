@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { filterJsonObjectForLogging, formatLength, calculateDate } = require('../../server/utils/utils')
+const { filterJsonObjectForLogging, formatLength, calculateNextReviewDate } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
   it('it removes the _csrf property from a json object', () => {
@@ -37,7 +37,7 @@ describe('calculateDate', () => {
     ${'other'}     | ${''}
     ${''}          | ${''}
   `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {
-    const actualDate = calculateDate(nextDateChoice)
+    const actualDate = calculateNextReviewDate(nextDateChoice)
     expect(actualDate).toEqual(expectedValue)
   })
 })
