@@ -49,9 +49,9 @@ class EscapeSpecification extends GebReportingSpec {
     warningTextDiv.text().contains('This person is considered an escape risk')
     !info.displayed
     alertInfo*.text() == [
-      'XEL First xel comment 2016-09-14',
-      '''XEL Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
-      'XER First xer comment 2016-09-16']
+      'E-List: First xel comment 2016-09-14',
+      '''E-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
+      'Escape Risk Alert: First xer comment 2016-09-16']
     $('form').text() contains 'Do you think this information means they should be in Cat B?'
   }
 
@@ -70,7 +70,7 @@ class EscapeSpecification extends GebReportingSpec {
     then: 'The page is displayed with alert info and extra question'
     at(new CategoriserEscapePage(bookingId: '12'))
 
-    info.text(). contains 'This person is not considered an escape risk'
+    info.text(). contains 'This person is not on the E-List and does not have an Escape Risk Alert'
     !warningTextDiv.displayed
   }
 

@@ -1,16 +1,10 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "../macros/renderAlert.html" import renderAlert %}
 
 {% macro formatAnswer(yesno, details) %}
 <div>{{yesno}}</div>
 <div>{{details}}</div>
-{% endmacro %}
-
-{% macro renderAlert(alert) %}
-<p class="govuk-!-margin-bottom-1">{{ alert.alertCode }} {{ alert.comment }} <strong>{{ alert.dateCreated }}</strong>
-  {% if alert.expired %} (expired){% endif %}
-  {% if not alert.active %} (inactive){% endif %}
-</p>
 {% endmacro %}
 
 
@@ -65,7 +59,7 @@
 </div>
 
 {% else %}
-<div>This person is not considered an escape risk.</div>
+<div>This person is not on the E-List and does not have an Escape Risk Alert.</div>
 {% endif %}
 {% endset %}
 
@@ -203,7 +197,7 @@
         }
       },
       {
-        key: { text: "What security conditions are suitable for this person?" },
+        key: { text: "What security category is most suitable for this person?" },
         value: { text: 'Category ' + data.recat.decision.category },
         actions: { items: [] }
       }
