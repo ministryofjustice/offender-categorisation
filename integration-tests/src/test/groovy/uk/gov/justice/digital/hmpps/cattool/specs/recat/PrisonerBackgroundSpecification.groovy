@@ -50,9 +50,9 @@ class PrisonerBackgroundSpecification extends GebReportingSpec {
     at PrisonerBackgroundPage
     headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
     alertInfo*.text() == [
-      'XEL First xel comment 2016-09-14',
-      '''XEL Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
-      'XER First xer comment 2016-09-16']
+      'E-List: First xel comment 2016-09-14',
+      '''E-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
+      'Escape Risk Alert: First xer comment 2016-09-16']
     extremismWarning.text() contains 'This person is at risk of engaging in, or vulnerable to, extremism'
     violenceWarning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months'
     !violenceNotifyWarning.displayed

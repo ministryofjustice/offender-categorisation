@@ -75,7 +75,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
       '24/03/2013 B Moorland (HMP & YOI)\n' +
       '04/04/2012 A Moorland (HMP & YOI)'),
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months',
-      'This person is considered an escape risk\nXEL First xel comment 2016-09-14 (expired)',
+      'This person is considered an escape risk\nE-List: First xel comment 2016-09-14 (expired)',
       'This person is at risk of engaging in, or vulnerable to, extremism.', '']
   }
 
