@@ -38,22 +38,10 @@ class ViolenceSpecification extends GebReportingSpec {
 
   def "The violence page saves details correctly"() {
     when: 'I go to the violence page'
-
-    elite2Api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12)
-
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    selectFirstPrisoner()
+    fixture.gotoTasklist()
     at TasklistPage
-
-
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
-    to ViolencePage, '12'
+    violenceButton.click()
 
     then: 'The violence page is displayed'
     at ViolencePage
@@ -81,21 +69,10 @@ class ViolenceSpecification extends GebReportingSpec {
 
   def "The violence page shows warning correctly"() {
     when: 'I go to the violence page'
-
-    elite2Api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12)
-
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    selectFirstPrisoner()
+    fixture.gotoTasklist()
     at TasklistPage
-
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
-    to ViolencePage, '12'
+    violenceButton.click()
 
     then: 'The violence page is displayed with a warning'
     at ViolencePage
@@ -116,15 +93,11 @@ class ViolenceSpecification extends GebReportingSpec {
 
   def 'Validation test'() {
     when: 'I submit the page with empty details'
-    elite2Api.stubUncategorised()
-    def date11 = LocalDate.now().plusDays(-3).toString()
-    def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
-    fixture.loginAs(CATEGORISER_USER)
-    at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12)
+    fixture.gotoTasklist()
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
-    to ViolencePage, '12'
+    at TasklistPage
+    violenceButton.click()
+    at ViolencePage
     submitButton.click()
 
     then: 'I stay on the page with radio button validation errors'

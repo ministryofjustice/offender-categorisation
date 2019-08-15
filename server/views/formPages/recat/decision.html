@@ -41,39 +41,23 @@
     text: "YOI (open)"
   } %}
 
-
-
   {% if data.details.sentence.indeterminate %}
     {{ govukInsetText({
-    text: "Prisoner has an indeterminate sentence, open conditions are not available."
+      text: "Prisoner has an indeterminate sentence, open conditions are not available."
     }) }}
-   {{ govukRadios({
-      name: "category",
-      classes: "govuk-radios",
-      fieldset: {
-        legend: {
-          text: "What security conditions are suitable for this person?"
-        }
-      },
-      errorMessage: {
-        text: "Please select a security condition"
-      } if (errors | findError('category')),
-      items: [ optionB, optionC, optionI ] if data.details.youngOffender else [ optionB, optionC ]
-    }) }}
+    {% set itemList = [ optionB, optionC, optionI ] if data.details.youngOffender else [ optionB, optionC ] %}
   {% else %}
-   {{ govukRadios({
-      name: "category",
-      classes: "govuk-radios",
-      fieldset: {
-        legend: {
-          text: "What security conditions are suitable for this person?"
-        }
-      },
-      errorMessage: {
-        text: "Please select a security condition"
-      } if (errors | findError('category')),
-    items: [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ]
-  }) }}
+    {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
   {% endif %}
+
+  {{ govukRadios({
+    name: "category",
+    classes: "govuk-radios",
+    fieldset: { legend: { text: "What security category is most suitable for this person?" } },
+    errorMessage: {
+      text: "Please select a security condition"
+    } if (errors | findError('category')),
+    items: itemList
+  }) }}
 
 {% endblock %}
