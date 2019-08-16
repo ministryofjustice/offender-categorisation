@@ -32,15 +32,15 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_
 
 class OpenConditionsSpecification extends GebReportingSpec {
 
-  static allNoAnswersWithFurtherCharges = [
+  static final allNoAnswersWithFurtherCharges = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
-    furtherCharges     : [increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
+    furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
     riskLevels         : [likelyToAbscond: 'No'],
   ]
 
-  static allNoAnswers = [
+  static final allNoAnswers = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
@@ -220,7 +220,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'there is a validation error'
     waitFor {
-      errorSummaries*.text() == ['Please select yes or no', 'Please enter details']
+      errorSummaries*.text() == ['Please enter details', 'Please select yes or no']
       errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease select yes or no']
     }
 
@@ -310,7 +310,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
-      furtherCharges     : [increasedRisk: 'Yes', furtherChargesText: 'some charges,furtherChargesText details'],
+      furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: 'some charges,furtherChargesText details'],
       riskLevels         : [likelyToAbscond: 'Yes', likelyToAbscondText: 'likelyToAbscondText details'],
       notRecommended     : [stillRefer: 'No']
     ]
