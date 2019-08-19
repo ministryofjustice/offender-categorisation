@@ -168,6 +168,10 @@ module.exports = function Index({ formService, offendersService, userService, au
       delete updated.harmManaged
       delete updated.harmManagedText
     }
+    if (body.furtherCharges === 'No') {
+      delete updated.furtherChargesText
+      delete updated.increasedRisk
+    }
     if (body.likelyToAbscond === 'No') {
       delete updated.likelyToAbscondText
     }
