@@ -95,6 +95,14 @@
     </div>
     <div class="govuk-!-width-full">
 
+      {{ govukSummaryList({
+        classes: 'govuk-!-margin-bottom-7',
+        rows: [
+          { key: { text: "Approval date" }, value: { text: approvalDate} },
+          { key: { text: "Categorisation prison" }, value: { text: prisonDescription} }
+        ]
+      }) }}
+
     {% set showChangeLinks = false %}
     {% include "../../partials/reviewContentsRecat.html" %}
 
