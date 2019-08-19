@@ -243,15 +243,17 @@ module.exports = function Index({
         res.locals.user.token,
         result.prisonId
       )
+      const approvalDateDisplay = getLongDateFormat(result.approvalDate)
       if (result.catType === CatType.INITIAL.name) {
-        res.render(`formPages/approvedView`, { ...result, prisonDescription })
+        res.render(`formPages/approvedView`, { ...result, approvalDateDisplay, prisonDescription })
       } else {
         const categorisations = await offendersService.getPrisonerBackground(
           res.locals.user.token,
-          result.data.details.offenderNo
+          result.data.details.offenderNo,
+          result.approvalDate
         )
         const data = { ...result.data, categorisations }
-        res.render(`formPages/recat/approvedView`, { ...result, data, prisonDescription })
+        res.render(`formPages/recat/approvedView`, { ...result, data, approvalDateDisplay, prisonDescription })
       }
     })
   )
@@ -283,7 +285,7 @@ module.exports = function Index({
       status: formData.status,
       catType: formData.catType,
       reviewReason: formData.reviewReason,
-      approvalDate: getLongDateFormat(formData.approvalDate),
+      approvalDate: formData.approvalDate,
       prisonId: formData.prisonId,
       backLink,
       errors,
