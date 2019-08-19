@@ -123,7 +123,8 @@ class ApprovedViewSpecification extends GebReportingSpec {
     at RecategoriserDonePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false)
     elite2Api.stubAssessments(['B2345YZ'])
-    elite2Api.stubAgencyDetails('LPI')
+    elite2Api.stubAgencyDetails('LPI') // existing assessments
+    elite2Api.stubAgencyDetails('LEI') // where this cat was done
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     viewButtons[0].click()
 
@@ -138,6 +139,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     at SupervisorHomePage
 
     elite2Api.stubCategorised([12])
+    elite2Api.stubAgencyDetails('LEI')
     doneTabLink.click()
     at SupervisorDonePage
 

@@ -1,4 +1,5 @@
 const request = require('supertest')
+const moment = require('moment')
 const appSetup = require('./utils/appSetup')
 const createRouter = require('../../server/routes/form')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
@@ -53,6 +54,7 @@ const offendersService = {
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
   getPrisonerBackground: jest.fn(),
+  getOptionalAssessmentAgencyDescription: jest.fn(),
 }
 
 const userService = {
@@ -194,8 +196,12 @@ describe('GET /approvedView', () => {
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
+      prisonId: 'MPI',
+      approvalDate: moment('2019-08-13'),
       formObject: { openConditions: { field: 'value' } },
     })
+
+    offendersService.getOptionalAssessmentAgencyDescription.mockResolvedValue('HMP MyPrison')
 
     return request(app)
       .get(`/approvedView/1234`)
@@ -204,6 +210,8 @@ describe('GET /approvedView', () => {
       .expect(res => {
         expect(res.text).toContain('Open Conditions')
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+        expect(res.text).toContain('Tuesday 13th August 2019')
+        expect(res.text).toContain('HMP MyPrison')
       })
   })
 
