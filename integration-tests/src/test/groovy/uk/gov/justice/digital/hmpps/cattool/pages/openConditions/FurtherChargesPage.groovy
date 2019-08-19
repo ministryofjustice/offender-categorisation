@@ -13,8 +13,10 @@ class FurtherChargesPage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     form { $('form') }
-    increasedRiskYes { $('#increasedRisk') }
-    increasedRiskNo { $('#increasedRisk-2') }
+    furtherChargesYes { $('#furtherCharges') }
+    furtherChargesNo { $('#furtherCharges-2') }
+    increasedRiskYes(required: false)  { $('#increasedRisk') }
+    increasedRiskNo(required: false)  { $('#increasedRisk-2') }
     furtherChargesText(required: false) { $('textarea', name: 'furtherChargesText') }
 
     submitButton { $('button', type: 'submit') }

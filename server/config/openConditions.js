@@ -86,15 +86,21 @@ module.exports = {
   furtherCharges: {
     fields: [
       {
-        increasedRisk: {
+        furtherCharges: {
           responseType: 'requiredString',
           validationMessage: 'Please select yes or no',
         },
       },
       {
         furtherChargesText: {
-          responseType: 'requiredString',
+          responseType: 'requiredStringIf_furtherCharges_Yes',
           validationMessage: 'Please enter details',
+        },
+      },
+      {
+        increasedRisk: {
+          responseType: 'requiredStringIf_furtherCharges_Yes',
+          validationMessage: 'Please select yes or no',
         },
       },
     ],

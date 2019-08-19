@@ -5,18 +5,14 @@
 
 {% set greenButtonText = "Continue" %}
 
-{% block formItems %}
+{% set furtherChargesHtml %}
 
-<h1 class="govuk-heading-l">Further charges</h1>
-
-{{ govukCharacterCount({
+  {{ govukCharacterCount({
     name: "furtherChargesText",
     type: "furtherChargesText",
     maxlength: 50000,
     threshold: 50,
-    label: {
-      text: "Details of further charges"
-    },
+    label: { text: "Details of further charges" },
     value: data.openConditions.furtherCharges.furtherChargesText,
     errorMessage: {
       text: "Please enter details"
@@ -27,11 +23,7 @@
     formGroup: { classes: 'govuk-!-margin-bottom-6' },
     name: "increasedRisk",
     classes: "govuk-radios--inline",
-    fieldset: {
-      legend: {
-        text: "Do these charges mean they pose an increased risk if placed in open conditions?"
-      }
-    },
+    fieldset: { legend: { text: "Do these charges mean they pose an increased risk if placed in open conditions?" } },
     errorMessage: {
       text: "Please select yes or no"
     } if (errors | findError('increasedRisk')),
@@ -43,11 +35,46 @@
       },
       {
         value: "No",
-        checked: data.openConditions.furtherCharges.increasedRisk === 'No',
-        text: "No"
+        text: "No",
+        checked: data.openConditions.furtherCharges.increasedRisk === 'No'
       }
     ]
   }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">Further charges</h1>
+
+  {% if catType === 'RECAT' %}
+    {{ govukRadios({
+      name: "furtherCharges",
+      classes: "govuk-radios--inline",
+      fieldset: { legend: { text: "Do they have any further charges?" } },
+      errorMessage: {
+        text: "Please select yes or no"
+      } if (errors | findError('furtherCharges')),
+      items: [
+        {
+          value: "Yes",
+          text: "Yes",
+          checked: data.openConditions.furtherCharges.furtherCharges === 'Yes',
+          conditional: {
+            html: furtherChargesHtml
+          }
+        },
+        {
+          value: "No",
+          text: "No",
+          checked: data.openConditions.furtherCharges.furtherCharges === 'No'
+        }
+      ]
+    }) }}
+  {% else %}
+    <input type="hidden" name="furtherCharges" value="Yes" />
+    {{ furtherChargesHtml | safe }}
+  {% endif %}
 
   {% set guidanceIncreasedRisk %}
 <div class="govuk-!-font-weight-bold">You should check:</div>

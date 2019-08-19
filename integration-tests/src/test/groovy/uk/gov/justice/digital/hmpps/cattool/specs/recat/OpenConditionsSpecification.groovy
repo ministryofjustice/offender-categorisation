@@ -31,6 +31,14 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_
 
 class OpenConditionsSpecification extends GebReportingSpec {
 
+  static final allNoAnswers = [
+    earliestReleaseDate: [threeOrMoreYears: 'No'],
+    foreignNational    : [isForeignNational: 'No'],
+    riskOfHarm         : [seriousHarm: 'No'],
+    furtherCharges     : [furtherCharges: 'No'],
+    riskLevels         : [likelyToAbscond: 'No'],
+  ]
+
   def setup() {
     db.clearDb()
   }
@@ -106,7 +114,17 @@ class OpenConditionsSpecification extends GebReportingSpec {
     then: 'the Further Charges page is displayed'
     at FurtherChargesPage
 
+    when: 'I submit a blank page'
+    submitButton.click()
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
+
     when: 'I submit the page'
+    furtherChargesYes.click()
     furtherChargesText << ',furtherChargesText details'
     increasedRiskYes.click()
     submitButton.click()
@@ -119,7 +137,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     likelyToAbscondText << 'likelyToAbscondText details'
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-
     then: 'I am diverted to the not recommended page'
     at NotRecommendedPage
     reasons*.text() == ['They have further charges which pose an increased risk in open conditions',
@@ -172,7 +189,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
-      furtherCharges     : [increasedRisk: 'Yes', furtherChargesText: ',furtherChargesText details'],
+      furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: ',furtherChargesText details'],
       riskLevels         : [likelyToAbscond: 'Yes', likelyToAbscondText: 'likelyToAbscondText details'],
       notRecommended     : [stillRefer: 'No']
     ]
@@ -182,8 +199,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
   def "The happy path is correct for recategoriser setting cat D, all nos"() {
     when: 'The categoriser overrides to D'
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
-      recat         : TestFixture.defaultRecat,
-      openConditions: [furtherCharges: [increasedRisk: 'Yes', furtherChargesText: 'some charges']]
+      recat         : TestFixture.defaultRecat
     ]), 'RECAT')
 
     fixture.gotoTasklistRecat()
@@ -203,7 +219,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at TasklistRecatPage
 
     when: 'open conditions forms are completed'
-    completeOpenConditionsWorkflow(true)
+    completeOpenConditionsWorkflow()
 
     then: 'tasklist page is displayed with the open conditions section completed'
     at TasklistRecatPage
@@ -245,7 +261,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       ]
     ]
     response.supervisor == null
-    response.openConditions == uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification.allNoAnswersWithFurtherCharges
+    response.openConditions == allNoAnswers
     response.openConditionsRequested
 
     when: 'I confirm the cat D category'
@@ -287,7 +303,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       ]
     ]
     afterSubmitResponse.supervisor == null
-    afterSubmitResponse.openConditions == uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification.allNoAnswersWithFurtherCharges
+    afterSubmitResponse.openConditions == allNoAnswers
     afterSubmitResponse.openConditionsRequested
 
     when: 'the supervisor reviews and accepts the cat D'
@@ -311,7 +327,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.status == ["APPROVED"]
     response.recat.decision == [category: "D"]
     response.supervisor == [review: [proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes']]
-    response.openConditions == uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification.allNoAnswersWithFurtherCharges
+    response.openConditions == allNoAnswers
     response.openConditionsRequested
 
     when: 'the approved view page is shown'
@@ -334,8 +350,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
   def "recategoriser sets D, supervisor overrides to C"() {
     when: 'The categoriser overrides to D'
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
-      recat         : TestFixture.defaultRecat,
-      openConditions: [furtherCharges: [increasedRisk: 'Yes', furtherChargesText: 'some charges']]
+      recat         : TestFixture.defaultRecat
     ]), 'RECAT')
 
     fixture.gotoTasklistRecat()
@@ -355,7 +370,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at TasklistRecatPage
 
     when: 'open conditions forms are completed'
-    completeOpenConditionsWorkflow(true)
+    completeOpenConditionsWorkflow()
 
     then: 'tasklist page is displayed with the open conditions section'
     at TasklistRecatPage
@@ -413,7 +428,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     ]
     response.supervisor == [review: [proposedCategory             : 'D', otherInformationText: 'super other info', supervisorOverriddenCategory: 'C',
                                      supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'super changed D to C']]
-    response.openConditions == uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification.allNoAnswersWithFurtherCharges
+    response.openConditions == allNoAnswers
     response.openConditionsRequested // TODO is this ok?
 
     when: 'the approved view page is shown'
@@ -436,8 +451,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
   def "The happy path is correct for supervisor overriding to D"() {
     when: 'The categoriser submits cat C'
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
-      recat         : TestFixture.defaultRecat,
-      openConditions: [furtherCharges: [increasedRisk: 'Yes', furtherChargesText: 'some charges']]
+      recat         : TestFixture.defaultRecat
     ]), 'RECAT')
 
     fixture.gotoTasklistRecat()
@@ -481,7 +495,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     fixture.gotoTasklistRecat()
     at TasklistRecatPage
 
-    completeOpenConditionsWorkflow(true)
+    completeOpenConditionsWorkflow()
 
     then: 'tasklist page is displayed with the open conditions section and decision cleared'
     at TasklistRecatPage
@@ -556,7 +570,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
                                      supervisorCategoryAppropriate: 'Yes',
                                      otherInformationText         : 'super other info 1 + 2',
                                      previousOverrideCategoryText : 'super overriding C to D']]
-    response.openConditions == uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification.allNoAnswersWithFurtherCharges
+    response.openConditions == allNoAnswers
     response.openConditionsRequested
 
     when: 'the approved view page is shown'
@@ -576,7 +590,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     commentLabel.size() == 1
   }
 
-  def completeOpenConditionsWorkflow(boolean furtherChargesExist) {
+  def completeOpenConditionsWorkflow() {
     openConditionsButton.click()
     at EarliestReleasePage
     threeOrMoreYearsNo.click()
@@ -587,12 +601,9 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at RiskOfHarmPage
     seriousHarmNo.click()
     submitButton.click()
-    if (furtherChargesExist) {
-      at FurtherChargesPage
-      furtherChargesText << ',furtherChargesText details'
-      increasedRiskNo.click()
-      submitButton.click()
-    }
+    at FurtherChargesPage
+    furtherChargesNo.click()
+    submitButton.click()
     at RiskLevelsPage
     likelyToAbscondNo.click()
     elite2Api.stubUncategorised()
