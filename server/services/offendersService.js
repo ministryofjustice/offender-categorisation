@@ -620,19 +620,22 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getPrisonerBackground(token, offenderNo) {
+  async function getPrisonerBackground(token, offenderNo, approvalDate = null) {
     try {
       const nomisClient = nomisClientBuilder(token)
       const currentCats = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
+      // If approved, omit any cats that were done later than the approval of this cat
+      const filteredCats = approvalDate
+        ? currentCats.filter(o => !o.assessmentDate || moment(o.assessmentDate, 'YYYY-MM-DD') <= approvalDate)
+        : currentCats
 
       const decoratedCats = await Promise.all(
-        currentCats.map(async o => {
+        filteredCats.map(async o => {
           const description = await getOptionalAssessmentAgencyDescription(token, o.assessmentAgencyId)
-          const assessmentMoment = moment(o.assessmentDate, 'YYYY-MM-DD')
           return {
             ...o,
             agencyDescription: description,
-            assessmentDateDisplay: assessmentMoment.format('DD/MM/YYYY'),
+            assessmentDateDisplay: dateConverter(o.assessmentDate),
           }
         })
       )
