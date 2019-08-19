@@ -2,7 +2,7 @@ const express = require('express')
 const flash = require('connect-flash')
 const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
-const { calculateNextReviewDate } = require('../utils/utils')
+const { calculateNextReviewDate, choosingHigherCategory } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const recat = require('../config/recat')
@@ -12,7 +12,6 @@ const log = require('../../log')
 const formConfig = {
   recat,
 }
-const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB'])
 
 module.exports = function Index({
   formService,
@@ -338,8 +337,6 @@ module.exports = function Index({
       res.redirect(`${nextPath}${bookingId}`)
     })
   )
-
-  const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
   router.post(
     '/review/:bookingId',
