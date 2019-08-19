@@ -627,7 +627,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const decoratedCats = await Promise.all(
         currentCats.map(async o => {
-          const description = await getOptionalAssessmentAgencyDescription(nomisClient, o.assessmentAgencyId)
+          const description = await getOptionalAssessmentAgencyDescription(token, o.assessmentAgencyId)
           const assessmentMoment = moment(o.assessmentDate, 'YYYY-MM-DD')
           return {
             ...o,
@@ -654,8 +654,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getOptionalAssessmentAgencyDescription(nomisClient, agencyId) {
+  async function getOptionalAssessmentAgencyDescription(token, agencyId) {
     if (agencyId) {
+      const nomisClient = nomisClientBuilder(token)
       const agency = await nomisClient.getAgencyDetail(agencyId)
       return agency.description
     }
@@ -776,6 +777,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getCatAInformation,
     getOffenceHistory,
     isRecat,
+    getOptionalAssessmentAgencyDescription,
     createInitialCategorisation,
     createSupervisorApproval,
     getCategorisedOffenders,

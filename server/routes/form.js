@@ -4,6 +4,7 @@ const R = require('ramda')
 const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
+const { getLongDateFormat } = require('../utils/utils')
 const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
@@ -238,16 +239,19 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient)
-
+      const prisonDescription = await offendersService.getOptionalAssessmentAgencyDescription(
+        res.locals.user.token,
+        result.prisonId
+      )
       if (result.catType === CatType.INITIAL.name) {
-        res.render(`formPages/approvedView`, result)
+        res.render(`formPages/approvedView`, { ...result, prisonDescription })
       } else {
         const categorisations = await offendersService.getPrisonerBackground(
           res.locals.user.token,
           result.data.details.offenderNo
         )
         const data = { ...result.data, categorisations }
-        res.render(`formPages/recat/approvedView`, { ...result, data })
+        res.render(`formPages/recat/approvedView`, { ...result, data, prisonDescription })
       }
     })
   )
@@ -279,6 +283,8 @@ module.exports = function Index({
       status: formData.status,
       catType: formData.catType,
       reviewReason: formData.reviewReason,
+      approvalDate: getLongDateFormat(formData.approvalDate),
+      prisonId: formData.prisonId,
       backLink,
       errors,
     }
