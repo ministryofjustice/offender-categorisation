@@ -121,6 +121,9 @@ const calculateNextReviewDate = R.cond([
   [R.T, R.always('')],
 ])
 
+const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB'])
+const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
+
 module.exports = {
   dateConverter,
   formatLength,
@@ -134,4 +137,5 @@ module.exports = {
   filterJsonObjectForLogging,
   catDisplay,
   calculateNextReviewDate,
+  choosingHigherCategory,
 }

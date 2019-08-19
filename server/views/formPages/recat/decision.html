@@ -4,6 +4,23 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 
+{% macro hintText(proposedCategory) %}
+  <span class="govuk-!-font-size-16" >
+    {% if choosingHigherCategory(data.details.categoryCode, proposedCategory)
+         or (data.details.categoryCode === 'I' and proposedCategory === 'B') %}
+      You will need to complete a higher security review for this person, after choosing this category.
+    {% else %}
+      Choosing this category requires no additional reviews or assessments.
+    {% endif %}
+  </span>
+{% endmacro %}
+
+{% macro hintTextOpen(proposedCategoryText) %}
+  <span class="govuk-!-font-size-16" >
+    You will need to complete an open conditions assessment for this person, to check they are suitable for {{ proposedCategoryText }} conditions.
+  </span>
+{% endmacro %}
+
 {% block formItems %}
 
 <h1 id="securityInputHeader" class="govuk-heading-l">Category decision</h1>
@@ -14,31 +31,41 @@
     value: "B",
     id: "catBOption",
     checked: data.recat.decision.category == 'B',
-    text: "B"
+    hint: { html: hintText('B') },
+    text: "Category B",
+    label: { classes: "govuk-!-font-weight-bold" }
   } %}
 {% set optionC =  {
     value: "C",
     id: "catCOption",
     checked: data.recat.decision.category == 'C',
-    text: "C"
+    hint: { html: hintText('C') },
+    text: "Category C",
+    label: { classes: "govuk-!-font-weight-bold" }
   } %}
 {% set optionD =  {
     value: "D",
     id: "catDOption",
     checked: data.recat.decision.category == 'D',
-    text: "D"
+    hint: { html: hintTextOpen('Category D') },
+    text: "Consider them for Category D",
+    label: { classes: "govuk-!-font-weight-bold" }
   } %}
 {% set optionI =  {
     value: "I",
     id: "catIOption",
     checked: data.recat.decision.category == 'I',
-    text: "YOI (closed)"
+    hint: { html: hintText('I') },
+    text: "YOI (closed)",
+    label: { classes: "govuk-!-font-weight-bold" }
   } %}
 {% set optionJ =  {
     value: "J",
     id: "catJOption",
     checked: data.recat.decision.category == 'J',
-    text: "YOI (open)"
+    hint: { html: hintTextOpen('YOI open') },
+    text: "Consider them for YOI (open)",
+    label: { classes: "govuk-!-font-weight-bold" }
   } %}
 
   {% if data.details.sentence.indeterminate %}
@@ -53,7 +80,7 @@
   {{ govukRadios({
     name: "category",
     classes: "govuk-radios",
-    fieldset: { legend: { text: "What security category is most suitable for this person?" } },
+    fieldset: { legend: { text: "What security conditions are suitable for this person?" } },
     errorMessage: {
       text: "Please select a security condition"
     } if (errors | findError('category')),
