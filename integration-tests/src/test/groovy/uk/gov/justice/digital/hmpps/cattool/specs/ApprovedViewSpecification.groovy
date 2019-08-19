@@ -98,6 +98,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     at SupervisorHomePage
 
     elite2Api.stubCategorised([12])
+    elite2Api.stubAgencyDetails('LEI')
     doneTabLink.click()
     at SupervisorDonePage
 
