@@ -452,6 +452,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubCategorised([12])
     doneTabLink.click()
     at SupervisorDonePage
+    elite2Api.stubAgencyDetails('LEI')
     viewButtons[0].click()
 
     then: 'details are correct'
@@ -553,6 +554,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubCategorised([12])
     doneTabLink.click()
     at SupervisorDonePage
+    elite2Api.stubAgencyDetails('LEI')
     viewButtons[0].click()
 
     then: 'details are correct'
@@ -680,6 +682,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubCategorised([12])
     doneTabLink.click()
     at SupervisorDonePage
+    elite2Api.stubAgencyDetails('LEI')
     viewButtons[0].click()
 
     then: 'details are correct'
