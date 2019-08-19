@@ -21,7 +21,7 @@ function get(name, fallback, log, options = {}) {
 
 module.exports = {
   sessionSecret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),
-  expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '60', true),
+  expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120', true),
   staticResourceCacheDuration: get('STATIC_RESOURCE_TIMEOUT_IN_MINUTES', '0', true),
   db: {
     username: get('DB_USER', 'form-builder', true),
@@ -29,6 +29,9 @@ module.exports = {
     server: get('DB_SERVER', 'localhost', true),
     database: get('DB_NAME', 'form-builder', true),
     sslEnabled: get('DB_SSL_ENABLED', 'false', true),
+  },
+  sqs: {
+    riskProfilerQueue: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', true),
   },
   apis: {
     oauth2: {
