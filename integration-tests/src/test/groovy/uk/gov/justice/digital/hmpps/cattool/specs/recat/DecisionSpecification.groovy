@@ -36,7 +36,7 @@ class DecisionSpecification extends GebReportingSpec {
   DatabaseUtils db = new DatabaseUtils()
 
   def "The page saves details correctly"() {
-    when: 'I go to the Higher Security Review page'
+    when: 'I go to the Decision page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
     decisionButton.click()
@@ -44,6 +44,10 @@ class DecisionSpecification extends GebReportingSpec {
     then: 'The page is displayed'
     at DecisionPage
     headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
+    hints*.text() == [
+      'You will need to complete a higher security review for this person, after choosing this category.',
+      'Choosing this category requires no additional reviews or assessments.',
+      'You will need to complete an open conditions assessment for this person, to check they are suitable for Category D conditions.']
 
     when: 'Details are entered, saved and accessed'
     categoryCOption.click()
@@ -81,6 +85,10 @@ class DecisionSpecification extends GebReportingSpec {
     categoryIOption.@type == 'radio'
     categoryJOption.@type == null
     categoryDOption.@type == null
+    hints*.text() == [
+      'You will need to complete a higher security review for this person, after choosing this category.',
+      'Choosing this category requires no additional reviews or assessments.',
+      'Choosing this category requires no additional reviews or assessments.']
   }
 
   def "The correct mini higher security page is displayed for I->B"() {
@@ -92,6 +100,12 @@ class DecisionSpecification extends GebReportingSpec {
     then: 'The page is displayed'
     at DecisionPage
     headerValue[1].text() == 'C0001AA'
+    hints*.text() == [
+      'You will need to complete a higher security review for this person, after choosing this category.',
+      'Choosing this category requires no additional reviews or assessments.',
+      'You will need to complete an open conditions assessment for this person, to check they are suitable for Category D conditions.',
+      'Choosing this category requires no additional reviews or assessments.',
+      'You will need to complete an open conditions assessment for this person, to check they are suitable for YOI open conditions.']
 
     when: 'Details are entered, saved and accessed'
     categoryBOption.click()
@@ -111,7 +125,7 @@ class DecisionSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type.value == ['RECAT']
-    response.recat == [decision: [category : "B"], miniHigherSecurityReview:[conditions:'some text']]
+    response.recat == [decision: [category: "B"], miniHigherSecurityReview: [conditions: 'some text']]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
 
@@ -128,13 +142,13 @@ class DecisionSpecification extends GebReportingSpec {
     def responseAfterClear = new JsonSlurper().parseText(dataAfterClear.form_response[0].toString())
     dataAfterClear.status == ['STARTED']
     dataAfterClear.cat_type.value == ['RECAT']
-    responseAfterClear.recat == [decision: [category : "D"]]
+    responseAfterClear.recat == [decision: [category: "D"]]
     dataAfterClear.user_id == ['RECATEGORISER_USER']
     dataAfterClear.assigned_user_id == ['RECATEGORISER_USER']
   }
 
   def "The correct higher security page is displayed for C->B"() {
-    when: 'I go to the Higher Security Review page'
+    when: 'I go to the Decision page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
     decisionButton.click()
@@ -203,7 +217,7 @@ class DecisionSpecification extends GebReportingSpec {
     def responseAfterClear = new JsonSlurper().parseText(dataAfterClear.form_response[0].toString())
     dataAfterClear.status == ['STARTED']
     dataAfterClear.cat_type.value == ['RECAT']
-    responseAfterClear.recat == [decision: [category : "D"]]
+    responseAfterClear.recat == [decision: [category: "D"]]
     dataAfterClear.user_id == ['RECATEGORISER_USER']
     dataAfterClear.assigned_user_id == ['RECATEGORISER_USER']
   }
@@ -222,5 +236,5 @@ class DecisionSpecification extends GebReportingSpec {
     at DecisionPage
     errorSummaries*.text() == ['Please select a security condition']
     errors*.text() == ['Error:\nPlease select a security condition']
- }
+  }
 }

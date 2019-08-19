@@ -18,10 +18,11 @@ class DecisionPage extends Page {
     form { $('form') }
     behaviour { $('#behaviour') }
     categoryBOption { $('#catBOption') }
-    categoryJOption (required: false){ $('#catJOption') }
-    categoryIOption (required: false){ $('#catIOption') }
-    categoryDOption (required: false){ $('#catDOption') }
+    categoryJOption(required: false) { $('#catJOption') }
+    categoryIOption(required: false) { $('#catIOption') }
+    categoryDOption(required: false) { $('#catDOption') }
     categoryCOption { $('#catCOption') }
+    hints { $('.govuk-radios__hint') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
