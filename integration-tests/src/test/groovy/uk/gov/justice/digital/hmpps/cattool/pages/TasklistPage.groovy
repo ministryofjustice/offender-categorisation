@@ -15,7 +15,7 @@ class TasklistPage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-grid-column-one-third') }
-    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
+    headerValue { headerBlock.$('div.govuk-\\!-font-weight-bold') }
     sentenceTableRow1(required: false) { $('table#sentences tr', 1).find('td') }
     sentenceTableRow2(required: false) { $('table#sentences tr', 2).find('td') }
     logoutLink { $('a', href: '/logout') }

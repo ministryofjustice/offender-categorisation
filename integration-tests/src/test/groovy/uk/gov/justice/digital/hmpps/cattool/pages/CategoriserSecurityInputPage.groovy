@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.cattool.pages;
 
-import geb.Page
-
-class CategoriserSecurityInputPage extends Page {
+class CategoriserSecurityInputPage extends HeaderPage {
 
   static String bookingId
 
@@ -13,9 +11,6 @@ class CategoriserSecurityInputPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
-    headerBlock { $('div.govuk-body-s') }
-    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     backLink { $('a.govuk-back-link') }
     warningTextDiv { $('div.govuk-warning-text')}
     saveButton { $('button.govuk-button') }

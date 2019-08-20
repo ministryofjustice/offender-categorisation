@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.cattool.pages.ratings
 
-import geb.Page
+import uk.gov.justice.digital.hmpps.cattool.pages.HeaderPage
 
-class CategoriserOffendingHistoryPage extends Page {
+class CategoriserOffendingHistoryPage extends HeaderPage {
 
   static String bookingId
 
@@ -13,9 +13,6 @@ class CategoriserOffendingHistoryPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
-    headerBlock { $('div.govuk-body-s') }
-    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     catAWarning(required: false) { $('div.govuk-warning-text') }
     catAInfo(required: false) { $('div.govuk-inset-text') }
     form { $('form') }
