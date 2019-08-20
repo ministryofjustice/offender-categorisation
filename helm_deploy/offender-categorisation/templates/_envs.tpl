@@ -73,5 +73,7 @@ env:
   - name: INGRESS_URL
     value: 'https://{{ .Values.ingress.host }}'
 
+  - name: DPS_URL
+    value: {{ .Values.env.DPS_URL | quote }}
 
 {{- end -}}

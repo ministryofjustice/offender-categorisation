@@ -64,7 +64,7 @@
           {{ row.nextReviewDateDisplay }}
         {% endif %}
       </td>
-      <td class="govuk-table__cell">{{ row.displayName }}</td>
+      <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a></td>
       <td class="govuk-table__cell">{{ row.offenderNo }}</td>
       <td class="govuk-table__cell">{{ row.reason.value }}</td>
       <td class="govuk-table__cell">
