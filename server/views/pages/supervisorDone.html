@@ -54,7 +54,7 @@
     <tbody class="govuk-table__body">
     {% for row in offenders %}
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">{{ row.displayName }}</td>
+      <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a></td>
       <td class="govuk-table__cell">{{ row.offenderNo }}</td>
       <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>

@@ -1,5 +1,6 @@
 const moment = require('moment')
 const R = require('ramda')
+const { dpsUrl } = require('../config')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 
@@ -124,6 +125,8 @@ const calculateNextReviewDate = R.cond([
 const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB'])
 const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
+const offenderLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/quick-look`
+
 module.exports = {
   dateConverter,
   formatLength,
@@ -138,4 +141,5 @@ module.exports = {
   catDisplay,
   calculateNextReviewDate,
   choosingHigherCategory,
+  offenderLink,
 }
