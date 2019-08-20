@@ -13,7 +13,7 @@ class TasklistRecatPage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     headerBlock { $('div.govuk-grid-column-one-third') }
-    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
+    headerValue { headerBlock.$('div.govuk-\\!-font-weight-bold') }
     headerLink { headerBlock.$('a') }
     logoutLink { $('a', href: '/logout') }
 
