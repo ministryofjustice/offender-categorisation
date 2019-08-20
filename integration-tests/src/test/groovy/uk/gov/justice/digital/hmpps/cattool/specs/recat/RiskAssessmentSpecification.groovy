@@ -40,7 +40,7 @@ class RiskAssessmentSpecification extends GebReportingSpec {
 
     then: 'The page is displayed'
     at RiskAssessmentPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
+    headerValue*.text() == fixture.MINI_HEADER
 
     when: 'Details are entered, saved and accessed'
     lowerCategory << 'lower text'

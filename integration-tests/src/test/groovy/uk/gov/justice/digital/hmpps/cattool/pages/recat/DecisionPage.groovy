@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.cattool.pages.recat
 
-import geb.Page
+import uk.gov.justice.digital.hmpps.cattool.pages.HeaderPage
 
-class DecisionPage extends Page {
+class DecisionPage extends HeaderPage {
 
   static url = '/form/recat/decision'
 
@@ -11,10 +11,6 @@ class DecisionPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
-    headerBlock { $('div.govuk-body-s') }
-    headerValue { headerBlock.$('div.govuk-\\!-font-weight-bold') }
-
     form { $('form') }
     behaviour { $('#behaviour') }
     categoryBOption { $('#catBOption') }
