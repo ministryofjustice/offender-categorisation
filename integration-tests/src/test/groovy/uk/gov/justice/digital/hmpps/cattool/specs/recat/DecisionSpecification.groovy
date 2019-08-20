@@ -43,7 +43,7 @@ class DecisionSpecification extends GebReportingSpec {
 
     then: 'The page is displayed'
     at DecisionPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
+    headerValue*.text() == fixture.MINI_HEADER
     hints*.text() == [
       'You will need to complete a higher security review for this person, after choosing this category.',
       'Choosing this category requires no additional reviews or assessments.',
@@ -155,7 +155,7 @@ class DecisionSpecification extends GebReportingSpec {
 
     then: 'The page is displayed'
     at DecisionPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
+    headerValue*.text() == fixture.MINI_HEADER
 
     when: 'Details are entered, saved and accessed'
     categoryBOption.click()

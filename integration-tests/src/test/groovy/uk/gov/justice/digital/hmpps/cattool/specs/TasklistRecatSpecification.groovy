@@ -48,6 +48,8 @@ class TasklistRecatSpecification extends GebReportingSpec {
 
     then: 'The tasklist page is displayed'
     headerValue*.text() == fixture.FULL_HEADER
+    headerLink.text() == 'Hillmob, Ant'
+    headerLink.@href == 'http://localhost:3000/offenders/B2345YZ/quick-look'
     !continueButton
     continueButtonDisabled.displayed
 

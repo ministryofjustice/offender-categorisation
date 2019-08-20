@@ -15,7 +15,9 @@
 
   <div class="govuk-grid-column-one-third">
     {{ headerTitle('Name') }}
-    {{ headerValue(data.details.displayName) }}
+    <div class="govuk-grid-row">
+      <a class="govuk-!-font-weight-bold govuk-!-margin-top-1" target="_blank" href="{{ data.details.offenderNo | offenderLink }}">{{ data.details.displayName }}</a>
+    </div>
 
     {{ headerTitle('NOMIS ID') }}
     {{ headerValue(data.details.offenderNo) }}
