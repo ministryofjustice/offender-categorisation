@@ -80,7 +80,7 @@
   {{ govukRadios({
     name: "category",
     classes: "govuk-radios",
-    fieldset: { legend: { text: "What security conditions are suitable for this person?" } },
+    fieldset: { legend: { text: "What security category is most suitable for this person?" } },
     errorMessage: {
       text: "Please select a security condition"
     } if (errors | findError('category')),

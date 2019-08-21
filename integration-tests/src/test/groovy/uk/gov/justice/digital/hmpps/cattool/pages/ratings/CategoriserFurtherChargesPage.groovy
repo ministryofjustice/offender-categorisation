@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.cattool.pages.ratings
 
-import geb.Page
+import uk.gov.justice.digital.hmpps.cattool.pages.HeaderPage
 
-class CategoriserFurtherChargesPage extends Page {
+class CategoriserFurtherChargesPage extends HeaderPage {
 
   static String bookingId
 
@@ -13,9 +13,6 @@ class CategoriserFurtherChargesPage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
-    headerBlock { $('div.govuk-body-s') }
-    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     form { $('form') }
     saveButton { $('button.govuk-button') }
     furtherChargesYes { $('#furtherCharges') }

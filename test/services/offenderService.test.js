@@ -627,17 +627,33 @@ describe('getUncategorisedOffenders', () => {
       /* do nothing */
     }
   })
-})
+  test('it should not return offenders without sentence data', async () => {
+    const uncategorised = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+      },
+    ]
 
-test('it should handle an empty response', async () => {
-  const uncategorised = []
-  const expected = []
+    const sentenceDates = [
+      {
+        sentenceDetail: { bookingId: 123 },
+      },
+    ]
 
-  nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    const expected = []
 
-  const result = await service.getReferredOffenders('user1', 'MDI')
-  expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
-  expect(result).toEqual(expected)
+    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    formService.getCategorisationRecord.mockReturnValue({})
+
+    const result = await service.getUncategorisedOffenders('user1', 'MDI')
+    expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
+    expect(result).toEqual(expected)
+  })
 })
 
 test('create categorisation should propagate error response', async () => {
@@ -662,34 +678,6 @@ test('createSupervisorApproval should propagate error response', async () => {
   } catch (s) {
     expect(s.message).toEqual('our Error')
   }
-})
-
-test('it should not return offenders without sentence data', async () => {
-  const uncategorised = [
-    {
-      offenderNo: 'G12345',
-      firstName: 'Jane',
-      lastName: 'Brown',
-      bookingId: 123,
-      status: Status.UNCATEGORISED.name,
-    },
-  ]
-
-  const sentenceDates = [
-    {
-      sentenceDetail: { bookingId: 123 },
-    },
-  ]
-
-  const expected = []
-
-  nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-  nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
-  formService.getCategorisationRecord.mockReturnValue({})
-
-  const result = await service.getUncategorisedOffenders('user1', 'MDI')
-  expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
-  expect(result).toEqual(expected)
 })
 
 describe('getReferredOffenders', () => {
@@ -860,6 +848,17 @@ describe('getReferredOffenders', () => {
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
+
+  test('it should handle an empty response', async () => {
+    const uncategorised = []
+    const expected = []
+
+    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+
+    const result = await service.getReferredOffenders('user1', 'MDI')
+    expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
+    expect(result).toEqual(expected)
+  })
 })
 
 describe('getOffenderDetails', () => {
@@ -990,46 +989,55 @@ describe('calculateButtonText', () => {
 })
 
 describe('getPrisonerBackground', () => {
-  test('it should return a list of historical categorisations, filtering out any pending categorisations, sorted by assessment date', async () => {
-    const cats = [
-      {
-        bookingId: -45,
-        offenderNo: 'ABC1',
-        classificationCode: 'A',
-        classification: 'Cat A',
-        assessmentDate: '2012-04-04',
-        assessmentAgencyId: 'MDI',
-        assessmentStatus: 'A',
-      },
-      {
-        bookingId: -45,
-        offenderNo: 'ABC1',
-        classificationCode: 'A',
-        classification: 'Cat A',
-        assessmentDate: '2012-04-04',
-        assessmentAgencyId: 'LEI',
-        assessmentStatus: 'P',
-      },
-      {
-        bookingId: -45,
-        offenderNo: 'ABC1',
-        classificationCode: 'A',
-        classification: 'Cat A',
-        assessmentDate: '2010-02-04',
-        assessmentAgencyId: 'LEI',
-        assessmentStatus: 'I',
-      },
-      {
-        bookingId: -45,
-        offenderNo: 'ABC1',
-        classificationCode: 'B',
-        classification: 'Cat B',
-        assessmentDate: '2013-03-24',
-        assessmentAgencyId: 'MDI',
-        assessmentStatus: 'I',
-      },
-    ]
+  const cats = [
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'A',
+      classification: 'Cat A',
+      assessmentDate: '2012-04-04',
+      assessmentAgencyId: 'MDI',
+      assessmentStatus: 'A',
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'A',
+      classification: 'Cat A',
+      assessmentDate: '2012-04-04',
+      assessmentAgencyId: 'LEI',
+      assessmentStatus: 'P',
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'A',
+      classification: 'Cat A',
+      assessmentDate: '2010-02-04',
+      assessmentAgencyId: 'LEI',
+      assessmentStatus: 'I',
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'B',
+      classification: 'Cat B',
+      assessmentDate: '2013-03-24',
+      assessmentAgencyId: 'MDI',
+      assessmentStatus: 'I',
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'B',
+      classification: 'Cat B',
+      assessmentDate: '2019-04-17',
+      assessmentAgencyId: 'BXI',
+      assessmentStatus: 'A',
+    },
+  ]
 
+  test('it should return a list of historical categorisations, filtering out any pending and future categorisations, sorted by assessment date', async () => {
     nomisClient.getCategoryHistory.mockReturnValue(cats)
     nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
 
@@ -1064,15 +1072,67 @@ describe('getPrisonerBackground', () => {
       },
     ]
 
-    const result = await service.getPrisonerBackground('token', 'ABC1')
+    const result = await service.getPrisonerBackground('token', 'ABC1', moment('2019-04-16'))
 
     expect(nomisClient.getAgencyDetail).toBeCalledTimes(3)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
 
+  test('it should return a list of historical categorisations, filtering out any pending categorisations, sorted by assessment date', async () => {
+    nomisClient.getCategoryHistory.mockReturnValue(cats)
+    nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
+
+    const expected = [
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'B',
+        assessmentDate: '2019-04-17',
+        assessmentDateDisplay: '17/04/2019',
+        assessmentAgencyId: 'BXI',
+        agencyDescription: 'Moorlands',
+        assessmentStatus: 'A',
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'B',
+        assessmentDate: '2013-03-24',
+        assessmentDateDisplay: '24/03/2013',
+        assessmentAgencyId: 'MDI',
+        agencyDescription: 'Moorlands',
+        assessmentStatus: 'I',
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        assessmentDate: '2012-04-04',
+        assessmentDateDisplay: '04/04/2012',
+        agencyDescription: 'Moorlands',
+        assessmentStatus: 'A',
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        classification: 'Cat A',
+        assessmentDate: '2010-02-04',
+        assessmentAgencyId: 'LEI',
+        assessmentStatus: 'I',
+      },
+    ]
+
+    const result = await service.getPrisonerBackground('token', 'ABC1')
+
+    expect(nomisClient.getAgencyDetail).toBeCalledTimes(4)
+    expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
+    expect(result).toMatchObject(expected)
+  })
+
   test('it should handle a missing assessment agency', async () => {
-    const cats = [
+    nomisClient.getCategoryHistory.mockReturnValue([
       {
         bookingId: -45,
         offenderNo: 'ABC1',
@@ -1080,9 +1140,7 @@ describe('getPrisonerBackground', () => {
         classification: 'Cat A',
         assessmentDate: '2012-04-04',
       },
-    ]
-
-    nomisClient.getCategoryHistory.mockReturnValue(cats)
+    ])
     nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
 
     const expected = [

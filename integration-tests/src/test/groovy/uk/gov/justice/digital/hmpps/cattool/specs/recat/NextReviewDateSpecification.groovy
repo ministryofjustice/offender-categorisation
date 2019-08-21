@@ -45,7 +45,7 @@ class NextReviewDateSpecification extends GebReportingSpec {
 
     then: 'The page is displayed'
     at NextReviewDateQuestionPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
+    headerValue*.text() == fixture.MINI_HEADER
 
     when: "6 months is selected"
     sixMonthsOption.click()
@@ -91,7 +91,7 @@ class NextReviewDateSpecification extends GebReportingSpec {
 
     then: 'The page is displayed'
     at NextReviewDateQuestionPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
+    headerValue*.text() == fixture.MINI_HEADER
 
     when: 'Nothing is selected - validation kicks in'
     submitButton.click()

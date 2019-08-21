@@ -72,6 +72,7 @@ class TestFixture {
   '16/06/2020',
   '17/06/2020',
   '6 years, 3 months (Std sentence)']
+  public static final MINI_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
 
   TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1) {
     this.browser = browser
