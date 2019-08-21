@@ -7,7 +7,7 @@ jest.mock('cls-hooked')
 
 describe('nomisClient', () => {
   let fakeElite2Api
-  let fakeOath
+  let fakeOauth
   let nomisClient
 
   const uncatResponse = [{}]
@@ -16,7 +16,7 @@ describe('nomisClient', () => {
 
   beforeEach(() => {
     fakeElite2Api = nock(`${config.apis.elite2.url}`) // .log(console.log)
-    fakeOath = nock(`${config.apis.oauth2.url}`) // .log(console.log)
+    fakeOauth = nock(`${config.apis.oauth2.url}`) // .log(console.log)
     nomisClient = nomisClientBuilder('username')
     getNamespace.mockReturnValue({ get: () => 'myuser' })
   })
@@ -75,7 +75,7 @@ describe('nomisClient', () => {
 
   describe('getOffenderDetailList', () => {
     it('should return data from api', async () => {
-      fakeOath.post(`/oauth/token`, 'grant_type=client_credentials&username=myuser').reply(200, '')
+      fakeOauth.post(`/oauth/token`, 'grant_type=client_credentials&username=myuser').reply(200, '')
       fakeElite2Api.post(`/api/bookings/offenders`).reply(200, emptyListResponse)
 
       const output = await nomisClient.getOffenderDetailList([123, 321])
