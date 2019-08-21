@@ -76,4 +76,23 @@ env:
   - name: DPS_URL
     value: {{ .Values.env.DPS_URL | quote }}
 
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: rp-sqs-instance-output
+        key: access_key_id
+
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: rp-sqs-instance-output
+        key: secret_access_key
+
+  - name: RP_QUEUE_URL
+    valueFrom:
+      secretKeyRef:
+        name: rp-sqs-instance-output
+        key: sqs_rpc_url
+
+
 {{- end -}}
