@@ -181,8 +181,8 @@ function nomisPushBuilder(verb, token) {
 
 function nomisClientPostBuilder() {
   return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
-    logger.info(`nomisClientPush: calling elite2api: ${path}`)
-    logger.debug(`nomisClientPush: body: ${body}`)
+    logger.info(`nomisClientPost calling elite2api: ${path}`)
+    logger.debug(`nomisClientPost: body: ${body}`)
     try {
       const clientToken = await getApiClientToken()
 
