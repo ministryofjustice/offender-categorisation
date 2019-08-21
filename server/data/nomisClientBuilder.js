@@ -14,6 +14,7 @@ module.exports = token => {
   const nomisUserGet = nomisUserGetBuilder(token)
   const nomisClientGet = nomisClientGetBuilder()
   const nomisPost = nomisPushBuilder('post', token)
+  const nomisClientPost = nomisClientPostBuilder()
   const nomisPut = nomisPushBuilder('put', token)
 
   return {
@@ -104,9 +105,9 @@ module.exports = token => {
       const path = `${apiUrl}api/offender-assessments/category/categorise`
       return nomisPost({ path, body: details })
     },
-    getOffenderDetailList(agencyId, offenderNos) {
+    getOffenderDetailList(offenderNos) {
       const path = `${apiUrl}api/bookings/offenders`
-      return nomisPost({ path, body: offenderNos })
+      return nomisClientPost({ path, body: offenderNos })
     },
     getUserDetailList(usernames) {
       const path = `${apiUrl}api/users/list`
@@ -135,11 +136,11 @@ function nomisUserGetBuilder(token) {
   }
 }
 
-function nomisClientGetBuilder(username) {
+function nomisClientGetBuilder() {
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     logger.info(`nomis Get using clientId credentials: calling elite2api: ${path} ${query}`)
     try {
-      const clientToken = await getApiClientToken(username)
+      const clientToken = await getApiClientToken()
 
       const result = await superagent
         .get(path)
@@ -168,6 +169,31 @@ function nomisPushBuilder(verb, token) {
     logger.debug(`nomisPush: body: ${body}`)
     try {
       const result = await updateMethod[verb](token, path, body, headers, responseType)
+      return result.body
+    } catch (error) {
+      logger.warn('Error calling elite2api')
+      logger.warn(error)
+
+      throw error
+    }
+  }
+}
+
+function nomisClientPostBuilder() {
+  return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
+    logger.info(`nomisClientPush: calling elite2api: ${path}`)
+    logger.debug(`nomisClientPush: body: ${body}`)
+    try {
+      const clientToken = await getApiClientToken()
+
+      const result = await superagent
+        .post(path)
+        .send(body)
+        .set('Authorization', `Bearer ${clientToken.body.access_token}`)
+        .set(headers)
+        .responseType(responseType)
+        .timeout(timeoutSpec)
+
       return result.body
     } catch (error) {
       logger.warn('Error calling elite2api')

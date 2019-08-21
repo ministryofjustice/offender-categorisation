@@ -182,7 +182,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         const sentenceMap = await getSentenceMap(securityReferredFromDB, nomisClient)
 
         const offenderDetailsFromElite = await nomisClient.getOffenderDetailList(
-          agencyId,
           securityReferredFromDB.map(c => c.offenderNo)
         )
 
@@ -235,7 +234,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const securityReviewedFromDB = await formService.getSecurityReviewedOffenders(agencyId, transactionalDbClient)
       if (!isNilOrEmpty(securityReviewedFromDB)) {
         const offenderDetailsFromElite = await nomisClient.getOffenderDetailList(
-          agencyId,
           securityReviewedFromDB.map(c => c.offenderNo)
         )
 
