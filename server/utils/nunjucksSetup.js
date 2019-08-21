@@ -7,6 +7,7 @@ const {
   getLongDateFormat,
   catDisplay,
   choosingHigherCategory,
+  offenderLink,
 } = require('../utils/utils.js')
 const config = require('../config')
 
@@ -35,6 +36,7 @@ module.exports = (app, path) => {
 
   njkEnv
     .addFilter('findError', findError)
+    .addFilter('offenderLink', offenderLink)
     .addGlobal('Status', Status)
     .addGlobal('ReviewReason', ReviewReason)
     .addGlobal('dateConverter', dateConverter)

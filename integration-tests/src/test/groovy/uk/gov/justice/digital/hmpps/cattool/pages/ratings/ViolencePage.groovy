@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.cattool.pages.ratings
 
-import geb.Page
+import uk.gov.justice.digital.hmpps.cattool.pages.HeaderPage
 
-class ViolencePage extends Page {
+class ViolencePage extends HeaderPage {
 
   static url = '/form/ratings/violenceRating'
 
@@ -11,10 +11,6 @@ class ViolencePage extends Page {
   }
 
   static content = {
-    headingText { $('h1.govuk-heading-l').text() }
-    headerBlock { $('div.govuk-body-s') }
-    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
-
     warning(required: false) { $('div.govuk-warning-text') }
     info(required: false) { $('div.govuk-inset-text') }
 

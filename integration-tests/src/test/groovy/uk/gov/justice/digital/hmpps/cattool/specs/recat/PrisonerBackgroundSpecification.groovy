@@ -48,7 +48,7 @@ class PrisonerBackgroundSpecification extends GebReportingSpec {
 
     then: 'The page is displayed'
     at PrisonerBackgroundPage
-    headerValue*.text() == ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
+    headerValue*.text() == fixture.MINI_HEADER
     alertInfo*.text() == [
       'E-List: First xel comment 2016-09-14',
       '''E-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
