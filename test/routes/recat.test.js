@@ -74,7 +74,7 @@ let app
 beforeEach(() => {
   app = appSetup(formRoute)
   roles = ['ROLE_CREATE_RECATEGORISATION']
-  formService.getCategorisationRecord.mockResolvedValue({})
+  formService.getCategorisationRecord.mockResolvedValue({ status: 'STARTED', bookingId: 12345, formObject: {} })
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
   formService.isValid.mockResolvedValue(true)
@@ -82,7 +82,7 @@ beforeEach(() => {
   formService.deleteFormData.mockReturnValue({})
   formService.recordNomisSeqNumber.mockReturnValue({})
   formService.categoriserDecision.mockReturnValue({})
-  offendersService.createInitialCategorisation.mockReturnValue({ bookingId: 12, seq: 4 })
+  offendersService.createInitialCategorisation.mockReturnValue({ bookingId: 12345, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
@@ -97,26 +97,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  formService.getCategorisationRecord.mockReset()
-  formService.referToSecurityIfRiskAssessed.mockReset()
-  formService.referToSecurityIfRequested.mockReset()
-  formService.update.mockReset()
-  formService.getValidationErrors.mockReset()
-  formService.computeSuggestedCat.mockReset()
-  formService.updateFormData.mockReset()
-  formService.isYoungOffender.mockReset()
-  formService.mergeRiskProfileData.mockReset()
-  formService.backToCategoriser.mockReset()
-  formService.isValid.mockReset()
-  formService.deleteFormData.mockReset()
-  offendersService.getOffenderDetails.mockReset()
-  offendersService.getCatAInformation.mockReset()
-  offendersService.getOffenceHistory.mockReset()
-  userService.getUser.mockReset()
-  riskProfilerService.getSecurityProfile.mockReset()
-  riskProfilerService.getViolenceProfile.mockReset()
-  riskProfilerService.getExtremismProfile.mockReset()
-  riskProfilerService.getEscapeProfile.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('recat', () => {
@@ -152,9 +133,10 @@ describe('recat', () => {
     test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
       formService.getCategorisationRecord.mockResolvedValue({
         status: 'SECURITY_MANUAL',
-        bookingId: 12,
+        bookingId: 12345,
         displayName: 'Tim Handle',
         displayStatus: 'Any other status',
+        formObject: {},
       })
       return request(app)
         .get('/securityInput/12345')
@@ -172,7 +154,7 @@ describe('recat', () => {
     ${'nextReviewDate'}           | ${{ date: '23/05/2025' }}  | ${'/tasklistRecat/'}
   `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
-      bookingId: 12,
+      bookingId: 12345,
       formObject: {},
     })
     return request(app)
@@ -402,7 +384,7 @@ describe('POST /form/recat/decision', () => {
   `('Post for input $userInput should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'STARTED',
-      bookingId: 12,
+      bookingId: 12345,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
     })

@@ -238,7 +238,8 @@ module.exports = function Index({
     '/approvedView/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient)
+      const { sequenceNo } = req.query
+      const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient, sequenceNo)
       const prisonDescription = await offendersService.getOptionalAssessmentAgencyDescription(
         res.locals.user.token,
         result.prisonId
@@ -258,13 +259,21 @@ module.exports = function Index({
     })
   )
 
-  const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient) => {
+  const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient, sequenceNo) => {
     const user = await userService.getUser(res.locals.user.token)
     res.locals.user = { ...user, ...res.locals.user }
 
-    const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-    res.locals.formObject = formData.formObject || {}
-    res.locals.formObject = { ...res.locals.formObject, ...formData.riskProfile }
+    if (sequenceNo && Number.isNaN(parseInt(sequenceNo, 10))) {
+      throw new Error('Invalid sequenceNo')
+    }
+    const formData = sequenceNo
+      ? await formService.getCategorisationRecordUsingSequence(bookingId, sequenceNo, transactionalDbClient)
+      : await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+    if (!formData || !formData.formObject) {
+      throw new Error('No categorisation found for this booking id / sequence no')
+    }
+    res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')

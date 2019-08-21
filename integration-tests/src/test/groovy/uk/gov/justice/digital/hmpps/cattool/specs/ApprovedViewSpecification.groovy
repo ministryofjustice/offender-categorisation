@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.ApprovedViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
 
 import java.time.LocalDate
 
@@ -86,6 +87,42 @@ class ApprovedViewSpecification extends GebReportingSpec {
     at SupervisorDonePage
   }
 
+  def "An old cat can be displayed"() {
+
+    when: 'the approved view page for B2345YZ is selected'
+    db.doCreateCompleteRow(-1, 12, JsonOutput.toJson([
+      recat: [decision: [category: "B", categoryAppropriate: "Yes"]]
+    ]), 'CATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null,
+      1, null, 'BXI', 'B2345YZ', 'current_timestamp(2)', null, null,
+    '2019-07-19')
+
+    db.doCreateCompleteRow(-2, 12, JsonOutput.toJson([
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]],
+      supervisor : [review: [supervisorCategoryAppropriate: "Yes"]]
+    ]), 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
+      2, null, 'LEI', 'B2345YZ', 'current_timestamp(2)', null, null,
+      '2019-07-20')
+
+    navigateToView()
+
+    then: 'the latest cat details are correct'
+    categories*.text() == ['C\nWarning\nCategory C',
+                           'C\nWarning\nThe categoriser recommends category C',
+                           'C\nWarning\nThe supervisor also recommends category C']
+    dateAndPrison*.text() == ['Saturday 20th July 2019', 'LEI prison']
+
+    when: "I look at the old categorisation"
+    elite2Api.stubAgencyDetails('BXI')
+    elite2Api.stubAgencyDetails('LPI')
+    to ApprovedViewRecatPage, '12', sequenceNo: '1'
+
+    then: 'the old cat details are shown correctly'
+    categories*.text() == ['B\nWarning\nCategory B',
+                           'B\nWarning\nThe categoriser recommends category B',
+                           'B\nWarning\nThe supervisor also recommends category B']
+    dateAndPrison*.text() == ['Friday 19th July 2019', 'BXI prison']
+  }
+
   private navigateToView() {
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
@@ -105,10 +142,6 @@ class ApprovedViewSpecification extends GebReportingSpec {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false)
     elite2Api.stubAssessments(['B2345YZ'])
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
 
     viewButtons[0].click()
 
