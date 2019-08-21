@@ -196,8 +196,7 @@ function nomisClientPostBuilder() {
 
       return result.body
     } catch (error) {
-      logger.warn('Error calling elite2api')
-      logger.warn(error)
+      logger.warn(error, 'Error calling elite2api')
 
       throw error
     }
