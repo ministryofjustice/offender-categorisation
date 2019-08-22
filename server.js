@@ -2,6 +2,7 @@ const knex = require('knex')
 const knexfile = require('./knexfile')
 const app = require('./server/index')
 const log = require('./log')
+require('./server/sqs')
 
 const selectSql = message => {
   if (message.sql) {
