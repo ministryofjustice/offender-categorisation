@@ -83,13 +83,14 @@ class ReviewSpecification extends GebReportingSpec {
     headerValue*.text() == fixture.FULL_HEADER
     changeLinks.size() == 5
 
-    prisonerBackgroundSummary*.text() == ['',
-                                          'Manual',
-                                          'Categorisation date Category decision Review location\n24/03/2013 B Moorland (HMP & YOI)\n04/04/2012 A Moorland (HMP & YOI)',
-                                          'This person has not been reported as the perpetrator in any assaults in custody before',
-                                          'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
-                                          'This person is at risk of engaging in, or vulnerable to, extremism.',
-                                          '']
+    prisonerBackgroundSummary*.text() == [
+      '',
+      'Manual',
+      'Categorisation date Category decision Review location\n24/03/2013 B LPI prison\n04/04/2012 A LPI prison',
+      'This person has not been reported as the perpetrator in any assaults in custody before',
+      'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
+      'This person is at risk of engaging in, or vulnerable to, extremism.',
+      '']
     securityInputSummary*.text() == ['', 'No', 'Yes', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']

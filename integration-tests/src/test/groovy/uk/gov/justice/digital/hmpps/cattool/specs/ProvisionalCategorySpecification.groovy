@@ -100,6 +100,8 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
   }
 
   def 'Validation test'() {
+    db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([ratings: TestFixture.defaultRatingsC]))
+
     when: 'I submit the Provisional Category page without selecting anything'
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()

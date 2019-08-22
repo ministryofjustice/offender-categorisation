@@ -1,12 +1,6 @@
 const logger = require('../../log.js')
 
-const sequenceClause =
-  'and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)'
-
-module.exports = {
-  getFormDataForUser(bookingId, transactionalClient) {
-    const query = {
-      text: `select id,
+const selectClause = `select id,
                     booking_id             as "bookingId",
                     offender_no            as "offenderNo",
                     sequence_no            as "sequence",
@@ -23,9 +17,31 @@ module.exports = {
                     prison_id              as "prisonId",
                     cat_type               as "catType",
                     review_reason          as "reviewReason",
-                    nomis_sequence_no      as "nomisSeq"
-             from form f
-      where f.booking_id = $1 ${sequenceClause}`,
+                    nomis_sequence_no      as "nomisSeq"`
+
+const sequenceClause =
+  'and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)'
+
+module.exports = {
+  getFormDataForUser(bookingId, transactionalClient) {
+    const query = {
+      text: `${selectClause} from form f where f.booking_id = $1 ${sequenceClause}`,
+      values: [bookingId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getFormDataUsingSequence(bookingId, sequenceNo, transactionalClient) {
+    const query = {
+      text: `${selectClause} from form f where f.booking_id = $1 and f.sequence_no = $2`,
+      values: [bookingId, sequenceNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getHistoricalFormData(bookingId, transactionalClient) {
+    const query = {
+      text: `${selectClause} from form f where f.booking_id = $1`,
       values: [bookingId],
     }
     return transactionalClient.query(query)
