@@ -135,8 +135,10 @@ module.exports = function Index({
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-    res.locals.formObject = formData.formObject || {}
-    res.locals.formObject = { ...res.locals.formObject, ...formData.riskProfile }
+    if (!formData || !formData.formObject) {
+      throw new Error('No categorisation found for this booking id')
+    }
+    res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
