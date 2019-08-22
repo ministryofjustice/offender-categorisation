@@ -20,6 +20,8 @@ class ApprovedViewPage extends Page {
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
 
+    dateAndPrison { $('dl.dateAndPrison > div > dd') }
+
     openConditionsHeader(required: false) { $('.openConditionsHeader') }
 
     otherInformationSummary { $('.otherInformationSummary .govuk-summary-list__value') }

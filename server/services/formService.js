@@ -24,10 +24,20 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function getCategorisationRecordUsingNomisSeq(bookingId, seq, transactionalClient) {
+  async function getCategorisationRecordUsingSequence(bookingId, seq, transactionalClient) {
     try {
-      const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
+      const data = await formClient.getFormDataUsingSequence(bookingId, seq, transactionalClient)
       return dataIfExists(data) || {}
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
+  async function getHistoricalCategorisationRecords(bookingId, transactionalClient) {
+    try {
+      const data = await formClient.getHistoricalFormData(bookingId, transactionalClient)
+      return data.rows
     } catch (error) {
       logger.error(error)
       throw error
@@ -541,6 +551,7 @@ module.exports = function createFormService(formClient) {
     recordNomisSeqNumber,
     categoriserDecisionWithFormResponse,
     categoriserDecision,
-    getCategorisationRecordUsingNomisSeq,
+    getCategorisationRecordUsingSequence,
+    getHistoricalCategorisationRecords,
   }
 }

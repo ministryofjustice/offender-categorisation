@@ -29,14 +29,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  formClient.getFormDataForUser.mockReset()
-  formClient.update.mockReset()
-  formClient.updateFormData.mockReset()
-  formClient.create.mockReset()
-  formClient.referToSecurity.mockReset()
-  formClient.updateStatus.mockReset()
-  formClient.securityReviewed.mockReset({})
-  formClient.updateRiskProfileData.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('getCategorisationRecord', () => {
