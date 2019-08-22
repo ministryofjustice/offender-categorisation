@@ -12,6 +12,8 @@ const app = Consumer.create({
   },
 })
 
+logger.info(`Consuming from queue ${config.sqs.riskProfilerQueue}`)
+
 app.on('error', err => {
   logger.error(err.message)
 })
