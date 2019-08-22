@@ -73,7 +73,7 @@ let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
-  formService.getCategorisationRecord.mockResolvedValue({})
+  formService.getCategorisationRecord.mockResolvedValue({ status: 'STARTED', bookingId: 12345, formObject: {} })
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
   formService.isValid.mockResolvedValue(true)
@@ -92,21 +92,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  formService.getCategorisationRecord.mockReset()
-  formService.referToSecurityIfRiskAssessed.mockReset()
-  formService.referToSecurityIfRequested.mockReset()
-  formService.mergeRiskProfileData.mockReset()
-  formService.update.mockReset()
-  offendersService.getOffenderDetails.mockReset()
-  offendersService.getCatAInformation.mockReset()
-  offendersService.getOffenceHistory.mockReset()
-  offendersService.getPrisonerBackground.mockReset()
-  formService.update.mockReset()
-  userService.getUser.mockReset()
-  riskProfilerService.getSecurityProfile.mockReset()
-  riskProfilerService.getViolenceProfile.mockReset()
-  riskProfilerService.getExtremismProfile.mockReset()
-  riskProfilerService.getEscapeProfile.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('GET /section/form', () => {
@@ -163,6 +149,7 @@ describe('GET /ratings/securityInput', () => {
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
+      formObject: {},
     })
     return request(app)
       .get('/ratings/securityInput/12345')
@@ -286,6 +273,7 @@ describe('GET /supervisor/review', () => {
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
+      formObject: {},
     })
 
     return request(app)
@@ -304,6 +292,7 @@ describe('GET /supervisor/review', () => {
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
+      formObject: {},
     })
 
     return request(app)
@@ -804,20 +793,23 @@ describe('POST /supervisor/confirmBack', () => {
 
 describe('POST /categoriser/provisionalCategory', () => {
   test.each`
-    sectionName      | formName                 | userInput                                                                              | nextPath
-    ${'categoriser'} | ${'provisionalCategory'} | ${{ suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH' }}  | ${'/tasklist/categoriserSubmitted/12345'}
-    ${'categoriser'} | ${'provisionalCategory'} | ${{ suggestedCategory: 'C', overriddenCategory: 'D', overriddenCategoryText: 'text' }} | ${'/openConditionsAdded/12345?catType=INITIAL'}
-  `(
-    'should render $expectedContent for /categoriser/provisionalCategory',
-    ({ sectionName, formName, userInput, nextPath }) =>
-      request(app)
-        .post(`/${sectionName}/${formName}/12345`)
-        .send(userInput)
-        .expect(302)
-        .expect('Location', `${nextPath}`)
-        .expect(() => {
+    userInput                                                                              | nextPath                                        | isOpen
+    ${{ suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH' }}  | ${'/tasklist/categoriserSubmitted/12345'}       | ${false}
+    ${{ suggestedCategory: 'C', overriddenCategory: 'D', overriddenCategoryText: 'text' }} | ${'/openConditionsAdded/12345?catType=INITIAL'} | ${true}
+  `('should redirect to $nextPath for /categoriser/provisionalCategory', ({ userInput, nextPath, isOpen }) =>
+    request(app)
+      .post(`/categoriser/provisionalCategory/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect('Location', `${nextPath}`)
+      .expect(() => {
+        if (isOpen) {
+          expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(0)
+        } else {
           expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
-          expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+          const updateArg = formService.categoriserDecisionWithFormResponse.mock.calls[0][0]
+          expect(updateArg.bookingId).toBe(12345)
+          expect(updateArg.userId).toBe('CA_USER_TEST')
           expect(offendersService.createInitialCategorisation).toBeCalledWith({
             token: 'ABCDEF',
             bookingId: 12345,
@@ -825,9 +817,7 @@ describe('POST /categoriser/provisionalCategory', () => {
             overriddenCategoryText: 'HHH',
             suggestedCategory: 'B',
           })
-          const updateArg = formService.categoriserDecisionWithFormResponse.mock.calls[0][0]
-          expect(updateArg.bookingId).toBe(12345)
-          expect(updateArg.userId).toBe('CA_USER_TEST')
-        })
+        }
+      })
   )
 })

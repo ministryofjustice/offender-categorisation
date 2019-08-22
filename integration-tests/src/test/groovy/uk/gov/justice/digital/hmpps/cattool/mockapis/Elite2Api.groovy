@@ -1057,13 +1057,10 @@ class Elite2Api extends WireMockRule {
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
-
-              agencyId   : "MDI",
-              description: "Moorland (HMP & YOI)",
+              agencyId   : agency,
+              description: "$agency prison",
               agencyType : "INST"
-
-            ]
-            ))
+            ]))
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )

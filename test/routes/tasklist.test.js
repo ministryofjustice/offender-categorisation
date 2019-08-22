@@ -67,12 +67,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  formService.getCategorisationRecord.mockReset()
-  formService.referToSecurityIfRiskAssessed.mockReset()
-  formService.updateFormData.mockReset()
-  formService.createOrRetrieveCategorisationRecord.mockReset()
-  offendersService.getOffenderDetails.mockReset()
-  formService.update.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('GET /tasklist/', () => {

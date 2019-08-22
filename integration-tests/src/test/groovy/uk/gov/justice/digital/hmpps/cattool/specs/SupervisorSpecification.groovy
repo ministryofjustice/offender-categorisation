@@ -550,8 +550,8 @@ class SupervisorSpecification extends GebReportingSpec {
 
     prisonerBackgroundSummary*.text() == [
       '', 'Review due', ('Categorisation date Category decision Review location\n' +
-      '24/03/2013 B Moorland (HMP & YOI)\n' +
-      '04/04/2012 A Moorland (HMP & YOI)'),
+      '24/03/2013 B LPI prison\n' +
+      '04/04/2012 A LPI prison'),
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14',
       'This person is at risk of engaging in, or vulnerable to, extremism.', '']
@@ -579,7 +579,7 @@ class SupervisorSpecification extends GebReportingSpec {
     def riskResponse = new JsonSlurper().parseText(data.risk_profile[0].toString())
     response.recat == TestFixture.defaultRecat
     response.supervisor == [review: [proposedCategory: 'C', supervisorCategoryAppropriate: 'Yes']]
-    riskResponse.catHistory == [["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2013-03-24", "classification": "Cat B", "nextReviewDate": "2013-09-17", "assessmentStatus": "I", "agencyDescription": "Moorland (HMP & YOI)", "assessmentAgencyId": "LPI", "classificationCode": "B", "cellSharingAlertFlag": false, "assessmentDateDisplay": "24/03/2013", "assessmentDescription": "Categorisation"], ["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2012-04-04", "classification": "Cat A", "nextReviewDate": "2012-06-07", "assessmentStatus": "A", "agencyDescription": "Moorland (HMP & YOI)", "assessmentAgencyId": "LPI", "classificationCode": "A", "cellSharingAlertFlag": false, "assessmentDateDisplay": "04/04/2012", "assessmentDescription": "Categorisation"]]
+    riskResponse.catHistory == [["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2013-03-24", "classification": "Cat B", "nextReviewDate": "2013-09-17", "assessmentStatus": "I", "agencyDescription": "LPI prison", "assessmentAgencyId": "LPI", "classificationCode": "B", "cellSharingAlertFlag": false, "assessmentDateDisplay": "24/03/2013", "assessmentDescription": "Categorisation"], ["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2012-04-04", "classification": "Cat A", "nextReviewDate": "2012-06-07", "assessmentStatus": "A", "agencyDescription": "LPI prison", "assessmentAgencyId": "LPI", "classificationCode": "A", "cellSharingAlertFlag": false, "assessmentDateDisplay": "04/04/2012", "assessmentDescription": "Categorisation"]]
 
     response.openConditionsRequested == null
     data.status == ["APPROVED"]
