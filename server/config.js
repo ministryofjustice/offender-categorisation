@@ -30,6 +30,9 @@ module.exports = {
     database: get('DB_NAME', 'form-builder', true),
     sslEnabled: get('DB_SSL_ENABLED', 'false', true),
   },
+  sqs: {
+    riskProfilerQueue: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', true),
+  },
   apis: {
     oauth2: {
       url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true),
