@@ -76,7 +76,7 @@ describe('nomisClient', () => {
   describe('getOffenderDetailList', () => {
     it('should return data from api', async () => {
       fakeOauth.post(`/oauth/token`, 'grant_type=client_credentials&username=myuser').reply(200, '')
-      fakeElite2Api.post(`/api/bookings/offenders`).reply(200, emptyListResponse)
+      fakeElite2Api.post(`/api/bookings/offenders?activeOnly=false`).reply(200, emptyListResponse)
 
       const output = await nomisClient.getOffenderDetailList([123, 321])
       return expect(output).toEqual(emptyListResponse)
