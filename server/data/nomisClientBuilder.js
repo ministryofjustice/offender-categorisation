@@ -106,7 +106,7 @@ module.exports = token => {
       return nomisPost({ path, body: details })
     },
     getOffenderDetailList(offenderNos) {
-      const path = `${apiUrl}api/bookings/offenders`
+      const path = `${apiUrl}api/bookings/offenders?activeOnly=false`
       return nomisClientPost({ path, body: offenderNos })
     },
     getUserDetailList(usernames) {
