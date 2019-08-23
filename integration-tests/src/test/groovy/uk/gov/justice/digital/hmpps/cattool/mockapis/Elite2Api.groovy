@@ -721,7 +721,7 @@ class Elite2Api extends WireMockRule {
 
   def stubGetOffenderDetailsByOffenderNoList(List offenderNumbers) {
     this.stubFor(
-      post("/api/bookings/offenders")
+      post("/api/bookings/offenders?activeOnly=false")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
