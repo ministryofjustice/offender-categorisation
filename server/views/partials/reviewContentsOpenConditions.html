@@ -1,13 +1,5 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
-
-{% macro formatAnswer(yesno, details) %}
-  {% if yesno %}
-    <div>{{yesno}}</div>
-    <div>{{details}}</div>
-  {% else %}
-    Not applicable
-  {% endif %}
-{% endmacro %}
+{% from "../macros/formatAnswer.html" import formatAnswerWithNA %}
 
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 earliestReleaseDateSummary',
@@ -28,7 +20,7 @@
       },
       {
         key: { text: "Reasons that justify moving to open conditions?" },
-        value: { html: formatAnswer(data.openConditions.earliestReleaseDate.justify, data.openConditions.earliestReleaseDate.justifyText) },
+        value: { html: formatAnswerWithNA(data.openConditions.earliestReleaseDate.justify, data.openConditions.earliestReleaseDate.justifyText) },
         actions: { items: [] }
       }
     ]
@@ -88,7 +80,7 @@
       },
       {
         key: { text: "Can this risk be managed?" },
-        value: { html: formatAnswer(data.openConditions.riskOfHarm.harmManaged, data.openConditions.riskOfHarm.harmManagedText) },
+        value: { html: formatAnswerWithNA(data.openConditions.riskOfHarm.harmManaged, data.openConditions.riskOfHarm.harmManagedText) },
         actions: { items: [] }
       }
     ]
@@ -133,7 +125,7 @@
       },
       {
         key: { text: "Likely to abscond or abuse open conditions?" },
-        value: { html: formatAnswer(data.openConditions.riskLevels.likelyToAbscond, data.openConditions.riskLevels.likelyToAbscondText) },
+        value: { html: formatAnswerWithNA(data.openConditions.riskLevels.likelyToAbscond, data.openConditions.riskLevels.likelyToAbscondText) },
         actions: { items: [] }
       }
     ]

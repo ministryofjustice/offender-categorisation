@@ -26,7 +26,7 @@ class TestFixture {
     securityInput   : [securityInputNeeded: "No"],
     furtherCharges  : [furtherCharges: "Yes", furtherChargesText: "some charges"],
     violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
-    escapeRating    : [escapeOtherEvidence: "Yes"],
+    escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: "evidence details", escapeCatB: "Yes", escapeCatBText: "cat b details"],
     extremismRating : [previousTerrorismOffences: "Yes"]
   ]
 

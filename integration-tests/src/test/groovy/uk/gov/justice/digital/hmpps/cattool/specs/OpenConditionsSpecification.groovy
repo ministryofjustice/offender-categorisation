@@ -294,7 +294,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
     furtherChargesSummary*.text() == ['Yes\nsome charges', '']
     violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes']
-    escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes', '']
+    escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes\nevidence details', 'Yes\ncat b details']
     extremismRatingSummary*.text() == ['Yes', 'Yes']
     securityInputSummary*.text() == ['No', 'No']
 
@@ -360,7 +360,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
     furtherChargesSummary*.text() == ['Yes\nsome charges', '']
     violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes']
-    escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes', '']
+    escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes\nevidence details', 'Yes\ncat b details']
     extremismRatingSummary*.text() == ['Yes', 'Yes']
     securityInputSummary*.text() == ['No', 'No']
 
