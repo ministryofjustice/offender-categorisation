@@ -1,12 +1,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "../macros/renderAlert.html" import renderAlert %}
-
-{% macro formatAnswer(yesno, details) %}
-<div>{{yesno}}</div>
-<div>{{details}}</div>
-{% endmacro %}
-
+{% from "../macros/formatAnswer.html" import formatAnswer %}
 
 {% set catHistory %}
 {% if data.categorisations | length > 0 %}
