@@ -5,10 +5,12 @@ require('./utils/azure-appinsights')
 const createApp = require('./app')
 
 const formClient = require('./data/formClient')
+const statsClient = require('./data/statsClient')
 const nomisClientBuilder = require('./data/nomisClientBuilder')
 const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
 
 const createFormService = require('./services/formService')
+const createStatsService = require('./services/statsService')
 const createOffendersService = require('./services/offendersService')
 const createSignInService = require('./authentication/signInService')
 const createUserService = require('./services/userService')
@@ -16,6 +18,7 @@ const createRiskProfilerService = require('./services/riskProfilerService')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)
+const statsService = createStatsService(statsClient)
 const offendersService = createOffendersService(nomisClientBuilder, formService)
 const userService = createUserService(nomisClientBuilder)
 const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
@@ -26,6 +29,7 @@ const app = createApp({
   signInService: createSignInService(),
   userService,
   riskProfilerService,
+  statsService,
 })
 
 module.exports = app
