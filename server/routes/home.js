@@ -8,7 +8,7 @@ const extractNextReviewDate = details => {
   return catRecord && catRecord.nextReviewDate
 }
 
-module.exports = function Index({ authenticationMiddleware, userService, offendersService }) {
+module.exports = function Index({ authenticationMiddleware, userService, offendersService, statsService }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -16,7 +16,15 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
   router.get(
     '/',
     asyncMiddleware(async (req, res) => {
-      redirectUsingRole(req, res, '/categoriserHome', '/supervisorHome', '/securityHome', '/recategoriserHome')
+      redirectUsingRole(
+        req,
+        res,
+        '/categoriserHome',
+        '/supervisorHome',
+        '/securityHome',
+        '/recategoriserHome',
+        '/dashboard'
+      )
     })
   )
 
@@ -161,6 +169,17 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
           )
         : []
       res.render('pages/recategoriserDone', { offenders })
+    })
+  )
+
+  router.get(
+    '/dashboard',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const initial = await statsService.getInitialCategoryOutcomes(transactionalDbClient)
+      const recat = await statsService.getRecatCategoryOutcomes(transactionalDbClient)
+      const security = await statsService.getSecurityReferrals(transactionalDbClient)
+
+      res.render('pages/dashboard', { initial, recat, security })
     })
   )
 

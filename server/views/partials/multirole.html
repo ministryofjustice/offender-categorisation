@@ -20,6 +20,9 @@
                 {% if user.multipleRoles.security %}
                   <option value="security" {{ "selected" if currentRole === 'security' }}>Security</option>
                 {% endif %}
+                {% if user.multipleRoles.readonly %}
+                  <option value="readonly" {{ "selected" if currentRole === 'readonly' }}>Read-only</option>
+                {% endif %}
               </select>
           <hr class="govuk-section-break govuk-!-padding-top-2 govuk-section-break--visible">
         </div>

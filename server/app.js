@@ -38,6 +38,7 @@ module.exports = function createApp({
   offendersService,
   userService,
   riskProfilerService,
+  statsService,
 }) {
   const app = express()
 
@@ -240,7 +241,7 @@ module.exports = function createApp({
     return next()
   })
 
-  const homeRouter = createHomeRouter({ userService, offendersService, authenticationMiddleware })
+  const homeRouter = createHomeRouter({ userService, offendersService, authenticationMiddleware, statsService })
   app.use('/', homeRouter)
   app.use(
     '/tasklist/',
