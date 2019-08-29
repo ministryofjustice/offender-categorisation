@@ -5,15 +5,11 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
 const { isNilOrEmpty } = require('../utils/functionalHelpers')
-const { properCaseName, dateConverter } = require('../utils/utils.js')
+const { properCaseName, dateConverter, get10BusinessDays } = require('../utils/utils.js')
 const { sortByDateTime, sortByStatus } = require('./offenderSort.js')
 const config = require('../config')
 
 const dirname = process.cwd()
-
-const SATURDAY = 6
-const SUNDAY = 0
-const SUNDAY2 = 7
 
 function isCatA(c) {
   return c.classificationCode === 'A' || c.classificationCode === 'H' || c.classificationCode === 'P'
@@ -21,21 +17,6 @@ function isCatA(c) {
 
 function getYear(isoDate) {
   return isoDate && isoDate.substring(0, 4)
-}
-
-function get10BusinessDays(from) {
-  let numberOfDays = 14
-  switch (from.isoWeekday()) {
-    case SATURDAY:
-      numberOfDays += 2
-      break
-    case SUNDAY:
-    case SUNDAY2:
-      numberOfDays += 1
-      break
-    default:
-  }
-  return numberOfDays
 }
 
 async function getSentenceMap(offenderList, nomisClient) {
@@ -473,9 +454,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   function buildSentenceData(sentenceDate) {
     const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
     const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
+
     const actualDays = get10BusinessDays(sentenceDateMoment)
     const dateRequiredRaw = sentenceDateMoment.add(actualDays, 'day')
     const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
+
     const overdue = dateRequiredRaw.isBefore(moment(0, 'HH'))
     return { daysSinceSentence, dateRequired, sentenceDate, overdue }
   }

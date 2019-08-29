@@ -5,6 +5,23 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile } = require('../utils/functionalHelpers')
 
+const calculateNextReviewDate = details => {
+  // Endpoint only returns the latest assessment for each type
+  const cat = details.assessments.find(a => a.assessmentCode === 'CATEGORY')
+  return cat && cat.nextReviewDate
+}
+
+const calculateAge21Date = details => {
+  const dob = moment(details.dateOfBirth, 'YYYY-MM-DD')
+  return dob.add(21, 'years').format('YYYY-MM-DD')
+}
+
+const calculateDueDate = (reason, details) => {
+  if (reason === 'DUE') return calculateNextReviewDate(details)
+  if (reason === 'AGE') return calculateAge21Date(details)
+  return null
+}
+
 module.exports = function Index({
   formService,
   offendersService,
@@ -31,6 +48,7 @@ module.exports = function Index({
         details.offenderNo,
         CatType.RECAT.name,
         reason,
+        calculateDueDate(reason, details),
         transactionalDbClient
       )
 
@@ -50,6 +68,7 @@ module.exports = function Index({
           details.offenderNo,
           CatType.RECAT.name,
           reason,
+          calculateDueDate(reason, details),
           transactionalDbClient
         )
       }
