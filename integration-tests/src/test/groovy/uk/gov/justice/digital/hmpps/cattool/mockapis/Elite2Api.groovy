@@ -823,6 +823,12 @@ class Elite2Api extends WireMockRule {
                 dateOfBirth       : youngOffender ? '2018-01-01' : '1970-02-17',
                 category          : 'Cat ' + category,
                 categoryCode      : category,
+                assessments       : [
+                  [
+                    assessmentCode: 'CATEGORY',
+                    nextReviewDate: '2020-01-16',
+                  ],
+                ],
                 assignedLivingUnit:
                   [
                     description: 'C-04-02',
@@ -846,6 +852,7 @@ class Elite2Api extends WireMockRule {
 
     def sentenceDetail = [
       bookingId                         : bookingId,
+      sentenceStartDate                 : '2019-08-15',
       homeDetentionCurfewEligibilityDate: '2020-06-10',
       paroleEligibilityDate             : '2020-06-13',
       nonParoleDate                     : '2020-06-14',

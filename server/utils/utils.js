@@ -25,6 +25,25 @@ const formatLength = sentenceTerms => {
   return result.endsWith(', ') ? result.substr(0, result.length - 2) : result
 }
 
+const SATURDAY = 6
+const SUNDAY = 0
+const SUNDAY2 = 7
+
+const get10BusinessDays = from => {
+  let numberOfDays = 14
+  switch (from.isoWeekday()) {
+    case SATURDAY:
+      numberOfDays += 2
+      break
+    case SUNDAY:
+    case SUNDAY2:
+      numberOfDays += 1
+      break
+    default:
+  }
+  return numberOfDays
+}
+
 const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 
@@ -130,6 +149,7 @@ const offenderLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/quick-look`
 module.exports = {
   dateConverter,
   formatLength,
+  get10BusinessDays,
   properCase,
   properCaseName,
   getHoursMinutes,

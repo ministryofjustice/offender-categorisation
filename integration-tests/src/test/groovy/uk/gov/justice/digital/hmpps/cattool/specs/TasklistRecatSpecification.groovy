@@ -44,9 +44,9 @@ class TasklistRecatSpecification extends GebReportingSpec {
     when: 'I go to the recat tasklist page'
 
     fixture.gotoTasklistRecat()
-    at TasklistRecatPage
 
     then: 'The tasklist page is displayed'
+    at TasklistRecatPage
     headerValue*.text() == fixture.FULL_HEADER
     headerLink.text() == 'Hillmob, Ant'
     headerLink.@href == 'http://localhost:3000/offenders/B2345YZ/quick-look'
@@ -55,10 +55,43 @@ class TasklistRecatSpecification extends GebReportingSpec {
 
     and: 'SOC data is stored and merged correctly'
     def data = db.getData(12)
-    data.status == ["STARTED"]
-    data.review_reason.value == ["DUE"]
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
     response == [socProfile: [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C']]
+    def row = data[0]
+    row.booking_id == 12L
+    row.user_id == "RECATEGORISER_USER"
+    row.status == "STARTED"
+    row.assigned_user_id == "RECATEGORISER_USER"
+    row.sequence_no == 1
+    row.prison_id == "LEI"
+    row.offender_no == "B2345YZ"
+    row.start_date.toLocalDate().equals(LocalDate.now())
+    row.cat_type.value == "RECAT"
+    row.review_reason.value == "DUE"
+    row.due_by_date.toLocalDate().equals(LocalDate.of(2020, 1, 16))
+  }
+
+  def "The recat tasklist of YOI prisoner is correct"() {
+    when: 'I go to the recat tasklist page for a YOI prisoner'
+
+    fixture.gotoTasklistRecatForCatI()
+
+    then: 'The tasklist page is displayed'
+    at TasklistRecatPage
+    headerValue[1].text() == 'C0001AA'
+    headerValue[2].text() == '01/01/2018'
+    headerValue[3].text() == 'I'
+
+    and: 'data is stored correctly'
+    def data = db.getData(21)
+    def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
+    response == [socProfile: [nomsId: "C0001AA", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'I']]
+    def row = data[0]
+    row.booking_id == 21L
+    row.offender_no == "C0001AA"
+    row.cat_type.value == "RECAT"
+    row.review_reason.value == "AGE"
+    row.due_by_date.toLocalDate().equals(LocalDate.of(2039, 1, 1))
   }
 
   def "The tasklist page displays an alert when status is transferred to security"() {
@@ -81,19 +114,20 @@ class TasklistRecatSpecification extends GebReportingSpec {
     db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsC]), 'INITIAL')
 
-    // not in todo list so have to go directly
     elite2Api.stubRecategorise()
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    to TasklistRecatPage, '12'
+    // TODO: was not in the to-do list so have to go directly, BUT NOW IS with wrong button label 'edit'
+    to TasklistRecatPage, '12', reason: 'DUE'
 
     then: 'The database row is created correctly'
     def data = db.getData(12)
     data.status == ['APPROVED', 'STARTED']
     data.cat_type*.toString() == ['INITIAL', 'RECAT']
     data.sequence_no == [1, 2]
+    data.review_reason*.toString() == [null, 'DUE']
   }
 
   def "The recat tasklist correctly creates a subsequent database sequence when a completed recat record present"() {

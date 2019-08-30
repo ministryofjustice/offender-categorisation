@@ -3,6 +3,7 @@ module.exports = {
   '/recategoriser\\w+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/supervisor\\w+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/security\\w+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
+  '/dashboard': { authorised: ['ROLE_CATEGORISATION_READONLY'] },
   '/tasklist/supervisor/.+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/tasklist/.+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/tasklistRecat/.+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },

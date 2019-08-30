@@ -176,17 +176,18 @@ module.exports = {
     prisonId,
     offenderNo,
     reviewReason,
+    dueByDate,
     transactionalClient,
   }) {
     logger.debug(`creating categorisation record for booking id ${bookingId}`)
     const query = {
       text: `insert into form (
-              form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type, review_reason
+              form_response, booking_id, user_id, status, assigned_user_id, sequence_no, prison_id, offender_no, start_date, cat_type, review_reason, due_by_date
              ) values ($1, $2, $3, $4, $5, (
               select COALESCE(MAX(sequence_no), 0) + 1 from form where booking_id = $2
-                 ), $6, $7, CURRENT_TIMESTAMP, $8, $9
+                 ), $6, $7, CURRENT_TIMESTAMP, $8, $9, $10
              )`,
-      values: [{}, bookingId, userId, status, assignedUserId, prisonId, offenderNo, catType, reviewReason],
+      values: [{}, bookingId, userId, status, assignedUserId, prisonId, offenderNo, catType, reviewReason, dueByDate],
     }
     return transactionalClient.query(query)
   },

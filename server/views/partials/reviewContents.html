@@ -3,11 +3,7 @@
 {% from "../macros/listOffences.html" import listOffences %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
-
-{% macro formatAnswer(yesno, details) %}
-<div>{{yesno}}</div>
-<div>{{details}}</div>
-{% endmacro %}
+{% from "../macros/formatAnswer.html" import formatAnswer %}
 
 <h2 class="govuk-heading-m">Offending history</h2>
 {% set catAValue %}Cat {{ data.history.catAType }} ({{ data.history.catAStartYear }}){% endset %}

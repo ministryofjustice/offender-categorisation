@@ -151,6 +151,7 @@ describe('update', () => {
         'OFFno',
         CatType.INITIAL.name,
         'AGE',
+        '2019-06-04',
         mockTransactionalClient
       )
 
@@ -164,6 +165,7 @@ describe('update', () => {
         prisonId: 'LEI',
         offenderNo: 'OFFno',
         reviewReason: 'AGE',
+        dueByDate: '2019-06-04',
         transactionalClient: mockTransactionalClient,
       })
     })
@@ -707,6 +709,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
       'A4567RS',
       'RECAT',
       'AGE',
+      '2019-06-04',
       mockTransactionalClient
     )
 
@@ -719,6 +722,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
       prisonId: 'MDI',
       offenderNo: 'A4567RS',
       reviewReason: 'AGE',
+      dueByDate: '2019-06-04',
       transactionalClient: mockTransactionalClient,
     })
   })
