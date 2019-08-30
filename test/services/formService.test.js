@@ -495,7 +495,7 @@ describe('computeSuggestedCat', () => {
   const nearMisses = {
     extremismProfile: { provisionalCategorisation: 'C' },
     history: {},
-    violenceProfile: { veryHighRiskViolentOffender: false, numberOfSeriousAssaults: 0 },
+    violenceProfile: { veryHighRiskViolentOffender: false, numberOfSeriousAssaults: 0, provisionalCategorisation: 'C' },
     ratings: {
       offendingHistory: { furtherChargesCatB: 'No' },
       escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'Yes' },
@@ -510,7 +510,8 @@ describe('computeSuggestedCat', () => {
     ${{ history: { catAType: 'A' } }}                                         | ${'B'}
     ${{ ratings: { securityBack: { catB: 'Yes' } } }}                         | ${'B'}
     ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}             | ${'B'}
-    ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}                    | ${'B'}
+    ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}                    | ${'C'}
+    ${{ violenceProfile: { provisionalCategorisation: 'B' } }}                | ${'B'}
     ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}                   | ${'B'}
     ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}         | ${'B'}
     ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }} | ${'B'}

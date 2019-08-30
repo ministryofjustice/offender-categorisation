@@ -297,8 +297,8 @@ module.exports = function createFormService(formClient) {
     if (
       (data.history && data.history.catAType) ||
       (data.ratings && data.ratings.securityBack && data.ratings.securityBack.catB === 'Yes') ||
-      (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) ||
-      (data.violenceProfile && data.violenceProfile.numberOfSeriousAssaults > 0) || // note: Qs on page ignored (info only)
+      (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) || // Visor, not MVP
+      (data.violenceProfile && data.violenceProfile.provisionalCategorisation === 'B') || // note: Qs on page ignored (info only)
       (data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes') || // Other Q is info only
       (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'B') ||
       (data.ratings &&
