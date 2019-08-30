@@ -294,17 +294,26 @@ module.exports = function createFormService(formClient) {
     if (isYoungOffender(data.details)) {
       return 'I'
     }
-    if (
-      (data.history && data.history.catAType) ||
-      (data.ratings && data.ratings.securityBack && data.ratings.securityBack.catB === 'Yes') ||
-      (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) || // Visor, not MVP
-      (data.violenceProfile && data.violenceProfile.provisionalCategorisation === 'B') || // note: Qs on page ignored (info only)
-      (data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes') || // Other Q is info only
+    const isCatBDueToPreviousCatA = data.history && data.history.catAType
+    const isCatBDueToSecurity = data.ratings && data.ratings.securityBack && data.ratings.securityBack.catB === 'Yes'
+    const isCatBDueToViolence =
+      (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) || // Visor: not MVP
+      (data.violenceProfile && data.violenceProfile.provisionalCategorisation === 'B') // note: Qs on page ignored (info only)
+    const isCatBDueToEscape =
+      // The other Q on the escape page is info only
+      data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes'
+    const isCatBDueToExtremism =
       (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'B') ||
-      (data.ratings &&
-        data.ratings.extremismRating &&
-        data.ratings.extremismRating.previousTerrorismOffences === 'Yes') ||
-      (data.ratings && data.ratings.furtherCharges && data.ratings.furtherCharges.furtherChargesCatB === 'Yes')
+      (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
+    const isCatBDueToSeriousFurtherCharges =
+      data.ratings && data.ratings.furtherCharges && data.ratings.furtherCharges.furtherChargesCatB === 'Yes'
+    if (
+      isCatBDueToPreviousCatA ||
+      isCatBDueToSecurity ||
+      isCatBDueToViolence ||
+      isCatBDueToEscape ||
+      isCatBDueToExtremism ||
+      isCatBDueToSeriousFurtherCharges
     ) {
       return 'B'
     }
