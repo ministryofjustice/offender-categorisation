@@ -63,7 +63,7 @@ class TasklistSpecification extends GebReportingSpec {
   def "The continue button behaves correctly"() {
     when: 'I go to the tasklist page with all sections complete'
     db.createData(12, JsonOutput.toJson([
-      ratings: [
+      ratings       : [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         furtherCharges  : [furtherCharges: "No"],
         securityInput   : [securityInputNeeded: "No"],
@@ -83,7 +83,7 @@ class TasklistSpecification extends GebReportingSpec {
   def "The continue button behaves correctly when openconditions is added to list items"() {
     when: 'I go to the tasklist page with all sections complete'
     db.createData(12, JsonOutput.toJson([
-      ratings: [
+      ratings                   : [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
         furtherCharges  : [furtherCharges: "No"],
         securityInput   : [securityInputNeeded: "No"],
@@ -126,5 +126,25 @@ class TasklistSpecification extends GebReportingSpec {
     at SecurityHomePage
     prisonNos[0] == 'B2345YZ'
     referredBy[0] == 'Automatic'
+  }
+
+  def "The tasklist page correctly populates the database"() {
+    when: 'I go to the tasklist page'
+
+    fixture.gotoTasklist(false)
+
+    then: 'A database row is created containing correct basic info'
+    at(new TasklistPage(bookingId: '12'))
+    def data = db.getData(12)[0]
+    data.booking_id == 12L
+    data.user_id == "CATEGORISER_USER"
+    data.status == "STARTED"
+    data.assigned_user_id == "CATEGORISER_USER"
+    data.sequence_no == 1
+    data.prison_id == "LEI"
+    data.offender_no == "B2345YZ"
+    data.start_date.toLocalDate().equals(LocalDate.now())
+    data.cat_type.value == "INITIAL"
+    data.due_by_date.toLocalDate().equals(LocalDate.of(2019, 8, 29))
   }
 }

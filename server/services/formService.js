@@ -188,6 +188,7 @@ module.exports = function createFormService(formClient) {
     offenderNo,
     catType,
     reviewReason,
+    dueByDate,
     transactionalClient
   ) {
     await formClient.create({
@@ -199,6 +200,7 @@ module.exports = function createFormService(formClient) {
       prisonId,
       offenderNo,
       reviewReason,
+      dueByDate,
       transactionalClient,
     })
     return getCategorisationRecord(bookingId, transactionalClient)
@@ -211,6 +213,7 @@ module.exports = function createFormService(formClient) {
     offenderNo,
     catType,
     reviewReason,
+    dueByDate,
     transactionalClient
   ) {
     const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
@@ -224,6 +227,7 @@ module.exports = function createFormService(formClient) {
         offenderNo,
         catType,
         reviewReason,
+        dueByDate,
         transactionalClient
       )
       return record

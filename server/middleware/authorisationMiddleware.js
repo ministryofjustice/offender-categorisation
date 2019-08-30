@@ -39,6 +39,7 @@ const buildApplicationRoles = roles => {
     ...(roles.includes('ROLE_CREATE_CATEGORISATION') && { categoriser: true }),
     ...(roles.includes('ROLE_CREATE_RECATEGORISATION') && { recategoriser: true }),
     ...(roles.includes('ROLE_CATEGORISATION_SECURITY') && { security: true }),
+    ...(roles.includes('ROLE_CATEGORISATION_READONLY') && { readonly: true }),
   }
   return applicationRoles
 }

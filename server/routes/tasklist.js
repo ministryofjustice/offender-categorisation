@@ -4,6 +4,13 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile } = require('../utils/functionalHelpers')
+const { get10BusinessDays } = require('../utils/utils.js')
+
+function add10BusinessDays(isoDate) {
+  const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
+  const numberOfDays = get10BusinessDays(sentenceDateMoment)
+  return sentenceDateMoment.add(numberOfDays, 'day').format('YYYY-MM-DD')
+}
 
 module.exports = function Index({
   formService,
@@ -23,6 +30,9 @@ module.exports = function Index({
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      const dueByDate =
+        details.sentence && details.sentence.sentenceStartDate && add10BusinessDays(details.sentence.sentenceStartDate)
+
       let categorisationRecord = await formService.createOrRetrieveCategorisationRecord(
         bookingId,
         req.user.username,
@@ -30,6 +40,7 @@ module.exports = function Index({
         details.offenderNo,
         CatType.INITIAL.name,
         null,
+        dueByDate,
         transactionalDbClient
       )
       res.locals.formObject = categorisationRecord.formObject || {}
