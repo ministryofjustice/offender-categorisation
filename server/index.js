@@ -15,7 +15,6 @@ const createOffendersService = require('./services/offendersService')
 const createSignInService = require('./authentication/signInService')
 const createUserService = require('./services/userService')
 const createRiskProfilerService = require('./services/riskProfilerService')
-// const createSqsService = require('./sqs')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)
@@ -32,7 +31,5 @@ const app = createApp({
   riskProfilerService,
   statsService,
 })
-
-// createSqsService(formService)
 
 module.exports = app
