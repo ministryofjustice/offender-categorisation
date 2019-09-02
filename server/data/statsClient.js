@@ -43,4 +43,21 @@ module.exports = {
     }
     return transactionalClient.query(query)
   },
+
+  getTimeliness(transactionalClient) {
+    const query = {
+      // TODO also need %age 'on time'
+      text: `select
+        cat_type                                                                 as "catType",
+        avg(extract(day from (due_by_date  - date_trunc ('day',approval_date)))) as "approvalTimelinessDays",
+        avg(extract(hour from (referred_date - start_date)))                     as "securityReferralTimelinessHours",
+        avg(extract(hour from (security_reviewed_date - referred_date)))         as "inSecurityHours",
+        avg(extract(day from (assessment_date - date_trunc('day', start_date)))) as "startToAssessmentDays",
+        avg(approval_date - assessment_date)                                     as "assessmentToApprovalDays" -- days
+      from form
+      where status = 'APPROVED'
+      group by cat_type`,
+    }
+    return transactionalClient.query(query)
+  },
 }

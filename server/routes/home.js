@@ -178,8 +178,9 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
       const initial = await statsService.getInitialCategoryOutcomes(transactionalDbClient)
       const recat = await statsService.getRecatCategoryOutcomes(transactionalDbClient)
       const security = await statsService.getSecurityReferrals(transactionalDbClient)
+      const timeliness = await statsService.getTimeliness(transactionalDbClient)
 
-      res.render('pages/dashboard', { initial, recat, security })
+      res.render('pages/dashboard', { initial, recat, security, timeliness })
     })
   )
 
