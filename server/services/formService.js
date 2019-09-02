@@ -4,6 +4,7 @@ const { validate } = require('../utils/fieldValidation')
 const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
+const RiskChange = require('../utils/riskChangeStatusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
 const conf = require('../../server/config')
 const log = require('../../log')
@@ -37,6 +38,16 @@ module.exports = function createFormService(formClient) {
   async function getHistoricalCategorisationRecords(bookingId, transactionalClient) {
     try {
       const data = await formClient.getHistoricalFormData(bookingId, transactionalClient)
+      return data.rows
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
+  async function getRiskChanges(agencyId, transactionalClient) {
+    try {
+      const data = await formClient.getRiskChangeByStatus(agencyId, RiskChange.NEW, transactionalClient)
       return data.rows
     } catch (error) {
       logger.error(error)
@@ -233,6 +244,17 @@ module.exports = function createFormService(formClient) {
       return record
     }
     return currentRecord
+  }
+
+  async function createRiskChange({ userId, agencyId, offenderNo, oldProfile, newProfile, transactionalClient }) {
+    await formClient.createRiskChange({
+      userId,
+      agencyId,
+      offenderNo,
+      oldProfile,
+      newProfile,
+      transactionalClient,
+    })
   }
 
   function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
@@ -565,6 +587,8 @@ module.exports = function createFormService(formClient) {
     categoriserDecisionWithFormResponse,
     categoriserDecision,
     getCategorisationRecordUsingSequence,
+    getRiskChanges,
+    createRiskChange,
     getHistoricalCategorisationRecords,
   }
 }

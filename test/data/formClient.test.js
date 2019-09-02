@@ -1,5 +1,6 @@
 const moment = require('moment')
 const formClient = require('../../server/data/formClient')
+const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
@@ -151,6 +152,38 @@ describe('supervisorApproval update', () => {
       text:
         'update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
       values: [{}, 'APPROVED', 'Me', 'bookingId1'],
+    })
+  })
+})
+
+describe('createRiskChange', () => {
+  test('it should create a risk change record with a status of new', () => {
+    formClient.createRiskChange({
+      agencyId: 'LEI',
+      offenderNo: 'ABC123',
+      oldProfile: '{old}',
+      newProfile: '{new}',
+      client: mockTransactionalClient,
+    })
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text:
+        'insert into risk_change ( prison_id, offender_no, old_profile, new_profile, raised_date ) values ($1, $2, $3, $4, CURRENT_TIMESTAMP )',
+
+      values: ['LEI', 'ABC123', '{old}', '{new}'],
+    })
+  })
+})
+
+describe('getRiskChangeByStatus', () => {
+  test('it should retrieve a list of risk change records by agency and status', () => {
+    formClient.getRiskChangeByStatus('LEI', RiskChangeStatus.NEW, mockTransactionalClient)
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text:
+        'select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.agency_id= $1 and status = $2::risk_change_status_enum',
+
+      values: ['LEI', { name: 'NEW', value: 'New risk change alert' }],
     })
   })
 })
