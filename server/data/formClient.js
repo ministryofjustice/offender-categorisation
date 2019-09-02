@@ -77,6 +77,15 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  getRiskChangeByStatus(agencyId, status, transactionalClient) {
+    logger.debug(`getRiskChangeByStatus called with status ${status} and agencyId ${agencyId}`)
+    const query = {
+      text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.agency_id= $1 and status = $2::risk_change_status_enum`,
+      values: [agencyId, status],
+    }
+    return transactionalClient.query(query)
+  },
+
   referToSecurity(bookingId, userId, status, transactionalClient) {
     logger.debug(`referToSecurity called for ${userId}, status ${status} and booking id ${bookingId}`)
     const query = {
@@ -165,6 +174,15 @@ module.exports = {
       values: [formResponse, status, bookingId],
     }
     return transactionalClient.query(query)
+  },
+
+  createRiskChange({ agencyId, offenderNo, oldProfile, newProfile, client }) {
+    logger.debug(`creating risk_change record for offender no  ${offenderNo}`)
+    const query = {
+      text: `insert into risk_change ( prison_id, offender_no, old_profile, new_profile, raised_date ) values ($1, $2, $3, $4, CURRENT_TIMESTAMP )`,
+      values: [agencyId, offenderNo, oldProfile, newProfile],
+    }
+    return client.query(query)
   },
 
   create({
