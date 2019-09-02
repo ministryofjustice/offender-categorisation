@@ -15,7 +15,8 @@ exports.up = knex =>
         .notNullable()
         .defaultTo('NEW')
       table.timestamp('raised_date').notNullable()
+      table.index('prison_id')
     }),
   ])
 
-exports.down = knex => knex.schema.dropTable('risk_change')
+exports.down = knex => knex.schema.dropTable('risk_change').then(() => knex.raw(`drop risk_change_status_enum`))
