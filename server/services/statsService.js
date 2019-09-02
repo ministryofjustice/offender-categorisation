@@ -10,11 +10,13 @@ module.exports = function createstatsService(statsClient) {
 
       return stats.rows
     },
+
     async getRecatCategoryOutcomes(transactionalClient) {
       const stats = await statsClient.getRecatCategoryOutcomes(transactionalClient)
 
       return stats.rows
     },
+
     async getSecurityReferrals(transactionalClient) {
       const stats = await statsClient.getSecurityReferrals(transactionalClient)
 
@@ -25,6 +27,13 @@ module.exports = function createstatsService(statsClient) {
         recatManual: getCount(rows, 'RECAT', false),
         recatAuto: getCount(rows, 'RECAT', true),
       }
+    },
+
+    async getTimeliness(transactionalClient) {
+      const stats = await statsClient.getTimeliness(transactionalClient)
+      const initial = stats.rows.find(r => r.catType === 'INITIAL')
+      const recat = stats.rows.find(r => r.catType === 'RECAT')
+      return { initial, recat }
     },
   }
 }

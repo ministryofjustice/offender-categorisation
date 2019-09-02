@@ -143,7 +143,7 @@ module.exports = {
   categoriserDecisionWithFormResponse(formResponse, bookingId, userId, transactionalClient) {
     logger.debug(`recording assessment decision (awaiting approval) for booking id ${bookingId}`)
     const query = {
-      text: `update form f set form_response = $1, status = $2, assessed_by = $3, assessment_Date = CURRENT_DATE where f.booking_id = $4 ${sequenceClause}`,
+      text: `update form f set form_response = $1, status = $2, assessed_by = $3, assessment_date = CURRENT_DATE where f.booking_id = $4 ${sequenceClause}`,
       values: [formResponse, 'AWAITING_APPROVAL', userId, bookingId],
     }
     return transactionalClient.query(query)
@@ -152,7 +152,7 @@ module.exports = {
   categoriserDecision(bookingId, userId, transactionalClient) {
     logger.debug(`recording assessment decision (awaiting approval) for booking id ${bookingId}`)
     const query = {
-      text: `update form f set status = $1, assessed_by = $2, assessment_Date = CURRENT_DATE where f.booking_id = $3 ${sequenceClause}`,
+      text: `update form f set status = $1, assessed_by = $2, assessment_date = CURRENT_DATE where f.booking_id = $3 ${sequenceClause}`,
       values: ['AWAITING_APPROVAL', userId, bookingId],
     }
     return transactionalClient.query(query)
