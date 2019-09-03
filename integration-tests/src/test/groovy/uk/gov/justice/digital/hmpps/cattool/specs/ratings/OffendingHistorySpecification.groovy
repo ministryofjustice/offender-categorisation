@@ -68,7 +68,6 @@ class OffendingHistorySpecification extends GebReportingSpec {
     db.getData(12).status == ["STARTED"]
   }
 
-
   def "The Offending history page is shown correctly (no previous cat A)"() {
     when: 'I go to the Offending history page'
 
