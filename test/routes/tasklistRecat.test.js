@@ -25,7 +25,6 @@ const offendersService = {
   getUncategorisedOffenders: jest.fn(),
   getOffenderDetails: jest.fn(),
   getImage: jest.fn(),
-  getCatAInformation: jest.fn(),
 }
 
 const userService = {
