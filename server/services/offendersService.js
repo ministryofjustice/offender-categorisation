@@ -207,6 +207,44 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  async function getRiskChanges(token, agencyId, transactionalDbClient) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+
+      const changesFromDB = await formService.getRiskChanges(agencyId, transactionalDbClient)
+
+      if (!isNilOrEmpty(changesFromDB)) {
+        const offenderNos = changesFromDB.map(c => c.offenderNo)
+        const [offenderDetailsFromElite, offenderCategorisationsFromElite] = await Promise.all([
+          nomisClient.getOffenderDetailList(offenderNos),
+          nomisClient.getLatestCategorisationForOffenders(agencyId, offenderNos),
+        ])
+
+        const decoratedResults = changesFromDB.map(o => {
+          const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
+          const offenderCategorisation = offenderCategorisationsFromElite.find(
+            record => record.offenderNo === o.offenderNo
+          )
+          return {
+            ...o,
+            offenderNo: offenderDetail.offenderNo,
+            displayName:
+              offenderDetail.lastName &&
+              `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+            displayNextReviewDate: dateConverter(offenderCategorisation.nextReviewDate),
+            displayCreatedDate: dateConverter(o.createdDate),
+          }
+        })
+
+        return decoratedResults.sort((a, b) => sortByDateTime(a.displayCreatedDate, b.displayCreatedDate))
+      }
+      return []
+    } catch (error) {
+      logger.error(error, 'Error during getRiskChanges')
+      throw error
+    }
+  }
+
   async function getSecurityReviewedOffenders(token, agencyId, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
@@ -756,6 +794,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     )
   }
 
+  async function getOffenderDetailWithFullInfo(offenderNo) {
+    const nomisClient = nomisClientBuilder()
+    return nomisClient.getOffenderDetailsByOffenderNo(offenderNo)
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -772,11 +815,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getCategorisedOffenders,
     getSecurityReviewedOffenders,
     getPrisonerBackground,
+    getRiskChanges,
     // just for tests:
     buildSentenceData,
     getMatchedCategorisations: matchEliteAndDBCategorisations,
     pnomisOrInconsistentWarning,
     calculateButtonStatus,
     mergeU21ResultWithNomisCategorisationData,
+    getOffenderDetailWithFullInfo,
   }
 }

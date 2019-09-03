@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorMessagePage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.SecurityInputPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.SupervisorRecatReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage

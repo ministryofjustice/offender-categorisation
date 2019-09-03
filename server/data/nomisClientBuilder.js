@@ -78,7 +78,7 @@ module.exports = token => {
       return nomisClientGet({ path })
     },
     async getOffenderDetailsByOffenderNo(offenderNo) {
-      const path = `${apiUrl}apibookings/offenderNo/${offenderNo}?fullInfo=true`
+      const path = `${apiUrl}api/bookings/offenderNo/${offenderNo}?fullInfo=true`
       return nomisClientGet({ path })
     },
     getMainOffence(bookingId) {

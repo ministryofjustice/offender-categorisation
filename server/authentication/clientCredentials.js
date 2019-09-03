@@ -31,7 +31,9 @@ async function getApiClientToken() {
   const oauthRiskProfilerClientToken = generateOauthClientToken()
   const handle = getNamespace('request.scope')
   const username = handle.get('user')
-  const oauthRequest = querystring.stringify({ grant_type: 'client_credentials', username })
+  const oauthRequest = username
+    ? querystring.stringify({ grant_type: 'client_credentials', username })
+    : querystring.stringify({ grant_type: 'client_credentials' })
 
   logger.info(
     `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`

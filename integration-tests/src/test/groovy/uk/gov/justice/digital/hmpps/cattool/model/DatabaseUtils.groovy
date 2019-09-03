@@ -64,6 +64,11 @@ class DatabaseUtils {
     sql.executeUpdate("""update form set review_reason = '$reason' where booking_id = $bookingId""")
   }
 
+  def updateStatus(int bookingId, String status) {
+    def sql = Sql.newInstance(dbConnParams)
+    sql.executeUpdate("""update form set status = '$status' where booking_id = $bookingId""")
+  }
+
   def createDataWithStatus(id, bookingId, status, json) {
     doCreateData(id, bookingId, status, json)
   }
