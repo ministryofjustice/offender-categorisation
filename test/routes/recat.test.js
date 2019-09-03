@@ -50,7 +50,6 @@ const offendersService = {
   getUncategorisedOffenders: jest.fn(),
   getOffenderDetails: jest.fn(),
   getImage: jest.fn(),
-  getCatAInformation: jest.fn(),
   getOffenceHistory: jest.fn(),
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
@@ -84,7 +83,6 @@ beforeEach(() => {
   formService.categoriserDecision.mockReturnValue({})
   offendersService.createInitialCategorisation.mockReturnValue({ bookingId: 12345, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
-  offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getPrisonerBackground.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})

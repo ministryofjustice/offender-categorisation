@@ -26,7 +26,7 @@ async function getSentenceMap(offenderList, nomisClient) {
 
   const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
 
-  const sentenceMap = new Map(
+  return new Map(
     sentenceDates
       .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
       .map(s => {
@@ -34,7 +34,6 @@ async function getSentenceMap(offenderList, nomisClient) {
         return [sentenceDetail.bookingId, { sentenceDate: sentenceDetail.sentenceStartDate }]
       })
   )
-  return sentenceMap
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
@@ -559,14 +558,17 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getCatAInformation(token, offenderNo) {
+  const sortByDescendingBookingAndAscendingSequence = (a, b) => {
+    if (a.bookingId === b.bookingId) return a.assessmentSeq - b.assessmentSeq
+    return b.bookingId - a.bookingId
+  }
+
+  async function getCatAInformation(token, offenderNo, currentBookingId) {
     try {
       const nomisClient = nomisClientBuilder(token)
       const categories = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
-      const mostRecentCatA = categories
-        .slice()
-        .reverse()
-        .find(isCatA)
+      const sortedCategories = categories.sort(sortByDescendingBookingAndAscendingSequence)
+      const mostRecentCatA = sortedCategories.find(isCatA)
 
       let catAType = null
       let catAStartYear = null
@@ -574,7 +576,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       let releaseYear = null
       let finalCat = null
       if (mostRecentCatA) {
-        const categoriesForBooking = categories.filter(c => c.bookingId === mostRecentCatA.bookingId)
+        const categoriesForBooking = sortedCategories.filter(c => c.bookingId === mostRecentCatA.bookingId)
+
         catAType = mostRecentCatA.classificationCode
         catAStartYear = getYear(mostRecentCatA.assessmentDate)
         const catAIndex = categoriesForBooking.findIndex(isCatA)
@@ -582,15 +585,18 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           catAEndYear = getYear(categoriesForBooking[catAIndex + 1].assessmentDate)
         }
         finalCat = categoriesForBooking[categoriesForBooking.length - 1].classification
-        const sentences = await nomisClient.getSentenceHistory(offenderNo)
-        const catASentence = sentences.find(s => s.sentenceDetail.bookingId === mostRecentCatA.bookingId)
-        if (catASentence) {
-          if (catAIndex === categoriesForBooking.length - 1) {
-            // Cat A was the last, or only categorisation for this sentence (should not happen!)
-            catAEndYear = getYear(catASentence.sentenceDetail.releaseDate)
-            logger.warn(`Found sentence with ends as Cat A, bookingId=${mostRecentCatA.bookingId}`)
+        // Populate release date if was not for current booking
+        if (currentBookingId !== mostRecentCatA.bookingId) {
+          const sentences = await nomisClient.getSentenceHistory(offenderNo)
+          const catASentence = sentences.find(s => s.sentenceDetail.bookingId === mostRecentCatA.bookingId)
+          if (catASentence) {
+            if (catAIndex === categoriesForBooking.length - 1) {
+              // Cat A was the last, or only categorisation for this sentence (should not happen!)
+              catAEndYear = getYear(catASentence.sentenceDetail.releaseDate)
+              logger.warn(`Found sentence which ends as Cat A, bookingId=${mostRecentCatA.bookingId}`)
+            }
+            releaseYear = getYear(catASentence.sentenceDetail.releaseDate)
           }
-          releaseYear = getYear(catASentence.sentenceDetail.releaseDate)
         }
       }
 
@@ -693,8 +699,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
   async function getOffenceHistory(token, offenderNo) {
     const nomisClient = nomisClientBuilder(token)
-    const result = await nomisClient.getOffenceHistory(offenderNo)
-    return result
+    return nomisClient.getOffenceHistory(offenderNo)
   }
 
   async function isRecat(token, bookingId) {

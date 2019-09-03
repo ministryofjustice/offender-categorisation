@@ -2,18 +2,21 @@
 {% from "inset-text/macro.njk" import govukInsetText %}
 
 {% set warningText %}
+  This prisoner was categorised as a
   {% if data.history.catAType === 'A' %}
-    This prisoner was categorised as a Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
-    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+    Cat A
   {% elif data.history.catAType === 'P' %}
-    This prisoner was treated as a Provisional Cat A in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
-    for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
+    Provisional Cat A
   {% elif data.history.catAType === 'H' %}
-    This prisoner was categorised as a Cat A High in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+    Cat A High
+  {% endif %}
+  in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
+
+  {% if data.history.releaseYear %}
     for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
   {% endif %}
 {% endset %}
-{% if warningText | trim %}
+{% if data.history.catAType %}
 <div>
   <h2 class="govuk-heading-m">Previous categorisation</h2>
   {{ govukWarningText({
