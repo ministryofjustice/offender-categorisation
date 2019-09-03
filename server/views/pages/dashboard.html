@@ -99,6 +99,45 @@
   <p>Recat manual: {{security.recatManual}} </p>
   <p>Recat auto: {{security.recatAuto}} </p>
   <hr/>
+
+  <h3>Timeliness</h3>
+  <table class="govuk-table" id="timeliness">
+    <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col"></th>
+      <th class="govuk-table__header" scope="col">Initial</th>
+      <th class="govuk-table__header" scope="col">Recat</th>
+    </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Number of days before due date that approval occurred</td>
+      <td class="govuk-table__cell"> {{ timeliness.initial.approvalTimelinessDays }}</td>
+      <td class="govuk-table__cell"> {{ timeliness.recat.approvalTimelinessDays }}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Security referral timeliness (Hours from start to referral)</td>
+      <td class="govuk-table__cell"> {{ timeliness.initial.securityReferralTimelinessHours }}</td>
+      <td class="govuk-table__cell"> {{ timeliness.recat.securityReferralTimelinessHours }}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Hours in security</td>
+      <td class="govuk-table__cell"> {{ timeliness.initial.inSecurityHours }}</td>
+      <td class="govuk-table__cell"> {{ timeliness.recat.inSecurityHours }}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Start to assessment completion (days)</td>
+      <td class="govuk-table__cell"> {{ timeliness.initial.startToAssessmentDays }}</td>
+      <td class="govuk-table__cell"> {{ timeliness.recat.startToAssessmentDays }}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Approval time (days)</td>
+      <td class="govuk-table__cell"> {{ timeliness.initial.assessmentToApprovalDays | round(2) }}</td>
+      <td class="govuk-table__cell"> {{ timeliness.recat.assessmentToApprovalDays | round(2) }}</td>
+    </tr>
+    </tbody>
+  </table>
+  {# <pre>{{ timeliness | dump(2) }}</pre> #}
   <p>Initial total = {{ initial.length }}</p>
   <p>Recat total = {{ recat.length }}</p>
   <p class="govuk-!-font-weight-bold">Grand total = {{ initial.length + recat.length }}</p>

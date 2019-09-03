@@ -5,7 +5,7 @@
 {% block pageTitle %}Digital Categorisation Tool{% endblock %}
 
 {% block head %}
-  {% if googleAnalyticsKey %}
+  {% if googleAnalyticsKey | trim %}
     <!-- Global Site Tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ googleAnalyticsKey }}"></script>
     <script>
