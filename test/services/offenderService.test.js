@@ -655,7 +655,7 @@ describe('getUncategorisedOffenders', () => {
     expect(result).toEqual(expected)
   })
 
-  test('it return a pnomis marker for inconsistent data', async () => {
+  test('it returns a pnomis marker for inconsistent data', async () => {
     const uncategorised = [
       {
         offenderNo: 'G12345',
