@@ -41,7 +41,8 @@ function localStatusIsInconstentWithNomisAwaitingApproval(dbRecord) {
     !!dbRecord &&
     dbRecord.status !== Status.AWAITING_APPROVAL.name &&
     dbRecord.status !== Status.SUPERVISOR_BACK.name &&
-    dbRecord.status !== Status.SECURITY_BACK.name
+    dbRecord.status !== Status.SECURITY_BACK.name &&
+    dbRecord.status !== Status.SECURITY_MANUAL.name
   )
 }
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
@@ -787,7 +788,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       buttonStatus = 'View'
     } else if (
       dbRecord &&
-      (Status.SECURITY_BACK.name === dbRecord.status || Status.SUPERVISOR_BACK.name === dbRecord.status)
+      (Status.SECURITY_BACK.name === dbRecord.status ||
+        Status.SUPERVISOR_BACK.name === dbRecord.status ||
+        Status.SECURITY_MANUAL.name === dbRecord.status)
     ) {
       buttonStatus = 'Edit'
     }
@@ -807,7 +810,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     if (pnomisStatus === 'A') {
       return dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status
     }
-    // record is pending, valid status is AWAITING_APPROVAL OR SUPERVISOR_BACK OR SECURITY_BACK
+    // record is pending, valid status is AWAITING_APPROVAL OR SUPERVISOR_BACK OR SECURITY_BACK OR SECURITY_MANUAL
     return localStatusIsInconstentWithNomisAwaitingApproval(dbRecord)
   }
 
