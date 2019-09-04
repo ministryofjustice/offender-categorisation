@@ -359,6 +359,30 @@ describe('getUnapprovedOffenders', () => {
         status: 'AWAITING_APPROVAL',
         assessmentSeq: 99,
       },
+      {
+        offenderNo: 'G0008',
+        firstName: 'DIFFERENT',
+        lastName: 'SEQUENCES',
+        categoriserFirstName: 'CATTER',
+        categoriserLastName: 'EIGHT',
+        bookingId: 8,
+        category: 'C',
+        nextReviewDate: '2019-05-29',
+        status: 'AWAITING_APPROVAL',
+        assessmentSeq: 99,
+      },
+      {
+        offenderNo: 'G0009',
+        firstName: 'DIFFERENT',
+        lastName: 'SEQUENCES',
+        categoriserFirstName: 'CATTER',
+        categoriserLastName: 'NINE',
+        bookingId: 9,
+        category: 'C',
+        nextReviewDate: '2019-05-29',
+        status: 'AWAITING_APPROVAL',
+        assessmentSeq: 99,
+      },
     ]
 
     nomisClient.getUncategorisedOffenders.mockReturnValue(data)
@@ -370,6 +394,8 @@ describe('getUnapprovedOffenders', () => {
       .mockReturnValueOnce({ bookingId: 5, nomisSeq: 15, catType: 'RECAT', status: Status.SUPERVISOR_BACK.name })
       .mockReturnValueOnce({})
       .mockReturnValueOnce({ bookingId: 7, nomisSeq: 17, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
+      .mockReturnValueOnce({ bookingId: 8, nomisSeq: 18, catType: 'RECAT', status: Status.SECURITY_BACK.name })
+      .mockReturnValueOnce({ bookingId: 9, nomisSeq: 19, catType: 'RECAT', status: Status.SECURITY_MANUAL.name })
 
     const sentenceDates = [
       { sentenceDetail: { bookingId: 1, sentenceStartDate: mockTodaySubtract(30) } }, // 2019-05-01
@@ -438,7 +464,7 @@ describe('getUnapprovedOffenders', () => {
     const result = await service.getUnapprovedOffenders('token', 'LEI', mockTransactionalClient)
 
     expect(nomisClient.getUncategorisedOffenders.mock.calls[0][0]).toEqual('LEI')
-    expect(formService.getCategorisationRecord).toBeCalledTimes(6)
+    expect(formService.getCategorisationRecord).toBeCalledTimes(8)
     expect(formService.getCategorisationRecord).nthCalledWith(1, 1, mockTransactionalClient)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledWith([1, 6])
     expect(result).toMatchObject(expected)
@@ -1041,6 +1067,16 @@ describe('calculateButtonText', () => {
 
   test('should return Edit for nomis status is A with local status SECURITY_MANUAL', async () => {
     const result = service.calculateButtonStatus({ status: 'SECURITY_MANUAL' }, 'A')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return Edit for nomis status is P with local status SECURITY_BACK', async () => {
+    const result = service.calculateButtonStatus({ status: 'SECURITY_BACK' }, 'P')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return Edit for nomis status is P with local status SUPERVISOR_BACK', async () => {
+    const result = service.calculateButtonStatus({ status: 'SUPERVISOR_BACK' }, 'P')
     expect(result).toMatch('Edit')
   })
 
