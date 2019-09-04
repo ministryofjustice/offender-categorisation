@@ -1,8 +1,7 @@
 const knex = require('knex')
 const knexfile = require('./knexfile')
-const app = require('./server/index')
+const { app, sqsService } = require('./server/index')
 const log = require('./log')
-const createQueueConsumer = require('./server/sqs')
 
 const selectSql = message => {
   if (message.sql) {
@@ -33,5 +32,5 @@ knex1.migrate.latest().then(() => {
     log.info(`Server listening on port ${app.get('port')}`)
   })
   // must be created after migration scripts are complete
-  createQueueConsumer()
+  sqsService.start()
 })
