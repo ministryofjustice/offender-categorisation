@@ -305,7 +305,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       )
 
       // remove any sent back to categoriser records
-      const unapprovedOffenders = unapprovedWithDbRecord.filter(o => o.dbRecord.status !== Status.SUPERVISOR_BACK.name)
+      const unapprovedOffenders = unapprovedWithDbRecord.filter(
+        o =>
+          o.dbRecord.status !== Status.SUPERVISOR_BACK.name &&
+          o.dbRecord.status !== Status.SECURITY_BACK.name &&
+          o.dbRecord.status !== Status.SECURITY_MANUAL.name
+      )
 
       if (isNilOrEmpty(unapprovedOffenders)) {
         logger.info(`getUnapprovedOffenders: No unapproved offenders found for ${agencyId}`)
