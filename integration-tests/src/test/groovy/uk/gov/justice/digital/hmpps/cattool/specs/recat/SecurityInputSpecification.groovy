@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.cattool.specs.recat
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
@@ -66,6 +67,32 @@ class SecurityInputSpecification extends GebReportingSpec {
     at(new SecurityInputPage(bookingId: '12'))
 
     securityRadio == 'No'
+  }
+
+  def "Can be referred to security after supervisor rejection"() {
+    given: 'the supervisor set back the categorisation'
+    fixture.gotoTasklistRecat()
+    at TasklistRecatPage
+
+    db.updateStatus(12, 'SUPERVISOR_BACK')
+
+    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+
+    when: 'The user refers to security'
+    securityButton.click()
+
+    at(new SecurityInputPage(bookingId: '12'))
+    securityRadio = 'Yes'
+    securityText << 'Some text'
+    saveButton.click()
+
+    then: 'The task is displayed with the correct manually referred information'
+    at TasklistRecatPage
+    securityButton.@disabled
+    def today = LocalDate.now().format('dd/MM/yyyy')
+    $('#securitySection').text().contains("Manually referred to Security ($today)")
   }
 
   def "A prisoner can be manually referred to security"() {
