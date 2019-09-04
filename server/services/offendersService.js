@@ -777,8 +777,14 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           buttonStatus = 'Edit'
         }
       }
+      // nomis status is pending approval
     } else if (dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status) {
       buttonStatus = 'View'
+    } else if (
+      dbRecord &&
+      (Status.SECURITY_BACK.name === dbRecord.status || Status.SUPERVISOR_BACK.name === dbRecord.status)
+    ) {
+      buttonStatus = 'Edit'
     }
     return buttonStatus
   }

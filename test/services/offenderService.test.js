@@ -1044,6 +1044,16 @@ describe('calculateButtonText', () => {
     expect(result).toMatch('Edit')
   })
 
+  test('should return Edit for nomis status is P with local status SECURITY_BACK', async () => {
+    const result = service.calculateButtonStatus({ status: 'SECURITY_BACK' }, 'P')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return Edit for nomis status is P with local status SUPERVISOR_BACK', async () => {
+    const result = service.calculateButtonStatus({ status: 'SUPERVISOR_BACK' }, 'P')
+    expect(result).toMatch('Edit')
+  })
+
   test('should return Start when nomis status is A but dbrecord does not exist', async () => {
     const result = service.calculateButtonStatus(null, 'A')
     expect(result).toMatch('Start')
