@@ -739,6 +739,7 @@ describe('getUncategorisedOffenders calculates inconsistent data correctly', () 
     ${Status.UNCATEGORISED.name}     | ${Status.SECURITY_BACK.name}     | ${false}
     ${Status.UNCATEGORISED.name}     | ${Status.AWAITING_APPROVAL.name} | ${true}
     ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_BACK.name}     | ${false}
+    ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_MANUAL.name}   | ${false}
     ${Status.AWAITING_APPROVAL.name} | ${Status.SUPERVISOR_BACK.name}   | ${false}
     ${Status.AWAITING_APPROVAL.name} | ${Status.STARTED.name}           | ${true}
   `('should return errors $expectedContent for form return', async ({ nomisStatus, localStatus, pnomis }) => {
@@ -1031,6 +1032,12 @@ describe('pnomisOrInconsistentWarning', () => {
     expect(result.requiresWarning).toBe(false)
   })
 
+  test('should return false for nomis status is P and local status is SECURITY_MANUAL FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_MANUAL' }, 'P')
+    expect(result.pnomis).toBe(false)
+    expect(result.requiresWarning).toBe(false)
+  })
+
   test('should return false for nomis status is P and local status is SUPERVISOR_BACK FOR RECAT', async () => {
     const result = service.pnomisOrInconsistentWarning({ status: 'SUPERVISOR_BACK' }, 'P')
     expect(result.pnomis).toBe(false)
@@ -1077,6 +1084,11 @@ describe('calculateButtonText', () => {
 
   test('should return Edit for nomis status is P with local status SUPERVISOR_BACK', async () => {
     const result = service.calculateButtonStatus({ status: 'SUPERVISOR_BACK' }, 'P')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return Edit for nomis status is P with local status SECURITY_MANUAL', async () => {
+    const result = service.calculateButtonStatus({ status: 'SECURITY_MANUAL' }, 'P')
     expect(result).toMatch('Edit')
   })
 
