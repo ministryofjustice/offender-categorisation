@@ -654,6 +654,32 @@ describe('getUncategorisedOffenders', () => {
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
   })
+
+  test('it return a pnomis marker for inconsistent data', async () => {
+    const uncategorised = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+      },
+    ]
+
+    const dbRecord = { bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: Status.AWAITING_APPROVAL.name }
+
+    const sentenceDates = [
+      {
+        sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
+      },
+    ]
+    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    formService.getCategorisationRecord.mockReturnValue(dbRecord)
+
+    const result = await service.getUncategorisedOffenders('user1', 'MDI')
+    expect(result[0].pnomis).toBe(true)
+  })
 })
 
 test('create categorisation should propagate error response', async () => {
@@ -678,6 +704,41 @@ test('createSupervisorApproval should propagate error response', async () => {
   } catch (s) {
     expect(s.message).toEqual('our Error')
   }
+})
+
+describe('getUncategorisedOffenders calculates inconsistent data correctly', () => {
+  test.each`
+    nomisStatus                      | localStatus                      | pnomis
+    ${Status.UNCATEGORISED.name}     | ${Status.SUPERVISOR_BACK.name}   | ${false}
+    ${Status.UNCATEGORISED.name}     | ${Status.SECURITY_BACK.name}     | ${false}
+    ${Status.UNCATEGORISED.name}     | ${Status.AWAITING_APPROVAL.name} | ${true}
+    ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_BACK.name}     | ${false}
+    ${Status.AWAITING_APPROVAL.name} | ${Status.SUPERVISOR_BACK.name}   | ${false}
+    ${Status.AWAITING_APPROVAL.name} | ${Status.STARTED.name}           | ${true}
+  `('should return errors $expectedContent for form return', async ({ nomisStatus, localStatus, pnomis }) => {
+    const uncategorised = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: nomisStatus,
+      },
+    ]
+
+    const dbRecord = { bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: localStatus }
+
+    const sentenceDates = [
+      {
+        sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
+      },
+    ]
+    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    formService.getCategorisationRecord.mockReturnValue(dbRecord)
+    const result = await service.getUncategorisedOffenders('user1', 'MDI')
+    expect(result[0].pnomis).toBe(pnomis)
+  })
 })
 
 describe('getReferredOffenders', () => {
@@ -938,6 +999,12 @@ describe('pnomisOrInconsistentWarning', () => {
     expect(result.requiresWarning).toBe(false)
   })
 
+  test('should return false for nomis status is P and local status is SECURITY_BACK FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_BACK' }, 'P')
+    expect(result.pnomis).toBe(false)
+    expect(result.requiresWarning).toBe(false)
+  })
+
   test('should return false for nomis status is P and local status is SUPERVISOR_BACK FOR RECAT', async () => {
     const result = service.pnomisOrInconsistentWarning({ status: 'SUPERVISOR_BACK' }, 'P')
     expect(result.pnomis).toBe(false)
@@ -984,6 +1051,11 @@ describe('calculateButtonText', () => {
 
   test('should return Edit for nomis status is P with local status SUPERVISOR_BACK', async () => {
     const result = service.calculateButtonStatus({ status: 'SUPERVISOR_BACK' }, 'A')
+    expect(result).toMatch('Edit')
+  })
+
+  test('should return Edit for nomis status is P with local status SECURITY_BACK', async () => {
+    const result = service.calculateButtonStatus({ status: 'SECURITY_BACK' }, 'A')
     expect(result).toMatch('Edit')
   })
 })

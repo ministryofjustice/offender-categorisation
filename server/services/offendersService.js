@@ -36,6 +36,14 @@ async function getSentenceMap(offenderList, nomisClient) {
   )
 }
 
+function localStatusIsInconstentWithNomisAwaitingApproval(dbRecord) {
+  return (
+    !!dbRecord &&
+    dbRecord.status !== Status.AWAITING_APPROVAL.name &&
+    dbRecord.status !== Status.SUPERVISOR_BACK.name &&
+    dbRecord.status !== Status.SECURITY_BACK.name
+  )
+}
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
   async function getUncategorisedOffenders(token, agencyId, user, transactionalDbClient) {
     try {
@@ -57,12 +65,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               return null
             }
 
+            const nomisStatusAwaitingApproval = o.status === Status.AWAITING_APPROVAL.name
+            const nomisStatusUncategorised = o.status === Status.UNCATEGORISED.name
+
             const inconsistent =
-              (o.status === Status.AWAITING_APPROVAL.name &&
-                dbRecord.status &&
-                dbRecord.status !== Status.AWAITING_APPROVAL.name &&
-                dbRecord.status !== Status.SUPERVISOR_BACK.name) ||
-              (o.status === Status.UNCATEGORISED.name &&
+              (nomisStatusAwaitingApproval && localStatusIsInconstentWithNomisAwaitingApproval(dbRecord)) ||
+              (nomisStatusUncategorised &&
                 (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
 
             const row = {
@@ -70,7 +78,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
               ...buildSentenceData(sentenceMap.get(o.bookingId).sentenceDate),
               ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
-              pnomis: inconsistent || (o.status === Status.AWAITING_APPROVAL.name && !dbRecord.status),
+              pnomis: inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status),
             }
             if (inconsistent) {
               logger.warn(
@@ -788,10 +796,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     if (pnomisStatus === 'A') {
       return dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status
     }
-    // record is pending, valid status is AWAITING_APPROVAL OR SUPERVISOR_BACK
-    return (
-      !!dbRecord && dbRecord.status !== Status.AWAITING_APPROVAL.name && dbRecord.status !== Status.SUPERVISOR_BACK.name
-    )
+    // record is pending, valid status is AWAITING_APPROVAL OR SUPERVISOR_BACK OR SECURITY_BACK
+    return localStatusIsInconstentWithNomisAwaitingApproval(dbRecord)
   }
 
   async function getOffenderDetailWithFullInfo(offenderNo) {
