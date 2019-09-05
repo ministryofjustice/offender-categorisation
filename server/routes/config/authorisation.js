@@ -4,7 +4,7 @@ module.exports = {
   '/supervisor\\w+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/security\\w+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
   '/dashboard': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
-  '/categoryHistory/\\d+': { authorised: ['ANY'] },
+  '/categoryHistory/\\d+': { authorised: ['BOOKING_ID_IN_CASELOAD'] },
   '/tasklist/supervisor/.+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/tasklist/.+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/tasklistRecat/.+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
@@ -20,9 +20,9 @@ module.exports = {
   },
   '/form/supervisor/.+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/form/security/.+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
-  '/form/approvedView/.+': { authorised: ['ANY'] },
+  '/form/approvedView/.+': { authorised: ['BOOKING_ID_IN_CASELOAD'] },
   '/form/awaitingApprovalView/.+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
-  '/\\d+': { authorised: ['ANY'] },
+  '/\\d+': { authorised: ['BOOKING_ID_IN_CASELOAD'] },
   '/switchRole/.+': {
     authorised: [
       'ROLE_CREATE_CATEGORISATION',
