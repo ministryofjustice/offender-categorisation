@@ -8,7 +8,13 @@ const extractNextReviewDate = details => {
   return catRecord && catRecord.nextReviewDate
 }
 
-module.exports = function Index({ authenticationMiddleware, userService, offendersService, statsService }) {
+module.exports = function Index({
+  authenticationMiddleware,
+  userService,
+  offendersService,
+  statsService,
+  formService,
+}) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
@@ -16,15 +22,7 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
   router.get(
     '/',
     asyncMiddleware(async (req, res) => {
-      redirectUsingRole(
-        req,
-        res,
-        '/categoriserHome',
-        '/supervisorHome',
-        '/securityHome',
-        '/recategoriserHome',
-        '/dashboard'
-      )
+      redirectUsingRole(req, res, '/categoriserHome', '/supervisorHome', '/securityHome', '/recategoriserHome')
     })
   )
 
@@ -181,6 +179,24 @@ module.exports = function Index({ authenticationMiddleware, userService, offende
       const timeliness = await statsService.getTimeliness(transactionalDbClient)
 
       res.render('pages/dashboard', { initial, recat, security, timeliness })
+    })
+  )
+
+  router.get(
+    '/categoryHistory/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const data = await formService.getHistoricalCategorisationRecords(bookingId, transactionalDbClient)
+      const dataDecorated = await Promise.all(
+        data.map(async d => ({
+          ...d,
+          prisonDescription: await offendersService.getOptionalAssessmentAgencyDescription(
+            res.locals.user.token,
+            d.prisonId
+          ),
+        }))
+      )
+      res.render(`pages/categoryHistory`, { data: dataDecorated })
     })
   )
 
