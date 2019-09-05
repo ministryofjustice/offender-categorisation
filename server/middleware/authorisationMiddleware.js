@@ -26,7 +26,7 @@ module.exports = (userService, offendersService) => async (req, res, next) => {
   if (res.locals && res.locals.user && res.locals.user.token) {
     const { authorities } = jwtDecode(res.locals.user.token)
     const roles = authorities ? authorities.filter(role => isCat(role)) : []
-    const isOpen = config.authorised[0] === 'ANY'
+    const isOpen = config.authorised[0] === 'BOOKING_ID_IN_CASELOAD'
     const authorisedRoles = isOpen ? roles : config.authorised.filter(role => roles.includes(role))
     if (!authorisedRoles.length) {
       if (!isOpen) {
