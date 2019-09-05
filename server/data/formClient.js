@@ -41,7 +41,15 @@ module.exports = {
 
   getHistoricalFormData(bookingId, transactionalClient) {
     const query = {
-      text: `${selectClause} from form f where f.booking_id = $1`,
+      text: `select booking_id    as "bookingId",
+                    offender_no   as "offenderNo",
+                    sequence_no   as "sequence",
+                    approval_date as "approvalDate",
+                    form_response as "formObject",
+                    prison_id     as "prisonId"
+             from form f
+             where f.booking_id = $1 and status = 'APPROVED'
+             order by sequence_no`,
       values: [bookingId],
     }
     return transactionalClient.query(query)

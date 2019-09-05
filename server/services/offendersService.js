@@ -580,6 +580,15 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       throw error
     }
   }
+  async function getBasicOffenderDetails(token, bookingId) {
+    try {
+      const nomisClient = nomisClientBuilder(token)
+      return nomisClient.getBasicOffenderDetails(bookingId)
+    } catch (error) {
+      logger.error(error, 'Error during getBasicOffenderDetails')
+      throw error
+    }
+  }
 
   function enableCaching(res) {
     res.setHeader('Cache-Control', 'max-age=3600')
@@ -825,6 +834,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getReferredOffenders,
     getRecategoriseOffenders,
     getOffenderDetails,
+    getBasicOffenderDetails,
     getImage,
     getCatAInformation,
     getOffenceHistory,

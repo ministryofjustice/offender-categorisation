@@ -73,11 +73,15 @@ module.exports = token => {
       const path = `${apiUrl}api/images/${imageId}/data`
       return nomisUserGet({ path, responseType: 'stream', raw: true })
     },
-    async getOffenderDetails(bookingId) {
+    getOffenderDetails(bookingId) {
       const path = `${apiUrl}api/bookings/${bookingId}?basicInfo=false`
       return nomisClientGet({ path })
     },
-    async getOffenderDetailsByOffenderNo(offenderNo) {
+    getBasicOffenderDetails(bookingId) {
+      const path = `${apiUrl}api/bookings/${bookingId}?basicInfo=true`
+      return nomisClientGet({ path })
+    },
+    getOffenderDetailsByOffenderNo(offenderNo) {
       const path = `${apiUrl}api/bookings/offenderNo/${offenderNo}?fullInfo=true`
       return nomisClientGet({ path })
     },

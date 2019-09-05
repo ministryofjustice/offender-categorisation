@@ -1,0 +1,50 @@
+{% extends "../partials/layout.html" %}
+
+{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% block beforeContent %}
+{{ govukBreadcrumbs({
+  items: [
+    {
+      text: "Home",
+      href: "#"
+    }
+  ]
+}) }}
+{% endblock %}
+
+{% block content %}
+
+<div >
+  <h1 class="govuk-heading-l">Check previous category reviews</h1>
+</div>
+
+<div>
+  {% if data | length > 0 %}
+    <table class="govuk-table" id="initialTable">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Categorisation date</th>
+          <th class="govuk-table__header" scope="col">Category decision</th>
+          <th class="govuk-table__header" scope="col">Review location</th>
+          <th class="govuk-table__header" scope="col"></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for row in data %}
+          <tr class="govuk-table__row ">
+            <td class="govuk-table__cell"> {{ dateConverter(row.approvalDate) }}</td>
+            <td class="govuk-table__cell">{{ row.formObject.supervisor.review.supervisorOverriddenCategory or row.formObject.supervisor.review.proposedCategory }}</td>
+            <td class="govuk-table__cell">{{ row.prisonDescription }}</td>
+            <td class="govuk-table__cell"><a href="/form/approvedView/{{ row.bookingId }}?sequenceNo={{ row.sequence }}">View (opens in new tab)</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    No completed categorisations found.
+  {% endif %}
+
+</div>
+
+{% endblock %}

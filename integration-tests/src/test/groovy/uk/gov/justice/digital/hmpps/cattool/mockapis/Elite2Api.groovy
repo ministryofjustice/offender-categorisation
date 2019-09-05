@@ -928,6 +928,26 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubGetBasicOffenderDetails(int bookingId, offenderNo = 'B2345YZ') {
+    this.stubFor(
+      get("/api/bookings/$bookingId?basicInfo=true")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson(
+              [
+                bookingId  : bookingId,
+                offenderNo : offenderNo,
+                agencyId   : 'LEI',
+                firstName  : 'ANT',
+                lastName   : 'HILLMOB',
+                dateOfBirth: '1970-02-17',
+              ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
   def stubOffenceHistory(offenderNo) {
     this.stubFor(
       get("/api/bookings/offenderNo/$offenderNo/offenceHistory")

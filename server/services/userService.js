@@ -14,6 +14,7 @@ module.exports = function createUserService(nomisClientBuilder) {
         ...user,
         displayName: `${properCaseName(user.lastName)}, ${properCaseName(user.firstName)}`,
         activeCaseLoad,
+        activeCaseLoads,
       }
     } catch (error) {
       logger.error('Error during getUser: ', error.stack)
