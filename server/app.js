@@ -231,7 +231,7 @@ module.exports = function createApp({
     res.redirect(authLogoutUrl)
   })
 
-  app.use(authorisationMiddleware)
+  app.use(authorisationMiddleware(userService, offendersService))
 
   // Setup user thread-local
   app.use(async (req, res, next) => {
@@ -241,7 +241,13 @@ module.exports = function createApp({
     return next()
   })
 
-  const homeRouter = createHomeRouter({ userService, offendersService, authenticationMiddleware, statsService })
+  const homeRouter = createHomeRouter({
+    userService,
+    offendersService,
+    authenticationMiddleware,
+    statsService,
+    formService,
+  })
   app.use('/', homeRouter)
   app.use(
     '/tasklist/',

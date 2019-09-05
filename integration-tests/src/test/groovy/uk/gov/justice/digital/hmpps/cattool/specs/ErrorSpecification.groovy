@@ -68,7 +68,7 @@ class ErrorSpecification extends GebReportingSpec {
 
     then: 'the auth error page is displayed'
     at new ErrorPage(url: 'idontexist/12')
-    errorSummaryTitle.text() == 'Unauthorised access: required role not present'
+    errorSummaryTitle.text() == 'Url not recognised'
     errorText.text() == 'status 403'
   }
 }

@@ -28,12 +28,12 @@ function determinePathFromDecisions({ decisions, data }) {
   return decisions.reduce((path, pathConfig) => path || getPathFromAnswer({ nextPath: pathConfig, data }), null)
 }
 
-function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl, readonlyUrl) {
+function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl) {
   const roles = jwtDecode(res.locals.user.token).authorities
   // NOTE: order must match multirole.html
   if (req.session && req.session.currentRole) {
     res.redirect(
-      lookupRoleUrl(req.session.currentRole, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl, readonlyUrl)
+      lookupRoleUrl(req.session.currentRole, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl)
     )
   } else if (roles && roles.includes('ROLE_APPROVE_CATEGORISATION')) {
     req.session.currentRole = `supervisor`
@@ -47,9 +47,6 @@ function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl,
   } else if (roles && roles.includes('ROLE_CATEGORISATION_SECURITY')) {
     req.session.currentRole = `security`
     res.redirect(securityUrl)
-  } else if (roles && roles.includes('ROLE_CATEGORISATION_READONLY')) {
-    req.session.currentRole = `readonly`
-    res.redirect(readonlyUrl)
   } else {
     // go to a 'not auth' page
     res.status(403)
@@ -57,7 +54,7 @@ function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl,
   }
 }
 
-function lookupRoleUrl(role, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl, readonlyUrl) {
+function lookupRoleUrl(role, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl) {
   switch (role) {
     case 'supervisor':
       return supervisorUrl
@@ -67,8 +64,6 @@ function lookupRoleUrl(role, categoriserUrl, supervisorUrl, securityUrl, recateg
       return securityUrl
     case 'recategoriser':
       return recategoriserUrl
-    case 'readonly':
-      return readonlyUrl
     default:
       return undefined
   }

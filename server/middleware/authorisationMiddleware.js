@@ -3,27 +3,60 @@ const authorisationConfig = require('../routes/config/authorisation')
 const { getWhereKeyLike, isEmpty } = require('../utils/functionalHelpers')
 const { unauthorisedError } = require('../utils/errors')
 
-module.exports = (req, res, next) => {
+const allCatRoles = [
+  'ROLE_CREATE_CATEGORISATION',
+  'ROLE_CREATE_RECATEGORISATION',
+  'ROLE_APPROVE_CATEGORISATION',
+  'ROLE_CATEGORISATION_SECURITY',
+]
+
+function isCat(role) {
+  return allCatRoles.indexOf(role) >= 0
+}
+
+module.exports = (userService, offendersService) => async (req, res, next) => {
   if (req.originalUrl === '/') {
     return next() // always allow "/"
   }
   const config = getWhereKeyLike(req.originalUrl, authorisationConfig)
   if (isEmpty(config)) {
-    return next(unauthorisedError())
+    return next(unauthorisedError('Url not recognised'))
   }
 
   if (res.locals && res.locals.user && res.locals.user.token) {
-    const roles = jwtDecode(res.locals.user.token).authorities
-
-    const authorisedRoles = roles ? config.authorised.filter(role => roles.includes(role)) : []
+    const { authorities } = jwtDecode(res.locals.user.token)
+    const roles = authorities ? authorities.filter(role => isCat(role)) : []
+    const isOpen = config.authorised[0] === 'ANY'
+    const authorisedRoles = isOpen ? roles : config.authorised.filter(role => roles.includes(role))
     if (!authorisedRoles.length) {
-      return next(unauthorisedError())
+      if (!isOpen) {
+        return next(unauthorisedError())
+      }
+      // retrieve booking id
+      const lastBit = req.path.split('/').reverse()[0]
+      if (Number.isNaN(parseInt(lastBit, 10))) {
+        return next(unauthorisedError('Failed to parse booking id'))
+      }
+      const bookingId = parseInt(lastBit, 10)
+
+      // Check prisoner is in caseload
+      try {
+        const details = await offendersService.getBasicOffenderDetails(res.locals.user.token, bookingId)
+        const user = await userService.getUser(res.locals.user.token)
+        const found = user.activeCaseLoads.find(caseLoad => caseLoad.caseLoadId === details.agencyId)
+        if (!found) {
+          return next(unauthorisedError('Prisoner is not in this prison'))
+        }
+      } catch (e) {
+        return next(unauthorisedError('Booking id not found'))
+      }
     }
 
     const applicationRoles = buildApplicationRoles(roles)
-
-    if (Object.keys(applicationRoles).length > 1) {
-      res.locals.user = { multipleRoles: applicationRoles, ...res.locals.user }
+    res.locals.user = {
+      roles: applicationRoles,
+      numberOfRoles: Object.keys(applicationRoles).length,
+      ...res.locals.user,
     }
 
     return next()
@@ -39,7 +72,6 @@ const buildApplicationRoles = roles => {
     ...(roles.includes('ROLE_CREATE_CATEGORISATION') && { categoriser: true }),
     ...(roles.includes('ROLE_CREATE_RECATEGORISATION') && { recategoriser: true }),
     ...(roles.includes('ROLE_CATEGORISATION_SECURITY') && { security: true }),
-    ...(roles.includes('ROLE_CATEGORISATION_READONLY') && { readonly: true }),
   }
   return applicationRoles
 }
