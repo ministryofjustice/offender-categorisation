@@ -32,9 +32,7 @@ function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl,
   const roles = jwtDecode(res.locals.user.token).authorities
   // NOTE: order must match multirole.html
   if (req.session && req.session.currentRole) {
-    res.redirect(
-      lookupRoleUrl(req.session.currentRole, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl)
-    )
+    res.redirect(lookupRoleUrl(req.session.currentRole, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl))
   } else if (roles && roles.includes('ROLE_APPROVE_CATEGORISATION')) {
     req.session.currentRole = `supervisor`
     res.redirect(supervisorUrl)
