@@ -22,3 +22,16 @@ env:
   ELITE2API_ENDPOINT_URL: https://gateway.prod.nomis-api.service.hmpps.dsd.io/elite2api/
   RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
   DPS_URL: https://notm.service.hmpps.dsd.io/
+
+whitelist:
+  office: "217.33.148.210/32"
+  quantum1: "62.25.109.197/32"
+  quantum2: "212.137.36.230/32"
+  quantum3: "195.92.38.16/28"
+  health-kick: "35.177.252.195/32"
+  mojvpn: "81.134.202.29/32"
+  ark-nps-hmcts-ttp1: "195.59.75.0/24"
+  ark-nps-hmcts-ttp2: "194.33.192.0/25"
+  ark-nps-hmcts-ttp3: "194.33.193.0/25"
+  ark-nps-hmcts-ttp4: "194.33.196.0/25"
+  ark-nps-hmcts-ttp5: "194.33.197.0/25"
