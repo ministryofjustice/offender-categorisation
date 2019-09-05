@@ -7,12 +7,13 @@ class LandingPage extends Page {
   static url = '/'
 
   static at = {
-    headingText == 'Start a category review early'
+    historyHeading.text() == 'Check previous category reviews'
   }
 
   static content = {
-    headingText { $('h1').text() }
-    startButton(required: false) { $('a.govuk-button') }
+    startButton(required: false) { $('#recatButton') }
     warning(required: false) { $('div.govuk-warning-text') }
+    historyButton { $('#historyButton') }
+    historyHeading { $('#previousCategoryHeading') }
   }
 }

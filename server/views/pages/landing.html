@@ -13,6 +13,8 @@
 {% endblock %}
 
 {% block content %}
+
+  {% if user.roles.recategoriser %}
   <h1 class="govuk-heading-l">Start a category review early</h1>
 
   <div>
@@ -20,11 +22,10 @@
       <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
       <p>Once started, you cannot cancel an early category review. However, you will have until their review due date to finish it.</p>
       {{ govukButton({
-        text: 'Start Now',
+        text: 'Start review',
         href: '/tasklistRecat/' + data.details.bookingId + '?reason=MANUAL',
-        classes: buttonClasses,
-        attributes:
-          { 'id': 'recatButton' }
+        classes: 'grey-button',
+        attributes: { 'id': 'recatButton' }
       }) }}
     {% elif data.catType == 'INITIAL' %}
       {{ govukWarningText({
@@ -40,5 +41,17 @@
       }) }}
     {% endif %}
   </div>
+  {% endif %}
+
+  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+
+  <p>See all information from previous category reviews.</p>
+
+  {{ govukButton({
+    text: 'Check previous reviews',
+    href: '/categoryHistory/' + data.details.bookingId,
+    classes: 'grey-button',
+    attributes: { 'id': 'historyButton' }
+  }) }}
 
 {% endblock %}
