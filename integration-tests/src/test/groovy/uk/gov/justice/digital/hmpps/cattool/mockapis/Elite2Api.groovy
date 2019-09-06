@@ -694,18 +694,25 @@ class Elite2Api extends WireMockRule {
     def response = [
       [
         offenderNo    : offenderNo,
+        bookingId     : -45,
         firstName     : 'firstName',
         lastName      : 'lastName',
-        sentenceDetail: [bookingId  : -45,
-                         releaseDate: formattedReleaseDate]
+        sentenceDetail: [bookingId: -45, releaseDate: formattedReleaseDate]
       ],
       [
         offenderNo    : offenderNo,
+        bookingId     : -55,
         firstName     : 'firstName',
         lastName      : 'lastName',
-        sentenceDetail: [bookingId  : -55,
-                         releaseDate: formattedReleaseDate]
-      ]
+        sentenceDetail: [bookingId: -55, releaseDate: formattedReleaseDate]
+      ],
+      [
+        offenderNo    : offenderNo,
+        bookingId     : 12,
+        firstName     : 'firstName12',
+        lastName      : 'lastName12',
+        sentenceDetail: [bookingId: 12, releaseDate: '2020-11-30']
+      ],
     ]
 
     this.stubFor(
@@ -1001,7 +1008,7 @@ class Elite2Api extends WireMockRule {
                   bookingId            : -45,
                   offenderNo           : offenderNo,
                   classificationCode   : 'A',
-                  classification       : 'Cat B',
+                  classification       : 'Cat A',
                   assessmentCode       : 'CATEGORY',
                   assessmentDescription: 'Categorisation',
                   cellSharingAlertFlag : false,
@@ -1025,6 +1032,89 @@ class Elite2Api extends WireMockRule {
                   assessmentAgencyId   : "LPI",
                   assessmentStatus     : 'I'
                 ]
+              ])
+            )
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200)))
+  }
+
+  def stubAssessmentsWithCurrent(String offenderNo) {
+    this.stubFor(
+      get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson(
+              [
+                [
+                  bookingId            : -45,
+                  offenderNo           : offenderNo,
+                  classificationCode   : 'A',
+                  classification       : 'Cat A',
+                  assessmentCode       : 'CATEGORY',
+                  assessmentDescription: 'Categorisation',
+                  cellSharingAlertFlag : false,
+                  assessmentDate       : '2012-04-04',
+                  nextReviewDate       : '2012-06-07',
+                  approvalDate         : '2012-06-08',
+                  assessmentAgencyId   : "LPI",
+                  assessmentStatus     : 'A'
+                ],
+                [
+                  bookingId            : -45,
+                  offenderNo           : offenderNo,
+                  classificationCode   : 'A',
+                  classification       : 'Cat A',
+                  assessmentCode       : 'CATEGORY',
+                  assessmentDescription: 'Categorisation',
+                  cellSharingAlertFlag : false,
+                  assessmentDate       : '2012-03-28',
+                  nextReviewDate       : '2012-06-07',
+                  approvalDate         : '2012-06-18',
+                  assessmentAgencyId   : "LPI",
+                  assessmentStatus     : 'P'
+                ],
+                [
+                  bookingId            : -45,
+                  offenderNo           : offenderNo,
+                  classificationCode   : 'B',
+                  classification       : 'Cat B',
+                  assessmentCode       : 'CATEGORY',
+                  assessmentDescription: 'Categorisation',
+                  cellSharingAlertFlag : false,
+                  assessmentDate       : '2013-03-24',
+                  nextReviewDate       : '2013-09-17',
+                  approvalDate         : '2012-06-08',
+                  assessmentAgencyId   : "LPI",
+                  assessmentStatus     : 'I'
+                ],
+                [
+                  bookingId            : 12,
+                  offenderNo           : offenderNo,
+                  classificationCode   : 'P',
+                  classification       : 'Prov Cat A',
+                  assessmentCode       : 'CATEGORY',
+                  assessmentDescription: 'Cat A in current booking',
+                  cellSharingAlertFlag : false,
+                  assessmentDate       : '2018-04-04',
+                  nextReviewDate       : '2018-06-07',
+                  approvalDate         : '2018-06-08',
+                  assessmentAgencyId   : "LPI",
+                  assessmentStatus     : 'I'
+                ],
+                [
+                  bookingId            : 12,
+                  offenderNo           : offenderNo,
+                  classificationCode   : 'U',
+                  classification       : 'Unsentenced',
+                  assessmentCode       : 'CATEGORY',
+                  assessmentDescription: 'Current booking',
+                  cellSharingAlertFlag : false,
+                  assessmentDate       : '2019-03-28',
+                  nextReviewDate       : '2019-06-07',
+                  approvalDate         : '2019-06-18',
+                  assessmentAgencyId   : "LPI",
+                  assessmentStatus     : 'A'
+                ],
               ])
             )
             .withHeader('Content-Type', 'application/json')

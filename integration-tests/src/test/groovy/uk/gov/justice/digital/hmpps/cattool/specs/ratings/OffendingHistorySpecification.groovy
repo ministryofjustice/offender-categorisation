@@ -43,7 +43,7 @@ class OffendingHistorySpecification extends GebReportingSpec {
 
     then: 'a Cat A warning and offence history is displayed'
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    catAWarning.text() contains 'This prisoner was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
+    catAWarning.text() endsWith 'This prisoner was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
     !catAInfo.displayed
     history*.text() == ['Libel (21/02/2019)', 'Slander (22/02/2019 - 24/02/2019)', 'Undated offence']
 
@@ -80,7 +80,22 @@ class OffendingHistorySpecification extends GebReportingSpec {
 
     then: 'a non Cat A info message is displayed'
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    catAInfo.text() contains 'This person has not been categorised as a Cat A or a provisional Cat A before.'
+    catAInfo.text() endsWith 'This person has not been categorised as a Cat A or a provisional Cat A before.'
     !catAWarning.displayed
+  }
+
+  def "The Offending history page is shown correctly (cat A in current booking)"() {
+    when: 'I go to the Offending history page'
+
+    fixture.gotoTasklist()
+    at new TasklistPage(bookingId: '12')
+    elite2Api.stubAssessmentsWithCurrent('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
+    offendingHistoryButton.click()
+
+    then: 'the correct Cat A warning message is displayed'
+    at new CategoriserOffendingHistoryPage(bookingId: '12')
+    catAWarning.text() endsWith 'This prisoner was categorised as a Provisional Cat A in 2018 until 2019'
   }
 }

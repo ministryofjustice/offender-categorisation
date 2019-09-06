@@ -624,12 +624,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return b.bookingId - a.bookingId
   }
 
-  async function getCatAInformation(token, offenderNo, currentBookingId) {
+  async function getCatAInformation(token, offenderNo, currentBookingIdString) {
     try {
       const nomisClient = nomisClientBuilder(token)
       const categories = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
       const sortedCategories = categories.sort(sortByDescendingBookingAndAscendingSequence)
       const mostRecentCatA = sortedCategories.find(isCatA)
+      const currentBookingId = parseInt(currentBookingIdString, 10)
 
       let catAType = null
       let catAStartYear = null
