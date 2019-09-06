@@ -51,22 +51,22 @@ class DatabaseUtils {
 
   def createRiskProfileDataForExistingRow(bookingId, json) {
     def sql = Sql.newInstance(dbConnParams)
-    sql.executeUpdate("""update form set risk_profile = ?::JSON where booking_id = $bookingId""", json)
+    sql.executeUpdate("update form set risk_profile = ?::JSON where booking_id = $bookingId", json)
   }
 
   def createNomisSeqNo(bookingId, seq) {
     def sql = Sql.newInstance(dbConnParams)
-    sql.executeUpdate("""update form set nomis_sequence_no = $seq where booking_id = $bookingId""")
+    sql.executeUpdate("update form set nomis_sequence_no = $seq where booking_id = $bookingId")
   }
 
   def createReviewReason(int bookingId, String reason) {
     def sql = Sql.newInstance(dbConnParams)
-    sql.executeUpdate("""update form set review_reason = '$reason' where booking_id = $bookingId""")
+    sql.executeUpdate("update form set review_reason = $reason::review_reason_enum where booking_id = $bookingId")
   }
 
   def updateStatus(int bookingId, String status) {
     def sql = Sql.newInstance(dbConnParams)
-    sql.executeUpdate("""update form set status = '$status' where booking_id = $bookingId""")
+    sql.executeUpdate("update form set status = '$status' where booking_id = $bookingId")
   }
 
   def createDataWithStatus(id, bookingId, status, json) {

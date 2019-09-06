@@ -11,12 +11,22 @@ const config = require('../config')
 
 const dirname = process.cwd()
 
+const extractNextReviewDate = details => {
+  const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
+  return catRecord && catRecord.nextReviewDate
+}
+
 function isCatA(c) {
   return c.classificationCode === 'A' || c.classificationCode === 'H' || c.classificationCode === 'P'
 }
 
 function getYear(isoDate) {
   return isoDate && isoDate.substring(0, 4)
+}
+
+function isOverdue(dbDate) {
+  const date = moment(dbDate, 'YYYY-MM-DD')
+  return date.isBefore(moment(0, 'HH'))
 }
 
 async function getSentenceMap(offenderList, nomisClient) {
@@ -45,6 +55,16 @@ function localStatusIsInconstentWithNomisAwaitingApproval(dbRecord) {
     dbRecord.status !== Status.SECURITY_MANUAL.name
   )
 }
+
+function unwanted(dbRecord) {
+  return (
+    // Initial cat in progress
+    (dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name) ||
+    // These are in top section, dont duplicate
+    (dbRecord.reviewReason === ReviewReason.MANUAL.name || dbRecord.reviewReason === ReviewReason.RISK_CHANGE.name)
+  )
+}
+
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
   async function getUncategorisedOffenders(token, agencyId, user, transactionalDbClient) {
     try {
@@ -365,114 +385,145 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getRecategoriseOffenders(token, agencyId, user, transactionalDbClient) {
-    const today = moment(0, 'HH')
+  async function getManualAndRiskRecats(agencyId, user, nomisClient, transactionalDbClient) {
+    const data = await formService.getManualAndRiskCategorisationRecords(agencyId, transactionalDbClient)
 
-    function isOverdue(dbDate) {
-      const date = moment(dbDate, 'YYYY-MM-DD')
-      return date.isBefore(today)
+    return Promise.all(
+      data.map(async dbRecord => {
+        const details = await nomisClient.getOffenderDetails(dbRecord.bookingId)
+        const nextReviewDate = extractNextReviewDate(details)
+        const decorated = await decorateWithCategorisationData(details, user, nomisClient, dbRecord)
+        return {
+          ...dbRecord,
+          displayName: `${properCaseName(details.lastName)}, ${properCaseName(details.firstName)}`,
+          displayStatus: decorated.displayStatus || 'Not started',
+          dbStatus: decorated.dbStatus,
+          reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
+          nextReviewDateDisplay: dateConverter(nextReviewDate),
+          overdue: false,
+          dbRecordExists: decorated.dbRecordExists,
+          pnomis: false,
+          buttonText: calculateButtonStatus(dbRecord, ''),
+        }
+      })
+    )
+  }
+
+  async function getDueRecats(agencyId, user, nomisClient, transactionalDbClient) {
+    const reviewTo = moment()
+      .add(config.recatMarginMonths, 'months')
+      .format('YYYY-MM-DD')
+
+    const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
+    return Promise.all(
+      resultsReview.map(async o => {
+        const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
+        if (unwanted(dbRecord)) return null
+        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus)
+        if (requiresWarning) {
+          logger.warn(
+            `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
+          )
+        }
+
+        const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
+        return {
+          ...o,
+          displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+          displayStatus: decorated.displayStatus || 'Not started',
+          dbStatus: decorated.dbStatus,
+          reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
+          nextReviewDateDisplay: dateConverter(o.nextReviewDate),
+          overdue: isOverdue(o.nextReviewDate),
+          dbRecordExists: decorated.dbRecordExists,
+          pnomis,
+          buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
+        }
+      })
+    )
+  }
+
+  async function getU21Recats(agencyId, user, nomisClient, transactionalDbClient) {
+    const u21From = moment()
+      .subtract(22, 'years') // allow up to a year overdue
+      .format('YYYY-MM-DD')
+    const u21To = moment()
+      .subtract(21, 'years')
+      .add(config.recatMarginMonths, 'months')
+      .format('YYYY-MM-DD')
+
+    const resultsU21 = await nomisClient.getPrisonersAtLocation(agencyId, u21From, u21To)
+
+    const resultsU21IJ = resultsU21.filter(o => /[IJ]/.test(o.categoryCode))
+
+    if (!resultsU21IJ.length) {
+      return resultsU21IJ
     }
 
+    // we meed the categorisation records for all the U21 offenders identified
+    const eliteCategorisationResultsU21 = await mergeU21ResultWithNomisCategorisationData(
+      nomisClient,
+      agencyId,
+      resultsU21IJ
+    )
+
+    return Promise.all(
+      eliteCategorisationResultsU21.map(async o => {
+        const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
+        if (unwanted(dbRecord)) return null
+        const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
+
+        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus)
+
+        if (requiresWarning) {
+          logger.warn(
+            `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
+          )
+        }
+        const nextReviewDate = moment(o.dateOfBirth, 'YYYY-MM-DD')
+        const nextReviewDateDisplay = nextReviewDate.add(21, 'years').format('DD/MM/YYYY')
+        return {
+          ...o,
+          displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+          displayStatus: decorated.displayStatus || 'Not started',
+          dbStatus: decorated.dbStatus,
+          reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.AGE,
+          nextReviewDateDisplay,
+          overdue: isOverdue(nextReviewDate),
+          dbRecordExists: decorated.dbRecordExists,
+          pnomis,
+          buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
+        }
+      })
+    )
+  }
+
+  async function getRecategoriseOffenders(token, agencyId, user, transactionalDbClient) {
     try {
       const nomisClient = nomisClientBuilder(token)
-      const u21From = moment()
-        .subtract(22, 'years') // allow up to a year overdue
-        .format('YYYY-MM-DD')
-      const u21To = moment()
-        .subtract(21, 'years')
-        .add(config.recatMarginMonths, 'months')
-        .format('YYYY-MM-DD')
-      const reviewTo = moment()
-        .add(config.recatMarginMonths, 'months')
-        .format('YYYY-MM-DD')
 
-      const [resultsReview, resultsU21] = await Promise.all([
-        nomisClient.getRecategoriseOffenders(agencyId, reviewTo),
-        nomisClient.getPrisonersAtLocation(agencyId, u21From, u21To),
+      const [resultsManualRisk, decoratedResultsReview, decoratedResultsU21] = await Promise.all([
+        getManualAndRiskRecats(agencyId, user, nomisClient, transactionalDbClient),
+        getDueRecats(agencyId, user, nomisClient, transactionalDbClient),
+        getU21Recats(agencyId, user, nomisClient, transactionalDbClient),
       ])
-      const resultsU21IJ = resultsU21.filter(o => /[IJ]/.test(o.categoryCode))
 
-      if (isNilOrEmpty(resultsReview) && isNilOrEmpty(resultsU21IJ)) {
+      if (
+        isNilOrEmpty(decoratedResultsReview) &&
+        isNilOrEmpty(decoratedResultsU21) &&
+        isNilOrEmpty(resultsManualRisk)
+      ) {
         logger.info(`No recat offenders found for ${agencyId}`)
         return []
       }
 
-      const decoratedResultsReview = await Promise.all(
-        resultsReview.map(async o => {
-          const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-          if (dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name) {
-            // Initial cat in progress
-            return null
-          }
-
-          const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus)
-          if (requiresWarning) {
-            logger.warn(
-              `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
-            )
-          }
-
-          const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
-          return {
-            ...o,
-            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-            displayStatus: decorated.displayStatus || 'Not started',
-            dbStatus: decorated.dbStatus,
-            reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
-            nextReviewDateDisplay: dateConverter(o.nextReviewDate),
-            overdue: isOverdue(o.nextReviewDate),
-            dbRecordExists: decorated.dbRecordExists,
-            pnomis,
-            buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
-          }
-        })
-      )
-
-      // we meed the categorisation records for all the U21 offenders identified
-      const eliteCategorisationResultsU21 = await mergeU21ResultWithNomisCategorisationData(
-        nomisClient,
-        agencyId,
-        resultsU21IJ
-      )
-
-      const decoratedResultsU21 = await Promise.all(
-        eliteCategorisationResultsU21.map(async o => {
-          const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-          if (dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name) {
-            // Initial cat in progress
-            return null
-          }
-          const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
-
-          const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus)
-
-          if (requiresWarning) {
-            logger.warn(
-              `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
-            )
-          }
-          const nextReviewDate = moment(o.dateOfBirth, 'YYYY-MM-DD')
-          const nextReviewDateDisplay = nextReviewDate.add(21, 'years').format('DD/MM/YYYY')
-          return {
-            ...o,
-            displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-            displayStatus: decorated.displayStatus || 'Not started',
-            dbStatus: decorated.dbStatus,
-            reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.AGE,
-            nextReviewDateDisplay,
-            overdue: isOverdue(nextReviewDate),
-            dbRecordExists: decorated.dbRecordExists,
-            pnomis,
-            buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
-          }
-        })
-      )
-      return [...decoratedResultsReview, ...decoratedResultsU21]
+      const decoratedReviewAndU21 = [...decoratedResultsReview, ...decoratedResultsU21]
         .filter(o => o) // ignore initial cats (which were set to null)
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
         })
+      return [...resultsManualRisk, ...decoratedReviewAndU21]
     } catch (error) {
       logger.error(error, 'Error during getRecategorisedOffenders')
       throw error
@@ -798,7 +849,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       buttonStatus = 'View'
     } else if (
       dbRecord &&
-      (Status.SECURITY_BACK.name === dbRecord.status ||
+      (Status.STARTED.name === dbRecord.status ||
+        Status.SECURITY_BACK.name === dbRecord.status ||
         Status.SUPERVISOR_BACK.name === dbRecord.status ||
         Status.SECURITY_MANUAL.name === dbRecord.status)
     ) {
