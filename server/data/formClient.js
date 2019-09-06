@@ -1,4 +1,5 @@
 const logger = require('../../log.js')
+const ReviewReason = require('../utils/reviewReasonEnum')
 
 const selectClause = `select id,
                     booking_id             as "bookingId",
@@ -48,7 +49,7 @@ module.exports = {
                     form_response as "formObject",
                     prison_id     as "prisonId"
              from form f
-             where f.booking_id = $1 and status = 'APPROVED'
+             where f.booking_id = $1 and f.status = 'APPROVED'
              order by sequence_no`,
       values: [bookingId],
     }
@@ -69,7 +70,7 @@ module.exports = {
     logger.debug(`getApprovedCategorisations called for ${agencyId}, date ${fromDate}`)
     const query = {
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType", nomis_sequence_no as "nomisSeq"
-        from form f where f.prison_id = $1 and f.status = $2 and approval_date >= $3 and ($4::cat_type_enum is null or cat_type = $4::cat_type_enum) ${sequenceClause}`,
+        from form f where f.prison_id = $1 and f.status = $2 and f.approval_date >= $3 and ($4::cat_type_enum is null or f.cat_type = $4::cat_type_enum) ${sequenceClause}`,
       values: [agencyId, 'APPROVED', fromDate, catType],
     }
     return transactionalClient.query(query)
@@ -79,8 +80,17 @@ module.exports = {
     logger.debug(`getSecurityReviewedCategorisationRecords called for ${agencyId}`)
     const query = {
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType"
-        from form f where f.prison_id = $1 and security_reviewed_date is not null ${sequenceClause}`,
+        from form f where f.prison_id = $1 and f.security_reviewed_date is not null ${sequenceClause}`,
       values: [agencyId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getManualAndRiskCategorisationRecords(agencyId, transactionalClient) {
+    logger.debug(`getManualAndRiskCategorisationRecords called for ${agencyId}`)
+    const query = {
+      text: `${selectClause} from form f where f.prison_id = $1 and f.status <> 'APPROVED' and f.review_reason = ANY ($2) ${sequenceClause}`,
+      values: [agencyId, [ReviewReason.MANUAL.name, ReviewReason.RISK_CHANGE.name]],
     }
     return transactionalClient.query(query)
   },
@@ -88,7 +98,7 @@ module.exports = {
   getRiskChangeByStatus(agencyId, status, transactionalClient) {
     logger.debug(`getRiskChangeByStatus called with status ${status} and agencyId ${agencyId}`)
     const query = {
-      text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.agency_id= $1 and status = $2::risk_change_status_enum`,
+      text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.agency_id= $1 and f.status = $2::risk_change_status_enum`,
       values: [agencyId, status],
     }
     return transactionalClient.query(query)
@@ -97,7 +107,7 @@ module.exports = {
   referToSecurity(bookingId, userId, status, transactionalClient) {
     logger.debug(`referToSecurity called for ${userId}, status ${status} and booking id ${bookingId}`)
     const query = {
-      text: `update form f set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where booking_id = $3 ${sequenceClause}`,
+      text: `update form f set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where f.booking_id = $3 ${sequenceClause}`,
       values: [status, userId, bookingId],
     }
     return transactionalClient.query(query)
@@ -106,7 +116,7 @@ module.exports = {
   securityReviewed(bookingId, status, userId, transactionalClient) {
     logger.debug(`securityReviewed called for ${userId} with status ${status} and booking id ${bookingId}`)
     const query = {
-      text: `update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where booking_id = $3 ${sequenceClause}`,
+      text: `update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
       values: [userId, status, bookingId],
     }
     return transactionalClient.query(query)
@@ -115,7 +125,7 @@ module.exports = {
   updateStatus(bookingId, status, transactionalClient) {
     logger.debug(`updateStatus called for booking id ${bookingId} and status ${status}`)
     const query = {
-      text: `update form f set status = $1 where booking_id = $2 ${sequenceClause}`,
+      text: `update form f set status = $1 where f.booking_id = $2 ${sequenceClause}`,
       values: [status, bookingId],
     }
     return transactionalClient.query(query)
@@ -124,7 +134,7 @@ module.exports = {
   updateRecordWithNomisSeqNumber(bookingId, seq, transactionalClient) {
     logger.debug(`updateRecordWithNomisSeqNumber called for booking id ${bookingId} and seq ${seq}`)
     const query = {
-      text: `update form f set nomis_sequence_no = $1 where booking_id = $2 ${sequenceClause}`,
+      text: `update form f set nomis_sequence_no = $1 where f.booking_id = $2 ${sequenceClause}`,
       values: [seq, bookingId],
     }
     return transactionalClient.query(query)
@@ -133,7 +143,7 @@ module.exports = {
   updateFormData(bookingId, formResponse, transactionalClient) {
     logger.debug(`updateFormData for booking id ${bookingId}`)
     const query = {
-      text: `update form f set form_response = $1 where booking_id = $2 ${sequenceClause}`,
+      text: `update form f set form_response = $1 where f.booking_id = $2 ${sequenceClause}`,
       values: [formResponse, bookingId],
     }
     return transactionalClient.query(query)
@@ -142,7 +152,7 @@ module.exports = {
   updateRiskProfileData(bookingId, data, transactionalClient) {
     logger.debug(`mergeRiskProfileData for booking id ${bookingId}`)
     const query = {
-      text: `update form f set risk_profile = $1 where booking_id = $2 ${sequenceClause}`,
+      text: `update form f set risk_profile = $1 where f.booking_id = $2 ${sequenceClause}`,
       values: [data, bookingId],
     }
     return transactionalClient.query(query)

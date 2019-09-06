@@ -62,7 +62,7 @@ describe('supervisorApproval', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType", nomis_sequence_no as "nomisSeq"
-        from form f where f.prison_id = $1 and f.status = $2 and approval_date >= $3 and ($4::cat_type_enum is null or cat_type = $4::cat_type_enum) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
+        from form f where f.prison_id = $1 and f.status = $2 and f.approval_date >= $3 and ($4::cat_type_enum is null or f.cat_type = $4::cat_type_enum) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['MDI', 'APPROVED', fromDate, 'RECAT'],
     })
   })
@@ -74,7 +74,7 @@ describe('getSecurityReviewedCategorisationRecords', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType"
-        from form f where f.prison_id = $1 and security_reviewed_date is not null and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
+        from form f where f.prison_id = $1 and f.security_reviewed_date is not null and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
       values: ['MDI'],
     })
   })
@@ -86,7 +86,7 @@ describe('securityReviewed', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+        'update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
       values: ['Meeeee', 'SECURITY', '12345'],
     })
   })
@@ -98,7 +98,7 @@ describe('updateRecordWithNomisSeqNumber', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'update form f set nomis_sequence_no = $1 where booking_id = $2 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+        'update form f set nomis_sequence_no = $1 where f.booking_id = $2 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
       values: [4, '12345'],
     })
   })
@@ -181,7 +181,7 @@ describe('getRiskChangeByStatus', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.agency_id= $1 and status = $2::risk_change_status_enum',
+        'select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.agency_id= $1 and f.status = $2::risk_change_status_enum',
 
       values: ['LEI', { name: 'NEW', value: 'New risk change alert' }],
     })
