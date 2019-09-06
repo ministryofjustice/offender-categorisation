@@ -57,7 +57,7 @@ class ReviewSpecification extends GebReportingSpec {
       ],
       security: [review: [securityReview: 'Here is the Security information held on this prisoner']]
     ]), 'RECAT')
-    db.createReviewReason(12, 'MANUAL')
+    db.createReviewReason(12, 'AGE')
 
     when: 'The task list is displayed for a fully completed set of forms'
     fixture.gotoTasklistRecat()
@@ -85,7 +85,7 @@ class ReviewSpecification extends GebReportingSpec {
 
     prisonerBackgroundSummary*.text() == [
       '',
-      'Manual',
+      'Age 21',
       'Categorisation date Category decision Review location\n24/03/2013 B LPI prison\n04/04/2012 A LPI prison',
       'This person has not been reported as the perpetrator in any assaults in custody before',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
