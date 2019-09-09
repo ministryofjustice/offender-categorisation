@@ -8,6 +8,7 @@ const { isNilOrEmpty } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter, get10BusinessDays } = require('../utils/utils.js')
 const { sortByDateTime, sortByStatus } = require('./offenderSort.js')
 const config = require('../config')
+const riskChangeHelper = require('../utils/riskChange')
 
 const dirname = process.cwd()
 
@@ -246,7 +247,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         const offenderNos = changesFromDB.map(c => c.offenderNo)
         const [offenderDetailsFromElite, offenderCategorisationsFromElite] = await Promise.all([
           nomisClient.getOffenderDetailList(offenderNos),
-          nomisClient.getLatestCategorisationForOffenders(agencyId, offenderNos),
+          nomisClient.getLatestCategorisationForOffenders(offenderNos),
         ])
 
         const decoratedResults = changesFromDB.map(o => {
@@ -257,11 +258,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           return {
             ...o,
             offenderNo: offenderDetail.offenderNo,
+            bookingId: offenderCategorisation.bookingId,
             displayName:
               offenderDetail.lastName &&
               `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
             displayNextReviewDate: dateConverter(offenderCategorisation.nextReviewDate),
-            displayCreatedDate: dateConverter(o.createdDate),
+            displayCreatedDate: dateConverter(o.raisedDate),
           }
         })
 
@@ -531,10 +533,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function mergeU21ResultWithNomisCategorisationData(nomisClient, agencyId, resultsU21IJ) {
-    const eliteResultsRaw = await nomisClient.getLatestCategorisationForOffenders(
-      agencyId,
-      resultsU21IJ.map(c => c.offenderNo)
-    )
+    const eliteResultsRaw = await nomisClient.getLatestCategorisationForOffenders(resultsU21IJ.map(c => c.offenderNo))
 
     // results can include inactive - need to remove
     const eliteResultsFiltered = eliteResultsRaw.filter(c => c.assessmentStatus !== 'I')
@@ -551,6 +550,18 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       logger.error(`No latest categorisation found for u21 offender ${u21.offenderNo} booking id: ${u21.bookingId}`)
       return u21
     })
+  }
+
+  async function getRiskChangeForOffender(token, bookingId, transactionalClient) {
+    try {
+      const details = await getOffenderDetails(token, bookingId)
+      const riskChange = await formService.getRiskChangeForOffender(details.offenderNo, transactionalClient)
+      const changeFlags = riskChangeHelper.assessRiskProfiles(riskChange.oldProfile, riskChange.newProfile)
+      return { ...riskChange, ...changeFlags, details }
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
   }
 
   function buildSentenceData(sentenceDate) {
@@ -906,5 +917,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     calculateButtonStatus,
     mergeU21ResultWithNomisCategorisationData,
     getOffenderDetailWithFullInfo,
+    getRiskChangeForOffender,
   }
 }
