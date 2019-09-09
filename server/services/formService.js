@@ -47,7 +47,7 @@ module.exports = function createFormService(formClient) {
 
   async function getRiskChanges(agencyId, transactionalClient) {
     try {
-      const data = await formClient.getRiskChangeByStatus(agencyId, RiskChange.NEW, transactionalClient)
+      const data = await formClient.getRiskChangeByStatus(agencyId, RiskChange.NEW.name, transactionalClient)
       return data.rows
     } catch (error) {
       logger.error(error)
@@ -59,6 +59,16 @@ module.exports = function createFormService(formClient) {
     try {
       const data = await formClient.getManualAndRiskCategorisationRecords(agencyId, transactionalClient)
       return data.rows
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
+  async function getRiskChangeForOffender(offenderNo, transactionalClient) {
+    try {
+      const data = await formClient.getNewRiskChangeByOffender(offenderNo, transactionalClient)
+      return dataIfExists(data)
     } catch (error) {
       logger.error(error)
       throw error
@@ -256,15 +266,22 @@ module.exports = function createFormService(formClient) {
     return currentRecord
   }
 
-  async function createRiskChange({ userId, agencyId, offenderNo, oldProfile, newProfile, transactionalClient }) {
-    await formClient.createRiskChange({
-      userId,
-      agencyId,
-      offenderNo,
-      oldProfile,
-      newProfile,
-      transactionalClient,
-    })
+  async function createRiskChange(offenderNo, agencyId, oldProfile, newProfile, transactionalClient) {
+    const existingRecordOptional = dataIfExists(formClient.getNewRiskChangeByOffender(offenderNo, transactionalClient))
+
+    if (existingRecordOptional) {
+      log.info(`createRiskChange: updating existing risk profile record for offender ${offenderNo}`)
+      formClient.mergeRiskChangeForOffender(offenderNo, newProfile, transactionalClient)
+    } else {
+      log.info(`createRiskChange: creating risk profile record for offender ${offenderNo}`)
+      await formClient.createRiskChange({
+        agencyId,
+        offenderNo,
+        oldProfile,
+        newProfile,
+        transactionalClient,
+      })
+    }
   }
 
   function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
@@ -600,6 +617,7 @@ module.exports = function createFormService(formClient) {
     getRiskChanges,
     getManualAndRiskCategorisationRecords,
     createRiskChange,
+    getRiskChangeForOffender,
     getHistoricalCategorisationRecords,
   }
 }
