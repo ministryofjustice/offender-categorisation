@@ -299,7 +299,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           token: res.locals.user.token,
           bookingId: bookingInt,
           suggestedCategory: userInput.openConditionsSuggestedCategory,
-          overriddenCategoryText: userInput.overriddenCategoryText,
+          overriddenCategoryText: userInput.overriddenCategoryText || 'Cat-tool Open',
         })
 
         await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)

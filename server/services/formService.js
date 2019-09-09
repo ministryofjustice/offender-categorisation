@@ -111,9 +111,8 @@ module.exports = function createFormService(formClient) {
         calculateStatus(currentCategorisation.status, status),
         transactionalClient
       )
-      return newCategorisationForm
     }
-    throw new Error(`Invalid state transition from ${currentCategorisation.status} to ${status}`)
+    return newCategorisationForm
   }
 
   async function categoriserDecisionWithFormResponse({
@@ -149,9 +148,8 @@ module.exports = function createFormService(formClient) {
         userId,
         transactionalClient
       )
-      return newCategorisationForm
     }
-    throw new Error(`Invalid state transition from ${currentCategorisation.status} to 'AWAITING_APPROVAL'`)
+    return newCategorisationForm
   }
 
   async function categoriserDecision(bookingId, userId, transactionalClient) {
@@ -159,8 +157,6 @@ module.exports = function createFormService(formClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     if (validateStatusIfProvided(currentCategorisation.status, Status.AWAITING_APPROVAL.name)) {
       await formClient.categoriserDecision(bookingId, userId, transactionalClient)
-    } else {
-      throw new Error(`Invalid state transition from ${currentCategorisation.status} to 'AWAITING_APPROVAL'`)
     }
   }
 
@@ -217,11 +213,8 @@ module.exports = function createFormService(formClient) {
         )}`
       )
       await formClient.supervisorApproval(newCategorisationForm, bookingId, userId, transactionalClient)
-      return newCategorisationForm
     }
-    throw new Error(
-      `Invalid state transition in supervisorApproval from ${currentCategorisation.status} to ${Status.APPROVED.name}`
-    )
+    return newCategorisationForm
   }
 
   async function createCategorisationRecord(
@@ -303,6 +296,16 @@ module.exports = function createFormService(formClient) {
       status,
       transactionalClient,
     })
+  }
+
+  async function createSecurityReferral(bookingId, agencyId, offenderNo, userId, transactionalClient) {
+    log.info(`createSecurityReferral: creating security referral record for bookingId ${bookingId}`)
+    await formClient.createSecurityReferral({ bookingId, agencyId, offenderNo, userId, transactionalClient })
+  }
+
+  async function getSecurityReferral(bookingId, transactionalClient) {
+    const data = await formClient.getSecurityReferral(bookingId, transactionalClient)
+    return dataIfExists(data) || {}
   }
 
   function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
@@ -407,14 +410,7 @@ module.exports = function createFormService(formClient) {
   async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile, currentStatus, transactionalClient) {
     if (socProfile.transferToSecurity && currentStatus !== Status.SECURITY_BACK.name) {
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_AUTO.name)) {
-        try {
-          await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name, transactionalClient)
-        } catch (error) {
-          logger.error(error)
-          throw error
-        }
-      } else {
-        logger.warn(`Cannot transition from status ${currentStatus} to SECURITY_AUTO, bookingId=${bookingId}`)
+        await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name, transactionalClient)
       }
     }
   }
@@ -426,17 +422,28 @@ module.exports = function createFormService(formClient) {
     if (section.securityInput.securityInputNeeded === 'Yes') {
       const currentStatus = currentCategorisation.status
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_MANUAL.name)) {
-        try {
-          await formClient.referToSecurity(bookingId, userId, Status.SECURITY_MANUAL.name, transactionalClient)
-        } catch (error) {
-          logger.error(error)
-          throw error
-        }
-      } else {
-        logger.warn(`Cannot transition from status ${currentStatus} to SECURITY_MANUAL, bookingId=${bookingId}`)
+        await formClient.referToSecurity(bookingId, userId, Status.SECURITY_MANUAL.name, transactionalClient)
       }
     }
     return {}
+  }
+
+  /**
+   * Refer to security if a new entry is present in the SECURITY_REFERRAL table
+   */
+  async function referToSecurityIfFlagged(bookingId, currentStatus, transactionalClient) {
+    const securityReferral = await getSecurityReferral(bookingId, transactionalClient)
+    if (securityReferral && securityReferral.status === 'NEW') {
+      if (validateStatusIfProvided(currentStatus, Status.SECURITY_FLAGGED.name)) {
+        await formClient.referToSecurity(
+          bookingId,
+          securityReferral.userId,
+          Status.SECURITY_FLAGGED.name,
+          transactionalClient
+        )
+        await formClient.setSecurityReferralProcessed(bookingId, transactionalClient)
+      }
+    }
   }
 
   async function backToCategoriser(bookingId, transactionalClient) {
@@ -452,8 +459,6 @@ module.exports = function createFormService(formClient) {
         logger.error(error)
         throw error
       }
-    } else {
-      logger.warn(`Cannot transition from status ${currentStatus} to SUPERVISOR_BACK, bookingId=${bookingId}`)
     }
   }
 
@@ -483,9 +488,6 @@ module.exports = function createFormService(formClient) {
         logger.error(error)
         throw error
       }
-    } else {
-      logger.error(`Cannot transition from status ${currentStatus} to AWAITING_APPROVAL, bookingId=${bookingId}`)
-      throw new Error(`Cannot transition from status ${currentStatus} to AWAITING_APPROVAL`)
     }
   }
 
@@ -499,8 +501,6 @@ module.exports = function createFormService(formClient) {
         logger.error(error)
         throw error
       }
-    } else {
-      logger.warn(`Cannot transition from status ${currentStatus} to SECURITY_BACK, bookingId=${bookingId}`)
     }
     return {}
   }
@@ -533,7 +533,7 @@ module.exports = function createFormService(formClient) {
     try {
       const data = await formClient.getCategorisationRecordsByStatus(
         agencyId,
-        [Status.SECURITY_MANUAL.name, Status.SECURITY_AUTO.name],
+        [Status.SECURITY_MANUAL.name, Status.SECURITY_AUTO.name, Status.SECURITY_FLAGGED.name],
         transactionalClient
       )
 
@@ -549,7 +549,17 @@ module.exports = function createFormService(formClient) {
   }
 
   function validateStatusIfProvided(current, proposed) {
-    return proposed ? Status[proposed].previous.includes(Status[current]) : true
+    const valid = proposed ? Status[proposed].previous.includes(Status[current]) : true
+    if (!valid) {
+      if (current === proposed) {
+        logger.warn(`Cannot transition from status ${current} to itself`)
+      } else {
+        const error = new Error(`Cannot transition from status ${current} to ${proposed}`)
+        logger.error(error)
+        throw error
+      }
+    }
+    return valid
   }
 
   function isValid(formPageConfig, req, res, formUrl, userInput) {
@@ -614,8 +624,9 @@ module.exports = function createFormService(formClient) {
     computeSuggestedCat,
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,
+    referToSecurityIfFlagged,
     securityReviewed,
-    validateStatus: validateStatusIfProvided,
+    validateStatusIfProvided,
     createOrRetrieveCategorisationRecord,
     createCategorisationRecord,
     backToCategoriser,
@@ -638,6 +649,8 @@ module.exports = function createFormService(formClient) {
     getRiskChanges,
     getManualAndRiskCategorisationRecords,
     createRiskChange,
+    createSecurityReferral,
+    getSecurityReferral,
     getRiskChangeForOffender,
     getHistoricalCategorisationRecords,
     updateStatusForOutstandingRiskChange,

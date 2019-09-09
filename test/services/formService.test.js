@@ -17,6 +17,8 @@ const formClient = {
   getNewRiskChangeByOffender: jest.fn(),
   mergeRiskChangeForOffender: jest.fn(),
   createRiskChange: jest.fn(),
+  getSecurityReferral: jest.fn(),
+  setSecurityReferralProcessed: jest.fn(),
 }
 let service
 
@@ -467,29 +469,34 @@ describe('getValidationErrors', () => {
   })
 })
 
-describe('validateStatusIfPresent', () => {
+describe('validateStatusIfProvided', () => {
   test.each`
     current                          | proposed                         | expectedOutput
     ${Status.STARTED.name}           | ${Status.AWAITING_APPROVAL.name} | ${true}
-    ${Status.STARTED.name}           | ${Status.APPROVED.name}          | ${false}
+    ${Status.STARTED.name}           | ${Status.APPROVED.name}          | ${'exception'}
     ${Status.SECURITY_AUTO.name}     | ${Status.SECURITY_BACK.name}     | ${true}
     ${Status.SECURITY_MANUAL.name}   | ${Status.SECURITY_BACK.name}     | ${true}
-    ${Status.SECURITY_MANUAL.name}   | ${Status.STARTED.name}           | ${false}
+    ${Status.SECURITY_MANUAL.name}   | ${Status.STARTED.name}           | ${'exception'}
     ${Status.AWAITING_APPROVAL.name} | ${Status.SUPERVISOR_BACK.name}   | ${true}
-    ${Status.STARTED.name}           | ${Status.SUPERVISOR_BACK.name}   | ${false}
+    ${Status.STARTED.name}           | ${Status.SUPERVISOR_BACK.name}   | ${'exception'}
     ${Status.SUPERVISOR_BACK.name}   | ${Status.AWAITING_APPROVAL.name} | ${true}
-    ${Status.SUPERVISOR_BACK.name}   | ${Status.STARTED.name}           | ${false}
-    ${undefined}                     | ${Status.APPROVED.name}          | ${false}
-    ${undefined}                     | ${Status.AWAITING_APPROVAL.name} | ${false}
-    ${undefined}                     | ${Status.SECURITY_MANUAL.name}   | ${false}
+    ${Status.SUPERVISOR_BACK.name}   | ${Status.STARTED.name}           | ${'exception'}
+    ${undefined}                     | ${Status.APPROVED.name}          | ${'exception'}
+    ${undefined}                     | ${Status.AWAITING_APPROVAL.name} | ${'exception'}
+    ${undefined}                     | ${Status.SECURITY_MANUAL.name}   | ${'exception'}
     ${undefined}                     | ${Status.SECURITY_AUTO.name}     | ${true}
-    ${undefined}                     | ${Status.SECURITY_BACK.name}     | ${false}
+    ${undefined}                     | ${Status.SECURITY_BACK.name}     | ${'exception'}
     ${undefined}                     | ${Status.STARTED.name}           | ${true}
     ${Status.STARTED.name}           | ${undefined}                     | ${true}
+    ${Status.SUPERVISOR_BACK.name}   | ${Status.SUPERVISOR_BACK.name}   | ${false}
   `(
     `should return $expectedOutput for validate status transition $current to $proposed`,
     ({ current, proposed, expectedOutput }) => {
-      expect(service.validateStatus(current, proposed)).toEqual(expectedOutput)
+      if (expectedOutput === 'exception') {
+        expect(() => service.validateStatusIfProvided(current, proposed)).toThrow(
+          `Cannot transition from status ${current} to ${proposed}`
+        )
+      } else expect(service.validateStatusIfProvided(current, proposed)).toEqual(expectedOutput)
     }
   )
 })
@@ -531,7 +538,7 @@ const userId = 'MEEE'
 describe('referToSecurityIfRiskAssessed', () => {
   const socProfile = { transferToSecurity: true }
 
-  test(' valid status', async () => {
+  test('valid status', async () => {
     await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED', mockTransactionalClient)
     expect(formClient.referToSecurity.mock.calls[0]).toEqual([
       bookingId,
@@ -542,8 +549,9 @@ describe('referToSecurityIfRiskAssessed', () => {
   })
 
   test('invalid status', async () => {
-    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED', mockTransactionalClient)
-    expect(formClient.referToSecurity).not.toBeCalled()
+    expect(
+      service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED', mockTransactionalClient)
+    ).rejects.toThrow()
   })
 
   test('invalid SECURITY_AUTO status', async () => {
@@ -593,7 +601,9 @@ describe('referToSecurityIfRequested', () => {
   test('no record in db', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
+    expect(
+      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
+    ).rejects.toThrow()
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -601,7 +611,9 @@ describe('referToSecurityIfRequested', () => {
   test('invalid status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'APPROVED' }] })
 
-    await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
+    expect(
+      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
+    ).rejects.toThrow()
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -620,6 +632,40 @@ describe('referToSecurityIfRequested', () => {
     expect(
       service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
     ).rejects.toThrow('TEST')
+  })
+})
+
+describe('referToSecurityIfFlagged', () => {
+  test('happy path', async () => {
+    formClient.getSecurityReferral.mockReturnValue({ rows: [{ status: 'NEW', userId: 'SEC_USER' }] })
+
+    await service.referToSecurityIfFlagged(bookingId, 'STARTED', mockTransactionalClient)
+
+    expect(formClient.referToSecurity.mock.calls[0]).toEqual([
+      bookingId,
+      'SEC_USER',
+      Status.SECURITY_FLAGGED.name,
+      mockTransactionalClient,
+    ])
+    expect(formClient.setSecurityReferralProcessed.mock.calls[0]).toEqual([bookingId, mockTransactionalClient])
+  })
+
+  test('not flagged', async () => {
+    formClient.getSecurityReferral.mockReturnValue({ rows: [] })
+
+    await service.referToSecurityIfFlagged(bookingId, 'STARTED', mockTransactionalClient)
+
+    expect(formClient.referToSecurity).not.toBeCalled()
+    expect(formClient.setSecurityReferralProcessed).not.toBeCalled()
+  })
+
+  test('flag processed', async () => {
+    formClient.getSecurityReferral.mockReturnValue({ rows: [{ status: 'REFERRED', userId: 'SEC_USER' }] })
+
+    await service.referToSecurityIfFlagged(bookingId, 'STARTED', mockTransactionalClient)
+
+    expect(formClient.referToSecurity).not.toBeCalled()
+    expect(formClient.setSecurityReferralProcessed).not.toBeCalled()
   })
 })
 
@@ -650,7 +696,7 @@ describe('updateStatus', () => {
   test('no record in db', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [] })
 
-    await service.backToCategoriser(bookingId, mockTransactionalClient)
+    expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -658,7 +704,7 @@ describe('updateStatus', () => {
   test('invalid status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
 
-    await service.backToCategoriser(bookingId, mockTransactionalClient)
+    expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -666,7 +712,7 @@ describe('updateStatus', () => {
   test('invalid SECURITY_BACK status', async () => {
     formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_BACK' }] })
 
-    await service.backToCategoriser(bookingId, mockTransactionalClient)
+    expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
 
     expect(formClient.updateStatus).not.toBeCalled()
   })

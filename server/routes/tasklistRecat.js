@@ -72,6 +72,7 @@ module.exports = function Index({
           transactionalDbClient
         )
       }
+
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id

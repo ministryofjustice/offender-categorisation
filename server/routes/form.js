@@ -68,7 +68,11 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId, transactionalDbClient)
 
-      if (result.status === Status.SECURITY_MANUAL.name || result.status === Status.SECURITY_AUTO.name) {
+      if (
+        result.status === Status.SECURITY_MANUAL.name ||
+        result.status === Status.SECURITY_AUTO.name ||
+        result.status === Status.SECURITY_FLAGGED.name
+      ) {
         res.redirect(`/tasklist/${bookingId}`)
       } else {
         res.render('formPages/ratings/securityInput', result)
@@ -531,7 +535,7 @@ module.exports = function Index({
           bookingId: bookingInt,
           overriddenCategory: userInput.overriddenCategory,
           suggestedCategory: userInput.suggestedCategory,
-          overriddenCategoryText: userInput.overriddenCategoryText,
+          overriddenCategoryText: userInput.overriddenCategoryText || 'Cat-tool Initial',
         })
 
         await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)
