@@ -19,4 +19,4 @@ exports.up = knex =>
     }),
   ])
 
-exports.down = knex => knex.schema.dropTable('risk_change').then(() => knex.raw(`drop risk_change_status_enum`))
+exports.down = knex => knex.schema.dropTable('risk_change').then(() => knex.raw(`drop type risk_change_status_enum`))

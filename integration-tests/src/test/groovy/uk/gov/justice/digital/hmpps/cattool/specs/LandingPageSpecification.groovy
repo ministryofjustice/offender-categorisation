@@ -97,6 +97,78 @@ class LandingPageSpecification extends GebReportingSpec {
     warning.text() contains 'This prisoner is Cat A. They cannot be categorised here.'
   }
 
+  def "A security user can flag a prisoner for later referral"() {
+
+    given: 'A security user is logged in'
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
+    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    elite2Api.stubUncategorised()
+    elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
+    elite2Api.stubGetSecurityStaffDetailsByUsernameList()
+    fixture.loginAs(SECURITY_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetCategory(12, 'C')
+    go '/12'
+
+    then: 'The page contains a security referral checkbox'
+    at LandingPage
+    securityButton.displayed
+
+    when: 'It is clicked and saved'
+    checkbox.click()
+    securityButton.click()
+
+    then: 'The referral is stored'
+    at SecurityHomePage
+
+    def securityNew = db.getSecurityData(12)[0]
+    securityNew.booking_id == 12
+    securityNew.offender_no == 'B2345YZ'
+    securityNew.status.value == 'NEW'
+    securityNew.prison_id == 'LEI'
+    securityNew.user_id == SECURITY_USER.getUsername()
+    System.currentTimeMillis() - securityNew.raised_date.getTime() < 10000
+
+    when: 'A re-categoriser starts a recat'
+    fixture.logout()
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+    go '/12'
+    at LandingPage
+    elite2Api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    recatButton.click()
+
+    then: 'Security is locked'
+    at TasklistRecatPage
+    securityButton.@disabled
+    def today = LocalDate.now().format('dd/MM/yyyy')
+    $('#securitySection').text().contains("Flagged to be referred to Security ($today)")
+
+    and: 'the security database table is updated correctly'
+    def securityReferred = db.getSecurityData(12)[0]
+    securityReferred.status.value == 'REFERRED'
+    System.currentTimeMillis() - securityReferred.processed_date.getTime() < 10000
+
+    when: 'the security user reviews the prisoner'
+    fixture.logout()
+    fixture.loginAs(SECURITY_USER)
+    at SecurityHomePage
+    startButtons[0].click()
+    at new SecurityReviewPage(bookingId: '12')
+    securityText << 'security info'
+    saveButton.click()
+
+    then: 'the form database table is updated correctly'
+    def data = db.getData(12)[0]
+    data.status == 'SECURITY_BACK'
+    data.cat_type.value == 'RECAT'
+    data.referred_by == 'SECURITY_USER'
+    data.security_reviewed_by == 'SECURITY_USER'
+  }
+
   def "A basic user can view previous categorisations if prisoner is in their prison"() {
     db.createData(12, '{}'); // should get ignored
     db.doCreateCompleteRow(-2, 12, '{"supervisor": {"review": {"proposedCategory": "B"}}}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,

@@ -19,6 +19,13 @@ module.exports = function Index({
 
   router.use(authenticationMiddleware())
 
+  router.use((req, res, next) => {
+    if (typeof req.csrfToken === 'function') {
+      res.locals.csrfToken = req.csrfToken()
+    }
+    next()
+  })
+
   router.get(
     '/',
     asyncMiddleware(async (req, res) => {
@@ -253,6 +260,29 @@ module.exports = function Index({
       const catType = await offendersService.isRecat(res.locals.user.token, bookingId)
 
       res.render('pages/landing', { data: { catType, nextReviewDate, details } })
+    })
+  )
+
+  router.post(
+    '/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+
+      if (req.body.refer) {
+        const user = await userService.getUser(res.locals.user.token)
+        const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+
+        formService.createSecurityReferral(
+          bookingId,
+          details.agencyId,
+          details.offenderNo,
+          user.username,
+          transactionalDbClient
+        )
+        res.redirect(`/`)
+      } else {
+        res.redirect(`/`)
+      }
     })
   )
 

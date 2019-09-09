@@ -80,20 +80,27 @@ async function addSocProfile({
   req,
   categorisationRecord,
 }) {
+  let result
   // only load the soc profile once - then it is saved against the record
-  if (res.locals.formObject.socProfile) {
-    return categorisationRecord
+  if (!res.locals.formObject.socProfile) {
+    const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals.user.username)
+
+    await formService.mergeRiskProfileData(bookingId, { socProfile }, transactionalDbClient)
+
+    await formService.referToSecurityIfRiskAssessed(
+      bookingId,
+      req.user.username,
+      socProfile,
+      categorisationRecord.status,
+      transactionalDbClient
+    )
+    result = formService.getCategorisationRecord(bookingId, transactionalDbClient)
+  } else {
+    result = categorisationRecord
   }
-  const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals.user.username)
 
-  await formService.mergeRiskProfileData(bookingId, { socProfile }, transactionalDbClient)
+  await formService.referToSecurityIfFlagged(bookingId, result.status, transactionalDbClient)
+  result = formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
-  await formService.referToSecurityIfRiskAssessed(
-    bookingId,
-    req.user.username,
-    socProfile,
-    categorisationRecord.status,
-    transactionalDbClient
-  )
-  return formService.getCategorisationRecord(bookingId, transactionalDbClient)
+  return result
 }
