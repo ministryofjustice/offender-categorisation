@@ -30,7 +30,9 @@ module.exports = function createSqsService(offenderService, formService) {
               )
             })
           } else {
-            logger.debug(`Ignoring Risk Change alert for category ${detail.categoryCode} as category cannot be increased`)
+            logger.debug(
+              `Ignoring Risk Change alert for category ${detail.categoryCode} as category cannot be increased`
+            )
           }
         } catch (error) {
           logger.error(
