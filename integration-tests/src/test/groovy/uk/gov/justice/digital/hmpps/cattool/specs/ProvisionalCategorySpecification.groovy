@@ -321,7 +321,6 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
 
     then: 'An error is displayed and the data is not persisted'
     at ErrorPage
-    at new ErrorPage(url: 'form/categoriser/provisionalCategory/12')
     errorSummaryTitle.text() == 'Server Error'
 
     def data = db.getData(12)

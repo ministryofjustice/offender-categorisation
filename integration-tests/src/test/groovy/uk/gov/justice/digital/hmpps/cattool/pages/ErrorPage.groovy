@@ -4,8 +4,6 @@ import geb.Page
 
 class ErrorPage extends Page {
 
-  static url
-
   static at = {
     errorSummaryTitle.displayed
   }
