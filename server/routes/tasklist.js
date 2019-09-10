@@ -30,6 +30,7 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals.user.token)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
+      const { reason } = req.query
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
       const dueByDate =
         details.sentence && details.sentence.sentenceStartDate && add10BusinessDays(details.sentence.sentenceStartDate)
@@ -40,7 +41,7 @@ module.exports = function Index({
         details.agencyId,
         details.offenderNo,
         CatType.INITIAL.name,
-        null,
+        reason || null,
         dueByDate,
         transactionalDbClient
       )
