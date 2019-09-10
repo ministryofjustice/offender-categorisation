@@ -171,4 +171,15 @@ module.exports = {
     },
     validate: true,
   },
+  riskProfileChangeDetail: {
+    fields: [
+      {
+        confirmation: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+    ],
+    validate: true,
+  },
 }

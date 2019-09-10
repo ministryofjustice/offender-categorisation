@@ -17,15 +17,23 @@ module.exports = function createSqsService(offenderService, formService) {
           // todo check endpoint will return inactive offender details
           const detail = await offenderService.getOffenderDetailWithFullInfo(change.offenderNo)
 
-          db.doTransactional(async transactionalDbClient => {
-            await formService.createRiskChange({
-              offenderNo: change.offenderNo,
-              agencyId: detail.agencyId,
-              newProfile: change.newProfile,
-              oldProfile: change.oldProfile,
-              client: transactionalDbClient,
+          if (categoryCouldMoveUp(detail)) {
+            logger.info(`Creating risk change record for offender ${change.offenderNo}`)
+
+            db.doTransactional(async transactionalDbClient => {
+              await formService.createRiskChange(
+                change.offenderNo,
+                detail.agencyId,
+                change.oldProfile,
+                change.newProfile,
+                transactionalDbClient
+              )
             })
-          })
+          } else {
+            logger.debug(
+              `Ignoring Risk Change alert for category ${detail.categoryCode} as category cannot be increased`
+            )
+          }
         } catch (error) {
           logger.error(
             `Problem processing risk change payload for offender ${change.offenderNo} \nError returned : ${error}`
@@ -47,6 +55,10 @@ module.exports = function createSqsService(offenderService, formService) {
   app.on('processing_error', err => {
     logger.error(err.message)
   })
+
+  function categoryCouldMoveUp(detail) {
+    return detail && (detail.categorycode !== 'B' && detail.categorycode !== 'I')
+  }
 
   function alertIsRequired(detail) {
     const { oldProfile, newProfile } = detail

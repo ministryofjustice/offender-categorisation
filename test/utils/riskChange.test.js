@@ -32,6 +32,42 @@ describe('it should assess the risk change status of a new and old risk profile 
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeListAlert).toBe(true)
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeRiskAlert).toBe(false)
   })
+  it('Changes in violence assaults are detected', () => {
+    const oldProfile = buildProfile({ numberOfAssaults: 0 })
+    const newProfile = buildProfile({ numberOfAssaults: 1 })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceAssaultsChange).toBe(true)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceNotifySafetyCTLead).toBe(false)
+  })
+  it('Changes in violence serious assaults are detected', () => {
+    const oldProfile = buildProfile({ numberOfSeriousAssaults: 0 })
+    const newProfile = buildProfile({ numberOfSeriousAssaults: 1 })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceAssaultsChange).toBe(true)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceNotifySafetyCTLead).toBe(false)
+  })
+  it('Changes in violence notify lead', () => {
+    const oldProfile = buildProfile({ notifySafetyCustodyLead: false })
+    const newProfile = buildProfile({ notifySafetyCustodyLead: true })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceAssaultsChange).toBe(false)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceNotifySafetyCTLead).toBe(true)
+  })
+  it('Changes in extremism notify lead', () => {
+    const oldProfile = buildProfile({ notifyRegionalCTLead: false })
+    const newProfile = buildProfile({ notifyRegionalCTLead: true })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).increasedRiskOfExtremism).toBe(false)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).notifyRegionalCTLeadExtremism).toBe(true)
+  })
+  it('Changes in extremism increasedRiskOfExtremism', () => {
+    const oldProfile = buildProfile({ increasedRiskOfExtremism: false })
+    const newProfile = buildProfile({ increasedRiskOfExtremism: true })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).increasedRiskOfExtremism).toBe(true)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).notifyRegionalCTLeadExtremism).toBe(false)
+  })
+  it('Changes in extremism increasedRiskOfExtremism change to false is ignored', () => {
+    const oldProfile = buildProfile({ increasedRiskOfExtremism: true })
+    const newProfile = buildProfile({ increasedRiskOfExtremism: false })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).increasedRiskOfExtremism).toBe(false)
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).notifyRegionalCTLeadExtremism).toBe(false)
+  })
 })
 
 function buildProfile({
@@ -39,8 +75,15 @@ function buildProfile({
   activeEscapeList = false,
   escapeRiskAlerts = [],
   escapeListAlerts = [],
+  numberOfAssaults = 0,
+  numberOfSeriousAssaults = 0,
+  notifySafetyCustodyLead = false,
+  notifyRegionalCTLead = false,
+  increasedRiskOfExtremism = false,
 }) {
   return {
     escape: { activeEscapeList, activeEscapeRisk, escapeRiskAlerts, escapeListAlerts },
+    violence: { numberOfAssaults, numberOfSeriousAssaults, notifySafetyCustodyLead },
+    extremism: { notifyRegionalCTLead, increasedRiskOfExtremism },
   }
 }
