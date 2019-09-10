@@ -43,7 +43,7 @@ class ErrorSpecification extends GebReportingSpec {
     fixture.loginAs(SUPERVISOR_USER)
 
     then: 'the error page is displayed'
-    at new ErrorPage(url: 'supervisorHome')
+    at ErrorPage
     errorSummaryTitle.text() == 'A test error'
     errorText.text() == 'status 500'
   }
@@ -58,7 +58,7 @@ class ErrorSpecification extends GebReportingSpec {
     go 'tasklist/12'
 
     then: 'the auth error page is displayed'
-    at new ErrorPage(url: 'tasklist/12')
+    at ErrorPage
     errorSummaryTitle.text() == 'Unauthorised access: required role not present'
     errorText.text() == 'status 403'
 
@@ -67,7 +67,7 @@ class ErrorSpecification extends GebReportingSpec {
     go 'idontexist/12'
 
     then: 'the auth error page is displayed'
-    at new ErrorPage(url: 'idontexist/12')
+    at ErrorPage
     errorSummaryTitle.text() == 'Url not recognised'
     errorText.text() == 'status 403'
   }
