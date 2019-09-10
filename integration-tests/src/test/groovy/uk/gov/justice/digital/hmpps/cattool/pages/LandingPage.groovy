@@ -11,7 +11,8 @@ class LandingPage extends Page {
   }
 
   static content = {
-    startButton(required: false) { $('#recatButton') }
+    initialButton(required: false) { $('#initialButton') }
+    recatButton(required: false) { $('#recatButton') }
     warning(required: false) { $('div.govuk-warning-text') }
     historyButton { $('#historyButton') }
     historyHeading { $('#previousCategoryHeading') }
