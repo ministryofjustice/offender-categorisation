@@ -142,14 +142,26 @@ module.exports = function createFormService(formClient) {
         filterJsonObjectForLogging(userInput)
       )}`
     )
-
-    await formClient.categoriserDecisionWithFormResponse(newCategorisationForm, bookingId, userId, transactionalClient)
-    return newCategorisationForm
+    if (validateStatusIfProvided(currentCategorisation.status, Status.AWAITING_APPROVAL.name)) {
+      await formClient.categoriserDecisionWithFormResponse(
+        newCategorisationForm,
+        bookingId,
+        userId,
+        transactionalClient
+      )
+      return newCategorisationForm
+    }
+    throw new Error(`Invalid state transition from ${currentCategorisation.status} to 'AWAITING_APPROVAL'`)
   }
 
   async function categoriserDecision(bookingId, userId, transactionalClient) {
     log.info(`record 'awaiting_approval' for  booking Id: ${bookingId}`)
-    await formClient.categoriserDecision(bookingId, userId, transactionalClient)
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
+    if (validateStatusIfProvided(currentCategorisation.status, Status.AWAITING_APPROVAL.name)) {
+      await formClient.categoriserDecision(bookingId, userId, transactionalClient)
+    } else {
+      throw new Error(`Invalid state transition from ${currentCategorisation.status} to 'AWAITING_APPROVAL'`)
+    }
   }
 
   async function deleteFormData({ bookingId, formSection, formName, transactionalClient }) {
