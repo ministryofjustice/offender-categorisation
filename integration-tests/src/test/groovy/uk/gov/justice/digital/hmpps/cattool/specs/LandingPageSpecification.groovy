@@ -12,6 +12,8 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
 
+import java.time.LocalDate
+
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
 class LandingPageSpecification extends GebReportingSpec {
@@ -46,12 +48,12 @@ class LandingPageSpecification extends GebReportingSpec {
 
     then: 'The page contains a recat button'
     at LandingPage
-    startButton.displayed
-    startButton.@href.contains('/tasklistRecat/12?reason=MANUAL')
+    recatButton.displayed
+    recatButton.@href.contains('/tasklistRecat/12?reason=MANUAL')
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    startButton.click()
+    recatButton.click()
 
     then: 'We are sent to the recat tasklist'
     at TasklistRecatPage
@@ -74,7 +76,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     then: 'The page contains an initial cat warning'
     at LandingPage
-    !startButton.displayed
+    !recatButton.displayed
     warning.text() contains 'This prisoner seems to need an INITIAL category'
   }
 
@@ -91,7 +93,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     then: 'The page contains a warning'
     at LandingPage
-    !startButton.displayed
+    !recatButton.displayed
     warning.text() contains 'This prisoner is Cat A. They cannot be categorised here.'
   }
 
@@ -133,5 +135,53 @@ class LandingPageSpecification extends GebReportingSpec {
 
     then: 'the approved view page is shown'
     at ApprovedViewRecatPage
+  }
+
+  def "A categoriser user can start an initial cat from the landing page"() {
+
+    given: 'A categoriser is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetCategory(12, 'U')
+    go '/12'
+
+    then: 'The page contains an initial cat button'
+    at LandingPage
+    initialButton.displayed
+    initialButton.@href.contains('/tasklist/12?reason=MANUAL')
+
+    when: 'It is clicked'
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    initialButton.click()
+
+    then: 'We are sent to the tasklist and data is stored'
+    at TasklistPage
+    currentUrl.contains '/tasklist/12'
+    def data = db.getData(12)
+    data.status == ["STARTED"]
+    data.cat_type.value == ["INITIAL"]
+    data.review_reason.value == ["MANUAL"]
+  }
+
+  def "A categoriser user cannot start an initial cat where a cat already exists"() {
+
+    given: 'A categoriser is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'The user arrives at the landing page and a cat already exists'
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetCategory(12, 'B')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !recatButton.displayed
+    warning.text() endsWith 'This prisoner already has a category of Cat C. Their category can only be reviewed.'
   }
 }
