@@ -98,8 +98,26 @@ module.exports = {
   getRiskChangeByStatus(agencyId, status, transactionalClient) {
     logger.debug(`getRiskChangeByStatus called with status ${status} and agencyId ${agencyId}`)
     const query = {
-      text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.agency_id= $1 and f.status = $2::risk_change_status_enum`,
+      text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2::risk_change_status_enum`,
       values: [agencyId, status],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getNewRiskChangeByOffender(offenderNo, transactionalClient) {
+    logger.debug(`getRiskChangeByStatus called with offenderNo ${offenderNo}`)
+    const query = {
+      text: `select old_profile as "oldProfile", new_profile as "newProfile", status, raised_date as "raisedDate" from risk_change r where r.offender_no= $1 and r.status = 'NEW'`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  mergeRiskChangeForOffender(offenderNo, newProfile, transactionalClient) {
+    logger.debug(`mergeRiskChangeForOffender called with offenderNo ${offenderNo}`)
+    const query = {
+      text: `update risk_change set new_profile =$2, raised_date = CURRENT_TIMESTAMP where r.offender_no= $1 and r.status = 'NEW'`,
+      values: [offenderNo, newProfile],
     }
     return transactionalClient.query(query)
   },
@@ -194,13 +212,13 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  createRiskChange({ agencyId, offenderNo, oldProfile, newProfile, client }) {
+  createRiskChange({ agencyId, offenderNo, oldProfile, newProfile, transactionalClient }) {
     logger.debug(`creating risk_change record for offender no  ${offenderNo}`)
     const query = {
       text: `insert into risk_change ( prison_id, offender_no, old_profile, new_profile, raised_date ) values ($1, $2, $3, $4, CURRENT_TIMESTAMP )`,
       values: [agencyId, offenderNo, oldProfile, newProfile],
     }
-    return client.query(query)
+    return transactionalClient.query(query)
   },
 
   create({

@@ -121,6 +121,22 @@ module.exports = function Index({
   )
 
   router.get(
+    '/riskProfileChangeDetail/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+
+      const data = await offendersService.getRiskChangeForOffender(
+        res.locals.user.token,
+        bookingId,
+        transactionalDbClient
+      )
+      res.render('formPages/recat/riskProfileChangeDetail', { data })
+    })
+  )
+
+  router.get(
     '/:form/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
