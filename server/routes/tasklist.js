@@ -5,6 +5,7 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile } = require('../utils/functionalHelpers')
 const { get10BusinessDays } = require('../utils/utils.js')
+const logger = require('../../log.js')
 
 function add10BusinessDays(isoDate) {
   const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
@@ -29,6 +30,7 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals.user.token)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
+      const { reason } = req.query
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
       const dueByDate =
         details.sentence && details.sentence.sentenceStartDate && add10BusinessDays(details.sentence.sentenceStartDate)
@@ -39,10 +41,19 @@ module.exports = function Index({
         details.agencyId,
         details.offenderNo,
         CatType.INITIAL.name,
-        null,
+        reason || null,
         dueByDate,
         transactionalDbClient
       )
+      if (categorisationRecord.status === Status.APPROVED.name) {
+        logger.error(
+          `tasklist: Attempt to do initial cat for $bookingId / $categorisationRecord.offenderNo where approved cat already exists`
+        )
+        throw new Error(
+          'An approved categorisation already exists for this prison term. This prisoner can only be recategorised.'
+        )
+      }
+
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
