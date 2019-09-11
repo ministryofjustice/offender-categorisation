@@ -16,8 +16,7 @@ const nomisClientBuilder = () => nomisClient
 const service = serviceCreator(nomisClientBuilder, formService)
 
 afterEach(() => {
-  nomisClient.getCategoryHistory.mockReset()
-  nomisClient.getSentenceHistory.mockReset()
+  jest.resetAllMocks()
 })
 
 describe('getCatAInformation', () => {

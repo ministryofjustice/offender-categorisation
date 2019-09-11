@@ -9,12 +9,12 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Check change in risk status</h1>
+<h1 class="govuk-heading-l ">Check change in risk status</h1>
 <p>The following has flagged this person for early review</p>
 
 
 {% if data.escapeList or data.escapeRisk or  data.escapeListAlert or data.escapeRiskAlert %}
-<h2 class="govuk-heading-m">Risk of escape</h2>
+<h2 id="escapeSection" class="govuk-heading-m govuk-!-padding-top-4">Risk of escape</h2>
 
 {% if data.escapeList or data.escapeRisk %}
 {{ govukWarningText({
@@ -25,30 +25,43 @@
 {% endif %}
 
 {% if data.escapeListAlert or data.escapeRiskAlert %}
-<h2 class="govuk-heading-s">Previous Alert notes</h2>
 <div class="govuk-details__text govuk-!-margin-bottom-3">
-  {% for alert in data.oldProfile.escape.escapeListAlerts %}
-  {{ renderAlert(alert) }}
-  {% endfor %}
-  {% for alert in data.oldProfile.escape.escapeRiskAlerts %}
-  {{ renderAlert(alert) }}
-  {% endfor %}
+  {% if data.newProfile.escape.escapeListAlerts.length > 0 or data.newProfile.escape.escapeRiskAlerts.length > 0 %}
+    {% for alert in data.newProfile.escape.escapeListAlerts %}
+    {{ renderAlert(alert) }}
+    {% endfor %}
+    {% for alert in data.newProfile.escape.escapeRiskAlerts %}
+    {{ renderAlert(alert) }}
+    {% endfor %}
+  {% else %}
+    No alerts
+  {% endif %}
 </div>
-<h2 class="govuk-heading-s">Current Alert notes</h2>
-<div class="govuk-details__text govuk-!-margin-bottom-3">
-  {% for alert in data.newProfile.escape.escapeListAlerts %}
-  {{ renderAlert(alert) }}
-  {% endfor %}
-  {% for alert in data.newProfile.escape.escapeRiskAlerts %}
-  {{ renderAlert(alert) }}
-  {% endfor %}
-</div>
+<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      View existing alert notes
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    {% if data.oldProfile.escape.escapeListAlerts.length > 0 or data.oldProfile.escape.escapeRiskAlerts.length > 0 %}
+      {% for alert in data.oldProfile.escape.escapeListAlerts %}
+      {{ renderAlert(alert) }}
+      {% endfor %}
+      {% for alert in data.oldProfile.escape.escapeRiskAlerts %}
+      {{ renderAlert(alert) }}
+      {% endfor %}
+    {% else %}
+      No alerts
+    {% endif %}
+  </div>
+</details>
 {% endif %}
 
 {% endif %}
 
 {% if data.increasedRiskOfExtremism or data.notifyRegionalCTLeadExtremism %}
-<h2 class="govuk-heading-m">Extremism</h2>
+<h2 id="extremismSection" class="govuk-heading-m  govuk-!-padding-top-4">Extremism</h2>
 
 {% if data.increasedRiskOfExtremism %}
  {{ govukWarningText({
@@ -69,29 +82,9 @@
 {% endif %}
 
 {% if data.violenceAssaultsChange  or data.violenceNotifySafetyCTLead %}
-<h2 class="govuk-heading-m">Safety and good order</h2>
+<h2 id="violenceSection" class="govuk-heading-m  govuk-!-padding-top-4">Safety and good order</h2>
 
-<h2 class="govuk-heading-s">Previous Safety and good order</h2>
-{% if data.oldProfile.violence.displayAssaults %}
-    {% set warningText %}
-      This person has been reported as the perpetrator in {{ data.oldProfile.violence.numberOfAssaults }} assaults in custody before,
-      including {{ data.oldProfile.violence.numberOfSeriousAssaults }} serious assaults in the last 12 months
-    {% endset %}
-    {{ govukWarningText({
-      text: warningText,
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides"
-    }) }}
-  {% endif %}
-  {% if data.oldProfile.violence.notifySafetyCustodyLead %}
-    {{ govukWarningText({
-      text: 'Please notify your safer custody lead about this prisoner',
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides"
-    }) }}
- {% endif %}
-<h2 class="govuk-heading-s">Current Safety and good order</h2>
-{% if data.newProfile.violence.displayAssaults %}
+{% if data.violenceAssaultsChange %}
     {% set warningText %}
       This person has been reported as the perpetrator in {{ data.newProfile.violence.numberOfAssaults }} assaults in custody before,
       including {{ data.newProfile.violence.numberOfSeriousAssaults }} serious assaults in the last 12 months
@@ -101,14 +94,36 @@
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
-  {% endif %}
-  {% if data.newProfile.violence.notifySafetyCustodyLead %}
+{% endif %}
+{% if data.violenceNotifySafetyCTLead %}
     {{ govukWarningText({
       text: 'Please notify your safer custody lead about this prisoner',
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
  {% endif %}
+
+{% if data.violenceAssaultsChange %}
+<details class="govuk-details" data-module="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      View previous safety and good order warnings
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    {% set warningText %}
+    This person has been reported as the perpetrator in {{ data.oldProfile.violence.numberOfAssaults }} assaults in custody before,
+    including {{ data.oldProfile.violence.numberOfSeriousAssaults }} serious assaults in the last 12 months
+    {% endset %}
+    {{ govukWarningText({
+    text: warningText,
+    iconFallbackText: "Warning",
+    classes: "forms-warning-text warning-overrides"
+    }) }}
+  </div>
+</details>
+{% endif %}
+
 {% endif %}
 
 

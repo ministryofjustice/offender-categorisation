@@ -87,6 +87,8 @@ module.exports = function Index({
         categorisationRecord,
       })
 
+      // todo clear any outstanding risk profile alerts as categorisation has been started ( apply to inital tasklist too)
+
       const data = {
         details,
         ...res.locals.formObject,
