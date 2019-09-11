@@ -7,6 +7,7 @@ const { getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const recat = require('../config/recat')
 const Status = require('../utils/statusEnum')
+const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
 
 const formConfig = {
@@ -221,6 +222,42 @@ module.exports = function Index({
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
+    })
+  )
+
+  router.post(
+    '/riskProfileChangeDetail/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const section = 'recat'
+      const form = 'riskProfileChangeDetail'
+      const { bookingId } = req.params
+      const formPageConfig = formConfig[section][form]
+      const userInput = Object.assign({}, req.body)
+
+      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
+        return
+      }
+
+      const bookingIdInt = parseInt(bookingId, 10)
+      const status =
+        userInput.confirmation === 'No'
+          ? RiskChangeStatus.REVIEW_NOT_REQUIRED.name
+          : RiskChangeStatus.REVIEW_REQUIRED.name
+
+      offendersService.handleRiskChangeDecision(
+        res.locals.user.token,
+        bookingIdInt,
+        req.user.username,
+        status,
+        transactionalDbClient
+      )
+
+      if (userInput.confirmation === 'No') {
+        res.redirect(`/recategoriserCheck`)
+      } else {
+        // in the event of an initial categorisation the user will see an error (edge-case as this should be filtered out in the sqs service)
+        res.redirect(`/tasklistRecat/${bookingId}`)
+      }
     })
   )
 

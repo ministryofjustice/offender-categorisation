@@ -221,6 +221,15 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  updateNewRiskChangeStatus({ offenderNo, userId, status, transactionalClient }) {
+    logger.debug(`updating risk_change status for offender no  ${offenderNo}`)
+    const query = {
+      text: `update risk_change set status = $1, user_id = $2 where offender_no = $3 and status = 'NEW'`,
+      values: [status, userId, offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
   create({
     bookingId,
     catType,
