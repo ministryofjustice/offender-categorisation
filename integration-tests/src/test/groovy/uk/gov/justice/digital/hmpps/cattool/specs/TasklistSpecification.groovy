@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
 
@@ -146,5 +147,18 @@ class TasklistSpecification extends GebReportingSpec {
     data.start_date.toLocalDate().equals(LocalDate.now())
     data.cat_type.value == "INITIAL"
     data.due_by_date.toLocalDate().equals(LocalDate.of(2019, 8, 29))
+  }
+
+  def "Initial cat after an existing cat is not allowed"() {
+    when: 'I go to the tasklist page with an existing completed cat'
+    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
+      ratings                   : [
+      ]]))
+    fixture.gotoTasklist()
+    go '/tasklist/12' // no clickable button available, so force to page
+
+    then: 'An error is displayed'
+    at ErrorPage
+    errorSummaryTitle.text() == 'An approved categorisation already exists for this prison term. This prisoner can only be recategorised.'
   }
 }

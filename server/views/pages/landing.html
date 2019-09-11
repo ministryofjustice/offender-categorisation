@@ -14,6 +14,34 @@
 
 {% block content %}
 
+  {% if user.roles.categoriser %}
+  <h1 class="govuk-heading-l">Start an initial categorisation</h1>
+
+  <div>
+    {% if data.catType == 'INITIAL' %}
+      <p>Once started, you cannot cancel a categorisation.</p>
+      {{ govukButton({
+        text: 'Start initial categorisation',
+        href: '/tasklist/' + data.details.bookingId + '?reason=MANUAL',
+        classes: 'grey-button',
+        attributes: { 'id': 'initialButton' }
+      }) }}
+    {% elif data.catType == 'RECAT' %}
+      {{ govukWarningText({
+        text: 'This prisoner already has a category of ' + data.details.category + '. Their category can only be reviewed.',
+        iconFallbackText: "Warning",
+        classes: "forms-warning-text warning-overrides"
+      }) }}
+    {% else %}
+      {{ govukWarningText({
+        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here.',
+        iconFallbackText: "Warning",
+        classes: "forms-warning-text warning-overrides"
+      }) }}
+    {% endif %}
+  </div>
+  {% endif %}
+
   {% if user.roles.recategoriser %}
   <h1 class="govuk-heading-l">Start a category review early</h1>
 
