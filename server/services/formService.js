@@ -284,6 +284,15 @@ module.exports = function createFormService(formClient) {
     }
   }
 
+  async function updateStatusForOutstandingRiskChange({ offenderNo, userId, status, transactionalClient }) {
+    await formClient.updateNewRiskChangeStatus({
+      offenderNo,
+      userId,
+      status,
+      transactionalClient,
+    })
+  }
+
   function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
     const answers = fieldMap ? fieldMap.reduce(answersFromMapReducer(userInput), {}) : {}
 
@@ -619,5 +628,6 @@ module.exports = function createFormService(formClient) {
     createRiskChange,
     getRiskChangeForOffender,
     getHistoricalCategorisationRecords,
+    updateStatusForOutstandingRiskChange,
   }
 }

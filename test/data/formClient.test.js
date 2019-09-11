@@ -213,3 +213,20 @@ describe('mergeRiskChangeForOffender', () => {
     })
   })
 })
+
+describe('updateNewRiskChangeStatus', () => {
+  test('it should update the risk change record (if a changed record with NEW status exists) by offender with the given status', () => {
+    formClient.updateNewRiskChangeStatus({
+      offenderNo: 'GN12345',
+      userId: 'Me',
+      status: 'REVIEW_REQUIRED',
+      transactionalClient: mockTransactionalClient,
+    })
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text: "update risk_change set status = $1, user_id = $2 where offender_no = $3 and status = 'NEW'",
+
+      values: ['REVIEW_REQUIRED', 'Me', 'GN12345'],
+    })
+  })
+})

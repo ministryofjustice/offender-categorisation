@@ -1,6 +1,7 @@
 module.exports = {
   '/categoriser\\w+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/recategoriser\\w+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
+  '/riskProfileChangeDetail/.+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/supervisor\\w+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/security\\w+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
   '/dashboard': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
