@@ -2,6 +2,7 @@ const moment = require('moment')
 const serviceCreator = require('../../server/services/offendersService')
 const Status = require('../../server/utils/statusEnum')
 const ReviewReason = require('../../server/utils/reviewReasonEnum')
+const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -25,6 +26,7 @@ const nomisClient = {
   getAgencyDetail: jest.fn(),
   getCategorisedOffenders: jest.fn(),
   getLatestCategorisationForOffenders: jest.fn(),
+  updateNextReviewDate: jest.fn(),
 }
 
 const formService = {
@@ -32,6 +34,7 @@ const formService = {
   getSecurityReferredOffenders: jest.fn(),
   getCategorisedOffenders: jest.fn(),
   getManualAndRiskCategorisationRecords: jest.fn(),
+  updateStatusForOutstandingRiskChange: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -61,6 +64,7 @@ afterEach(() => {
   nomisClient.getAgencyDetail.mockReset()
   nomisClient.getCategorisedOffenders.mockReset()
   nomisClient.getLatestCategorisationForOffenders.mockReset()
+  nomisClient.updateNextReviewDate.mockReset()
 })
 
 moment.now = jest.fn()
@@ -1505,63 +1509,145 @@ describe('getMatchedCategorisations', () => {
     ]
     expect(result).toMatchObject(expected)
   })
+})
+describe('mergeU21ResultWithNomisCategorisationData', () => {
+  test('it should merge in the assessStatus by booking Id', async () => {
+    const u21Cats = [
+      {
+        bookingId: 11,
+        firstName: 'Amos',
+      },
+      {
+        bookingId: 10,
+        firstName: 'Jane',
+      },
+      {
+        bookingId: 12,
+        firstName: 'Inactive',
+      },
+    ]
 
-  describe('mergeU21ResultWithNomisCategorisationData', () => {
-    test('it should merge in the assessStatus by booking Id', async () => {
-      const u21Cats = [
-        {
-          bookingId: 11,
-          firstName: 'Amos',
-        },
-        {
-          bookingId: 10,
-          firstName: 'Jane',
-        },
-        {
-          bookingId: 12,
-          firstName: 'Inactive',
-        },
-      ]
+    const eliteU21Cats = [
+      {
+        offenderNo: 'B1234AA',
+        bookingId: 10,
+        assessmentStatus: 'A',
+      },
+      {
+        offenderNo: 'B1234AA',
+        bookingId: 12,
+        assessmentStatus: 'I',
+      },
+      {
+        offenderNo: 'B1234AB',
+        bookingId: 11,
+        assessmentStatus: 'P',
+      },
+    ]
 
-      const eliteU21Cats = [
-        {
-          offenderNo: 'B1234AA',
-          bookingId: 10,
-          assessmentStatus: 'A',
-        },
-        {
-          offenderNo: 'B1234AA',
-          bookingId: 12,
-          assessmentStatus: 'I',
-        },
-        {
-          offenderNo: 'B1234AB',
-          bookingId: 11,
-          assessmentStatus: 'P',
-        },
-      ]
+    const expected = [
+      {
+        bookingId: 11,
+        firstName: 'Amos',
+        assessStatus: 'P',
+      },
 
-      const expected = [
-        {
-          bookingId: 11,
-          firstName: 'Amos',
-          assessStatus: 'P',
-        },
+      {
+        bookingId: 10,
+        firstName: 'Jane',
+        assessStatus: 'A',
+      },
+      {
+        bookingId: 12,
+        firstName: 'Inactive', // an inactive cat was returned here
+      },
+    ]
+    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(eliteU21Cats)
+    const result = await service.mergeU21ResultWithNomisCategorisationData(nomisClient, 'LEI', u21Cats)
 
-        {
-          bookingId: 10,
-          firstName: 'Jane',
-          assessStatus: 'A',
-        },
-        {
-          bookingId: 12,
-          firstName: 'Inactive', // an inactive cat was returned here
-        },
-      ]
-      nomisClient.getLatestCategorisationForOffenders.mockReturnValue(eliteU21Cats)
-      const result = await service.mergeU21ResultWithNomisCategorisationData(nomisClient, 'LEI', u21Cats)
+    expect(result).toMatchObject(expected)
+  })
+})
 
-      expect(result).toMatchObject(expected)
+describe('handleRiskChangeDecision', () => {
+  const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
+
+  test('should handle review required decision correctly', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+    nomisClient.getOffenderDetails.mockReturnValue({
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
+    })
+    await service.handleRiskChangeDecision(
+      'token',
+      -5,
+      'Me',
+      RiskChangeStatus.REVIEW_REQUIRED.name,
+      mockTransactionalClient
+    )
+
+    expect(nomisClient.updateNextReviewDate).toBeCalledWith(-5, '2019-06-14')
+    expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
+      offenderNo: 'GN123',
+      userId: 'Me',
+      status: RiskChangeStatus.REVIEW_REQUIRED.name,
+      transactionalClient: mockTransactionalClient,
+    })
+  })
+  test('should handle review required decision with next review date within 10 working days correctly', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+    nomisClient.getOffenderDetails.mockReturnValue({
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2019-06-10' }],
+    })
+    await service.handleRiskChangeDecision(
+      'token',
+      -5,
+      'Me',
+      RiskChangeStatus.REVIEW_REQUIRED.name,
+      mockTransactionalClient
+    )
+
+    expect(nomisClient.updateNextReviewDate).not.toBeCalled()
+    expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
+      offenderNo: 'GN123',
+      userId: 'Me',
+      status: RiskChangeStatus.REVIEW_REQUIRED.name,
+      transactionalClient: mockTransactionalClient,
+    })
+  })
+  test('should handle review NOT required decision correctly', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+    nomisClient.getOffenderDetails.mockReturnValue({
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
+    })
+    await service.handleRiskChangeDecision(
+      'token',
+      -5,
+      'Me',
+      RiskChangeStatus.REVIEW_NOT_REQUIRED.name,
+      mockTransactionalClient
+    )
+
+    expect(nomisClient.updateNextReviewDate).not.toBeCalled()
+    expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
+      offenderNo: 'GN123',
+      userId: 'Me',
+      status: RiskChangeStatus.REVIEW_NOT_REQUIRED.name,
+      transactionalClient: mockTransactionalClient,
     })
   })
 })

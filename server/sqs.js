@@ -31,7 +31,7 @@ module.exports = function createSqsService(offenderService, formService) {
             })
           } else {
             logger.debug(
-              `Ignoring Risk Change alert for category ${detail.categoryCode} as category cannot be increased`
+              `Ignoring Risk Change alert for category ${detail.categoryCode} as category cannot be increased or this is not a recategorisation`
             )
           }
         } catch (error) {
@@ -56,8 +56,9 @@ module.exports = function createSqsService(offenderService, formService) {
     logger.error(err.message)
   })
 
+  /* ensures there is scope to act on the risk change and that the categorisation would be a recat */
   function categoryCouldMoveUp(detail) {
-    return detail && (detail.categorycode !== 'B' && detail.categorycode !== 'I')
+    return detail && (detail.categorycode === 'C' || detail.categorycode === 'D' || detail.categorycode === 'J')
   }
 
   function alertIsRequired(detail) {

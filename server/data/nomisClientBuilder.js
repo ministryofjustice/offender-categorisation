@@ -121,6 +121,11 @@ module.exports = token => {
       const path = `${apiUrl}api/users/list`
       return nomisPost({ path, body: usernames })
     },
+    // todo complete when eliteapi endpoint is defined
+    updateNextReviewDate(bookingId, nextReviewDate) {
+      const path = `${apiUrl}api/offender-assessments/category/nextReviewDate`
+      return nomisClientPost({ path, body: { bookingId, nextReviewDate } })
+    },
   }
 }
 

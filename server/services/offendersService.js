@@ -9,6 +9,7 @@ const { properCaseName, dateConverter, get10BusinessDays } = require('../utils/u
 const { sortByDateTime, sortByStatus } = require('./offenderSort.js')
 const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
+const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 
 const dirname = process.cwd()
 
@@ -443,6 +444,34 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         }
       })
     )
+  }
+
+  async function handleRiskChangeDecision(token, bookingId, user, decision, transactionalDbClient) {
+    try {
+      const details = await getOffenderDetails(token, bookingId)
+
+      if (decision === RiskChangeStatus.REVIEW_REQUIRED.name) {
+        const nextReviewDate = extractNextReviewDate(details)
+        const nextReviewMoment = moment(nextReviewDate, 'YYYY-MM-DD')
+        const today = moment()
+        const tenDaysInFutureMoment = today.add(get10BusinessDays(today), 'days')
+        if (tenDaysInFutureMoment < nextReviewMoment) {
+          // adjust nextReviewDate on nomis which will ensure that the categorisation is picked on the on the recat to do list
+          const nomisClient = nomisClientBuilder(token)
+          await nomisClient.updateNextReviewDate(bookingId, tenDaysInFutureMoment.format('YYYY-MM-DD'))
+        }
+      }
+
+      formService.updateStatusForOutstandingRiskChange({
+        offenderNo: details.offenderNo,
+        userId: user,
+        status: decision,
+        transactionalClient: transactionalDbClient,
+      })
+    } catch (error) {
+      logger.error(error, 'Error during handleRiskChangeDecision')
+      throw error
+    }
   }
 
   async function getU21Recats(agencyId, user, nomisClient, transactionalDbClient) {
@@ -918,5 +947,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     mergeU21ResultWithNomisCategorisationData,
     getOffenderDetailWithFullInfo,
     getRiskChangeForOffender,
+    handleRiskChangeDecision,
   }
 }
