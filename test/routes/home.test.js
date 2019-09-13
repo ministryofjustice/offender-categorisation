@@ -21,16 +21,25 @@ const offendersService = {
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
   getUnapprovedOffenders: jest.fn(),
+  isRecat: jest.fn(),
 }
 
 const userService = {
   getUser: jest.fn(),
 }
 
+const statsService = {}
+
+const formService = {
+  createSecurityReferral: jest.fn(),
+}
+
 const homeRoute = createRouter({
   authenticationMiddleware,
   userService,
   offendersService,
+  statsService,
+  formService,
 })
 
 let app
@@ -259,5 +268,37 @@ describe('GET /', () => {
       .get('/')
       .expect(302)
       .expect('location', '/securityHome')
+  })
+})
+
+describe('Landing page', () => {
+  test('security user get', () => {
+    userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI', roles: { security: true } })
+    offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12 })
+    offendersService.isRecat.mockResolvedValue('INITIAL')
+
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('securityButton')
+        expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(offendersService.isRecat).toBeCalledTimes(1)
+      })
+  })
+
+  test('security user post', () => {
+    userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI', roles: { security: true } })
+    offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12 })
+    return request(app)
+      .post('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Automatic referral setup successful')
+        expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(formService.createSecurityReferral).toBeCalledTimes(1)
+      })
   })
 })

@@ -230,37 +230,36 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  createSecurityReferral({ bookingId, agencyId, offenderNo, userId, transactionalClient }) {
-    logger.debug(`creating security_referral record for ${offenderNo}, ${bookingId}`)
+  createSecurityReferral({ agencyId, offenderNo, userId, transactionalClient }) {
+    logger.debug(`creating security_referral record for ${offenderNo}`)
     const query = {
-      text: `insert into security_referral ( booking_id, prison_id, offender_no, user_id, raised_date )
-        values ($1, $2, $3, $4, CURRENT_TIMESTAMP )
-        on conflict (booking_id) do update set prison_id=$2, offender_no=$3, user_id=$4, raised_date=CURRENT_TIMESTAMP`,
-      values: [bookingId, agencyId, offenderNo, userId],
+      text: `insert into security_referral ( prison_id, offender_no, user_id, raised_date )
+        values ($1, $2, $3, CURRENT_TIMESTAMP )
+        on conflict (offender_no) do update set prison_id=$1, user_id=$3, raised_date=CURRENT_TIMESTAMP`,
+      values: [agencyId, offenderNo, userId],
     }
     return transactionalClient.query(query)
   },
 
-  getSecurityReferral(bookingId, transactionalClient) {
-    logger.debug(`getSecurityReferral called with bookingId ${bookingId}`)
+  getSecurityReferral(offenderNo, transactionalClient) {
+    logger.debug(`getSecurityReferral called with offenderNo ${offenderNo}`)
     const query = {
       text: `select prison_id   as "prisonId",
-                    offender_no as "offenderNo",
                     user_id     as "userId",
                     status,
                     raised_date as "raisedDate"
              from security_referral
-             where booking_id = $1`,
-      values: [bookingId],
+             where offender_no = $1`,
+      values: [offenderNo],
     }
     return transactionalClient.query(query)
   },
 
-  setSecurityReferralProcessed(bookingId, transactionalClient) {
-    logger.debug(`setSecurityReferralProcessed for ${bookingId}`)
+  setSecurityReferralProcessed(offenderNo, transactionalClient) {
+    logger.debug(`setSecurityReferralProcessed for ${offenderNo}`)
     const query = {
-      text: `update security_referral set status='REFERRED', processed_date=CURRENT_TIMESTAMP where booking_id=$1`,
-      values: [bookingId],
+      text: `update security_referral set status='REFERRED', processed_date=CURRENT_TIMESTAMP where offender_no=$1`,
+      values: [offenderNo],
     }
     return transactionalClient.query(query)
   },

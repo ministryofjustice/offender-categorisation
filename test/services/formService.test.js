@@ -3,6 +3,9 @@ const Status = require('../../server/utils/statusEnum')
 const CatType = require('../../server/utils/catTypeEnum')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+const bookingId = 34
+const offenderNo = 'GN12345'
+const userId = 'MEEE'
 
 const formClient = {
   getFormDataForUser: jest.fn(),
@@ -532,9 +535,6 @@ describe('computeSuggestedCat', () => {
   })
 })
 
-const bookingId = 34
-const userId = 'MEEE'
-
 describe('referToSecurityIfRiskAssessed', () => {
   const socProfile = { transferToSecurity: true }
 
@@ -639,7 +639,7 @@ describe('referToSecurityIfFlagged', () => {
   test('happy path', async () => {
     formClient.getSecurityReferral.mockReturnValue({ rows: [{ status: 'NEW', userId: 'SEC_USER' }] })
 
-    await service.referToSecurityIfFlagged(bookingId, 'STARTED', mockTransactionalClient)
+    await service.referToSecurityIfFlagged(bookingId, offenderNo, 'STARTED', mockTransactionalClient)
 
     expect(formClient.referToSecurity.mock.calls[0]).toEqual([
       bookingId,
@@ -647,13 +647,13 @@ describe('referToSecurityIfFlagged', () => {
       Status.SECURITY_FLAGGED.name,
       mockTransactionalClient,
     ])
-    expect(formClient.setSecurityReferralProcessed.mock.calls[0]).toEqual([bookingId, mockTransactionalClient])
+    expect(formClient.setSecurityReferralProcessed.mock.calls[0]).toEqual([offenderNo, mockTransactionalClient])
   })
 
   test('not flagged', async () => {
     formClient.getSecurityReferral.mockReturnValue({ rows: [] })
 
-    await service.referToSecurityIfFlagged(bookingId, 'STARTED', mockTransactionalClient)
+    await service.referToSecurityIfFlagged(bookingId, offenderNo, 'STARTED', mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
     expect(formClient.setSecurityReferralProcessed).not.toBeCalled()
@@ -662,7 +662,7 @@ describe('referToSecurityIfFlagged', () => {
   test('flag processed', async () => {
     formClient.getSecurityReferral.mockReturnValue({ rows: [{ status: 'REFERRED', userId: 'SEC_USER' }] })
 
-    await service.referToSecurityIfFlagged(bookingId, 'STARTED', mockTransactionalClient)
+    await service.referToSecurityIfFlagged(bookingId, offenderNo, 'STARTED', mockTransactionalClient)
 
     expect(formClient.referToSecurity).not.toBeCalled()
     expect(formClient.setSecurityReferralProcessed).not.toBeCalled()
@@ -893,7 +893,6 @@ describe('cancelOpenConditions', () => {
 
 describe('createRiskChange', () => {
   const newProfile = { something: 'hello' }
-  const offenderNo = 'GN12345'
   test('merge with existing', async () => {
     const existingRecord = { existing: true }
     formClient.getNewRiskChangeByOffender.mockReturnValue({ rows: [{ existingRecord }] })

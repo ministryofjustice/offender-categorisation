@@ -3,6 +3,7 @@ const jwtDecode = require('jwt-decode')
 module.exports = {
   getPathFor,
   redirectUsingRole,
+  handleCsrf,
 }
 
 function getPathFor({ data, config }) {
@@ -65,4 +66,11 @@ function lookupRoleUrl(role, categoriserUrl, supervisorUrl, securityUrl, recateg
     default:
       return undefined
   }
+}
+
+function handleCsrf(req, res, next) {
+  if (typeof req.csrfToken === 'function') {
+    res.locals.csrfToken = req.csrfToken()
+  }
+  next()
 }
