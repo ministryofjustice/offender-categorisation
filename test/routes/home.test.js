@@ -32,6 +32,7 @@ const statsService = {}
 
 const formService = {
   createSecurityReferral: jest.fn(),
+  getSecurityReferral: jest.fn(),
 }
 
 const homeRoute = createRouter({
@@ -276,6 +277,7 @@ describe('Landing page', () => {
     userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI', roles: { security: true } })
     offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12 })
     offendersService.isRecat.mockResolvedValue('INITIAL')
+    formService.getSecurityReferral.mockResolvedValue({})
 
     return request(app)
       .get('/12345')
