@@ -93,7 +93,7 @@ class ReviewSpecification extends GebReportingSpec {
     violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes\nHere are the serious threat details']
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes\nEscape Other Evidence Text', 'Yes\nReason why Cat B']
     extremismRatingSummary*.text() == ['Yes', 'Yes\nPrevious Terrorism Offences Text']
-    securityInputSummary*.text() == ['No', 'Yes', 'Here is the Security information held on this prisoner', 'Yes']
+    securityInputSummary*.text() == ['No', 'Yes', 'No', 'Here is the Security information held on this prisoner', 'Yes']
 
     changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed

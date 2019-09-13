@@ -15,12 +15,14 @@ class DatabaseUtils {
 
     def sql = Sql.newInstance(dbConnParams)
     sql.executeUpdate("delete from form where user_id = '${user.username}'")
+    sql.executeUpdate("delete from security_referral")
   }
 
   def clearDb() {
 
     def sql = Sql.newInstance(dbConnParams)
     sql.executeUpdate("delete from form where booking_id < 1000")
+    sql.executeUpdate("delete from security_referral")
   }
 
   def getData(bookingId) {
@@ -87,5 +89,10 @@ class DatabaseUtils {
     sql.executeUpdate("""insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId',
       $referredDate, '$referredBy', $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', ?::date, ?::date, '$catType')""",
       json, riskProfile, securityReviewedDate, approvalDateDB)
+  }
+
+  def getSecurityData(offenderNo) {
+    def sql = Sql.newInstance(dbConnParams)
+    return sql.rows("select * from security_referral where offender_no = $offenderNo")
   }
 }

@@ -16,5 +16,6 @@ class LandingPage extends Page {
     warning(required: false) { $('div.govuk-warning-text') }
     historyButton { $('#historyButton') }
     historyHeading { $('#previousCategoryHeading') }
+    securityButton(required: false) { $('#securityButton') }
   }
 }
