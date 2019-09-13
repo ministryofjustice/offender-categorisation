@@ -72,20 +72,23 @@
   </div>
   {% endif %}
 
-  {% if user.roles.security %}
-  <h1 class="govuk-heading-l">Refer this person to security at next category review</h1>
-  <p>This means they will automatically be referred to security when their next category review is started.</p>
-  <div>
-    <form method="post">
-      <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+  {% if data.isSecurityReferred %}
+    <h1 class="govuk-heading-l">This person will automatically be referred to security at next category review</h1>
+    <p>This cannot be cancelled.</p>
+  {% elif user.roles.security %}
+    <h1 class="govuk-heading-l">Refer this person to security at next category review</h1>
+    <p>This means they will automatically be referred to security when their next category review is started.</p>
+    <div>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
 
-      {{ govukButton({
-        text: 'Set this up',
-        classes: 'grey-button',
-        attributes: { 'id': 'securityButton' }
-      }) }}
-    </form>
-  </div>
+        {{ govukButton({
+          text: 'Set this up',
+          classes: 'grey-button',
+          attributes: { 'id': 'securityButton' }
+        }) }}
+      </form>
+    </div>
   {% endif %}
 
   <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>

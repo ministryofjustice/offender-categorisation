@@ -123,13 +123,19 @@ class LandingPageSpecification extends GebReportingSpec {
 
     then: 'The referral is stored'
     at SecurityReferralSubmittedPage
-
     def securityNew = db.getSecurityData('B2345YZ')[0]
     securityNew.offender_no == 'B2345YZ'
     securityNew.status.value == 'NEW'
     securityNew.prison_id == 'LEI'
     securityNew.user_id == SECURITY_USER.getUsername()
     System.currentTimeMillis() - securityNew.raised_date.getTime() < 10000
+
+    when: 'The security user revisits the page'
+    go '/12'
+    at LandingPage
+
+    then: 'A message is shown instead of a button'
+    driver.pageSource =~ /This person will automatically be referred to security at next category review/
 
     when: 'A re-categoriser starts a recat'
     fixture.logout()

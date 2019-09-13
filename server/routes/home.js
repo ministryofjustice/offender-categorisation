@@ -245,7 +245,7 @@ module.exports = function Index({
 
   router.get(
     '/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals.user.token)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
@@ -253,8 +253,10 @@ module.exports = function Index({
 
       const nextReviewDate = extractNextReviewDate(details)
       const catType = await offendersService.isRecat(res.locals.user.token, bookingId)
+      const securityReferral = await formService.getSecurityReferral(details.offenderNo, transactionalDbClient)
+      const isSecurityReferred = securityReferral.status === 'NEW'
 
-      res.render('pages/landing', { data: { catType, nextReviewDate, details } })
+      res.render('pages/landing', { data: { catType, nextReviewDate, isSecurityReferred, details } })
     })
   )
 
