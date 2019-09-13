@@ -79,16 +79,8 @@
     <form method="post">
       <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
 
-      {{ govukCheckboxes({
-        name: 'refer',
-        items: [{
-          value: 'refer',
-          text: 'Refer this person to security automatically'
-        }]
-      }) }}
-
       {{ govukButton({
-        text: 'Save and return',
+        text: 'Set this up',
         classes: 'grey-button',
         attributes: { 'id': 'securityButton' }
       }) }}

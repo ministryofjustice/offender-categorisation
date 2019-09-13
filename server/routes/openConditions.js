@@ -2,7 +2,7 @@ const express = require('express')
 const flash = require('connect-flash')
 const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
-const { getPathFor } = require('../utils/routes')
+const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
@@ -20,12 +20,7 @@ module.exports = function Index({ formService, offendersService, userService, au
   router.use(authenticationMiddleware())
   router.use(flash())
 
-  router.use((req, res, next) => {
-    if (typeof req.csrfToken === 'function') {
-      res.locals.csrfToken = req.csrfToken()
-    }
-    next()
-  })
+  router.use(handleCsrf)
 
   router.get(
     '/furtherCharges/:bookingId',

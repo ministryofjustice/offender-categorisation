@@ -90,10 +90,6 @@ describe('GET /tasklistRecat/', () => {
       formObject: { sample: 'string' },
       status: 'STARTED',
     })
-    formService.getCategorisationRecord.mockResolvedValue({
-      status: 'SECURITY_AUTO',
-      securityReferredDate: `${todayISO}`,
-    })
     const sampleSocProfile = {
       transferToSecurity: true,
       provisionalCategorisation: 'B',
@@ -117,9 +113,7 @@ describe('GET /tasklistRecat/', () => {
 
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
-          {
-            socProfile: sampleSocProfile,
-          },
+          { socProfile: sampleSocProfile },
           mockTransactionalClient
         )
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(

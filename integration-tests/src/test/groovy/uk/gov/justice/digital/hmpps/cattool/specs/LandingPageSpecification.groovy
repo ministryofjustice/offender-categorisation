@@ -18,6 +18,8 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
 class LandingPageSpecification extends GebReportingSpec {
 
+  def today = LocalDate.now().format('dd/MM/yyyy')
+
   def setup() {
     db.clearDb()
   }
@@ -112,19 +114,17 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubGetCategory(12, 'C')
     go '/12'
 
-    then: 'The page contains a security referral checkbox'
+    then: 'The page contains a security referral button'
     at LandingPage
     securityButton.displayed
 
-    when: 'It is clicked and saved'
-    checkbox.click()
+    when: 'It is clicked'
     securityButton.click()
 
     then: 'The referral is stored'
-    at SecurityHomePage
+    at SecurityReferralSubmittedPage
 
-    def securityNew = db.getSecurityData(12)[0]
-    securityNew.booking_id == 12
+    def securityNew = db.getSecurityData('B2345YZ')[0]
     securityNew.offender_no == 'B2345YZ'
     securityNew.status.value == 'NEW'
     securityNew.prison_id == 'LEI'
@@ -144,11 +144,10 @@ class LandingPageSpecification extends GebReportingSpec {
     then: 'Security is locked'
     at TasklistRecatPage
     securityButton.@disabled
-    def today = LocalDate.now().format('dd/MM/yyyy')
     $('#securitySection').text().contains("Flagged to be referred to Security ($today)")
 
     and: 'the security database table is updated correctly'
-    def securityReferred = db.getSecurityData(12)[0]
+    def securityReferred = db.getSecurityData('B2345YZ')[0]
     securityReferred.status.value == 'REFERRED'
     System.currentTimeMillis() - securityReferred.processed_date.getTime() < 10000
 
@@ -167,6 +166,48 @@ class LandingPageSpecification extends GebReportingSpec {
     data.cat_type.value == 'RECAT'
     data.referred_by == 'SECURITY_USER'
     data.security_reviewed_by == 'SECURITY_USER'
+  }
+
+  def "A prisoner is both flagged and automatically referred"() {
+
+    given: 'A security user logs in'
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
+    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    elite2Api.stubUncategorised()
+    elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
+    elite2Api.stubGetSecurityStaffDetailsByUsernameList()
+    fixture.loginAs(SECURITY_USER)
+
+    and: 'Refers a prisoner'
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetCategory(12, 'C')
+    go '/12'
+    at LandingPage
+    securityButton.click()
+    at SecurityReferralSubmittedPage
+
+    when: 'A re-categoriser starts a recat which is automatically referred'
+    fixture.logout()
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+    go '/12'
+    at LandingPage
+    elite2Api.stubGetOffenderDetails(12)
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
+    recatButton.click()
+
+    then: 'Security is locked due to being flagged'
+    at TasklistRecatPage
+    securityButton.@disabled
+    $('#securitySection').text().contains("Flagged to be referred to Security ($today)")
+
+    and: 'the database is updated correctly'
+    def securityReferred = db.getSecurityData('B2345YZ')[0]
+    securityReferred.status.value == 'REFERRED'
+    def data = db.getData(12)[0]
+    data.status == 'SECURITY_FLAGGED'
+    data.cat_type.value == 'RECAT'
+    data.referred_by == 'SECURITY_USER'
   }
 
   def "A basic user can view previous categorisations if prisoner is in their prison"() {

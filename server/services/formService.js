@@ -298,13 +298,13 @@ module.exports = function createFormService(formClient) {
     })
   }
 
-  async function createSecurityReferral(bookingId, agencyId, offenderNo, userId, transactionalClient) {
-    log.info(`createSecurityReferral: creating security referral record for bookingId ${bookingId}`)
-    await formClient.createSecurityReferral({ bookingId, agencyId, offenderNo, userId, transactionalClient })
+  async function createSecurityReferral(agencyId, offenderNo, userId, transactionalClient) {
+    log.info(`createSecurityReferral: creating security referral record for offenderNo ${offenderNo}`)
+    await formClient.createSecurityReferral({ agencyId, offenderNo, userId, transactionalClient })
   }
 
-  async function getSecurityReferral(bookingId, transactionalClient) {
-    const data = await formClient.getSecurityReferral(bookingId, transactionalClient)
+  async function getSecurityReferral(offenderNo, transactionalClient) {
+    const data = await formClient.getSecurityReferral(offenderNo, transactionalClient)
     return dataIfExists(data) || {}
   }
 
@@ -411,8 +411,10 @@ module.exports = function createFormService(formClient) {
     if (socProfile.transferToSecurity && currentStatus !== Status.SECURITY_BACK.name) {
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_AUTO.name)) {
         await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name, transactionalClient)
+        return Status.SECURITY_AUTO.name
       }
     }
+    return currentStatus
   }
 
   async function referToSecurityIfRequested(bookingId, userId, updatedFormObject, transactionalClient) {
@@ -431,8 +433,8 @@ module.exports = function createFormService(formClient) {
   /**
    * Refer to security if a new entry is present in the SECURITY_REFERRAL table
    */
-  async function referToSecurityIfFlagged(bookingId, currentStatus, transactionalClient) {
-    const securityReferral = await getSecurityReferral(bookingId, transactionalClient)
+  async function referToSecurityIfFlagged(bookingId, offenderNo, currentStatus, transactionalClient) {
+    const securityReferral = await getSecurityReferral(offenderNo, transactionalClient)
     if (securityReferral && securityReferral.status === 'NEW') {
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_FLAGGED.name)) {
         await formClient.referToSecurity(
@@ -441,7 +443,7 @@ module.exports = function createFormService(formClient) {
           Status.SECURITY_FLAGGED.name,
           transactionalClient
         )
-        await formClient.setSecurityReferralProcessed(bookingId, transactionalClient)
+        await formClient.setSecurityReferralProcessed(offenderNo, transactionalClient)
       }
     }
   }

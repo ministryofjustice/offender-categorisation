@@ -1,6 +1,6 @@
 const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
-const { redirectUsingRole } = require('../utils/routes')
+const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 
 const extractNextReviewDate = details => {
@@ -19,12 +19,7 @@ module.exports = function Index({
 
   router.use(authenticationMiddleware())
 
-  router.use((req, res, next) => {
-    if (typeof req.csrfToken === 'function') {
-      res.locals.csrfToken = req.csrfToken()
-    }
-    next()
-  })
+  router.use(handleCsrf)
 
   router.get(
     '/',
@@ -268,21 +263,11 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
 
-      if (req.body.refer) {
-        const user = await userService.getUser(res.locals.user.token)
-        const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      const user = await userService.getUser(res.locals.user.token)
+      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      formService.createSecurityReferral(details.agencyId, details.offenderNo, user.username, transactionalDbClient)
 
-        formService.createSecurityReferral(
-          bookingId,
-          details.agencyId,
-          details.offenderNo,
-          user.username,
-          transactionalDbClient
-        )
-        res.redirect(`/`)
-      } else {
-        res.redirect(`/`)
-      }
+      res.render('pages/securityReferralSubmitted')
     })
   )
 
