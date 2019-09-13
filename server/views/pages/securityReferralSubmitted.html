@@ -1,0 +1,19 @@
+{% set mainClasses = 'govuk-!-width-two-thirds' %}
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "panel/macro.njk" import govukPanel %}
+
+{% block content %}
+
+{{ govukPanel({
+  titleText: "Automatic referral setup successful"
+}) }}
+<h2>What happens next</h2>
+<p>At this person’s next category review, they’ll automatically be referred to security.</p>
+
+{{ govukButton({
+  text: "Finish",
+  href: "/"
+}) }}
+
+{% endblock %}

@@ -230,6 +230,40 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  createSecurityReferral({ agencyId, offenderNo, userId, transactionalClient }) {
+    logger.debug(`creating security_referral record for ${offenderNo}`)
+    const query = {
+      text: `insert into security_referral ( prison_id, offender_no, user_id, raised_date )
+        values ($1, $2, $3, CURRENT_TIMESTAMP )
+        on conflict (offender_no) do update set prison_id=$1, user_id=$3, raised_date=CURRENT_TIMESTAMP`,
+      values: [agencyId, offenderNo, userId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getSecurityReferral(offenderNo, transactionalClient) {
+    logger.debug(`getSecurityReferral called with offenderNo ${offenderNo}`)
+    const query = {
+      text: `select prison_id   as "prisonId",
+                    user_id     as "userId",
+                    status,
+                    raised_date as "raisedDate"
+             from security_referral
+             where offender_no = $1`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  setSecurityReferralProcessed(offenderNo, transactionalClient) {
+    logger.debug(`setSecurityReferralProcessed for ${offenderNo}`)
+    const query = {
+      text: `update security_referral set status='REFERRED', processed_date=CURRENT_TIMESTAMP where offender_no=$1`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
   create({
     bookingId,
     catType,

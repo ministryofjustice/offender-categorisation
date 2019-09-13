@@ -165,21 +165,28 @@
   }) }}
 
 <h2 class="govuk-heading-m">Security information</h2>
-  {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityInput.securityInputNeeded == 'Yes' %}
+  {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB %}
   {% set auto = {
-      key: { text: "Automatic referral to security team" },
-      value: { text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
-      actions: { items: [] }
+      key: { classes: 'no-print', text: "Automatic referral to security team" },
+      value: { classes: 'no-print', text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
+      actions: { classes: 'no-print', items: [] }
     } %}
   {% set manual = {
-      key: { text: "Manual referral to security team" },
-      value: { text: data.ratings.securityInput.securityInputNeeded or 'No' },
-      actions: { items: [{
+      key: { classes: 'no-print', text: "Manual referral to security team" },
+      value: { classes: 'no-print', text: data.ratings.securityInput.securityInputNeeded or 'No' },
+      actions: {
+        classes: 'no-print',
+        items: [{
           href: '/form/ratings/securityInput/' + data.details.bookingId,
           text: "Change",
           visuallyHiddenText: "Manual referral to security team"
         }] if showChangeLinks and not wasReferred else []
       }
+    } %}
+  {% set flagged = {
+      key: { classes: 'no-print', text: "Flagged by security team" },
+      value: { classes: 'no-print', text: 'Yes' if data.ratings.securityBack.catB and not data.ratings.securityInput.securityInputNeeded else 'No' },
+      actions: { classes: 'no-print', items: [] }
     } %}
   {% set comments = {
       key: { text: "Security comments" },
@@ -200,5 +207,5 @@
     } %}
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary',
-    rows: [ auto, manual, comments, warrantS ] if wasReferred else [ auto, manual ]
+    rows: [ auto, manual, flagged, comments, warrantS ] if wasReferred else [ auto, manual, flagged ]
   }) }}

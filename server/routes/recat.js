@@ -3,7 +3,7 @@ const flash = require('connect-flash')
 const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
 const { calculateNextReviewDate, choosingHigherCategory } = require('../utils/utils')
-const { getPathFor } = require('../utils/routes')
+const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const recat = require('../config/recat')
 const Status = require('../utils/statusEnum')
@@ -26,12 +26,7 @@ module.exports = function Index({
   router.use(authenticationMiddleware())
   router.use(flash())
 
-  router.use((req, res, next) => {
-    if (typeof req.csrfToken === 'function') {
-      res.locals.csrfToken = req.csrfToken()
-    }
-    next()
-  })
+  router.use(handleCsrf)
 
   router.get(
     '/securityInput/:bookingId',
@@ -39,7 +34,11 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId, transactionalDbClient)
 
-      if (result.status === Status.SECURITY_MANUAL.name || result.status === Status.SECURITY_AUTO.name) {
+      if (
+        result.status === Status.SECURITY_MANUAL.name ||
+        result.status === Status.SECURITY_AUTO.name ||
+        result.status === Status.SECURITY_FLAGGED.name
+      ) {
         res.redirect(`/tasklistRecat/${bookingId}`)
       } else {
         res.render('formPages/recat/securityInput', result)

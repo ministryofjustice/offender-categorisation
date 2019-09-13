@@ -15,6 +15,7 @@ const formService = {
   updateFormData: jest.fn(),
   mergeRiskProfileData: jest.fn(),
   referToSecurityIfRiskAssessed: jest.fn(),
+  referToSecurityIfFlagged: jest.fn(),
 }
 
 const riskProfilerService = {

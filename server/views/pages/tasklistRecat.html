@@ -26,7 +26,7 @@ href: backLink or "/"
   {% include "../partials/offenderDetails.html" %}
   <hr/>
 
-  {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name %}
+  {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name or data.status === Status.SECURITY_FLAGGED.name %}
 
   {% set supervisorMessageCompleted = data.supervisor.confirmBack.messageText and data.supervisor.confirmBack.isRead %}
   {% set prisonerBackgroundCompleted = data.recat %} {# .prisonerBackground.tbc #}
