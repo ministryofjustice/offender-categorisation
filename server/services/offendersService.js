@@ -425,7 +425,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const details = await getOffenderDetails(token, bookingId)
 
       if (decision === RiskChangeStatus.REVIEW_REQUIRED.name) {
-        updateNextReviewDateIfRequired(token, bookingId, details)
+        await updateNextReviewDateIfRequired(token, bookingId, details)
       }
 
       await formService.updateStatusForOutstandingRiskChange({
@@ -539,7 +539,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
         })
-      return [...decoratedReviewAndU21]
+      return decoratedReviewAndU21
     } catch (error) {
       logger.error(error, 'Error during getRecategorisedOffenders')
       throw error
