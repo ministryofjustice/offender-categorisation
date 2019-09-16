@@ -146,7 +146,7 @@ function nomisUserGetBuilder(token) {
       logger.debug({ path, query, durationMillis }, 'Nomis GET using user credentials')
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, `Error calling ${path} ${query}`)
+      logger.error({ ...error, path, query }, 'Error in Nomis GET using user credentials')
       throw error
     }
   }
@@ -170,7 +170,7 @@ function nomisClientGetBuilder() {
       logger.debug({ path, query, durationMillis }, 'Nomis GET using clientId credentials')
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, `Error calling ${path} ${query}`)
+      logger.error({ ...error, path, query }, 'Error in Nomis GET using clientId credentials')
       throw error
     }
   }
@@ -188,10 +188,10 @@ function nomisPushBuilder(verb, token) {
       const result = await updateMethod[verb](token, path, body, headers, responseType)
 
       const durationMillis = moment().diff(time)
-      logger.debug({ path, body, durationMillis }, 'Nomis PUSH called elite2api')
+      logger.debug({ path, body, durationMillis }, 'Nomis PUSH')
       return result.body
     } catch (error) {
-      logger.warn(error, `Error calling ${path}`)
+      logger.error({ ...error, path }, 'Error in Nomis PUSH')
       throw error
     }
   }
@@ -212,10 +212,10 @@ function nomisClientPostBuilder() {
         .timeout(timeoutSpec)
 
       const durationMillis = moment().diff(time)
-      logger.debug({ path, body, durationMillis }, 'Nomis POST called elite2api')
+      logger.debug({ path, body, durationMillis }, 'Nomis POST')
       return result.body
     } catch (error) {
-      logger.warn(error, `Error calling ${path}`)
+      logger.error({ ...error, path }, 'Error in Nomis POST')
       throw error
     }
   }
