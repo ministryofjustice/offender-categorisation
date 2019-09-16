@@ -17,6 +17,7 @@ module.exports = token => {
   const nomisPost = nomisPushBuilder('post', token)
   const nomisClientPost = nomisClientPostBuilder()
   const nomisPut = nomisPushBuilder('put', token)
+  const nomisClientPut = nomisClientPutBuilder()
 
   return {
     getUncategorisedOffenders(agencyId) {
@@ -122,10 +123,9 @@ module.exports = token => {
       const path = `${apiUrl}api/users/list`
       return nomisPost({ path, body: usernames })
     },
-    // todo complete when eliteapi endpoint is defined
     updateNextReviewDate(bookingId, nextReviewDate) {
-      const path = `${apiUrl}api/offender-assessments/category/nextReviewDate`
-      return nomisClientPost({ path, body: { bookingId, nextReviewDate } })
+      const path = `${apiUrl}api/offender-assessments/category/${bookingId}/nextReviewDate/${nextReviewDate}`
+      return nomisClientPut({ path })
     },
   }
 }
@@ -210,12 +210,35 @@ function nomisClientPostBuilder() {
         .set(headers)
         .responseType(responseType)
         .timeout(timeoutSpec)
-
       const durationMillis = moment().diff(time)
       logger.debug({ path, body, durationMillis }, 'Nomis POST')
       return result.body
     } catch (error) {
       logger.error({ ...error, path }, 'Error in Nomis POST')
+      throw error
+    }
+  }
+}
+
+function nomisClientPutBuilder() {
+  return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
+    const time = moment()
+    try {
+      const clientToken = await getApiClientToken()
+
+      const result = await superagent
+        .put(path)
+        .send(body)
+        .set('Authorization', `Bearer ${clientToken.body.access_token}`)
+        .set(headers)
+        .responseType(responseType)
+        .timeout(timeoutSpec)
+
+      const durationMillis = moment().diff(time)
+      logger.debug({ path, body, durationMillis }, 'Nomis PUT')
+      return result.body
+    } catch (error) {
+      logger.error({ ...error, path }, 'Error in Nomis PUT')
       throw error
     }
   }

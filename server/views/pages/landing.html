@@ -50,12 +50,15 @@
     {% if data.catType == 'RECAT' %}
       <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
       <p>Once started, you cannot cancel an early category review. However, you will have until their review due date to finish it.</p>
-      {{ govukButton({
-        text: 'Start review',
-        href: '/tasklistRecat/' + data.details.bookingId + '?reason=MANUAL',
-        classes: 'grey-button',
-        attributes: { 'id': 'recatButton' }
-      }) }}
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+        <input type="hidden" name="landingType" value="earlyReview" />
+        {{ govukButton({
+          text: 'Start review',
+          classes: 'grey-button',
+          attributes: { 'id': 'recatButton' }
+        }) }}
+      </form>
     {% elif data.catType == 'INITIAL' %}
       {{ govukWarningText({
         text: 'This prisoner seems to need an INITIAL category.',

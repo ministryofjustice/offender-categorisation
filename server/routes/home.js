@@ -267,9 +267,15 @@ module.exports = function Index({
 
       const user = await userService.getUser(res.locals.user.token)
       const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
-      formService.createSecurityReferral(details.agencyId, details.offenderNo, user.username, transactionalDbClient)
 
-      res.render('pages/securityReferralSubmitted')
+      if (req.body.landingType && req.body.landingType === 'earlyReview') {
+        await offendersService.updateNextReviewDateIfRequired(res.locals.user.token, bookingId, details)
+        res.redirect(`/tasklistRecat/${bookingId}?reason=MANUAL`)
+      } else {
+        formService.createSecurityReferral(details.agencyId, details.offenderNo, user.username, transactionalDbClient)
+
+        res.render('pages/securityReferralSubmitted')
+      }
     })
   )
 

@@ -132,6 +132,10 @@
 {{ govukRadios({
   name: "confirmation",
   classes: "govuk-radios--inline",
+  id: "confirmation",
+  errorMessage: {
+    text: "Please select yes or no"
+  } if (errors | findError('confirmation')),
   items: [
     {
       value: 'Yes',
