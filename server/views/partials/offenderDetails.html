@@ -50,7 +50,7 @@
     {% endset %}
     {{ headerValue(nationality | trim) }}
 
-    {{ headerTitle('Type of offence(s)') }}
+    {{ headerTitle('Main offence') }}
     {% if data.details.offence | length == 0 %}
       {{ headerValue('-') }}
     {% else %}
