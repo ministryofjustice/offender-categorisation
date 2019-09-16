@@ -1,5 +1,4 @@
 const logger = require('../../log.js')
-const ReviewReason = require('../utils/reviewReasonEnum')
 
 const selectClause = `select id,
                     booking_id             as "bookingId",
@@ -82,15 +81,6 @@ module.exports = {
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType"
         from form f where f.prison_id = $1 and f.security_reviewed_date is not null ${sequenceClause}`,
       values: [agencyId],
-    }
-    return transactionalClient.query(query)
-  },
-
-  getManualAndRiskCategorisationRecords(agencyId, transactionalClient) {
-    logger.debug(`getManualAndRiskCategorisationRecords called for ${agencyId}`)
-    const query = {
-      text: `${selectClause} from form f where f.prison_id = $1 and f.status <> 'APPROVED' and f.review_reason = ANY ($2) ${sequenceClause}`,
-      values: [agencyId, [ReviewReason.MANUAL.name, ReviewReason.RISK_CHANGE.name]],
     }
     return transactionalClient.query(query)
   },

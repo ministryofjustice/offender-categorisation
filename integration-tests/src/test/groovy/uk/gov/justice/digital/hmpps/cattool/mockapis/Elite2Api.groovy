@@ -1167,6 +1167,19 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubUpdateNextReviewDate() {
+
+    this.stubFor(
+      put(urlMatching("/api/offender-assessments/category/12/nextReviewDate/.*"))
+        .willReturn(
+        aResponse()
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
+
+
   def stubAgencyDetails(agency) {
 
     this.stubFor(

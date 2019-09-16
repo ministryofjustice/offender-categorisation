@@ -61,9 +61,7 @@ function localStatusIsInconstentWithNomisAwaitingApproval(dbRecord) {
 function unwanted(dbRecord) {
   return (
     // Initial cat in progress
-    (dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name) ||
-    // These are in top section, dont duplicate
-    (dbRecord.reviewReason === ReviewReason.MANUAL.name || dbRecord.reviewReason === ReviewReason.RISK_CHANGE.name)
+    dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name
   )
 }
 
@@ -388,30 +386,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getManualAndRiskRecats(agencyId, user, nomisClient, transactionalDbClient) {
-    const data = await formService.getManualAndRiskCategorisationRecords(agencyId, transactionalDbClient)
-
-    return Promise.all(
-      data.map(async dbRecord => {
-        const details = await nomisClient.getOffenderDetails(dbRecord.bookingId)
-        const nextReviewDate = extractNextReviewDate(details)
-        const decorated = await decorateWithCategorisationData(details, user, nomisClient, dbRecord)
-        return {
-          ...dbRecord,
-          displayName: `${properCaseName(details.lastName)}, ${properCaseName(details.firstName)}`,
-          displayStatus: decorated.displayStatus || 'Not started',
-          dbStatus: decorated.dbStatus,
-          reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
-          nextReviewDateDisplay: dateConverter(nextReviewDate),
-          overdue: false,
-          dbRecordExists: decorated.dbRecordExists,
-          pnomis: false,
-          buttonText: calculateButtonStatus(dbRecord, ''),
-        }
-      })
-    )
-  }
-
   async function getDueRecats(agencyId, user, nomisClient, transactionalDbClient) {
     const reviewTo = moment()
       .add(config.recatMarginMonths, 'months')
@@ -451,18 +425,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const details = await getOffenderDetails(token, bookingId)
 
       if (decision === RiskChangeStatus.REVIEW_REQUIRED.name) {
-        const nextReviewDate = extractNextReviewDate(details)
-        const nextReviewMoment = moment(nextReviewDate, 'YYYY-MM-DD')
-        const today = moment()
-        const tenDaysInFutureMoment = today.add(get10BusinessDays(today), 'days')
-        if (tenDaysInFutureMoment < nextReviewMoment) {
-          // adjust nextReviewDate on nomis which will ensure that the categorisation is picked on the on the recat to do list
-          const nomisClient = nomisClientBuilder(token)
-          await nomisClient.updateNextReviewDate(bookingId, tenDaysInFutureMoment.format('YYYY-MM-DD'))
-        }
+        updateNextReviewDateIfRequired(token, bookingId, details)
       }
 
-      formService.updateStatusForOutstandingRiskChange({
+      await formService.updateStatusForOutstandingRiskChange({
         offenderNo: details.offenderNo,
         userId: user,
         status: decision,
@@ -470,6 +436,30 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       })
     } catch (error) {
       logger.error(error, 'Error during handleRiskChangeDecision')
+      throw error
+    }
+  }
+
+  async function updateNextReviewDateIfRequired(token, bookingId, offenderdetails) {
+    try {
+      const nextReviewDate = extractNextReviewDate(offenderdetails)
+      const nextReviewMoment = moment(nextReviewDate, 'YYYY-MM-DD')
+      const today = moment()
+      const tenDaysInFutureMoment = today.add(get10BusinessDays(today), 'days')
+      if (tenDaysInFutureMoment < nextReviewMoment) {
+        logger.info(`updating next review date for offender ${offenderdetails.offenderNo}, bookingId ${bookingId}`)
+        const nomisClient = nomisClientBuilder(token)
+        // adjust nextReviewDate on nomis which will ensure that the categorisation is picked on the on the recat to do list
+        await nomisClient.updateNextReviewDate(bookingId, tenDaysInFutureMoment.format('YYYY-MM-DD'))
+      } else {
+        logger.info(
+          `Next review date for offender ${
+            offenderdetails.offenderNo
+          }, bookingId ${bookingId} was NOT required, review date is ${nextReviewMoment.format('YYYY-MM-DD')}`
+        )
+      }
+    } catch (error) {
+      logger.error(error, `Error during updateNextReviewDate, unable to update next review date for ${bookingId} `)
       throw error
     }
   }
@@ -533,17 +523,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       const nomisClient = nomisClientBuilder(token)
 
-      const [resultsManualRisk, decoratedResultsReview, decoratedResultsU21] = await Promise.all([
-        getManualAndRiskRecats(agencyId, user, nomisClient, transactionalDbClient),
+      const [decoratedResultsReview, decoratedResultsU21] = await Promise.all([
         getDueRecats(agencyId, user, nomisClient, transactionalDbClient),
         getU21Recats(agencyId, user, nomisClient, transactionalDbClient),
       ])
 
-      if (
-        isNilOrEmpty(decoratedResultsReview) &&
-        isNilOrEmpty(decoratedResultsU21) &&
-        isNilOrEmpty(resultsManualRisk)
-      ) {
+      if (isNilOrEmpty(decoratedResultsReview) && isNilOrEmpty(decoratedResultsU21)) {
         logger.info(`No recat offenders found for ${agencyId}`)
         return []
       }
@@ -554,7 +539,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
         })
-      return [...resultsManualRisk, ...decoratedReviewAndU21]
+      return [...decoratedReviewAndU21]
     } catch (error) {
       logger.error(error, 'Error during getRecategorisedOffenders')
       throw error
@@ -948,5 +933,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getOffenderDetailWithFullInfo,
     getRiskChangeForOffender,
     handleRiskChangeDecision,
+    updateNextReviewDateIfRequired,
   }
 }
