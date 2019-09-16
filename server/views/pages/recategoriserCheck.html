@@ -2,6 +2,7 @@
 
 {% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "button/macro.njk" import govukButton %}
+{% from "tag/macro.njk" import govukTag %}
 
 {% block beforeContent %}
 {{ govukBreadcrumbs({
@@ -28,13 +29,13 @@
         To do
       </a>
     </li>
-    <li class="govuk-tabs__list-item ">
-      <a class="govuk-tabs__tab" id="check-tab" href="/recategoriserCheck">
+    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+      <a class="govuk-tabs__tab" id="check-tab">
         To check
       </a>
     </li>
-    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-      <a class="govuk-tabs__tab" id="done-tab" >
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" id="done-tab" href="/recategoriserDone">
         Done
       </a>
     </li>
@@ -47,34 +48,27 @@
     <thead class="govuk-table__head">
 
     <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Date of risk<br/>profile change</th>
       <th class="govuk-table__header" scope="col">Name</th>
-      <th class="govuk-table__header" scope="col">Prison no.</th>
-      <th class="govuk-table__header" scope="col">Approved on</th>
-      <th class="govuk-table__header" scope="col">Categorised by</th>
-      <th class="govuk-table__header" scope="col">Approved by</th>
-      <th class="govuk-table__header" scope="col">Category</th>
+      <th class="govuk-table__header" scope="col">Prison no</th>
+      <th class="govuk-table__header" scope="col">Due date for<br/>category review</th>
       <th class="govuk-table__header" scope="col"></th>
     </tr>
     </thead>
     <tbody class="govuk-table__body">
-    {% set regExp = r/referred to security/i %}
     {% for row in offenders %}
     <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">{{ row.displayCreatedDate }}</td>
       <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a></td>
       <td class="govuk-table__cell">{{ row.offenderNo }}</td>
-      <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
-      <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
-      <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
-      <td class="govuk-table__cell">{{ row.category }}</td>
-      <td class="govuk-table__cell">
-        {% if row.statusTextDisplay != '' %}
-        {% set locked = regExp.test(row.displayStatus) %}
-        {{ govukButton({
-          text: "View",
-          href: "/form/approvedView/" + row.bookingId,
-          classes: "tableButton grey-button govuk-!-padding-left-3 govuk-!-padding-right-3"
-        }) }}
-        {% endif %}
+      <td class="govuk-table__cell">{{ row.displayNextReviewDate }}</td>
+      <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+        {% set href = ("/form/recat/riskProfileChangeDetail/" + row.bookingId) %}
+          {{ govukButton({
+            text: 'Check now',
+            href: href,
+            classes: "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3"
+          }) }}
       </td>
     </tr>
     {% endfor %}
@@ -82,9 +76,9 @@
     </tbody>
   </table>
   {% else %}
-  <div class="govuk-!-padding-top-7">
-    <div id="no-results-message" class="govuk-heading-m">No category review prisoners found</div>
-  </div>
+    <div class="govuk-!-padding-top-4">
+      <div>No risk changes found.</div>
+    </div>
   {% endif %}
   </section>
 </div>

@@ -55,16 +55,6 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function getManualAndRiskCategorisationRecords(agencyId, transactionalClient) {
-    try {
-      const data = await formClient.getManualAndRiskCategorisationRecords(agencyId, transactionalClient)
-      return data.rows
-    } catch (error) {
-      logger.error(error)
-      throw error
-    }
-  }
-
   async function getRiskChangeForOffender(offenderNo, transactionalClient) {
     try {
       const data = await formClient.getNewRiskChangeByOffender(offenderNo, transactionalClient)
@@ -649,7 +639,6 @@ module.exports = function createFormService(formClient) {
     categoriserDecision,
     getCategorisationRecordUsingSequence,
     getRiskChanges,
-    getManualAndRiskCategorisationRecords,
     createRiskChange,
     createSecurityReferral,
     getSecurityReferral,
