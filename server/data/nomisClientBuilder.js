@@ -1,4 +1,5 @@
 const superagent = require('superagent')
+const moment = require('moment')
 const logger = require('../../log')
 const config = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
@@ -131,7 +132,7 @@ module.exports = token => {
 
 function nomisUserGetBuilder(token) {
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
-    logger.info(`nomis Get using user credentials: calling elite2api: ${path} ${query}`)
+    const time = moment()
     try {
       const result = await superagent
         .get(path)
@@ -141,9 +142,11 @@ function nomisUserGetBuilder(token) {
         .responseType(responseType)
         .timeout(timeoutSpec)
 
+      const durationMillis = moment().diff(time)
+      logger.debug({ path, query, durationMillis }, 'Nomis GET using user credentials')
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, 'Error calling elite2api')
+      logger.warn(error, `Error calling ${path} ${query}`)
       throw error
     }
   }
@@ -151,7 +154,7 @@ function nomisUserGetBuilder(token) {
 
 function nomisClientGetBuilder() {
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
-    logger.info(`nomis Get using clientId credentials: calling elite2api: ${path} ${query}`)
+    const time = moment()
     try {
       const clientToken = await getApiClientToken()
 
@@ -163,9 +166,11 @@ function nomisClientGetBuilder() {
         .responseType(responseType)
         .timeout(timeoutSpec)
 
+      const durationMillis = moment().diff(time)
+      logger.debug({ path, query, durationMillis }, 'Nomis GET using clientId credentials')
       return raw ? result : result.body
     } catch (error) {
-      logger.warn(error, 'Error calling elite2api')
+      logger.warn(error, `Error calling ${path} ${query}`)
       throw error
     }
   }
@@ -178,15 +183,15 @@ function nomisPushBuilder(verb, token) {
   }
 
   return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
-    logger.info(`nomisPush: calling elite2api: ${path}`)
-    logger.debug(`nomisPush: body: ${body}`)
+    const time = moment()
     try {
       const result = await updateMethod[verb](token, path, body, headers, responseType)
+
+      const durationMillis = moment().diff(time)
+      logger.debug({ path, body, durationMillis }, 'Nomis PUSH called elite2api')
       return result.body
     } catch (error) {
-      logger.warn('Error calling elite2api')
-      logger.warn(error)
-
+      logger.warn(error, `Error calling ${path}`)
       throw error
     }
   }
@@ -194,8 +199,7 @@ function nomisPushBuilder(verb, token) {
 
 function nomisClientPostBuilder() {
   return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
-    logger.info(`nomisClientPost calling elite2api: ${path}`)
-    logger.debug(`nomisClientPost: body: ${body}`)
+    const time = moment()
     try {
       const clientToken = await getApiClientToken()
 
@@ -207,10 +211,11 @@ function nomisClientPostBuilder() {
         .responseType(responseType)
         .timeout(timeoutSpec)
 
+      const durationMillis = moment().diff(time)
+      logger.debug({ path, body, durationMillis }, 'Nomis POST called elite2api')
       return result.body
     } catch (error) {
-      logger.warn(error, 'Error calling elite2api')
-
+      logger.warn(error, `Error calling ${path}`)
       throw error
     }
   }
