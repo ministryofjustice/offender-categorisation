@@ -68,7 +68,7 @@ const assessRiskProfiles = (oldP, newP) => {
     notifyRegionalCTLeadExtremism,
     violenceNotifySafetyCTLead,
     violenceAssaultsChange,
-    alertRequired: false /* switching off
+    alertRequired:
       escapeListAlert ||
       escapeRiskAlert ||
       escapeRisk ||
@@ -76,7 +76,7 @@ const assessRiskProfiles = (oldP, newP) => {
       increasedRiskOfExtremism ||
       notifyRegionalCTLeadExtremism ||
       violenceNotifySafetyCTLead ||
-      violenceAssaultsChange, */,
+      violenceAssaultsChange,
   }
 }
 
