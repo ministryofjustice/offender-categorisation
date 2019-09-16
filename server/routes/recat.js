@@ -132,7 +132,9 @@ module.exports = function Index({
         bookingId,
         transactionalDbClient
       )
-      res.render('formPages/recat/riskProfileChangeDetail', { data })
+      const errors = req.flash('errors')
+      const backLink = req.get('Referrer')
+      res.render('formPages/recat/riskProfileChangeDetail', { errors, backLink, data })
     })
   )
 
@@ -243,7 +245,7 @@ module.exports = function Index({
           ? RiskChangeStatus.REVIEW_NOT_REQUIRED.name
           : RiskChangeStatus.REVIEW_REQUIRED.name
 
-      offendersService.handleRiskChangeDecision(
+      await offendersService.handleRiskChangeDecision(
         res.locals.user.token,
         bookingIdInt,
         req.user.username,
@@ -255,7 +257,7 @@ module.exports = function Index({
         res.redirect(`/recategoriserCheck`)
       } else {
         // in the event of an initial categorisation the user will see an error (edge-case as this should be filtered out in the sqs service)
-        res.redirect(`/tasklistRecat/${bookingId}`)
+        res.redirect(`/tasklistRecat/${bookingId}?reason=RISK_CHANGE`)
       }
     })
   )

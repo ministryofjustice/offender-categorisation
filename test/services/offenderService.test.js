@@ -33,7 +33,6 @@ const formService = {
   getCategorisationRecord: jest.fn(),
   getSecurityReferredOffenders: jest.fn(),
   getCategorisedOffenders: jest.fn(),
-  getManualAndRiskCategorisationRecords: jest.fn(),
   updateStatusForOutstandingRiskChange: jest.fn(),
 }
 
@@ -79,45 +78,6 @@ function mockTodaySubtract(days) {
 
 describe('getRecategoriseOffenders', () => {
   test('it should return a list of offenders and sentence information', async () => {
-    const offenderDetails51 = {
-      bookingId: 51,
-      offenderNo: 'B0051ZZ',
-      firstName: 'PETER',
-      lastName: 'PURVES',
-      agencyId: 'LEI',
-      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2018-02-11' }],
-      category: 'Cat C',
-      categoryCode: 'C',
-    }
-
-    const offenderDetails52 = {
-      bookingId: 52,
-      offenderNo: 'B0052ZZ',
-      firstName: 'JOHN',
-      lastName: 'NOAKES',
-      agencyId: 'LEI',
-      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2018-05-13' }],
-      category: 'Cat B',
-      categoryCode: 'B',
-    }
-
-    const manualData = [
-      {
-        bookingId: 51,
-        offenderNo: 'B0051ZZ',
-        prisonId: 'LEI',
-        status: Status.STARTED.name,
-        reviewReason: ReviewReason.MANUAL.name,
-      },
-      {
-        bookingId: 52,
-        offenderNo: 'B0052ZZ',
-        prisonId: 'LEI',
-        status: Status.SUPERVISOR_BACK.name,
-        reviewReason: ReviewReason.RISK_CHANGE.name,
-      },
-    ]
-
     const dueData = [
       {
         offenderNo: 'G12345',
@@ -145,12 +105,6 @@ describe('getRecategoriseOffenders', () => {
         category: 'D',
         nextReviewDate: '2019-06-22',
         assessStatus: 'A',
-      },
-      {
-        offenderNo: 'B0052ZZ',
-        firstName: 'Should-be',
-        lastName: 'Unwanted',
-        bookingId: 52,
       },
     ]
 
@@ -188,32 +142,6 @@ describe('getRecategoriseOffenders', () => {
     ]
 
     const expected = [
-      {
-        offenderNo: 'B0051ZZ',
-        buttonText: 'Edit',
-        dbRecordExists: true,
-        dbStatus: 'STARTED',
-        displayName: 'Purves, Peter',
-        bookingId: 51,
-        displayStatus: Status.STARTED.value,
-        nextReviewDateDisplay: '11/02/2018',
-        prisonId: 'LEI',
-        reason: ReviewReason.MANUAL,
-        reviewReason: 'MANUAL',
-      },
-      {
-        offenderNo: 'B0052ZZ',
-        buttonText: 'Edit',
-        dbRecordExists: true,
-        dbStatus: 'SUPERVISOR_BACK',
-        displayName: 'Noakes, John',
-        bookingId: 52,
-        displayStatus: Status.SUPERVISOR_BACK.value,
-        nextReviewDateDisplay: '13/05/2018',
-        prisonId: 'LEI',
-        reason: ReviewReason.RISK_CHANGE,
-        reviewReason: 'RISK_CHANGE',
-      },
       {
         offenderNo: 'G12345',
         firstName: 'Jane',
@@ -272,16 +200,12 @@ describe('getRecategoriseOffenders', () => {
     ]
     nomisClient.getRecategoriseOffenders.mockReturnValue(dueData)
     nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
-    formService.getManualAndRiskCategorisationRecords.mockReturnValue(manualData)
-    nomisClient.getOffenderDetails.mockReturnValueOnce(offenderDetails51).mockReturnValueOnce(offenderDetails52)
     nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
     formService.getCategorisationRecord.mockImplementation((bookingId, transactionalClient) => {
       expect(transactionalClient).toEqual(mockTransactionalClient)
       switch (bookingId) {
         case 123:
           return { bookingId, status: Status.SECURITY_MANUAL.name }
-        case 52:
-          return { bookingId, reviewReason: ReviewReason.MANUAL.name }
         default:
           return {}
       }
@@ -291,14 +215,13 @@ describe('getRecategoriseOffenders', () => {
 
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(nomisClient.getPrisonersAtLocation).toBeCalled()
-    expect(formService.getCategorisationRecord).toBeCalledTimes(6)
+    expect(formService.getCategorisationRecord).toBeCalledTimes(5)
     expect(result).toMatchObject(expected)
   })
 
   test('No results from elite', async () => {
     nomisClient.getRecategoriseOffenders.mockReturnValue([])
     nomisClient.getPrisonersAtLocation.mockReturnValue([])
-    formService.getManualAndRiskCategorisationRecords.mockReturnValue([])
 
     const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
     expect(result).toHaveLength(0)
@@ -346,7 +269,6 @@ describe('getRecategoriseOffenders', () => {
       })
     nomisClient.getRecategoriseOffenders.mockReturnValue(data)
     nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
-    formService.getManualAndRiskCategorisationRecords.mockReturnValue([])
     nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
 
     const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
@@ -1566,6 +1488,33 @@ describe('mergeU21ResultWithNomisCategorisationData', () => {
     const result = await service.mergeU21ResultWithNomisCategorisationData(nomisClient, 'LEI', u21Cats)
 
     expect(result).toMatchObject(expected)
+  })
+})
+
+describe('updateNextReviewDateIfRequired', () => {
+  test('calls nomis to update review date', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    const offenderDetails = {
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
+    }
+    await service.updateNextReviewDateIfRequired('token', -5, offenderDetails)
+
+    expect(nomisClient.updateNextReviewDate).toBeCalledWith(-5, '2019-06-14')
+  })
+  test('does not call nomis to update review date if date within 10 working days', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    const offenderDetails = {
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2019-06-05' }],
+    }
+    await service.updateNextReviewDateIfRequired('token', -5, offenderDetails)
+
+    expect(nomisClient.updateNextReviewDate).not.toBeCalled()
   })
 })
 
