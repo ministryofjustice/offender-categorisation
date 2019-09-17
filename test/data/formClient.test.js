@@ -177,13 +177,13 @@ describe('createRiskChange', () => {
 
 describe('getRiskChangeByStatus', () => {
   test('it should retrieve a list of risk change records by agency and status', () => {
-    formClient.getRiskChangeByStatus('LEI', RiskChangeStatus.NEW, mockTransactionalClient)
+    formClient.getRiskChangeByStatus('LEI', RiskChangeStatus.NEW.name, mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2::risk_change_status_enum',
+        'select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2',
 
-      values: ['LEI', { name: 'NEW', value: 'New risk change alert' }],
+      values: ['LEI', 'NEW'],
     })
   })
 })

@@ -16,6 +16,8 @@ const formService = {
   mergeRiskProfileData: jest.fn(),
   referToSecurityIfRiskAssessed: jest.fn(),
   referToSecurityIfFlagged: jest.fn(),
+  updateStatusForOutstandingRiskChange: jest.fn(),
+  addSocProfile: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -47,7 +49,9 @@ beforeEach(() => {
   formService.getCategorisationRecord.mockResolvedValue({})
   formService.createOrRetrieveCategorisationRecord.mockResolvedValue({})
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
+  formService.updateStatusForOutstandingRiskChange.mockResolvedValue({})
   offendersService.getOffenderDetails.mockResolvedValue({
+    offenderNo: 'GN123',
     sentence: {
       bookingId: 12345,
       releaseDate: '2019-01-01',
@@ -79,6 +83,12 @@ describe('GET /tasklistRecat/', () => {
         expect(res.text).toContain('Category review task list')
         expect(res.text).toContain('Security information')
         expect(res.text).toContain('Not yet checked')
+        expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
+          offenderNo: 'GN123',
+          userId: 'CA_USER_TEST',
+          status: 'REVIEWED_FIRST',
+          transactionalClient: mockTransactionalClient,
+        })
       }))
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
