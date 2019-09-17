@@ -4,6 +4,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile } = require('../utils/functionalHelpers')
+const RiskChange = require('../utils/riskChangeStatusEnum')
 
 const calculateNextReviewDate = details => {
   // Endpoint only returns the latest assessment for each type
@@ -88,7 +89,12 @@ module.exports = function Index({
         categorisationRecord,
       })
 
-      // todo clear any outstanding risk profile alerts as categorisation has been started ( apply to inital tasklist too)
+      await formService.updateStatusForOutstandingRiskChange({
+        offenderNo: details.offenderNo,
+        userId: req.user.username,
+        transactionalClient: transactionalDbClient,
+        status: RiskChange.REVIEWED_FIRST.name,
+      })
 
       const data = {
         details,

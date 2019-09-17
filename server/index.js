@@ -15,7 +15,7 @@ const createOffendersService = require('./services/offendersService')
 const createSignInService = require('./authentication/signInService')
 const createUserService = require('./services/userService')
 const createRiskProfilerService = require('./services/riskProfilerService')
-const createSqsService = require('./sqs')
+const createSqsService = require('./services/sqsService')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)

@@ -88,7 +88,7 @@ module.exports = {
   getRiskChangeByStatus(agencyId, status, transactionalClient) {
     logger.debug(`getRiskChangeByStatus called with status ${status} and agencyId ${agencyId}`)
     const query = {
-      text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2::risk_change_status_enum`,
+      text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2`,
       values: [agencyId, status],
     }
     return transactionalClient.query(query)

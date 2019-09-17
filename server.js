@@ -32,5 +32,5 @@ knex1.migrate.latest().then(() => {
     log.info(`Server listening on port ${app.get('port')}`)
   })
   // must be created after migration scripts are complete
-  sqsService.start()
+  sqsService.app.start()
 })
