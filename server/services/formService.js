@@ -262,7 +262,8 @@ module.exports = function createFormService(formClient) {
   }
 
   async function createRiskChange(offenderNo, agencyId, oldProfile, newProfile, transactionalClient) {
-    const existingRecordOptional = dataIfExists(formClient.getNewRiskChangeByOffender(offenderNo, transactionalClient))
+    const newRiskChangeByOffender = await formClient.getNewRiskChangeByOffender(offenderNo, transactionalClient)
+    const existingRecordOptional = dataIfExists(newRiskChangeByOffender)
 
     if (existingRecordOptional) {
       log.info(`createRiskChange: updating existing risk profile record for offender ${offenderNo}`)
