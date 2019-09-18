@@ -144,58 +144,53 @@ describe('getRecategoriseOffenders', () => {
     const expected = [
       {
         offenderNo: 'G12345',
-        firstName: 'Jane',
-        lastName: 'Brown',
         displayName: 'Brown, Jane',
         bookingId: 123,
         displayStatus: Status.SECURITY_MANUAL.value,
         nextReviewDateDisplay: '20/04/2019',
         reason: ReviewReason.DUE,
         overdue: true,
+        buttonText: 'Edit',
       },
       {
         offenderNo: 'U2101AA',
-        firstName: 'PETER',
-        lastName: 'PAN',
         displayName: 'Pan, Peter',
         bookingId: 21,
         displayStatus: 'Not started',
         nextReviewDateDisplay: '01/05/2019',
         reason: ReviewReason.AGE,
         overdue: true,
+        buttonText: 'Start',
       },
       {
         offenderNo: 'H12345',
-        firstName: 'Danny',
-        lastName: 'Doyle',
         displayName: 'Doyle, Danny',
         bookingId: 111,
         displayStatus: 'Not started',
         nextReviewDateDisplay: '21/05/2019',
         reason: ReviewReason.DUE,
         overdue: true,
+        buttonText: 'Start',
       },
       {
         offenderNo: 'U2102AA',
-        firstName: 'JUSTIN',
-        lastName: 'BEIBER',
         displayName: 'Beiber, Justin',
         bookingId: 22,
         displayStatus: 'Not started',
         nextReviewDateDisplay: '01/06/2019',
         reason: ReviewReason.AGE,
         overdue: false,
+        buttonText: 'Start',
       },
       {
         offenderNo: 'G55345',
-        firstName: 'Alan',
-        lastName: 'Allen',
         displayName: 'Allen, Alan',
         bookingId: 122,
         displayStatus: 'Not started',
         nextReviewDateDisplay: '22/06/2019',
         reason: ReviewReason.DUE,
         overdue: false,
+        buttonText: 'Start',
       },
     ]
     nomisClient.getRecategoriseOffenders.mockReturnValue(dueData)
@@ -204,6 +199,10 @@ describe('getRecategoriseOffenders', () => {
     formService.getCategorisationRecord.mockImplementation((bookingId, transactionalClient) => {
       expect(transactionalClient).toEqual(mockTransactionalClient)
       switch (bookingId) {
+        case 22:
+          return { bookingId, status: Status.APPROVED.name }
+        case 122:
+          return { bookingId, status: Status.APPROVED.name }
         case 123:
           return { bookingId, status: Status.SECURITY_MANUAL.name }
         default:
