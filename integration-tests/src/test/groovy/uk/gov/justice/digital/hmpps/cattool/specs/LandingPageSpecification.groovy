@@ -252,10 +252,11 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'the user selects a review'
     elite2Api.stubAssessments(['B2345YZ'])
-    rows[2].find('td > a').click()
 
     then: 'the approved view page is shown'
-    at ApprovedViewRecatPage
+    withNewWindow({ rows[2].find('td > a').click() }) {
+      at ApprovedViewRecatPage
+    }
   }
 
   def "A categoriser user can start an initial cat from the landing page"() {
