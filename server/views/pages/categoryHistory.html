@@ -36,7 +36,7 @@
             <td class="govuk-table__cell"> {{ dateConverter(row.approvalDate) }}</td>
             <td class="govuk-table__cell">{{ row.formObject.supervisor.review.supervisorOverriddenCategory or row.formObject.supervisor.review.proposedCategory }}</td>
             <td class="govuk-table__cell">{{ row.prisonDescription }}</td>
-            <td class="govuk-table__cell"><a href="/form/approvedView/{{ row.bookingId }}?sequenceNo={{ row.sequence }}">View (opens in new tab)</a></td>
+            <td class="govuk-table__cell"><a target="_blank" href="/form/approvedView/{{ row.bookingId }}?sequenceNo={{ row.sequence }}">View (opens in new tab)</a></td>
           </tr>
         {% endfor %}
       </tbody>
