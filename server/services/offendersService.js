@@ -48,7 +48,7 @@ async function getSentenceMap(offenderList, nomisClient) {
   )
 }
 
-function localStatusIsInconstentWithNomisAwaitingApproval(dbRecord) {
+function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
   return (
     !!dbRecord &&
     dbRecord.status !== Status.AWAITING_APPROVAL.name &&
@@ -63,6 +63,10 @@ function unwanted(dbRecord) {
     // Initial cat in progress
     dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name
   )
+}
+
+function calculateRecatDisplayStatus(displayStatus) {
+  return displayStatus === Status.APPROVED.value || !displayStatus ? 'Not started' : displayStatus
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
@@ -90,7 +94,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             const nomisStatusUncategorised = o.status === Status.UNCATEGORISED.name
 
             const inconsistent =
-              (nomisStatusAwaitingApproval && localStatusIsInconstentWithNomisAwaitingApproval(dbRecord)) ||
+              (nomisStatusAwaitingApproval && localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)) ||
               (nomisStatusUncategorised &&
                 (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
 
@@ -407,7 +411,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return {
           ...o,
           displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-          displayStatus: decorated.displayStatus || 'Not started',
+          displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
           nextReviewDateDisplay: dateConverter(o.nextReviewDate),
@@ -506,7 +510,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return {
           ...o,
           displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-          displayStatus: decorated.displayStatus || 'Not started',
+          displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.AGE,
           nextReviewDateDisplay,
@@ -864,10 +868,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   function calculateButtonStatus(dbRecord, pnomisStatus) {
     let buttonStatus = 'Start'
     if (pnomisStatus === 'A') {
-      if (dbRecord && dbRecord.status) {
-        if (!(dbRecord.status in [Status.APPROVED.name, Status.AWAITING_APPROVAL.name])) {
-          buttonStatus = 'Edit'
-        }
+      if (
+        dbRecord &&
+        dbRecord.status &&
+        dbRecord.status !== Status.APPROVED.name &&
+        dbRecord.status !== Status.AWAITING_APPROVAL.name
+      ) {
+        buttonStatus = 'Edit'
       }
       // nomis status is pending approval
     } else if (dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status) {
@@ -898,7 +905,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       return dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status
     }
     // record is pending, valid status is AWAITING_APPROVAL OR SUPERVISOR_BACK OR SECURITY_BACK OR SECURITY_MANUAL
-    return localStatusIsInconstentWithNomisAwaitingApproval(dbRecord)
+    return localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)
   }
 
   async function getOffenderDetailWithFullInfo(offenderNo) {
