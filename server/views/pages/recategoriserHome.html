@@ -86,7 +86,7 @@
         {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
         {% set href = ("/form/awaitingApprovalView/" + row.bookingId) if row.displayStatus == 'Awaiting approval'
                  else ("/tasklistRecat/" + row.bookingId + '?reason=' + row.reason.name) %}
-        {% set classes = basicClasses + " grey-button" if row.dbRecordExists else basicClasses %}
+        {% set classes = basicClasses if row.buttonText == 'Start' else basicClasses + " grey-button" %}
         {% if row.pnomis %}
           <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">PNOMIS</div>
         {% else %}
