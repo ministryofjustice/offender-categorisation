@@ -182,7 +182,7 @@ function nomisPushBuilder(verb, token) {
     post,
   }
 
-  return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
+  return async ({ path, body = {}, headers = {}, responseType = '' } = {}) => {
     const time = moment()
     try {
       const result = await updateMethod[verb](token, path, body, headers, responseType)
@@ -198,7 +198,7 @@ function nomisPushBuilder(verb, token) {
 }
 
 function nomisClientPostBuilder() {
-  return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
+  return async ({ path, body = {}, headers = {}, responseType = '' } = {}) => {
     const time = moment()
     try {
       const clientToken = await getApiClientToken()
@@ -221,7 +221,7 @@ function nomisClientPostBuilder() {
 }
 
 function nomisClientPutBuilder() {
-  return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
+  return async ({ path, body = {}, headers = {}, responseType = '' } = {}) => {
     const time = moment()
     try {
       const clientToken = await getApiClientToken()
