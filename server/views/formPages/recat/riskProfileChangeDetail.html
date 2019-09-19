@@ -18,7 +18,7 @@
 
 {% if data.escapeList or data.escapeRisk %}
 {{ govukWarningText({
-  text: 'This person is now considered an escape risk',
+  text: 'This person is now considered a risk of escape',
   iconFallbackText: "Warning",
   classes: "forms-warning-text warning-overrides"
 }) }}
@@ -65,7 +65,7 @@
 
 {% if data.increasedRiskOfExtremism %}
  {{ govukWarningText({
-      text: "This person is now at risk of engaging in, or vulnerable to, extremism",
+      text: "This person is now at risk, or vulnerable to, extremism",
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
@@ -73,7 +73,7 @@
 
 {% if data.notifyRegionalCTLeadExtremism %}
  {{ govukWarningText({
-      text: 'Please notify your regional CT lead that you have this person in custody',
+      text: 'Notify your regional CT leader that you have this person in custody',
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
@@ -85,19 +85,25 @@
 <h2 id="violenceSection" class="govuk-heading-m  govuk-!-padding-top-4">Safety and good order</h2>
 
 {% if data.violenceAssaultsChange %}
+     {% set totalNewAssaults =  (data.newProfile.violence.numberOfSeriousAssaults + data.newProfile.violence.numberOfAssaults)%}
     {% set warningText %}
-      This person has been reported as the perpetrator in {{ data.newProfile.violence.numberOfAssaults }} assaults in custody before,
-      including {{ data.newProfile.violence.numberOfSeriousAssaults }} serious assaults in the last 12 months
+      They have been reported as the perpetrator of {{ totalNewAssaults }} assaults in total during this sentence
+      <br/>
+      {% if data.newProfile.violence.numberOfSeriousAssaults == 1 %}
+      Of these, 1 was a serious assault committed in the past 12 months
+      {% else %}
+      Of these, {{ data.newProfile.violence.numberOfSeriousAssaults }} were serious assaults committed in the past 12 months
+      {% endif %}
     {% endset %}
     {{ govukWarningText({
-      text: warningText,
+      html: warningText,
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
 {% endif %}
 {% if data.violenceNotifySafetyCTLead %}
     {{ govukWarningText({
-      text: 'Please notify your safer custody lead about this prisoner',
+      text: 'Notify your safer custody lead about this prisoner',
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
@@ -111,12 +117,22 @@
     </span>
   </summary>
   <div class="govuk-details__text">
+    {% set totalOldAssaults =  (data.oldProfile.violence.numberOfSeriousAssaults + data.oldProfile.violence.numberOfAssaults)%}
     {% set warningText %}
-    This person has been reported as the perpetrator in {{ data.oldProfile.violence.numberOfAssaults }} assaults in custody before,
-    including {{ data.oldProfile.violence.numberOfSeriousAssaults }} serious assaults in the last 12 months
+    {% if totalOldAssaults == 0 %}
+      There are no reported assaults during this sentence
+    {% else %}
+      They have been reported as the perpetrator of {{ totalOldAssaults }} assaults in total during this sentence
+      <br/>
+      {% if data.oldProfile.violence.numberOfSeriousAssaults == 1 %}
+      Of these, 1 was a serious assault committed in the past 12 months
+      {% else %}
+      Of these, {{ data.oldProfile.violence.numberOfSeriousAssaults }} were serious assaults committed in the past 12 months
+      {% endif %}
+    {% endif %}
     {% endset %}
     {{ govukWarningText({
-    text: warningText,
+    html: warningText,
     iconFallbackText: "Warning",
     classes: "forms-warning-text warning-overrides"
     }) }}
@@ -130,18 +146,16 @@
 <h2 id="socSection" class="govuk-heading-m  govuk-!-padding-top-4">Security referral</h2>
 
 {{ govukWarningText({
-text: "This person has been referred to security. They cannot review this person until you start a category review.",
+text: "This person needs to be referred to security. However, they cannot be referred until you start a category review",
 iconFallbackText: "Warning",
 classes: "forms-warning-text warning-overrides"
 }) }}
 
-<p>Is there a good reason not to start an early category review?</p>
 
 {% endif %}
 
 
-
-<h1 class="govuk-heading-m govuk-!-padding-top-7">Do you want to start their category review early?</h1>
+<h1 class="govuk-heading-m govuk-!-padding-top-7">Do you want to start an early category review?</h1>
 {{ govukRadios({
   name: "confirmation",
   classes: "govuk-radios--inline",
