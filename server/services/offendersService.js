@@ -574,8 +574,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       const details = await getOffenderDetails(token, bookingId)
       const riskChange = await formService.getRiskChangeForOffender(details.offenderNo, transactionalClient)
-      const changeFlags = riskChangeHelper.assessRiskProfiles(riskChange.oldProfile, riskChange.newProfile)
-      return { ...riskChange, ...changeFlags, details }
+      if (riskChange) {
+        const changeFlags = riskChangeHelper.assessRiskProfiles(riskChange.oldProfile, riskChange.newProfile)
+        return { ...riskChange, ...changeFlags, details }
+      }
+      throw new Error(`No risk change record found for offender ${details.offenderNo}`)
     } catch (error) {
       logger.error(error)
       throw error
