@@ -360,14 +360,19 @@ describe('recat', () => {
         expect(res.text).not.toContain('/higherSecurityReview/12345')
       })
   })
+})
 
-  test('GET /riskProfileChangeDetail/:bookingId', () => {
+describe('GET /riskProfileChangeDetail/:bookingId', () => {
+  test('happy path sections are displayed', () => {
     offendersService.getRiskChangeForOffender.mockResolvedValue({
       socNewlyReferred: true,
       escapeList: true,
       notifyRegionalCTLeadExtremism: true,
       violenceNotifySafetyCTLead: true,
+      violenceAssaultsChange: true,
       bookingId: 12345,
+      newProfile: { violence: { numberOfSeriousAssaults: 1, numberOfAssaults: 0 } },
+      oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 0 } },
     })
     return request(app)
       .get(`/riskProfileChangeDetail/12345`)
@@ -375,11 +380,112 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(
-          'This person has been referred to security. They cannot review this person until you start a category review.'
+          'This person needs to be referred to security. However, they cannot be referred until you start a category review'
         )
-        expect(res.text).toContain('Please notify your safer custody lead about this prisoner')
-        expect(res.text).toContain('Please notify your regional CT lead that you have this person in custody')
-        expect(res.text).toContain('This person is now considered an escape risk')
+        expect(res.text).toContain('Notify your safer custody lead about this prisoner')
+        expect(res.text).toContain('Notify your regional CT leader that you have this person in custody')
+        expect(res.text).toContain('This person is now considered a risk of escape')
+        expect(res.text).toContain(
+          'They have been reported as the perpetrator of 1 assaults in total during this sentence'
+        )
+        expect(res.text).toContain('Of these, 1 was a serious assault committed in the past 12 months')
+        expect(res.text).toContain('There are no reported assaults during this sentence')
+        expect(res.text).toContain('Do you want to start an early category review?')
+      })
+  })
+
+  test('Assaults wording', () => {
+    offendersService.getRiskChangeForOffender.mockResolvedValue({
+      violenceAssaultsChange: true,
+      bookingId: 12345,
+      newProfile: { violence: { numberOfSeriousAssaults: 3, numberOfAssaults: 1 } },
+      oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 1 } },
+    })
+    return request(app)
+      .get(`/riskProfileChangeDetail/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Extremism')
+        expect(res.text).not.toContain('Risk of escape')
+        expect(res.text).not.toContain('Security referral')
+        expect(res.text).toContain(
+          'They have been reported as the perpetrator of 4 assaults in total during this sentence'
+        )
+        expect(res.text).toContain(
+          'They have been reported as the perpetrator of 1 assaults in total during this sentence'
+        )
+        expect(res.text).toContain('Of these, 3 were serious assaults committed in the past 12 months')
+        expect(res.text).toContain('Of these, 0 were serious assaults committed in the past 12 months')
+      })
+  })
+
+  test('Assaults wording', () => {
+    offendersService.getRiskChangeForOffender.mockResolvedValue({
+      violenceAssaultsChange: true,
+      bookingId: 12345,
+      newProfile: { violence: { numberOfSeriousAssaults: 3, numberOfAssaults: 1 } },
+      oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 1 } },
+    })
+    return request(app)
+      .get(`/riskProfileChangeDetail/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Extremism')
+        expect(res.text).not.toContain('Risk of escape')
+        expect(res.text).not.toContain('Security referral')
+        expect(res.text).toContain(
+          'They have been reported as the perpetrator of 4 assaults in total during this sentence'
+        )
+        expect(res.text).toContain(
+          'They have been reported as the perpetrator of 1 assaults in total during this sentence'
+        )
+        expect(res.text).toContain('Of these, 3 were serious assaults committed in the past 12 months')
+        expect(res.text).toContain('Of these, 0 were serious assaults committed in the past 12 months')
+      })
+  })
+
+  test('Assaults wording - 1 serious assault', () => {
+    offendersService.getRiskChangeForOffender.mockResolvedValue({
+      violenceAssaultsChange: true,
+      bookingId: 12345,
+      newProfile: { violence: { numberOfSeriousAssaults: 1, numberOfAssaults: 2 } },
+      oldProfile: { violence: { numberOfSeriousAssaults: 1, numberOfAssaults: 1 } },
+    })
+    return request(app)
+      .get(`/riskProfileChangeDetail/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Extremism')
+        expect(res.text).not.toContain('Risk of escape')
+        expect(res.text).not.toContain('Security referral')
+        expect(res.text).toContain(
+          'They have been reported as the perpetrator of 2 assaults in total during this sentence'
+        )
+        expect(res.text).toContain(
+          'They have been reported as the perpetrator of 3 assaults in total during this sentence'
+        )
+        expect(res.text).toContain('Of these, 1 was a serious assault committed in the past 12 months')
+      })
+  })
+
+  test('No violence change', () => {
+    offendersService.getRiskChangeForOffender.mockResolvedValue({
+      violenceAssaultsChange: false,
+      notifyRegionalCTLeadExtremism: true,
+      bookingId: 12345,
+    })
+    return request(app)
+      .get(`/riskProfileChangeDetail/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Extremism')
+        expect(res.text).not.toContain('Risk of escape')
+        expect(res.text).not.toContain('Safety and good order')
+        expect(res.text).not.toContain('Security referral')
       })
   })
 })
