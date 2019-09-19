@@ -24,6 +24,12 @@ function isNewEscapeRisk(oldP, newP) {
   return !oldEscapeRisk && newEscapeRisk
 }
 
+function isNewlyReferredToSecurity(oldP, newP) {
+  const oldRisk = oldP.soc.transferToSecurity
+  const newRisk = newP.soc.transferToSecurity
+  return !oldRisk && newRisk
+}
+
 function nowRequiresNotifyRegionalCTLead(oldP, newP) {
   const oldNotify = oldP.extremism.notifyRegionalCTLead
   const newNotify = newP.extremism.notifyRegionalCTLead
@@ -59,6 +65,7 @@ const assessRiskProfiles = (oldP, newP) => {
   const notifyRegionalCTLeadExtremism = nowRequiresNotifyRegionalCTLead(oldP, newP)
   const violenceNotifySafetyCTLead = nowRequiresNotifySafetyCTLead(oldP, newP)
   const violenceAssaultsChange = changeInAssault(oldP, newP)
+  const socNewlyReferred = isNewlyReferredToSecurity(oldP, newP)
   return {
     escapeListAlert,
     escapeRiskAlert,
@@ -68,6 +75,7 @@ const assessRiskProfiles = (oldP, newP) => {
     notifyRegionalCTLeadExtremism,
     violenceNotifySafetyCTLead,
     violenceAssaultsChange,
+    socNewlyReferred,
     alertRequired:
       escapeListAlert ||
       escapeRiskAlert ||
@@ -76,7 +84,8 @@ const assessRiskProfiles = (oldP, newP) => {
       increasedRiskOfExtremism ||
       notifyRegionalCTLeadExtremism ||
       violenceNotifySafetyCTLead ||
-      violenceAssaultsChange,
+      violenceAssaultsChange ||
+      socNewlyReferred,
   }
 }
 
@@ -94,4 +103,5 @@ function alertCompare(a, b) {
 
 module.exports = {
   assessRiskProfiles,
+  isNewlyReferredToSecurity,
 }
