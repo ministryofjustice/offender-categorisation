@@ -126,6 +126,19 @@
 
 {% endif %}
 
+{% if data.socNewlyReferred %}
+<h2 id="socSection" class="govuk-heading-m  govuk-!-padding-top-4">Security referral</h2>
+
+{{ govukWarningText({
+text: "This person has been referred to security. They cannot review this person until you start a category review.",
+iconFallbackText: "Warning",
+classes: "forms-warning-text warning-overrides"
+}) }}
+
+<p>Is there a good reason not to start an early category review?</p>
+
+{% endif %}
+
 
 
 <h1 class="govuk-heading-m govuk-!-padding-top-7">Do you want to start their category review early?</h1>

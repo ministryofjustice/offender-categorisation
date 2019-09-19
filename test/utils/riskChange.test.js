@@ -68,6 +68,11 @@ describe('it should assess the risk change status of a new and old risk profile 
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).increasedRiskOfExtremism).toBe(false)
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).notifyRegionalCTLeadExtremism).toBe(false)
   })
+  it('Changes in soc referral notify lead', () => {
+    const oldProfile = buildProfile({ transferToSecurity: false })
+    const newProfile = buildProfile({ transferToSecurity: true })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).socNewlyReferred).toBe(true)
+  })
 })
 
 function buildProfile({
@@ -80,10 +85,12 @@ function buildProfile({
   notifySafetyCustodyLead = false,
   notifyRegionalCTLead = false,
   increasedRiskOfExtremism = false,
-}) {
+  transferToSecurity = false,
+} = {}) {
   return {
     escape: { activeEscapeList, activeEscapeRisk, escapeRiskAlerts, escapeListAlerts },
     violence: { numberOfAssaults, numberOfSeriousAssaults, notifySafetyCustodyLead },
     extremism: { notifyRegionalCTLead, increasedRiskOfExtremism },
+    soc: { transferToSecurity },
   }
 }

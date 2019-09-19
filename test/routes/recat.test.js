@@ -54,6 +54,7 @@ const offendersService = {
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
   getPrisonerBackground: jest.fn(),
+  getRiskChangeForOffender: jest.fn(),
 }
 
 const userService = {
@@ -357,6 +358,28 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).toContain('/miniHigherSecurityReview/12345')
         expect(res.text).not.toContain('/higherSecurityReview/12345')
+      })
+  })
+
+  test('GET /riskProfileChangeDetail/:bookingId', () => {
+    offendersService.getRiskChangeForOffender.mockResolvedValue({
+      socNewlyReferred: true,
+      escapeList: true,
+      notifyRegionalCTLeadExtremism: true,
+      violenceNotifySafetyCTLead: true,
+      bookingId: 12345,
+    })
+    return request(app)
+      .get(`/riskProfileChangeDetail/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(
+          'This person has been referred to security. They cannot review this person until you start a category review.'
+        )
+        expect(res.text).toContain('Please notify your safer custody lead about this prisoner')
+        expect(res.text).toContain('Please notify your regional CT lead that you have this person in custody')
+        expect(res.text).toContain('This person is now considered an escape risk')
       })
   })
 })
