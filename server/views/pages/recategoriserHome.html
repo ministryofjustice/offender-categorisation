@@ -26,17 +26,17 @@
   <ul class="govuk-tabs__list">
     <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
       <a class="govuk-tabs__tab" id="todo-tab">
-        To do
+        Category reviews
       </a>
     </li>
     <li class="govuk-tabs__list-item">
       <a class="govuk-tabs__tab" id="check-tab" href="/recategoriserCheck">
-        To check
+        Potential reviews{% if riskChangeCount > 0 %}<div class="tabTotal">{{ riskChangeCount }}</div>{% endif %}
       </a>
     </li>
     <li class="govuk-tabs__list-item">
       <a class="govuk-tabs__tab" id="done-tab" href="/recategoriserDone">
-        Done
+        Finished reviews
       </a>
     </li>
   </ul>

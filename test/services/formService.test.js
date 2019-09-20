@@ -22,6 +22,7 @@ const formClient = {
   createRiskChange: jest.fn(),
   getSecurityReferral: jest.fn(),
   setSecurityReferralProcessed: jest.fn(),
+  getRiskChangeByStatus: jest.fn(),
 }
 let service
 
@@ -34,6 +35,7 @@ beforeEach(() => {
   formClient.referToSecurity.mockReturnValue({})
   formClient.updateStatus.mockReturnValue({})
   formClient.securityReviewed.mockReturnValue({})
+  formClient.getRiskChangeByStatus.mockReturnValue({ rows: [] })
 })
 
 afterEach(() => {
@@ -920,5 +922,19 @@ describe('createRiskChange', () => {
         transactionalClient: mockTransactionalClient,
       },
     ])
+  })
+})
+
+describe('getRiskChangeCount', () => {
+  test('count is returned when record count is greater than 0', async () => {
+    formClient.getRiskChangeByStatus.mockReturnValue({ rows: [{ existingRecord: true }] })
+    const result = await service.getRiskChangeCount('LEI', mockTransactionalClient)
+
+    expect(result).toEqual(1)
+  })
+  test('0 count is returned when no records', async () => {
+    const result = await service.getRiskChangeCount('LEI', mockTransactionalClient)
+
+    expect(result).toEqual(0)
   })
 })
