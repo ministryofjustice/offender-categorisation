@@ -609,6 +609,16 @@ module.exports = function createFormService(formClient) {
     await updateFormData(bookingId, updated, transactionalDbClient)
   }
 
+  async function getRiskChangeCount(agencyId, transactionalDbClient) {
+    try {
+      const changesFromDB = await getRiskChanges(agencyId, transactionalDbClient)
+      return isNilOrEmpty(changesFromDB) ? 0 : changesFromDB.length
+    } catch (error) {
+      logger.error(error, 'Error during getRiskChangeCount')
+      throw error
+    }
+  }
+
   return {
     getCategorisationRecord,
     update,
@@ -646,5 +656,6 @@ module.exports = function createFormService(formClient) {
     getRiskChangeForOffender,
     getHistoricalCategorisationRecords,
     updateStatusForOutstandingRiskChange,
+    getRiskChangeCount,
   }
 }
