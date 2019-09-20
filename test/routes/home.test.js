@@ -291,7 +291,7 @@ describe('Recategoriser home', () => {
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
       })
   })
-  test('total is not displayed on Potential reviews tab if equal to 0)', () => {
+  test('total is not displayed on Potential reviews tab if equal to 0', () => {
     offendersService.getRecategoriseOffenders.mockResolvedValue([])
     formService.getRiskChangeCount.mockResolvedValue(4)
     return request(app)
