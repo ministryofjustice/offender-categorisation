@@ -287,7 +287,7 @@ describe('Recategoriser home', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Potential reviews.*<div class="tabTotal">4<\/div>.*/)
+        expect(res.text).toMatch(/Potential reviews.*4<\/span.*/)
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
       })
   })
@@ -299,7 +299,7 @@ describe('Recategoriser home', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).not.toMatch(/Potential reviews.*<div class="tabTotal">0<\/div>.*/)
+        expect(res.text).not.toMatch(/Potential reviews.*0<\/span.*/)
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
       })
   })

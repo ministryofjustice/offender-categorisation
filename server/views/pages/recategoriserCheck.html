@@ -31,7 +31,7 @@
     </li>
     <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
       <a class="govuk-tabs__tab" id="check-tab">
-        Potential reviews{% if offenders | length > 0 %}<div class="tabTotal">{{ offenders | length }}</div>{% endif %}
+        Potential reviews{% if offenders | length > 0 %}<div class="tabTotal"><span class="adjustCount">{{ offenders | length }}</span></div>{% endif %}
       </a>
     </li>
     <li class="govuk-tabs__list-item">
