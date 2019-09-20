@@ -149,7 +149,12 @@ module.exports = function Index({
             transactionalDbClient
           )
         : []
-      res.render('pages/recategoriserHome', { offenders })
+
+      const riskChangeCount = await formService.getRiskChangeCount(
+        res.locals.user.activeCaseLoad.caseLoadId,
+        transactionalDbClient
+      )
+      res.render('pages/recategoriserHome', { offenders, riskChangeCount })
     })
   )
 
@@ -168,7 +173,11 @@ module.exports = function Index({
             transactionalDbClient
           )
         : []
-      res.render('pages/recategoriserDone', { offenders })
+      const riskChangeCount = await formService.getRiskChangeCount(
+        res.locals.user.activeCaseLoad.caseLoadId,
+        transactionalDbClient
+      )
+      res.render('pages/recategoriserDone', { offenders, riskChangeCount })
     })
   )
 

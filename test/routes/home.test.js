@@ -21,6 +21,7 @@ const offendersService = {
   createSupervisorApproval: jest.fn(),
   createInitialCategorisation: jest.fn(),
   getUnapprovedOffenders: jest.fn(),
+  getRecategoriseOffenders: jest.fn(),
   isRecat: jest.fn(),
 }
 
@@ -33,6 +34,7 @@ const statsService = {}
 const formService = {
   createSecurityReferral: jest.fn(),
   getSecurityReferral: jest.fn(),
+  getRiskChangeCount: jest.fn(),
 }
 
 const homeRoute = createRouter({
@@ -52,6 +54,8 @@ beforeEach(() => {
   offendersService.getUnapprovedOffenders.mockResolvedValue({})
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
+  offendersService.getRecategoriseOffenders.mockResolvedValue({})
+  formService.getRiskChangeCount.mockResolvedValue(0)
   userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI' })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
@@ -65,6 +69,8 @@ afterEach(() => {
   offendersService.getOffenderDetails.mockReset()
   offendersService.getCatAInformation.mockReset()
   offendersService.getOffenceHistory.mockReset()
+  offendersService.getRecategoriseOffenders.mockReset()
+  formService.getRiskChangeCount.mockReset()
   userService.getUser.mockReset()
 })
 
@@ -269,6 +275,33 @@ describe('GET /', () => {
       .get('/')
       .expect(302)
       .expect('location', '/securityHome')
+  })
+})
+
+describe('Recategoriser home', () => {
+  test('total is displayed on Potential reviews tab)', () => {
+    offendersService.getRecategoriseOffenders.mockResolvedValue([])
+    formService.getRiskChangeCount.mockResolvedValue(4)
+    return request(app)
+      .get('/recategoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Potential reviews.*<div class="tabTotal">4<\/div>.*/)
+        expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('total is not displayed on Potential reviews tab if equal to 0', () => {
+    offendersService.getRecategoriseOffenders.mockResolvedValue([])
+    formService.getRiskChangeCount.mockResolvedValue(4)
+    return request(app)
+      .get('/recategoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toMatch(/Potential reviews.*<div class="tabTotal">0<\/div>.*/)
+        expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
+      })
   })
 })
 
