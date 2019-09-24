@@ -163,6 +163,7 @@ class HomePageSpecification extends GebReportingSpec {
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     startButtons[0].text() == 'Start'
     startButtons[0].@href.contains('/tasklistRecat/12?reason=DUE')
+    !checkTabLink.isDisplayed()
   }
 
   def "The home page for a multiple role user is present"() {
