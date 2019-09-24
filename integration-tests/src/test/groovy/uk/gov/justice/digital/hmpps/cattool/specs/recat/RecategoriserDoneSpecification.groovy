@@ -10,14 +10,9 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 
-import java.time.LocalDate
-
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 
 class RecategoriserDoneSpecification extends GebReportingSpec {
@@ -57,6 +52,7 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
     elite2Api.stubCategorisedMultiple([12,10])
+    checkTabLink.isDisplayed()
     doneTabLink.click()
 
     then: 'The recategoriser done page is displayed, showing only approved recats'

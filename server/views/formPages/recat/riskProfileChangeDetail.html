@@ -9,7 +9,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l ">Check change in risk status</h1>
+<h1 class="govuk-heading-l">Check change in risk status</h1>
 <p>The following has flagged this person for early review</p>
 
 
@@ -20,12 +20,13 @@
 {{ govukWarningText({
   text: 'This person is now considered a risk of escape',
   iconFallbackText: "Warning",
+attributes: {  'id': 'escapeWarning'},
   classes: "forms-warning-text warning-overrides"
 }) }}
 {% endif %}
 
 {% if data.escapeListAlert or data.escapeRiskAlert %}
-<div class="govuk-details__text govuk-!-margin-bottom-3">
+<div class="govuk-details__text govuk-!-margin-bottom-3" id="escapeAlerts">
   {% if data.newProfile.escape.escapeListAlerts.length > 0 or data.newProfile.escape.escapeRiskAlerts.length > 0 %}
     {% for alert in data.newProfile.escape.escapeListAlerts %}
     {{ renderAlert(alert) }}
@@ -43,7 +44,7 @@
       View existing alert notes
     </span>
   </summary>
-  <div class="govuk-details__text">
+  <div class="govuk-details__text" id="escapeAlertsOld">
     {% if data.oldProfile.escape.escapeListAlerts.length > 0 or data.oldProfile.escape.escapeRiskAlerts.length > 0 %}
       {% for alert in data.oldProfile.escape.escapeListAlerts %}
       {{ renderAlert(alert) }}
@@ -67,6 +68,7 @@
  {{ govukWarningText({
       text: "This person is now at risk, or vulnerable to, extremism",
       iconFallbackText: "Warning",
+      attributes: {  'id': 'increasedRiskExtremismWarning'},
       classes: "forms-warning-text warning-overrides"
     }) }}
 {% endif %}
@@ -75,6 +77,7 @@
  {{ govukWarningText({
       text: 'Notify your regional CT leader that you have this person in custody',
       iconFallbackText: "Warning",
+      attributes: {  'id': 'notifyCtExtremismWarning'},
       classes: "forms-warning-text warning-overrides"
     }) }}
 {% endif %}
@@ -97,6 +100,7 @@
     {% endset %}
     {{ govukWarningText({
       html: warningText,
+      attributes: {  'id': 'violenceWarningNew'},
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
@@ -104,6 +108,7 @@
 {% if data.violenceNotifySafetyCTLead %}
     {{ govukWarningText({
       text: 'Notify your safer custody lead about this prisoner',
+      attributes: {  'id': 'notifyCTViolenceWarning'},
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
@@ -133,6 +138,7 @@
     {% endset %}
     {{ govukWarningText({
     html: warningText,
+    attributes: {  'id': 'violenceWarningOld'},
     iconFallbackText: "Warning",
     classes: "forms-warning-text warning-overrides"
     }) }}
@@ -148,6 +154,7 @@
 {{ govukWarningText({
 text: "This person needs to be referred to security. However, they cannot be referred until you start a category review",
 iconFallbackText: "Warning",
+attributes: {  'id': 'securityReferralWarning'},
 classes: "forms-warning-text warning-overrides"
 }) }}
 
