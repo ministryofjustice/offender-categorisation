@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserPotentialReviewsPage
 
 import java.time.LocalDate
 

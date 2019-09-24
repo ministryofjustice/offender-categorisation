@@ -281,12 +281,15 @@ module.exports = function createFormService(formClient) {
   }
 
   async function updateStatusForOutstandingRiskChange({ offenderNo, userId, status, transactionalClient }) {
-    await formClient.updateNewRiskChangeStatus({
+    const result = await formClient.updateNewRiskChangeStatus({
       offenderNo,
       userId,
       status,
       transactionalClient,
     })
+    logger.debug(
+      `updateStatusForOutstandingRiskChange for offender no  ${offenderNo} Updated ${result.rowCount} records`
+    )
   }
 
   async function createSecurityReferral(agencyId, offenderNo, userId, transactionalClient) {

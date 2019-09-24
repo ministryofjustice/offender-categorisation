@@ -21,6 +21,7 @@ class RecategoriserHomePage extends Page {
     startButtons { bodyRows*.$('td', 5)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/recategoriserDone')}
+    checkTabLink { $('a', href: '/recategoriserCheck')}
   }
 
   def selectFirstPrisoner() {

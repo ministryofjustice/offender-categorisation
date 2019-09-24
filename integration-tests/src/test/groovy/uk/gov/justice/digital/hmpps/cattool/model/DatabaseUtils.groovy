@@ -16,6 +16,7 @@ class DatabaseUtils {
     def sql = Sql.newInstance(dbConnParams)
     sql.executeUpdate("delete from form where user_id = '${user.username}'")
     sql.executeUpdate("delete from security_referral")
+    sql.executeUpdate("delete from risk_change")
   }
 
   def clearDb() {
@@ -23,11 +24,17 @@ class DatabaseUtils {
     def sql = Sql.newInstance(dbConnParams)
     sql.executeUpdate("delete from form where booking_id < 1000")
     sql.executeUpdate("delete from security_referral")
+    sql.executeUpdate("delete from risk_change")
   }
 
   def getData(bookingId) {
     def sql = Sql.newInstance(dbConnParams)
     return sql.rows("select * from form where booking_id = $bookingId order by sequence_no")
+  }
+
+  def getRiskChange(offenderNo) {
+    def sql = Sql.newInstance(dbConnParams)
+    return sql.rows("select * from risk_change where offender_no = $offenderNo")
   }
 
   def createData(bookingId, json) {
@@ -94,5 +101,11 @@ class DatabaseUtils {
   def getSecurityData(offenderNo) {
     def sql = Sql.newInstance(dbConnParams)
     return sql.rows("select * from security_referral where offender_no = $offenderNo")
+  }
+
+  def createRiskChange(id, offenderNo, userId, status, riskProfileOld, riskProfileNew, prisonId, raisedDate ) {
+    def sql = Sql.newInstance(dbConnParams)
+    sql.executeUpdate("""insert into risk_change (id, old_profile, new_profile, offender_no, user_id, prison_id, status, raised_date ) values ($id, ?::JSON, ?::JSON, '$offenderNo', '$userId', '$prisonId', '$status', '$raisedDate' )""",
+      riskProfileOld, riskProfileNew)
   }
 }
