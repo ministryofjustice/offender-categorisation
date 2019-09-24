@@ -369,6 +369,26 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  void stubGetLatestCategorisationForOffenders(){
+    this.stubFor(
+      post("/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false")
+        .willReturn(
+        aResponse()
+          .withBody(JsonOutput.toJson([
+          [
+            bookingId     : 12,
+            offenderNo    : 'B2345XY',
+            classificationCode      : 'C',
+            nextReviewDate: '2019-07-25',
+            assessmentStatus: 'A'
+          ]
+        ]
+        ))
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200))
+    )
+  }
+
   void stubCategorised(bookingIds = [11, 12]) {
     def response = []
     if (bookingIds.contains(10)) {

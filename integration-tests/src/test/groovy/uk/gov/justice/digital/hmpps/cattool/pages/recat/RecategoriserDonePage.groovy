@@ -22,5 +22,7 @@ class RecategoriserDonePage extends Page {
     viewButtons { bodyRows*.$('td', 6)*.find('*')  }
     todoTabLink { $('a', href: '/recategoriserHome')}
     noResultsDiv { $('#no-results-message') }
+    checkTabLink { $('a', href: '/recategoriserCheck')}
+    homeTabLink { $('a', href: '/recategoriserHome')}
   }
 }

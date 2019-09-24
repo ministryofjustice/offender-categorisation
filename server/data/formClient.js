@@ -212,7 +212,7 @@ module.exports = {
   },
 
   updateNewRiskChangeStatus({ offenderNo, userId, status, transactionalClient }) {
-    logger.debug(`updating risk_change status for offender no  ${offenderNo}`)
+    logger.debug(`updating risk_change status for offender no  ${offenderNo} with status ${status}`)
     const query = {
       text: `update risk_change set status = $1, user_id = $2 where offender_no = $3 and status = 'NEW'`,
       values: [status, userId, offenderNo],
