@@ -11,43 +11,7 @@
   href: backLink or "/"
 }) }}
 
-<hr/>
-<div class="govuk-grid-row govuk-!-padding-left-3 govuk-body-s">
-  <div class="govuk-grid-column-one-quarter govuk-label" for="offenderDisplayName">
-    Name
-  </div>
-  <div class="govuk-grid-column-one-quarter govuk-label" for="offenderNo">
-    NOMIS ID
-  </div>
-  <div class="govuk-grid-column-one-quarter govuk-label" for="dob">
-    Date of birth
-  </div>
-  <div class="govuk-grid-column-one-quarter govuk-label" for="category">
-    Current category
-  </div>
-</div>
-<div class="govuk-grid-row govuk-!-padding-left-3 govuk-body-s">
-  <div id="offenderDisplayName" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">
-    <a target="_blank" href="{{ data.details.offenderNo | offenderLink }}">{{ data.details.displayName }}</a>
-  </div>
-  <div id="offenderNo" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">{{
-    data.details.offenderNo }}
-  </div>
-  <div id="dob" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">{{
-    dateConverter(data.details.dateOfBirth) }}
-  </div>
-  <div id="category" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">
-    {% if data.details.categoryCode %}
-    {% if data.details.categoryCode == 'U' or data.details.categoryCode == 'X' or data.details.categoryCode == 'Z' %}
-    {{ data.details.categoryCode }} ({{ data.details.category }})
-    {% else %}
-    {{ data.details.categoryCode }}
-    {% endif %}
-    {% endif %}
-  </div>
-</div>
-<hr/>
-
+{% include "../partials/offenderBanner.html" %}
 
 {% endblock %}
 
