@@ -308,7 +308,11 @@ describe('Recategoriser home', () => {
 describe('Landing page', () => {
   test('security user get', () => {
     userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI', roles: { security: true } })
-    offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12 })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+    })
     offendersService.isRecat.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({})
 
@@ -317,6 +321,7 @@ describe('Landing page', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('Dexter Spaniel')
         expect(res.text).toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(offendersService.isRecat).toBeCalledTimes(1)
