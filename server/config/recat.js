@@ -182,4 +182,68 @@ module.exports = {
     ],
     validate: true,
   },
+  fasttrackEligibility: {
+    fields: [
+      {
+        earlyCatD: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter yes or no',
+        },
+      },
+      {
+        increaseCategory: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter yes or no',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/recat/fasttrackRemain/',
+    },
+    validate: true,
+  },
+  fasttrackRemain: {
+    fields: [
+      {
+        remainCatC: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter yes or no',
+        },
+      },
+    ],
+    nextPath: {
+      decisions: {
+        discriminator: 'remainCatC',
+        Yes: '/form/recat/fasttrackPositiveProgress/',
+        No: '/form/recat/fasttrackCancelled/',
+      },
+    },
+    validate: true,
+  },
+  fasttrackPositiveProgress: {
+    fields: [
+      {
+        positiveProgress: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter yes or no',
+        },
+      },
+      {
+        positiveProgressText: {
+          responseType: 'requiredStringIf_positiveProgress_Yes',
+          validationMessage: 'Please enter details',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/recat/fasttrackConfirmation/',
+    },
+    validate: true,
+  },
+  fasttrackConfirmation: {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    validate: false,
+  },
 }
