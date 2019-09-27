@@ -1,39 +1,49 @@
-function getCount(rows, catType, securityAuto) {
-  const find = rows.find(r => r.catType === catType && r.securityAuto === securityAuto)
+function getCount(rows, securityAuto) {
+  const find = rows.find(r => r.securityAuto === securityAuto)
+  return find ? find.count : 0
+}
+
+function getCount2(rows, onTime) {
+  const find = rows.find(r => r.onTime === onTime)
   return find ? find.count : 0
 }
 
 module.exports = function createstatsService(statsClient) {
   return {
-    async getInitialCategoryOutcomes(transactionalClient) {
-      const stats = await statsClient.getInitialCategoryOutcomes(transactionalClient)
+    async getInitialCategoryOutcomes(startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getInitialCategoryOutcomes(startDate, endDate, prisonId, transactionalClient)
 
       return stats.rows
     },
 
-    async getRecatCategoryOutcomes(transactionalClient) {
-      const stats = await statsClient.getRecatCategoryOutcomes(transactionalClient)
+    async getRecatCategoryOutcomes(startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getRecatCategoryOutcomes(startDate, endDate, prisonId, transactionalClient)
 
       return stats.rows
     },
 
-    async getSecurityReferrals(transactionalClient) {
-      const stats = await statsClient.getSecurityReferrals(transactionalClient)
+    async getSecurityReferrals(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getSecurityReferrals(catType, startDate, endDate, prisonId, transactionalClient)
 
       const { rows } = stats
       return {
-        initialManual: getCount(rows, 'INITIAL', false),
-        initialAuto: getCount(rows, 'INITIAL', true),
-        recatManual: getCount(rows, 'RECAT', false),
-        recatAuto: getCount(rows, 'RECAT', true),
+        manual: getCount(rows, false),
+        auto: getCount(rows, true),
       }
     },
 
-    async getTimeliness(transactionalClient) {
-      const stats = await statsClient.getTimeliness(transactionalClient)
-      const initial = stats.rows.find(r => r.catType === 'INITIAL')
-      const recat = stats.rows.find(r => r.catType === 'RECAT')
-      return { initial, recat }
+    async getTimeliness(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getTimeliness(catType, startDate, endDate, prisonId, transactionalClient)
+      return stats.rows[0]
+    },
+
+    async getOnTime(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getOnTime(catType, startDate, endDate, prisonId, transactionalClient)
+      const { rows } = stats
+      return {
+        onTime: getCount2(rows, true),
+        notOnTime: getCount2(rows, false),
+      }
     },
   }
 }
