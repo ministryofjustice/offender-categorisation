@@ -1,7 +1,10 @@
+const moment = require('moment')
 const express = require('express')
+const flash = require('connect-flash')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
+const dashboard = require('../config/dashboard')
 
 const extractNextReviewDate = details => {
   const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
@@ -18,8 +21,14 @@ module.exports = function Index({
   const router = express.Router()
 
   router.use(authenticationMiddleware())
+  router.use(flash())
 
   router.use(handleCsrf)
+
+  async function getCurrentPrison(token) {
+    const user = await userService.getUser(token)
+    return user.activeCaseLoadId
+  }
 
   router.get(
     '/',
@@ -198,15 +207,56 @@ module.exports = function Index({
     })
   )
 
-  router.get(
-    '/dashboard',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const initial = await statsService.getInitialCategoryOutcomes(transactionalDbClient)
-      const recat = await statsService.getRecatCategoryOutcomes(transactionalDbClient)
-      const security = await statsService.getSecurityReferrals(transactionalDbClient)
-      const timeliness = await statsService.getTimeliness(transactionalDbClient)
+  const INIT = CatType.INITIAL.name
+  const RECAT = CatType.RECAT.name
 
-      res.render('pages/dashboard', { initial, recat, security, timeliness })
+  async function getParams(req, res) {
+    const { startDate, endDate, scope } = req.query
+    const start = startDate ? moment(startDate, 'DD/MM/YYYY').format('YYYY-MM-DD') : null
+    const end = endDate ? moment(endDate, 'DD/MM/YYYY').format('YYYY-MM-DD') : null
+    const prisonId = scope === 'all' ? null : await getCurrentPrison(res.locals.user.token)
+    return { start, end, prisonId }
+  }
+
+  function getTotal(results) {
+    return results.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0)
+  }
+
+  router.get(
+    '/dashboardInitial',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const errors = formService.isValidForGet(dashboard.dashboard, req, res, req.query)
+      if (errors.length) {
+        res.render('pages/dashboardInitial', { errors, ...req.query })
+      } else {
+        const { start, end, prisonId } = await getParams(req, res)
+        const initial = await statsService.getInitialCategoryOutcomes(start, end, prisonId, transactionalDbClient)
+        const security = await statsService.getSecurityReferrals(INIT, start, end, prisonId, transactionalDbClient)
+        const timeliness = await statsService.getTimeliness(INIT, start, end, prisonId, transactionalDbClient)
+        const onTime = await statsService.getOnTime(INIT, start, end, prisonId, transactionalDbClient)
+        const total = getTotal(initial)
+
+        res.render('pages/dashboardInitial', { initial, security, timeliness, onTime, total, errors, ...req.query })
+      }
+    })
+  )
+
+  router.get(
+    '/dashboardRecat',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const errors = formService.isValidForGet(dashboard.dashboard, req, res, req.query)
+      if (errors.length) {
+        res.render('pages/dashboardInitial', { errors, ...req.query })
+      } else {
+        const { start, end, prisonId } = await getParams(req, res)
+        const recat = await statsService.getRecatCategoryOutcomes(start, end, prisonId, transactionalDbClient)
+        const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, transactionalDbClient)
+        const timeliness = await statsService.getTimeliness(RECAT, start, end, prisonId, transactionalDbClient)
+        const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, transactionalDbClient)
+        const total = getTotal(recat)
+
+        res.render('pages/dashboardRecat', { recat, security, timeliness, onTime, total, errors, ...req.query })
+      }
     })
   )
 
