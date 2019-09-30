@@ -1,0 +1,38 @@
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% if errors.length > 0 %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+<form method="get">
+    {% if (errors | findError('startDate')) or (errors | findError('endDate')) %}
+      <span id="startDate-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> Enter a valid date that is today or earlier
+      </span>
+    {% endif %}
+
+    <div class=" govuk-!-display-inline{% if (errors | findError('startDate'))%} govuk-form-group--error{%endif%}">
+      <label class="govuk-label govuk-!-display-inline" for="startDate">Start Date</label>
+      <input class="govuk-input dateInputWidth govuk-!-display-inline {% if (errors | findError('startDate'))%} govuk-input--error{%endif%}"
+             id="startDate" name="startDate" type="text" value="{{ startDate }}" placeholder="dd/mm/yyyy"
+             aria-describedby="startDate-hint {% if (errors | findError('startDate'))%}startDate-error{%endif%}">
+    </div>
+
+    <div class=" govuk-!-display-inline{% if (errors | findError('endDate'))%} govuk-form-group--error{%endif%}">
+      <label class="govuk-label govuk-!-display-inline" for="endDate">End Date</label>
+      <input class="govuk-input dateInputWidth govuk-!-display-inline {% if (errors | findError('endDate'))%} govuk-input--error{%endif%}"
+             id="endDate" name="endDate" type="text" value="{{ endDate }}" placeholder="dd/mm/yyyy"
+             aria-describedby="endDate-hint {% if (errors | findError('endDate'))%}endDate-error{%endif%}">
+    </div>
+
+    <div class=" govuk-!-display-inline">
+      <select class="govuk-select govuk-!-margin-left-1" id="scope" name="scope">
+        <option value="within" {{ "selected" if scope === 'within' }}>within this prison</option>
+        <option value="all" {{ "selected" if scope === 'all' }}>in whole estate</option>
+      </select>
+    </div>
+
+    <button type="submit" class="govuk-button" data-module="govuk-button">Update</button>
+  </form>

@@ -1,0 +1,55 @@
+  <h3>Referrals to security</h3>
+  <p id="manual">Manual: {{security.manual}} </p>
+  <p id="auto">Auto: {{security.auto}} </p>
+  <hr/>
+
+  <h3>Timeliness Averages</h3>
+  <table class="govuk-table" id="timeliness">
+    <tbody class="govuk-table__body">
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Number of days before due date that approval occurred</td>
+      <td class="govuk-table__cell"> {{ timeliness.approvalTimelinessDays | round(2)}}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Security referral timeliness (Hours from start to referral)</td>
+      <td class="govuk-table__cell"> {{ timeliness.securityReferralTimelinessHours | round(2)}}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Hours in security</td>
+      <td class="govuk-table__cell"> {{ timeliness.inSecurityHours | round(2)}}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Start to assessment completion (days)</td>
+      <td class="govuk-table__cell"> {{ timeliness.startToAssessmentDays | round(2)}}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Assessment to approval (days)</td>
+      <td class="govuk-table__cell"> {{ timeliness.assessmentToApprovalDays | round(2) }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <h3>Completion</h3>
+  <table class="govuk-table" id="completion">
+    <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Completion</th>
+      <th class="govuk-table__header" scope="col">Percentage completed on time</th>
+      <th class="govuk-table__header" scope="col">Total</th>
+    </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Before due date</td>
+      <td class="govuk-table__cell">{{ (100 * onTime.onTime / (onTime.onTime + onTime.notOnTime)) | round(2) + '%' if onTime.onTime + onTime.notOnTime > 0 }}</td>
+      <td class="govuk-table__cell">{{ onTime.onTime }}</td>
+    </tr>
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">Late</td>
+      <td class="govuk-table__cell"></td>
+      <td class="govuk-table__cell">{{ onTime.notOnTime }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <p id="total">Total: {{ total }}</p>
