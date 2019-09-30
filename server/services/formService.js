@@ -558,12 +558,16 @@ module.exports = function createFormService(formClient) {
     return valid
   }
 
+  function getInputForExpectedFields(formPageConfig, userInput) {
+    const expectedFields = formPageConfig.fields.map(getFieldName)
+    return pickBy((val, key) => expectedFields.includes(key), userInput)
+  }
+
   function isValid(formPageConfig, req, res, formUrl, userInput) {
     if (formPageConfig.validate && formPageConfig.fields) {
-      const expectedFields = formPageConfig.fields.map(getFieldName)
-      const inputForExpectedFields = pickBy((val, key) => expectedFields.includes(key), userInput)
-
+      const inputForExpectedFields = getInputForExpectedFields(formPageConfig, userInput)
       const errors = validate(inputForExpectedFields, formPageConfig)
+
       if (!isNilOrEmpty(errors)) {
         req.flash('errors', errors)
         req.flash('userInput', inputForExpectedFields)
@@ -573,6 +577,15 @@ module.exports = function createFormService(formClient) {
       }
     }
     return true
+  }
+
+  function isValidForGet(formPageConfig, req, res, userInput) {
+    if (formPageConfig.validate && formPageConfig.fields) {
+      const inputForExpectedFields = getInputForExpectedFields(formPageConfig, userInput)
+      const errors = validate(inputForExpectedFields, formPageConfig)
+      return errors
+    }
+    return []
   }
 
   async function requiresOpenConditions(bookingId, userId, transactionalDbClient) {
@@ -638,8 +651,8 @@ module.exports = function createFormService(formClient) {
     backToCategoriser,
     backToCategoriserMessageRead,
     setAwaitingApproval,
-    validate,
     isValid,
+    isValidForGet,
     requiresOpenConditions,
     cancelOpenConditions,
     getCategorisedOffenders,

@@ -40,9 +40,6 @@ class SecuritySpecification extends GebReportingSpec {
   def "The done page for a security user is present"() {
     when: 'I go to the home page as security and select the done tab'
 
-    def reviewDate1 = LocalDate.of(2019, 1, 28)
-    def reviewDate2 = LocalDate.of(2019, 1, 31)
-
     db.createSecurityReviewedData(-2, 13, 'B2345XY', 'SECURITY_BACK', JsonOutput.toJson([
       ratings: [
         offendingHistory: [previousConvictions: "Yes", previousConvictionsText: "some convictions"],
@@ -51,7 +48,7 @@ class SecuritySpecification extends GebReportingSpec {
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]],
-      security: [review: [securityReview: "this is the text from the security team for a recat"]]]),SECURITY_USER.username, Timestamp.valueOf(reviewDate1.atStartOfDay()), 'RECAT')
+      security: [review: [securityReview: "this is the text from the security team for a recat"]]]),SECURITY_USER.username, "'2019-01-28'", 'RECAT')
 
     db.createRiskProfileDataForExistingRow(13, JsonOutput.toJson([socProfile: [nomsId: "G1110GX", riskType: "SOC", transferToSecurity: true, provisionalCategorisation: "C"]]))
 
@@ -65,7 +62,7 @@ class SecuritySpecification extends GebReportingSpec {
       ],
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]
       ],
-      security: [review: [securityReview: "this is the text from the security team"]]]),SECURITY_USER.username, Timestamp.valueOf(reviewDate2.atStartOfDay()))
+      security: [review: [securityReview: "this is the text from the security team"]]]),SECURITY_USER.username, "'2019-01-31'")
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)

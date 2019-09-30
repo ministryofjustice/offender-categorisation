@@ -93,7 +93,7 @@ describe('authorisationMiddleware roles', () => {
       next
     )
 
-    expect(next).toBeCalledWith(new Error('Failed to parse booking id'))
+    expect(next).toBeCalledWith(new Error('Url not recognised')) // blocked by auth config
   })
 
   test('Should not allow generic users if bookingId does not exist', async () => {

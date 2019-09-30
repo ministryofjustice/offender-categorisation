@@ -90,12 +90,13 @@ class DatabaseUtils {
     doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, 'INITIAL', null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
 
-  def doCreateCompleteRow(id, bookingId, json, userId, status, catType, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate, securityReviewedBy, securityReviewedDate, approvalDate = null) {
+  def doCreateCompleteRow(id, bookingId, json, userId, status, catType, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate,
+                          securityReviewedBy, securityReviewedDate, approvalDate = null, assessmentDate = null, dueByDate = null) {
     def sql = Sql.newInstance(dbConnParams)
     def approvalDateDB = approvalDate != null ? approvalDate : status == 'APPROVED' ? new Date(Calendar.getInstance().getTimeInMillis()) : null
-    sql.executeUpdate("""insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId',
-      $referredDate, '$referredBy', $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', ?::date, ?::date, '$catType')""",
-      json, riskProfile, securityReviewedDate, approvalDateDB)
+    sql.executeUpdate("""insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId', $referredDate, '$referredBy',
+      $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', $securityReviewedDate, ?::date, '$catType', null, ?::date, null, null, null, ?::date)""",
+      json, riskProfile, approvalDateDB, assessmentDate, dueByDate)
   }
 
   def getSecurityData(offenderNo) {

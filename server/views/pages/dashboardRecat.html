@@ -1,0 +1,52 @@
+{% extends "../partials/layout.html" %}
+
+{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "button/macro.njk" import govukButton %}
+{% from "input/macro.njk" import govukInput %}
+
+{% block beforeContent %}
+{{ govukBreadcrumbs({
+  items: [
+    {
+      text: "Home",
+      href: "#"
+    }
+  ]
+}) }}
+{% endblock %}
+
+{% block content %}
+
+<div >
+  <h1 class="govuk-heading-l">Dashboard - Categorisation reviews</h1>
+</div>
+
+<div>
+  {% include "../partials/dashboardForm.html" %}
+  <hr/>
+  <div class="govuk-!-width-two-thirds">
+    <h3>Categorisation review numbers</h3>
+    <table class="govuk-table" id="recatTable">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Selected by categoriser</th>
+          <th class="govuk-table__header" scope="col">Supervisor override</th>
+          <th class="govuk-table__header" scope="col">numbers</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for row in recat %}
+          <tr class="govuk-table__row ">
+            <td class="govuk-table__cell">{{ catDisplay(row.recat) }}</td>
+            <td class="govuk-table__cell">{{ catDisplay(row.superOverride) }}</td>
+            <td class="govuk-table__cell">{{ row.count }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if (not errors | length) %}
+      {% include "../partials/dashboardData.html" %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
