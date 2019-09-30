@@ -663,6 +663,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       throw error
     }
   }
+
   async function getBasicOffenderDetails(token, bookingId) {
     try {
       const nomisClient = nomisClientBuilder(token)
