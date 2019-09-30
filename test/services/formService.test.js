@@ -1,4 +1,5 @@
 const serviceCreator = require('../../server/services/formService')
+const { validate } = require('../../server/utils/fieldValidation')
 const Status = require('../../server/utils/statusEnum')
 const CatType = require('../../server/utils/catTypeEnum')
 
@@ -470,7 +471,7 @@ describe('getValidationErrors', () => {
     ${{ q1: 'No', q3: 'Yes' }}                 | ${dependantConfig} | ${[{ href: '#q4', text: 'Error q4' }]}
     ${{ q1: 'No', q3: 'Yes', q4: 'any text' }} | ${dependantConfig} | ${[{ href: '#q4', text: 'Error q4' }]}
   `('should return errors $expectedContent for form return', ({ formBody, formConfig, expectedOutput }) => {
-    expect(service.validate(formBody, formConfig)).toEqual(expectedOutput)
+    expect(validate(formBody, formConfig)).toEqual(expectedOutput)
   })
 })
 
