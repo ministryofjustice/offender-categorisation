@@ -3,9 +3,9 @@ const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
-const { addSocProfile } = require('../utils/functionalHelpers')
+const ReviewReason = require('../utils/reviewReasonEnum')
+const { addSocProfile, isFirstVisit } = require('../utils/functionalHelpers')
 const { get10BusinessDays } = require('../utils/utils.js')
-const logger = require('../../log.js')
 
 function add10BusinessDays(isoDate) {
   const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
@@ -45,18 +45,33 @@ module.exports = function Index({
         dueByDate,
         transactionalDbClient
       )
+
+      if (categorisationRecord.catType === CatType.RECAT.name && categorisationRecord.status !== Status.APPROVED.name) {
+        throw new Error('A categorisation review is in progress')
+      }
+
+      // If retrieved - check if APPROVED and if it is, create new
       if (categorisationRecord.status === Status.APPROVED.name) {
-        logger.error(
-          `tasklist: Attempt to do initial cat for $bookingId / $categorisationRecord.offenderNo where approved cat already exists`
-        )
-        throw new Error(
-          'An approved categorisation already exists for this prison term. This prisoner can only be recategorised.'
+        categorisationRecord = await formService.createCategorisationRecord(
+          bookingId,
+          req.user.username,
+          details.agencyId,
+          details.offenderNo,
+          CatType.INITIAL.name,
+          reason || null,
+          dueByDate,
+          transactionalDbClient
         )
       }
 
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
+
+      if (reason === ReviewReason.MANUAL.name && isFirstVisit(res)) {
+        // Ensure this categorisation appears on the to-do list
+        await offendersService.setInactive(res.locals.user.token, bookingId)
+      }
 
       categorisationRecord = await addSocProfile({
         res,

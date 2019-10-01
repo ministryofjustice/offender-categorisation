@@ -468,6 +468,20 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  /**
+   * deactivate any existing categorisations to ensure that the categorisation is present on the initial to do list
+   */
+  async function setInactive(token, bookingId) {
+    try {
+      logger.info(`Setting cats of bookingId ${bookingId} inactive`)
+      const nomisClient = nomisClientBuilder(token)
+      await nomisClient.setInactive(bookingId)
+    } catch (error) {
+      logger.error(error, `Error during setInactive, for ${bookingId} `)
+      throw error
+    }
+  }
+
   async function getU21Recats(agencyId, user, nomisClient, transactionalDbClient) {
     const u21From = moment()
       .subtract(22, 'years') // allow up to a year overdue
@@ -849,7 +863,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function isRecat(token, bookingId) {
-    // Decide whether INITIAL or RECAT.
+    // Decide whether to do an INITIAL or RECAT (or neither).
     // To detect Cat A etc reliably we have to get cat from nomis.
     // If missing or UXZ it is INITIAL;
     // if B,C,D,I,J it is RECAT;
@@ -935,15 +949,16 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getSecurityReviewedOffenders,
     getPrisonerBackground,
     getRiskChanges,
+    getOffenderDetailWithFullInfo,
+    getRiskChangeForOffender,
+    handleRiskChangeDecision,
+    updateNextReviewDateIfRequired,
+    setInactive,
     // just for tests:
     buildSentenceData,
     getMatchedCategorisations: matchEliteAndDBCategorisations,
     pnomisOrInconsistentWarning,
     calculateButtonStatus,
     mergeU21ResultWithNomisCategorisationData,
-    getOffenderDetailWithFullInfo,
-    getRiskChangeForOffender,
-    handleRiskChangeDecision,
-    updateNextReviewDateIfRequired,
   }
 }
