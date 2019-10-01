@@ -99,6 +99,44 @@ class LandingPageSpecification extends GebReportingSpec {
     warning.text() contains 'This prisoner is Cat A. They cannot be categorised here.'
   }
 
+  def "A recategoriser user sees a warning for being in progress"() {
+
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ');
+
+    given: 'A recategoriser is logged in'
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+
+    when: 'The user arrives at the landing page for an already-started cat'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'A')
+    elite2Api.stubGetCategory(12, 'C')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !recatButton.displayed
+    warning.text() contains "This prisoner's categorisation or review is currently in progress"
+  }
+
+  def "A recategoriser user sees a warning for awaiting approval"() {
+
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'RECAT', 'B2345YZ');
+
+    given: 'A recategoriser is logged in'
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+
+    when: 'The user arrives at the landing page for a cat in awaiting approval status'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'A')
+    elite2Api.stubGetCategory(12, 'C')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !recatButton.displayed
+    warning.text() contains "This prisoner is awaiting supervisor approval"
+  }
+
   def "A security user can flag a prisoner for later referral"() {
 
     given: 'A security user is logged in'
@@ -275,21 +313,24 @@ class LandingPageSpecification extends GebReportingSpec {
     at LandingPage
     initialButton.displayed
     initialButton.@href.contains('/tasklist/12?reason=MANUAL')
+    !warning.displayed
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    elite2Api.stubSetInactive()
     initialButton.click()
 
     then: 'We are sent to the tasklist and data is stored'
     at TasklistPage
-    currentUrl.contains '/tasklist/12'
+    currentUrl.contains '/tasklist/12?reason=MANUAL'
     def data = db.getData(12)
     data.status == ["STARTED"]
     data.cat_type.value == ["INITIAL"]
     data.review_reason.value == ["MANUAL"]
+    elite2Api.verifySetInactive() == null
   }
 
-  def "A categoriser user cannot start an initial cat where a cat already exists"() {
+  def "A categoriser user can start an initial cat where a cat already exists"() {
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
@@ -301,9 +342,64 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubGetCategory(12, 'B')
     go '/12'
 
-    then: 'The page contains a warning'
+    then: 'The page contains an initial cat button and a warning'
     at LandingPage
     !recatButton.displayed
-    warning.text() endsWith 'This prisoner already has a category of Cat C. Their category can only be reviewed.'
+    initialButton.displayed
+    warning.text() endsWith 'This prisoner already has a category of Cat C.'
+
+    when: 'It is clicked'
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    elite2Api.stubSetInactive()
+    initialButton.click()
+
+    then: 'We are sent to the tasklist and data is stored'
+    at TasklistPage
+    currentUrl.contains '/tasklist/12?reason=MANUAL'
+    def data = db.getData(12)
+    data.status == ["STARTED"]
+    data.cat_type.value == ["INITIAL"]
+    data.review_reason.value == ["MANUAL"]
+    elite2Api.verifySetInactive() == null
+  }
+
+  def "A categoriser user sees a warning for being in progress"() {
+
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ');
+
+    given: 'A categoriser is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'The user arrives at the landing page for an already-started cat'
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetCategory(12, 'U')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !initialButton.displayed
+    warning.text() contains "This prisoner's categorisation or review is currently in progress"
+  }
+
+  def "A categoriser user sees a warning for awaiting approval"() {
+
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'INITIAL', 'B2345YZ');
+
+    given: 'A categoriser is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'The user arrives at the landing page for an already-started cat'
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetCategory(12, 'U')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !initialButton.displayed
+    warning.text() contains "This prisoner is awaiting supervisor approval"
   }
 }

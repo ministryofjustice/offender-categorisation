@@ -21,20 +21,41 @@
   <h1 class="govuk-heading-l">Start an initial categorisation</h1>
 
   <div>
-    {% if data.catType == 'INITIAL' %}
-      <p>Once started, you cannot cancel a categorisation.</p>
-      {{ govukButton({
-        text: 'Start initial categorisation',
-        href: '/tasklist/' + data.details.bookingId + '?reason=MANUAL',
-        classes: 'grey-button',
-        attributes: { 'id': 'initialButton' }
-      }) }}
-    {% elif data.catType == 'RECAT' %}
-      {{ govukWarningText({
-        text: 'This prisoner already has a category of ' + data.details.category + '. Their category can only be reviewed.',
-        iconFallbackText: "Warning",
-        classes: "forms-warning-text warning-overrides"
-      }) }}
+    {% if data.catType %}
+      {% if data.catType == 'RECAT' %}
+        {{ govukWarningText({
+          text: 'This prisoner already has a category of ' + data.details.category + '.',
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+      {% endif %}
+      {% if not data.status or data.status == Status.APPROVED.name %}
+        <p>Once started, you cannot cancel a categorisation.</p>
+        {{ govukButton({
+          text: 'Start initial categorisation',
+          href: '/tasklist/' + data.details.bookingId + '?reason=MANUAL',
+          classes: 'grey-button',
+          attributes: { 'id': 'initialButton' }
+        }) }}
+      {% elif data.status == Status.AWAITING_APPROVAL.name %}
+        {{ govukWarningText({
+          text: 'This prisoner is awaiting supervisor approval',
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+        {{ govukButton({
+          text: 'View categorisation',
+          href: '/form/awaitingApprovalView/' + data.details.bookingId,
+          classes: 'grey-button',
+          attributes: { 'id': 'viewButton' }
+        }) }}
+      {% else %}
+        {{ govukWarningText({
+          text: "This prisoner's categorisation or review is currently in progress",
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+      {% endif %}
     {% else %}
       {{ govukWarningText({
         text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here.',
@@ -50,17 +71,37 @@
 
   <div>
     {% if data.catType == 'RECAT' %}
-      <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
-      <p>Once started, you cannot cancel an early category review. However, you will have until their review due date to finish it.</p>
-      <form method="post">
-        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-        <input type="hidden" name="landingType" value="earlyReview" />
-        {{ govukButton({
-          text: 'Start review',
-          classes: 'grey-button',
-          attributes: { 'id': 'recatButton' }
+      {% if not data.status or data.status == Status.APPROVED.name %}
+        <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
+        <p>Once started, you cannot cancel an early category review. However, you will have until their review due date to finish it.</p>
+        <form method="post">
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+          <input type="hidden" name="landingType" value="earlyReview" />
+          {{ govukButton({
+            text: 'Start review',
+            classes: 'grey-button',
+            attributes: { 'id': 'recatButton' }
+          }) }}
+        </form>
+      {% elif data.status == Status.AWAITING_APPROVAL.name %}
+        {{ govukWarningText({
+          text: 'This prisoner is awaiting supervisor approval',
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
         }) }}
-      </form>
+        {{ govukButton({
+          text: 'View categorisation',
+          href: '/form/awaitingApprovalView/' + data.details.bookingId,
+          classes: 'grey-button',
+          attributes: { 'id': 'viewButton' }
+        }) }}
+      {% else %}
+        {{ govukWarningText({
+          text: "This prisoner's categorisation or review is currently in progress",
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+      {% endif %}
     {% elif data.catType == 'INITIAL' %}
       {{ govukWarningText({
         text: 'This prisoner seems to need an INITIAL category.',
