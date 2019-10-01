@@ -149,16 +149,17 @@ class TasklistSpecification extends GebReportingSpec {
     data.due_by_date.toLocalDate().equals(LocalDate.of(2019, 8, 29))
   }
 
-  def "Initial cat after an existing cat is not allowed"() {
+  def "Initial cat after an existing cat is allowed"() {
     when: 'I go to the tasklist page with an existing completed cat'
-    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
-      ratings                   : [
-      ]]))
+    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([ratings: []]))
     fixture.gotoTasklist()
     go '/tasklist/12' // no clickable button available, so force to page
 
-    then: 'An error is displayed'
-    at ErrorPage
-    errorSummaryTitle.text() == 'An approved categorisation already exists for this prison term. This prisoner can only be recategorised.'
+    then: 'A new database row is created'
+    at TasklistPage
+    def data = db.getData(12)
+    data.booking_id == [12L, 12L]
+    data.sequence_no == [1, 2]
+    data.status == ['APPROVED', 'STARTED']
   }
 }

@@ -127,6 +127,10 @@ module.exports = token => {
       const path = `${apiUrl}api/offender-assessments/category/${bookingId}/nextReviewDate/${nextReviewDate}`
       return nomisClientPut({ path })
     },
+    setInactive(bookingId) {
+      const path = `${apiUrl}api/offender-assessments/category/${bookingId}/inactive`
+      return nomisClientPut({ path })
+    },
   }
 }
 
