@@ -477,7 +477,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const nomisClient = nomisClientBuilder(token)
       await nomisClient.setInactive(bookingId)
     } catch (error) {
-      logger.error(error, `Error during updateNextReviewDate, unable to update next review date for ${bookingId} `)
+      logger.error(error, `Error during setInactive, for ${bookingId} `)
       throw error
     }
   }
