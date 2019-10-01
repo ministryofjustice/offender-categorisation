@@ -35,6 +35,7 @@ const formService = {
   createSecurityReferral: jest.fn(),
   getSecurityReferral: jest.fn(),
   getRiskChangeCount: jest.fn(),
+  getCategorisationRecord: jest.fn(),
 }
 
 const homeRoute = createRouter({
@@ -56,6 +57,7 @@ beforeEach(() => {
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getRecategoriseOffenders.mockResolvedValue({})
   formService.getRiskChangeCount.mockResolvedValue(0)
+  formService.getCategorisationRecord.mockResolvedValue({})
   userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI' })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)

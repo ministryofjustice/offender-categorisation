@@ -14,6 +14,7 @@ module.exports = {
   getWhereKeyLike,
   replace,
   groupBy,
+  isFirstVisit,
   addSocProfile,
 }
 
@@ -70,6 +71,10 @@ function groupBy(array, groupByProperty) {
   return R.groupBy(R.prop(groupByProperty), array)
 }
 
+function isFirstVisit(res) {
+  return res.locals.formObject ? !res.locals.formObject.socProfile : true
+}
+
 async function addSocProfile({
   res,
   riskProfilerService,
@@ -82,7 +87,7 @@ async function addSocProfile({
 }) {
   let { status } = categorisationRecord
   // only load the soc profile once - then it is saved against the record
-  if (!res.locals.formObject.socProfile) {
+  if (isFirstVisit(res)) {
     const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals.user.username)
 
     await formService.mergeRiskProfileData(bookingId, { socProfile }, transactionalDbClient)
