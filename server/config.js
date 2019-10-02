@@ -64,4 +64,5 @@ module.exports = {
   googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', ' ', true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 6, true)}`,
   recatMarginMonths: `${get('RECAT_MARGIN_MONTHS', 2, true)}`,
+  https: production,
 }

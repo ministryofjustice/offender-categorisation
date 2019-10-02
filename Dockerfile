@@ -21,7 +21,7 @@ RUN npm install && \
     npm run record-build-info
 
 ENV PORT=3000
-
+ENV NODE_ENV='production'
 EXPOSE 3000
 
 RUN chown -R appuser:appgroup /app
