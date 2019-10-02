@@ -3,7 +3,7 @@ LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-RUN apt-get update && apt-get install -y make python && \
+RUN apt-get update && apt-get install -y curl && \
     rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Europe/London
