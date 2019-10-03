@@ -205,6 +205,9 @@ module.exports = function Index({
     if (body.transfer === 'Yes') {
       delete updated.transferText
     }
+    if (body.positiveProgress === 'No') {
+      delete updated.positiveProgressText
+    }
     return updated
   }
 
