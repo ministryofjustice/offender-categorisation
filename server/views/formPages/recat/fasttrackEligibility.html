@@ -7,10 +7,12 @@
 <h1 id="fasttract1Header" class="govuk-heading-l">Category C preliminary review questions</h1>
 
 <p>This person has more than three years of their sentence left to serve. They are currently Category C.</p>
-<ul>This means they:
+<div>This means they:
+<ul class="govuk-!-margin-top-0">
   <li>are only eligible for Category D conditions in exceptional circumstances</li>
   <li>should only go into higher security conditions if they now pose an increased risk</li>
 </ul>
+</div>
 
 
   {{ govukRadios({
@@ -18,8 +20,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Is there a reason to consider them for Category D conditions early?",
-        isPageHeading: false
+        html: "<span class='govuk-heading-m govuk-!-padding-top-3'>Is there a reason to consider them for Category D conditions early?</span>"
       }
     },
     hint: {
@@ -50,8 +51,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Does anything suggest their category should be increased?",
-        isPageHeading: false
+        html: "<span class='govuk-heading-m'>Does anything suggest their category should be increased?</span>"
       }
     },
     errorMessage: {
