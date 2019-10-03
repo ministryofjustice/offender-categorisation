@@ -114,6 +114,29 @@
   ]
 }) }}
 
+{% if data.recat.fasttrackPositiveProgress %}
+{{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 print-full-width riskAssessmentSummary',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Positive progress" },
+        value: { classes: 'no-print'},
+        actions: { items: [{
+              href: '/form/recat/fasttrackPositiveProgress/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "Positive progress"
+            }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Are they making any positive progress?" },
+        value: { html: formatAnswer(data.recat.fasttrackPositiveProgress.positiveProgress, data.recat.fasttrackPositiveProgress.positiveProgressText) },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
+{% endif %}
+
 
   {% set wasReferred = data.socProfile.transferToSecurity or data.recat.securityInput.securityInputNeeded == 'Yes' %}
   {% set title = {

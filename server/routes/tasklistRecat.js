@@ -3,8 +3,9 @@ const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
-const { addSocProfile } = require('../utils/functionalHelpers')
+const { addSocProfile, getIn } = require('../utils/functionalHelpers')
 const RiskChange = require('../utils/riskChangeStatusEnum')
+const log = require('../../log')
 
 const calculateNextReviewDate = details => {
   // Endpoint only returns the latest assessment for each type
@@ -15,6 +16,14 @@ const calculateNextReviewDate = details => {
 const calculateAge21Date = details => {
   const dob = moment(details.dateOfBirth, 'YYYY-MM-DD')
   return dob.add(21, 'years').format('YYYY-MM-DD')
+}
+
+const over3YearsLeftOnSentence = details => {
+  const confirmedReleaseDate = details.sentence && details.sentence.confirmedReleaseDate
+  if (confirmedReleaseDate) {
+    return moment(confirmedReleaseDate, 'YYYY-MM-DD').isAfter(moment().add(3, 'years'))
+  }
+  return false
 }
 
 const calculateDueDate = (reason, details) => {
@@ -96,11 +105,18 @@ module.exports = function Index({
         status: RiskChange.REVIEWED_FIRST.name,
       })
 
+      const { eligibleForFasttrack, fasttrackCancelled } = calculateFasttrackFlags(
+        details,
+        categorisationRecord,
+        bookingId
+      )
       const data = {
         details,
         ...res.locals.formObject,
         status: categorisationRecord.status,
         displayStatus: categorisationRecord.status && Status[categorisationRecord.status].value,
+        eligibleForFasttrack,
+        fasttrackCancelled,
         securityReferredDate:
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
@@ -108,6 +124,34 @@ module.exports = function Index({
       res.render('pages/tasklistRecat', { data })
     })
   )
+
+  const calculateFasttrackFlags = (details, categorisationRecord, bookingId) => {
+    const { formObject } = categorisationRecord
+    const eligibleForFasttrack =
+      over3YearsLeftOnSentence(details) &&
+      (categorisationRecord.status === Status.STARTED.name ||
+        categorisationRecord.status === Status.SUPERVISOR_BACK.name) &&
+      details.categoryCode === 'C'
+
+    const fasttrackCancelled =
+      getIn(['recat', 'fasttrackRemain', 'remainCatC'], formObject) === 'No' ||
+      (getIn(['recat', 'fasttrackEligibility', 'earlyCatD'], formObject) === 'Yes' ||
+        getIn(['recat', 'fasttrackEligibility', 'increaseCategory'], formObject) === 'Yes')
+
+    log.debug(
+      `eligible for fast track status: ${eligibleForFasttrack} for offender no ${
+        details.offenderNo
+      },  booking id ${bookingId},  category: ${details.categoryCode}, status ${
+        categorisationRecord.status
+      }, confirmedReleaseDate: ${details.sentence && details.sentence.confirmedReleaseDate}`
+    )
+    if (fasttrackCancelled) {
+      log.debug(
+        `Fast track C was completed and cancelled for offender no ${details.offenderNo},  booking id ${bookingId}`
+      )
+    }
+    return { eligibleForFasttrack, fasttrackCancelled }
+  }
 
   router.get(
     '/recategoriserSubmitted/:bookingId',

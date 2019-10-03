@@ -11,11 +11,14 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackCancelledPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackConfirmationPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackEligibilityPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackPositivePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackRemainPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.PrisonerBackgroundPage
+
+import java.time.LocalDate
 
 class FasttrackCSpecification extends GebReportingSpec {
 
@@ -36,7 +39,7 @@ class FasttrackCSpecification extends GebReportingSpec {
   TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
-  def "Happy path - fast track"() {
+  def "Happy path with validation"() {
     when: ''
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
@@ -47,7 +50,16 @@ class FasttrackCSpecification extends GebReportingSpec {
 
     at FasttrackEligibilityPage
 
-    when: ''
+    when: 'submitted without answers'
+
+    submitButton.click()
+
+    then: 'presented with validation message'
+
+    errorSummaries*.text() == ['Please enter yes or no', 'Please enter yes or no']
+    errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease select yes or no']
+
+    when: 'form is submitted complete'
 
     earlyCatDNo.click()
 
@@ -55,21 +67,50 @@ class FasttrackCSpecification extends GebReportingSpec {
 
     submitButton.click()
 
-    then: ''
+    then: 'Progress to next page'
 
     at FasttrackRemainPage
 
-    when: ''
+    when: 'submitted without answers'
+
+    submitButton.click()
+
+    then: 'presented with validation message'
+
+    errorSummaries*.text() == ['Please enter yes or no']
+    errors*.text() == ['Error:\nPlease select yes or no']
+
+    when: 'form is submitted complete'
 
     remainYes.click()
 
     submitButton.click()
 
-    then: ''
+    then: 'user is presented with the Positive Progress page'
 
     at FasttrackPositivePage
 
-    when: ''
+    when: 'submitted without answers'
+
+    submitButton.click()
+
+    then: 'presented with validation message'
+
+    errorSummaries*.text() == ['Please enter yes or no']
+    errors*.text() == ['Error:\nPlease select yes or no']
+
+    when: 'submitted without text field after answering Yes'
+
+    positiveYes.click()
+
+    submitButton.click()
+
+    then: 'presented with validation message'
+
+    errorSummaries*.text() == ['Please enter details']
+    errors*.text() == ['Error:\nPlease enter details']
+
+    when: 'form is submitted complete'
 
     positiveYes.click()
 
@@ -77,19 +118,107 @@ class FasttrackCSpecification extends GebReportingSpec {
 
     submitButton.click()
 
-    then: ''
+    then: 'User is presented with the confirmation page'
 
     at FasttrackConfirmationPage
 
-    when: ''
+    when: 'continue is selected'
 
     submitButton.click()
 
-    then: ''
+    then: 'user is returned to the recat task list'
 
     at TasklistRecatPage
 
+    def data = db.getData(12)
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    def calculatedNextReviewDate = LocalDate.now().plusYears(1).format('dd/MM/yyy')
+    response.recat == [
+      decision:[category:'C'],
+      nextReviewDate:[date: calculatedNextReviewDate],
+      riskAssessment:[lowerCategory:'They could not be considered for open conditions early. Their circumstances weren\'t exceptional enough.',
+      otherRelevant:'No',
+      higherCategory:'They pose no additional risks. There’s no reason to consider them for higher security conditions.'],
+      fasttrackRemain:[remainCatC:'Yes'],
+      fasttrackEligibility:[earlyCatD:'No', increaseCategory:'No'],
+      fasttrackPositiveProgress:[positiveProgress:'Yes', positiveProgressText:'something']]
+  }
+
+  def "leave fast track at eligibility"() {
+    given: ''
+    fixture.gotoTasklistRecat(false)
+    at TasklistRecatPage
+
+    go 'form/recat/fasttrackEligibility/12'
+
+    at FasttrackEligibilityPage
+
+    when: 'user answers negatively'
+
+    earlyCatDYes.click()
+
+    increaseCategoryYes.click()
+
+    submitButton.click()
+
+    then: 'user is presented with the fast track is not suitable page'
+
+    at FasttrackCancelledPage
+
+    when: 'the user clicks continue'
+
+    submitButton.click()
+
+    then: 'They are returned to the recat task list'
+
+    at TasklistRecatPage
+
+    def data = db.getData(12)
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.recat == [fasttrackEligibility: [earlyCatD:'Yes', increaseCategory:'Yes']]
 
   }
+
+  def "leave fast track at remain category C"() {
+
+    given : 'user progresses to the Remain in Category C page'
+    fixture.gotoTasklistRecat(false)
+    at TasklistRecatPage
+
+    go 'form/recat/fasttrackEligibility/12'
+
+    at FasttrackEligibilityPage
+
+    earlyCatDNo.click()
+
+    increaseCategoryNo.click()
+
+    submitButton.click()
+
+    at FasttrackRemainPage
+
+    when: 'user answers negatively'
+
+    remainNo.click()
+
+    submitButton.click()
+
+    then: 'user is presented with the fast track is not suitable page'
+
+    at FasttrackCancelledPage
+
+    when: 'the user clicks continue'
+
+    submitButton.click()
+
+    then: 'They are returned to the recat task list'
+
+    at TasklistRecatPage
+
+    def data = db.getData(12)
+    def response = new JsonSlurper().parseText(data.form_response[0].toString())
+    response.recat == [fasttrackEligibility: [earlyCatD:'No', increaseCategory:'No'], fasttrackRemain: [remainCatC:'No']]
+  }
+
 
 }
