@@ -4,7 +4,7 @@
 
 {% block formItems %}
 
-<h1 id="fasttract1Header" class="govuk-heading-l">Category C fast track questions</h1>
+<h1 id="fasttract1Header" class="govuk-heading-l">Category C preliminary review questions</h1>
 
 <p>This person has more than three years of their sentence left to serve. They are currently Category C.</p>
 <ul>This means they:
@@ -32,14 +32,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.recat.fasttrackElibigility.earlyCatD === 'Yes',
+        checked: data.recat.fasttrackEligibility.earlyCatD === 'Yes',
         conditional: {
           html:securityInputTextHtml
         }
       },
       {
         value: "No",
-        checked: data.recat.fasttrackElibigility.earlyCatD === 'No',
+        checked: data.recat.fasttrackEligibility.earlyCatD === 'No',
         text: "No"
       }
     ]
@@ -61,14 +61,14 @@
       {
         value: "Yes",
         text: "Yes",
-        checked: data.recat.fasttrackElibigility.increaseCategory === 'Yes',
+        checked: data.recat.fasttrackEligibility.increaseCategory === 'Yes',
         conditional: {
           html:securityInputTextHtml
         }
       },
       {
         value: "No",
-        checked: data.recat.fasttrackElibigility.increaseCategory === 'No',
+        checked: data.recat.fasttrackEligibility.increaseCategory === 'No',
         text: "No"
       }
     ]

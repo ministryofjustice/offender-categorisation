@@ -7,7 +7,7 @@ class FasttrackEligibilityPage extends HeaderPage {
   static url = '/form/recat/fasttrackEligibility'
 
   static at = {
-    headingText == 'Category C fast track questions'
+    headingText == 'Category C preliminary review questions'
   }
 
   static content = {

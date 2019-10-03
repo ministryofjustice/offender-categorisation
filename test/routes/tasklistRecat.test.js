@@ -58,15 +58,20 @@ beforeEach(() => {
       homeDetentionCurfewEligibilityDate: '2020-06-10',
       automaticReleaseDate: '2020-06-11',
       conditionalReleaseDate: '2020-02-02',
+      confirmedReleaseDate: '2022-06-01',
       paroleEligibilityDate: '2020-06-13',
       nonParoleDate: '2020-06-14',
       tariffDate: '2020-06-15',
       licenceExpiryDate: '2020-06-16',
       sentenceExpiryDate: '2020-06-17',
     },
+    categoryCode: 'C',
   })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
+
+  moment.now = jest.fn()
+  moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 })
 
 afterEach(() => {
@@ -160,4 +165,153 @@ describe('GET /tasklistRecat/', () => {
       .expect(res => {
         expect(res.text).toContain('Submitted for approval')
       }))
+})
+
+describe('GET /tasklistRecat/ Fast track C item', () => {
+  const sampleSocProfile = {
+    transferToSecurity: false,
+    provisionalCategorisation: 'C',
+  }
+  test('should hide fast track task for offender currently category B', () => {
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'GN123',
+      sentence: {
+        bookingId: 12345,
+        confirmedReleaseDate: '2022-06-01',
+        sentenceExpiryDate: '2020-06-17',
+      },
+      categoryCode: 'B',
+    })
+    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string' },
+      status: 'STARTED',
+    })
+    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
+    formService.getCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string', socProfile: sampleSocProfile },
+      status: 'STARTED',
+    })
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Category C preliminary review questions')
+      })
+  })
+
+  test('should hide fast track task for offender with a SECURITY related status', () => {
+    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string' },
+      status: 'STARTED',
+    })
+
+    const sampleSocProfileAuto = {
+      transferToSecurity: true,
+      provisionalCategorisation: 'B',
+    }
+    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfileAuto)
+    formService.getCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string', socProfile: sampleSocProfile },
+      status: 'SECURITY_AUTO',
+    })
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Category C preliminary review questions')
+      })
+  })
+
+  test('should hide fast track task for offender with 3 or less years until confirmed release date', () => {
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'GN123',
+      sentence: {
+        bookingId: 12345,
+        confirmedReleaseDate: '2022-05-31',
+        sentenceExpiryDate: '2020-06-17',
+      },
+      categoryCode: 'C',
+    })
+    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string' },
+      status: 'STARTED',
+    })
+
+    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
+    formService.getCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string', socProfile: sampleSocProfile },
+      status: 'STARTED',
+    })
+
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Category C preliminary review questions')
+      })
+  })
+
+  test('should display fast track task for eligible offender', () => {
+    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string' },
+      status: 'STARTED',
+    })
+
+    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
+    formService.getCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string', socProfile: sampleSocProfile },
+      status: 'STARTED',
+      bookingId: 1234567,
+    })
+    return request(app)
+      .get('/1234567')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Category C preliminary review questions')
+      })
+  })
+
+  test('should hide fast track task for a cancelled fast track', () => {
+    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: { sample: 'string' },
+      status: 'STARTED',
+    })
+
+    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
+    formService.getCategorisationRecord.mockResolvedValue({
+      id: 1111,
+      formObject: {
+        sample: 'string',
+        socProfile: sampleSocProfile,
+        recat: {
+          nextReviewDate: { date: '10/06/2020' },
+          fasttrackEligibility: {
+            earlyCatD: 'No',
+            increaseCategory: 'Yes',
+          },
+        },
+      },
+      status: 'STARTED',
+    })
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Category C preliminary review questions')
+      })
+  })
 })
