@@ -240,10 +240,4 @@ module.exports = {
     },
     validate: true,
   },
-  fasttrackConfirmation: {
-    nextPath: {
-      path: '/tasklistRecat/',
-    },
-    validate: false,
-  },
 }

@@ -1,4 +1,5 @@
 const request = require('supertest')
+const moment = require('moment')
 const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const db = require('../../server/data/dataAccess/db')
@@ -93,6 +94,9 @@ beforeEach(() => {
   riskProfilerService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
+  moment.now = jest.fn()
+  // NOTE: mock current date!
+  moment.now.mockReturnValue(moment('2019-06-05', 'YYYY-MM-DD'))
 })
 
 afterEach(() => {
@@ -559,6 +563,83 @@ describe('POST /form/recat/review', () => {
           nextReviewDate: '16/02/2020',
         })
         expect(formService.categoriserDecision).toBeCalledWith('12345', 'CA_USER_TEST', mockTransactionalClient)
+      })
+  })
+})
+
+describe('POST /form/recat/fasttrackPositive', () => {
+  test('Risk Assessment, next review date and decision are defaulted', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12345,
+      formObject: { something: 'alreadyOnTheForm' },
+    })
+    return request(app)
+      .post(`/fasttrackPositiveProgress/12345`)
+      .send({ positiveProgress: 'Yes', positiveProgressText: 'They have done very well' })
+      .expect(302)
+      .expect('Location', `/form/recat/fasttrackConfirmation/12345`)
+      .expect(() => {
+        expect(formService.update).toBeCalledTimes(1)
+        expect(formService.updateFormData).toBeCalledWith(
+          '12345',
+          {
+            recat: {
+              decision: { category: 'C' },
+              nextReviewDate: { date: '05/06/2020' },
+              riskAssessment: {
+                higherCategory:
+                  'They pose no additional risks. There’s no reason to consider them for higher security conditions.',
+                lowerCategory:
+                  "They could not be considered for open conditions early. Their circumstances weren't exceptional enough.",
+                otherRelevant: 'No',
+              },
+            },
+            something: 'alreadyOnTheForm',
+          },
+          mockTransactionalClient
+        )
+      })
+  })
+
+  test('Only missing data is defaulted - all fields complete', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12345,
+      formObject: {
+        something: 'alreadyOnTheForm',
+        recat: {
+          nextReviewDate: { date: '10/06/2020' },
+          riskAssessment: {
+            higherCategory: 'higherCategory Text was already here - should not be cleared',
+            lowerCategory: 'lowerCategory Text was already here - should not be cleared',
+          },
+        },
+      },
+    })
+    return request(app)
+      .post(`/fasttrackPositiveProgress/12345`)
+      .send({ positiveProgress: 'Yes', positiveProgressText: 'They have done very well' })
+      .expect(302)
+      .expect('Location', `/form/recat/fasttrackConfirmation/12345`)
+      .expect(() => {
+        expect(formService.update).toBeCalledTimes(1)
+        expect(formService.updateFormData).toBeCalledWith(
+          '12345',
+          {
+            recat: {
+              decision: { category: 'C' },
+              nextReviewDate: { date: '10/06/2020' },
+              riskAssessment: {
+                higherCategory: 'higherCategory Text was already here - should not be cleared',
+                lowerCategory: 'lowerCategory Text was already here - should not be cleared',
+                otherRelevant: 'No',
+              },
+            },
+            something: 'alreadyOnTheForm',
+          },
+          mockTransactionalClient
+        )
       })
   })
 })

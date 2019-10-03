@@ -11,7 +11,7 @@ class FasttrackConfirmationPage extends HeaderPage {
   }
 
   static content = {
-    submitButton { $('button', type: 'submit') }
+    submitButton { $('a.govuk-button') }
     backLink { $('a.govuk-back-link') }
   }
 }
