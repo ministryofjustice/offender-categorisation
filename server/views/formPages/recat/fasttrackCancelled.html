@@ -1,32 +1,19 @@
-{% extends "../formTemplate.html" %}
-{% set greenButtonText = "Continue" %}
-
-{% block formItems %}
-
-<h1 id="fasttrackConfirmationHeader" class="govuk-heading-l">Fast track is not appropriate</h1>
-
-<p>You will need to check it before submitting. You can also edit any answers.</p>
-
-
-{% endblock %}
-
-
-
-{#  {% set mainClasses = 'govuk-!-width-two-thirds' %}
-{% extends "../partials/layout.html" %}
+{% set mainClasses = 'govuk-!-width-two-thirds' %}
+{% extends "../../partials/layout.html" %}
 {% from "button/macro.njk" import govukButton %}
 {% from "panel/macro.njk" import govukPanel %}
 
 {% block content %}
 
-<h1 id="fasttrackPositiveProgressHeader" class="govuk-heading-l">This category review has been filled in automatically for you</h1>
+<h1 id="fasttrackConfirmationHeader" class="govuk-heading-l">You need to do a complete category review</h1>
 
-<p>You will need to check it before submitting. You can also edit any answers.</p>
+<p>This is because their risk level seems to have changed.</p>
+
+<p>‘Category C preliminary review questions’ has been removed from your task list.</p>
 
 {{ govukButton({
-text: "Return to task list",
-href: "/tasklistRecat/" + data.bookingId
+  text: "Return to task list",
+  href: "/tasklistRecat/" + bookingId
 }) }}
 
 {% endblock %}
-#}

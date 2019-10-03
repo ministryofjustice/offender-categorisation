@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.cattool.pages.recat
 
 import uk.gov.justice.digital.hmpps.cattool.pages.HeaderPage
 
-class FasttrackConfirmationPage extends HeaderPage {
+class FasttrackCancelledPage extends HeaderPage {
 
-  static url = '/form/recat/fasttrackConfirmation'
+  static url = '/form/recat/fasttrackCancelled'
 
   static at = {
-    headingText == 'This category review has been filled in automatically for you'
+    headingText == 'You need to do a complete category review'
   }
 
   static content = {
