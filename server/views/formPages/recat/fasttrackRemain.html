@@ -19,12 +19,16 @@
       {
         value: "Yes",
         text: "Yes, they should remain in Category C conditions",
-        checked: data.recat.fasttrackRemain.remainCatC === 'Yes'
+        checked: data.recat.fasttrackRemain.remainCatC === 'Yes',
+        hint: { text: "This will automatically fill in the review for you. You can check it before submitting."
+        }
       },
       {
         value: "No",
         checked: data.recat.fasttrackRemain.remainCatC === 'No',
-        text: "No, I want to change their category"
+        text: "No, I want to change their category",
+        hint:  { text: "You will fill in the category review in full."
+        }
       }
     ]
   }) }}
