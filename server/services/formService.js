@@ -415,7 +415,7 @@ module.exports = function createFormService(formClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     const section =
       currentCategorisation.catType === CatType.RECAT.name ? updatedFormObject.recat : updatedFormObject.ratings
-    if (section.securityInput.securityInputNeeded === 'Yes') {
+    if (section && section.securityInput && section.securityInput.securityInputNeeded === 'Yes') {
       const currentStatus = currentCategorisation.status
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_MANUAL.name)) {
         await formClient.referToSecurity(bookingId, userId, Status.SECURITY_MANUAL.name, transactionalClient)
