@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.PrisonerBackgroundPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
@@ -253,6 +254,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       decision      : [category: "D"],
       securityInput : [securityInputNeeded: "No"],
       nextReviewDate: [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails:"offence Details text"],
       riskAssessment: [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",
@@ -295,6 +297,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       decision      : [category: "D"],
       securityInput : [securityInputNeeded: "No"],
       nextReviewDate: [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails:"offence Details text"],
       riskAssessment: [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",
@@ -420,6 +423,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       decision      : [category: "D"],
       securityInput : [securityInputNeeded: "No"],
       nextReviewDate: [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails:"offence Details text"],
       riskAssessment: [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",
@@ -560,6 +564,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
       decision      : [category: "D"],
       securityInput : [securityInputNeeded: "No"],
       nextReviewDate: [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails:"offence Details text"],
       riskAssessment: [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",

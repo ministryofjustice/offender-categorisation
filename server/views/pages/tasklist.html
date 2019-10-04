@@ -151,7 +151,7 @@ href: backLink or "/"
             </li>
             {% endif %}
             <li id="review" class="app-task-list__item">
-              {% set completionText = "Completed" if allSectionsCompleted else "Tasks not yet complete" %}
+              {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
                 {{ govukButton({
                   text: "Continue",
                   href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,

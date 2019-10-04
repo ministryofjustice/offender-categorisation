@@ -44,6 +44,7 @@ class TestFixture {
     decision      : [category: "C"],
     securityInput : [securityInputNeeded: "No"],
     nextReviewDate: [date: "14/12/2019"],
+    prisonerBackground: [offenceDetails: "offence Details text"],
     riskAssessment: [
       lowerCategory    : "lower security category text",
       otherRelevant    : "Yes",
