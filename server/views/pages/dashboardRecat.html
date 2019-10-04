@@ -24,8 +24,31 @@
 <div>
   {% include "../partials/dashboardForm.html" %}
   <hr/>
+  <h3>Categorisation review numbers</h3>
+  {% set cats = cycler("B", "C", "D" , "YOI&nbsp;closed", "YOI&nbsp;open", "Total") %}
+  <table class="govuk-table" id="reviewNumbersTable">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">From/To</th>
+        {% for count in [1,2,3,4,5,6] %}
+          <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">{{ cats.next() | safe }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      {% for row in table %}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell govuk-!-font-weight-bold">{{ cats.next() | safe }}</td>
+          {% set rowIndex = loop.index %}
+          {% for cell in row %}
+            <td class="govuk-table__cell{{ ' table-diagonal-cell' if rowIndex == loop.index and not loop.last }}">{{ cell }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
   <div class="govuk-!-width-two-thirds">
-    <h3>Categorisation review numbers</h3>
+    <h3>Overrides</h3>
     <table class="govuk-table" id="recatTable">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
@@ -36,7 +59,7 @@
       </thead>
       <tbody class="govuk-table__body">
         {% for row in recat %}
-          <tr class="govuk-table__row ">
+          <tr class="govuk-table__row">
             <td class="govuk-table__cell">{{ catDisplay(row.recat) }}</td>
             <td class="govuk-table__cell">{{ catDisplay(row.superOverride) }}</td>
             <td class="govuk-table__cell">{{ row.count }}</td>

@@ -9,6 +9,7 @@ class DashboardRecatPage extends DashboardPage {
   }
 
   static content = {
+    reviewNumbersTableRows { $('#reviewNumbersTable > tbody > tr') }
     numbersTableRows { $('#recatTable > tbody > tr') }
   }
 }

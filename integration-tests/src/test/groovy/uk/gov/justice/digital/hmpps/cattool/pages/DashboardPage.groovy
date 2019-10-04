@@ -11,6 +11,8 @@ abstract class DashboardPage extends Page {
 
     referralManual {$('p#manual')}
     referralAuto {$('p#auto')}
+    referralFlagged {$('p#flagged')}
+
     timelinessTableRows { $('table#timeliness > tbody > tr') }
     completionTableRows { $('table#completion > tbody > tr') }
     total {$('p#total')}
