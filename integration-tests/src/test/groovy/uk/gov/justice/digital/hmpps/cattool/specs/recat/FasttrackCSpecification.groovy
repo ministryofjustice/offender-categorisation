@@ -141,7 +141,8 @@ class FasttrackCSpecification extends GebReportingSpec {
       higherCategory:'They pose no additional risks. There’s no reason to consider them for higher security conditions.'],
       fasttrackRemain:[remainCatC:'Yes'],
       fasttrackEligibility:[earlyCatD:'No', increaseCategory:'No'],
-      fasttrackPositiveProgress:[positiveProgress:'Yes', positiveProgressText:'something']]
+      fasttrackPositiveProgress:[positiveProgress:'Yes', positiveProgressText:'something'],
+      securityInput: [securityInputNeeded:'No']]
   }
 
   def "leave fast track at eligibility"() {
