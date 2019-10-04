@@ -142,6 +142,8 @@ module.exports = function Index({
     '/fasttrackConfirmation/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
       res.render(`formPages/recat/fasttrackConfirmation`, { bookingId })
     })
   )
@@ -150,6 +152,8 @@ module.exports = function Index({
     '/fasttrackCancelled/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
       res.render(`formPages/recat/fasttrackCancelled`, { bookingId })
     })
   )
@@ -548,6 +552,7 @@ module.exports = function Index({
     const existingLower = R.path(['formObject', 'recat', 'riskAssessment', 'lowerCategory'], data)
     const otherRelevant = R.path(['formObject', 'recat', 'riskAssessment', 'otherRelevant'], data)
     const existingNextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], data)
+    const existingSecurity = R.path(['formObject', 'recat', 'securityInput', 'securityInputNeeded'], data)
 
     let newData = data.formObject
     if (!existingHigher) {
@@ -567,6 +572,9 @@ module.exports = function Index({
     }
     if (!existingNextReviewDate) {
       newData = R.assocPath(['recat', 'nextReviewDate', 'date'], calculateNextReviewDate('12'), newData)
+    }
+    if (!existingSecurity) {
+      newData = R.assocPath(['recat', 'securityInput', 'securityInputNeeded'], 'No', newData)
     }
 
     newData = R.assocPath(['recat', 'decision', 'category'], 'C', newData)
