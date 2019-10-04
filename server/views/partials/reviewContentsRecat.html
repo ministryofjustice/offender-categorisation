@@ -138,7 +138,7 @@
 {% endif %}
 
 
-  {% set wasReferred = data.socProfile.transferToSecurity or data.recat.securityInput.securityInputNeeded == 'Yes' %}
+  {% set wasReferred = data.security.review.securityReview %}
   {% set title = {
     key: { classes: 'summary-list-title', text: "Security information" },
     value: { classes: 'no-print'},
@@ -149,7 +149,7 @@
         }] if showChangeLinks and not wasReferred else []
     }
   } %}
- {% set auto = {
+  {% set auto = {
       key: { text: "Automatic referral to security team" },
       value: { text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
       actions: { items: [] }
@@ -160,6 +160,11 @@
       actions: { items: []
       }
     } %}
+  {% set flagged = {
+      key: { classes: 'no-print', text: "Flagged by security team" },
+      value: { classes: 'no-print', text: 'Yes' if not data.socProfile.transferToSecurity and not data.recat.securityInput.securityInputNeeded else 'No' },
+      actions: { classes: 'no-print', items: [] }
+    } %}
   {% set comments = {
       key: { text: "Security comments" },
       value: { text: data.security.review.securityReview },
@@ -168,7 +173,7 @@
 
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary',
-    rows: [ title, auto, manual, comments ] if wasReferred else [ title, auto, manual ]
+    rows: [ title, auto, manual, flagged, comments ] if wasReferred else [ title, auto, manual, flagged ]
   }) }}
 
  {{ govukSummaryList({

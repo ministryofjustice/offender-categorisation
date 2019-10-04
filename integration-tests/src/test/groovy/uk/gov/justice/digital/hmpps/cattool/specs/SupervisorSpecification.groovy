@@ -547,7 +547,7 @@ class SupervisorSpecification extends GebReportingSpec {
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14',
       'This person is at risk of engaging in, or vulnerable to, extremism.', '']
-    securityInputSummary*.text() == ['', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'No', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14th December 2019']
