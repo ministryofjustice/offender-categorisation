@@ -546,7 +546,7 @@ class SupervisorSpecification extends GebReportingSpec {
       '04/04/2012 A LPI prison'),
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14',
-      'This person is at risk of engaging in, or vulnerable to, extremism.', '']
+      'This person is at risk of engaging in, or vulnerable to, extremism.', 'offence Details text']
     securityInputSummary*.text() == ['', 'No', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
@@ -656,6 +656,7 @@ class SupervisorSpecification extends GebReportingSpec {
     response.recat == [
       securityInput : [securityInputNeeded: "No"],
       nextReviewDate: [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails:"offence Details text"],
       riskAssessment: [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",

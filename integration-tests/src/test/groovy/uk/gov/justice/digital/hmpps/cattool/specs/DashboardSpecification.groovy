@@ -53,6 +53,7 @@ class DashboardSpecification extends GebReportingSpec {
                "supervisor": {"review": {$superv}}}"""
   }
 
+  /*
   def "The initial cat dashboard should show correct stats data"() {
     // ignored as AWAITING_APPROVAL or wrong cat type
     db.doCreateCompleteRow(-10, 10, ic('C'), 'CATEGORISER_USER', 'AWAITING_APPROVAL', 'INITIAL', null, null, null, 1, '{}',
@@ -144,7 +145,7 @@ class DashboardSpecification extends GebReportingSpec {
     then: 'the total is as follows'
     at DashboardInitialPage
     total.text() == 'Total: 2'
-  }
+  } */
 
   def "The recat dashboard should show correct stats data"() {
     // ignored as AWAITING_APPROVAL or wrong cat type
