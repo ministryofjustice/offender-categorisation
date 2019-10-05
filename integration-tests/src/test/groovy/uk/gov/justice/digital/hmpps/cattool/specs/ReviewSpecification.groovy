@@ -79,7 +79,7 @@ class ReviewSpecification extends GebReportingSpec {
 
     then: 'the completed text is displayed'
     summarySection[0].text() == 'Review and categorisation'
-    summarySection[1].text() == 'Completed'
+    summarySection[1].text() == 'All tasks completed'
 
     when: 'The continue link is selected'
     continueButton.click()

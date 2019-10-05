@@ -594,6 +594,7 @@ describe('POST /form/recat/fasttrackPositive', () => {
                   "They could not be considered for open conditions early. Their circumstances weren't exceptional enough.",
                 otherRelevant: 'No',
               },
+              securityInput: { securityInputNeeded: 'No' },
             },
             something: 'alreadyOnTheForm',
           },
@@ -635,6 +636,7 @@ describe('POST /form/recat/fasttrackPositive', () => {
                 lowerCategory: 'lowerCategory Text was already here - should not be cleared',
                 otherRelevant: 'No',
               },
+              securityInput: { securityInputNeeded: 'No' }, // fasttrack not available if any security input
             },
             something: 'alreadyOnTheForm',
           },
