@@ -47,6 +47,7 @@ class ReviewSpecification extends GebReportingSpec {
           securityInputNeeded    : "Yes",
           securityInputNeededText: "reasons"
         ],
+        prisonerBackground: [offenceDetails: "some text"],
         nextReviewDate: [date: "14/12/2019"],
         riskAssessment: [
           lowerCategory    : "lower security category text",
@@ -69,7 +70,7 @@ class ReviewSpecification extends GebReportingSpec {
 
     then: 'the completed text is displayed'
     summarySection[0].text() == 'Check and submit'
-    summarySection[1].text() == 'Completed'
+    summarySection[1].text() == 'All tasks completed'
 
     when: 'The continue link is selected'
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
@@ -90,7 +91,7 @@ class ReviewSpecification extends GebReportingSpec {
       'This person has not been reported as the perpetrator in any assaults in custody before',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
       'This person is at risk of engaging in, or vulnerable to, extremism.',
-      '']
+      'some text']
     securityInputSummary*.text() == ['', 'No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
@@ -122,6 +123,7 @@ class ReviewSpecification extends GebReportingSpec {
         decision      : [category: "C"],
         securityInput : [securityInputNeeded: "No"],
         nextReviewDate: [date: "14/12/2019"],
+        prisonerBackground: [offenceDetails: "some text"],
         riskAssessment: [
           lowerCategory    : "lower security category text",
           otherRelevant    : "Yes",
