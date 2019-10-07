@@ -25,11 +25,6 @@ module.exports = function Index({
 
   router.use(handleCsrf)
 
-  async function getCurrentPrison(token) {
-    const user = await userService.getUser(token)
-    return user.activeCaseLoadId
-  }
-
   router.get(
     '/',
     asyncMiddleware(async (req, res) => {
@@ -214,7 +209,7 @@ module.exports = function Index({
     const { startDate, endDate, scope } = req.query
     const start = startDate ? moment(startDate, 'DD/MM/YYYY').format('YYYY-MM-DD') : null
     const end = endDate ? moment(endDate, 'DD/MM/YYYY').format('YYYY-MM-DD') : null
-    const prisonId = scope === 'all' ? null : await getCurrentPrison(res.locals.user.token)
+    const prisonId = scope === 'all' ? null : res.locals.user.activeCaseLoadId
     return { start, end, prisonId }
   }
 
@@ -225,6 +220,9 @@ module.exports = function Index({
   router.get(
     '/dashboardInitial',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+
       const errors = formService.isValidForGet(dashboard.dashboard, req, res, req.query)
       if (errors.length) {
         res.render('pages/dashboardInitial', { errors, ...req.query })
@@ -244,18 +242,22 @@ module.exports = function Index({
   router.get(
     '/dashboardRecat',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals.user.token)
+      res.locals.user = { ...user, ...res.locals.user }
+
       const errors = formService.isValidForGet(dashboard.dashboard, req, res, req.query)
       if (errors.length) {
         res.render('pages/dashboardInitial', { errors, ...req.query })
       } else {
         const { start, end, prisonId } = await getParams(req, res)
+        const table = await statsService.getRecatFromTo(start, end, prisonId, transactionalDbClient)
         const recat = await statsService.getRecatCategoryOutcomes(start, end, prisonId, transactionalDbClient)
         const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, transactionalDbClient)
         const timeliness = await statsService.getTimeliness(RECAT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, transactionalDbClient)
         const total = getTotal(recat)
 
-        res.render('pages/dashboardRecat', { recat, security, timeliness, onTime, total, errors, ...req.query })
+        res.render('pages/dashboardRecat', { table, recat, security, timeliness, onTime, total, errors, ...req.query })
       }
     })
   )

@@ -34,13 +34,40 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  getRecatFromTo(startDate, endDate, prisonId, transactionalClient) {
+    const query = {
+      text: `
+        with cat_table as (
+          select booking_id,
+                 sequence_no,
+                 coalesce (form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory',
+                           form_response -> 'recat' -> 'decision' ->>'category') as cat
+          from form)
+        select count(*),
+          (select cat from cat_table where booking_id = f.booking_id and sequence_no = (select max(f2.sequence_no) - 1 from form f2 where f2.booking_id = f.booking_id)) as previous,
+          (select cat from cat_table where booking_id = f.booking_id and sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)) as current
+        from form f
+        where ${whereClause} and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)
+        group by previous, current`,
+      values: ['RECAT', startDate, endDate, prisonId],
+    }
+    return transactionalClient.query(query)
+  },
+
   getSecurityReferrals(catType, startDate, endDate, prisonId, transactionalClient) {
     const query = {
       text: `select count(*),
-                    risk_profile -> 'socProfile' ->> 'transferToSecurity' is not null and risk_profile -> 'socProfile' ->> 'transferToSecurity' = 'true' as "securityAuto"
+               CASE WHEN
+                 risk_profile -> 'socProfile' ->> 'transferToSecurity' is not null and
+                 risk_profile -> 'socProfile' ->> 'transferToSecurity' = 'true' THEN 'auto'
+               WHEN 
+                 form_response -> 'ratings' -> 'securityInput' ->> 'securityInputNeeded' is not null or
+                 form_response -> 'recat' -> 'securityInput' ->> 'securityInputNeeded' is not null THEN 'manual'
+               ELSE 'flagged'
+               END as "security"
              from form
              where referred_date is not null and ${whereClause}
-             group by "securityAuto"`,
+             group by "security"`,
       values: [catType, startDate, endDate, prisonId],
     }
     return transactionalClient.query(query)

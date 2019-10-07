@@ -92,7 +92,7 @@ class ReviewSpecification extends GebReportingSpec {
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
       'This person is at risk of engaging in, or vulnerable to, extremism.',
       'some text']
-    securityInputSummary*.text() == ['', 'No', 'Yes', 'Here is the Security information held on this prisoner']
+    securityInputSummary*.text() == ['', 'No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     higherSecurityReviewSummary*.text() == ['', 'good','step',  'No', 'conditions']
