@@ -174,7 +174,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at ReviewRecatPage
     changeLinks.size() == 5
 
-    securityInputSummary*.text() == ['', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'No', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14th December 2019']
