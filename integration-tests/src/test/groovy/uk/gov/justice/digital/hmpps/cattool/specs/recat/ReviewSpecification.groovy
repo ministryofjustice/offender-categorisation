@@ -40,16 +40,16 @@ class ReviewSpecification extends GebReportingSpec {
 
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
       recat   : [
-        decision      : [category: "C"],
+        decision            : [category: "C"],
         higherSecurityReview: [steps: "step", transfer: "No", behaviour: "good", conditions: "conditions"],
-        securityBack  : [:],
-        securityInput : [
+        securityBack        : [:],
+        securityInput       : [
           securityInputNeeded    : "Yes",
           securityInputNeededText: "reasons"
         ],
-        prisonerBackground: [offenceDetails: "some text"],
-        nextReviewDate: [date: "14/12/2019"],
-        riskAssessment: [
+        prisonerBackground  : [offenceDetails: "some text"],
+        nextReviewDate      : [date: "14/12/2019"],
+        riskAssessment      : [
           lowerCategory    : "lower security category text",
           otherRelevant    : "Yes",
           higherCategory   : "higher security category text",
@@ -95,7 +95,7 @@ class ReviewSpecification extends GebReportingSpec {
     securityInputSummary*.text() == ['', 'No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
-    higherSecurityReviewSummary*.text() == ['', 'good','step',  'No', 'conditions']
+    higherSecurityReviewSummary*.text() == ['', 'good', 'step', 'No', 'conditions']
     nextReviewDateSummary*.text() == ['', 'Saturday 14th December 2019']
 
     !changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
@@ -120,11 +120,11 @@ class ReviewSpecification extends GebReportingSpec {
     given: 'data has been entered for the pages'
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
       recat: [
-        decision      : [category: "C"],
-        securityInput : [securityInputNeeded: "No"],
-        nextReviewDate: [date: "14/12/2019"],
+        decision          : [category: "C"],
+        securityInput     : [securityInputNeeded: "No"],
+        nextReviewDate    : [date: "14/12/2019"],
         prisonerBackground: [offenceDetails: "some text"],
-        riskAssessment: [
+        riskAssessment    : [
           lowerCategory    : "lower security category text",
           otherRelevant    : "Yes",
           higherCategory   : "higher security category text",
@@ -148,5 +148,41 @@ class ReviewSpecification extends GebReportingSpec {
     at ReviewRecatPage
     changeLinks.size() == 5
     changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
+    securityInputSummary*.text() == ['', 'No', 'No', 'No']
+  }
+
+  def "The recat review page security flagged section"() {
+    given: 'data has been entered for the pages'
+    db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
+      recat   : [
+        decision          : [category: "C"],
+        securityBack      : [:],
+        nextReviewDate    : [date: "14/12/2019"],
+        prisonerBackground: [offenceDetails: "some text"],
+        riskAssessment    : [
+          lowerCategory    : "lower security category text",
+          otherRelevant    : "Yes",
+          higherCategory   : "higher security category text",
+          otherRelevantText: "other relevant information"
+        ]
+      ],
+      security: [review: [securityReview: "security info"]]
+    ]), 'RECAT')
+    when: 'The review page is displayed for a fully completed set of pages'
+    fixture.gotoTasklistRecat()
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    elite2Api.stubOffenceHistory('B2345YZ')
+    at TasklistRecatPage
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    elite2Api.stubAgencyDetails('LPI')
+    continueButton.click()
+
+    then: 'the review page is displayed with security flagged showing as "yes"'
+    at ReviewRecatPage
+    changeLinks.size() == 4
+    securityInputSummary*.text() == ['', 'No', 'No', 'Yes', 'security info']
   }
 }
