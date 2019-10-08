@@ -161,9 +161,10 @@
       }
     } %}
   {% set flagged = {
-      key: { classes: 'no-print', text: "Flagged by security team" },
-      value: { classes: 'no-print', text: 'Yes' if not data.socProfile.transferToSecurity and not data.recat.securityInput.securityInputNeeded else 'No' },
-      actions: { classes: 'no-print', items: [] }
+      classes: 'no-print',
+      key: { text: "Flagged by security team" },
+      value: { text: 'Yes' if data.security.review.securityReview and not data.socProfile.transferToSecurity and not data.recat.securityInput.securityInputNeeded else 'No' },
+      actions: { items: [] }
     } %}
   {% set comments = {
       key: { text: "Security comments" },
@@ -176,7 +177,7 @@
     rows: [ title, auto, manual, flagged, comments ] if wasReferred else [ title, auto, manual, flagged ]
   }) }}
 
- {{ govukSummaryList({
+  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 print-full-width riskAssessmentSummary',
     rows: [
       {
