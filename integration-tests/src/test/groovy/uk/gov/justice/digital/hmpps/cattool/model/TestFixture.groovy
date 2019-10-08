@@ -147,6 +147,7 @@ class TestFixture {
     def requests = oauthApi.getAllServeEvents()
     // print JsonOutput.toJson(requests)
     // Capture 'state' param for passport (-2 = last but one server request)
+    if (requests.size() < 2) throw new Exception("Cannot login, possible env config problem")
     def stateParam = requests[-1].request.queryParams['state']
     def state = stateParam ? stateParam.values[0] : requests[-2].request.queryParams['state'].values[0]
     // Simulate auth server calling the callback, which then gets a token (from wiremock) and goes to homepage
