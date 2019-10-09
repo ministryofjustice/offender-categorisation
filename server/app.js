@@ -106,10 +106,6 @@ module.exports = function createApp({
   })
 */
 
-  client.on('error', console.error)
-  client.on('connect', console.error)
-  client.on('connected', console.error)
-
   app.use(
     session({
       name: 'session',
