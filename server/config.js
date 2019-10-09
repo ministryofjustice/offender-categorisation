@@ -6,7 +6,7 @@ const production = process.env.NODE_ENV === 'production'
 function get(name, fallback, log, options = {}) {
   if (process.env[name]) {
     if (log) {
-      logger.info(`Env var: ${name} value: ${process.env[name]}`)
+      logger.info(`Env var: ${name} value: ${process.env[name]} `)
     }
     return process.env[name]
   }
