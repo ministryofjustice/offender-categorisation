@@ -1,6 +1,5 @@
 const express = require('express')
 const addRequestId = require('express-request-id')()
-const { createNamespace } = require('cls-hooked')
 const moment = require('moment')
 const path = require('path')
 const bunyanRequestLogger = require('bunyan-request-logger')
@@ -9,7 +8,10 @@ const csurf = require('csurf')
 const compression = require('compression')
 const passport = require('passport')
 const bodyParser = require('body-parser')
-const cookieSession = require('cookie-session')
+const redis = require('redis')
+const session = require('express-session')
+const RedisStore = require('connect-redis')(session)
+
 const sassMiddleware = require('node-sass-middleware')
 const catToolSerialisers = require('./catToolSerialisers')
 const auth = require('./authentication/auth')
@@ -63,27 +65,18 @@ module.exports = function createApp({
   // 2. https://www.npmjs.com/package/helmet
   app.use(helmet())
 
-  // Setup thread-locals for services under main routers (must occur before requestLogger)
-  const ns = createNamespace('request.scope')
-  app.use(async (req, res, next) => {
-    // const ns = getNamespace('request.scope')
-    ns.bindEmitter(req)
-    ns.bindEmitter(res)
-    return ns.run(() => next())
-  })
-
   app.use(addRequestId)
 
+  const client = redis.createClient({ port: config.redis.port, password: config.redis.auth_token }) // cloud platform generates an auth token for elasticache
+
   app.use(
-    cookieSession({
+    session({
       name: 'session',
-      keys: [config.sessionSecret],
-      maxAge: config.expiryMinutes * 60 * 1000,
-      secure: config.https,
-      httpOnly: true,
-      signed: true,
-      overwrite: true,
-      sameSite: 'lax',
+      store: new RedisStore({ client }),
+      cookie: { secure: config.https, sameSite: 'lax', maxAge: config.expiryMinutes * 60 * 1000 },
+      secret: config.session.secret,
+      resave: false, // redis implements touch so shouldn't need this
+      saveUninitialized: true,
     })
   )
 
@@ -226,20 +219,12 @@ module.exports = function createApp({
   app.use('/logout', (req, res) => {
     if (req.user) {
       req.logout()
-      req.session = null
+      req.session.destroy()
     }
     res.redirect(authLogoutUrl)
   })
 
   app.use(authorisationMiddleware(userService, offendersService))
-
-  // Setup user thread-local
-  app.use(async (req, res, next) => {
-    if (req.user && req.user.username) {
-      ns.set('user', req.user.username)
-    }
-    return next()
-  })
 
   const homeRouter = createHomeRouter({
     userService,
