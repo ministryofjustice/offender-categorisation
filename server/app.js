@@ -66,12 +66,49 @@ module.exports = function createApp({
   app.use(helmet())
 
   app.use(addRequestId)
+  // rediss://dummyuser:${module.cccd_elasticache_redis.auth_token}@${module.cccd_elasticache_redis.primary_endpoint_address}:6379"
+
+  /* const client = redis.createClient({
+   // url: `rediss://dummyuser:${config.redis.auth_token}@${config.redis.host}:${config.redis.port}`,
+    url: `rediss://dummyuser:5a953a5a6438643388df8f12add4f3a3306dd8178b0612cd31c63c052ccb7308t@127.0.0.1:6380`,
+  }) // cloud platform generates an auth token for elasticache
+  */
+  logger.info(
+    `redis host: ${config.redis.host} redis port: ${config.redis.port} redis token: ${config.redis.auth_token}`
+  )
 
   const client = redis.createClient({
     port: config.redis.port,
     password: config.redis.auth_token,
     host: config.redis.host,
-  }) // cloud platform generates an auth token for elasticache
+  })
+
+  /*
+  const redisClust = new RedisClustr({
+    servers: [
+      {
+        host: 'cp-b6f10cb6bc6b7e30-001' ,
+        port: 6379 ,
+      },
+    ],
+    client,
+  })
+
+
+
+  redisClust.on('connect', () => {
+    console.log('connected')
+  })
+
+
+  redisClust.on('error', () => {
+    console.log('error')
+  })
+*/
+
+  client.on('error', console.error)
+  client.on('connect', console.error)
+  client.on('connected', console.error)
 
   app.use(
     session({

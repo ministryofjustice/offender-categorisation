@@ -21,8 +21,8 @@ function get(name, fallback, log, options = {}) {
 
 module.exports = {
   redis: {
-    port: get('REDIS_PORT', 6379),
-    host: get('REDIS_HOST', '127.0.0.1'),
+    port: get('REDIS_PORT', 6379, true),
+    host: get('REDIS_HOST', '127.0.0.1', true),
     auth_token: get('REDIS_AUTH_TOKEN', ''),
   },
   session: {
