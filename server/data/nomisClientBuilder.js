@@ -11,13 +11,13 @@ const timeoutSpec = {
 
 const apiUrl = config.apis.elite2.url
 
-module.exports = token => {
-  const nomisUserGet = nomisUserGetBuilder(token)
-  const nomisClientGet = nomisClientGetBuilder()
-  const nomisPost = nomisPushBuilder('post', token)
-  const nomisClientPost = nomisClientPostBuilder()
-  const nomisPut = nomisPushBuilder('put', token)
-  const nomisClientPut = nomisClientPutBuilder()
+module.exports = context => {
+  const nomisUserGet = nomisUserGetBuilder(context.user.token)
+  const nomisClientGet = nomisClientGetBuilder(context.user.username)
+  const nomisPost = nomisPushBuilder('post', context.user.token)
+  const nomisClientPost = nomisClientPostBuilder(context.user.username)
+  const nomisPut = nomisPushBuilder('put', context.user.token)
+  const nomisClientPut = nomisClientPutBuilder(context.user.username)
 
   return {
     getUncategorisedOffenders(agencyId) {
@@ -156,11 +156,11 @@ function nomisUserGetBuilder(token) {
   }
 }
 
-function nomisClientGetBuilder() {
+function nomisClientGetBuilder(username) {
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     const time = moment()
     try {
-      const clientToken = await getApiClientToken()
+      const clientToken = await getApiClientToken(username)
 
       const result = await superagent
         .get(path)
@@ -201,11 +201,11 @@ function nomisPushBuilder(verb, token) {
   }
 }
 
-function nomisClientPostBuilder() {
+function nomisClientPostBuilder(username) {
   return async ({ path, body = {}, headers = {}, responseType = '' } = {}) => {
     const time = moment()
     try {
-      const clientToken = await getApiClientToken()
+      const clientToken = await getApiClientToken(username)
 
       const result = await superagent
         .post(path)
@@ -224,11 +224,11 @@ function nomisClientPostBuilder() {
   }
 }
 
-function nomisClientPutBuilder() {
+function nomisClientPutBuilder(username) {
   return async ({ path, body = {}, headers = {}, responseType = '' } = {}) => {
     const time = moment()
     try {
-      const clientToken = await getApiClientToken()
+      const clientToken = await getApiClientToken(username)
 
       const result = await superagent
         .put(path)

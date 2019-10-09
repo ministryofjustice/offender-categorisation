@@ -27,11 +27,11 @@ module.exports = function Index({
   router.get(
     '/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const { reason } = req.query
-      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
       const dueByDate =
         details.sentence && details.sentence.sentenceStartDate && add10BusinessDays(details.sentence.sentenceStartDate)
 
@@ -70,7 +70,7 @@ module.exports = function Index({
 
       if (reason === ReviewReason.MANUAL.name && isFirstVisit(res)) {
         // Ensure this categorisation appears on the to-do list
-        await offendersService.setInactive(res.locals.user.token, bookingId)
+        await offendersService.setInactive(res.locals, bookingId)
       }
 
       categorisationRecord = await addSocProfile({
@@ -100,7 +100,7 @@ module.exports = function Index({
   router.get(
     '/categoriserSubmitted/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.render('pages/categoriserSubmitted')
     })
@@ -109,7 +109,7 @@ module.exports = function Index({
   router.get(
     '/supervisor/outcome/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.render('pages/supervisorReviewOutcome')
     })
@@ -118,7 +118,7 @@ module.exports = function Index({
   router.get(
     '/images/:imageId/data',
     asyncMiddleware(async (req, res) => {
-      await offendersService.getImage(res.locals.user.token, req.params.imageId, res)
+      await offendersService.getImage(res.locals, req.params.imageId, res)
     })
   )
 

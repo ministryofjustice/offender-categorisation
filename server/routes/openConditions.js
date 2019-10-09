@@ -114,7 +114,7 @@ module.exports = function Index({ formService, offendersService, userService, au
   )
 
   const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient) => {
-    const user = await userService.getUser(res.locals.user.token)
+    const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
@@ -131,7 +131,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     pageData[section][form] = { ...pageData[section][form], ...firstItem(req.flash('userInput')) }
 
     const errors = req.flash('errors')
-    const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
     return {
       data: { ...pageData, details },
@@ -291,7 +291,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         })
 
         const nomisKeyMap = await offendersService.createInitialCategorisation({
-          token: res.locals.user.token,
+          context: res.locals,
           bookingId: bookingInt,
           suggestedCategory: userInput.openConditionsSuggestedCategory,
           overriddenCategoryText: userInput.overriddenCategoryText || 'Cat-tool Open',

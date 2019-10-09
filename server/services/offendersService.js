@@ -70,9 +70,10 @@ function calculateRecatDisplayStatus(displayStatus) {
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
-  async function getUncategorisedOffenders(token, agencyId, user, transactionalDbClient) {
+  async function getUncategorisedOffenders(context, user, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
 
       if (isNilOrEmpty(uncategorisedResult)) {
@@ -148,9 +149,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       }
     })
 
-  async function getCategorisedOffenders(token, agencyId, user, catType, transactionalDbClient) {
+  async function getCategorisedOffenders(context, user, catType, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
 
       const categorisedFromDB = await formService.getCategorisedOffenders(agencyId, catType, transactionalDbClient)
       if (!isNilOrEmpty(categorisedFromDB)) {
@@ -185,9 +187,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getReferredOffenders(token, agencyId, transactionalDbClient) {
+  async function getReferredOffenders(context, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
 
       const securityReferredFromDB = await formService.getSecurityReferredOffenders(agencyId, transactionalDbClient)
 
@@ -240,9 +243,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getRiskChanges(token, agencyId, transactionalDbClient) {
+  async function getRiskChanges(context, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
 
       const changesFromDB = await formService.getRiskChanges(agencyId, transactionalDbClient)
 
@@ -279,9 +283,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getSecurityReviewedOffenders(token, agencyId, transactionalDbClient) {
+  async function getSecurityReviewedOffenders(context, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
 
       const securityReviewedFromDB = await formService.getSecurityReviewedOffenders(agencyId, transactionalDbClient)
       if (!isNilOrEmpty(securityReviewedFromDB)) {
@@ -316,9 +321,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getUnapprovedOffenders(token, agencyId, transactionalDbClient) {
+  async function getUnapprovedOffenders(context, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       const uncategorisedResult = (await nomisClient.getUncategorisedOffenders(agencyId)).filter(
         s => s.status === Status.AWAITING_APPROVAL.name // the status coming back from nomis
       )
@@ -444,7 +450,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function updateNextReviewDateIfRequired(token, bookingId, offenderdetails) {
+  async function updateNextReviewDateIfRequired(context, bookingId, offenderdetails) {
     try {
       const nextReviewDate = extractNextReviewDate(offenderdetails)
       const nextReviewMoment = moment(nextReviewDate, 'YYYY-MM-DD')
@@ -452,7 +458,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const tenDaysInFutureMoment = today.add(get10BusinessDays(today), 'days')
       if (tenDaysInFutureMoment < nextReviewMoment) {
         logger.info(`updating next review date for offender ${offenderdetails.offenderNo}, bookingId ${bookingId}`)
-        const nomisClient = nomisClientBuilder(token)
+        const nomisClient = nomisClientBuilder(context)
         // adjust nextReviewDate on nomis which will ensure that the categorisation is picked on the on the recat to do list
         await nomisClient.updateNextReviewDate(bookingId, tenDaysInFutureMoment.format('YYYY-MM-DD'))
       } else {
@@ -471,10 +477,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   /**
    * deactivate any existing categorisations to ensure that the categorisation is present on the initial to do list
    */
-  async function setInactive(token, bookingId) {
+  async function setInactive(context, bookingId) {
     try {
       logger.info(`Setting cats of bookingId ${bookingId} inactive`)
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       await nomisClient.setInactive(bookingId)
     } catch (error) {
       logger.error(error, `Error during setInactive, for ${bookingId} `)
@@ -537,9 +543,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     )
   }
 
-  async function getRecategoriseOffenders(token, agencyId, user, transactionalDbClient) {
+  async function getRecategoriseOffenders(context, user, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
 
       const [decoratedResultsReview, decoratedResultsU21] = await Promise.all([
         getDueRecats(agencyId, user, nomisClient, transactionalDbClient),
@@ -642,9 +649,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
   const statusTextDisplay = input => (Status[input] ? Status[input].value : '')
 
-  async function getOffenderDetails(token, bookingId) {
+  async function getOffenderDetails(context, bookingId) {
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       const result = await nomisClient.getOffenderDetails(bookingId)
 
       if (isNilOrEmpty(result)) {
@@ -678,9 +685,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getBasicOffenderDetails(token, bookingId) {
+  async function getBasicOffenderDetails(context, bookingId) {
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       return nomisClient.getBasicOffenderDetails(bookingId)
     } catch (error) {
       logger.error(error, 'Error during getBasicOffenderDetails')
@@ -698,8 +705,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     res.removeHeader('Pragma')
   }
 
-  async function getImage(token, imageId, res) {
-    const nomisClient = nomisClientBuilder(token)
+  async function getImage(context, imageId, res) {
+    const nomisClient = nomisClientBuilder(context)
     const placeHolder = () => path.join(dirname, './assets/images/image-missing.png')
     enableCaching(res)
 
@@ -722,9 +729,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return b.bookingId - a.bookingId
   }
 
-  async function getCatAInformation(token, offenderNo, currentBookingIdString) {
+  async function getCatAInformation(context, offenderNo, currentBookingIdString) {
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       const categories = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
       const sortedCategories = categories.sort(sortByDescendingBookingAndAscendingSequence)
       const mostRecentCatA = sortedCategories.find(isCatA)
@@ -767,9 +774,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getPrisonerBackground(token, offenderNo, approvalDate = null) {
+  async function getPrisonerBackground(context, offenderNo, approvalDate = null) {
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       const currentCats = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
       // If approved, omit any cats that were done later than the approval of this cat
       const filteredCats = approvalDate
@@ -778,7 +785,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const decoratedCats = await Promise.all(
         filteredCats.map(async o => {
-          const description = await getOptionalAssessmentAgencyDescription(token, o.assessmentAgencyId)
+          const description = await getOptionalAssessmentAgencyDescription(context, o.assessmentAgencyId)
           return {
             ...o,
             agencyDescription: description,
@@ -804,9 +811,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getOptionalAssessmentAgencyDescription(token, agencyId) {
+  async function getOptionalAssessmentAgencyDescription(context, agencyId) {
     if (agencyId) {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       const agency = await nomisClient.getAgencyDetail(agencyId)
       return agency.description
     }
@@ -814,7 +821,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function createInitialCategorisation({
-    token,
+    context,
     bookingId,
     overriddenCategory,
     suggestedCategory,
@@ -823,7 +830,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }) {
     const category = overriddenCategory || suggestedCategory
     const comment = overriddenCategoryText || ''
-    const nomisClient = nomisClientBuilder(token)
+    const nomisClient = nomisClientBuilder(context)
     const nextReviewDateConverted = nextReviewDate && moment(nextReviewDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
     try {
       return await nomisClient.createInitialCategorisation({
@@ -839,10 +846,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function createSupervisorApproval(token, bookingId, form) {
+  async function createSupervisorApproval(context, bookingId, form) {
     const category = form.supervisorOverriddenCategory || form.proposedCategory
     const comment = form.supervisorOverriddenCategoryText || ''
-    const nomisClient = nomisClientBuilder(token)
+    const nomisClient = nomisClientBuilder(context)
     try {
       await nomisClient.createSupervisorApproval({
         bookingId,
@@ -857,18 +864,18 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getOffenceHistory(token, offenderNo) {
-    const nomisClient = nomisClientBuilder(token)
+  async function getOffenceHistory(context, offenderNo) {
+    const nomisClient = nomisClientBuilder(context)
     return nomisClient.getOffenceHistory(offenderNo)
   }
 
-  async function isRecat(token, bookingId) {
+  async function isRecat(context, bookingId) {
     // Decide whether to do an INITIAL or RECAT (or neither).
     // To detect Cat A etc reliably we have to get cat from nomis.
     // If missing or UXZ it is INITIAL;
     // if B,C,D,I,J it is RECAT;
     // otherwise we cant process it (cat A, or female etc).
-    const nomisClient = nomisClientBuilder(token)
+    const nomisClient = nomisClientBuilder(context)
     try {
       const cat = await nomisClient.getCategory(bookingId)
       if (!cat.classificationCode || /[UXZ]/.test(cat.classificationCode)) {
@@ -926,8 +933,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)
   }
 
-  async function getOffenderDetailWithFullInfo(offenderNo) {
-    const nomisClient = nomisClientBuilder()
+  async function getOffenderDetailWithFullInfo(context, offenderNo) {
+    const nomisClient = nomisClientBuilder(context)
     return nomisClient.getOffenderDetailsByOffenderNo(offenderNo)
   }
 

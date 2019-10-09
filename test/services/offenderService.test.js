@@ -6,6 +6,7 @@ const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+const context = { user: { token: 'token', username: 'username', activeCaseLoad: { caseLoadId: 'LEI' } } }
 
 const nomisClient = {
   getUncategorisedOffenders: jest.fn(),
@@ -210,7 +211,7 @@ describe('getRecategoriseOffenders', () => {
       }
     })
 
-    const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(nomisClient.getPrisonersAtLocation).toBeCalled()
@@ -222,7 +223,7 @@ describe('getRecategoriseOffenders', () => {
     nomisClient.getRecategoriseOffenders.mockReturnValue([])
     nomisClient.getPrisonersAtLocation.mockReturnValue([])
 
-    const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })
 
@@ -270,7 +271,7 @@ describe('getRecategoriseOffenders', () => {
     nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
     nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
 
-    const result = await service.getRecategoriseOffenders('token', 'LEI', 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
 
     expect(result).toHaveLength(0)
     expect(formService.getCategorisationRecord).toBeCalledTimes(2)
@@ -460,7 +461,7 @@ describe('getUnapprovedOffenders', () => {
       },
     ]
 
-    const result = await service.getUnapprovedOffenders('token', 'LEI', mockTransactionalClient)
+    const result = await service.getUnapprovedOffenders(context, mockTransactionalClient)
 
     expect(nomisClient.getUncategorisedOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(formService.getCategorisationRecord).toBeCalledTimes(8)
@@ -471,7 +472,7 @@ describe('getUnapprovedOffenders', () => {
 
   test('No results from elite', async () => {
     nomisClient.getUncategorisedOffenders.mockReturnValue([])
-    const result = await service.getUnapprovedOffenders('token', 'LEI', mockTransactionalClient)
+    const result = await service.getUnapprovedOffenders(context, 'LEI', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })
 })
@@ -551,7 +552,7 @@ describe('getUncategorisedOffenders', () => {
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
     formService.getCategorisationRecord.mockReturnValue({})
 
-    const result = await service.getUncategorisedOffenders('user1')
+    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
@@ -564,7 +565,7 @@ describe('getUncategorisedOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
 
-    const result = await service.getUncategorisedOffenders('MDI')
+    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
   })
@@ -636,7 +637,7 @@ describe('getUncategorisedOffenders', () => {
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
     formService.getCategorisationRecord.mockReturnValue({})
 
-    const result = await service.getUncategorisedOffenders('MDI')
+    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
   })
@@ -675,7 +676,7 @@ describe('getUncategorisedOffenders', () => {
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
     formService.getCategorisationRecord.mockReturnValue({})
 
-    const result = await service.getUncategorisedOffenders('user1', 'MDI')
+    const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
   })
@@ -702,7 +703,7 @@ describe('getUncategorisedOffenders', () => {
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
     formService.getCategorisationRecord.mockReturnValue(dbRecord)
 
-    const result = await service.getUncategorisedOffenders('user1', 'MDI')
+    const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(result[0].pnomis).toBe(true)
   })
 })
@@ -762,7 +763,7 @@ describe('getUncategorisedOffenders calculates inconsistent data correctly', () 
     nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
     formService.getCategorisationRecord.mockReturnValue(dbRecord)
-    const result = await service.getUncategorisedOffenders('user1', 'MDI')
+    const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(result[0].pnomis).toBe(pnomis)
   })
 })
@@ -870,7 +871,7 @@ describe('getReferredOffenders', () => {
       },
     ]
 
-    const result = await service.getReferredOffenders('user1', 'agency')
+    const result = await service.getReferredOffenders(context, mockTransactionalClient)
 
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
@@ -929,7 +930,7 @@ describe('getReferredOffenders', () => {
       },
     ]
 
-    const result = await service.getReferredOffenders('user1', 'agency')
+    const result = await service.getReferredOffenders(context, mockTransactionalClient)
 
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
@@ -942,7 +943,7 @@ describe('getReferredOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
 
-    const result = await service.getReferredOffenders('user1', 'MDI')
+    const result = await service.getReferredOffenders(context, mockTransactionalClient)
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
   })
@@ -956,7 +957,7 @@ describe('getOffenderDetails', () => {
     nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
     nomisClient.getMainOffence.mockReturnValue({ mainOffence: 'stuff' })
 
-    const result = await service.getOffenderDetails('token', -5)
+    const result = await service.getOffenderDetails(context, -5)
 
     expect(result).toEqual({
       sentence: { dummyDetails: 'stuff', list: sentenceTerms, indeterminate: true },
@@ -971,25 +972,25 @@ describe('getOffenderDetails', () => {
 describe('isRecat', () => {
   test('it should return RECAT when supported cat in nomis', async () => {
     nomisClient.getCategory.mockReturnValue({ classificationCode: 'B' })
-    const result = await service.isRecat('token', 12345)
+    const result = await service.isRecat(context, 12345)
     expect(result).toBe('RECAT')
   })
 
   test('it should return INITIAL when missing in nomis', async () => {
     nomisClient.getCategory.mockRejectedValue(new Error('404'))
-    const result = await service.isRecat('token', 12345)
+    const result = await service.isRecat(context, 12345)
     expect(result).toBe('INITIAL')
   })
 
   test('it should return INITIAL when cat Z in nomis', async () => {
     nomisClient.getCategory.mockReturnValue({ classificationCode: 'Z' })
-    const result = await service.isRecat('token', 12345)
+    const result = await service.isRecat(context, 12345)
     expect(result).toBe('INITIAL')
   })
 
   test('it should return null when cat A in nomis', async () => {
     nomisClient.getCategory.mockReturnValue({ classificationCode: 'A' })
-    const result = await service.isRecat('token', 12345)
+    const result = await service.isRecat(context, 12345)
     expect(result).toBe(null)
   })
 })
@@ -1191,7 +1192,7 @@ describe('getPrisonerBackground', () => {
       },
     ]
 
-    const result = await service.getPrisonerBackground('token', 'ABC1', moment('2019-04-16'))
+    const result = await service.getPrisonerBackground(context, 'ABC1', moment('2019-04-16'))
 
     expect(nomisClient.getAgencyDetail).toBeCalledTimes(3)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
@@ -1243,7 +1244,7 @@ describe('getPrisonerBackground', () => {
       },
     ]
 
-    const result = await service.getPrisonerBackground('token', 'ABC1')
+    const result = await service.getPrisonerBackground(context, 'ABC1')
 
     expect(nomisClient.getAgencyDetail).toBeCalledTimes(4)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
@@ -1273,7 +1274,7 @@ describe('getPrisonerBackground', () => {
       },
     ]
 
-    const result = await service.getPrisonerBackground('token', 'ABC1')
+    const result = await service.getPrisonerBackground(context, 'ABC1')
 
     expect(nomisClient.getAgencyDetail).toBeCalledTimes(0)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
@@ -1499,7 +1500,7 @@ describe('updateNextReviewDateIfRequired', () => {
       lastName: 'SMITH',
       assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
     }
-    await service.updateNextReviewDateIfRequired('token', -5, offenderDetails)
+    await service.updateNextReviewDateIfRequired(context, -5, offenderDetails)
 
     expect(nomisClient.updateNextReviewDate).toBeCalledWith(-5, '2019-06-14')
   })
@@ -1511,7 +1512,7 @@ describe('updateNextReviewDateIfRequired', () => {
       lastName: 'SMITH',
       assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2019-06-05' }],
     }
-    await service.updateNextReviewDateIfRequired('token', -5, offenderDetails)
+    await service.updateNextReviewDateIfRequired(context, -5, offenderDetails)
 
     expect(nomisClient.updateNextReviewDate).not.toBeCalled()
   })
@@ -1531,7 +1532,7 @@ describe('handleRiskChangeDecision', () => {
       assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
     })
     await service.handleRiskChangeDecision(
-      'token',
+      context,
       -5,
       'Me',
       RiskChangeStatus.REVIEW_REQUIRED.name,
@@ -1557,7 +1558,7 @@ describe('handleRiskChangeDecision', () => {
       assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2019-06-10' }],
     })
     await service.handleRiskChangeDecision(
-      'token',
+      context,
       -5,
       'Me',
       RiskChangeStatus.REVIEW_REQUIRED.name,
@@ -1583,7 +1584,7 @@ describe('handleRiskChangeDecision', () => {
       assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
     })
     await service.handleRiskChangeDecision(
-      'token',
+      context,
       -5,
       'Me',
       RiskChangeStatus.REVIEW_NOT_REQUIRED.name,

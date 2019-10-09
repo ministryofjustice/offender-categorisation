@@ -52,15 +52,15 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
-      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals.user.username)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals.user.username)
+      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
+      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
-        res.locals.user.username,
+        res.locals,
         false // not used for recat (contributes towards recommended category)
       )
 
-      const categorisations = await offendersService.getPrisonerBackground(res.locals.user.token, offenderNo)
+      const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
 
       const data = { ...result.data, categorisations, escapeProfile, violenceProfile, extremismProfile }
 
@@ -74,15 +74,15 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
-      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals.user.username)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals.user.username)
+      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
+      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
-        res.locals.user.username,
+        res.locals,
         false // contributes towards recommended category, only used in initial categorisations
       )
 
-      const categorisations = await offendersService.getPrisonerBackground(res.locals.user.token, offenderNo)
+      const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
 
       const dataToStore = {
         escapeProfile,
@@ -124,14 +124,10 @@ module.exports = function Index({
     '/riskProfileChangeDetail/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      const data = await offendersService.getRiskChangeForOffender(
-        res.locals.user.token,
-        bookingId,
-        transactionalDbClient
-      )
+      const data = await offendersService.getRiskChangeForOffender(res.locals, bookingId, transactionalDbClient)
       const errors = req.flash('errors')
       const backLink = req.get('Referrer')
       res.render('formPages/recat/riskProfileChangeDetail', { errors, backLink, data })
@@ -142,7 +138,7 @@ module.exports = function Index({
     '/fasttrackConfirmation/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.render(`formPages/recat/fasttrackConfirmation`, { bookingId })
     })
@@ -152,7 +148,7 @@ module.exports = function Index({
     '/fasttrackCancelled/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.render(`formPages/recat/fasttrackCancelled`, { bookingId })
     })
@@ -169,7 +165,7 @@ module.exports = function Index({
   )
 
   const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient) => {
-    const user = await userService.getUser(res.locals.user.token)
+    const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
@@ -188,7 +184,7 @@ module.exports = function Index({
     pageData[section][form] = { ...pageData[section][form], ...firstItem(req.flash('userInput')) }
 
     const errors = req.flash('errors')
-    const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
     const youngOffender = formService.isYoungOffender(details)
 
     return {
@@ -269,7 +265,7 @@ module.exports = function Index({
           : RiskChangeStatus.REVIEW_REQUIRED.name
 
       await offendersService.handleRiskChangeDecision(
-        res.locals.user.token,
+        res.locals,
         bookingIdInt,
         req.user.username,
         status,
@@ -436,7 +432,7 @@ module.exports = function Index({
         const nextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], formData)
 
         const nomisKeyMap = await offendersService.createInitialCategorisation({
-          token: res.locals.user.token,
+          context: res.locals,
           bookingId: bookingInt,
           suggestedCategory,
           overriddenCategoryText: 'Cat-tool Recat',

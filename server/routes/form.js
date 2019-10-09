@@ -46,12 +46,8 @@ module.exports = function Index({
       const form = 'offendingHistory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const history = await offendersService.getCatAInformation(
-        res.locals.user.token,
-        result.data.details.offenderNo,
-        bookingId
-      )
-      const offences = await offendersService.getOffenceHistory(res.locals.user.token, result.data.details.offenderNo)
+      const history = await offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId)
+      const offences = await offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo)
       const data = { ...result.data, history, offences }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
@@ -82,10 +78,7 @@ module.exports = function Index({
       const form = 'violenceRating'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const violenceProfile = await riskProfilerService.getViolenceProfile(
-        result.data.details.offenderNo,
-        res.locals.user.username
-      )
+      const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
       const data = { ...result.data, violenceProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
@@ -98,10 +91,7 @@ module.exports = function Index({
       const form = 'escapeRating'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(
-        result.data.details.offenderNo,
-        res.locals.user.username
-      )
+      const escapeProfile = await riskProfilerService.getEscapeProfile(result.data.details.offenderNo, res.locals)
       const data = { ...result.data, escapeProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
@@ -116,7 +106,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         result.data.details.offenderNo,
-        res.locals.user.username,
+        res.locals,
         false // don't yet have the answer the question - will be populated correctly in the review route
       )
       const data = { ...result.data, extremismProfile }
@@ -148,28 +138,18 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'categoriser', 'review', bookingId, transactionalDbClient)
 
-      const history = await offendersService.getCatAInformation(
-        res.locals.user.token,
-        result.data.details.offenderNo,
-        bookingId
-      )
-      const offences = await offendersService.getOffenceHistory(res.locals.user.token, result.data.details.offenderNo)
+      const history = await offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId)
+      const offences = await offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo)
 
-      const escapeProfile = await riskProfilerService.getEscapeProfile(
-        result.data.details.offenderNo,
-        res.locals.user.username
-      )
+      const escapeProfile = await riskProfilerService.getEscapeProfile(result.data.details.offenderNo, res.locals)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         result.data.details.offenderNo,
-        res.locals.user.username,
+        res.locals,
         result.data.ratings &&
           result.data.ratings.extremismRating &&
           result.data.ratings.extremismRating.previousTerrorismOffences === 'Yes'
       )
-      const violenceProfile = await riskProfilerService.getViolenceProfile(
-        result.data.details.offenderNo,
-        res.locals.user.username
-      )
+      const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
 
       const dataToStore = {
         history,
@@ -203,10 +183,7 @@ module.exports = function Index({
       if (result.catType === CatType.INITIAL.name) {
         res.render(`formPages/${section}/review`, result)
       } else {
-        const categorisations = await offendersService.getPrisonerBackground(
-          res.locals.user.token,
-          result.data.details.offenderNo
-        )
+        const categorisations = await offendersService.getPrisonerBackground(res.locals, result.data.details.offenderNo)
         const data = { ...result.data, categorisations }
         res.render(`formPages/${section}/recatReview`, { ...result, data })
       }
@@ -231,10 +208,7 @@ module.exports = function Index({
       if (result.catType === CatType.INITIAL.name) {
         res.render('formPages/categoriser/awaitingApprovalView', result)
       } else {
-        const categorisations = await offendersService.getPrisonerBackground(
-          res.locals.user.token,
-          result.data.details.offenderNo
-        )
+        const categorisations = await offendersService.getPrisonerBackground(res.locals, result.data.details.offenderNo)
         const data = { ...result.data, categorisations }
         res.render('formPages/recat/awaitingApprovalView', { ...result, data })
       }
@@ -248,7 +222,7 @@ module.exports = function Index({
       const { sequenceNo } = req.query
       const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient, sequenceNo)
       const prisonDescription = await offendersService.getOptionalAssessmentAgencyDescription(
-        res.locals.user.token,
+        res.locals,
         result.prisonId
       )
       const approvalDateDisplay = getLongDateFormat(result.approvalDate)
@@ -256,7 +230,7 @@ module.exports = function Index({
         res.render(`formPages/approvedView`, { ...result, approvalDateDisplay, prisonDescription })
       } else {
         const categorisations = await offendersService.getPrisonerBackground(
-          res.locals.user.token,
+          res.locals,
           result.data.details.offenderNo,
           result.approvalDate
         )
@@ -267,7 +241,7 @@ module.exports = function Index({
   )
 
   const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient, sequenceNo) => {
-    const user = await userService.getUser(res.locals.user.token)
+    const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
 
     if (sequenceNo && Number.isNaN(parseInt(sequenceNo, 10))) {
@@ -292,7 +266,7 @@ module.exports = function Index({
     pageData[section][form] = { ...pageData[section][form], ...firstItem(req.flash('userInput')) }
 
     const errors = req.flash('errors')
-    const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
     const youngOffender = formService.isYoungOffender(details)
 
     return {
@@ -526,7 +500,7 @@ module.exports = function Index({
         })
 
         const nomisKeyMap = await offendersService.createInitialCategorisation({
-          token: res.locals.user.token,
+          context: res.locals,
           bookingId: bookingInt,
           overriddenCategory: userInput.overriddenCategory,
           suggestedCategory: userInput.suggestedCategory,
@@ -581,13 +555,13 @@ module.exports = function Index({
           formName: form,
           transactionalClient: transactionalDbClient,
         })
-        await offendersService.createSupervisorApproval(res.locals.user.token, bookingId, userInput)
+        await offendersService.createSupervisorApproval(res.locals, bookingId, userInput)
 
         const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
         if (userInput.catType === CatType.RECAT.name) {
           const categorisations = await offendersService.getPrisonerBackground(
-            res.locals.user.token,
+            res.locals,
             categorisationRecord.offenderNo
           )
           const dataToStore = {
