@@ -11,10 +11,10 @@ const timeoutSpec = {
 
 const apiUrl = `${config.apis.riskProfiler.url}risk-profile/`
 
-module.exports = username => {
-  const apiGet = riskProfilerGetBuilder(username)
-  const apiPost = riskProfilerPushBuilder('post', username)
-  const apiPut = riskProfilerPushBuilder('put', username)
+module.exports = context => {
+  const apiGet = riskProfilerGetBuilder(context.user.username)
+  const apiPost = riskProfilerPushBuilder('post', context.user.username)
+  const apiPut = riskProfilerPushBuilder('put', context.user.username)
 
   return {
     getSocProfile(offenderNo) {

@@ -1,5 +1,4 @@
 const querystring = require('querystring')
-const { getNamespace } = require('cls-hooked')
 const superagent = require('superagent')
 const logger = require('../../log')
 const config = require('../config')
@@ -27,10 +26,9 @@ function generate(clientId, clientSecret) {
   return `Basic ${token}`
 }
 
-async function getApiClientToken() {
+async function getApiClientToken(username) {
   const oauthRiskProfilerClientToken = generateOauthClientToken()
-  const handle = getNamespace('request.scope')
-  const username = handle.get('user')
+
   const oauthRequest = username
     ? querystring.stringify({ grant_type: 'client_credentials', username })
     : querystring.stringify({ grant_type: 'client_credentials' })

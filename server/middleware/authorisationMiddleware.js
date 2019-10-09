@@ -41,8 +41,8 @@ module.exports = (userService, offendersService) => async (req, res, next) => {
 
       // Check prisoner is in caseload
       try {
-        const details = await offendersService.getBasicOffenderDetails(res.locals.user.token, bookingId)
-        const user = await userService.getUser(res.locals.user.token)
+        const details = await offendersService.getBasicOffenderDetails(res.locals, bookingId)
+        const user = await userService.getUser(res.locals)
         const found = user.activeCaseLoads.find(caseLoad => caseLoad.caseLoadId === details.agencyId)
         if (!found) {
           return next(unauthorisedError('Prisoner is not in this prison'))

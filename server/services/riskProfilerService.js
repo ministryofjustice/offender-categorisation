@@ -2,9 +2,9 @@ const logger = require('../../log.js')
 
 module.exports = function createRiskProfilerService(riskProfilerClientBuilder) {
   return {
-    async getSecurityProfile(offenderNo, userId) {
+    async getSecurityProfile(offenderNo, context) {
       try {
-        const riskProfilerClient = riskProfilerClientBuilder(userId)
+        const riskProfilerClient = riskProfilerClientBuilder(context)
         return await riskProfilerClient.getSocProfile(offenderNo)
       } catch (error) {
         logger.error(error, 'Error during getSecurityProfile')
@@ -12,9 +12,9 @@ module.exports = function createRiskProfilerService(riskProfilerClientBuilder) {
       }
     },
 
-    async getViolenceProfile(offenderNo, userId) {
+    async getViolenceProfile(offenderNo, context) {
       try {
-        const riskProfilerClient = riskProfilerClientBuilder(userId)
+        const riskProfilerClient = riskProfilerClientBuilder(context)
         return await riskProfilerClient.getViolenceProfile(offenderNo)
       } catch (error) {
         logger.error(error, 'Error during getViolenceProfile')
@@ -22,9 +22,9 @@ module.exports = function createRiskProfilerService(riskProfilerClientBuilder) {
       }
     },
 
-    async getEscapeProfile(offenderNo, userId) {
+    async getEscapeProfile(offenderNo, context) {
       try {
-        const riskProfilerClient = riskProfilerClientBuilder(userId)
+        const riskProfilerClient = riskProfilerClientBuilder(context)
         return await riskProfilerClient.getEscapeProfile(offenderNo)
       } catch (error) {
         logger.error(error, 'Error during getEscapeProfile')
@@ -32,9 +32,9 @@ module.exports = function createRiskProfilerService(riskProfilerClientBuilder) {
       }
     },
 
-    async getExtremismProfile(offenderNo, userId, previousOffences) {
+    async getExtremismProfile(offenderNo, context, previousOffences) {
       try {
-        const riskProfilerClient = riskProfilerClientBuilder(userId)
+        const riskProfilerClient = riskProfilerClientBuilder(context)
         return await riskProfilerClient.getExtremismProfile(offenderNo, previousOffences)
       } catch (error) {
         logger.error(error, 'Error during getExtremismProfile')

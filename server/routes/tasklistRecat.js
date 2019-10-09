@@ -46,11 +46,11 @@ module.exports = function Index({
   router.get(
     '/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const { reason } = req.query
-      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
       let categorisationRecord = await formService.createOrRetrieveCategorisationRecord(
         bookingId,
         req.user.username,
@@ -156,7 +156,7 @@ module.exports = function Index({
   router.get(
     '/recategoriserSubmitted/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.render('pages/recategoriserSubmitted')
     })
