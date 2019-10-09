@@ -1,6 +1,8 @@
 {% extends "./formTemplate.html" %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
+{% block pageTitle %}{{data.details.offenderNo}} {{data.details.displayName}}{% endblock %}
+
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
@@ -53,66 +55,66 @@
 
     <h2 class="govuk-heading-s no-print">Categoriser decision</h2>
     {% if overriddenCat %}
-    <div class="govuk-warning-text forms-info-text warning-overrides no-print">
-      <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ cat }}</span>
-      <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
-      <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
-      <div class="govuk-warning-text__text override-icon-text">
-        <span class="govuk-warning-text__assistive">Warning</span>
-        The recommended category was changed from a {{ catDisplay(cat) }} to a {{ catDisplay(overriddenCat) }}
-      </div>
-    </div>
-      {% if overriddenCatText %}
-        <div class="govuk-!-margin-bottom-6">
-        <label for="overriddenText" class="govuk-!-font-weight-bold" >Comments</label>
-        <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
+      <div class="govuk-warning-text forms-info-text warning-overrides no-print">
+        <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ cat }}</span>
+        <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
+        <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
+        <div class="govuk-warning-text__text override-icon-text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          The recommended category was changed from a {{ catDisplay(cat) }} to a {{ catDisplay(overriddenCat) }}
         </div>
       </div>
+      {% if overriddenCatText %}
+        <div class="govuk-!-margin-bottom-6{{' no-print' if superCat or superPreviousOverrideComments }}">
+          <label for="overriddenText" class="govuk-!-font-weight-bold" >Comments</label>
+          <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
+          </div>
+        </div>
       {% endif %}
     {% else %}
-    <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
-      <div class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
-        The categoriser recommends category {{ catDisplay(cat) }}
+      <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+        <div class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          The categoriser recommends category {{ catDisplay(cat) }}
+        </div>
       </div>
-    </div>
     {% endif %}
 
     <h2 class="govuk-heading-s no-print">Supervisor decision</h2>
     {% if superCat %}
-    <div class="govuk-warning-text forms-supervisor-info-text warning-overrides no-print">
-      <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ categoriserCat }}</span>
-      <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
-      <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
-      <div class="govuk-warning-text__text override-icon-text">
-        <span class="govuk-warning-text__assistive">Warning</span>
-        The recommended category was changed from a {{ catDisplay(categoriserCat) }} to a {{ catDisplay(superCat) }}
+      <div class="govuk-warning-text forms-supervisor-info-text warning-overrides no-print">
+        <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ categoriserCat }}</span>
+        <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
+        <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
+        <div class="govuk-warning-text__text override-icon-text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          The recommended category was changed from a {{ catDisplay(categoriserCat) }} to a {{ catDisplay(superCat) }}
+        </div>
       </div>
-    </div>
     {% else %}
-    <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
-      <div class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
-        The supervisor also recommends category {{ catDisplay(categoriserCat) }}
+      <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+        <div class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          The supervisor also recommends category {{ catDisplay(categoriserCat) }}
+        </div>
       </div>
-    </div>
     {% endif %}
 
     {% if superCat or superOtherComments or superPreviousOverrideComments %}
-    <div class="govuk-!-margin-bottom-6">
-      <label for="overriddenText-2" class="{% if overriddenCat and overriddenCatText %}no-print {% endif %}govuk-!-font-weight-bold">Comments</label>
-      {% if superCat %}
-        <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}</div>
-      {% endif %}
-      {% if superPreviousOverrideComments %}
-        <div class="forms-comments-text govuk-!-margin-bottom-1" id="previous-overriddenText">{{ superPreviousOverrideComments }}</div>
-      {% endif %}
-      {% if superOtherComments %}
-        <div class="forms-comments-text govuk-!-margin-bottom-1" id="other-text-supervisor">{{ superOtherComments }}</div>
-      {% endif %}
-    </div>
+      <div class="govuk-!-margin-bottom-6">
+        <label for="overriddenText-2" class="{% if overriddenCat and overriddenCatText %}no-print {% endif %}govuk-!-font-weight-bold">Comments</label>
+        {% if superCat %}
+          <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}</div>
+        {% endif %}
+        {% if superPreviousOverrideComments %}
+          <div class="forms-comments-text govuk-!-margin-bottom-1" id="previous-overriddenText">{{ superPreviousOverrideComments }}</div>
+        {% endif %}
+        {% if superOtherComments %}
+          <div class="forms-comments-text govuk-!-margin-bottom-1" id="other-text-supervisor">{{ superOtherComments }}</div>
+        {% endif %}
+      </div>
     {% endif %}
     </div>
     <div class="govuk-!-width-full">

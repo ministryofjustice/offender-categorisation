@@ -1,6 +1,8 @@
 {% extends "../formTemplate.html" %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
+{% block pageTitle %}{{data.details.offenderNo}} {{data.details.displayName}}{% endblock %}
+
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
