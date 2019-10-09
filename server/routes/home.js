@@ -35,16 +35,11 @@ module.exports = function Index({
   router.get(
     '/categoriserHome',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getUncategorisedOffenders(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            user,
-            transactionalDbClient
-          )
+        ? await offendersService.getUncategorisedOffenders(res.locals, user, transactionalDbClient)
         : []
       res.render('pages/categoriserHome', { offenders })
     })
@@ -53,17 +48,11 @@ module.exports = function Index({
   router.get(
     '/categoriserDone',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getCategorisedOffenders(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            user,
-            CatType.INITIAL.name,
-            transactionalDbClient
-          )
+        ? await offendersService.getCategorisedOffenders(res.locals, user, CatType.INITIAL.name, transactionalDbClient)
         : []
       res.render('pages/categoriserDone', { offenders })
     })
@@ -72,17 +61,11 @@ module.exports = function Index({
   router.get(
     '/supervisorDone',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getCategorisedOffenders(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            user,
-            null,
-            transactionalDbClient
-          )
+        ? await offendersService.getCategorisedOffenders(res.locals, user, null, transactionalDbClient)
         : []
       res.render('pages/supervisorDone', { offenders })
     })
@@ -91,15 +74,11 @@ module.exports = function Index({
   router.get(
     '/securityDone',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getSecurityReviewedOffenders(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            transactionalDbClient
-          )
+        ? await offendersService.getSecurityReviewedOffenders(res.locals, transactionalDbClient)
         : []
       res.render('pages/securityDone', { offenders })
     })
@@ -108,15 +87,11 @@ module.exports = function Index({
   router.get(
     '/supervisorHome',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getUnapprovedOffenders(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            transactionalDbClient
-          )
+        ? await offendersService.getUnapprovedOffenders(res.locals, transactionalDbClient)
         : []
       res.render('pages/supervisorHome', { offenders })
     })
@@ -125,15 +100,11 @@ module.exports = function Index({
   router.get(
     '/securityHome',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getReferredOffenders(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            transactionalDbClient
-          )
+        ? await offendersService.getReferredOffenders(res.locals, transactionalDbClient)
         : []
       res.render('pages/securityHome', { offenders })
     })
@@ -142,16 +113,11 @@ module.exports = function Index({
   router.get(
     '/recategoriserHome',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getRecategoriseOffenders(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            user,
-            transactionalDbClient
-          )
+        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient)
         : []
 
       const riskChangeCount = await formService.getRiskChangeCount(
@@ -165,17 +131,11 @@ module.exports = function Index({
   router.get(
     '/recategoriserDone',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getCategorisedOffenders(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            user,
-            CatType.RECAT.name,
-            transactionalDbClient
-          )
+        ? await offendersService.getCategorisedOffenders(res.locals, user, CatType.RECAT.name, transactionalDbClient)
         : []
       const riskChangeCount = await formService.getRiskChangeCount(
         res.locals.user.activeCaseLoad.caseLoadId,
@@ -188,15 +148,11 @@ module.exports = function Index({
   router.get(
     '/recategoriserCheck',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getRiskChanges(
-            res.locals.user.token,
-            res.locals.user.activeCaseLoad.caseLoadId,
-            transactionalDbClient
-          )
+        ? await offendersService.getRiskChanges(res.locals, transactionalDbClient)
         : []
       res.render('pages/recategoriserCheck', { offenders })
     })
@@ -220,7 +176,7 @@ module.exports = function Index({
   router.get(
     '/dashboardInitial',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const errors = formService.isValidForGet(dashboard.dashboard, req, res, req.query)
@@ -242,7 +198,7 @@ module.exports = function Index({
   router.get(
     '/dashboardRecat',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
       const errors = formService.isValidForGet(dashboard.dashboard, req, res, req.query)
@@ -270,10 +226,7 @@ module.exports = function Index({
       const dataDecorated = await Promise.all(
         data.map(async d => ({
           ...d,
-          prisonDescription: await offendersService.getOptionalAssessmentAgencyDescription(
-            res.locals.user.token,
-            d.prisonId
-          ),
+          prisonDescription: await offendersService.getOptionalAssessmentAgencyDescription(res.locals, d.prisonId),
         }))
       )
       res.render(`pages/categoryHistory`, { data: dataDecorated })
@@ -295,7 +248,7 @@ module.exports = function Index({
   router.get(
     '/openConditionsAdded/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const { catType } = req.query
@@ -307,14 +260,14 @@ module.exports = function Index({
   router.get(
     '/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals.user.token)
+      const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
-      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
       const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
       const nextReviewDate = extractNextReviewDate(details)
-      const catType = await offendersService.isRecat(res.locals.user.token, bookingId)
+      const catType = await offendersService.isRecat(res.locals, bookingId)
       const securityReferral = await formService.getSecurityReferral(details.offenderNo, transactionalDbClient)
       const isSecurityReferred = securityReferral.status === 'NEW'
 
@@ -329,11 +282,11 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
 
-      const user = await userService.getUser(res.locals.user.token)
-      const details = await offendersService.getOffenderDetails(res.locals.user.token, bookingId)
+      const user = await userService.getUser(res.locals)
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
       if (req.body.landingType && req.body.landingType === 'earlyReview') {
-        await offendersService.updateNextReviewDateIfRequired(res.locals.user.token, bookingId, details)
+        await offendersService.updateNextReviewDateIfRequired(res.locals, bookingId, details)
         res.redirect(`/tasklistRecat/${bookingId}?reason=MANUAL`)
       } else {
         formService.createSecurityReferral(details.agencyId, details.offenderNo, user.username, transactionalDbClient)

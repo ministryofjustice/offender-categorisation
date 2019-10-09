@@ -556,7 +556,7 @@ describe('POST /form/recat/review', () => {
       .expect(() => {
         expect(formService.update).toBeCalledTimes(0)
         expect(offendersService.createInitialCategorisation).toBeCalledWith({
-          token: 'ABCDEF',
+          context: { user: { token: 'ABCDEF' } },
           bookingId: 12345,
           overriddenCategoryText: 'Cat-tool Recat',
           suggestedCategory: 'B',

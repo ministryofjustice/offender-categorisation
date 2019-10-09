@@ -2,9 +2,9 @@ const logger = require('../../log.js')
 const { properCaseName } = require('../utils/utils.js')
 
 module.exports = function createUserService(nomisClientBuilder) {
-  async function getUser(token) {
+  async function getUser(context) {
     try {
-      const nomisClient = nomisClientBuilder(token)
+      const nomisClient = nomisClientBuilder(context)
       const user = await nomisClient.getUser()
 
       const activeCaseLoads = user.activeCaseLoadId ? await nomisClient.getUserCaseLoads() : []

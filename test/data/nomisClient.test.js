@@ -1,9 +1,6 @@
 const nock = require('nock')
-const { getNamespace } = require('cls-hooked')
 const config = require('../../server/config')
 const nomisClientBuilder = require('../../server/data/nomisClientBuilder')
-
-jest.mock('cls-hooked')
 
 describe('nomisClient', () => {
   let fakeElite2Api
@@ -17,8 +14,7 @@ describe('nomisClient', () => {
   beforeEach(() => {
     fakeElite2Api = nock(`${config.apis.elite2.url}`) // .log(console.log)
     fakeOauth = nock(`${config.apis.oauth2.url}`) // .log(console.log)
-    nomisClient = nomisClientBuilder('username')
-    getNamespace.mockReturnValue({ get: () => 'myuser' })
+    nomisClient = nomisClientBuilder({ user: { username: 'myuser', token: '1234321' } })
   })
 
   afterEach(() => {

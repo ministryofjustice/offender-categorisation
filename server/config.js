@@ -20,7 +20,16 @@ function get(name, fallback, log, options = {}) {
 }
 
 module.exports = {
-  sessionSecret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),
+  redis: {
+    port: get('REDIS_PORT', 6379),
+    host: get('REDIS_HOST', '127.0.0.1'),
+    auth_token: get('REDIS_AUTH_TOKEN', ''),
+  },
+  session: {
+    secret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),
+    ttl: get('SESSION_TTL', 1200),
+  },
+
   expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120', true),
   staticResourceCacheDuration: get('STATIC_RESOURCE_TIMEOUT_IN_MINUTES', '0', true),
   db: {
