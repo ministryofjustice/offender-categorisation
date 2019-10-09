@@ -67,7 +67,7 @@ module.exports = function createApp({
 
   app.use(addRequestId)
 
-  const client = redis.createClient({ port: config.redis.port, password: config.redis.auth_token }) // cloud platform generates an auth token for elasticache
+  const client = redis.createClient({ port: config.redis.port, password: config.redis.auth_token, host: config.redis.host }) // cloud platform generates an auth token for elasticache
 
   app.use(
     session({
