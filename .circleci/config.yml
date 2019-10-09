@@ -112,6 +112,7 @@ jobs:
         environment:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder
+      - image: redis
     steps:
       - checkout
       - attach_workspace:
