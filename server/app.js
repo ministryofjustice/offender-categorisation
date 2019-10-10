@@ -71,8 +71,7 @@ module.exports = function createApp({
     port: config.redis.port,
     password: config.redis.auth_token,
     host: config.redis.host,
-    // tls: config.redis.tls_enabled === 'true' ? { checkServerIdentity: () => undefined } : false,
-    tls: {},
+    tls: config.redis.tls_enabled === 'true' ? {} : false,
   })
 
   app.use(
