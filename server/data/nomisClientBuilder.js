@@ -91,6 +91,10 @@ module.exports = context => {
       const path = `${apiUrl}api/bookings/${bookingId}/mainOffence`
       return nomisClientGet({ path })
     },
+    getMainOffences(bookingIds) {
+      const path = `${apiUrl}api/bookings/mainOffence`
+      return nomisClientPost({ path, body: bookingIds })
+    },
     getOffenceHistory(offenderNo) {
       const path = `${apiUrl}api/bookings/offenderNo/${offenderNo}/offenceHistory`
       return nomisUserGet({ path })
