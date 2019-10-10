@@ -112,5 +112,8 @@ env:
         name: oc-elasticache-redis
         key: auth_token
 
+  - name: REDIS_TLS_ENABLED
+    value: {{ .Values.env.REDIS_TLS_ENABLED }}
+
 
 {{- end -}}
