@@ -71,7 +71,7 @@ module.exports = function createApp({
     port: config.redis.port,
     password: config.redis.auth_token,
     host: config.redis.host,
-    tls: { checkServerIdentity: () => undefined }, // no ssl currently
+    tls: config.redis.tls_enabled ? { checkServerIdentity: () => undefined } : false, // no ssl currently + local redis image requires false instead of object
   })
 
   app.use(
