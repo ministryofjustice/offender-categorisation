@@ -2,19 +2,17 @@ package uk.gov.justice.digital.hmpps.cattool.pages.recat
 
 import uk.gov.justice.digital.hmpps.cattool.pages.HeaderPage
 
-class FasttrackPositivePage extends HeaderPage {
+class FasttrackProgressPage extends HeaderPage {
 
-  static url = '/form/recat/fasttrackPositiveProgress'
+  static url = '/form/recat/fasttrackProgress'
 
   static at = {
-    headingText == 'Are they making any positive progress?'
+    headingText == 'Please detail any progress made by the prisoner since the last review'
   }
 
   static content = {
     form { $('form') }
-    positiveYes { $('#positiveProgress') }
-    positiveNo { $('#positiveProgress-2') }
-    positiveText { $('#positiveProgressText') }
+    progressText { $('#progressText') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
