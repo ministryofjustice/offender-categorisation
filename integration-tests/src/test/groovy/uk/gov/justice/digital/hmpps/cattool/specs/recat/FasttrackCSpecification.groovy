@@ -14,9 +14,8 @@ import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackCancelledPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackConfirmationPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackEligibilityPage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackPositivePage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackProgressPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.FasttrackRemainPage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.PrisonerBackgroundPage
 
 import java.time.LocalDate
 
@@ -86,22 +85,11 @@ class FasttrackCSpecification extends GebReportingSpec {
 
     submitButton.click()
 
-    then: 'user is presented with the Positive Progress page'
+    then: 'user is presented with the Progress page'
 
-    at FasttrackPositivePage
+    at FasttrackProgressPage
 
     when: 'submitted without answers'
-
-    submitButton.click()
-
-    then: 'presented with validation message'
-
-    errorSummaries*.text() == ['Please enter yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
-
-    when: 'submitted without text field after answering Yes'
-
-    positiveYes.click()
 
     submitButton.click()
 
@@ -112,9 +100,7 @@ class FasttrackCSpecification extends GebReportingSpec {
 
     when: 'form is submitted complete'
 
-    positiveYes.click()
-
-    positiveText = 'something'
+    progressText = 'something'
 
     submitButton.click()
 
@@ -141,7 +127,7 @@ class FasttrackCSpecification extends GebReportingSpec {
       higherCategory:'They pose no additional risks. There’s no reason to consider them for higher security conditions.'],
       fasttrackRemain:[remainCatC:'Yes'],
       fasttrackEligibility:[earlyCatD:'No', increaseCategory:'No'],
-      fasttrackPositiveProgress:[positiveProgress:'Yes', positiveProgressText:'something'],
+      fasttrackProgress:[progressText:'something'],
       securityInput: [securityInputNeeded:'No']]
   }
 
