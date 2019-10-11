@@ -32,23 +32,15 @@ describe('it should assess the risk change status of a new and old risk profile 
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeListAlert).toBe(true)
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeRiskAlert).toBe(false)
   })
-  it('Changes in violence assaults are detected', () => {
+  it('Changes in violence assaults are ignored if no recommended cat change', () => {
     const oldProfile = buildProfile({ numberOfAssaults: 0 })
-    const newProfile = buildProfile({ numberOfAssaults: 1 })
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceAssaultsChange).toBe(true)
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceNotifySafetyCTLead).toBe(false)
+    const newProfile = buildProfile({ numberOfAssaults: 1, notifySafetyCustodyLead: true })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceChange).toBe(false)
   })
-  it('Changes in violence serious assaults are detected', () => {
-    const oldProfile = buildProfile({ numberOfSeriousAssaults: 0 })
-    const newProfile = buildProfile({ numberOfSeriousAssaults: 1 })
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceAssaultsChange).toBe(true)
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceNotifySafetyCTLead).toBe(false)
-  })
-  it('Changes in violence notify lead', () => {
-    const oldProfile = buildProfile({ notifySafetyCustodyLead: false })
-    const newProfile = buildProfile({ notifySafetyCustodyLead: true })
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceAssaultsChange).toBe(false)
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceNotifySafetyCTLead).toBe(true)
+  it('Change in violence recommendation is detected', () => {
+    const oldProfile = buildProfile({})
+    const newProfile = buildProfile({ provisionalCategorisation: 'B' })
+    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceChange).toBe(true)
   })
   it('Changes in extremism notify lead', () => {
     const oldProfile = buildProfile({ notifyRegionalCTLead: false })
@@ -81,7 +73,7 @@ function buildProfile({
   escapeRiskAlerts = [],
   escapeListAlerts = [],
   numberOfAssaults = 0,
-  numberOfSeriousAssaults = 0,
+  provisionalCategorisation = 'C',
   notifySafetyCustodyLead = false,
   notifyRegionalCTLead = false,
   increasedRiskOfExtremism = false,
@@ -89,7 +81,7 @@ function buildProfile({
 } = {}) {
   return {
     escape: { activeEscapeList, activeEscapeRisk, escapeRiskAlerts, escapeListAlerts },
-    violence: { numberOfAssaults, numberOfSeriousAssaults, notifySafetyCustodyLead },
+    violence: { numberOfAssaults, provisionalCategorisation, notifySafetyCustodyLead },
     extremism: { notifyRegionalCTLead, increasedRiskOfExtremism },
     soc: { transferToSecurity },
   }
