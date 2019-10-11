@@ -48,6 +48,16 @@ async function getSentenceMap(offenderList, nomisClient) {
   )
 }
 
+async function getOffenceMap(offenderList, nomisClient) {
+  const bookingIds = offenderList
+    .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
+    .map(o => o.bookingId)
+
+  const offences = await nomisClient.getMainOffences(bookingIds)
+  // There can (rarely) be > 1 main offence per booking id, but not in the IS91 case
+  return new Map(offences.map(offence => [offence.bookingId, offence]))
+}
+
 function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
   return (
     !!dbRecord &&
@@ -80,11 +90,27 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         logger.info(`No uncategorised offenders found for ${agencyId}`)
         return []
       }
-      const sentenceMap = await getSentenceMap(uncategorisedResult, nomisClient)
+      const [sentenceMap, offenceMap] = await Promise.all([
+        getSentenceMap(uncategorisedResult, nomisClient),
+        getOffenceMap(uncategorisedResult, nomisClient),
+      ])
+
+      const filterIS91s = o => {
+        const offence = offenceMap.get(o.bookingId)
+        if (!offence) {
+          return true
+        }
+        if (offence.offenceCode === 'IA99000-001N' && offence.statuteCode === 'ZZ') {
+          logger.info(`Filtered out IS91 prisoner: bookingId = ${offence.bookingId}`)
+          return false
+        }
+        return true
+      }
 
       const decoratedResults = await Promise.all(
         uncategorisedResult
           .filter(o => sentenceMap.get(o.bookingId)) // filter out offenders without sentence
+          .filter(filterIS91s)
           .map(async o => {
             const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
             if (dbRecord.catType === 'RECAT') {

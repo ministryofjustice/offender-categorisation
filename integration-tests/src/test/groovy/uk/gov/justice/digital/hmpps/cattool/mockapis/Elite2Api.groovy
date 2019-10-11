@@ -698,6 +698,24 @@ class Elite2Api extends WireMockRule {
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )
+
+    def offences = emptyResponse ? [] : bookingIds.collect({ no ->
+      [
+        bookingId  : no,
+        offenceCode: "OFF${no}",
+        statuteCode : "ST${no}"
+      ]
+    })
+
+    this.stubFor(
+      post("/api/bookings/mainOffence")
+        .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, false))
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson(offences))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
   }
 
   def stubSentenceDataError() {

@@ -20,6 +20,7 @@ const nomisClient = {
   getSentenceDetails: jest.fn(),
   getSentenceTerms: jest.fn(),
   getMainOffence: jest.fn(),
+  getMainOffences: jest.fn(),
   createInitialCategorisation: jest.fn(),
   createSupervisorApproval: jest.fn(),
   getCategory: jest.fn(),
@@ -43,6 +44,8 @@ let service
 
 beforeEach(() => {
   service = serviceCreator(nomisClientBuilder, formService)
+  nomisClient.getMainOffences.mockReturnValue([])
+  formService.getCategorisationRecord.mockReturnValue({})
 })
 
 afterEach(() => {
@@ -705,6 +708,45 @@ describe('getUncategorisedOffenders', () => {
 
     const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(result[0].pnomis).toBe(true)
+  })
+
+  test('it filters out IS91s', async () => {
+    const uncategorised = [
+      {
+        offenderNo: 'H12345',
+        firstName: 'Danny',
+        lastName: 'Doyle',
+        bookingId: 111,
+        status: Status.UNCATEGORISED.name,
+      },
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+      },
+    ]
+
+    // const dbRecord = { bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: Status.AWAITING_APPROVAL.name }
+
+    const sentenceDates = [
+      { sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) } },
+      { sentenceDetail: { bookingId: 111, sentenceStartDate: mockTodaySubtract(4) } },
+    ]
+
+    const offences = [
+      { bookingId: 123, offenceCode: 'OKCODE', statuteCode: 'ZZ' },
+      { bookingId: 111, offenceCode: 'IA99000-001N', statuteCode: 'ZZ' },
+    ]
+    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    nomisClient.getMainOffences.mockReturnValue(offences)
+    // formService.getCategorisationRecord.mockReturnValue(dbRecord)
+
+    const results = await service.getUncategorisedOffenders(context, mockTransactionalClient)
+    expect(results).toHaveLength(1)
+    expect(results[0].bookingId).toEqual(123)
   })
 })
 
