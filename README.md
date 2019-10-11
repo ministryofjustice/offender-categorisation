@@ -24,6 +24,15 @@ You can log in with users stored int eh seeded nomis oauth db e.g. `CA_USER, pas
 ### Dependencies
 The app authenticates using nomis `Nomis Oauth2 Server` and saves to a Postgres database.
 
+The app uses redis (cloud platform elasticache when deployed to our environments) to store the user session.
+Run redis as a local docker container on the default port of 6379 when running the app locally
+The other option is to run stunnel and port forward using the cloud platform guidance:
+`https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster`
+If running locally against elasticache you will also need to provide the following env vars:
+REDIS_AUTH_TOKEN=<from the namespace secret>
+NODE_TLS_REJECT_UNAUTHORIZED=0 
+
+`docker run redis`
 
 ### Runing the app for development**
 

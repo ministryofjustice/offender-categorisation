@@ -205,9 +205,6 @@ module.exports = function Index({
     if (body.transfer === 'Yes') {
       delete updated.transferText
     }
-    if (body.positiveProgress === 'No') {
-      delete updated.positiveProgressText
-    }
     return updated
   }
 
@@ -509,10 +506,10 @@ module.exports = function Index({
   )
 
   router.post(
-    '/fasttrackPositiveProgress/:bookingId',
+    '/fasttrackProgress/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const form = 'fasttrackPositiveProgress'
+      const form = 'fasttrackProgress'
       const section = 'recat'
       const formPageConfig = formConfig[section][form]
       const userInput = clearConditionalFields(req.body)
