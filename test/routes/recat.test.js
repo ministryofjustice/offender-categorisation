@@ -566,7 +566,7 @@ describe('POST /form/recat/review', () => {
   })
 })
 
-describe('POST /form/recat/fasttrackPositive', () => {
+describe('POST /form/recat/fasttrackProgress', () => {
   test('Risk Assessment, next review date and decision are defaulted', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'STARTED',
@@ -574,8 +574,8 @@ describe('POST /form/recat/fasttrackPositive', () => {
       formObject: { something: 'alreadyOnTheForm' },
     })
     return request(app)
-      .post(`/fasttrackPositiveProgress/12345`)
-      .send({ positiveProgress: 'Yes', positiveProgressText: 'They have done very well' })
+      .post(`/fasttrackProgress/12345`)
+      .send({ progressText: 'They have done very well' })
       .expect(302)
       .expect('Location', `/form/recat/fasttrackConfirmation/12345`)
       .expect(() => {
@@ -618,8 +618,8 @@ describe('POST /form/recat/fasttrackPositive', () => {
       },
     })
     return request(app)
-      .post(`/fasttrackPositiveProgress/12345`)
-      .send({ positiveProgress: 'Yes', positiveProgressText: 'They have done very well' })
+      .post(`/fasttrackProgress/12345`)
+      .send({ progressText: 'They have done very well' })
       .expect(302)
       .expect('Location', `/form/recat/fasttrackConfirmation/12345`)
       .expect(() => {
