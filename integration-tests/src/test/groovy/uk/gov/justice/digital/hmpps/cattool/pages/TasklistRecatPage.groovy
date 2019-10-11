@@ -17,7 +17,9 @@ class TasklistRecatPage extends Page {
     headerLink { headerBlock.$('a') }
     logoutLink { $('a', href: '/logout') }
 
-    supervisorMessageButton { $('#supervisorMessageButton') }
+    supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
+    prisonerBackgroundButton { $('#prisonerBackgroundButton') }
+    fastrackEligibilityButton(required: false) { $('#fastrackEligibilityButton') }
     prisonerBackgroundButton { $('#prisonerBackgroundButton') }
     securityButton { $('#securityButton') }
     riskAssessmentButton { $('#riskAssessmentButton') }
