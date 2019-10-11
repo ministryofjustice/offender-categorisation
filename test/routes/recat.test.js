@@ -375,7 +375,7 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       violenceChange: true,
       bookingId: 12345,
       newProfile: { violence: { numberOfSeriousAssaults: 1, numberOfAssaults: 0, provisionalCategorisation: 'C' } },
-      oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 0, provisionalCategorisation: 'D' } },
+      oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 0, provisionalCategorisation: 'B' } },
     })
     return request(app)
       .get(`/riskProfileChangeDetail/12345`)
