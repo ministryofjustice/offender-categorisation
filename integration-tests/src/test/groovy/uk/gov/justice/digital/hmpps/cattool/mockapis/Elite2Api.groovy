@@ -907,6 +907,7 @@ class Elite2Api extends WireMockRule {
     if (!indeterminateSentence) {
       sentenceDetail.releaseDate = '2019-01-01'
       sentenceDetail.conditionalReleaseDate = '2020-02-02'
+      sentenceDetail.confirmedReleaseDate = LocalDate.now().plusYears(4).format('yyyy-MM-dd') // > 3
       sentenceDetail.automaticReleaseDate = '2020-06-11'
     }
 

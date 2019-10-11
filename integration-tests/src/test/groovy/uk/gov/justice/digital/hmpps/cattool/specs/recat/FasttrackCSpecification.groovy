@@ -42,11 +42,10 @@ class FasttrackCSpecification extends GebReportingSpec {
     when: ''
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-
-    go 'form/recat/fasttrackEligibility/12'
+    assert fastrackEligibilityButton.text() == 'Start'
+    fastrackEligibilityButton.click()
 
     then: ''
-
     at FasttrackEligibilityPage
 
     when: 'submitted without answers'
@@ -115,6 +114,7 @@ class FasttrackCSpecification extends GebReportingSpec {
     then: 'user is returned to the recat task list'
 
     at TasklistRecatPage
+    fastrackEligibilityButton.text() == 'Edit'
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
@@ -136,7 +136,7 @@ class FasttrackCSpecification extends GebReportingSpec {
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
 
-    go 'form/recat/fasttrackEligibility/12'
+    fastrackEligibilityButton.click()
 
     at FasttrackEligibilityPage
 
@@ -159,6 +159,7 @@ class FasttrackCSpecification extends GebReportingSpec {
     then: 'They are returned to the recat task list'
 
     at TasklistRecatPage
+    !fastrackEligibilityButton.displayed
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
@@ -172,7 +173,7 @@ class FasttrackCSpecification extends GebReportingSpec {
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
 
-    go 'form/recat/fasttrackEligibility/12'
+    fastrackEligibilityButton.click()
 
     at FasttrackEligibilityPage
 
@@ -201,11 +202,10 @@ class FasttrackCSpecification extends GebReportingSpec {
     then: 'They are returned to the recat task list'
 
     at TasklistRecatPage
+    !fastrackEligibilityButton.displayed
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.recat == [fasttrackEligibility: [earlyCatD:'No', increaseCategory:'No'], fasttrackRemain: [remainCatC:'No']]
   }
-
-
 }
