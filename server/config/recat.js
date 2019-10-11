@@ -214,23 +214,17 @@ module.exports = {
     nextPath: {
       decisions: {
         discriminator: 'remainCatC',
-        Yes: '/form/recat/fasttrackPositiveProgress/',
+        Yes: '/form/recat/fasttrackProgress/',
         No: '/form/recat/fasttrackCancelled/',
       },
     },
     validate: true,
   },
-  fasttrackPositiveProgress: {
+  fasttrackProgress: {
     fields: [
       {
-        positiveProgress: {
+        progressText: {
           responseType: 'requiredString',
-          validationMessage: 'Please enter yes or no',
-        },
-      },
-      {
-        positiveProgressText: {
-          responseType: 'requiredStringIf_positiveProgress_Yes',
           validationMessage: 'Please enter details',
         },
       },
