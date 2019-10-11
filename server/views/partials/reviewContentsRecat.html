@@ -114,23 +114,23 @@
   ]
 }) }}
 
-{% if data.recat.fasttrackPositiveProgress %}
+{% if data.recat.fasttrackProgress %}
 {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 print-full-width positiveProgressSummary',
+    classes: 'govuk-!-margin-bottom-9 print-full-width progressSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Positive progress" },
+        key: { classes: 'summary-list-title', text: "Progress" },
         value: { classes: 'no-print'},
         actions: { items: [{
-              href: '/form/recat/fasttrackPositiveProgress/' + data.details.bookingId,
+              href: '/form/recat/fasttrackProgress/' + data.details.bookingId,
               text: "Change",
-              visuallyHiddenText: "Positive progress"
+              visuallyHiddenText: "Progress"
             }] if showChangeLinks else []
         }
       },
       {
-        key: { text: "Are they making any positive progress?" },
-        value: { html: formatAnswer(data.recat.fasttrackPositiveProgress.positiveProgress, data.recat.fasttrackPositiveProgress.positiveProgressText) },
+        key: { text: "Progress information" },
+        value: { text: data.recat.fasttrackProgress.progressText },
         actions: { items: [] }
       }
     ]

@@ -34,7 +34,7 @@ href: backLink or "/"
   {% set riskAssessmentCompleted = data.recat.riskAssessment.otherRelevant %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
   {% set nextReviewDateCompleted = data.recat.nextReviewDate.date %}
-  {% set fasttrackCompleted = data.recat.fasttrackPositiveProgress.positiveProgress %}
+  {% set fasttrackCompleted = data.recat.fasttrackProgress.progress %}
   {% set openConditionsRequested = data.openConditionsRequested %}
   {% set decisionCompleted = data.recat.decision.category %}
   {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
