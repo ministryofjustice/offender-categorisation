@@ -372,11 +372,10 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       socNewlyReferred: true,
       escapeList: true,
       notifyRegionalCTLeadExtremism: true,
-      violenceNotifySafetyCTLead: true,
-      violenceAssaultsChange: true,
+      violenceChange: true,
       bookingId: 12345,
-      newProfile: { violence: { numberOfSeriousAssaults: 1, numberOfAssaults: 0 } },
-      oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 0 } },
+      newProfile: { violence: { numberOfSeriousAssaults: 1, numberOfAssaults: 0, provisionalCategorisation: 'C' } },
+      oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 0, provisionalCategorisation: 'D' } },
     })
     return request(app)
       .get(`/riskProfileChangeDetail/12345`)
@@ -400,7 +399,7 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
 
   test('Assaults wording', () => {
     offendersService.getRiskChangeForOffender.mockResolvedValue({
-      violenceAssaultsChange: true,
+      violenceChange: true,
       bookingId: 12345,
       newProfile: { violence: { numberOfSeriousAssaults: 3, numberOfAssaults: 1 } },
       oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 1 } },
@@ -426,7 +425,7 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
 
   test('Assaults wording', () => {
     offendersService.getRiskChangeForOffender.mockResolvedValue({
-      violenceAssaultsChange: true,
+      violenceChange: true,
       bookingId: 12345,
       newProfile: { violence: { numberOfSeriousAssaults: 3, numberOfAssaults: 1 } },
       oldProfile: { violence: { numberOfSeriousAssaults: 0, numberOfAssaults: 1 } },
@@ -452,7 +451,7 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
 
   test('Assaults wording - 1 serious assault', () => {
     offendersService.getRiskChangeForOffender.mockResolvedValue({
-      violenceAssaultsChange: true,
+      violenceChange: true,
       bookingId: 12345,
       newProfile: { violence: { numberOfSeriousAssaults: 1, numberOfAssaults: 2 } },
       oldProfile: { violence: { numberOfSeriousAssaults: 1, numberOfAssaults: 1 } },
@@ -477,7 +476,7 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
 
   test('No violence change', () => {
     offendersService.getRiskChangeForOffender.mockResolvedValue({
-      violenceAssaultsChange: false,
+      violenceChange: false,
       notifyRegionalCTLeadExtremism: true,
       bookingId: 12345,
     })

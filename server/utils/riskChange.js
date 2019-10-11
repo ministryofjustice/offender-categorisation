@@ -36,24 +36,16 @@ function nowRequiresNotifyRegionalCTLead(oldP, newP) {
   return !oldNotify && newNotify
 }
 
-function nowRequiresNotifySafetyCTLead(oldP, newP) {
-  const oldNotify = oldP.violence.notifySafetyCustodyLead
-  const newNotify = newP.violence.notifySafetyCustodyLead
-  return !oldNotify && newNotify
-}
-
 function isIncreasedRiskOfExtremism(oldP, newP) {
   const oldNotify = oldP.extremism.increasedRiskOfExtremism
   const newNotify = newP.extremism.increasedRiskOfExtremism
   return !oldNotify && newNotify
 }
 
-function changeInAssault(oldP, newP) {
-  const oldAssaults = oldP.violence.numberOfAssaults
-  const newAssaults = newP.violence.numberOfAssaults
-  const oldSeriousAssaults = oldP.violence.numberOfSeriousAssaults
-  const newSeriousAssaults = newP.violence.numberOfSeriousAssaults
-  return oldAssaults !== newAssaults || oldSeriousAssaults !== newSeriousAssaults
+function changeInViolenceCategoryRecommendation(oldP, newP) {
+  const oldCategory = oldP.violence.provisionalCategorisation
+  const newCategory = newP.violence.provisionalCategorisation
+  return oldCategory === 'C' && newCategory === 'B'
 }
 
 const assessRiskProfiles = (oldP, newP) => {
@@ -63,8 +55,7 @@ const assessRiskProfiles = (oldP, newP) => {
   const escapeRisk = isNewEscapeRisk(oldP, newP)
   const increasedRiskOfExtremism = isIncreasedRiskOfExtremism(oldP, newP)
   const notifyRegionalCTLeadExtremism = nowRequiresNotifyRegionalCTLead(oldP, newP)
-  const violenceNotifySafetyCTLead = nowRequiresNotifySafetyCTLead(oldP, newP)
-  const violenceAssaultsChange = changeInAssault(oldP, newP)
+  const violenceChange = changeInViolenceCategoryRecommendation(oldP, newP)
   const socNewlyReferred = isNewlyReferredToSecurity(oldP, newP)
   return {
     escapeListAlert,
@@ -73,8 +64,7 @@ const assessRiskProfiles = (oldP, newP) => {
     escapeRisk,
     increasedRiskOfExtremism,
     notifyRegionalCTLeadExtremism,
-    violenceNotifySafetyCTLead,
-    violenceAssaultsChange,
+    violenceChange,
     socNewlyReferred,
     alertRequired:
       escapeListAlert ||
@@ -83,8 +73,7 @@ const assessRiskProfiles = (oldP, newP) => {
       escapeList ||
       increasedRiskOfExtremism ||
       notifyRegionalCTLeadExtremism ||
-      violenceNotifySafetyCTLead ||
-      violenceAssaultsChange ||
+      violenceChange ||
       socNewlyReferred,
   }
 }
@@ -103,5 +92,4 @@ function alertCompare(a, b) {
 
 module.exports = {
   assessRiskProfiles,
-  isNewlyReferredToSecurity,
 }
