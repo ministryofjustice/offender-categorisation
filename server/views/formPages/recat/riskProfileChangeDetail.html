@@ -84,10 +84,9 @@ attributes: {  'id': 'escapeWarning'},
 
 {% endif %}
 
-{% if data.violenceAssaultsChange  or data.violenceNotifySafetyCTLead %}
+{% if data.violenceChange %}
 <h2 id="violenceSection" class="govuk-heading-m  govuk-!-padding-top-4">Safety and good order</h2>
 
-{% if data.violenceAssaultsChange %}
      {% set totalNewAssaults =  (data.newProfile.violence.numberOfSeriousAssaults + data.newProfile.violence.numberOfAssaults)%}
     {% set warningText %}
       They have been reported as the perpetrator of {{ totalNewAssaults }} assaults in total during this sentence
@@ -104,17 +103,14 @@ attributes: {  'id': 'escapeWarning'},
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
-{% endif %}
-{% if data.violenceNotifySafetyCTLead %}
+
     {{ govukWarningText({
       text: 'Notify your safer custody lead about this prisoner',
       attributes: {  'id': 'notifyCTViolenceWarning'},
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides"
     }) }}
- {% endif %}
 
-{% if data.violenceAssaultsChange %}
 <details class="govuk-details" data-module="govuk-details">
   <summary class="govuk-details__summary">
     <span class="govuk-details__summary-text">
@@ -144,7 +140,6 @@ attributes: {  'id': 'escapeWarning'},
     }) }}
   </div>
 </details>
-{% endif %}
 
 {% endif %}
 
