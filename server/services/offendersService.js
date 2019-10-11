@@ -97,7 +97,14 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const filterIS91s = o => {
         const offence = offenceMap.get(o.bookingId)
-        return !offence || offence.offenceCode !== 'IA99000-001N' || offence.statuteCode !== 'ZZ'
+        if (!offence) {
+          return true
+        }
+        if (offence.offenceCode === 'IA99000-001N' && offence.statuteCode === 'ZZ') {
+          logger.info(`Filtered out IS91 prisoner: bookingId = ${offence.bookingId}`)
+          return false
+        }
+        return true
       }
 
       const decoratedResults = await Promise.all(
