@@ -267,12 +267,19 @@ module.exports = function Index({
       const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
       const nextReviewDate = extractNextReviewDate(details)
-      const catType = await offendersService.isRecat(res.locals, bookingId)
+      const requiredCatType = await offendersService.isRecat(res.locals, bookingId)
       const securityReferral = await formService.getSecurityReferral(details.offenderNo, transactionalDbClient)
       const isSecurityReferred = securityReferral.status === 'NEW'
 
       res.render('pages/landing', {
-        data: { catType, nextReviewDate, isSecurityReferred, details, status: categorisationRecord.status },
+        data: {
+          requiredCatType,
+          inProgressCatType: categorisationRecord.catType,
+          nextReviewDate,
+          isSecurityReferred,
+          details,
+          status: categorisationRecord.status,
+        },
       })
     })
   )
