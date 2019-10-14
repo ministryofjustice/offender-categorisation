@@ -99,9 +99,38 @@ class LandingPageSpecification extends GebReportingSpec {
     warning.text() contains 'This prisoner is Cat A. They cannot be categorised here.'
   }
 
-  def "A recategoriser user sees a warning for being in progress"() {
+  def "A recategoriser user sees a continue button when a recat is in progress"() {
 
     db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ');
+
+    given: 'A recategoriser is logged in'
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+
+    when: 'The user arrives at the landing page for an already-started cat'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'A')
+    elite2Api.stubGetCategory(12, 'C')
+    go '/12'
+
+    then: 'The page contains a recat continue button'
+    at LandingPage
+    editButton.displayed
+    !recatButton.displayed
+    !warning.displayed
+
+    when: 'It is clicked'
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    elite2Api.stubUpdateNextReviewDate()
+    editButton.click()
+
+    then: 'We are sent to the recat tasklist'
+    at TasklistRecatPage
+    currentUrl.contains '/tasklistRecat/12'
+  }
+
+  def "A recategoriser user sees a warning for initial cat being in progress"() {
+
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ');
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
@@ -115,7 +144,8 @@ class LandingPageSpecification extends GebReportingSpec {
     then: 'The page contains a warning'
     at LandingPage
     !recatButton.displayed
-    warning.text() contains "This prisoner's categorisation or review is currently in progress"
+    !editButton.displayed
+    warning.text() contains "This prisoner has an initial categorisation in progress"
   }
 
   def "A recategoriser user sees a warning for awaiting approval"() {
@@ -135,6 +165,7 @@ class LandingPageSpecification extends GebReportingSpec {
     at LandingPage
     !recatButton.displayed
     warning.text() contains "This prisoner is awaiting supervisor approval"
+    viewButton.displayed
   }
 
   def "A security user can flag a prisoner for later referral"() {
@@ -363,9 +394,39 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.verifySetInactive() == null
   }
 
-  def "A categoriser user sees a warning for being in progress"() {
+  def "A categoriser user sees a continue button when an initial cat is in progress"() {
 
     db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ');
+
+    given: 'A categoriser is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'The user arrives at the landing page for an already-started cat'
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetCategory(12, 'U')
+    go '/12'
+
+    then: 'The page contains a continue button'
+    at LandingPage
+    !initialButton.displayed
+    editButton.displayed
+    !warning.displayed
+
+    when: 'It is clicked'
+    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    elite2Api.stubSetInactive()
+    editButton.click()
+
+    then: 'We are sent to the tasklist'
+    at TasklistPage
+    currentUrl.contains '/tasklist/12'
+  }
+
+  def "A categoriser user sees a warning when a recat is in progress"() {
+
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ');
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
@@ -380,7 +441,8 @@ class LandingPageSpecification extends GebReportingSpec {
     then: 'The page contains a warning'
     at LandingPage
     !initialButton.displayed
-    warning.text() contains "This prisoner's categorisation or review is currently in progress"
+    !editButton.displayed
+    warning.text() contains "This prisoner has a categorisation review in progress"
   }
 
   def "A categoriser user sees a warning for awaiting approval"() {
@@ -401,5 +463,6 @@ class LandingPageSpecification extends GebReportingSpec {
     at LandingPage
     !initialButton.displayed
     warning.text() contains "This prisoner is awaiting supervisor approval"
+    viewButton.displayed
   }
 }
