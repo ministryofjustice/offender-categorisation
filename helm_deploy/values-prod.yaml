@@ -21,7 +21,7 @@ env:
   NOMIS_AUTH_URL: https://gateway.prod.nomis-api.service.hmpps.dsd.io/auth
   ELITE2API_ENDPOINT_URL: https://gateway.prod.nomis-api.service.hmpps.dsd.io/elite2api/
   RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
-  DPS_URL: https://notm.service.hmpps.dsd.io/
+  DPS_URL: https://digital.prison.service.justice.gov.uk/
 
 whitelist:
   office: "217.33.148.210/32"
