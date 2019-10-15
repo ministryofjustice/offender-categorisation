@@ -32,9 +32,9 @@ If running locally against elasticache you will also need to provide the followi
 REDIS_AUTH_TOKEN=<from the namespace secret>
 NODE_TLS_REJECT_UNAUTHORIZED=0 
 
-`docker run redis`
+`docker run -p6379:6379 redis`
 
-### Runing the app for development**
+### Running the app for development**
 
 #### Build assets
 `npm run build`
