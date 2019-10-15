@@ -288,19 +288,27 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           const offenderCategorisation = offenderCategorisationsFromElite.find(
             record => record.offenderNo === o.offenderNo
           )
-          return {
-            ...o,
-            offenderNo: offenderDetail.offenderNo,
-            bookingId: offenderCategorisation.bookingId,
-            displayName:
-              offenderDetail.lastName &&
-              `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
-            displayNextReviewDate: dateConverter(offenderCategorisation.nextReviewDate),
-            displayCreatedDate: dateConverter(o.raisedDate),
+
+          // it is possible that the offender now has a new booking without a categorisation (since the alert was recorded)
+          if (offenderCategorisation) {
+            return {
+              ...o,
+              offenderNo: offenderDetail.offenderNo,
+              bookingId: offenderCategorisation.bookingId,
+              displayName:
+                offenderDetail.lastName &&
+                `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+              displayNextReviewDate: dateConverter(offenderCategorisation.nextReviewDate),
+              displayCreatedDate: dateConverter(o.raisedDate),
+            }
           }
+          logger.warn(`Found risk change alert without a categorisation for offender no: ${offenderDetail.offenderNo}`)
+          return null
         })
 
-        return decoratedResults.sort((a, b) => sortByDateTime(a.displayCreatedDate, b.displayCreatedDate))
+        return decoratedResults
+          .filter(o => o) // ignore records without an associated cat
+          .sort((a, b) => sortByDateTime(a.displayCreatedDate, b.displayCreatedDate))
       }
       return []
     } catch (error) {

@@ -36,6 +36,7 @@ const formService = {
   getSecurityReferredOffenders: jest.fn(),
   getCategorisedOffenders: jest.fn(),
   updateStatusForOutstandingRiskChange: jest.fn(),
+  getRiskChanges: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -1640,5 +1641,99 @@ describe('handleRiskChangeDecision', () => {
       status: RiskChangeStatus.REVIEW_NOT_REQUIRED.name,
       transactionalClient: mockTransactionalClient,
     })
+  })
+})
+
+describe('getRiskChanges', () => {
+  test('Should filter out any alerts without a categorisation', async () => {
+    const riskAlerts = [
+      {
+        id: 1,
+        offenderNo: 'G12345',
+        userId: 'me',
+        status: RiskChangeStatus.NEW.name,
+        raisedDate: '2022-05-05',
+      },
+      {
+        id: 2,
+        offenderNo: 'H12345',
+        userId: 'me',
+        status: RiskChangeStatus.NEW.name,
+        raisedDate: '2022-05-05',
+      },
+      {
+        id: 3,
+        offenderNo: 'J12345',
+        userId: 'me',
+        status: RiskChangeStatus.NEW.name,
+        raisedDate: '2022-05-05',
+      },
+    ]
+
+    const offenderDetailList = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 22,
+        status: Status.UNCATEGORISED.name,
+      },
+      {
+        offenderNo: 'H12345',
+        firstName: 'Danny',
+        lastName: 'Doyle',
+        bookingId: 21,
+        status: Status.UNCATEGORISED.name,
+      },
+      {
+        offenderNo: 'J12345',
+        firstName: 'Alan',
+        lastName: 'Allen',
+        bookingId: 20,
+        status: Status.UNCATEGORISED.name,
+      },
+    ]
+
+    const latestCategorisations = [
+      { offenderNo: 'H12345', bookingId: 21, assessStatus: 'A', nextReviewDate: '2020-05-15' },
+      { offenderNo: 'G12345', bookingId: 22, assessStatus: 'A', nextReviewDate: '2020-05-15' },
+    ]
+
+    formService.getRiskChanges.mockReturnValue(riskAlerts)
+    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(latestCategorisations)
+    nomisClient.getOffenderDetailList.mockReturnValue(offenderDetailList)
+
+    const expected = [
+      {
+        id: 1,
+        offenderNo: 'G12345',
+        displayName: 'Brown, Jane',
+        bookingId: 22,
+        displayCreatedDate: '05/05/2022',
+        displayNextReviewDate: '15/05/2020',
+        status: 'NEW',
+        userId: 'me',
+      },
+      {
+        id: 2,
+        offenderNo: 'H12345',
+        displayName: 'Doyle, Danny',
+        bookingId: 21,
+        displayCreatedDate: '05/05/2022',
+        displayNextReviewDate: '15/05/2020',
+        status: 'NEW',
+        userId: 'me',
+      },
+    ]
+
+    const result = await service.getRiskChanges(context, mockTransactionalClient)
+
+    expect(result).toMatchObject(expected)
+  })
+
+  test('No results from elite', async () => {
+    nomisClient.getUncategorisedOffenders.mockReturnValue([])
+    const result = await service.getUnapprovedOffenders(context, 'LEI', mockTransactionalClient)
+    expect(result).toHaveLength(0)
   })
 })
