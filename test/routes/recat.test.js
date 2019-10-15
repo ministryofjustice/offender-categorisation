@@ -383,7 +383,7 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(
-          'This person needs to be referred to security. However, they cannot be referred until you start a category review'
+          'This person needs to be considered by security. Please start a review and refer this person to security.'
         )
         expect(res.text).toContain('Notify your safer custody lead about this prisoner')
         expect(res.text).toContain('Notify your regional CT leader that you have this person in custody')
