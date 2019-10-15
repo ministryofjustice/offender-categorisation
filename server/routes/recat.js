@@ -106,21 +106,6 @@ module.exports = function Index({
   )
 
   router.get(
-    '/nextReviewDate/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const { bookingId } = req.params
-      const { nextDateChoice } = req.query
-      const form = 'nextReviewDate'
-      const section = 'recat'
-      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      res.render(
-        `formPages/${section}/${form}`,
-        R.assocPath(['data', 'recat', 'nextReviewDate', 'date'], calculateNextReviewDate(nextDateChoice), result)
-      )
-    })
-  )
-
-  router.get(
     '/riskProfileChangeDetail/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
@@ -443,32 +428,6 @@ module.exports = function Index({
       } else {
         throw new Error('category has not been specified')
       }
-    })
-  )
-
-  router.post(
-    '/nextReviewDateQuestion/:bookingId',
-    asyncMiddleware(async (req, res) => {
-      const { bookingId } = req.params
-      const section = 'recat'
-      const form = 'nextReviewDateQuestion'
-      const formPageConfig = formConfig[section][form]
-      const userInput = clearConditionalFields(req.body)
-
-      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
-      if (!valid) {
-        return
-      }
-
-      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      res.redirect(`${nextPath}${bookingId}?nextDateChoice=${userInput.nextDateChoice}`)
-    })
-  )
-
-  router.post(
-    '/nextReviewDateEditing/:bookingId',
-    asyncMiddleware(async (req, res) => {
-      res.redirect(`/tasklistRecat/${req.params.bookingId}`)
     })
   )
 

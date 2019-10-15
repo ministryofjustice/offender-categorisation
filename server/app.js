@@ -26,6 +26,7 @@ const nunjucksSetup = require('./utils/nunjucksSetup')
 const config = require('../server/config')
 const createOpenConditionsRouter = require('./routes/openConditions')
 const createRecatRouter = require('./routes/recat')
+const createNextReviewDateRouter = require('./routes/nextReviewDate')
 
 const log = bunyanRequestLogger({ name: 'Cat tool http', serializers: catToolSerialisers })
 const { authenticationMiddleware } = auth
@@ -270,6 +271,14 @@ module.exports = function createApp({
     authenticationMiddleware,
   })
   app.use('/form/recat/', recatRouter)
+
+  const nextReviewDateRouter = createNextReviewDateRouter({
+    formService,
+    offendersService,
+    userService,
+    authenticationMiddleware,
+  })
+  app.use('/form/nextReviewDate/', nextReviewDateRouter)
 
   const formRouter = createFormRouter({
     formService,

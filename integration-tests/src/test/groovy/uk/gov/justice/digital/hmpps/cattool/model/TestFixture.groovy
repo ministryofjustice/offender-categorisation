@@ -28,7 +28,8 @@ class TestFixture {
     furtherCharges  : [furtherCharges: "Yes", furtherChargesText: "some charges"],
     violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
     escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: "evidence details", escapeCatB: "Yes", escapeCatBText: "cat b details"],
-    extremismRating : [previousTerrorismOffences: "Yes"]
+    extremismRating : [previousTerrorismOffences: "Yes"],
+    nextReviewDate  : [date: "14/12/2019"]
   ]
 
   public static final defaultRatingsC = [
@@ -37,15 +38,16 @@ class TestFixture {
     furtherCharges  : [furtherCharges: "No"],
     violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
     escapeRating    : [escapeOtherEvidence: "No"],
-    extremismRating : [previousTerrorismOffences: "No"]
+    extremismRating : [previousTerrorismOffences: "No"],
+    nextReviewDate  : [date: "14/12/2019"]
   ]
 
   public static final defaultRecat = [
-    decision      : [category: "C"],
-    securityInput : [securityInputNeeded: "No"],
-    nextReviewDate: [date: "14/12/2019"],
+    decision          : [category: "C"],
+    securityInput     : [securityInputNeeded: "No"],
+    nextReviewDate    : [date: "14/12/2019"],
     prisonerBackground: [offenceDetails: "offence Details text"],
-    riskAssessment: [
+    riskAssessment    : [
       lowerCategory    : "lower security category text",
       otherRelevant    : "Yes",
       higherCategory   : "higher security category text",

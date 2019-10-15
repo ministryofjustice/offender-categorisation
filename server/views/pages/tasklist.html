@@ -35,11 +35,12 @@ href: backLink or "/"
   {% set escapeRatingCompleted = data.ratings.escapeRating.escapeOtherEvidence %}
   {% set extremismRatingCompleted = data.ratings.extremismRating.previousTerrorismOffences %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
+  {% set nextReviewDateCompleted = data.ratings.nextReviewDate.date %}
   {% set openConditionsRequested = data.openConditionsRequested %}
   {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
      and offendingHistoryCompleted and furtherChargesCompleted and securityInputCompleted and not locked
-     and violenceRatingCompleted and escapeRatingCompleted
-     and extremismRatingCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
+     and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted
+     and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
   <div class="govuk-grid-row govuk-!-width-two-thirds">
     <div class="govuk-grid-column-full">
@@ -150,6 +151,21 @@ href: backLink or "/"
               <div class="govuk-!-margin-top-2">{% if openConditionsCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
             {% endif %}
+
+            <li class="app-task-list__item" id="nextReviewDateSection">
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if nextReviewDateCompleted else buttonClassesDefault %}
+              {{ govukButton({
+                text: "Edit" if nextReviewDateCompleted else "Start",
+                href: "/form/nextReviewDate/nextReviewDateEditing/" + data.details.bookingId if nextReviewDateCompleted else
+                      "/form/nextReviewDate/nextReviewDateQuestion/" + data.details.bookingId,
+                classes: buttonClasses,
+                attributes: { 'id': 'nextReviewDateButton' }
+              }) }}
+              <div class="govuk-heading-m">Set next category review date</div>
+              <div class="govuk-!-margin-top-2">{% if nextReviewDateCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+            </li>
+
+
             <li id="review" class="app-task-list__item">
               {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
                 {{ govukButton({
