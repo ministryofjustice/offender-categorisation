@@ -70,7 +70,8 @@ class TasklistSpecification extends GebReportingSpec {
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
+        extremismRating : [previousTerrorismOffences: "Yes"],
+        nextReviewDate: [date: "14/12/2019"]
       ],
       openConditions: [riskLevels: [likelyToAbscond: "Yes"]]]))
     fixture.gotoTasklist()
@@ -90,7 +91,8 @@ class TasklistSpecification extends GebReportingSpec {
         securityInput   : [securityInputNeeded: "No"],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
-        extremismRating : [previousTerrorismOffences: "Yes"]
+        extremismRating : [previousTerrorismOffences: "Yes"],
+        nextReviewDate: [date: "14/12/2019"]
       ], openConditionsRequested: true]))
     fixture.gotoTasklist()
     at(new TasklistPage(bookingId: '12'))
