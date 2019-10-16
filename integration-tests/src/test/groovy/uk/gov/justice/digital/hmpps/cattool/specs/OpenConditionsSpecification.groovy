@@ -289,7 +289,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'the review page is displayed and Data is stored correctly. Data is persisted and displayed - regardless of the decision to end the open conditions flow'
     at ReviewPage
-    changeLinks.size() == 9
+    changeLinks.size() == 10
 
     offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
     furtherChargesSummary*.text() == ['Yes\nsome charges', '']
@@ -297,6 +297,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes\nevidence details', 'Yes\ncat b details']
     extremismRatingSummary*.text() == ['Yes', 'Yes']
     securityInputSummary*.text() == ['No', 'No', 'No']
+    nextReviewDateSummary*.text() == ['Saturday 14th December 2019']
 
     riskOfHarm*.text() == ['', 'Yes', 'Yes\nharmManagedText details']
 

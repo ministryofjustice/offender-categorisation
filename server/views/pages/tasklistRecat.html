@@ -153,8 +153,8 @@ href: backLink or "/"
               {% set buttonClasses = buttonClassesDefault + " grey-button" if nextReviewDateCompleted else buttonClassesDefault %}
               {{ govukButton({
                 text: "Edit" if nextReviewDateCompleted else "Start",
-                href: "/form/recat/nextReviewDateEditing/" + data.details.bookingId if nextReviewDateCompleted else
-                      "/form/recat/nextReviewDateQuestion/" + data.details.bookingId,
+                href: "/form/nextReviewDate/nextReviewDateEditing/" + data.details.bookingId if nextReviewDateCompleted else
+                      "/form/nextReviewDate/nextReviewDateQuestion/" + data.details.bookingId,
                 classes: buttonClasses,
                 attributes:
                   { 'id': 'nextReviewDateButton' }

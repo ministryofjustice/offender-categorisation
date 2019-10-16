@@ -49,7 +49,8 @@ class ReviewSpecification extends GebReportingSpec {
         securityBack    : [catB: 'Yes'],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes", seriousThreatText: "Here are the serious threat details"],
         escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'Yes', escapeCatBText: 'Reason why Cat B'],
-        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text']
+        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text'],
+        nextReviewDate  : [date: "14/12/2019"]
       ],
       security: [
         review: [
@@ -87,13 +88,14 @@ class ReviewSpecification extends GebReportingSpec {
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewPage
     headerValue*.text() == fixture.FULL_HEADER
-    changeLinks.size() == 9
+    changeLinks.size() == 10
     offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
     furtherChargesSummary*.text() == ['Yes\ncharges text', 'No']
     violenceRatingSummary*.text() == ['5', '2', 'No', 'Yes\nHere are the serious threat details']
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes\nEscape Other Evidence Text', 'Yes\nReason why Cat B']
     extremismRatingSummary*.text() == ['Yes', 'Yes\nPrevious Terrorism Offences Text']
     securityInputSummary*.text() == ['No', 'Yes', 'No', 'Here is the Security information held on this prisoner', 'Yes']
+    nextReviewDateSummary*.text() == ['Saturday 14th December 2019']
 
     changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
@@ -130,7 +132,8 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
         securityInput   : [securityInputNeeded: 'No'],
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
         escapeRating    : [escapeOtherEvidence: "Yes", escapeOtherEvidenceText: 'Escape Other Evidence Text', escapeCatB: 'No'],
-        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text']
+        extremismRating : [previousTerrorismOffences: "Yes", previousTerrorismOffencesText: 'Previous Terrorism Offences Text'],
+        nextReviewDate  : [date: "14/12/2019"]
       ]
     ]))
     when: 'The review page is displayed for a fully completed set of ratings'
@@ -146,7 +149,7 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewPage
-    changeLinks.size() == 8
+    changeLinks.size() == 9
     changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
   }

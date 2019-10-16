@@ -1,10 +1,10 @@
-package uk.gov.justice.digital.hmpps.cattool.pages.recat
+package uk.gov.justice.digital.hmpps.cattool.pages
 
 import geb.Page
 
 class NextReviewDateEditingPage extends Page {
 
-  static url = '/form/recat/nextReviewDateEditing'
+  static url = '/form/nextReviewDate/nextReviewDateEditing'
 
   static at = {
     headingText == 'Check the date they will be reviewed by'

@@ -24,6 +24,8 @@ class TasklistPage extends Page {
     furtherChargesButton { $('#furtherChargesButton') }
     securityButton { $('#securityButton') }
     openConditionsButton(required: false) { $('#openConditionsButton') }
+    nextReviewDateButton { $('#nextReviewDateButton') }
+
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }
     violenceButton { $('#violenceButton') }
