@@ -1,4 +1,4 @@
-{% extends "../../formPages/formTemplate.html" %}
+{% extends "../formTemplate.html" %}
 {% from "input/macro.njk" import govukInput %}
 
 {% block formItems %}
@@ -21,7 +21,7 @@
     text: "For example, 2/11/2021"
   },
   classes: "dateInputWidth",
-  value: data.recat.nextReviewDate.date
+  value: date
 }) }}
 
 {% endblock %}

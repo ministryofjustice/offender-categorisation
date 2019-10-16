@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cattool.specs.recat
+package uk.gov.justice.digital.hmpps.cattool.specs.ratings
 
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
+import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDateEditingPage
 import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDatePage
 import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDateQuestionPage
@@ -39,8 +39,8 @@ class NextReviewDateSpecification extends GebReportingSpec {
 
   def "The page saves details correctly - 6 months"() {
     when: 'I go to the Next Review Date Question page'
-    fixture.gotoTasklistRecat(false)
-    at TasklistRecatPage
+    fixture.gotoTasklist(false)
+    at TasklistPage
     nextReviewDateButton.click()
 
     then: 'The page is displayed'
@@ -57,7 +57,7 @@ class NextReviewDateSpecification extends GebReportingSpec {
 
     when: 'Populated date is used, saved and accessed'
     submitButton.click()
-    at TasklistRecatPage
+    at TasklistPage
     nextReviewDateButton.click()
     at NextReviewDateEditingPage
 
@@ -77,16 +77,16 @@ class NextReviewDateSpecification extends GebReportingSpec {
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
-    data.cat_type.value == ['RECAT']
-    response.recat == [nextReviewDate: [date: SIX_MONTHS_AHEAD]]
-    data.user_id == ['RECATEGORISER_USER']
-    data.assigned_user_id == ['RECATEGORISER_USER']
+    data.cat_type.value == ['INITIAL']
+    response.ratings == [nextReviewDate: [date: SIX_MONTHS_AHEAD]]
+    data.user_id == ['CATEGORISER_USER']
+    data.assigned_user_id == ['CATEGORISER_USER']
   }
 
   def "Validation"() {
     when: 'I go to the Next Review Date Question page'
-    fixture.gotoTasklistRecat(false)
-    at TasklistRecatPage
+    fixture.gotoTasklist(false)
+    at TasklistPage
     nextReviewDateButton.click()
 
     then: 'The page is displayed'
