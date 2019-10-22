@@ -57,6 +57,7 @@ beforeEach(() => {
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getRecategoriseOffenders.mockResolvedValue({})
+  offendersService.getOptionalAssessmentAgencyDescription = jest.fn()
   formService.getRiskChangeCount.mockResolvedValue(0)
   formService.getCategorisationRecord.mockResolvedValue({})
   formService.getSecurityReferral.mockResolvedValue({})
@@ -74,6 +75,7 @@ afterEach(() => {
   offendersService.getCatAInformation.mockReset()
   offendersService.getOffenceHistory.mockReset()
   offendersService.getRecategoriseOffenders.mockReset()
+  offendersService.getOptionalAssessmentAgencyDescription.mockReset()
   formService.getRiskChangeCount.mockReset()
   userService.getUser.mockReset()
   userService.getUserByUserId.mockReset()
@@ -439,22 +441,16 @@ describe('Landing page', () => {
     })
     offendersService.isRecat.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
-      prisonId: 'BPI',
+      prisonId: 'ANI',
       userId: 'ANOTHER',
       status: 'NEW',
       raisedDate: '2019-10-17T11:34:35.740Z',
     })
     userService.getUserByUserId.mockResolvedValue({
       displayNameAlternative: 'James Brown',
-      activeCaseLoad: {
-        caseLoadId: 'BPI',
-        description: 'Blackpool (HMP)',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-      },
       roles: { security: true },
     })
+    offendersService.getOptionalAssessmentAgencyDescription.mockResolvedValue('Blackpool (HMP)')
 
     return request(app)
       .get('/12345')
@@ -464,6 +460,8 @@ describe('Landing page', () => {
         expect(res.text).toContain('Referred by James Brown of Blackpool (HMP)')
         expect(res.text).not.toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledTimes(1)
+        expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledWith(expect.anything(), 'ANI')
         expect(userService.getUserByUserId).toBeCalledTimes(1)
       })
   })
@@ -512,6 +510,7 @@ describe('Landing page', () => {
         expect(res.text).toContain('Referred by James Brown of Leeds (HMP)')
         expect(res.text).not.toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledTimes(0)
         expect(userService.getUserByUserId).toBeCalledTimes(1)
       })
   })
