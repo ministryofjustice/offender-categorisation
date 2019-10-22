@@ -219,7 +219,7 @@ module.exports = function Index({
       const prisonDescription =
         securityReferral.prisonId === context.user.activeCaseLoad.caseLoadId
           ? context.user.activeCaseLoad.description
-          : referrerUser.activeCaseLoad.description
+          : await offendersService.getOptionalAssessmentAgencyDescription(context, securityReferral.prisonId)
       return {
         securityReferral,
         isSecurityReferred,
