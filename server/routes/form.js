@@ -212,8 +212,8 @@ module.exports = function Index({
     const isSecurityReferred = securityReferral.status === 'REFERRED' // we are after cases that were flagged, THEN referred to security, when the review was started
 
     if (isSecurityReferred) {
-      const referrerCurrentUser = securityReferral.userId === context.user.username
-      const referrerUser = !referrerCurrentUser
+      const isReferrerCurrentUser = securityReferral.userId === context.user.username
+      const referrerUser = !isReferrerCurrentUser
         ? await userService.getUserByUserId(context, securityReferral.userId)
         : context.user
       const prisonDescription =
