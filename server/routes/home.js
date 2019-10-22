@@ -300,8 +300,8 @@ module.exports = function Index({
     const isSecurityReferred = securityReferral.status === 'NEW'
 
     if (isSecurityReferred) {
-      const referrerCurrentUser = securityReferral.userId === context.user.username
-      const referrerUser = !referrerCurrentUser
+      const isReferrerCurrentUser = securityReferral.userId === context.user.username
+      const referrerUser = !isReferrerCurrentUser
         ? await userService.getUserByUserId(context, securityReferral.userId)
         : context.user
       const prisonDescription =
