@@ -1,6 +1,7 @@
 const express = require('express')
 const flash = require('connect-flash')
 const R = require('ramda')
+const moment = require('moment')
 const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
@@ -189,6 +190,49 @@ module.exports = function Index({
       }
     })
   )
+
+  router.get(
+    '/security/review/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'security'
+      const result = await buildFormData(res, req, section, 'review', bookingId, transactionalDbClient)
+      const securityReferral = await getSecurityReferral(
+        res.locals,
+        result.data.details.offenderNo,
+        transactionalDbClient
+      )
+      res.render(`formPages/security/review`, { ...result, securityReferred: { ...securityReferral } })
+    })
+  )
+
+  const getSecurityReferral = async (context, offenderNo, transactionalDbClient) => {
+    const securityReferral = await formService.getSecurityReferral(offenderNo, transactionalDbClient)
+
+    const isSecurityReferred = securityReferral.status === 'REFERRED' // we are after cases that were flagged, THEN referred to security, when the review was started
+
+    if (isSecurityReferred) {
+      const referrerCurrentUser = securityReferral.userId === context.user.username
+      const referrerUser = !referrerCurrentUser
+        ? await userService.getUserByUserId(context, securityReferral.userId)
+        : context.user
+      const prisonDescription =
+        securityReferral.prisonId === context.user.activeCaseLoad.caseLoadId
+          ? context.user.activeCaseLoad.description
+          : referrerUser.activeCaseLoad.description
+      return {
+        securityReferral,
+        isSecurityReferred,
+        referrerUser,
+        prisonDescription,
+        referredDate: securityReferral.raisedDate && moment(securityReferral.raisedDate).format('DD/MM/YYYY'),
+      }
+    }
+
+    return {
+      isSecurityReferred,
+    }
+  }
 
   router.get(
     '/:section/:form/:bookingId',

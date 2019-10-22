@@ -205,6 +205,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     then: 'A message is shown instead of a button'
     driver.pageSource =~ /This person will automatically be referred to security at next category review/
+    driver.pageSource.contains('Referred by Another User of LEEDS (HMP) on ' +  LocalDate.now().format('dd/MM/yyyy'))
 
     when: 'A re-categoriser starts a recat'
     fixture.logout()
@@ -232,7 +233,12 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(SECURITY_USER)
     at SecurityHomePage
     startButtons[0].click()
+
+    then: 'the security review page displays the referral details'
     at new SecurityReviewPage(bookingId: '12')
+    driver.pageSource.contains('This individual was identified as needing a security review, as part of their categorisation, by Another User of LEEDS (HMP) on ' +  LocalDate.now().format('dd/MM/yyyy'))
+
+    when: 'the security review page is saved'
     securityText << 'security info'
     saveButton.click()
 

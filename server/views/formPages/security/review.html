@@ -36,9 +36,14 @@
   }) }}
   <p>The case has been referred to Security because:</p>
   <p class="forms-comments-text">{{ data.ratings.securityInput.securityInputNeededText or data.recat.securityInput.securityInputNeededText }}</p>
+{% elif status == Status.SECURITY_FLAGGED.name %}
+  {{ govukPanel({
+  titleText: "Referred for review"
+  }) }}
+  <p>This individual was identified as needing a security review, as part of their categorisation, by {{ securityReferred.referrerUser.displayNameAlternative }}{% if securityReferred.prisonDescription %} of {{ securityReferred.prisonDescription}}{% endif %} on {{ securityReferred.referredDate }}.</p>
 {% endif %}
 
-<form method="post">
+  <form method="post">
   <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
 
   {% block formItems %}
