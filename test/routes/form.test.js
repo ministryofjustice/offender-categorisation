@@ -202,6 +202,7 @@ describe('GET /security/review', () => {
         expect(res.text).not.toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(userService.getUserByUserId).toBeCalledTimes(0)
+        expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledTimes(0)
       })
   })
 
@@ -224,22 +225,16 @@ describe('GET /security/review', () => {
     })
     offendersService.isRecat.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
-      prisonId: 'BPI',
+      prisonId: 'ANI',
       userId: 'ANOTHER',
       status: 'REFERRED',
       raisedDate: '2019-10-17T11:34:35.740Z',
     })
     userService.getUserByUserId.mockResolvedValue({
       displayNameAlternative: 'James Brown',
-      activeCaseLoad: {
-        caseLoadId: 'ANI',
-        description: 'Another (HMP)',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-      },
       roles: { security: true },
     })
+    offendersService.getOptionalAssessmentAgencyDescription.mockResolvedValue('Another (HMP)')
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'SECURITY_FLAGGED',
       bookingId: 12345,
@@ -256,6 +251,8 @@ describe('GET /security/review', () => {
         )
         expect(res.text).not.toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledWith(expect.anything(), 'ANI')
+        expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledTimes(1)
         expect(userService.getUserByUserId).toBeCalledTimes(1)
       })
   })
@@ -311,6 +308,7 @@ describe('GET /security/review', () => {
         )
         expect(res.text).not.toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledTimes(0)
         expect(userService.getUserByUserId).toBeCalledTimes(1)
       })
   })
