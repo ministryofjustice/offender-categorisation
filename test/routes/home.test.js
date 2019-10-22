@@ -27,6 +27,7 @@ const offendersService = {
 
 const userService = {
   getUser: jest.fn(),
+  getUserByUserId: jest.fn(),
 }
 
 const statsService = {}
@@ -58,6 +59,7 @@ beforeEach(() => {
   offendersService.getRecategoriseOffenders.mockResolvedValue({})
   formService.getRiskChangeCount.mockResolvedValue(0)
   formService.getCategorisationRecord.mockResolvedValue({})
+  formService.getSecurityReferral.mockResolvedValue({})
   userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI' })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
@@ -74,6 +76,7 @@ afterEach(() => {
   offendersService.getRecategoriseOffenders.mockReset()
   formService.getRiskChangeCount.mockReset()
   userService.getUser.mockReset()
+  userService.getUserByUserId.mockReset()
 })
 
 describe('GET /categoriserDone', () => {
@@ -326,7 +329,190 @@ describe('Landing page', () => {
         expect(res.text).toContain('Dexter Spaniel')
         expect(res.text).toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(userService.getUserByUserId).toBeCalledTimes(0)
         expect(offendersService.isRecat).toBeCalledTimes(1)
+      })
+  })
+
+  test('security user get - referred by current user', () => {
+    userService.getUser.mockResolvedValue({
+      username: 'CT_SEC',
+      activeCaseLoad: {
+        caseLoadId: 'LEI',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+    })
+    offendersService.isRecat.mockResolvedValue('INITIAL')
+    formService.getSecurityReferral.mockResolvedValue({
+      prisonId: 'LEI',
+      userId: 'CT_SEC',
+      status: 'NEW',
+      raisedDate: '2019-10-17T11:34:35.740Z',
+    })
+
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Dexter Spaniel')
+        expect(res.text).not.toContain('securityButton')
+        expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(userService.getUserByUserId).toBeCalledTimes(0)
+      })
+  })
+
+  test('security user get - categorisation in progress', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      bookingId: 12,
+      formObject: {},
+      userId: 'A_BEN',
+    })
+    userService.getUser.mockResolvedValue({
+      username: 'CT_SEC',
+      activeCaseLoad: {
+        caseLoadId: 'LEI',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+    })
+    userService.getUserByUserId.mockResolvedValue({
+      username: 'A_BEN',
+      activeCaseLoad: {
+        caseLoadId: 'LEI',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+      displayNameAlternative: 'Amy Ben',
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+    })
+    offendersService.isRecat.mockResolvedValue('INITIAL')
+
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(`This prisoner's categorisation review is already in progress with Amy Ben`)
+        expect(res.text).not.toContain('securityButton')
+        expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(userService.getUserByUserId).toBeCalledTimes(1) // retrieves the categoriser name for display
+      })
+  })
+
+  test('security user get - referred by another user from a different prison', () => {
+    userService.getUser.mockResolvedValue({
+      username: 'CT_SEC',
+      activeCaseLoad: {
+        caseLoadId: 'LEI',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+    })
+    offendersService.isRecat.mockResolvedValue('INITIAL')
+    formService.getSecurityReferral.mockResolvedValue({
+      prisonId: 'BPI',
+      userId: 'ANOTHER',
+      status: 'NEW',
+      raisedDate: '2019-10-17T11:34:35.740Z',
+    })
+    userService.getUserByUserId.mockResolvedValue({
+      displayNameAlternative: 'James Brown',
+      activeCaseLoad: {
+        caseLoadId: 'BPI',
+        description: 'Blackpool (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+    })
+
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Referred by James Brown of Blackpool (HMP)')
+        expect(res.text).not.toContain('securityButton')
+        expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(userService.getUserByUserId).toBeCalledTimes(1)
+      })
+  })
+
+  test('security user get - referred by another user from the same prison', () => {
+    userService.getUser.mockResolvedValue({
+      username: 'CT_SEC',
+      activeCaseLoad: {
+        caseLoadId: 'LEI',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+    })
+    offendersService.isRecat.mockResolvedValue('INITIAL')
+    formService.getSecurityReferral.mockResolvedValue({
+      prisonId: 'LEI',
+      userId: 'ANOTHER',
+      status: 'NEW',
+      raisedDate: '2019-10-17T11:34:35.740Z',
+    })
+    userService.getUserByUserId.mockResolvedValue({
+      displayNameAlternative: 'James Brown',
+      activeCaseLoad: {
+        caseLoadId: 'LEI',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+    })
+
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Referred by James Brown of Leeds (HMP)')
+        expect(res.text).not.toContain('securityButton')
+        expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(userService.getUserByUserId).toBeCalledTimes(1)
       })
   })
 

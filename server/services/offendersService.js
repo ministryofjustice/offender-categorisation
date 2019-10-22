@@ -464,12 +464,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     )
   }
 
-  async function handleRiskChangeDecision(token, bookingId, user, decision, transactionalDbClient) {
+  async function handleRiskChangeDecision(context, bookingId, user, decision, transactionalDbClient) {
     try {
-      const details = await getOffenderDetails(token, bookingId)
+      const details = await getOffenderDetails(context, bookingId)
 
       if (decision === RiskChangeStatus.REVIEW_REQUIRED.name) {
-        await updateNextReviewDateIfRequired(token, bookingId, details)
+        await updateNextReviewDateIfRequired(context, bookingId, details)
       }
 
       await formService.updateStatusForOutstandingRiskChange({
@@ -625,9 +625,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     })
   }
 
-  async function getRiskChangeForOffender(token, bookingId, transactionalClient) {
+  async function getRiskChangeForOffender(context, bookingId, transactionalClient) {
     try {
-      const details = await getOffenderDetails(token, bookingId)
+      const details = await getOffenderDetails(context, bookingId)
       const riskChange = await formService.getRiskChangeForOffender(details.offenderNo, transactionalClient)
       if (riskChange) {
         const changeFlags = riskChangeHelper.assessRiskProfiles(riskChange.oldProfile, riskChange.newProfile)
