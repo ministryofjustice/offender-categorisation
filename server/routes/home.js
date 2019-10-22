@@ -5,6 +5,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
+const Status = require('../utils/statusEnum')
 
 const extractNextReviewDate = details => {
   const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
@@ -268,21 +269,58 @@ module.exports = function Index({
 
       const nextReviewDate = extractNextReviewDate(details)
       const requiredCatType = await offendersService.isRecat(res.locals, bookingId)
-      const securityReferral = await formService.getSecurityReferral(details.offenderNo, transactionalDbClient)
-      const isSecurityReferred = securityReferral.status === 'NEW'
+
+      const securityReferral = await getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient)
+      const categorisationUser = await getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord)
 
       res.render('pages/landing', {
         data: {
           requiredCatType,
           inProgressCatType: categorisationRecord.catType,
           nextReviewDate,
-          isSecurityReferred,
+          ...securityReferral,
           details,
+          categorisationUser,
           status: categorisationRecord.status,
         },
       })
     })
   )
+
+  /* we only need the categorisation user name if the categorisation is in progress and the current user has the security role */
+  const getCategorisationUserForSecurityDisplay = async (context, categorisation) => {
+    if (context.user.roles.security && categorisation.status && categorisation.status !== Status.APPROVED.name)
+      return userService.getUserByUserId(context, categorisation.userId)
+    return {}
+  }
+
+  const getSecurityReferral = async (context, offenderNo, transactionalDbClient) => {
+    const securityReferral = await formService.getSecurityReferral(offenderNo, transactionalDbClient)
+
+    const isSecurityReferred = securityReferral.status === 'NEW'
+
+    if (isSecurityReferred) {
+      const isReferrerCurrentUser = securityReferral.userId === context.user.username
+      const referrerUser = !isReferrerCurrentUser
+        ? await userService.getUserByUserId(context, securityReferral.userId)
+        : context.user
+      const prisonDescription =
+        securityReferral.prisonId === context.user.activeCaseLoad.caseLoadId
+          ? context.user.activeCaseLoad.description
+          : referrerUser.activeCaseLoad.description
+      return {
+        securityReferral,
+        isSecurityReferred,
+        referrerUser,
+        prisonDescription,
+        referredDate: securityReferral.raisedDate && moment(securityReferral.raisedDate).format('DD/MM/YYYY'),
+      }
+    }
+
+    return {
+      isSecurityReferred,
+    }
+  }
 
   router.post(
     '/:bookingId',
