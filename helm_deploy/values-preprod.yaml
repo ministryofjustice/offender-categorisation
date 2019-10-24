@@ -37,3 +37,6 @@ whitelist:
   ark-nps-hmcts-ttp5: "194.33.197.0/25"
   pentester-bsi: "145.239.254.21/32"
   pentester-bsi: "54.37.241.156/30"
+  dxc_webproxy1: "195.92.38.20/32"
+  dxc_webproxy2: "195.92.38.21/32"
+  dxc_webproxy3: "195.92.38.23/32"
