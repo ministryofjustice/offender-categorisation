@@ -31,7 +31,7 @@ class TasklistPage extends Page {
     violenceButton { $('#violenceButton') }
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }
-    backLink { $('a.govuk-back-link') }
+    categorisationHomeLink { $('a', text: 'Categorisation home') }
     summarySection(required: true) { $('#review div') }
   }
 }
