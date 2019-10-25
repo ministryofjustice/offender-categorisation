@@ -5,12 +5,16 @@
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
 
+{% set pageTitle = "Manage categorisations" %}
+
 {% block beforeContent %}
 
-{{ govukBackLink({
-  text: "Back",
-  href: backLink or "/"
-}) }}
+  {% include "../partials/breadCrumb.html" %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink or "/"
+  }) }}
 
 {% include "../partials/offenderBanner.html" %}
 

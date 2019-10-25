@@ -2,10 +2,11 @@
 {% from "radios/macro.njk" import govukRadios %}
 
 {% set greenButtonText = "Continue" %}
+{% set pageTitle = "Open conditions not recommended" %}
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Open conditions not recommended</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
 This person is not suitable for open conditions because:
 <ul class="govuk-!-font-weight-bold">

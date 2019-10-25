@@ -2,13 +2,14 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% set greenButtonText = "Continue" %}
+{% set pageTitle = "Provisional categorisation" %}
 
 {% block content %}
 
 <div class="govuk-grid-row govuk-body-s">
   <div>
 
-    <h1 class="govuk-heading-l mainHeading">Provisional categorisation</h1>
+    <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
 
     {% set cat = data.recat.decision.category %}
 

@@ -2,13 +2,11 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 
 {% set greenButtonText = "Back to task list" %}
-
-{% block beforeContent %}
-{% endblock %}
+{% set pageTitle = "Not suitable for open conditions" %}
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Not suitable for open conditions</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
 {{ govukWarningText({
   text: warningText,

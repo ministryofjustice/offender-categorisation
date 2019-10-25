@@ -4,6 +4,8 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 
+{% set pageTitle = "Category decision" %}
+
 {% macro hintText(proposedCategory) %}
   <span class="govuk-!-font-size-16" >
     {% if choosingHigherCategory(data.details.categoryCode, proposedCategory)
@@ -23,7 +25,7 @@
 
 {% block formItems %}
 
-<h1 id="securityInputHeader" class="govuk-heading-l">Category decision</h1>
+<h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
 
   <input type="hidden" name="currentCategory" value="{{data.details.categoryCode}}"/>
 

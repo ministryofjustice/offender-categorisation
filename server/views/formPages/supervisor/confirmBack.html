@@ -4,10 +4,12 @@
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "details/macro.njk" import govukDetails %}
 
+{% set pageTitle = "Confirm Status Change" %}
+
 {% block formItems %}
 
 <div>
-  <h1 class="govuk-heading-l">Confirm Status Change</h1>
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
 
 {% set messageHtml %}

@@ -2,8 +2,12 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% block pageTitle %}{{data.details.offenderNo}} {{data.details.displayName}}{% endblock %}
+{% set pageTitle = "Categorisation outcome" %}
 
 {% block beforeContent %}
+
+  {% include "../partials/breadCrumb.html" %}
+
   {{ govukBackLink({
     text: "Back",
     href: backLink
@@ -19,7 +23,7 @@
 
   <div class="govuk-grid-row govuk-!-margin-bottom-6">
     <h1 class="govuk-!-width-two-thirds govuk-heading-l govuk-!-display-inline mainHeading">
-     Categorisation outcome
+      {{ pageTitle }}
     </h1>
     <div class="govuk-!-width-one-third govuk-!-display-inline">
       <a class="govuk-link rightAlignedButton" href="#" onclick="handlePrint()">

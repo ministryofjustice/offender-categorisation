@@ -1,9 +1,12 @@
 {% extends "../formTemplate.html" %}
+{% set pageTitle = "Message from supervisor" %}
 
 {% block formItems %}
 
+
+
 <div>
-  <h1 class="govuk-heading-l">Message from supervisor</h1>
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
 
 <p id="messageText">{{ data.supervisor.confirmBack.messageText }}</p>

@@ -4,6 +4,7 @@
 {% from "details/macro.njk" import govukDetails %}
 
 {% set greenButtonText = "Continue" %}
+{% set pageTitle = "Risk of Serious Harm" %}
 
 {% set harmManagedHtml %}
 
@@ -50,7 +51,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Risk of Serious Harm</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   {{ govukRadios({
     name: "seriousHarm",
