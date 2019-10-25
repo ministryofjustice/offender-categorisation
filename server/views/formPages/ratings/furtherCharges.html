@@ -6,9 +6,11 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "details/macro.njk" import govukDetails %}
 
+{% set pageTitle = "Further charges" %}
+
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Further charges</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
 {% set furtherChargesHtml %}
   {{ govukCharacterCount({

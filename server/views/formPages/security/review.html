@@ -6,7 +6,11 @@
 {% from "panel/macro.njk" import govukPanel %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
 
+{% set pageTitle = "Security review" %}
+
 {% block beforeContent %}
+
+{% include "../../partials/breadCrumb.html" %}
 
 {{ govukBackLink({
   text: "Back",

@@ -4,6 +4,7 @@
 {% from "details/macro.njk" import govukDetails %}
 
 {% set greenButtonText = "Continue" %}
+{% set pageTitle = "Risk levels" %}
 
 {% set likelyToAbscondHtml %}
 
@@ -25,7 +26,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Risk levels</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   {{ govukRadios({
     name: "likelyToAbscond",

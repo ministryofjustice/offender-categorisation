@@ -7,9 +7,11 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "../../macros/renderAlert.html" import renderAlert %}
 
+{% set pageTitle = "Risk of escape" %}
+
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Risk of escape</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
 {% if data.escapeProfile.activeEscapeList or data.escapeProfile.activeEscapeRisk %}
   {{ govukWarningText({

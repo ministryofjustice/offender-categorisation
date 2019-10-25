@@ -3,13 +3,14 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "../../macros/renderAlert.html" import renderAlert %}
 
+{% set pageTitle = "Check change in risk status" %}
 
 {% set greenButtonText = "Continue" %}
 {% set backLink = "/recategoriserCheck" %}
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Check change in risk status</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 <p>The following has flagged this person for early review</p>
 
 
