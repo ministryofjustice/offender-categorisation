@@ -158,6 +158,7 @@ describe('GET /categoriserHome', () => {
       .expect(res => {
         expect(res.text).toContain('Start')
         expect(res.text).not.toContain('locked')
+        expect(res.text).toMatch(/DPS.+Categorisation home/s)
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })
@@ -294,6 +295,7 @@ describe('Recategoriser home', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toMatch(/DPS.+Categorisation home/s)
         expect(res.text).toMatch(/Potential reviews.*4<\/span.*/)
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
       })
@@ -330,6 +332,10 @@ describe('Landing page', () => {
       .expect(res => {
         expect(res.text).toContain('Dexter Spaniel')
         expect(res.text).toContain('securityButton')
+        expect(res.text).toContain(
+          '<a href="http://localhost:3000/offenders/B2345XY/quick-look" class="govuk-back-link">Back</a>'
+        )
+        expect(res.text).toMatch(/DPS.+Categorisation home.+Manage categorisations/s)
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(userService.getUserByUserId).toBeCalledTimes(0)
         expect(offendersService.isRecat).toBeCalledTimes(1)
