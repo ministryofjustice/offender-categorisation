@@ -8,6 +8,7 @@ const {
   catDisplay,
   choosingHigherCategory,
   offenderLink,
+  dpsUrl,
 } = require('../utils/utils.js')
 const config = require('../config')
 
@@ -37,6 +38,7 @@ module.exports = (app, path) => {
   njkEnv
     .addFilter('findError', findError)
     .addFilter('offenderLink', offenderLink)
+    .addGlobal('dpsHome', dpsUrl)
     .addGlobal('Status', Status)
     .addGlobal('ReviewReason', ReviewReason)
     .addGlobal('dateConverter', dateConverter)

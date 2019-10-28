@@ -6,8 +6,11 @@
 {% from "radios/macro.njk" import govukRadios %}
 
 {% set greenButtonText = "Submit" %}
+{% set pageTitle = "Approve category" %}
 
 {% block beforeContent %}
+  {% include "../../partials/breadCrumb.html" %}
+
   {{ govukBackLink({
     text: "Back",
     href: backLink

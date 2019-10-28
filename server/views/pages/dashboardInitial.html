@@ -1,24 +1,20 @@
 {% extends "../partials/layout.html" %}
 
-{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "button/macro.njk" import govukButton %}
 {% from "input/macro.njk" import govukInput %}
+{% from "../macros/breadCrumb.html" import breadCrumb %}
+{% set pageTitle = "Dashboard - Initial categorisations" %}
 
 {% block beforeContent %}
-{{ govukBreadcrumbs({
-  items: [
-    {
-      text: "Home",
-      href: "#"
-    }
-  ]
-}) }}
+
+{% include "../partials/breadCrumb.html" %}
+
 {% endblock %}
 
 {% block content %}
 
 <div >
-  <h1 class="govuk-heading-l">Dashboard - Initial categorisations</h1>
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
 
 <div>

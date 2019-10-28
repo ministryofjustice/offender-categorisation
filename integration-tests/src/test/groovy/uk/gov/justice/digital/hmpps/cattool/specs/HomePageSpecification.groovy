@@ -226,7 +226,7 @@ class HomePageSpecification extends GebReportingSpec {
 
     then: 'The uncategorised list is displayed with correct status text'
 
-    backLink.click()
+    categorisationHomeLink.click()
     at CategoriserHomePage
     statuses == ['Started (Api User)']
 

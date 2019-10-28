@@ -6,9 +6,11 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "../../macros/renderAlert.html" import renderAlert %}
 
+{% set pageTitle = "Prisoner background" %}
+
 {% block formItems %}
 
-<h1 class="govuk-heading-l" id="mainHeader">Prisoner background</h1>
+<h1 class="govuk-heading-l" id="mainHeader">{{ pageTitle }}</h1>
 
 <h1 class="govuk-heading-m govuk-!-margin-bottom-0">Reason for categorisation review</h1>
 <p>{{ ReviewReason[reviewReason].value }}</p>
