@@ -175,6 +175,7 @@ describe('GET /security/review', () => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(res.text).toContain('Claire Dent')
+        expect(res.text).toMatch(/DPS.+Categorisation home.+Security review/s)
       })
   )
 
@@ -399,6 +400,7 @@ describe('GET /awaitingApprovalView', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Open Conditions')
+        expect(res.text).toMatch(/DPS.+Categorisation home.+Provisional categorisation/s)
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')
       })
   })
@@ -420,6 +422,7 @@ describe('GET /supervisor/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toMatch(/DPS.+Categorisation home.+Approve category/s)
         expect(res.text).not.toContain('Prisoner background')
       })
   })
@@ -652,6 +655,7 @@ describe('GET /ratings/violence', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toMatch(/DPS.+Categorisation home.+Safety and good order/s)
         expect(res.text).toContain('This person has been reported as the perpetrator in 5 assaults in custody before,')
         expect(res.text).toContain('including 2 serious assaults in the last 12 months')
         expect(res.text).toContain('Please notify your safer custody lead about this prisoner')
