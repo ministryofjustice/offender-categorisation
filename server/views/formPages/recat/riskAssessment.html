@@ -3,6 +3,8 @@
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "details/macro.njk" import govukDetails %}
 
+{% set pageTitle = "Risk assessment" %}
+
 {% set guidance %}<div class="govuk-!-font-weight-bold govuk-!-margin-top-2">Consider information from:</div>
   <ul class="govuk-list govuk-list--bullet">
     <li>OASys</li>
@@ -33,7 +35,7 @@
 
 {% block formItems %}
 
-  <h1 class="govuk-heading-l">Risk assessment</h1>
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   <p>To help you make a decision, you are going to consider two different viewpoints. You will make your decision
     afterwards.</p>

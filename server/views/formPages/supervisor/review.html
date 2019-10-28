@@ -6,8 +6,11 @@
 {% from "radios/macro.njk" import govukRadios %}
 
 {% set greenButtonText = "Submit" %}
+{% set pageTitle = "Approve category" %}
 
 {% block beforeContent %}
+  {% include "../../partials/breadCrumb.html" %}
+
   {{ govukBackLink({
     text: "Back",
     href: backLink
@@ -24,7 +27,7 @@
 
 <div class="govuk-body-s">
 
-    <h1 class="govuk-heading-l mainHeading">Approve category</h1>
+    <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
 
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}

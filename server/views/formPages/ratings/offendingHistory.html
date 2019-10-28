@@ -6,9 +6,11 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "details/macro.njk" import govukDetails %}
 
+{% set pageTitle = "Offending history" %}
+
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Offending history</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   <h2 class="govuk-heading-m">Previous categorisation</h2>
   {% include "../../partials/warningOffendingHistory.html" %}

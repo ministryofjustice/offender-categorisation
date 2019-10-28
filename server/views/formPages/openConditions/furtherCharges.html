@@ -5,6 +5,8 @@
 
 {% set greenButtonText = "Continue" %}
 
+{% set pageTitle = "Further charges" %}
+
 {% set furtherChargesHtml %}
 
   {{ govukCharacterCount({
@@ -45,7 +47,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Further charges</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   {% if catType === 'RECAT' %}
     {{ govukRadios({

@@ -29,7 +29,7 @@ class TasklistRecatPage extends Page {
 
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }
-    backLink { $('a.govuk-back-link') }
+    categorisationHomeLink { $('a', text: 'Categorisation home') }
     summarySection(required: true) { $('#review div') }
   }
 }

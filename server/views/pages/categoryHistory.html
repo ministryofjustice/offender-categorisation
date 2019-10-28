@@ -1,22 +1,18 @@
 {% extends "../partials/layout.html" %}
+{% from "../macros/breadCrumb.html" import breadCrumb %}
 
-{% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% set pageTitle = "Check previous category reviews" %}
 
 {% block beforeContent %}
-{{ govukBreadcrumbs({
-  items: [
-    {
-      text: "Home",
-      href: "#"
-    }
-  ]
-}) }}
+
+{{ breadCrumb(pageTitle, breadCrumbList) }}
+
 {% endblock %}
 
 {% block content %}
 
 <div >
-  <h1 class="govuk-heading-l">Check previous category reviews</h1>
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
 
 <div>

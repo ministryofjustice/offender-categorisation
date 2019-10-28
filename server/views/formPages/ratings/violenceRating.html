@@ -5,6 +5,8 @@
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "details/macro.njk" import govukDetails %}
 
+{% set pageTitle = "Safety and good order" %}
+
 {% set highRiskOfViolenceTextHtml %}
   {{ govukCharacterCount({
     name: "highRiskOfViolenceText",
@@ -41,7 +43,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Safety and good order</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   {% if data.violenceProfile.displayAssaults %}
     {% set warningText %}

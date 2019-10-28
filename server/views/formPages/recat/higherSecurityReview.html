@@ -3,9 +3,11 @@
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "details/macro.njk" import govukDetails %}
 
+{% set pageTitle = "Higher Security Review" %}
+
 {% block formItems %}
 
-<h1 id="higherSecurityReviewHeader" class="govuk-heading-l">Higher Security Review</h1>
+<h1 id="higherSecurityReviewHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
 
  {{ govukCharacterCount({
     name: "behaviour",

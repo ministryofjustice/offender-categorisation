@@ -3,9 +3,11 @@
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 
+{% set pageTitle = "Security information" %}
+
 {% block formItems %}
 
-<h1 id="securityInputHeader" class="govuk-heading-l">Security information</h1>
+<h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
 
   {% set warningText %}
     This prisoner was referred to the security team

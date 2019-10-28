@@ -5,6 +5,8 @@
 
 {% set greenButtonText = "Continue" %}
 
+{% set pageTitle = "Earliest release date" %}
+
 {% set justifyTextHtml %}
 
   {{ govukCharacterCount({
@@ -59,7 +61,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l">Earliest release date</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   {{ govukRadios({
     name: "threeOrMoreYears",

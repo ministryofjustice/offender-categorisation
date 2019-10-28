@@ -1,0 +1,4 @@
+{% from "../macros/breadCrumb.html" import breadCrumb %}
+
+{% set breadCrumbList = [ {href: '/', title: 'Categorisation home'} ] %}
+{{ breadCrumb(pageTitle, breadCrumbList) }}
