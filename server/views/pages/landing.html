@@ -8,15 +8,16 @@
 {% set pageTitle = "Manage categorisations" %}
 
 {% block beforeContent %}
+  {% set offenderBack = offenderLink %}
 
   {% include "../partials/breadCrumb.html" %}
 
   {{ govukBackLink({
     text: "Back",
-    href: backLink or "/"
+    href: data.details.offenderNo | offenderLink
   }) }}
 
-{% include "../partials/offenderBanner.html" %}
+  {% include "../partials/offenderBanner.html" %}
 
 {% endblock %}
 

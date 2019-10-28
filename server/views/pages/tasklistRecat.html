@@ -1,17 +1,13 @@
 {% extends "../partials/layout.html" %}
 {% from "button/macro.njk" import govukButton %}
-{% from "back-link/macro.njk" import govukBackLink %}
 
 {% set pageTitle = "Category review task list" %}
 
 {% block beforeContent %}
 
-{% include "../partials/breadCrumb.html" %}
+  {% include "../partials/breadCrumb.html" %}
 
-{{ govukBackLink({
-text: "Back",
-href: backLink or "/"
-}) }}
+  <a href="javascript:window.history.back()" class="govuk-back-link">Back</a>
 
 {% endblock %}
 
