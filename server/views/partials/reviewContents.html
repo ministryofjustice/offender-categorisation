@@ -212,18 +212,20 @@
     rows: [ auto, manual, flagged, comments, warrantS ] if wasReferred else [ auto, manual, flagged ]
   }) }}
 
-  <h2 class="govuk-heading-m">Next category review date</h2>
-  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 nextReviewDateSummary',
-    rows: [
-      {
-        key: { text: "What date should they be reviewed by?" },
-        value: { text: getLongDateFormat(data.ratings.nextReviewDate.date) },
-        actions: { items: [{
-              href: '/form/nextReviewDate/nextReviewDate/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Set next category review date"
-            }] if showChangeLinks else [] }
-      }
-    ]
-  }) }}
+  {% if data.ratings.nextReviewDate %}
+    <h2 class="govuk-heading-m">Next category review date</h2>
+    {{ govukSummaryList({
+      classes: 'govuk-!-margin-bottom-9 nextReviewDateSummary',
+      rows: [
+        {
+          key: { text: "What date should they be reviewed by?" },
+          value: { text: getLongDateFormat(data.ratings.nextReviewDate.date) },
+          actions: { items: [{
+                href: '/form/nextReviewDate/nextReviewDate/' + data.details.bookingId,
+                text: "Change",
+                visuallyHiddenText: "Set next category review date"
+              }] if showChangeLinks else [] }
+        }
+      ]
+    }) }}
+  {% endif %}
