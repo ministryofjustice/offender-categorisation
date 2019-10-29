@@ -1,5 +1,10 @@
 const moment = require('moment')
-const { filterJsonObjectForLogging, formatLength, calculateNextReviewDate } = require('../../server/utils/utils')
+const {
+  filterJsonObjectForLogging,
+  formatLength,
+  calculateNextReviewDate,
+  getLongDateFormat,
+} = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
   it('it removes the _csrf property from a json object', () => {
@@ -38,6 +43,19 @@ describe('calculateDate', () => {
     ${''}          | ${''}
   `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {
     const actualDate = calculateNextReviewDate(nextDateChoice)
+    expect(actualDate).toEqual(expectedValue)
+  })
+})
+
+describe('getLongDateFormat', () => {
+  test.each`
+    nextDateChoice  | expectedValue
+    ${undefined}    | ${''}
+    ${''}           | ${''}
+    ${'23/04/2025'} | ${'Wednesday 23rd April 2025'}
+    ${'21/1/1974'}  | ${'Monday 21st January 1974'}
+  `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {
+    const actualDate = getLongDateFormat(nextDateChoice)
     expect(actualDate).toEqual(expectedValue)
   })
 })
