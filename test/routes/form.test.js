@@ -316,6 +316,45 @@ describe('GET /security/review', () => {
 })
 
 describe('GET /approvedView', () => {
+  test('Initial cat - Next review date section is shown if data exists', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { ratings: { nextReviewDate: { date: '25/11/2024' } } },
+    })
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Next category review date')
+        expect(res.text).toContain('Monday 25th November 2024')
+      })
+  })
+
+  test('Initial cat - Next review date section is hidden, if no data exists (records recorded before functionality was added)', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {},
+    })
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Next category review date')
+      })
+  })
+
   test('Open conditions entry is displayed on done view (after being abandoned), with no change links - RECAT', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'APPROVED',
