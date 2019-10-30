@@ -75,7 +75,12 @@ let app
 beforeEach(() => {
   app = appSetup(formRoute)
   roles = ['ROLE_CREATE_RECATEGORISATION']
-  formService.getCategorisationRecord.mockResolvedValue({ status: 'STARTED', bookingId: 12345, formObject: {} })
+  formService.getCategorisationRecord.mockResolvedValue({
+    status: 'STARTED',
+    offenderNo: 'GH123',
+    bookingId: 12345,
+    formObject: {},
+  })
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
   formService.isValid.mockResolvedValue(true)
@@ -84,7 +89,11 @@ beforeEach(() => {
   formService.recordNomisSeqNumber.mockReturnValue({})
   formService.categoriserDecision.mockReturnValue({})
   offendersService.createInitialCategorisation.mockReturnValue({ bookingId: 12345, seq: 4 })
-  offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
+  offendersService.getOffenderDetails.mockResolvedValue({
+    displayName: 'Claire Dent',
+    bookingId: 12345,
+    offenderNo: 'GH123',
+  })
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getPrisonerBackground.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
@@ -248,7 +257,10 @@ describe('recat', () => {
         expect(res.text).toContain('extremismInfo')
         expect(res.text).toMatch(/DPS.+Categorisation home.+Prisoner background/s)
         expect(res.text).toContain('escapeInfo')
-        expect(res.text).toContain('violenceInfo')
+        expect(res.text).toContain('/offenders/GH123/case-notes')
+        expect(res.text).toContain('/offenders/GH123/alerts')
+        expect(res.text).toContain('/offenders/GH123/adjudications')
+        expect(res.text).toContain('/categoryHistory/12345')
       }))
 
   test('GET /form/recat/review violence profile - displayAssault', () => {

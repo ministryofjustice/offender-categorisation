@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoryHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.PrisonerBackgroundPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RiskAssessmentPage
@@ -102,4 +103,27 @@ class PrisonerBackgroundSpecification extends GebReportingSpec {
     errorSummaries*.text() == ['Please enter details']
     errors*.text() == ['Error:\nPlease enter details']
   }
+
+  def "The prisoner background pa`ge provides a link to view Offender category history"() {
+    when: 'I go to the Prisoner background page and click on the category history link'
+
+    fixture.gotoTasklistRecat(false)
+    at TasklistRecatPage
+
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubAgencyDetails('LPI')
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
+    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, false)
+    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
+
+    prisonerBackgroundButton.click()
+    at PrisonerBackgroundPage
+
+    historyLink.click()
+
+    then: 'The category history page is displayed for the offender'
+    at CategoryHistoryPage
+  }
+
+
 }
