@@ -21,3 +21,4 @@ env:
   ELITE2API_ENDPOINT_URL: https://gateway.t3.nomis-api.hmpps.dsd.io/elite2api/
   RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
   DPS_URL: https://digital-dev.prison.service.justice.gov.uk/
+  WHEREABOUTS_URL: https://whereabouts-dev.prison.service.justice.gov.uk/
