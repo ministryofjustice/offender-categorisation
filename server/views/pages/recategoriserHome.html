@@ -88,6 +88,7 @@
           {{ govukButton({
             text: row.buttonText,
             href: href if not locked,
+            attributes: { 'data-prevent-double-click': 'true' },
             classes: classes
           }) }}
         {% endif %}
