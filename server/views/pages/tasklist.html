@@ -167,16 +167,20 @@
 
             <li id="review" class="app-task-list__item">
               {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
-                {{ govukButton({
-                  text: "Continue",
-                  href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
-                  disabled: not allSectionsCompleted,
-                  classes: "govuk-button tableButton app-task-list__task-completed"
-                }) }}
-                <div class="govuk-heading-m">Review and categorisation</div>
-                <div class="govuk-!-margin-top-2">{{ completionText }}</div>
+              {{ govukButton({
+                text: "Continue",
+                href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
+                disabled: not allSectionsCompleted,
+                classes: "govuk-button tableButton app-task-list__task-completed"
+              }) }}
+              <div class="govuk-heading-m">Review and categorisation</div>
+              <div class="govuk-!-margin-top-2">{{ completionText }}</div>
             </li>
           </ul>
+        </li>
+
+        <li>
+          <a href="/form/cancel/{{ data.details.bookingId }}" id="cancelLink">Cancel this categorisation</a>
         </li>
       </ul>
     </div>

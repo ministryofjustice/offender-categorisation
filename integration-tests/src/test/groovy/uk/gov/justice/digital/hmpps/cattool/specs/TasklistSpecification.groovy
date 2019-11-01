@@ -11,6 +11,8 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CancelConfirmedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CancelPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
@@ -71,7 +73,7 @@ class TasklistSpecification extends GebReportingSpec {
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"],
-        nextReviewDate: [date: "14/12/2019"]
+        nextReviewDate  : [date: "14/12/2019"]
       ],
       openConditions: [riskLevels: [likelyToAbscond: "Yes"]]]))
     fixture.gotoTasklist()
@@ -92,7 +94,7 @@ class TasklistSpecification extends GebReportingSpec {
         violenceRating  : [highRiskOfViolence: "No", seriousThreat: "Yes"],
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"],
-        nextReviewDate: [date: "14/12/2019"]
+        nextReviewDate  : [date: "14/12/2019"]
       ], openConditionsRequested: true]))
     fixture.gotoTasklist()
     at(new TasklistPage(bookingId: '12'))
@@ -149,6 +151,28 @@ class TasklistSpecification extends GebReportingSpec {
     data.start_date.toLocalDate().equals(LocalDate.now())
     data.cat_type.value == "INITIAL"
     data.due_by_date.toLocalDate().equals(LocalDate.of(2019, 8, 29))
+  }
+
+  def "The tasklist page allows cancellation"() {
+    when: 'I go to the tasklist page and cancel the categorisation'
+
+    fixture.gotoTasklist(false)
+    at TasklistPage
+    cancelLink.click()
+    at CancelPage
+    confirmNo.click()
+    submitButton.click()
+    at TasklistPage
+    cancelLink.click()
+    at CancelPage
+    elite2Api.stubSetInactive(12, 'PENDING')
+    confirmYes.click()
+    submitButton.click()
+
+    then: 'the cancel confirmed page is shown with finish and manage links'
+    at CancelConfirmedPage
+    finishButton.displayed
+    manageLink.displayed
   }
 
   def "Initial cat after an existing cat is allowed"() {

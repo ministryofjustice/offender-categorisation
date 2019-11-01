@@ -1,4 +1,5 @@
 const R = require('ramda')
+const Status = require('./statusEnum')
 
 module.exports = {
   getIn: R.path,
@@ -15,6 +16,7 @@ module.exports = {
   replace,
   groupBy,
   isFirstVisit,
+  inProgress,
   addSocProfile,
 }
 
@@ -73,6 +75,12 @@ function groupBy(array, groupByProperty) {
 
 function isFirstVisit(res) {
   return res.locals.formObject ? !res.locals.formObject.socProfile : true
+}
+
+function inProgress(dbRecord) {
+  return (
+    dbRecord && dbRecord.status && dbRecord.status !== Status.APPROVED.name && dbRecord.status !== Status.CANCELLED.name
+  )
 }
 
 async function addSocProfile({

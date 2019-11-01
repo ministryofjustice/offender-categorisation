@@ -1,0 +1,28 @@
+{% set mainClasses = 'govuk-!-width-two-thirds' %}
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "panel/macro.njk" import govukPanel %}
+
+{% set pageTitle = "Cancel confirmed" %}
+
+{% block beforeContent %}
+
+{% include "../partials/breadCrumb.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+{{ govukPanel({
+  titleText: "Categorisation has been removed"
+}) }}
+
+{{ govukButton({
+  text: "Finish",
+  href: "/"
+}) }}
+<div>
+  <a href="/{{ data.details.bookingId }}" id="manageLink">Manage prisoner</a>
+</div>
+
+{% endblock %}

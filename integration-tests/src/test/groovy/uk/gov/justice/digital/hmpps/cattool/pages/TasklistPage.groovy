@@ -33,5 +33,7 @@ class TasklistPage extends Page {
     extremismButton { $('#extremismButton') }
     categorisationHomeLink { $('a', text: 'Categorisation home') }
     summarySection(required: true) { $('#review div') }
+
+    cancelLink { $('a#cancelLink') }
   }
 }
