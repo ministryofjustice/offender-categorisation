@@ -1217,10 +1217,10 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  def stubSetInactive() {
+  def stubSetInactive(bookingId, status) {
 
     this.stubFor(
-      put(urlMatching("/api/offender-assessments/category/12/inactive"))
+      put("/api/offender-assessments/category/${bookingId}/inactive?status=${status}")
         .willReturn(
           aResponse()
             .withHeader('Content-Type', 'application/json')
@@ -1229,7 +1229,7 @@ class Elite2Api extends WireMockRule {
   }
 
   def verifySetInactive() {
-    verify(putRequestedFor(urlEqualTo("/api/offender-assessments/category/12/inactive")))
+    verify(putRequestedFor(urlMatching("/api/offender-assessments/category/12/inactive\\?status=\\w+")))
   }
 
   def stubAgencyDetails(agency) {

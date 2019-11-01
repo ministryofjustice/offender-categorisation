@@ -354,7 +354,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    elite2Api.stubSetInactive()
+    elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
 
     then: 'We are sent to the tasklist and data is stored'
@@ -387,7 +387,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    elite2Api.stubSetInactive()
+    elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
 
     then: 'We are sent to the tasklist and data is stored'
@@ -422,7 +422,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    elite2Api.stubSetInactive()
+    elite2Api.stubSetInactive(12, 'ACTIVE')
     editButton.click()
 
     then: 'We are sent to the tasklist'

@@ -15,6 +15,7 @@ const categoriser = require('../config/categoriser')
 const supervisor = require('../config/supervisor')
 const security = require('../config/security')
 const openConditions = require('../config/openConditions')
+const cancel = require('../config/cancel')
 
 const CatType = require('../utils/catTypeEnum')
 
@@ -24,6 +25,7 @@ const formConfig = {
   supervisor,
   security,
   openConditions,
+  cancel,
 }
 
 module.exports = function Index({
@@ -281,6 +283,31 @@ module.exports = function Index({
         const data = { ...result.data, categorisations }
         res.render(`formPages/recat/approvedView`, { ...result, data, approvalDateDisplay, prisonDescription })
       }
+    })
+  )
+
+  router.get(
+    '/cancel/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, 'dummy1', 'cancel', bookingId, transactionalDbClient)
+      const { referer } = req.headers
+      const categorisations =
+        result.catType === CatType.RECAT.name
+          ? await offendersService.getPrisonerBackground(res.locals, result.data.details.offenderNo)
+          : null
+      const data = { ...result.data, categorisations, referer }
+      res.render('formPages/cancel', { ...result, data })
+    })
+  )
+
+  router.get(
+    '/cancelConfirmed/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient)
+
+      res.render('pages/cancelConfirmed', result)
     })
   )
 
@@ -663,6 +690,34 @@ module.exports = function Index({
         // send back to the categoriser for open conditions completion
         await formService.backToCategoriser(bookingId, transactionalDbClient)
         res.redirect(`/supervisorHome`)
+      }
+    })
+  )
+
+  router.post(
+    '/cancel/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const formPageConfig = formConfig.cancel
+      const userInput = clearConditionalFields(req.body)
+
+      const valid = formService.isValid(formPageConfig, req, res, `/form/cancel/${bookingId}`, userInput)
+      if (!valid) {
+        return
+      }
+      if (userInput.confirm === 'Yes') {
+        await offendersService.setInactive(res.locals, bookingId, 'PENDING')
+
+        await formService.cancel({
+          bookingId: parseInt(bookingId, 10),
+          userId: res.locals.user && res.locals.user.username,
+          transactionalClient: transactionalDbClient,
+        })
+
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      } else {
+        res.redirect(userInput.referer || '/')
       }
     })
   )

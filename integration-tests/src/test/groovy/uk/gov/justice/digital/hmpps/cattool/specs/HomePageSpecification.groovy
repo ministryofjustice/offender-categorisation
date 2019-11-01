@@ -11,9 +11,12 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CancelConfirmedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CancelPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
@@ -246,7 +249,7 @@ class HomePageSpecification extends GebReportingSpec {
     startButtons[0].text() == 'Edit'
   }
 
-  def "An offender Awaiting approval can be viewed"() {
+  def "An offender Awaiting approval can be viewed and cancelled"() {
 
     db.createDataWithStatus(11, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings    : [
@@ -276,6 +279,69 @@ class HomePageSpecification extends GebReportingSpec {
     then: 'The view page is displayed'
     at CategoriserAwaitingApprovalViewPage
     categoryDiv.text() contains 'B\nWarning\nCategory for approval is B'
+
+    when: 'The categorisation is cancelled'
+    cancelLink.click()
+    at CancelPage
+    confirmNo.click()
+    submitButton.click()
+    at CategoriserAwaitingApprovalViewPage
+    cancelLink.click()
+    at CancelPage
+    elite2Api.stubSetInactive(11, 'PENDING')
+    confirmYes.click()
+    submitButton.click()
+
+    then: 'the cancel confirmed page is shown with finish and manage links'
+    at CancelConfirmedPage
+    finishButton.displayed
+    manageLink.displayed
+  }
+
+  def "An offender RECAT Awaiting approval can be viewed and cancelled"() {
+
+    db.createDataWithStatusAndCatType(11, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat    : TestFixture.defaultRecat,
+    ]), 'RECAT', 'B2345XY')
+    db.createNomisSeqNo(11,5)
+    db.createReviewReason(11, 'DUE')
+
+    when: 'A recategorisation user logs in'
+
+    elite2Api.stubRecategorise(['A','P','A','A'])
+    elite2Api.stubAssessments('B2345XY')
+    fixture.loginAs(RECATEGORISER_USER)
+    at RecategoriserHomePage
+    elite2Api.stubAgencyDetails('LPI') // existing assessments
+    elite2Api.stubGetOffenderDetails(11, "B2345XY")
+    startButtons[2].click()
+
+    then: 'The view page is displayed'
+    at RecategoriserAwaitingApprovalViewPage
+    categoryDiv.text() contains 'C\nWarning\nCategory for approval is C'
+
+    when: 'The categorisation is cancelled'
+    cancelLink.click()
+    at CancelPage
+    confirmNo.click()
+    submitButton.click()
+    at CategoriserAwaitingApprovalViewPage
+    cancelLink.click()
+    at CancelPage
+    elite2Api.stubSetInactive(11, 'PENDING')
+    confirmYes.click()
+    submitButton.click()
+
+    then: 'the cancel confirmed page is shown with finish and manage links'
+    at CancelConfirmedPage
+    finishButton.displayed
+    manageLink.displayed
+
+    and: 'the status is cancelled in the database'
+    def data = db.getData(11)[0]
+    data.status == "CANCELLED"
+    data.cancelled_date != null
+    data.cancelled_by == 'RECATEGORISER_USER'
   }
 
   def "Log out"() {

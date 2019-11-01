@@ -5,7 +5,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
-const Status = require('../utils/statusEnum')
+const { inProgress } = require('../utils/functionalHelpers')
 
 const extractNextReviewDate = details => {
   const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
@@ -289,7 +289,7 @@ module.exports = function Index({
 
   /* we only need the categorisation user name if the categorisation is in progress and the current user has the security role */
   const getCategorisationUserForSecurityDisplay = async (context, categorisation) => {
-    if (context.user.roles.security && categorisation.status && categorisation.status !== Status.APPROVED.name)
+    if (context.user.roles.security && inProgress(categorisation))
       return userService.getUserByUserId(context, categorisation.userId)
     return {}
   }

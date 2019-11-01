@@ -15,10 +15,12 @@ class CategoriserAwaitingApprovalViewPage extends Page {
 
     warning { $('div.govuk-warning-text', 0) }
 
-    backLink { $( 'a.govuk-back-link') }
+    backLink { $('a.govuk-back-link') }
 
-    categoryDiv { $( '#category-div') }
+    categoryDiv { $('#category-div') }
 
     earliestReleaseDate { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
+
+    cancelLink { $('a#cancelLink') }
   }
 }

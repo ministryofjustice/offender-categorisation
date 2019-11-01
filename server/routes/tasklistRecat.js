@@ -3,7 +3,7 @@ const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
-const { addSocProfile, getIn } = require('../utils/functionalHelpers')
+const { addSocProfile, getIn, inProgress } = require('../utils/functionalHelpers')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
 
@@ -62,15 +62,15 @@ module.exports = function Index({
         transactionalDbClient
       )
 
-      if (
-        categorisationRecord.catType === CatType.INITIAL.name &&
-        categorisationRecord.status !== Status.APPROVED.name
-      ) {
+      if (categorisationRecord.catType === CatType.INITIAL.name && inProgress(categorisationRecord)) {
         throw new Error('Initial categorisation is still in progress')
       }
 
-      // If retrieved - check if APPROVED and if it is, create new
-      if (categorisationRecord.status === Status.APPROVED.name) {
+      // If retrieved - check if APPROVED / CANCELLED and if it is, create new
+      if (
+        categorisationRecord.status === Status.APPROVED.name ||
+        categorisationRecord.status === Status.CANCELLED.name
+      ) {
         categorisationRecord = await formService.createCategorisationRecord(
           bookingId,
           req.user.username,

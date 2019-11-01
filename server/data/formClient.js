@@ -1,4 +1,5 @@
 const logger = require('../../log.js')
+const Status = require('../utils/statusEnum')
 
 const selectClause = `select id,
                     booking_id             as "bookingId",
@@ -162,6 +163,15 @@ module.exports = {
     const query = {
       text: `update form f set risk_profile = $1 where f.booking_id = $2 ${sequenceClause}`,
       values: [data, bookingId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  cancel(bookingId, user, transactionalClient) {
+    logger.debug(`cancel called for booking id ${bookingId} and user ${user}`)
+    const query = {
+      text: `update form f set status = $1, cancelled_by = $2, cancelled_date = CURRENT_TIMESTAMP where f.booking_id = $3 ${sequenceClause}`,
+      values: [Status.CANCELLED.name, user, bookingId],
     }
     return transactionalClient.query(query)
   },
