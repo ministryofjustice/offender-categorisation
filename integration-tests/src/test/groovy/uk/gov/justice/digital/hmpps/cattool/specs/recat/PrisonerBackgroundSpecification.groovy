@@ -104,7 +104,7 @@ class PrisonerBackgroundSpecification extends GebReportingSpec {
     errors*.text() == ['Error:\nPlease enter details']
   }
 
-  def "The prisoner background pa`ge provides a link to view Offender category history"() {
+  def "The prisoner background page provides a link to view Offender category history"() {
     when: 'I go to the Prisoner background page and click on the category history link'
 
     fixture.gotoTasklistRecat(false)
@@ -119,10 +119,10 @@ class PrisonerBackgroundSpecification extends GebReportingSpec {
     prisonerBackgroundButton.click()
     at PrisonerBackgroundPage
 
-    historyLink.click()
-
-    then: 'The category history page is displayed for the offender'
-    at CategoryHistoryPage
+    then: 'Cat history is displayed in a new tab'
+    withNewWindow({ historyLink.click() }) {
+      at CategoryHistoryPage
+    }
   }
 
 
