@@ -1,6 +1,6 @@
 const moment = require('moment')
 const R = require('ramda')
-const { dpsUrl } = require('../config')
+const { dpsUrl, whereaboutsUrl } = require('../config')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 
@@ -145,6 +145,9 @@ const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB'])
 const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
 const offenderLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/quick-look`
+const offenderCaseNotesLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/case-notes`
+const offenderAdjudicationLink = offenderNo => `${whereaboutsUrl}offenders/${offenderNo}/adjudications`
+const offenderAlertsLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/alerts`
 
 module.exports = {
   dateConverter,
@@ -163,4 +166,7 @@ module.exports = {
   choosingHigherCategory,
   offenderLink,
   dpsUrl,
+  offenderCaseNotesLink,
+  offenderAlertsLink,
+  offenderAdjudicationLink,
 }
