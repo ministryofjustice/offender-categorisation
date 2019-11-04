@@ -90,6 +90,7 @@
             {{ govukButton({
               text: buttonText,
               href: "/tasklist/" + row.bookingId if not locked,
+              attributes: { 'data-prevent-double-click': 'true' },
               classes: classes
             }) }}
           {% endif %}

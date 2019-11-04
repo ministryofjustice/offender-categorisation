@@ -43,7 +43,7 @@
           text: 'Start initial categorisation',
           href: '/tasklist/' + data.details.bookingId + '?reason=MANUAL',
           classes: 'grey-button',
-          attributes: { 'id': 'initialButton' }
+          attributes: { 'id': 'initialButton','data-prevent-double-click': 'true' }
         }) }}
       {% elif data.status == Status.AWAITING_APPROVAL.name %}
         {{ govukWarningText({
@@ -96,7 +96,7 @@
           {{ govukButton({
             text: 'Start review',
             classes: 'grey-button',
-            attributes: { 'id': 'recatButton' }
+            attributes: { 'id': 'recatButton','data-prevent-double-click': 'true' }
           }) }}
         </form>
       {% elif data.status == Status.AWAITING_APPROVAL.name %}
@@ -156,7 +156,7 @@
           {{ govukButton({
             text: 'Set this up',
             classes: 'grey-button',
-            attributes: { 'id': 'securityButton' }
+            attributes: { 'id': 'securityButton','data-prevent-double-click': 'true' }
           }) }}
         </form>
       </div>
