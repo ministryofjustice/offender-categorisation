@@ -2,7 +2,7 @@
   <div class="govuk-header__container govuk-width-container width-container">
 
     <div class="govuk-header__logo">
-      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+      <a href="{{ dpsHome }}" class="govuk-header__link govuk-header__link--homepage">
         <span class="govuk-header__logotype">
           <span class=govuk-header__logotype-crown-fallback-image">
             <img src="/assets/images/Crest@2x.png" alt="" width="42" height="35" />
@@ -15,15 +15,6 @@
 
       </a>
     </div>
-
-    {# Service name title
-      <div class="govuk-header__content">
-        <a href="/" class="govuk-header__link govuk-header__link--service-name">
-          Service name
-        </a>
-
-      </div>
-    #}
 
     {% if user %}
       <div class="user-block">
