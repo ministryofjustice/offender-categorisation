@@ -207,7 +207,7 @@ describe('mergeRiskChangeForOffender', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        "update risk_change set new_profile =$2, raised_date = CURRENT_TIMESTAMP where r.offender_no= $1 and r.status = 'NEW'",
+        "update risk_change set new_profile = $2, raised_date = CURRENT_TIMESTAMP where r.offender_no= $1 and r.status = 'NEW'",
 
       values: ['GN12345', { hello: 'hello' }],
     })
