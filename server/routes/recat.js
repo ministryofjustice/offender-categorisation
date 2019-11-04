@@ -2,7 +2,13 @@ const express = require('express')
 const flash = require('connect-flash')
 const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
-const { calculateNextReviewDate, choosingHigherCategory } = require('../utils/utils')
+const {
+  calculateNextReviewDate,
+  choosingHigherCategory,
+  offenderAlertsLink,
+  offenderCaseNotesLink,
+  offenderAdjudicationLink,
+} = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const recat = require('../config/recat')
@@ -59,10 +65,22 @@ module.exports = function Index({
         res.locals,
         false // not used for recat (contributes towards recommended category)
       )
+      const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
+      const offenderDpsCaseNotesLink = offenderCaseNotesLink(offenderNo)
+      const offenderDpsAdjudicationsLink = offenderAdjudicationLink(offenderNo)
 
       const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
 
-      const data = { ...result.data, categorisations, escapeProfile, violenceProfile, extremismProfile }
+      const data = {
+        ...result.data,
+        categorisations,
+        escapeProfile,
+        violenceProfile,
+        extremismProfile,
+        offenderDpsAlertsLink,
+        offenderDpsCaseNotesLink,
+        offenderDpsAdjudicationsLink,
+      }
 
       res.render(`formPages/recat/prisonerBackground`, { ...result, data })
     })

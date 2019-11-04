@@ -30,6 +30,7 @@ class PrisonerBackgroundPage extends Page {
 
     form { $('form') }
 
+    historyLink { $('#historyLink') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
