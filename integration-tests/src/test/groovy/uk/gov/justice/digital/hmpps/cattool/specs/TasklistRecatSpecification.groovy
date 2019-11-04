@@ -12,6 +12,8 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.CancelConfirmedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CancelPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
@@ -92,6 +94,30 @@ class TasklistRecatSpecification extends GebReportingSpec {
     row.cat_type.value == "RECAT"
     row.review_reason.value == "AGE"
     row.due_by_date.toLocalDate().equals(LocalDate.of(2039, 1, 1))
+  }
+
+  def "The recat tasklist page allows cancellation"() {
+    when: 'I go to the tasklist page and cancel the categorisation'
+
+    fixture.gotoTasklistRecat(false)
+    at TasklistRecatPage
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubAgencyDetails('LPI') // existing assessments
+    cancelLink.click()
+    at CancelPage
+    confirmNo.click()
+    submitButton.click()
+    at TasklistRecatPage
+    cancelLink.click()
+    at CancelPage
+    elite2Api.stubSetInactive(12, 'PENDING')
+    confirmYes.click()
+    submitButton.click()
+
+    then: 'the cancel confirmed page is shown with finish and manage links'
+    at CancelConfirmedPage
+    finishButton.displayed
+    manageLink.displayed
   }
 
   def "The tasklist page displays an alert when status is transferred to security"() {

@@ -37,7 +37,7 @@
           classes: "forms-warning-text warning-overrides"
         }) }}
       {% endif %}
-      {% if not data.status or data.status == Status.APPROVED.name %}
+      {% if not inProgress(data) %}
         <p>Once started, you cannot cancel a categorisation.</p>
         {{ govukButton({
           text: 'Start initial categorisation',
@@ -87,7 +87,7 @@
 
   <div>
     {% if data.requiredCatType == 'RECAT' %}
-      {% if not data.status or data.status == Status.APPROVED.name %}
+      {% if not inProgress(data) %}
         <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
         <p>Once started, you cannot cancel an early category review. However, you will have until their review due date to finish it.</p>
         <form method="post">
@@ -146,7 +146,7 @@
     <h1 class="govuk-heading-l">This person will automatically be referred to security at next category review</h1>
   <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
   {% elif user.roles.security %}
-    {% if not data.status or data.status == Status.APPROVED.name %}
+    {% if not inProgress(data) %}
       <h1 class="govuk-heading-l">Refer this person to security at next category review</h1>
       <p>This means they will automatically be referred to security when their next category review is started.</p>
       <div>

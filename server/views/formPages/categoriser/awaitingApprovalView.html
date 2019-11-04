@@ -25,7 +25,6 @@
     </div>
 
     {% set showChangeLinks = false %}
-
     {% include "../../partials/reviewContents.html" %}
 
     {% if (currentCat == "D" or currentCat == "J" or data.openConditions) %}
@@ -38,7 +37,7 @@
 
     <h2 class="govuk-heading-m">Other information</h2>
     {{ govukSummaryList({
-      classes: 'govuk-!-margin-bottom-9',
+      classes: 'govuk-!-margin-bottom-9 otherInformationSummary',
       rows: [
       {
       key: { text: "Other relevant information" },
@@ -47,6 +46,7 @@
       }
       ]
     }) }}
+    <a class="govuk-!-font-size-19" href="/form/cancel/{{ data.details.bookingId }}" id="cancelLink">Cancel this categorisation</a>
   </div>
 </div>
 
