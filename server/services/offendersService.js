@@ -4,7 +4,7 @@ const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
-const { isNilOrEmpty } = require('../utils/functionalHelpers')
+const { isNilOrEmpty, inProgress } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter, get10BusinessDays } = require('../utils/utils.js')
 const { sortByDateTime, sortByStatus } = require('./offenderSort.js')
 const config = require('../config')
@@ -71,12 +71,14 @@ function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
 function unwanted(dbRecord) {
   return (
     // Initial cat in progress
-    dbRecord.catType === CatType.INITIAL.name && dbRecord.status !== Status.APPROVED.name
+    dbRecord.catType === CatType.INITIAL.name && inProgress(dbRecord)
   )
 }
 
 function calculateRecatDisplayStatus(displayStatus) {
-  return displayStatus === Status.APPROVED.value || !displayStatus ? 'Not started' : displayStatus
+  return displayStatus === Status.APPROVED.value || displayStatus === Status.CANCELLED.value || !displayStatus
+    ? 'Not started'
+    : displayStatus
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
@@ -123,7 +125,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             const inconsistent =
               (nomisStatusAwaitingApproval && localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)) ||
               (nomisStatusUncategorised &&
-                (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
+                (dbRecord.status === Status.AWAITING_APPROVAL.name ||
+                  dbRecord.status === Status.APPROVED.name ||
+                  dbRecord.status === Status.CANCELLED.name))
 
             const row = {
               ...o,
@@ -302,7 +306,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               displayCreatedDate: dateConverter(o.raisedDate),
             }
           }
-          logger.warn(`Found risk change alert without a categorisation for offender no: ${offenderDetail.offenderNo}`)
+          logger.warn(`Found risk change alert without a categorisation for offender no: ${o.offenderNo}`)
           return null
         })
 
@@ -511,11 +515,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   /**
    * deactivate any existing categorisations to ensure that the categorisation is present on the initial to do list
    */
-  async function setInactive(context, bookingId) {
+  async function setInactive(context, bookingId, assessmentStatus) {
     try {
-      logger.info(`Setting cats of bookingId ${bookingId} inactive`)
+      logger.info(`Setting ${assessmentStatus} cats of bookingId ${bookingId} inactive`)
       const nomisClient = nomisClientBuilder(context)
-      await nomisClient.setInactive(bookingId)
+      await nomisClient.setInactive(bookingId, assessmentStatus)
     } catch (error) {
       logger.error(error, `Error during setInactive, for ${bookingId} `)
       throw error
@@ -927,12 +931,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   function calculateButtonStatus(dbRecord, pnomisStatus) {
     let buttonStatus = 'Start'
     if (pnomisStatus === 'A') {
-      if (
-        dbRecord &&
-        dbRecord.status &&
-        dbRecord.status !== Status.APPROVED.name &&
-        dbRecord.status !== Status.AWAITING_APPROVAL.name
-      ) {
+      if (inProgress(dbRecord) && dbRecord.status !== Status.AWAITING_APPROVAL.name) {
         buttonStatus = 'Edit'
       }
       // nomis status is pending approval

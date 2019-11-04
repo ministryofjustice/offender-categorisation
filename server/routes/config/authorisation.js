@@ -26,6 +26,7 @@ module.exports = {
   '/form/security/.+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
   '/form/approvedView/\\d+(\\?.+)?': { authorised: ['BOOKING_ID_IN_CASELOAD'] },
   '/form/awaitingApprovalView/\\d+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
+  '/form/cancel(Confirmed)?/\\d+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
   '/\\d+': { authorised: ['BOOKING_ID_IN_CASELOAD'] },
   '/switchRole/[A-Z_]+': {
     authorised: [

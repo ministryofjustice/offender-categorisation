@@ -31,5 +31,7 @@ class TasklistRecatPage extends Page {
     continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }
     categorisationHomeLink { $('a', text: 'Categorisation home') }
     summarySection(required: true) { $('#review div') }
+
+    cancelLink { $('a#cancelLink') }
   }
 }

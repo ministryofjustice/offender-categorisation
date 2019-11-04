@@ -46,7 +46,7 @@ class OauthApi extends WireMockRule {
     }
 
     this.stubFor(
-      post(urlMatching('/auth/oauth/token')).willReturn(tokenResponse))
+      post('/auth/oauth/token').willReturn(tokenResponse))
 
     this.stubFor(get('/favicon.ico').willReturn(aResponse()))
   }

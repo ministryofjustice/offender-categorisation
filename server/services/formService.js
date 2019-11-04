@@ -105,6 +105,13 @@ module.exports = function createFormService(formClient) {
     return newCategorisationForm
   }
 
+  async function cancel({ bookingId, userId, transactionalClient }) {
+    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
+    if (validateStatusIfProvided(currentCategorisation.status, Status.CANCELLED.name)) {
+      await formClient.cancel(bookingId, userId, transactionalClient)
+    }
+  }
+
   async function categoriserDecisionWithFormResponse({
     bookingId,
     config,
@@ -639,6 +646,7 @@ module.exports = function createFormService(formClient) {
     getCategorisationRecord,
     update,
     updateFormData,
+    cancel,
     mergeRiskProfileData,
     computeSuggestedCat,
     referToSecurityIfRiskAssessed,

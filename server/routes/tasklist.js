@@ -4,7 +4,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
-const { addSocProfile, isFirstVisit } = require('../utils/functionalHelpers')
+const { addSocProfile, isFirstVisit, inProgress } = require('../utils/functionalHelpers')
 const { get10BusinessDays } = require('../utils/utils.js')
 
 function add10BusinessDays(isoDate) {
@@ -46,12 +46,15 @@ module.exports = function Index({
         transactionalDbClient
       )
 
-      if (categorisationRecord.catType === CatType.RECAT.name && categorisationRecord.status !== Status.APPROVED.name) {
+      if (categorisationRecord.catType === CatType.RECAT.name && inProgress(categorisationRecord)) {
         throw new Error('A categorisation review is in progress')
       }
 
-      // If retrieved - check if APPROVED and if it is, create new
-      if (categorisationRecord.status === Status.APPROVED.name) {
+      // If retrieved - check if APPROVED / CANCELLED and if it is, create new
+      if (
+        categorisationRecord.status === Status.APPROVED.name ||
+        categorisationRecord.status === Status.CANCELLED.name
+      ) {
         categorisationRecord = await formService.createCategorisationRecord(
           bookingId,
           req.user.username,
@@ -70,7 +73,7 @@ module.exports = function Index({
 
       if (reason === ReviewReason.MANUAL.name && isFirstVisit(res)) {
         // Ensure this categorisation appears on the to-do list
-        await offendersService.setInactive(res.locals, bookingId)
+        await offendersService.setInactive(res.locals, bookingId, 'ACTIVE')
       }
 
       categorisationRecord = await addSocProfile({

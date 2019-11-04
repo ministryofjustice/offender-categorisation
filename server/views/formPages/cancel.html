@@ -1,0 +1,83 @@
+{% extends "./formTemplate.html" %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% block pageTitle %}{{data.details.offenderNo}} {{data.details.displayName}}{% endblock %}
+{% set pageTitle = "Confirm Cancellation" %}
+{% set greenButtonText = "Continue" %}
+
+{% block formItems %}
+
+  <h1 class="govuk-heading-l">Confirm Cancellation</h1>
+
+  <h2 class="govuk-heading-m">Are you sure you want to cancel this categorisation?</h2>
+  <p class="govuk-!-margin-bottom-8">The following information will be removed. You can restart the categorisation for this prisoner after cancelling.</p>
+
+  <div class="govuk-grid-row govuk-body-s">
+    <div class="govuk-!-width-full">
+
+      {% set showChangeLinks = false %}
+
+      {% if catType == "INITIAL" %}
+
+        {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
+        {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
+        {% set currentCat = overriddenCat if overriddenCat else cat %}
+
+        {% include "../partials/reviewContents.html" %}
+
+        {% if (currentCat == "D" or currentCat == "J" or data.openConditions) %}
+
+          <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+          {% set showOpenConditionChangeLinks = false %}
+          {% include "../partials/reviewContentsOpenConditions.html" %}
+
+        {% endif %}
+
+        <h2 class="govuk-heading-m">Other information</h2>
+        {{ govukSummaryList({
+          classes: 'govuk-!-margin-bottom-9 otherInformationSummary',
+          rows: [
+            {
+              key: { text: "Other relevant information" },
+              value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
+              actions: { items: [] }
+            }
+          ]
+        }) }}
+
+      {% else %}
+
+        {% set cat = data.recat.decision.category %}
+        {% include "../partials/reviewContentsRecat.html" %}
+
+        {% if (cat == "D" or cat == "J" or data.openConditions) %}
+
+          <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+          {% set showOpenConditionChangeLinks = false %}
+          {% include "../partials/reviewContentsOpenConditions.html" %}
+
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  {{ govukRadios({
+    name: "confirm",
+    classes: "govuk-radios--inline",
+    errorMessage: { text: "Please select yes or no" } if (errors | findError('confirm')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes"
+      },
+      {
+        value: "No",
+        text: "No"
+      }
+    ]
+  }) }}
+
+  <input name="referer" type="hidden" value="{{ data.referer }}" />
+
+{% endblock %}
