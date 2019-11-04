@@ -82,6 +82,9 @@ env:
   - name: DPS_URL
     value: {{ .Values.env.DPS_URL | quote }}
 
+  - name: WHEREABOUTS_URL
+    value: {{ .Values.env.WHEREABOUTS_URL | quote }}
+
   - name: AWS_ACCESS_KEY_ID
     valueFrom:
       secretKeyRef:
