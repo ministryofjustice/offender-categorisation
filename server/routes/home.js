@@ -222,6 +222,8 @@ module.exports = function Index({
   router.get(
     '/categoryHistory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const data = await formService.getHistoricalCategorisationRecords(bookingId, transactionalDbClient)
       const dataDecorated = await Promise.all(
