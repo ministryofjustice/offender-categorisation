@@ -22,6 +22,7 @@ const offendersService = {
   createInitialCategorisation: jest.fn(),
   getUnapprovedOffenders: jest.fn(),
   getRecategoriseOffenders: jest.fn(),
+  getReferredOffenders: jest.fn(),
   isRecat: jest.fn(),
 }
 
@@ -57,6 +58,7 @@ beforeEach(() => {
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getRecategoriseOffenders.mockResolvedValue({})
+  offendersService.getReferredOffenders.mockResolvedValue({})
   offendersService.getOptionalAssessmentAgencyDescription = jest.fn()
   formService.getRiskChangeCount.mockResolvedValue(0)
   formService.getCategorisationRecord.mockResolvedValue({})
@@ -76,6 +78,7 @@ afterEach(() => {
   offendersService.getOffenceHistory.mockReset()
   offendersService.getRecategoriseOffenders.mockReset()
   offendersService.getOptionalAssessmentAgencyDescription.mockReset()
+  offendersService.getReferredOffenders.mockReset()
   formService.getRiskChangeCount.mockReset()
   userService.getUser.mockReset()
   userService.getUserByUserId.mockReset()
@@ -310,6 +313,54 @@ describe('Recategoriser home', () => {
       .expect(res => {
         expect(res.text).not.toMatch(/Potential reviews.*0<\/span.*/)
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
+      })
+  })
+})
+
+describe('security home', () => {
+  const referred = [
+    {
+      id: 729,
+      bookingId: 1186899,
+      userId: 'LBENNETT_GEN',
+      status: 'SECURITY_FLAGGED',
+      assignedUserId: 'LBENNETT_GEN',
+      securityReferredDate: '2019-11-04T15:46:48.779Z',
+      securityReferredBy: 'Lucy Bennett',
+      offenderNo: 'G9964UP',
+      catType: 'INITIAL',
+      prisonid: 'LPI',
+      displayName: 'Paxtyn, Otsairah',
+      catTypeDisplay: 'Initial',
+    },
+    {
+      id: 522,
+      bookingId: 999147,
+      userId: 'LBENNETT_GEN',
+      status: 'SECURITY_FLAGGED',
+      assignedUserId: 'LBENNETT_GEN',
+      securityReferredDate: '2019-10-21T13:03:56.494Z',
+      securityReferredBy: 'Lucy Bennett',
+      offenderNo: 'G0581UW',
+      catType: 'RECAT',
+      prisonid: 'LPI',
+      displayName: 'Myrolph, Efltoche',
+      daysSinceSentence: 1458,
+      dateRequired: '23/11/2015',
+      sentenceDate: '2015-11-08',
+      catTypeDisplay: 'Recat',
+    },
+  ]
+  test('handles offenders without sentences', () => {
+    offendersService.getReferredOffenders.mockResolvedValue(referred)
+    return request(app)
+      .get('/securityHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/DPS.+Categorisation home/s)
+        expect(res.text).toMatch(/G9964UP.+G0581UW/s)
+        expect(offendersService.getReferredOffenders).toBeCalledTimes(1)
       })
   })
 })
