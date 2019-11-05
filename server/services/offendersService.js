@@ -246,25 +246,20 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               : o.securityReferredBy
           }
           const sentenceData = sentenceMap.get(o.bookingId)
-          if (!sentenceData) {
-            logger.error(
-              `Found offender without sentence in security referred list: booking Id=${o.bookingId}, prison=${o.prisonId}`
-            )
-            return null
-          }
+            ? buildSentenceData(sentenceMap.get(o.bookingId).sentenceDate)
+            : {}
 
           return {
             ...o,
             offenderNo: offenderDetail.offenderNo,
             displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
             securityReferredBy,
-            ...buildSentenceData(sentenceMap.get(o.bookingId).sentenceDate),
+            ...sentenceData,
             catTypeDisplay: CatType[o.catType].value,
           }
         })
 
-        // filter out offenders who no longer have a sentence (nomis change since referral)
-        return decoratedResults.filter(o => o).sort((a, b) => sortByDateTime(b.dateRequired, a.dateRequired))
+        return decoratedResults.sort((a, b) => sortByDateTime(b.dateRequired, a.dateRequired))
       }
       return []
     } catch (error) {
