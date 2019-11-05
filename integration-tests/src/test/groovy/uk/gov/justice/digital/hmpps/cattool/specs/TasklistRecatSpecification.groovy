@@ -96,11 +96,15 @@ class TasklistRecatSpecification extends GebReportingSpec {
     row.due_by_date.toLocalDate().equals(LocalDate.of(2039, 1, 1))
   }
 
-  def "The recat tasklist page allows cancellation"() {
+  def "The recat tasklist page allows cancellation including "() {
+    db.createSecurityData('B2345YZ')
+
     when: 'I go to the tasklist page and cancel the categorisation'
 
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
+    db.getSecurityData('B2345YZ')[0].status.value == 'PROCESSED'
+
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI') // existing assessments
     cancelLink.click()
@@ -118,6 +122,9 @@ class TasklistRecatSpecification extends GebReportingSpec {
     at CancelConfirmedPage
     finishButton.displayed
     manageLink.displayed
+
+    and: 'any security flag is reset'
+    db.getSecurityData('B2345YZ')[0].status.value == 'NEW'
   }
 
   def "The tasklist page displays an alert when status is transferred to security"() {

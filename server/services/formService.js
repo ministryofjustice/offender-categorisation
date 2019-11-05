@@ -105,10 +105,11 @@ module.exports = function createFormService(formClient) {
     return newCategorisationForm
   }
 
-  async function cancel({ bookingId, userId, transactionalClient }) {
+  async function cancel({ bookingId, offenderNo, userId, transactionalClient }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     if (validateStatusIfProvided(currentCategorisation.status, Status.CANCELLED.name)) {
       await formClient.cancel(bookingId, userId, transactionalClient)
+      await formClient.setSecurityReferralNotProcessed(offenderNo, transactionalClient)
     }
   }
 
@@ -210,6 +211,7 @@ module.exports = function createFormService(formClient) {
         )}`
       )
       await formClient.supervisorApproval(newCategorisationForm, bookingId, userId, transactionalClient)
+      await formClient.setSecurityReferralCompleted(currentCategorisation.offenderNo, transactionalClient)
     }
     return newCategorisationForm
   }
