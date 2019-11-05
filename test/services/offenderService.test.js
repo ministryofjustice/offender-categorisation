@@ -921,7 +921,7 @@ describe('getReferredOffenders', () => {
     expect(result).toMatchObject(expected)
   })
 
-  test('it should not return offenders without a sentence (result of nomis change after referral', async () => {
+  test('it should return offenders without a sentence, as these can now be referred', async () => {
     const sentenceDates = [
       {
         sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
@@ -951,17 +951,24 @@ describe('getReferredOffenders', () => {
       {
         id: -3,
         bookingId: 122,
-        offenderNo: 'G9999',
+        offenderNo: 'G55345',
         userId: 'me',
         status: Status.SECURITY_MANUAL.name,
         formObject: '',
         securityReferredDate: '2019-02-04',
-        securityReferredBy: 'BMAY',
+        securityReferredBy: 'JSMITH',
         catType: 'INITIAL',
       },
     ])
 
     const expected = [
+      {
+        offenderNo: 'G55345',
+        displayName: 'Allen, Alan',
+        bookingId: 122,
+        securityReferredBy: 'John Smith',
+        catTypeDisplay: 'Initial',
+      },
       {
         offenderNo: 'G12345',
         displayName: 'Brown, Jane',
