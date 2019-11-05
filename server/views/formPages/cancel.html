@@ -10,7 +10,6 @@
 
   <h1 class="govuk-heading-l">Confirm Cancellation</h1>
 
-  <h2 class="govuk-heading-m">Are you sure you want to cancel this categorisation?</h2>
   <p class="govuk-!-margin-bottom-8">The following information will be removed. You can restart the categorisation for this prisoner after cancelling.</p>
 
   <div class="govuk-grid-row govuk-body-s">
@@ -62,9 +61,10 @@
     </div>
   </div>
 
+  <h2 class="govuk-heading-m">Are you sure you want to cancel this categorisation?</h2>
+
   {{ govukRadios({
     name: "confirm",
-    classes: "govuk-radios--inline",
     errorMessage: { text: "Please select yes or no" } if (errors | findError('confirm')),
     items: [
       {

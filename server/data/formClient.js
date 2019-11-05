@@ -237,7 +237,7 @@ module.exports = {
     const query = {
       text: `insert into security_referral ( prison_id, offender_no, user_id, raised_date )
         values ($1, $2, $3, CURRENT_TIMESTAMP )
-        on conflict (offender_no) do update set prison_id=$1, user_id=$3, raised_date=CURRENT_TIMESTAMP`,
+        on conflict (offender_no) do update set prison_id=$1, user_id=$3, status='NEW', raised_date=CURRENT_TIMESTAMP, processed_date=null`,
       values: [agencyId, offenderNo, userId],
     }
     return transactionalClient.query(query)
@@ -261,6 +261,24 @@ module.exports = {
     logger.info(`setSecurityReferralProcessed for ${offenderNo}`)
     const query = {
       text: `update security_referral set status='REFERRED', processed_date=CURRENT_TIMESTAMP where offender_no=$1`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  setSecurityReferralCompleted(offenderNo, transactionalClient) {
+    logger.info(`setSecurityReferralCompleted for ${offenderNo}`)
+    const query = {
+      text: `update security_referral set status='COMPLETED' where offender_no=$1`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  setSecurityReferralNotProcessed(offenderNo, transactionalClient) {
+    logger.info(`setSecurityReferralNotProcessed for ${offenderNo}`)
+    const query = {
+      text: `update security_referral set status='NEW', processed_date=null where offender_no=$1 and status='REFERRED'`,
       values: [offenderNo],
     }
     return transactionalClient.query(query)

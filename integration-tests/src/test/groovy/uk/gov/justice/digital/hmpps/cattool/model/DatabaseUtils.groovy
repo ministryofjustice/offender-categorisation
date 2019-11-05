@@ -91,6 +91,10 @@ class DatabaseUtils {
       json, riskProfile, approvalDateDB, assessmentDate, dueByDate)
   }
 
+  def createSecurityData(offenderNo) {
+    sql.executeUpdate("insert into security_referral values (-1, '$offenderNo', 'SECURITY_USER', 'LEI', 'NEW', current_timestamp(2))")
+  }
+
   def getSecurityData(offenderNo) {
     return sql.rows("select * from security_referral where offender_no = $offenderNo")
   }

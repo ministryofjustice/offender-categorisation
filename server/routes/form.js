@@ -708,8 +708,10 @@ module.exports = function Index({
       if (userInput.confirm === 'Yes') {
         await offendersService.setInactive(res.locals, bookingId, 'PENDING')
 
+        const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
         await formService.cancel({
           bookingId: parseInt(bookingId, 10),
+          offenderNo: categorisationRecord.offenderNo,
           userId: res.locals.user && res.locals.user.username,
           transactionalClient: transactionalDbClient,
         })
