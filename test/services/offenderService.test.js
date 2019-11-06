@@ -918,7 +918,7 @@ describe('getReferredOffenders', () => {
       offenderNo: 'G55345',
       userId: 'me',
       status: Status.SECURITY_MANUAL.name,
-      formObject: '',
+      formObject: { security: { review: { securityReview: 'security info' } } },
       securityReferredDate: '2019-02-04',
       securityReferredBy: 'BMAY',
       catType: 'INITIAL',
@@ -927,15 +927,9 @@ describe('getReferredOffenders', () => {
 
   test('it should return a list of offenders and sentence information', async () => {
     const sentenceDates = [
-      {
-        sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
-      },
-      {
-        sentenceDetail: { bookingId: 111, sentenceStartDate: mockTodaySubtract(7) },
-      },
-      {
-        sentenceDetail: { bookingId: 122, sentenceStartDate: mockTodaySubtract(10) },
-      },
+      { sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) } },
+      { sentenceDetail: { bookingId: 111, sentenceStartDate: mockTodaySubtract(7) } },
+      { sentenceDetail: { bookingId: 122, sentenceStartDate: mockTodaySubtract(10) } },
     ]
 
     nomisClient.getOffenderDetailList.mockReturnValue(offenderDetailList)
@@ -953,6 +947,7 @@ describe('getReferredOffenders', () => {
         dateRequired: expect.stringMatching(DATE_MATCHER),
         securityReferredBy: 'Brian May',
         catTypeDisplay: 'Initial',
+        buttonText: 'Edit',
       },
       {
         offenderNo: 'G12345',
@@ -962,6 +957,7 @@ describe('getReferredOffenders', () => {
         dateRequired: expect.stringMatching(DATE_MATCHER),
         securityReferredBy: 'John Smith',
         catTypeDisplay: 'Initial',
+        buttonText: 'Start',
       },
     ]
 
