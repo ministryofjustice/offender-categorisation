@@ -12,8 +12,9 @@ class SecurityReviewPage extends HeaderPage {
 
   static content = {
     backLink { $('a.govuk-back-link') }
-    categoriserText { $('p.forms-comments-text')}
-    saveButton { $('button.govuk-button') }
-    securityText{ $('textarea', name: 'securityReview') }
+    categoriserText { $('p.forms-comments-text') }
+    submitButton { $('button.govuk-button', value: 'submit') }
+    saveOnlyButton { $('button.govuk-button', value: 'return') }
+    securityText { $('textarea', name: 'securityReview') }
   }
 }

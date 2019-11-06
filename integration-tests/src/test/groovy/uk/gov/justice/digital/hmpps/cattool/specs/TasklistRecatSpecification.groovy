@@ -96,7 +96,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     row.due_by_date.toLocalDate().equals(LocalDate.of(2039, 1, 1))
   }
 
-  def "The recat tasklist page allows cancellation including "() {
+  def "The recat tasklist page allows cancellation including security flag handling"() {
     db.createSecurityData('B2345YZ')
 
     when: 'I go to the tasklist page and cancel the categorisation'

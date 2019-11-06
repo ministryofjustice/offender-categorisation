@@ -69,9 +69,17 @@
   {% endblock %}
 
   {{ govukButton({
-    text: "Save"
+    text: "Save and submit",
+    name: "button",
+    value: 'submit'
+  }) }}
+  {{ govukButton({
+    text: "Save only",
+    name: "button",
+    value: 'return',
+    classes: 'rightAlignedButton grey-button'
   }) }}
 
-</form>
+  </form>
 </div>
 {% endblock %}
