@@ -1,8 +1,20 @@
   <h3>Referrals to security</h3>
-  <p id="manual">Manual: {{security.manual}} </p>
-  <p id="auto">Auto: {{security.auto}} </p>
-  <p id="flagged">Flagged: {{security.flagged}} </p>
-  <hr/>
+  <table class="govuk-table" id="security">
+    <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Manual</td>
+      <td class="govuk-table__cell">{{ security.manual }}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Automatic</td>
+      <td class="govuk-table__cell">{{ security.auto }}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Flagged</td>
+      <td class="govuk-table__cell">{{ security.flagged }}</td>
+    </tr>
+    </tbody>
+  </table>
 
   <h3>Timeliness Averages</h3>
   <table class="govuk-table" id="timeliness">
@@ -12,12 +24,12 @@
       <td class="govuk-table__cell"> {{ timeliness.approvalTimelinessDays | round(2)}}</td>
     </tr>
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Security referral timeliness (Hours from start to referral)</td>
-      <td class="govuk-table__cell"> {{ timeliness.securityReferralTimelinessHours | round(2)}}</td>
+      <td class="govuk-table__cell">Security referral timeliness (Days from start to referral)</td>
+      <td class="govuk-table__cell"> {{ timeliness.securityReferralTimelinessDays | round(2)}}</td>
     </tr>
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Hours in security</td>
-      <td class="govuk-table__cell"> {{ timeliness.inSecurityHours | round(2)}}</td>
+      <td class="govuk-table__cell">Days in security</td>
+      <td class="govuk-table__cell"> {{ timeliness.inSecurityDays | round(2)}}</td>
     </tr>
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">Start to assessment completion (days)</td>
