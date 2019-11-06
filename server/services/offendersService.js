@@ -576,6 +576,20 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     )
   }
 
+  // first array is master if duplicate bookingIds
+  function mergeOffenderListsRemovingNulls(masterList, listToMerge) {
+    // remove nulls from both lists
+    const masterListWithoutNulls = masterList.filter(o => o)
+    const listToMergeWithoutNulls = listToMerge.filter(o => o)
+
+    // remove items from second list that are already in first list
+    const itemsToAdd = listToMergeWithoutNulls.filter(
+      o => !masterListWithoutNulls.some(masterItem => o.bookingId === masterItem.bookingId)
+    )
+
+    return masterListWithoutNulls.concat(itemsToAdd)
+  }
+
   async function getRecategoriseOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
@@ -591,8 +605,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return []
       }
 
-      const decoratedReviewAndU21 = [...decoratedResultsReview, ...decoratedResultsU21]
-        .filter(o => o) // ignore initial cats (which were set to null)
+      const decoratedReviewAndU21 = mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
@@ -995,5 +1008,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     pnomisOrInconsistentWarning,
     calculateButtonStatus,
     mergeU21ResultWithNomisCategorisationData,
+    mergeOffenderLists: mergeOffenderListsRemovingNulls,
   }
 }
