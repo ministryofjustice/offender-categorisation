@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.cattool.specs
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
+import groovy.json.JsonSlurper
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -232,22 +233,42 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.logout()
     fixture.loginAs(SECURITY_USER)
     at SecurityHomePage
+    startButtons[0].text() == 'Start'
     startButtons[0].click()
 
     then: 'the security review page displays the referral details'
     at new SecurityReviewPage(bookingId: '12')
     driver.pageSource.contains('This individual was identified as needing a security review, as part of their categorisation, by Another User of LEEDS (HMP) on ' +  LocalDate.now().format('dd/MM/yyyy'))
 
-    when: 'the security review page is saved'
+    when: 'the security review page is only saved'
     securityText << 'security info'
-    saveButton.click()
+    saveOnlyButton.click()
 
-    then: 'the form database table is updated correctly'
+    then: 'the button has changed and the form database table is updated correctly'
+    at SecurityHomePage
+    startButtons[0].text() == 'Edit'
     def data = db.getData(12)[0]
-    data.status == 'SECURITY_BACK'
+    def response = new JsonSlurper().parseText(data.form_response.toString())
+    response.security.review.securityReview == 'security info'
+    data.status == 'SECURITY_FLAGGED'
     data.cat_type.value == 'RECAT'
     data.referred_by == 'SECURITY_USER'
-    data.security_reviewed_by == 'SECURITY_USER'
+    data.security_reviewed_by == null
+
+    when: 'the security review page is submitted'
+    startButtons[0].click()
+    at SecurityReviewPage
+    securityText << ', more security info'
+    submitButton.click()
+
+    then: 'the prisoner is no longer on the list and the form database table is updated correctly'
+    at SecurityHomePage
+    bodyRows.size() == 0
+    def data2 = db.getData(12)[0]
+    def response2 = new JsonSlurper().parseText(data2.form_response.toString())
+    response2.security.review.securityReview == 'security info, more security info'
+    data2.status == 'SECURITY_BACK'
+    data2.security_reviewed_by == 'SECURITY_USER'
   }
 
   def "A prisoner is both flagged and automatically referred"() {

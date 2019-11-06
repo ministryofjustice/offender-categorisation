@@ -4,7 +4,7 @@ const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
-const { isNilOrEmpty, inProgress } = require('../utils/functionalHelpers')
+const { isNilOrEmpty, inProgress, getIn } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter, get10BusinessDays } = require('../utils/utils.js')
 const { sortByDateTime, sortByStatus } = require('./offenderSort.js')
 const config = require('../config')
@@ -256,6 +256,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             securityReferredBy,
             ...sentenceData,
             catTypeDisplay: CatType[o.catType].value,
+            buttonText: getIn(['formObject', 'security', 'review', 'securityReview'], o) ? 'Edit' : 'Start',
           }
         })
 

@@ -537,8 +537,9 @@ module.exports = function Index({
         transactionalClient: transactionalDbClient,
       })
 
-      await formService.securityReviewed(bookingId, req.user.username, transactionalDbClient)
-
+      if (userInput.button === 'submit') {
+        await formService.securityReviewed(bookingId, req.user.username, transactionalDbClient)
+      }
       res.redirect('/')
     })
   )

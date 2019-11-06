@@ -130,7 +130,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     at new SecurityReviewPage(bookingId: '12')
     categoriserText == 'Some text'
     securityText << 'security info'
-    saveButton.click()
+    submitButton.click()
 
     then: 'the prisoner status is back from security'
     at SecurityHomePage
