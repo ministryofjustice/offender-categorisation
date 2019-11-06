@@ -223,6 +223,57 @@ describe('getRecategoriseOffenders', () => {
     expect(result).toMatchObject(expected)
   })
 
+  test('it should filter out any duplicates from young and standard offender recat lists', async () => {
+    const dueData = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'PETER',
+        lastName: 'PAN',
+        bookingId: 123,
+        category: 'C',
+        nextReviewDate: '2019-04-20',
+        assessStatus: 'P',
+      },
+    ]
+
+    const u21Data = [
+      {
+        bookingId: 123,
+        offenderNo: 'G12345',
+        firstName: 'PETER',
+        lastName: 'PAN',
+        dateOfBirth: '1998-05-01',
+        categoryCode: 'I',
+      },
+    ]
+
+    const u21CatData = [{ bookingId: 123, assessStatus: 'P' }]
+
+    const expected = [
+      {
+        offenderNo: 'G12345',
+        displayName: 'Pan, Peter',
+        bookingId: 123,
+        displayStatus: 'Awaiting approval',
+        nextReviewDateDisplay: '01/05/2019',
+        reason: ReviewReason.AGE,
+        overdue: true,
+        buttonText: 'View',
+      },
+    ]
+    nomisClient.getRecategoriseOffenders.mockReturnValue(dueData)
+    nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
+    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
+    formService.getCategorisationRecord.mockReturnValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
+
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
+
+    expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
+    expect(nomisClient.getPrisonersAtLocation).toBeCalled()
+    expect(formService.getCategorisationRecord).toBeCalledTimes(2)
+    expect(result).toMatchObject(expected)
+  })
+
   test('No results from elite', async () => {
     nomisClient.getRecategoriseOffenders.mockReturnValue([])
     nomisClient.getPrisonersAtLocation.mockReturnValue([])
@@ -1742,5 +1793,37 @@ describe('getRiskChanges', () => {
     nomisClient.getUncategorisedOffenders.mockReturnValue([])
     const result = await service.getUnapprovedOffenders(context, 'LEI', mockTransactionalClient)
     expect(result).toHaveLength(0)
+  })
+})
+
+describe('mergeOffenderLists', () => {
+  test('standard lists', () => {
+    const result = service.mergeOffenderLists(
+      [{ bookingId: 1, name: 'first1' }, { bookingId: 2, name: 'first2' }],
+      [{ bookingId: 1, name: 'second1' }, { bookingId: 4, name: 'second4' }]
+    )
+    expect(result).toMatchObject([
+      { bookingId: 1, name: 'first1' },
+      { bookingId: 2, name: 'first2' },
+      { bookingId: 4, name: 'second4' },
+    ])
+  })
+  test('empty lists - master list', () => {
+    const result = service.mergeOffenderLists(
+      [],
+      [{ bookingId: 1, name: 'second1' }, { bookingId: 4, name: 'second4' }]
+    )
+    expect(result).toMatchObject([{ bookingId: 1, name: 'second1' }, { bookingId: 4, name: 'second4' }])
+  })
+  test('empty lists - second list', () => {
+    const result = service.mergeOffenderLists([{ bookingId: 1, name: 'first1' }, { bookingId: 2, name: 'first2' }], [])
+    expect(result).toMatchObject([{ bookingId: 1, name: 'first1' }, { bookingId: 2, name: 'first2' }])
+  })
+  test('mergeOffenderLists - ignore nulls', () => {
+    const result = service.mergeOffenderLists(
+      [{ bookingId: 1, name: 'first1' }, null],
+      [null, { bookingId: 4, name: 'first2' }]
+    )
+    expect(result).toMatchObject([{ bookingId: 1, name: 'first1' }, { bookingId: 4, name: 'first2' }])
   })
 })
