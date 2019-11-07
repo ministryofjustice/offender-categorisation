@@ -132,14 +132,14 @@ class DashboardSpecification extends GebReportingSpec {
     numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '1']
     numbersTableRows[2].find('td')*.text() == ['C', 'B', 'D', '1']
 
-    referralManual.text() == 'Manual: 1'
-    referralAuto.text() == 'Auto: 1'
-    referralFlagged.text() == 'Flagged: 0'
+    securityTableRows[0].find('td')*.text() == ['Manual', '1']
+    securityTableRows[1].find('td')*.text() == ['Automatic', '1']
+    securityTableRows[2].find('td')*.text() == ['Flagged', '0']
 
     timelinessTableRows*.text() == [
       'Number of days before due date that approval occurred 1.75',
-      'Security referral timeliness (Hours from start to referral) 212.75',
-      'Hours in security 14.08',
+      'Security referral timeliness (Days from start to referral) 8.86',
+      'Days in security 0.59',
       'Start to assessment completion (days) 20.5',
       'Assessment to approval (days) 9']
 
@@ -161,13 +161,14 @@ class DashboardSpecification extends GebReportingSpec {
     numbersTableRows[3].find('td')*.text() == ['C', 'B', 'D', '1']
     numbersTableRows[4].find('td')*.text() == ['YOI Closed', '', '', '1']
 
-    referralManual.text() == 'Manual: 2'
-    referralAuto.text() == 'Auto: 2'
+    securityTableRows[0].find('td')*.text() == ['Manual', '2']
+    securityTableRows[1].find('td')*.text() == ['Automatic', '2']
+    securityTableRows[2].find('td')*.text() == ['Flagged', '0']
 
     timelinessTableRows*.text() == [
       'Number of days before due date that approval occurred 3.38',
-      'Security referral timeliness (Hours from start to referral) 334.38',
-      'Hours in security 115.04',
+      'Security referral timeliness (Days from start to referral) 13.93',
+      'Days in security 4.79',
       'Start to assessment completion (days) 20.75',
       'Assessment to approval (days) 8']
 
@@ -228,14 +229,14 @@ class DashboardSpecification extends GebReportingSpec {
     numbersTableRows[1].find('td')*.text() == ['C', '', '2']
     numbersTableRows[2].find('td')*.text() == ['C', 'B', '2']
 
-    referralManual.text() == 'Manual: 1'
-    referralAuto.text() == 'Auto: 1'
-    referralFlagged.text() == 'Flagged: 1'
+    securityTableRows[0].find('td')*.text() == ['Manual', '1']
+    securityTableRows[1].find('td')*.text() == ['Automatic', '1']
+    securityTableRows[2].find('td')*.text() == ['Flagged', '1']
 
     timelinessTableRows*.text() == [
       'Number of days before due date that approval occurred 2.2',
-      'Security referral timeliness (Hours from start to referral) 216',
-      'Hours in security 217.5',
+      'Security referral timeliness (Days from start to referral) 9',
+      'Days in security 9.06',
       'Start to assessment completion (days) 21',
       'Assessment to approval (days) 9.8']
 
@@ -255,14 +256,14 @@ class DashboardSpecification extends GebReportingSpec {
     numbersTableRows[1].find('td')*.text() == ['C', '', '4']
     numbersTableRows[2].find('td')*.text() == ['C', 'B', '3']
 
-    referralManual.text() == 'Manual: 2'
-    referralAuto.text() == 'Auto: 2'
-    referralFlagged.text() == 'Flagged: 1'
+    securityTableRows[0].find('td')*.text() == ['Manual', '2']
+    securityTableRows[1].find('td')*.text() == ['Automatic', '2']
+    securityTableRows[2].find('td')*.text() == ['Flagged', '1']
 
     timelinessTableRows*.text() == [
       'Number of days before due date that approval occurred -1.56',
-      'Security referral timeliness (Hours from start to referral) 174.4',
-      'Hours in security 258.5',
+      'Security referral timeliness (Days from start to referral) 7.27',
+      'Days in security 10.77',
       'Start to assessment completion (days) 21',
       'Assessment to approval (days) 13.56']
 

@@ -76,8 +76,8 @@ module.exports = {
   getTimeliness(catType, startDate, endDate, prisonId, transactionalClient) {
     const query = {
       text: `select avg(extract(day from (due_by_date - date_trunc('day', approval_date))))  as "approvalTimelinessDays",
-                    avg(extract(epoch from (referred_date - start_date))/3600)               as "securityReferralTimelinessHours",
-                    avg(extract(epoch from (security_reviewed_date - referred_date))/3600)   as "inSecurityHours",
+                    avg(extract(epoch from (referred_date - start_date))/86400)               as "securityReferralTimelinessDays",
+                    avg(extract(epoch from (security_reviewed_date - referred_date))/86400)   as "inSecurityDays",
                     avg(extract(day from (assessment_date - date_trunc('day', start_date)))) as "startToAssessmentDays",
                     avg(approval_date - assessment_date)                                     as "assessmentToApprovalDays"
              from form
