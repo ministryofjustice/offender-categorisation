@@ -9,9 +9,7 @@ abstract class DashboardPage extends Page {
     form { $('form') }
     submitButton { $('button', type: 'submit') }
 
-    referralManual {$('p#manual')}
-    referralAuto {$('p#auto')}
-    referralFlagged {$('p#flagged')}
+    securityTableRows { $('table#security > tbody > tr') }
 
     timelinessTableRows { $('table#timeliness > tbody > tr') }
     completionTableRows { $('table#completion > tbody > tr') }
