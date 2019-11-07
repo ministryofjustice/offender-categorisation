@@ -13,7 +13,8 @@ module.exports = function createSqsService(offenderService, formService) {
     if (alertIsRequired(change)) {
       try {
         // todo check endpoint will return inactive offender details
-        const detail = await offenderService.getOffenderDetailWithFullInfo(change.offenderNo)
+        const context = { user: {} }
+        const detail = await offenderService.getOffenderDetailWithFullInfo(context, change.offenderNo)
 
         if (categoryCouldMoveUp(detail)) {
           logger.info(`Creating risk change record for offender ${change.offenderNo}`)
