@@ -255,7 +255,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('extremismInfo')
-        expect(res.text).toMatch(/DPS.+Categorisation home.+Prisoner background/s)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Prisoner background/s)
         expect(res.text).toContain('escapeInfo')
         expect(res.text).toContain('/offenders/GH123/case-notes')
         expect(res.text).toContain('/offenders/GH123/alerts')
@@ -280,7 +280,7 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).toContain('This person has been reported as the perpetrator in 5 assaults in custody before,')
         expect(res.text).toContain('including 2 serious assaults in the last 12 months')
-        expect(res.text).toMatch(/DPS.+Categorisation home.+Check your answers/s)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Check your answers/s)
       })
   })
 
@@ -338,7 +338,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).not.toContain('This person is at risk of engaging in, or vulnerable to, extremism.')
-        expect(res.text).toMatch(/DPS.+Categorisation home.+Check your answers/s)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Check your answers/s)
         expect(res.text).toContain(
           'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.'
         )
@@ -375,7 +375,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('/miniHigherSecurityReview/12345')
-        expect(res.text).toMatch(/DPS.+Categorisation home.+Check your answers/s)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Check your answers/s)
         expect(res.text).not.toContain('/higherSecurityReview/12345')
       })
   })
@@ -397,7 +397,7 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/DPS.+Categorisation home.+Check change in risk status/s)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Check change in risk status/s)
         expect(res.text).toContain(
           'This person needs to be considered by security. Please start a review and refer this person to security.'
         )
