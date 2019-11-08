@@ -87,6 +87,8 @@ module.exports = function Index({
         categorisationRecord,
       })
 
+      const backLink = req.get('Referrer')
+
       const data = {
         details,
         ...res.locals.formObject,
@@ -96,7 +98,7 @@ module.exports = function Index({
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
       }
-      res.render('pages/tasklist', { data })
+      res.render('pages/tasklist', { data, backLink })
     })
   )
 
