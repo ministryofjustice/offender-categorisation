@@ -49,7 +49,7 @@ describe('handleMessage', () => {
         newProfile
       )} }`,
     })
-    expect(offendersService.getOffenderDetailWithFullInfo).toBeCalled()
+    expect(offendersService.getOffenderDetailWithFullInfo).toBeCalledWith({ user: {} }, 'GN123')
   })
 })
 
