@@ -24,9 +24,9 @@ module.exports = context => {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}?type=UNCATEGORISED`
       return nomisUserGet({ path })
     },
-    getCategorisedOffenders(agencyId, bookingIds) {
-      const path = `${apiUrl}api/offender-assessments/category/${agencyId}?latestOnly=false`
-      return nomisPost({ path, body: bookingIds })
+    getCategorisedOffenders(bookingIds) {
+      const path = `${apiUrl}api/offender-assessments/category?latestOnly=false`
+      return nomisClientPost({ path, body: bookingIds })
     },
     getLatestCategorisationForOffenders(offenderNos) {
       if (offenderNos.length === 0) return []
