@@ -186,10 +186,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const categorisedFromDB = await formService.getCategorisedOffenders(agencyId, catType, transactionalDbClient)
       if (!isNilOrEmpty(categorisedFromDB)) {
-        const categorisedFromElite = await nomisClient.getCategorisedOffenders(
-          agencyId,
-          categorisedFromDB.map(c => c.bookingId)
-        )
+        const categorisedFromElite = await nomisClient.getCategorisedOffenders(categorisedFromDB.map(c => c.bookingId))
 
         const matchedCategorisations = matchEliteAndDBCategorisations(categorisedFromElite, categorisedFromDB)
 
