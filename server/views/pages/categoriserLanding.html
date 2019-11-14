@@ -1,0 +1,97 @@
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+{% set pageTitle = "Manage categorisations" %}
+
+{% block beforeContent %}
+  {% set offenderBack = offenderLink %}
+
+  {% include "../partials/breadCrumb.html" %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: data.details.offenderNo | offenderLink
+  }) }}
+
+  {% include "../partials/offenderBanner.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-!-width-two-thirds">
+
+  <h1 class="govuk-heading-l">Start an initial categorisation</h1>
+
+  <div>
+    {% if data.requiredCatType %}
+      {% if data.requiredCatType == 'RECAT' %}
+        {{ govukWarningText({
+          text: 'This prisoner already has a category of ' + data.details.category + '.',
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+      {% endif %}
+      {% if not inProgress(data) %}
+        <p>Once started, you cannot cancel a categorisation.</p>
+        {{ govukButton({
+          text: 'Start initial categorisation',
+          href: '/tasklist/' + data.details.bookingId + '?reason=MANUAL',
+          classes: 'grey-button',
+          attributes: { 'id': 'initialButton','data-prevent-double-click': 'true' }
+        }) }}
+      {% elif data.status == Status.AWAITING_APPROVAL.name %}
+        {{ govukWarningText({
+          text: 'This prisoner is awaiting supervisor approval',
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+        {{ govukButton({
+          text: 'View categorisation',
+          href: '/form/awaitingApprovalView/' + data.details.bookingId,
+          classes: 'grey-button',
+          attributes: { 'id': 'viewButton' }
+        }) }}
+      {% elif data.inProgressCatType == 'RECAT' %}
+        {{ govukWarningText({
+          text: "This prisoner has a categorisation review in progress",
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+      {% else %}
+        <p>This prisoner's categorisation is in progress.</p>
+        {{ govukButton({
+          text: 'Continue categorisation',
+          href: '/tasklist/' + data.details.bookingId,
+          classes: 'grey-button',
+          attributes: { 'id': 'editButton' }
+        }) }}
+      {% endif %}
+    {% else %}
+      {{ govukWarningText({
+        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here.',
+        iconFallbackText: "Warning",
+        classes: "forms-warning-text warning-overrides"
+      }) }}
+    {% endif %}
+  </div>
+
+  {% if data.isSecurityReferred %}
+    <h1 class="govuk-heading-l">This person will automatically be referred to security at next category review</h1>
+    <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
+  {% endif %}
+
+  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <p>See all information from previous category reviews.</p>
+  {{ govukButton({
+    text: 'Check previous reviews',
+    href: '/categoryHistory/' + data.details.bookingId,
+    classes: 'grey-button',
+    attributes: { 'id': 'historyButton' }
+  }) }}
+
+</div>
+
+{% endblock %}

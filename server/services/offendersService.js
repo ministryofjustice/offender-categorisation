@@ -913,25 +913,19 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return nomisClient.getOffenceHistory(offenderNo)
   }
 
-  async function isRecat(context, bookingId) {
+  function isRecat(classificationCodeFromNomis) {
     // Decide whether to do an INITIAL or RECAT (or neither).
     // To detect Cat A etc reliably we have to get cat from nomis.
     // If missing or UXZ it is INITIAL;
     // if B,C,D,I,J it is RECAT;
     // otherwise we cant process it (cat A, or female etc).
-    const nomisClient = nomisClientBuilder(context)
-    try {
-      const cat = await nomisClient.getCategory(bookingId)
-      if (!cat.classificationCode || /[UXZ]/.test(cat.classificationCode)) {
-        return CatType.INITIAL.name
-      }
-      if (/[BCDIJ]/.test(cat.classificationCode)) {
-        return CatType.RECAT.name
-      }
-      return null
-    } catch (error) {
+    if (!classificationCodeFromNomis || /[UXZ]/.test(classificationCodeFromNomis)) {
       return CatType.INITIAL.name
     }
+    if (/[BCDIJ]/.test(classificationCodeFromNomis)) {
+      return CatType.RECAT.name
+    }
+    return null
   }
 
   function calculateButtonStatus(dbRecord, pnomisStatus) {
