@@ -676,7 +676,7 @@ describe('GET /supervisor/confirmBack', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Approve category.+Confirm Status Change/s)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Approve category.+Confirm status change/s)
       })
   })
 })
