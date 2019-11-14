@@ -4,6 +4,16 @@
 {% set greenButtonText = "Back to task list" %}
 {% set pageTitle = "Not suitable for open conditions" %}
 
+{% block navigation %}
+
+  {% if catType == 'RECAT' %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
+  {% else %}
+    {% include "../../partials/breadCrumbTaskList.html" %}
+  {% endif %}
+
+{% endblock %}
+
 {% block formItems %}
 
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>

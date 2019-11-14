@@ -5,6 +5,12 @@
 
 {% set pageTitle = "Security information" %}
 
+{% block navigation %}
+
+{% include "../../partials/breadCrumbTaskList.html" %}
+
+{% endblock %}
+
 {% block formItems %}
 
 <h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>

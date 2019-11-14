@@ -3,8 +3,16 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "details/macro.njk" import govukDetails %}
+{% from "../../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Confirm Status Change" %}
+
+{% block navigation %}
+
+{% set breadCrumbList = [ {href: '/', title: 'Categorisation home'}, {href: '/form/supervisor/review/'+ data.details.bookingId, title: 'Approve category'} ] %}
+{{ breadCrumb(pageTitle, breadCrumbList) }}
+
+{% endblock %}
 
 {% block formItems %}
 

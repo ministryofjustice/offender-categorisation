@@ -122,7 +122,7 @@ module.exports = function Index({
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
       }
-      res.render('pages/tasklistRecat', { data, backLink })
+      res.render('pages/tasklistRecat', { data, backLink, reason })
     })
   )
 
