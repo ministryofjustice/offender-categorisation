@@ -103,10 +103,6 @@ module.exports = context => {
       const path = `${apiUrl}api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false`
       return nomisUserGet({ path })
     },
-    getCategory(bookingId) {
-      const path = `${apiUrl}api/bookings/${bookingId}/assessment/CATEGORY`
-      return nomisUserGet({ path })
-    },
     getAgencyDetail(agencyId) {
       const path = `${apiUrl}api/agencies/${agencyId}?activeOnly=false`
       return nomisUserGet({ path })

@@ -1,0 +1,99 @@
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+{% set pageTitle = "Manage categorisations" %}
+
+{% block beforeContent %}
+  {% set offenderBack = offenderLink %}
+
+  {% include "../partials/breadCrumb.html" %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: data.details.offenderNo | offenderLink
+  }) }}
+
+  {% include "../partials/offenderBanner.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-!-width-two-thirds">
+
+  <h1 class="govuk-heading-l">Start a category review early</h1>
+
+  <div>
+    {% if data.requiredCatType == 'RECAT' %}
+      {% if not inProgress(data) %}
+        <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
+        <p>Once started, you cannot cancel an early category review. However, you will have until their review due date to finish it.</p>
+        <form method="post">
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+          {{ govukButton({
+            text: 'Start review',
+            classes: 'grey-button',
+            attributes: { 'id': 'recatButton','data-prevent-double-click': 'true' }
+          }) }}
+        </form>
+      {% elif data.status == Status.AWAITING_APPROVAL.name %}
+        {{ govukWarningText({
+          text: 'This prisoner is awaiting supervisor approval',
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+        {{ govukButton({
+          text: 'View categorisation',
+          href: '/form/awaitingApprovalView/' + data.details.bookingId,
+          classes: 'grey-button',
+          attributes: { 'id': 'viewButton' }
+        }) }}
+      {% elif data.inProgressCatType == 'INITIAL' %}
+        {{ govukWarningText({
+          text: "This prisoner has an initial categorisation in progress",
+          iconFallbackText: "Warning",
+          classes: "forms-warning-text warning-overrides"
+        }) }}
+      {% else %}
+        <p>This prisoner's categorisation review is in progress.</p>
+        {{ govukButton({
+          text: 'Continue review',
+          href: '/tasklistRecat/' + data.details.bookingId,
+          classes: 'grey-button',
+          attributes: { 'id': 'editButton' }
+        }) }}
+      {% endif %}
+    {% elif data.requiredCatType == 'INITIAL' %}
+      {{ govukWarningText({
+        text: 'This prisoner seems to need an INITIAL category.',
+        iconFallbackText: "Warning",
+        classes: "forms-warning-text warning-overrides"
+      }) }}
+    {% else %}
+      {{ govukWarningText({
+        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here.',
+        iconFallbackText: "Warning",
+        classes: "forms-warning-text warning-overrides"
+      }) }}
+    {% endif %}
+  </div>
+
+  {% if data.isSecurityReferred %}
+    <h1 class="govuk-heading-l">This person will automatically be referred to security at next category review</h1>
+    <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
+  {% endif %}
+
+  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <p>See all information from previous category reviews.</p>
+  {{ govukButton({
+    text: 'Check previous reviews',
+    href: '/categoryHistory/' + data.details.bookingId,
+    classes: 'grey-button',
+    attributes: { 'id': 'historyButton' }
+  }) }}
+
+</div>
+
+{% endblock %}

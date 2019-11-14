@@ -1,0 +1,60 @@
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
+
+{% set pageTitle = "Manage categorisations" %}
+
+{% block beforeContent %}
+  {% set offenderBack = offenderLink %}
+
+  {% include "../partials/breadCrumb.html" %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: data.details.offenderNo | offenderLink
+  }) }}
+
+  {% include "../partials/offenderBanner.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-!-width-two-thirds">
+
+  {% if data.isSecurityReferred %}
+    <h1 class="govuk-heading-l">This person will automatically be referred to security at next category review</h1>
+    <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
+  {% else %}
+    {% if not inProgress(data) %}
+      <h1 class="govuk-heading-l">Refer this person to security at next category review</h1>
+      <p>This means they will automatically be referred to security when their next category review is started.</p>
+      <div>
+        <form method="post">
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+          {{ govukButton({
+            text: 'Set this up',
+            classes: 'grey-button',
+            attributes: { 'id': 'securityButton','data-prevent-double-click': 'true' }
+          }) }}
+        </form>
+      </div>
+    {% else %}
+      <h1 class="govuk-heading-l">Security referral is not available</h1>
+      <p>This prisoner's categorisation review is already in progress with {{ data.categorisationUser.displayNameAlternative }}.</p>
+    {% endif %}
+  {% endif %}
+
+  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <p>See all information from previous category reviews.</p>
+  {{ govukButton({
+    text: 'Check previous reviews',
+    href: '/categoryHistory/' + data.details.bookingId,
+    classes: 'grey-button',
+    attributes: { 'id': 'historyButton' }
+  }) }}
+
+</div>
+
+{% endblock %}
