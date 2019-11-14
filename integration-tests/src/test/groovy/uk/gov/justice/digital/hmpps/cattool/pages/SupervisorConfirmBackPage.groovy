@@ -7,7 +7,7 @@ class SupervisorConfirmBackPage extends Page {
   static url = '/form/supervisor/confirmBack'
 
   static at = {
-    headingText == 'Confirm Status Change'
+    headingText == 'Confirm status change'
   }
 
   static content = {
