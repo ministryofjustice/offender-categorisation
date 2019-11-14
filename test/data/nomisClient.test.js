@@ -32,9 +32,10 @@ describe('nomisClient', () => {
 
   describe('getCategorisedOffenders', () => {
     it('should construct an api call', async () => {
-      fakeElite2Api.post(`/api/offender-assessments/category/LEI?latestOnly=false`).reply(200, uncatResponse)
+      fakeOauth.post(`/oauth/token`, 'grant_type=client_credentials&username=myuser').reply(200, '')
+      fakeElite2Api.post(`/api/offender-assessments/category?latestOnly=false`).reply(200, uncatResponse)
 
-      const output = await nomisClient.getCategorisedOffenders('LEI')
+      const output = await nomisClient.getCategorisedOffenders(['1', '2'])
       return expect(output).toEqual(uncatResponse)
     })
   })
