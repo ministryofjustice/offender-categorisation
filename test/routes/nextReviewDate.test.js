@@ -71,6 +71,49 @@ afterEach(() => {
 })
 
 describe('recat', () => {
+  test('next review date breadcrumb (in recat context)', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      formObject: { ratings: { nextReviewDate: { date: '25/11/2024' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      bookingId: 12,
+    })
+    return request(app)
+      .get(`/nextReviewDateQuestion/12`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list.+Next review date/s)
+        expect(res.text).toContain(
+          '<a class="govuk-breadcrumbs__link" href="/tasklistRecat/12">Category review task list</a>'
+        )
+      })
+  })
+
+  test('next review date breadcrumb (in initial context)', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      formObject: { ratings: { nextReviewDate: { date: '25/11/2024' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      bookingId: 12,
+    })
+    return request(app)
+      .get(`/nextReviewDateQuestion/12`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list.+Next review date/s)
+      })
+  })
+
   test('Post nextReviewDate should go to /tasklistRecat/', () => {
     const { formName, userInput, nextPath } = {
       formName: 'nextReviewDate',

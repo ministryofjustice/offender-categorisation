@@ -6,6 +6,12 @@
 
 {% set pageTitle = "Extremism" %}
 
+{% block navigation %}
+
+{% include "../../partials/breadCrumbTaskList.html" %}
+
+{% endblock %}
+
 {% set previousTerrorismOffencesTextHtml %}
   {{ govukCharacterCount({
     name: "previousTerrorismOffencesText",

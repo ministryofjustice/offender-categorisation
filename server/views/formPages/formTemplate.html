@@ -5,12 +5,16 @@
 
 {% block beforeContent %}
 
-  {% include "../partials/breadCrumb.html" %}
+  {% block navigation %}
 
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink or "/tasklist/" + data.details.bookingId
-}) }}
+    {% include "../partials/breadCrumb.html" %}
+
+    {{ govukBackLink({
+      text: "Back",
+      href: backLink or "/tasklist/" + data.details.bookingId
+  }) }}
+
+  {% endblock %}
 
 {% include "../partials/offenderBanner.html" %}
 

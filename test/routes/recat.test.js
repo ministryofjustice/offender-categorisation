@@ -280,7 +280,7 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).toContain('This person has been reported as the perpetrator in 5 assaults in custody before,')
         expect(res.text).toContain('including 2 serious assaults in the last 12 months')
-        expect(res.text).toMatch(/Home.+Categorisation home.+Check your answers/s)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list.+Check your answers/s)
       })
   })
 

@@ -501,6 +501,7 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Open Conditions')
+        expect(res.text).toMatch(/Home.+Categorisation home.+Approve category/s)
       })
   })
 
@@ -660,6 +661,26 @@ describe('GET /supervisor/review', () => {
   })
 })
 
+describe('GET /supervisor/confirmBack', () => {
+  test('breadcrumb', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      bookingId: 12345,
+      formObject: { recat: { decision: { category: 'I' } } },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      bookingId: 12345,
+    })
+    return request(app)
+      .get(`/supervisor/confirmBack/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Home.+Categorisation home.+Approve category.+Confirm Status Change/s)
+      })
+  })
+})
+
 describe('GET /ratings/violence', () => {
   test.each`
     path                              | expectedContent
@@ -672,6 +693,7 @@ describe('GET /ratings/violence', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(riskProfilerService.getViolenceProfile).toBeCalledTimes(1)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list.+Safety and good order/s)
         expect(res.text).toContain(
           'This person has not been reported as the perpetrator in any assaults in custody before.'
         )
@@ -713,6 +735,7 @@ describe('GET /ratings/extremism', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
+        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list.+Extremism/s)
         expect(riskProfilerService.getExtremismProfile).toBeCalledTimes(1)
       })
   )
@@ -751,7 +774,7 @@ describe('GET /categoriser/review', () => {
     return request(app)
       .get('/categoriser/review/12345')
       .expect(200)
-      .expect(() => {
+      .expect(res => {
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
           {
@@ -774,6 +797,7 @@ describe('GET /categoriser/review', () => {
           mockTransactionalClient
         )
         expect(formService.updateFormData).not.toBeCalled()
+        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list.+Check your answers/s)
       })
   })
 
