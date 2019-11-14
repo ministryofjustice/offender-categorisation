@@ -13,6 +13,16 @@
 
 {% set pageTitle = "Provisional category" %}
 
+{% block navigation %}
+
+{% if catType == 'RECAT' %}
+{% include "../../partials/breadCrumbTaskListRecat.html" %}
+{% else %}
+{% include "../../partials/breadCrumbTaskList.html" %}
+{% endif %}
+
+{% endblock %}
+
 
 {% block formItems %}
 

@@ -6,6 +6,16 @@
 {% set greenButtonText = "Continue" %}
 {% set pageTitle = "Risk levels" %}
 
+{% block navigation %}
+
+  {% if catType == 'RECAT' %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
+  {% else %}
+    {% include "../../partials/breadCrumbTaskList.html" %}
+  {% endif %}
+
+{% endblock %}
+
 {% set likelyToAbscondHtml %}
 
   {{ govukCharacterCount({

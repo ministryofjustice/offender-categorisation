@@ -7,12 +7,7 @@
 
 {% block beforeContent %}
 
-  {% include "../../partials/breadCrumb.html" %}
-
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  }) }}
+{% include "../../partials/breadCrumbTaskListRecat.html" %}
 
   <div class="govuk-body-m govuk-!-margin-left-4">
     {% include "../../partials/offenderDetails.html" %}
