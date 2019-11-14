@@ -367,6 +367,7 @@ describe('security home', () => {
 
 describe('Landing page', () => {
   test('security user get', () => {
+    roles = ['ROLE_CATEGORISATION_SECURITY']
     userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI', roles: { security: true } })
     offendersService.getOffenderDetails.mockResolvedValue({
       offenderNo: 'B2345XY',
@@ -378,6 +379,7 @@ describe('Landing page', () => {
 
     return request(app)
       .get('/12345')
+      .redirects(1)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
@@ -394,6 +396,7 @@ describe('Landing page', () => {
   })
 
   test('security user get - referred by current user', () => {
+    roles = ['ROLE_CATEGORISATION_SECURITY']
     userService.getUser.mockResolvedValue({
       username: 'CT_SEC',
       activeCaseLoad: {
@@ -420,6 +423,7 @@ describe('Landing page', () => {
 
     return request(app)
       .get('/12345')
+      .redirects(1)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
@@ -431,6 +435,7 @@ describe('Landing page', () => {
   })
 
   test('security user get - categorisation in progress', () => {
+    roles = ['ROLE_CATEGORISATION_SECURITY']
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'STARTED',
       bookingId: 12,
@@ -469,6 +474,7 @@ describe('Landing page', () => {
 
     return request(app)
       .get('/12345')
+      .redirects(1)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
@@ -480,6 +486,7 @@ describe('Landing page', () => {
   })
 
   test('security user get - referred by another user from a different prison', () => {
+    roles = ['ROLE_CATEGORISATION_SECURITY']
     userService.getUser.mockResolvedValue({
       username: 'CT_SEC',
       activeCaseLoad: {
@@ -511,6 +518,7 @@ describe('Landing page', () => {
 
     return request(app)
       .get('/12345')
+      .redirects(1)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
@@ -524,6 +532,7 @@ describe('Landing page', () => {
   })
 
   test('security user get - referred by another user from the same prison', () => {
+    roles = ['ROLE_CATEGORISATION_SECURITY']
     userService.getUser.mockResolvedValue({
       username: 'CT_SEC',
       activeCaseLoad: {
@@ -561,6 +570,7 @@ describe('Landing page', () => {
 
     return request(app)
       .get('/12345')
+      .redirects(1)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
@@ -576,7 +586,7 @@ describe('Landing page', () => {
     userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI', roles: { security: true } })
     offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12 })
     return request(app)
-      .post('/12345')
+      .post('/securityLanding/12345')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {

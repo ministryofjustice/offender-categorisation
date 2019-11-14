@@ -29,7 +29,7 @@ function determinePathFromDecisions({ decisions, data }) {
   return decisions.reduce((path, pathConfig) => path || getPathFromAnswer({ nextPath: pathConfig, data }), null)
 }
 
-function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl) {
+function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl, recategoriserUrl, defaultUrl) {
   const roles = jwtDecode(res.locals.user.token).authorities
   // NOTE: order must match multirole.html
   if (req.session && req.session.currentRole) {
@@ -46,6 +46,8 @@ function redirectUsingRole(req, res, categoriserUrl, supervisorUrl, securityUrl,
   } else if (roles && roles.includes('ROLE_CATEGORISATION_SECURITY')) {
     req.session.currentRole = `security`
     res.redirect(securityUrl)
+  } else if (defaultUrl) {
+    res.redirect(defaultUrl)
   } else {
     // go to a 'not auth' page
     res.status(403)

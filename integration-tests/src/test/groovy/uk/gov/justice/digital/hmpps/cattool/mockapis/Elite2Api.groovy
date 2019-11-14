@@ -1247,19 +1247,4 @@ class Elite2Api extends WireMockRule {
             .withStatus(200))
     )
   }
-
-  def stubGetCategory(bookingId, cat) {
-
-    this.stubFor(
-      get("/api/bookings/${bookingId}/assessment/CATEGORY")
-        .willReturn(
-          aResponse()
-            .withBody(JsonOutput.toJson([
-              classificationCode   : cat,
-            ]
-            ))
-            .withHeader('Content-Type', 'application/json')
-            .withStatus(200))
-    )
-  }
 }

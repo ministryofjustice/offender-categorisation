@@ -23,7 +23,6 @@ const nomisClient = {
   getMainOffences: jest.fn(),
   createInitialCategorisation: jest.fn(),
   createSupervisorApproval: jest.fn(),
-  getCategory: jest.fn(),
   getCategoryHistory: jest.fn(),
   getAgencyDetail: jest.fn(),
   getCategorisedOffenders: jest.fn(),
@@ -1067,28 +1066,20 @@ describe('getOffenderDetails', () => {
 })
 
 describe('isRecat', () => {
-  test('it should return RECAT when supported cat in nomis', async () => {
-    nomisClient.getCategory.mockReturnValue({ classificationCode: 'B' })
-    const result = await service.isRecat(context, 12345)
-    expect(result).toBe('RECAT')
+  test('it should return RECAT when supported cat in nomis', () => {
+    expect(service.isRecat('B')).toBe('RECAT')
   })
 
-  test('it should return INITIAL when missing in nomis', async () => {
-    nomisClient.getCategory.mockRejectedValue(new Error('404'))
-    const result = await service.isRecat(context, 12345)
-    expect(result).toBe('INITIAL')
+  test('it should return INITIAL when missing in nomis', () => {
+    expect(service.isRecat(null)).toBe('INITIAL')
   })
 
-  test('it should return INITIAL when cat Z in nomis', async () => {
-    nomisClient.getCategory.mockReturnValue({ classificationCode: 'Z' })
-    const result = await service.isRecat(context, 12345)
-    expect(result).toBe('INITIAL')
+  test('it should return INITIAL when cat Z in nomis', () => {
+    expect(service.isRecat('Z')).toBe('INITIAL')
   })
 
-  test('it should return null when cat A in nomis', async () => {
-    nomisClient.getCategory.mockReturnValue({ classificationCode: 'A' })
-    const result = await service.isRecat(context, 12345)
-    expect(result).toBe(null)
+  test('it should return null when cat A in nomis', () => {
+    expect(service.isRecat('A')).toBe(null)
   })
 })
 

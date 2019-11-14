@@ -262,20 +262,41 @@ module.exports = function Index({
 
   router.get(
     '/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      redirectUsingRole(
+        req,
+        res,
+        `/categoriserLanding/${bookingId}`,
+        `/supervisorLanding/${bookingId}`,
+        `/securityLanding/${bookingId}`,
+        `/recategoriserLanding/${bookingId}`,
+        `/landing/${bookingId}`
+      )
+    })
+  )
+
+  router.get(
+    '/:role(categoriser|supervisor|security|recategoriser)Landing/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const { bookingId } = req.params
+      const { role, bookingId } = req.params
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
       const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
       const nextReviewDate = extractNextReviewDate(details)
-      const requiredCatType = await offendersService.isRecat(res.locals, bookingId)
+      const requiredCatType = offendersService.isRecat(details.categoryCode)
 
-      const securityReferral = await getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient)
-      const categorisationUser = await getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord)
+      const [securityReferral, categorisationUser] =
+        role === 'security'
+          ? await Promise.all([
+              getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient),
+              getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord),
+            ])
+          : [{}, {}]
 
-      res.render('pages/landing', {
+      res.render(`pages/${role}Landing`, {
         data: {
           requiredCatType,
           inProgressCatType: categorisationRecord.catType,
@@ -286,6 +307,18 @@ module.exports = function Index({
           status: categorisationRecord.status,
         },
       })
+    })
+  )
+
+  router.get(
+    '/landing/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const { bookingId } = req.params
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+      res.render(`pages/landing`, { data: { details } })
     })
   )
 
@@ -325,21 +358,27 @@ module.exports = function Index({
   }
 
   router.post(
-    '/:bookingId',
+    '/recategoriserLanding/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+      await offendersService.updateNextReviewDateIfRequired(res.locals, bookingId, details)
+      res.redirect(`/tasklistRecat/${bookingId}?reason=MANUAL`)
+    })
+  )
+
+  router.post(
+    '/securityLanding/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
 
       const user = await userService.getUser(res.locals)
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
-      if (req.body.landingType && req.body.landingType === 'earlyReview') {
-        await offendersService.updateNextReviewDateIfRequired(res.locals, bookingId, details)
-        res.redirect(`/tasklistRecat/${bookingId}?reason=MANUAL`)
-      } else {
-        formService.createSecurityReferral(details.agencyId, details.offenderNo, user.username, transactionalDbClient)
-
-        res.render('pages/securityReferralSubmitted')
-      }
+      formService.createSecurityReferral(details.agencyId, details.offenderNo, user.username, transactionalDbClient)
+      res.render('pages/securityReferralSubmitted')
     })
   )
 
