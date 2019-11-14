@@ -80,7 +80,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     overriddenCategoryD.click()
     overriddenCategoryText << 'categoriser override to D comment'
     otherInformationText << 'categoriser relevant info 1'
-    elite2Api.stubCategorise('D', '', 12, 5)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
     at OpenConditionsAddedPage
@@ -332,7 +331,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     overriddenCategoryD.click()
     overriddenCategoryText << 'categoriser override to D comment'
     otherInformationText << 'categoriser relevant info 1'
-    elite2Api.stubCategorise('D', '', 12, 5)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
     at OpenConditionsAddedPage
@@ -389,7 +387,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D', '', 12, 5)
+    elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
     appropriateYes.click()
     submitButton.click()
 
@@ -478,7 +476,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     overriddenCategoryD.click()
     overriddenCategoryText << 'categoriser override to D comment'
     otherInformationText << 'categoriser relevant info 1'
-    elite2Api.stubCategorise('D', '', 12, 5)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
     at OpenConditionsAddedPage
@@ -512,7 +509,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D', '', 12, 5)
+    elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
     appropriateYes.click()
     submitButton.click()
 
@@ -580,7 +577,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     appropriateYes.click()
     otherInformationText << 'categoriser relevant info for accept'
-    elite2Api.stubCategorise('C', '', 12, 5)
+    elite2Api.stubCategorise('C', '2019-12-14', 12, 5)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     submitButton.click()
 
@@ -638,9 +635,9 @@ class OpenConditionsSpecification extends GebReportingSpec {
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D', '', 12, 5)
+    elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
     appropriateYes.click()
-    submitButton.click() // *************************
+    submitButton.click()
 
     then: 'the category is submitted'
     at CategoriserSubmittedPage

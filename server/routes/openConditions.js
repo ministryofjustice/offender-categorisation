@@ -279,6 +279,8 @@ module.exports = function Index({ formService, offendersService, userService, au
       const bookingInt = parseInt(bookingId, 10)
 
       if (userInput.openConditionsCategoryAppropriate === 'Yes') {
+        const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
         log.info(`Categoriser creating initial categorisation record:`)
         await formService.categoriserDecisionWithFormResponse({
           bookingId: bookingInt,
@@ -290,11 +292,14 @@ module.exports = function Index({ formService, offendersService, userService, au
           transactionalClient: transactionalDbClient,
         })
 
+        const nextReviewDate = R.path(['formObject', 'ratings', 'nextReviewDate', 'date'], formData)
+
         const nomisKeyMap = await offendersService.createInitialCategorisation({
           context: res.locals,
           bookingId: bookingInt,
           suggestedCategory: userInput.openConditionsSuggestedCategory,
           overriddenCategoryText: userInput.overriddenCategoryText || 'Cat-tool Open',
+          nextReviewDate,
         })
 
         await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)

@@ -560,7 +560,9 @@ module.exports = function Index({
       const bookingInt = parseInt(bookingId, 10)
 
       if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
-        log.info(`Categoriser creating initial categorisation record:`)
+        const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+        log.info(`Categoriser creating initial categorisation record for ${formData.offenderNo}:`)
         await formService.categoriserDecisionWithFormResponse({
           bookingId: bookingInt,
           config: formPageConfig,
@@ -571,12 +573,15 @@ module.exports = function Index({
           transactionalClient: transactionalDbClient,
         })
 
+        const nextReviewDate = R.path(['formObject', 'ratings', 'nextReviewDate', 'date'], formData)
+
         const nomisKeyMap = await offendersService.createInitialCategorisation({
           context: res.locals,
           bookingId: bookingInt,
           overriddenCategory: userInput.overriddenCategory,
           suggestedCategory: userInput.suggestedCategory,
           overriddenCategoryText: userInput.overriddenCategoryText || 'Cat-tool Initial',
+          nextReviewDate,
         })
 
         await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)
