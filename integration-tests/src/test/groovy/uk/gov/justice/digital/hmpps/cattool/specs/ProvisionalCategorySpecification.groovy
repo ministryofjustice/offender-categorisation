@@ -64,7 +64,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
 
     when: 'I enter some data, save and return to the page'
-    elite2Api.stubCategorise('C')
+    elite2Api.stubCategorise('C', '2019-12-14')
     appropriateNo.click()
 
     // the displayed property does not work on these radios for some reason
@@ -245,7 +245,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     newCatMessage.text() == 'Changing to Cat B'
 
     when: 'Changing to Cat B'
-    elite2Api.stubCategorise('B')
+    elite2Api.stubCategorise('B', '2019-12-14')
     overriddenCategoryText << "Explanation"
     otherInformationText << "other info"
     submitButton.click()
@@ -284,7 +284,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     indeterminateMessage.text() == 'Prisoner has an indeterminate sentence - YOI Open not available'
 
     when: 'form is submitted'
-    elite2Api.stubCategorise('I')
+    elite2Api.stubCategorise('I', '2019-12-14')
     submitButton.click()
 
     then: 'Data is stored correctly'
@@ -354,7 +354,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     warning[0].text() == 'D\nWarning\nBased on the information provided, the provisional category is D'
 
     when: 'I confirm Cat D'
-    elite2Api.stubCategorise('D')
+    elite2Api.stubCategorise('D', '2019-12-14')
     appropriateYes.click()
 
     submitButton.click()
