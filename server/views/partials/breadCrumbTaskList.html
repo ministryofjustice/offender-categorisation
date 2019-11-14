@@ -1,0 +1,4 @@
+{% from "../macros/breadCrumb.html" import breadCrumb %}
+
+{% set breadCrumbList = [ {href: '/', title: 'Categorisation home'}, {href: '/tasklist/' + data.details.bookingId, title: 'Categorisation task list'} ] %}
+{{ breadCrumb(pageTitle, breadCrumbList) }}

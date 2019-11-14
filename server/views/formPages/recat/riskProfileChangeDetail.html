@@ -2,11 +2,18 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "../../macros/renderAlert.html" import renderAlert %}
+{% from "../../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Check change in risk status" %}
 
+{% block navigation %}
+
+{% set breadCrumbList = [ {href: '/', title: 'Categorisation home'}, {href: '/recategoriserCheck', title: 'Potential reviews'} ] %}
+{{ breadCrumb(pageTitle, breadCrumbList) }}
+
+{% endblock %}
+
 {% set greenButtonText = "Continue" %}
-{% set backLink = "/recategoriserCheck" %}
 
 {% block formItems %}
 

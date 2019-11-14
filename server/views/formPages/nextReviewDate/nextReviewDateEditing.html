@@ -2,6 +2,16 @@
 
 {% set pageTitle = "Next review date" %}
 
+{% block navigation %}
+
+  {% if catType == 'RECAT' %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
+  {% else %}
+    {% include "../../partials/breadCrumbTaskList.html" %}
+  {% endif %}
+
+{% endblock %}
+
 {% set greenButtonText = "Return" %}
 
 {% block formItems %}

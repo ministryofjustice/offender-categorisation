@@ -11,11 +11,6 @@
 {% block beforeContent %}
   {% include "../../partials/breadCrumb.html" %}
 
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  }) }}
-
   <div class="govuk-body-m govuk-!-margin-left-6">
     {% include "../../partials/offenderDetails.html" %}
     <hr/>
