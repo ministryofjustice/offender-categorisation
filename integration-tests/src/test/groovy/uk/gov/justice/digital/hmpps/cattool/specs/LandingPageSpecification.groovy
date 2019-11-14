@@ -46,7 +46,6 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'The user arrives at the landing page'
     elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'C')
     go '/12'
 
     then: 'The page contains a recat button'
@@ -74,7 +73,6 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'The user arrives at the landing page'
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'U')
-    elite2Api.stubGetCategory(12, 'U')
     go '/12'
 
     then: 'The page contains an initial cat warning'
@@ -91,7 +89,6 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'The user arrives at the landing page'
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'A')
-    elite2Api.stubGetCategory(12, 'A')
     go '/12'
 
     then: 'The page contains a warning'
@@ -109,8 +106,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'A')
-    elite2Api.stubGetCategory(12, 'C')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C')
     go '/12'
 
     then: 'The page contains a recat continue button'
@@ -138,8 +134,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'A')
-    elite2Api.stubGetCategory(12, 'C')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C')
     go '/12'
 
     then: 'The page contains a warning'
@@ -158,8 +153,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page for a cat in awaiting approval status'
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'A')
-    elite2Api.stubGetCategory(12, 'C')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C')
     go '/12'
 
     then: 'The page contains a warning'
@@ -181,7 +175,6 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'The user arrives at the landing page'
     elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'C')
     go '/12'
 
     then: 'The page contains a security referral button'
@@ -283,7 +276,6 @@ class LandingPageSpecification extends GebReportingSpec {
 
     and: 'Refers a prisoner'
     elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'C')
     go '/12'
     at LandingPage
     securityButton.click()
@@ -331,7 +323,6 @@ class LandingPageSpecification extends GebReportingSpec {
     when: 'the user arrives at the landing page and clicks the link to check previous reviews'
     elite2Api.stubGetOffenderDetails(12)
     elite2Api.stubGetBasicOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'C')
     go '/12'
     at LandingPage
     elite2Api.stubAgencyDetails('BXI')
@@ -363,8 +354,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page'
-    elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'U')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'U')
     go '/12'
 
     then: 'The page contains an initial cat button'
@@ -396,15 +386,14 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page and a cat already exists'
-    elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'B')
+    elite2Api.stubGetOffenderDetails(12,'B2345YZ',  false,  false, 'B')
     go '/12'
 
     then: 'The page contains an initial cat button and a warning'
     at LandingPage
     !recatButton.displayed
     initialButton.displayed
-    warning.text() endsWith 'This prisoner already has a category of Cat C.'
+    warning.text() endsWith 'This prisoner already has a category of Cat B.'
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
@@ -431,8 +420,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
-    elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'U')
+    elite2Api.stubGetOffenderDetails(12,'B2345YZ',  false,  false, 'U')
     go '/12'
 
     then: 'The page contains a continue button'
@@ -461,8 +449,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
-    elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'U')
+    elite2Api.stubGetOffenderDetails(12,'B2345YZ',  false,  false, 'U')
     go '/12'
 
     then: 'The page contains a warning'
@@ -482,8 +469,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
-    elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetCategory(12, 'U')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'U')
     go '/12'
 
     then: 'The page contains a warning'
