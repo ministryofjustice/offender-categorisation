@@ -72,7 +72,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
-    elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
     at OpenConditionsAddedPage
     button.click()
@@ -158,7 +157,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryCOption.click()
-    elite2Api.stubCategorise('C', '', 12, 5)
     submitButton.click()
     at TasklistRecatPage
     elite2Api.stubAssessments('B2345YZ')
@@ -211,7 +209,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
-    elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
     at OpenConditionsAddedPage
     button.click()
@@ -267,7 +264,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     response.openConditionsRequested
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D', '', 12, 5)
+    elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
     submitButton.click()
 
     then: 'the category is submitted'
@@ -365,7 +362,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
-    elite2Api.stubCategorise('D', '', 12, 5)
     submitButton.click()
     at OpenConditionsAddedPage
     button.click()
@@ -392,7 +388,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at ReviewRecatPage
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D', '', 12, 5)
+    elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
     submitButton.click()
 
     then: 'the category is submitted'
@@ -465,13 +461,13 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    elite2Api.stubCategorise('C', '', 12, 5)
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
     elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
     at ReviewRecatPage
+    elite2Api.stubCategorise('C', '2019-12-14', 12, 5)
     submitButton.click()
 
     then: 'the cat C is submitted'
@@ -525,7 +521,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at ReviewRecatPage
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D', '', 12, 5)
+    elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
     submitButton.click()
 
     then: 'the category is submitted'

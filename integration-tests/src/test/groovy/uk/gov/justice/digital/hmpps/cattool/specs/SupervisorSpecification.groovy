@@ -190,7 +190,6 @@ class SupervisorSpecification extends GebReportingSpec {
     indeterminateMessage.text() == 'Prisoner has indeterminate sentence - Cat D not available'
 
     when: 'Changing to Cat B'
-    elite2Api.stubCategorise('B')
     overriddenCategoryText << "Some Text"
     submitButton.click()
 
