@@ -1160,12 +1160,9 @@ class Elite2Api extends WireMockRule {
             .withStatus(200)))
   }
 
-  def stubCategorise(String expectedCat, String nextReviewDate = '', long bookingId = 12, sequenceNumber = 4) {
+  def stubCategorise(String expectedCat, String nextReviewDate, long bookingId = 12, sequenceNumber = 4) {
 
-    def expectedBody = [bookingId: bookingId, category: expectedCat, committee: 'OCA']
-    if (nextReviewDate) {
-      expectedBody.nextReviewDate = nextReviewDate
-    }
+    def expectedBody = [bookingId: bookingId, category: expectedCat, committee: 'OCA', nextReviewDate: nextReviewDate]
 
     this.stubFor(
       post("/api/offender-assessments/category/categorise")
