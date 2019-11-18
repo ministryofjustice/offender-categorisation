@@ -83,7 +83,7 @@ class Elite2Api extends WireMockRule {
             .withBody("pong")))
   }
 
-  void stubUncategorised() {
+  void stubUncategorised(statusList=['UNCATEGORISED','AWAITING_APPROVAL']) {
     this.stubFor(
       get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
         .willReturn(
@@ -94,7 +94,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo   : 'B2345XY',
                 firstName    : 'PENELOPE',
                 lastName     : 'PITSTOP',
-                status       : 'UNCATEGORISED',
+                status       : statusList[0],
                 assessmentSeq: 5,
               ],
               [
@@ -102,7 +102,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo   : 'B2345YZ',
                 firstName    : 'ANT',
                 lastName     : 'HILLMOB',
-                status       : 'AWAITING_APPROVAL',
+                status       : statusList[1],
                 assessmentSeq: 4,
               ],
             ]

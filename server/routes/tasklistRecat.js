@@ -67,10 +67,7 @@ module.exports = function Index({
       }
 
       // If retrieved - check if APPROVED / CANCELLED and if it is, create new
-      if (
-        categorisationRecord.status === Status.APPROVED.name ||
-        categorisationRecord.status === Status.CANCELLED.name
-      ) {
+      if (categorisationRecord.status === Status.APPROVED.name) {
         categorisationRecord = await formService.createCategorisationRecord(
           bookingId,
           req.user.username,

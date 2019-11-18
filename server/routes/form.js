@@ -303,11 +303,11 @@ module.exports = function Index({
 
   router.get(
     '/cancelConfirmed/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient)
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
-      res.render('pages/cancelConfirmed', result)
+      res.render('pages/cancelConfirmed', { data: { details } })
     })
   )
 

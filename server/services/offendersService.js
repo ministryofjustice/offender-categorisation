@@ -76,9 +76,7 @@ function unwanted(dbRecord) {
 }
 
 function calculateRecatDisplayStatus(displayStatus) {
-  return displayStatus === Status.APPROVED.value || displayStatus === Status.CANCELLED.value || !displayStatus
-    ? 'Not started'
-    : displayStatus
+  return displayStatus === Status.APPROVED.value || !displayStatus ? 'Not started' : displayStatus
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
