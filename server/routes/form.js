@@ -652,16 +652,12 @@ module.exports = function Index({
         res.redirect(`${nextPath}${bookingId}`)
       } else {
         // persist the open conditions override and return to categoriser to complete the open conditions route.
-        const userInputAdditionalAudit = {
-          supervisorSentBackOverriddenCategoryText: userInput.supervisorOverriddenCategoryText,
-          ...userInput,
-        }
         log.info(`Supervisor overriding to Category ${userInput.supervisorOverriddenCategory}`)
         await formService.update({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
           config: formPageConfig,
-          userInput: userInputAdditionalAudit,
+          userInput,
           formSection: section,
           formName: form,
           transactionalClient: transactionalDbClient,
@@ -669,10 +665,16 @@ module.exports = function Index({
         })
         await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
 
+        const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+        const { formObject } = categorisationRecord
+        const formObjectWithMessageText = R.assocPath(
+          ['supervisor', 'confirmBack', 'messageText'],
+          userInput.supervisorOverriddenCategoryText,
+          formObject
+        )
+
         // Reset cat so it appears the categoriser originally chose open conditions!
         if (userInput.catType === CatType.INITIAL.name) {
-          const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-          const { formObject } = categorisationRecord
           const newData = R.assocPath(
             ['categoriser', 'provisionalCategory'],
             {
@@ -680,10 +682,12 @@ module.exports = function Index({
               categoryAppropriate: 'Yes',
               otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
             },
-            formObject
+            formObjectWithMessageText
           )
           await formService.updateFormData(bookingId, newData, transactionalDbClient)
         } else {
+          await formService.updateFormData(bookingId, formObjectWithMessageText, transactionalDbClient)
+
           // delete recat decision to force a new decision once open conditions completed
           await formService.deleteFormData({
             bookingId: parseInt(bookingId, 10),

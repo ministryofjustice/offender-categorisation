@@ -19,7 +19,7 @@ class TasklistPage extends Page {
     sentenceTableRow1(required: false) { $('table#sentences tr', 1).find('td') }
     sentenceTableRow2(required: false) { $('table#sentences tr', 2).find('td') }
     logoutLink { $('a', href: '/logout') }
-    supervisorMessageButton { $('#supervisorMessageButton') }
+    supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
     offendingHistoryButton { $('#offendingHistoryButton') }
     furtherChargesButton { $('#furtherChargesButton') }
     securityButton { $('#securityButton') }
