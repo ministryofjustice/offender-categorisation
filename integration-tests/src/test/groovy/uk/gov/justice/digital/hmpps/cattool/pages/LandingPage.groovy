@@ -15,9 +15,11 @@ class LandingPage extends Page {
     recatButton(required: false) { $('#recatButton') }
     viewButton(required: false) { $('#viewButton') }
     editButton(required: false) { $('#editButton') }
+    approveButton(required: false) { $('#approveButton') }
     warning(required: false) { $('div.govuk-warning-text') }
     historyButton { $('#historyButton') }
     historyHeading { $('#previousCategoryHeading') }
     securityButton(required: false) { $('#securityButton') }
+    paragraphs { $('p') }
   }
 }

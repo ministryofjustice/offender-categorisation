@@ -478,4 +478,83 @@ class LandingPageSpecification extends GebReportingSpec {
     warning.text() contains "This prisoner is awaiting supervisor approval"
     viewButton.displayed
   }
+
+  def "A supervisor user sees a prisoner with no cat data"() {
+
+    when: 'The supervisor visits the landing page'
+    elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubAssessments('B2345XY')
+    fixture.loginAs(SUPERVISOR_USER)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    go '/12'
+
+    then: 'they are treated as no cat in progress'
+    at LandingPage
+    paragraphs*.text() contains 'They are due to be reviewed by Thursday 16th January 2020.'
+  }
+
+  def "A supervisor user sees a prisoner awaiting approval"() {
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'INITIAL', 'B2345YZ');
+
+    when: 'The supervisor visits the landing page'
+    elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubAssessments('B2345XY')
+    fixture.loginAs(SUPERVISOR_USER)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    go '/12'
+
+    then: 'they are given a start button'
+    at LandingPage
+    approveButton.displayed
+  }
+
+  def "A supervisor user sees a started initial cat"() {
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ');
+
+    when: 'The supervisor visits the landing page'
+    elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubAssessments('B2345XY')
+    fixture.loginAs(SUPERVISOR_USER)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    go '/12'
+
+    then: 'they are informed there is a cat in progress'
+    at LandingPage
+    paragraphs*.text() contains 'This prisoner\'s initial categorisation is in progress.'
+  }
+
+  def "A supervisor user sees a started recat"() {
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ');
+
+    when: 'The supervisor visits the landing page'
+    elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.now().toString()])
+    elite2Api.stubAssessments('B2345XY')
+    fixture.loginAs(SUPERVISOR_USER)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    go '/12'
+
+    then: 'they are informed there is a cat in progress'
+    at LandingPage
+    paragraphs*.text() contains 'This prisoner has a categorisation review in progress.'
+  }
+
+  def "A supervisor user sees a prisoner with a cancelled cat"() {
+    db.createDataWithStatusAndCatType(12, 'CANCELLED', '{}', 'INITIAL', 'B2345YZ');
+
+    when: 'The supervisor visits the landing page'
+    elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubAssessments('B2345XY')
+    fixture.loginAs(SUPERVISOR_USER)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    go '/12'
+
+    then: 'they are treated as no cat in progress'
+    at LandingPage
+    paragraphs*.text() contains 'They are due to be reviewed by Thursday 16th January 2020.'
+  }
 }
