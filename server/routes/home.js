@@ -288,13 +288,10 @@ module.exports = function Index({
       const nextReviewDate = extractNextReviewDate(details)
       const requiredCatType = offendersService.isRecat(details.categoryCode)
 
-      const [securityReferral, categorisationUser] =
-        role === 'security'
-          ? await Promise.all([
-              getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient),
-              getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord),
-            ])
-          : [{}, {}]
+      const [securityReferral, categorisationUser] = await Promise.all([
+        getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient),
+        getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord),
+      ])
 
       res.render(`pages/${role}Landing`, {
         data: {
