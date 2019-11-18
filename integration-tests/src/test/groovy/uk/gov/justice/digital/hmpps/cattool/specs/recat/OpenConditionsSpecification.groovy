@@ -13,8 +13,8 @@ import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorMessagePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.PrisonerBackgroundPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
@@ -485,14 +485,14 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubSupervisorApprove('D')
     appropriateNo.click()
     overriddenCategoryD.click()
-    overriddenCategoryText << "super overriding C to D"
+    overriddenCategoryText << "super overriding C to D reason text"
     otherInformationText << "super other info 1"
     submitButton.click()
 
     then: 'supervisor is returned to home'
     at SupervisorHomePage
 
-    when: 'open conditions forms are completed by categoriser'
+    when: 'open conditions forms are accessed by categoriser'
     fixture.logout()
     fixture.gotoTasklistRecat()
     at TasklistRecatPage
@@ -507,7 +507,16 @@ class OpenConditionsSpecification extends GebReportingSpec {
     openConditionsButton.isDisplayed()
     decisionButton.text() == 'Start'
 
+    when: 'the categoriser looks at the supervisor message'
+    supervisorMessageButton.click()
+
+    then: 'the supervisor message is available'
+    at SupervisorMessagePage
+    messageText.text() == 'super overriding C to D reason text'
+
     when: 'the recategoriser chooses cat D instead of C'
+    submitButton.click()
+    at TasklistRecatPage
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
@@ -569,10 +578,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
       ]
     ]
     response.categoriser == null
-    response.supervisor == [review: [proposedCategory             : 'D',
-                                     supervisorCategoryAppropriate: 'Yes',
-                                     otherInformationText         : 'super other info 1 + 2',
-                                     previousOverrideCategoryText : 'super overriding C to D']]
+    response.supervisor == [review     : [proposedCategory             : 'D',
+                                          supervisorCategoryAppropriate: 'Yes',
+                                          otherInformationText         : 'super other info 1 + 2',
+                                          previousOverrideCategoryText : 'super overriding C to D reason text'],
+                            confirmBack: [isRead: true, messageText: 'super overriding C to D reason text']]
     response.openConditions == allNoAnswers
     response.openConditionsRequested
 
@@ -590,7 +600,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     categories*.text() == ['D\nWarning\nCategory D',
                            'D\nWarning\nThe categoriser recommends category D',
                            'D\nWarning\nThe supervisor also recommends category D']
-    comments*.text() == ['super overriding C to D', 'super other info 1 + 2']
+    comments*.text() == ['super overriding C to D reason text', 'super other info 1 + 2']
     commentLabel.size() == 1
   }
 
