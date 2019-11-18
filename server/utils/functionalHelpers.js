@@ -78,9 +78,7 @@ function isFirstVisit(res) {
 }
 
 function inProgress(dbRecord) {
-  return (
-    dbRecord && dbRecord.status && dbRecord.status !== Status.APPROVED.name && dbRecord.status !== Status.CANCELLED.name
-  )
+  return dbRecord && dbRecord.status && dbRecord.status !== Status.APPROVED.name
 }
 
 async function addSocProfile({
