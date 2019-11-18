@@ -23,10 +23,12 @@ const selectClause = `select id,
 const sequenceClause =
   'and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)'
 
+const ignoreCancelledClause = `and f.status <> 'CANCELLED'`
+
 module.exports = {
   getFormDataForUser(bookingId, transactionalClient) {
     const query = {
-      text: `${selectClause} from form f where f.booking_id = $1 ${sequenceClause}`,
+      text: `${selectClause} from form f where f.booking_id = $1 ${ignoreCancelledClause} ${sequenceClause}`,
       values: [bookingId],
     }
     return transactionalClient.query(query)
@@ -35,7 +37,7 @@ module.exports = {
   getFormDataUsingSequence(bookingId, sequenceNo, transactionalClient) {
     logger.debug(`getFormDataUsingSequence called for ${bookingId}, sequenceNo ${sequenceNo}`)
     const query = {
-      text: `${selectClause} from form f where f.booking_id = $1 and f.sequence_no = $2`,
+      text: `${selectClause} from form f where f.booking_id = $1 and f.sequence_no = $2 ${ignoreCancelledClause} `,
       values: [bookingId, sequenceNo],
     }
     return transactionalClient.query(query)
@@ -51,7 +53,8 @@ module.exports = {
                     form_response as "formObject",
                     prison_id     as "prisonId"
              from form f
-             where f.booking_id = $1 and f.status = 'APPROVED'
+             where f.booking_id = $1 and f.status = 'APPROVED' 
+             ${ignoreCancelledClause}
              order by sequence_no`,
       values: [bookingId],
     }
@@ -82,7 +85,7 @@ module.exports = {
     logger.debug(`getSecurityReviewedCategorisationRecords called for ${agencyId}`)
     const query = {
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType"
-        from form f where f.prison_id = $1 and f.security_reviewed_date is not null ${sequenceClause}`,
+        from form f where f.prison_id = $1 and f.security_reviewed_date is not null ${ignoreCancelledClause} ${sequenceClause}`,
       values: [agencyId],
     }
     return transactionalClient.query(query)

@@ -296,6 +296,16 @@ class HomePageSpecification extends GebReportingSpec {
     at CancelConfirmedPage
     finishButton.displayed
     manageLink.displayed
+
+    when: 'the user returns to the todo list'
+    elite2Api.stubUncategorised(['UNCATEGORISED','UNCATEGORISED'])
+    finishButton.click()
+
+    then: 'The cancelled record is available to initial categorisation'
+    at CategoriserHomePage
+    prisonNos == ['B2345YZ','B2345XY']
+    statuses == ['Not categorised', 'Not categorised']
+    startButtons*.text() == ['Start', 'Start']
   }
 
   def "An offender RECAT Awaiting approval can be viewed and cancelled"() {
@@ -325,7 +335,7 @@ class HomePageSpecification extends GebReportingSpec {
     at CancelPage
     confirmNo.click()
     submitButton.click()
-    at CategoriserAwaitingApprovalViewPage
+    at RecategoriserAwaitingApprovalViewPage
     cancelLink.click()
     at CancelPage
     elite2Api.stubSetInactive(11, 'PENDING')
@@ -342,6 +352,16 @@ class HomePageSpecification extends GebReportingSpec {
     data.status == "CANCELLED"
     data.cancelled_date != null
     data.cancelled_by == 'RECATEGORISER_USER'
+
+    when: 'the user returns to the todo list'
+    elite2Api.stubRecategorise(['A','A','A','A'])
+    finishButton.click()
+
+    then: 'The cancelled record is available to recategorise'
+    at RecategoriserHomePage
+    prisonNos == ['B2345XY', 'C0001AA', 'B2345YZ', 'C0002AA']
+    statuses == ['Not started', 'Not started', 'Not started', 'Not started']
+    startButtons*.text() == ['Start', 'Start', 'Start', 'Start']
   }
 
   def "Log out"() {
