@@ -124,8 +124,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               (nomisStatusAwaitingApproval && localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)) ||
               (nomisStatusUncategorised &&
                 (dbRecord.status === Status.AWAITING_APPROVAL.name ||
-                  dbRecord.status === Status.APPROVED.name ||
-                  dbRecord.status === Status.CANCELLED.name))
+                  dbRecord.status === Status.APPROVED.name))
 
             const row = {
               ...o,
