@@ -112,7 +112,8 @@ class SupervisorSpecification extends GebReportingSpec {
     data.status == ["SUPERVISOR_BACK"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
-    response.supervisor == [review: [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'reason text']]
+    response.supervisor == [review     : [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'reason text'],
+                            confirmBack: [messageText: 'reason text']]
     response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
@@ -317,7 +318,8 @@ class SupervisorSpecification extends GebReportingSpec {
     data.status == ["SUPERVISOR_BACK"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
-    response.supervisor == [review: [proposedCategory: 'B', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D']]
+    response.supervisor == [review     : [proposedCategory: 'B', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D'],
+                            confirmBack: [messageText: 'should be a D']]
     response.categoriser == [provisionalCategory: [suggestedCategory: 'D', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
@@ -349,7 +351,8 @@ class SupervisorSpecification extends GebReportingSpec {
     data.status == ["SUPERVISOR_BACK"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
-    response.supervisor == [review: [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a J']]
+    response.supervisor == [review     : [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a J'],
+                            confirmBack: [messageText: 'should be a J']]
     response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
@@ -663,7 +666,8 @@ class SupervisorSpecification extends GebReportingSpec {
         otherRelevantText: "other relevant information"
       ]
     ]
-    response.supervisor == [review: [proposedCategory: 'C', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D']]
+    response.supervisor == [review     : [proposedCategory: 'C', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D'],
+                            confirmBack: [messageText: 'should be a D']]
     response.openConditionsRequested
   }
 }
