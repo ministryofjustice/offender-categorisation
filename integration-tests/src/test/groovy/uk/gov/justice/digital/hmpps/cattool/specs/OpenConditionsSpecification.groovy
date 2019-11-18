@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorMessagePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
@@ -595,22 +596,30 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     appropriateNo.click()
     overriddenCategoryD.click()
-    overriddenCategoryText << "super overriding C to D"
+    overriddenCategoryText << "super overriding C to D reason text"
     otherInformationText << "super other info 1"
     submitButton.click()
 
     then: 'supervisor is returned to home'
     at SupervisorHomePage
 
-    when: 'open conditions forms are completed by categoriser'
+    when: 'open conditions forms are accessed by categoriser'
     fixture.logout()
 
     elite2Api.stubUncategorised()
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     startButtons[0].click()
-    at(new TasklistPage(bookingId: '12'))
+    at TasklistPage
+    supervisorMessageButton.click()
 
+    then: 'the supervisor message is available'
+    at SupervisorMessagePage
+    messageText.text() == 'super overriding C to D reason text'
+
+    when: 'open conditions forms are completed'
+    submitButton.click()
+    at TasklistPage
     completeOpenConditionsWorkflow(false)
 
     then: 'tasklist page is displayed with the open conditions section'
@@ -670,7 +679,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     response.ratings == TestFixture.defaultRatingsC
     response.categoriser == [review             : [:],
                              provisionalCategory: [suggestedCategory: 'D', categoryAppropriate: 'Yes', otherInformationText: 'categoriser relevant info for accept']]
-    response.supervisor == [review: [proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes', otherInformationText: 'super other info 1', previousOverrideCategoryText: 'super overriding C to D',]]
+    response.supervisor == [review     : [proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes', otherInformationText: 'super other info 1', previousOverrideCategoryText: 'super overriding C to D reason text',],
+                            confirmBack: [isRead: true, messageText: 'super overriding C to D reason text']]
     response.openConditions == allNoAnswers
     response.openConditionsRequested
 
@@ -686,7 +696,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     then: 'details are correct'
     at ApprovedViewPage
     categories*.text() == ['D\nWarning\nCategory D', 'D\nWarning\nThe categoriser recommends category D','D\nWarning\nThe supervisor also recommends category D']
-    comments*.text() == ['super overriding C to D','super other info 1']
+    comments*.text() == ['super overriding C to D reason text','super other info 1']
     otherInformationSummary.text() == 'categoriser relevant info for accept'
     commentLabel.size() == 1
   }
