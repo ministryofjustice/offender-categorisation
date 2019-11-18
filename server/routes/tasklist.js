@@ -50,11 +50,8 @@ module.exports = function Index({
         throw new Error('A categorisation review is in progress')
       }
 
-      // If retrieved - check if APPROVED / CANCELLED and if it is, create new
-      if (
-        categorisationRecord.status === Status.APPROVED.name ||
-        categorisationRecord.status === Status.CANCELLED.name
-      ) {
+      // If retrieved - check if APPROVED and if it is, create new
+      if (categorisationRecord.status === Status.APPROVED.name) {
         categorisationRecord = await formService.createCategorisationRecord(
           bookingId,
           req.user.username,
