@@ -5,12 +5,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
-const { inProgress } = require('../utils/functionalHelpers')
-
-const extractNextReviewDate = details => {
-  const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
-  return catRecord && catRecord.nextReviewDate
-}
+const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
 
 module.exports = function Index({
   authenticationMiddleware,
@@ -232,7 +227,7 @@ module.exports = function Index({
           prisonDescription: await offendersService.getOptionalAssessmentAgencyDescription(res.locals, d.prisonId),
         }))
       )
-      res.render(`pages/categoryHistory`, { data: dataDecorated })
+      res.render(`pages/categoryHistory`, { data: dataDecorated, bookingId })
     })
   )
 

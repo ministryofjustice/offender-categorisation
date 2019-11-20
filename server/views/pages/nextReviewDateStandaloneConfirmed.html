@@ -1,0 +1,31 @@
+{% set mainClasses = 'govuk-!-width-two-thirds' %}
+{% extends "../partials/layout.html" %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "button/macro.njk" import govukButton %}
+{% from "panel/macro.njk" import govukPanel %}
+
+{% set pageTitle = "Next review date confirmed" %}
+
+{% block beforeContent %}
+
+  {% include "../partials/breadCrumb.html" %}
+
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink
+  }) }}
+
+{% endblock %}
+
+{% block content %}
+
+{{ govukPanel({
+  titleText: "Next review date has been changed"
+}) }}
+
+{{ govukButton({
+  text: "Finish",
+  href: "/"
+}) }}
+
+{% endblock %}

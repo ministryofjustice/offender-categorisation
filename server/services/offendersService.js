@@ -4,7 +4,7 @@ const logger = require('../../log.js')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
-const { isNilOrEmpty, inProgress, getIn } = require('../utils/functionalHelpers')
+const { isNilOrEmpty, inProgress, getIn, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { properCaseName, dateConverter, get10BusinessDays } = require('../utils/utils.js')
 const { sortByDateTime, sortByStatus } = require('./offenderSort.js')
 const config = require('../config')
@@ -12,11 +12,6 @@ const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 
 const dirname = process.cwd()
-
-const extractNextReviewDate = details => {
-  const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
-  return catRecord && catRecord.nextReviewDate
-}
 
 function isCatA(c) {
   return c.classificationCode === 'A' || c.classificationCode === 'H' || c.classificationCode === 'P'
@@ -495,6 +490,21 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           }, bookingId ${bookingId} was NOT required, review date is ${nextReviewMoment.format('YYYY-MM-DD')}`
         )
       }
+    } catch (error) {
+      logger.error(
+        error,
+        `Error during updateNextReviewDateIfRequired, unable to update next review date for ${bookingId} `
+      )
+      throw error
+    }
+  }
+
+  async function updateNextReviewDate(context, bookingId, nextReviewDateUI) {
+    try {
+      const nextReviewDate = moment(nextReviewDateUI, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      logger.info(`updating next review date for bookingId ${bookingId} to ${nextReviewDate}`)
+      const nomisClient = nomisClientBuilder(context)
+      await nomisClient.updateNextReviewDate(bookingId, nextReviewDate)
     } catch (error) {
       logger.error(error, `Error during updateNextReviewDate, unable to update next review date for ${bookingId} `)
       throw error
@@ -989,6 +999,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getRiskChangeForOffender,
     handleRiskChangeDecision,
     updateNextReviewDateIfRequired,
+    updateNextReviewDate,
     setInactive,
     // just for tests:
     buildSentenceData,

@@ -16,6 +16,7 @@ class LandingPage extends Page {
     viewButton(required: false) { $('#viewButton') }
     editButton(required: false) { $('#editButton') }
     approveButton(required: false) { $('#approveButton') }
+    nextReviewDateButton(required: false) { $('#nextReviewDateButton') }
     warning(required: false) { $('div.govuk-warning-text') }
     historyButton { $('#historyButton') }
     historyHeading { $('#previousCategoryHeading') }

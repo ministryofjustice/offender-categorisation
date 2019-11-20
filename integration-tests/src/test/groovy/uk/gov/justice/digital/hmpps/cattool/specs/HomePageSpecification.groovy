@@ -53,19 +53,6 @@ class HomePageSpecification extends GebReportingSpec {
   DatabaseUtils db = new DatabaseUtils()
   static final TODAY = LocalDate.now()
 
-  def get10BusinessDays(LocalDate from) {
-    def numberOfDays = 14
-    switch (from.get(ChronoField.DAY_OF_WEEK)) {
-      case DayOfWeek.SATURDAY.value:
-        numberOfDays += 2
-        break
-      case DayOfWeek.SUNDAY.value:
-        numberOfDays += 1
-        break
-    }
-    return numberOfDays
-  }
-
   def "The home page for a categoriser is present"() {
     db.createDataWithStatus(-2, 32, 'STARTED', '{}')
     db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
@@ -101,10 +88,10 @@ class HomePageSpecification extends GebReportingSpec {
     names == ['Supervisor_back, Awaiting', 'Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised',
               'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised']
     days == ['1', '55', '50', '47', '43', '39', '19', '14', '5']
-    dates == [sentenceStartDate39.plusDays(get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
+    dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
               'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE',
-              sentenceStartDate37.plusDays(get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
-              sentenceStartDate38.plusDays(get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
+              sentenceStartDate37.plusDays(fixture.get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
+              sentenceStartDate38.plusDays(fixture.get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
     statuses == ['REJECTED BY\nSUPERVISOR', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
     startButtons*.text() == ['Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
   }
