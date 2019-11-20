@@ -6,9 +6,10 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserPotentialReviewsPage
 
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.temporal.ChronoField
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
@@ -163,5 +164,18 @@ class TestFixture {
 
   def sameDate(LocalDate expected, actual) {
     return actual[0].toLocalDate().equals(expected)
+  }
+
+  def get10BusinessDays(LocalDate from = LocalDate.now()) {
+    def numberOfDays = 14
+    switch (from.get(ChronoField.DAY_OF_WEEK)) {
+      case DayOfWeek.SATURDAY.value:
+        numberOfDays += 2
+        break
+      case DayOfWeek.SUNDAY.value:
+        numberOfDays += 1
+        break
+    }
+    return numberOfDays
   }
 }

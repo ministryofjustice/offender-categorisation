@@ -54,7 +54,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    elite2Api.stubUpdateNextReviewDate()
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
     recatButton.click()
 
     then: 'We are sent to the recat tasklist'
@@ -117,7 +117,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    elite2Api.stubUpdateNextReviewDate()
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
     editButton.click()
 
     then: 'We are sent to the recat tasklist'
@@ -207,7 +207,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
     go '/12'
     at LandingPage
-    elite2Api.stubUpdateNextReviewDate()
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     recatButton.click()
@@ -289,7 +289,7 @@ class LandingPageSpecification extends GebReportingSpec {
     at LandingPage
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
-    elite2Api.stubUpdateNextReviewDate()
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
     recatButton.click()
 
     then: 'Security is locked due to being flagged'

@@ -60,7 +60,7 @@ class RiskChangeAlertDetailSpecification extends GebReportingSpec {
     increasedRiskExtremismWarning.isDisplayed()
 
     when: 'I select yes to process'
-    elite2Api.stubUpdateNextReviewDate()
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
 
     elite2Api.stubGetOffenderDetails(12, 'B2345XY')
     riskProfilerApi.stubGetSocProfile('B2345XY', 'C', false)

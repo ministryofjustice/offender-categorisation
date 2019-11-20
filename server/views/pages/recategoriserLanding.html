@@ -78,6 +78,14 @@
         classes: "forms-warning-text warning-overrides"
       }) }}
     {% endif %}
+    {% if not inProgress(data) %}
+      {{ govukButton({
+        text: 'Change next review date',
+        href: '/form/nextReviewDate/nextReviewDateStandalone/' + data.details.bookingId,
+        classes: 'grey-button',
+        attributes: { 'id': 'nextReviewDateButton' }
+      }) }}
+    {% endif %}
   </div>
 
   {% if data.isSecurityReferred %}
