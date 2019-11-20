@@ -11,7 +11,7 @@ const {
   dpsUrl,
 } = require('../utils/utils.js')
 const config = require('../config')
-const { inProgress } = require('../utils/functionalHelpers')
+const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
 
 const findError = (array, formFieldId) => {
   const item = array.find(error => error.href === `#${formFieldId}`)
@@ -49,4 +49,5 @@ module.exports = (app, path) => {
     .addGlobal('catDisplay', catDisplay)
     .addGlobal('choosingHigherCategory', choosingHigherCategory)
     .addGlobal('inProgress', inProgress)
+    .addGlobal('extractNextReviewDate', extractNextReviewDate)
 }

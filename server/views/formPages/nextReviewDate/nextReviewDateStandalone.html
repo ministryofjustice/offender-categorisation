@@ -1,0 +1,37 @@
+{% extends "../formTemplate.html" %}
+{% from "input/macro.njk" import govukInput %}
+{% from "../../macros/breadCrumb.html" import breadCrumb %}
+
+{% set pageTitle = "Next review date" %}
+{% set greenButtonText = "Change" %}
+
+{% block navigation %}
+
+  {% set breadCrumbList = [ {href: '/' + data.details.bookingId, title: 'Manage categorisations'} ] %}
+  {{ breadCrumb(pageTitle, breadCrumbList) }}
+
+{% endblock %}
+
+{% block formItems %}
+
+  <h1 class="govuk-heading-l">Change the next review date</h1>
+  <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate))
+    if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
+  <p>This page can alter the prisoner's next review date (Re-Assessment date) without needing to create a new categorisation.</p>
+
+  {{ govukInput({
+    id: "reviewDate",
+    name: "date",
+    label: {
+      text: "Date",
+      classes: "govuk-!-font-weight-bold"
+    },
+    errorMessage: {
+      text: "Enter a valid date that is after today"
+    } if (errors | findError('date')),
+    classes: "dateInputWidth",
+    value: date or dateConverter(nomisDate)
+  }) }}
+  <!-- NOMIS = {{ dateConverter(nomisDate) }} -->
+
+{% endblock %}

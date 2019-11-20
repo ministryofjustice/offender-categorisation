@@ -1,10 +1,11 @@
 const express = require('express')
 const flash = require('connect-flash')
-const { firstItem } = require('../utils/functionalHelpers')
+const { firstItem, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { calculateNextReviewDate } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const nextReviewDate = require('../config/nextReviewDate')
+const Status = require('../utils/statusEnum')
 
 const formConfig = {
   nextReviewDate,
@@ -23,8 +24,31 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { bookingId } = req.params
       const { nextDateChoice } = req.query
       const form = 'nextReviewDate'
-      const result = await buildFormData(res, req, form, bookingId, transactionalDbClient)
+      const result = await buildFormData(res, req, form, bookingId, true, transactionalDbClient)
       res.render(`formPages/nextReviewDate/${form}`, { ...result, date: calculateNextReviewDate(nextDateChoice) })
+    })
+  )
+
+  router.get(
+    '/nextReviewDateStandalone/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const form = 'nextReviewDateStandalone'
+      const result = await buildFormData(res, req, form, bookingId, false, transactionalDbClient)
+      if (result.status && result.status !== Status.APPROVED.name) {
+        throw new Error('Categorisation is in progress: please use the tasklist to change date')
+      }
+      res.render(`formPages/nextReviewDate/${form}`, result)
+    })
+  )
+
+  router.get(
+    '/nextReviewDateStandaloneConfirmed/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const form = 'nextReviewDateStandaloneConfirmed'
+      const result = await buildFormData(res, req, form, bookingId, false, transactionalDbClient)
+      res.render(`pages/nextReviewDateStandaloneConfirmed`, result)
     })
   )
 
@@ -32,17 +56,17 @@ module.exports = function Index({ formService, offendersService, userService, au
     '/:form/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
-      const result = await buildFormData(res, req, form, bookingId, transactionalDbClient)
+      const result = await buildFormData(res, req, form, bookingId, true, transactionalDbClient)
       res.render(`formPages/nextReviewDate/${form}`, result)
     })
   )
 
-  const buildFormData = async (res, req, form, bookingId, transactionalDbClient) => {
+  const buildFormData = async (res, req, form, bookingId, strict, transactionalDbClient) => {
     const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-    if (!formData || !formData.formObject) {
+    if (strict && !formData.formObject) {
       throw new Error('No categorisation found for this booking id')
     }
     res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
@@ -59,6 +83,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
     const date = pageData[section] && pageData[section].nextReviewDate && pageData[section].nextReviewDate.date
+    const nomisDate = extractNextReviewDate(details)
 
     return {
       data: { ...pageData, details },
@@ -67,6 +92,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       reviewReason: formData.reviewReason,
       catType: formData.catType,
       date,
+      nomisDate,
       backLink,
       errors,
     }
@@ -115,18 +141,26 @@ module.exports = function Index({ formService, offendersService, userService, au
       if (!valid) {
         return
       }
-      const formSection = userInput.catType === 'RECAT' ? 'recat' : 'ratings'
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection,
-        formName: form,
-        transactionalClient: transactionalDbClient,
-      })
 
-      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      // Handle the possibility that there is no PG database entry: still allow Nomis update for standalone
+      if (userInput.catType) {
+        const formSection = userInput.catType === 'RECAT' ? 'recat' : 'ratings'
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput,
+          formSection,
+          formName: 'nextReviewDate',
+          transactionalClient: transactionalDbClient,
+        })
+      }
+
+      if (form === 'nextReviewDateStandalone') {
+        await offendersService.updateNextReviewDate(res.locals, bookingId, userInput.date)
+      }
+
+      const nextPath = getPathFor({ data: userInput, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
     })
   )

@@ -14,6 +14,9 @@ module.exports = {
   '/openConditionsAdded/\\d+(\\?.+)?': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
   '/form/recat/.+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/form/ratings/.+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
+  '/form/nextReviewDate/nextReviewDateStandalone.+': {
+    authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'],
+  },
   '/form/nextReviewDate/.+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
   '/form/openConditions/.+': {
     authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'],
