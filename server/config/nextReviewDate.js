@@ -27,4 +27,18 @@ module.exports = {
       decisions: { discriminator: 'catType', INITIAL: '/tasklist/', RECAT: '/tasklistRecat/' },
     },
   },
+  nextReviewDateStandalone: {
+    fields: [
+      {
+        date: {
+          responseType: 'futureDate',
+          validationMessage: 'Enter a valid date that is after today',
+        },
+      },
+    ],
+    validate: true,
+    nextPath: {
+      path: '/form/nextReviewDate/nextReviewDateStandaloneConfirmed/',
+    },
+  },
 }

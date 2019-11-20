@@ -5,7 +5,8 @@
 
 {% block beforeContent %}
 
-{{ breadCrumb(pageTitle, breadCrumbList) }}
+  {% set breadCrumbList = [ {href: '/' + bookingId, title: 'Manage categorisations'} ] %}
+  {{ breadCrumb(pageTitle, breadCrumbList) }}
 
 {% endblock %}
 

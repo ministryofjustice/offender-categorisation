@@ -17,6 +17,7 @@ module.exports = {
   groupBy,
   isFirstVisit,
   inProgress,
+  extractNextReviewDate,
   addSocProfile,
 }
 
@@ -79,6 +80,11 @@ function isFirstVisit(res) {
 
 function inProgress(dbRecord) {
   return dbRecord && dbRecord.status && dbRecord.status !== Status.APPROVED.name
+}
+
+function extractNextReviewDate(details) {
+  const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
+  return catRecord && catRecord.nextReviewDate
 }
 
 async function addSocProfile({
