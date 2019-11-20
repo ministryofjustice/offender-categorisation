@@ -3,8 +3,6 @@ package uk.gov.justice.digital.hmpps.cattool.specs.recat
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -60,7 +58,7 @@ class RiskChangeAlertDetailSpecification extends GebReportingSpec {
     increasedRiskExtremismWarning.isDisplayed()
 
     when: 'I select yes to process'
-    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
 
     elite2Api.stubGetOffenderDetails(12, 'B2345XY')
     riskProfilerApi.stubGetSocProfile('B2345XY', 'C', false)
@@ -96,7 +94,7 @@ class RiskChangeAlertDetailSpecification extends GebReportingSpec {
     noResultsText.isDisplayed()
   }
 
-  def void gotoRiskChangeDetail() {
+  void gotoRiskChangeDetail() {
    /* db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsC]), 'INITIAL') */
     def raisedDate = LocalDate.of(2019, 1, 31)
