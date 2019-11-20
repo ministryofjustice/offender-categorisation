@@ -54,7 +54,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     recatButton.click()
 
     then: 'We are sent to the recat tasklist'
@@ -99,7 +99,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
   def "A recategoriser user sees a continue button when a recat is in progress"() {
 
-    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ')
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
@@ -117,7 +117,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'It is clicked'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
-    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     editButton.click()
 
     then: 'We are sent to the recat tasklist'
@@ -127,7 +127,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
   def "A recategoriser user sees a warning for initial cat being in progress"() {
 
-    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ')
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
@@ -146,7 +146,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
   def "A recategoriser user sees a warning for awaiting approval"() {
 
-    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'RECAT', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'RECAT', 'B2345YZ')
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
@@ -207,7 +207,7 @@ class LandingPageSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
     go '/12'
     at LandingPage
-    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
     recatButton.click()
@@ -289,7 +289,7 @@ class LandingPageSpecification extends GebReportingSpec {
     at LandingPage
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
-    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()))
+    elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     recatButton.click()
 
     then: 'Security is locked due to being flagged'
@@ -307,7 +307,7 @@ class LandingPageSpecification extends GebReportingSpec {
   }
 
   def "A basic user can view previous categorisations if prisoner is in their prison"() {
-    db.createData(12, '{}'); // should get ignored
+    db.createData(12, '{}') // should get ignored
     db.doCreateCompleteRow(-2, 12, '{"supervisor": {"review": {"proposedCategory": "B"}}}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
       2, '{}', 'LEI', 'B2345YZ', 'current_timestamp(2)', null, null, '2019-07-29')
     db.doCreateCompleteRow(-3, 12, '{"supervisor": {"review": {"supervisorOverriddenCategory": "C"}}}', 'RECATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null,
@@ -412,7 +412,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
   def "A categoriser user sees a continue button when an initial cat is in progress"() {
 
-    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ')
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
@@ -441,7 +441,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
   def "A categoriser user sees a warning when a recat is in progress"() {
 
-    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ')
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
@@ -461,7 +461,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
   def "A categoriser user sees a warning for awaiting approval"() {
 
-    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'INITIAL', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'INITIAL', 'B2345YZ')
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
@@ -495,7 +495,7 @@ class LandingPageSpecification extends GebReportingSpec {
   }
 
   def "A supervisor user sees a prisoner awaiting approval"() {
-    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'INITIAL', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}', 'INITIAL', 'B2345YZ')
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
@@ -511,7 +511,7 @@ class LandingPageSpecification extends GebReportingSpec {
   }
 
   def "A supervisor user sees a started initial cat"() {
-    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'INITIAL', 'B2345YZ')
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
@@ -527,7 +527,7 @@ class LandingPageSpecification extends GebReportingSpec {
   }
 
   def "A supervisor user sees a started recat"() {
-    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT', 'B2345YZ')
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
@@ -543,7 +543,7 @@ class LandingPageSpecification extends GebReportingSpec {
   }
 
   def "A supervisor user sees a prisoner with a cancelled cat"() {
-    db.createDataWithStatusAndCatType(12, 'CANCELLED', '{}', 'INITIAL', 'B2345YZ');
+    db.createDataWithStatusAndCatType(12, 'CANCELLED', '{}', 'INITIAL', 'B2345YZ')
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
