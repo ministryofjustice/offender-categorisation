@@ -43,20 +43,21 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getHistoricalFormData(bookingId, transactionalClient) {
-    logger.debug(`getHistoricalFormData called for ${bookingId}`)
+  getHistoricalFormData(offenderNo, transactionalClient) {
+    logger.debug(`getHistoricalFormData called for ${offenderNo}`)
     const query = {
       text: `select booking_id    as "bookingId",
                     offender_no   as "offenderNo",
                     sequence_no   as "sequence",
                     approval_date as "approvalDate",
                     form_response as "formObject",
-                    prison_id     as "prisonId"
+                    prison_id     as "prisonId",
+                    nomis_sequence_no as "nomisSeq"
              from form f
-             where f.booking_id = $1 and f.status = 'APPROVED' 
+             where f.offender_no = $1 and f.status = 'APPROVED' 
              ${ignoreCancelledClause}
              order by sequence_no`,
-      values: [bookingId],
+      values: [offenderNo],
     }
     return transactionalClient.query(query)
   },

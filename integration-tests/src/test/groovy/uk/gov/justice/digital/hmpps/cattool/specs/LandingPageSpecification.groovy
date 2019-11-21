@@ -308,15 +308,17 @@ class LandingPageSpecification extends GebReportingSpec {
 
   def "A basic user can view previous categorisations if prisoner is in their prison"() {
     db.createData(12, '{}') // should get ignored
-    db.doCreateCompleteRow(-2, 12, '{"supervisor": {"review": {"proposedCategory": "B"}}}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
+    // category history is driven by the nomis response, a link to view the record is provided if a postgres record exists -  matched on nomis sequence
+    db.doCreateCompleteRow(-2, 12, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
       2, '{}', 'LEI', 'B2345YZ', 'current_timestamp(2)', null, null, '2019-07-29')
-    db.doCreateCompleteRow(-3, 12, '{"supervisor": {"review": {"supervisorOverriddenCategory": "C"}}}', 'RECATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null,
+    db.doCreateCompleteRow(-3, 12, '{}', 'RECATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null,
       3, '{}', 'BXI', 'B2345YZ', 'current_timestamp(2)', null, null, '2019-08-05')
-    db.doCreateCompleteRow(-4, 12,
-      '{"recat": {"decision": {"category": "D"}}, "supervisor": {"review": {"proposedCategory": "D", "supervisorCategoryAppropriate": "Yes"}}}',
+    db.doCreateCompleteRow(-4, 12,'{}',
       'RECATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null,
       4, '{}', 'LPI', 'B2345YZ', 'current_timestamp(2)', null, null, '2019-08-29')
 
+    db.createNomisSeqNoWhenMultipleCategorisationsForOffender(12, 3, 5)
+    db.createNomisSeqNoWhenMultipleCategorisationsForOffender(12, 4, 4)
     given: 'a basic user is logged in'
     fixture.loginAs(READONLY_USER)
 
@@ -325,23 +327,25 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubGetBasicOffenderDetails(12)
     go '/12'
     at LandingPage
-    elite2Api.stubAgencyDetails('BXI')
-    elite2Api.stubAgencyDetails('LEI')
+    elite2Api.stubAssessmentsWithCurrent("B2345YZ")
     elite2Api.stubAgencyDetails('LPI')
     historyButton.click()
 
     then: 'The previous category reviews page is displayed correctly'
     at CategoryHistoryPage
-    rows[0].find('td')*.text() == ['29/07/2019', 'B', 'LEI prison', 'View (opens in new tab)']
-    rows[1].find('td')*.text() == ['05/08/2019', 'C', 'BXI prison', 'View (opens in new tab)']
-    rows[2].find('td')*.text() == ['29/08/2019', 'D', 'LPI prison', 'View (opens in new tab)']
-    rows[0].find('td > a').@href.contains '/form/approvedView/12?sequenceNo=2'
+    rows[0].find('td')*.text() == ['18/06/2019', 'U', 'LPI prison', 'View (opens in new tab)']
+    rows[1].find('td')*.text() == ['08/06/2018', 'P', 'LPI prison', 'View (opens in new tab)']
+    rows[2].find('td')*.text() == ['08/06/2012', 'A', 'LPI prison', '']
+    rows[3].find('td')*.text() == ['08/06/2012', 'B', 'LPI prison', ''] // no local record means no view link provided
+    rows[0].find('td > a').@href.contains '/form/approvedView/12?sequenceNo=3'
 
     when: 'the user selects a review'
+    elite2Api.stubAgencyDetails('BXI')
+    elite2Api.stubAgencyDetails('LEI')
     elite2Api.stubAssessments(['B2345YZ'])
 
     then: 'the approved view page is shown'
-    withNewWindow({ rows[2].find('td > a').click() }) {
+    withNewWindow({ rows[0].find('td > a').click() }) {
       at ApprovedViewRecatPage
     }
   }
