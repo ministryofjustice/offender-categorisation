@@ -36,6 +36,7 @@ const formService = {
   getCategorisedOffenders: jest.fn(),
   updateStatusForOutstandingRiskChange: jest.fn(),
   getRiskChanges: jest.fn(),
+  getHistoricalCategorisationRecords: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -63,6 +64,7 @@ afterEach(() => {
   formService.getCategorisationRecord.mockReset()
   formService.getSecurityReferredOffenders.mockReset()
   formService.getCategorisedOffenders.mockReset()
+  formService.getHistoricalCategorisationRecords.mockReset()
   nomisClient.getCategoryHistory.mockReset()
   nomisClient.getAgencyDetail.mockReset()
   nomisClient.getCategorisedOffenders.mockReset()
@@ -1367,6 +1369,131 @@ describe('getPrisonerBackground', () => {
     expect(nomisClient.getAgencyDetail).toBeCalledTimes(0)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
+  })
+})
+
+describe('getCategorisationHistory', () => {
+  const cats = [
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'A',
+      classification: 'Cat A',
+      assessmentDate: '2012-04-04',
+      assessmentAgencyId: 'MDI',
+      assessmentStatus: 'A',
+      assessmentSeq: 7,
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'A',
+      classification: 'Cat A',
+      assessmentDate: '2012-04-04',
+      assessmentAgencyId: 'LEI',
+      assessmentStatus: 'P',
+      assessmentSeq: 6,
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'A',
+      classification: 'Cat A',
+      assessmentDate: '2010-02-04',
+      assessmentAgencyId: 'LEI',
+      assessmentStatus: 'I',
+      assessmentSeq: 5,
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'B',
+      classification: 'Cat B',
+      assessmentDate: '2013-03-24',
+      assessmentAgencyId: 'MDI',
+      assessmentStatus: 'I',
+      assessmentSeq: 9,
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'B',
+      classification: 'Cat B',
+      assessmentDate: '2019-04-17',
+      assessmentAgencyId: 'BXI',
+      assessmentStatus: 'A',
+      assessmentSeq: 10,
+    },
+  ]
+  test('it should return a list of historical categorisations, decorated with prison description and cat tool record', async () => {
+    const sentenceTerms = [{ years: 2, months: 4, lifeSentence: true }]
+    nomisClient.getOffenderDetails.mockReturnValue({ bookingId: 45, offenderNo: 'ABC1' })
+    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+    nomisClient.getMainOffence.mockReturnValue({ mainOffence: 'stuff' })
+    nomisClient.getCategoryHistory.mockReturnValue(cats)
+    formService.getHistoricalCategorisationRecords.mockReturnValue([
+      { bookingId: -45, sequence: 1, nomisSeq: 10, catType: 'INITIAL', status: Status.APPROVED.name },
+      { bookingId: -45, sequence: 3, nomisSeq: 7, catType: 'INITIAL', status: Status.APPROVED.name },
+    ])
+    nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
+
+    const expected = [
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'B',
+        assessmentDate: '2019-04-17',
+        assessmentDateDisplay: '17/04/2019',
+        assessmentAgencyId: 'BXI',
+        prisonDescription: 'Moorlands',
+        assessmentStatus: 'A',
+        assessmentSeq: 10,
+        sequence: 1,
+        recordExists: true,
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'B',
+        assessmentDate: '2013-03-24',
+        assessmentDateDisplay: '24/03/2013',
+        assessmentAgencyId: 'MDI',
+        prisonDescription: 'Moorlands',
+        assessmentStatus: 'I',
+        assessmentSeq: 9,
+        recordExists: false,
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        assessmentDate: '2012-04-04',
+        assessmentDateDisplay: '04/04/2012',
+        prisonDescription: 'Moorlands',
+        assessmentStatus: 'A',
+        assessmentSeq: 7,
+        recordExists: true,
+      },
+      {
+        bookingId: -45,
+        offenderNo: 'ABC1',
+        classificationCode: 'A',
+        classification: 'Cat A',
+        assessmentDate: '2010-02-04',
+        assessmentAgencyId: 'LEI',
+        assessmentStatus: 'I',
+        prisonDescription: 'Moorlands',
+        assessmentSeq: 5,
+        recordExists: false,
+      },
+    ]
+
+    const result = await service.getCategoryHistory(context, -45, mockTransactionalClient)
+
+    expect(nomisClient.getAgencyDetail).toBeCalledTimes(4)
+    expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
+    expect(result.history).toMatchObject(expected)
   })
 })
 

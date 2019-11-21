@@ -1077,7 +1077,7 @@ class Elite2Api extends WireMockRule {
             .withStatus(200)))
   }
 
-  def stubAssessmentsWithCurrent(String offenderNo) {
+  def stubAssessmentsWithCurrent(String offenderNo, bookingId = -45) {
     this.stubFor(
       get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false")
         .willReturn(
@@ -1085,7 +1085,7 @@ class Elite2Api extends WireMockRule {
             .withBody(JsonOutput.toJson(
               [
                 [
-                  bookingId            : -45,
+                  bookingId            : bookingId,
                   offenderNo           : offenderNo,
                   classificationCode   : 'A',
                   classification       : 'Cat A',
@@ -1096,10 +1096,11 @@ class Elite2Api extends WireMockRule {
                   nextReviewDate       : '2012-06-07',
                   approvalDate         : '2012-06-08',
                   assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'A'
+                  assessmentStatus     : 'A',
+                  assessmentSeq        : 1
                 ],
                 [
-                  bookingId            : -45,
+                  bookingId            : bookingId,
                   offenderNo           : offenderNo,
                   classificationCode   : 'A',
                   classification       : 'Cat A',
@@ -1110,10 +1111,12 @@ class Elite2Api extends WireMockRule {
                   nextReviewDate       : '2012-06-07',
                   approvalDate         : '2012-06-18',
                   assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'P'
+                  assessmentStatus     : 'P',
+                  assessmentSeq        : 2
+
                 ],
                 [
-                  bookingId            : -45,
+                  bookingId            : bookingId,
                   offenderNo           : offenderNo,
                   classificationCode   : 'B',
                   classification       : 'Cat B',
@@ -1124,10 +1127,12 @@ class Elite2Api extends WireMockRule {
                   nextReviewDate       : '2013-09-17',
                   approvalDate         : '2012-06-08',
                   assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'I'
+                  assessmentStatus     : 'I',
+                  assessmentSeq        : 3
+
                 ],
                 [
-                  bookingId            : 12,
+                  bookingId            : bookingId,
                   offenderNo           : offenderNo,
                   classificationCode   : 'P',
                   classification       : 'Prov Cat A',
@@ -1138,10 +1143,12 @@ class Elite2Api extends WireMockRule {
                   nextReviewDate       : '2018-06-07',
                   approvalDate         : '2018-06-08',
                   assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'I'
+                  assessmentStatus     : 'I',
+                  assessmentSeq        : 4
+
                 ],
                 [
-                  bookingId            : 12,
+                  bookingId            : bookingId,
                   offenderNo           : offenderNo,
                   classificationCode   : 'U',
                   classification       : 'Unsentenced',
@@ -1152,7 +1159,9 @@ class Elite2Api extends WireMockRule {
                   nextReviewDate       : '2019-06-07',
                   approvalDate         : '2019-06-18',
                   assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'A'
+                  assessmentStatus     : 'A',
+                  assessmentSeq        : 5
+
                 ],
               ])
             )

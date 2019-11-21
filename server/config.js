@@ -42,6 +42,7 @@ module.exports = {
   },
   sqs: {
     riskProfilerQueue: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', true),
+    enabled: get('SQS_ENABLED', 'true', true),
   },
   apis: {
     oauth2: {

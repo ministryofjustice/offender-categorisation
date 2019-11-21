@@ -24,6 +24,7 @@ const formClient = {
   getSecurityReferral: jest.fn(),
   setSecurityReferralProcessed: jest.fn(),
   getRiskChangeByStatus: jest.fn(),
+  getHistoricalFormData: jest.fn(),
 }
 let service
 
@@ -37,6 +38,7 @@ beforeEach(() => {
   formClient.updateStatus.mockReturnValue({})
   formClient.securityReviewed.mockReturnValue({})
   formClient.getRiskChangeByStatus.mockReturnValue({ rows: [] })
+  formClient.getHistoricalFormData.mockReturnValue({ rows: [] })
 })
 
 afterEach(() => {
@@ -937,5 +939,16 @@ describe('getRiskChangeCount', () => {
     const result = await service.getRiskChangeCount('LEI', mockTransactionalClient)
 
     expect(result).toEqual(0)
+  })
+})
+
+describe('getHistoricalCategorisationRecords', () => {
+  test('a list of categorisation records are returned', async () => {
+    formClient.getHistoricalFormData.mockReturnValue({
+      rows: [{ bookingId: 12, offenderNo: 'GD123' }, { bookingId: 13, offenderNo: 'GD123' }],
+    })
+    const result = await service.getHistoricalCategorisationRecords('GD123', mockTransactionalClient)
+
+    expect(result).toEqual([{ bookingId: 12, offenderNo: 'GD123' }, { bookingId: 13, offenderNo: 'GD123' }])
   })
 })
