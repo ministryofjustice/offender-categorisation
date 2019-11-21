@@ -876,15 +876,15 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           ...nomisRecord,
           prisonDescription: await getOptionalAssessmentAgencyDescription(context, nomisRecord.assessmentAgencyId),
           recordExists: !!foundCatRecord,
-          assessmentDateDisplay: dateConverter(nomisRecord.assessmentDate),
-          sequence: foundCatRecord ? foundCatRecord.sequence : undefined,
+          approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
+          sequence: foundCatRecord && foundCatRecord.sequence,
         }
       })
     )
 
     return {
       details,
-      history: dataDecorated.sort((a, b) => sortByDateTime(a.assessmentDateDisplay, b.assessmentDateDisplay)),
+      history: dataDecorated.sort((a, b) => sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay)),
     }
   }
 
