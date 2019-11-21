@@ -220,14 +220,8 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
-      const data = await formService.getHistoricalCategorisationRecords(bookingId, transactionalDbClient)
-      const dataDecorated = await Promise.all(
-        data.map(async d => ({
-          ...d,
-          prisonDescription: await offendersService.getOptionalAssessmentAgencyDescription(res.locals, d.prisonId),
-        }))
-      )
-      res.render(`pages/categoryHistory`, { data: dataDecorated, bookingId })
+      const data = await offendersService.getCategoryHistory(res.locals, bookingId, transactionalDbClient)
+      res.render(`pages/categoryHistory`, { data })
     })
   )
 

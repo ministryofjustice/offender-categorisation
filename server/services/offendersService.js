@@ -861,6 +861,33 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  async function getCategoryHistory(context, bookingId, transactionalDbClient) {
+    const details = await getOffenderDetails(context, bookingId)
+    const nomisClient = nomisClientBuilder(context)
+    const catRecords = await formService.getHistoricalCategorisationRecords(details.offenderNo, transactionalDbClient)
+    const nomisRecords = await getCategoryHistoryWithoutPendingCategories(nomisClient, details.offenderNo)
+
+    const dataDecorated = await await Promise.all(
+      nomisRecords.map(async nomisRecord => {
+        const foundCatRecord = catRecords.find(
+          o => o.bookingId === nomisRecord.bookingId && o.nomisSeq === nomisRecord.assessmentSeq
+        )
+        return {
+          ...nomisRecord,
+          prisonDescription: await getOptionalAssessmentAgencyDescription(context, nomisRecord.assessmentAgencyId),
+          recordExists: !!foundCatRecord,
+          approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
+          sequence: foundCatRecord && foundCatRecord.sequence,
+        }
+      })
+    )
+
+    return {
+      details,
+      history: dataDecorated.sort((a, b) => sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay)),
+    }
+  }
+
   async function getOptionalAssessmentAgencyDescription(context, agencyId) {
     if (agencyId) {
       const nomisClient = nomisClientBuilder(context)
@@ -1001,6 +1028,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     updateNextReviewDateIfRequired,
     updateNextReviewDate,
     setInactive,
+    getCategoryHistory,
     // just for tests:
     buildSentenceData,
     getMatchedCategorisations: matchEliteAndDBCategorisations,

@@ -35,9 +35,9 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function getHistoricalCategorisationRecords(bookingId, transactionalClient) {
+  async function getHistoricalCategorisationRecords(offenderNo, transactionalClient) {
     try {
-      const data = await formClient.getHistoricalFormData(bookingId, transactionalClient)
+      const data = await formClient.getHistoricalFormData(offenderNo, transactionalClient)
       return data.rows
     } catch (error) {
       logger.error(error)

@@ -63,6 +63,10 @@ class DatabaseUtils {
     sql.executeUpdate("update form set nomis_sequence_no = $seq where booking_id = $bookingId")
   }
 
+  def createNomisSeqNoWhenMultipleCategorisationsForOffender(bookingId, seq, nomisSeq) {
+    sql.executeUpdate("update form set nomis_sequence_no = $nomisSeq where booking_id = $bookingId and sequence_no = $seq")
+  }
+
   def createReviewReason(int bookingId, String reason) {
     sql.executeUpdate("update form set review_reason = $reason::review_reason_enum where booking_id = $bookingId")
   }
