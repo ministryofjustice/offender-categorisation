@@ -317,8 +317,7 @@ class LandingPageSpecification extends GebReportingSpec {
       'RECATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null,
       4, '{}', 'LPI', 'B2345YZ', 'current_timestamp(2)', null, null, '2019-08-29')
 
-    db.createNomisSeqNoWhenMultipleCatgorisationsForOffender(12, 2, 1)
-    db.createNomisSeqNoWhenMultipleCatgorisationsForOffender(12, 3, 3)
+    db.createNomisSeqNoWhenMultipleCatgorisationsForOffender(12, 3, 5)
     db.createNomisSeqNoWhenMultipleCatgorisationsForOffender(12, 4, 4)
     given: 'a basic user is logged in'
     fixture.loginAs(READONLY_USER)
@@ -328,17 +327,17 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubGetBasicOffenderDetails(12)
     go '/12'
     at LandingPage
-    elite2Api.stubAssessmentsWithCurrent("B2345YZ", 12)
+    elite2Api.stubAssessmentsWithCurrent("B2345YZ")
     elite2Api.stubAgencyDetails('LPI')
     historyButton.click()
 
     then: 'The previous category reviews page is displayed correctly'
     at CategoryHistoryPage
-    rows[0].find('td')*.text() == ['28/03/2019', 'U', 'LPI prison', '']  // no local record means no view link provided
+    rows[0].find('td')*.text() == ['28/03/2019', 'U', 'LPI prison', 'View (opens in new tab)']
     rows[1].find('td')*.text() == ['04/04/2018', 'P', 'LPI prison', 'View (opens in new tab)']
-    rows[2].find('td')*.text() == ['24/03/2013', 'B', 'LPI prison', 'View (opens in new tab)']
-    rows[3].find('td')*.text() == ['04/04/2012', 'A', 'LPI prison', 'View (opens in new tab)']
-    rows[1].find('td > a').@href.contains '/form/approvedView/12?sequenceNo=4'
+    rows[2].find('td')*.text() == ['24/03/2013', 'B', 'LPI prison', ''] // no local record means no view link provided
+    rows[3].find('td')*.text() == ['04/04/2012', 'A', 'LPI prison', '']
+    rows[0].find('td > a').@href.contains '/form/approvedView/12?sequenceNo=3'
 
     when: 'the user selects a review'
     elite2Api.stubAgencyDetails('BXI')
@@ -346,7 +345,7 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubAssessments(['B2345YZ'])
 
     then: 'the approved view page is shown'
-    withNewWindow({ rows[2].find('td > a').click() }) {
+    withNewWindow({ rows[0].find('td > a').click() }) {
       at ApprovedViewRecatPage
     }
   }

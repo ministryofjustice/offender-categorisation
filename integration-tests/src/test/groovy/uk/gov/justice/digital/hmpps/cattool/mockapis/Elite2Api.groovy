@@ -1077,96 +1077,93 @@ class Elite2Api extends WireMockRule {
             .withStatus(200)))
   }
 
-  def stubAssessmentsWithCurrent(String offenderNo, bookingId = -45) {
+
+  def stubAssessmentsWithCurrent(String offenderNo) {
     this.stubFor(
       get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false")
         .willReturn(
-          aResponse()
-            .withBody(JsonOutput.toJson(
-              [
-                [
-                  bookingId            : bookingId,
-                  offenderNo           : offenderNo,
-                  classificationCode   : 'A',
-                  classification       : 'Cat A',
-                  assessmentCode       : 'CATEGORY',
-                  assessmentDescription: 'Categorisation',
-                  cellSharingAlertFlag : false,
-                  assessmentDate       : '2012-04-04',
-                  nextReviewDate       : '2012-06-07',
-                  approvalDate         : '2012-06-08',
-                  assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'A',
-                  assessmentSeq        : 1
-                ],
-                [
-                  bookingId            : bookingId,
-                  offenderNo           : offenderNo,
-                  classificationCode   : 'A',
-                  classification       : 'Cat A',
-                  assessmentCode       : 'CATEGORY',
-                  assessmentDescription: 'Categorisation',
-                  cellSharingAlertFlag : false,
-                  assessmentDate       : '2012-03-28',
-                  nextReviewDate       : '2012-06-07',
-                  approvalDate         : '2012-06-18',
-                  assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'P',
-                  assessmentSeq        : 2
-
-                ],
-                [
-                  bookingId            : bookingId,
-                  offenderNo           : offenderNo,
-                  classificationCode   : 'B',
-                  classification       : 'Cat B',
-                  assessmentCode       : 'CATEGORY',
-                  assessmentDescription: 'Categorisation',
-                  cellSharingAlertFlag : false,
-                  assessmentDate       : '2013-03-24',
-                  nextReviewDate       : '2013-09-17',
-                  approvalDate         : '2012-06-08',
-                  assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'I',
-                  assessmentSeq        : 3
-
-                ],
-                [
-                  bookingId            : bookingId,
-                  offenderNo           : offenderNo,
-                  classificationCode   : 'P',
-                  classification       : 'Prov Cat A',
-                  assessmentCode       : 'CATEGORY',
-                  assessmentDescription: 'Cat A in current booking',
-                  cellSharingAlertFlag : false,
-                  assessmentDate       : '2018-04-04',
-                  nextReviewDate       : '2018-06-07',
-                  approvalDate         : '2018-06-08',
-                  assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'I',
-                  assessmentSeq        : 4
-
-                ],
-                [
-                  bookingId            : bookingId,
-                  offenderNo           : offenderNo,
-                  classificationCode   : 'U',
-                  classification       : 'Unsentenced',
-                  assessmentCode       : 'CATEGORY',
-                  assessmentDescription: 'Current booking',
-                  cellSharingAlertFlag : false,
-                  assessmentDate       : '2019-03-28',
-                  nextReviewDate       : '2019-06-07',
-                  approvalDate         : '2019-06-18',
-                  assessmentAgencyId   : "LPI",
-                  assessmentStatus     : 'A',
-                  assessmentSeq        : 5
-
-                ],
-              ])
-            )
-            .withHeader('Content-Type', 'application/json')
-            .withStatus(200)))
+        aResponse()
+          .withBody(JsonOutput.toJson(
+          [
+            [
+              bookingId            : -45,
+              offenderNo           : offenderNo,
+              classificationCode   : 'A',
+              classification       : 'Cat A',
+              assessmentCode       : 'CATEGORY',
+              assessmentDescription: 'Categorisation',
+              cellSharingAlertFlag : false,
+              assessmentDate       : '2012-04-04',
+              nextReviewDate       : '2012-06-07',
+              approvalDate         : '2012-06-08',
+              assessmentAgencyId   : "LPI",
+              assessmentStatus     : 'A',
+              assessmentSeq        : 1
+            ],
+            [
+              bookingId            : -45,
+              offenderNo           : offenderNo,
+              classificationCode   : 'A',
+              classification       : 'Cat A',
+              assessmentCode       : 'CATEGORY',
+              assessmentDescription: 'Categorisation',
+              cellSharingAlertFlag : false,
+              assessmentDate       : '2012-03-28',
+              nextReviewDate       : '2012-06-07',
+              approvalDate         : '2012-06-18',
+              assessmentAgencyId   : "LPI",
+              assessmentStatus     : 'P',
+              assessmentSeq        : 2
+            ],
+            [
+              bookingId            : -45,
+              offenderNo           : offenderNo,
+              classificationCode   : 'B',
+              classification       : 'Cat B',
+              assessmentCode       : 'CATEGORY',
+              assessmentDescription: 'Categorisation',
+              cellSharingAlertFlag : false,
+              assessmentDate       : '2013-03-24',
+              nextReviewDate       : '2013-09-17',
+              approvalDate         : '2012-06-08',
+              assessmentAgencyId   : "LPI",
+              assessmentStatus     : 'I',
+              assessmentSeq        : 3
+            ],
+            [
+              bookingId            : 12,
+              offenderNo           : offenderNo,
+              classificationCode   : 'P',
+              classification       : 'Prov Cat A',
+              assessmentCode       : 'CATEGORY',
+              assessmentDescription: 'Cat A in current booking',
+              cellSharingAlertFlag : false,
+              assessmentDate       : '2018-04-04',
+              nextReviewDate       : '2018-06-07',
+              approvalDate         : '2018-06-08',
+              assessmentAgencyId   : "LPI",
+              assessmentStatus     : 'I',
+              assessmentSeq        : 4
+            ],
+            [
+              bookingId            : 12,
+              offenderNo           : offenderNo,
+              classificationCode   : 'U',
+              classification       : 'Unsentenced',
+              assessmentCode       : 'CATEGORY',
+              assessmentDescription: 'Current booking',
+              cellSharingAlertFlag : false,
+              assessmentDate       : '2019-03-28',
+              nextReviewDate       : '2019-06-07',
+              approvalDate         : '2019-06-18',
+              assessmentAgencyId   : "LPI",
+              assessmentStatus     : 'A',
+              assessmentSeq        : 5
+            ],
+          ])
+        )
+          .withHeader('Content-Type', 'application/json')
+          .withStatus(200)))
   }
 
   def stubCategorise(String expectedCat, String nextReviewDate, long bookingId = 12, sequenceNumber = 4) {
