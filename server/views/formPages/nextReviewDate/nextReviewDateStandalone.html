@@ -15,8 +15,9 @@
 {% block formItems %}
 
   <h1 class="govuk-heading-l">Change the next review date</h1>
-  <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate))
-    if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
+  {% if data.details.sentence.conditionalReleaseDate %}
+    <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}.</p>
+  {% endif %}
   <p>This page can alter the prisoner's next review date (Re-Assessment date) without needing to create a new categorisation.</p>
 
   {{ govukInput({
