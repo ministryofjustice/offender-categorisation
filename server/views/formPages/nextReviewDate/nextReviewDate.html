@@ -16,8 +16,9 @@
 {% block formItems %}
 
 <h1 class="govuk-heading-l">Confirm the date they should be reviewed by</h1>
-<p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate))
-  if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
+{% if data.details.sentence.conditionalReleaseDate %}
+  <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}.</p>
+{% endif %}
 
 {{ govukInput({
   id: "reviewDate",

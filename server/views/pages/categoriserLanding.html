@@ -76,15 +76,17 @@
         classes: "forms-warning-text warning-overrides"
       }) }}
     {% endif %}
-    {% if not inProgress(data) %}
-      {{ govukButton({
-        text: 'Change next review date',
-        href: '/form/nextReviewDate/nextReviewDateStandalone/' + data.details.bookingId,
-        classes: 'grey-button',
-        attributes: { 'id': 'nextReviewDateButton' }
-      }) }}
-    {% endif %}
   </div>
+
+  {% if not inProgress(data) %}
+    <h1 class="govuk-heading-l govuk-!-padding-top-4">Change next review date</h1>
+    {{ govukButton({
+      text: 'Change next review date',
+      href: '/form/nextReviewDate/nextReviewDateStandalone/' + data.details.bookingId,
+      classes: 'grey-button',
+      attributes: { 'id': 'nextReviewDateButton' }
+    }) }}
+  {% endif %}
 
   {% if data.isSecurityReferred %}
     <h1 class="govuk-heading-l">This person will automatically be referred to security at next category review</h1>
