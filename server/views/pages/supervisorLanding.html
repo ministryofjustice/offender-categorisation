@@ -35,7 +35,7 @@
     <p>This prisoner is awaiting supervisor approval</p>
     {{ govukButton({
       text: 'Start approval',
-      href: "/form/supervisor/review/" + row.bookingId,
+      href: "/form/supervisor/review/" + data.details.bookingId,
       classes: 'grey-button',
       attributes: { 'id': 'approveButton' }
     }) }}
