@@ -867,7 +867,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const catRecords = await formService.getHistoricalCategorisationRecords(details.offenderNo, transactionalDbClient)
     const nomisRecords = await getCategoryHistoryWithoutPendingCategories(nomisClient, details.offenderNo)
 
-    const dataDecorated = await await Promise.all(
+    const dataDecorated = await Promise.all(
       nomisRecords.map(async nomisRecord => {
         const foundCatRecord = catRecords.find(
           o => o.bookingId === nomisRecord.bookingId && o.nomisSeq === nomisRecord.assessmentSeq
@@ -897,42 +897,57 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return ''
   }
 
-  async function createInitialCategorisation({
+  async function createOrUpdateCategorisation({
     context,
     bookingId,
     overriddenCategory,
     suggestedCategory,
     overriddenCategoryText,
     nextReviewDate,
+    nomisSeq,
+    transactionalDbClient,
   }) {
-    const category = overriddenCategory || suggestedCategory
-    const comment = overriddenCategoryText || ''
-    const nomisClient = nomisClientBuilder(context)
-    const nextReviewDateConverted = nextReviewDate && moment(nextReviewDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
     try {
-      return await nomisClient.createInitialCategorisation({
+      const category = overriddenCategory || suggestedCategory
+      const comment = (overriddenCategoryText && overriddenCategoryText.substring(0, 4000)) || ''
+      const nomisClient = nomisClientBuilder(context)
+      const nextReviewDateConverted = nextReviewDate && moment(nextReviewDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      if (nomisSeq) {
+        return await nomisClient.updateCategorisation({
+          bookingId,
+          assessmentSeq: nomisSeq,
+          category,
+          committee: 'OCA',
+          comment,
+          nextReviewDate: nextReviewDateConverted,
+        })
+      }
+      const nomisKeyMap = await nomisClient.createCategorisation({
         bookingId,
         category,
         committee: 'OCA',
         comment,
         nextReviewDate: nextReviewDateConverted,
       })
+      return await formService.recordNomisSeqNumber(bookingId, nomisKeyMap.sequenceNumber, transactionalDbClient)
     } catch (error) {
-      logger.error(error, 'Error during createInitialCategorisation')
+      logger.error(error, 'Error during createOrUpdateCategorisation')
       throw error
     }
   }
 
   async function createSupervisorApproval(context, bookingId, form) {
     const category = form.supervisorOverriddenCategory || form.proposedCategory
-    const comment = form.supervisorOverriddenCategoryText || ''
+    const comment =
+      (form.supervisorOverriddenCategoryText && form.supervisorOverriddenCategoryText.substring(0, 240)) || ''
     const nomisClient = nomisClientBuilder(context)
     try {
       await nomisClient.createSupervisorApproval({
         bookingId,
         category,
         evaluationDate: moment().format('YYYY-MM-DD'),
-        reviewSupLevelText: comment,
+        approvedCategoryComment: comment,
+        committeeCommentText: 'cat-tool approval',
         reviewCommitteeCode: 'OCA',
       })
     } catch (error) {
@@ -944,6 +959,27 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   async function getOffenceHistory(context, offenderNo) {
     const nomisClient = nomisClientBuilder(context)
     return nomisClient.getOffenceHistory(offenderNo)
+  }
+
+  async function backToCategoriser(context, bookingId, transactionalClient) {
+    try {
+      const currentCategorisation = await formService.backToCategoriser(bookingId, transactionalClient)
+      const details = {
+        bookingId,
+        assessmentSeq: currentCategorisation.nomisSeq,
+        evaluationDate: moment().format('YYYY-MM-DD'),
+        reviewCommitteeCode: 'OCA',
+        committeeCommentText: 'cat-tool rejected',
+      }
+      const nomisClient = nomisClientBuilder(context)
+      await nomisClient.createSupervisorRejection(details)
+      logger.info(
+        `Supervisor sent back categorisation record for bookingId: ${bookingId}, offender No: ${currentCategorisation.offenderNo}, user name: ${currentCategorisation.userId}`
+      )
+    } catch (error) {
+      logger.error(error, 'Error during createSupervisorApproval')
+      throw error
+    }
   }
 
   function isRecat(classificationCodeFromNomis) {
@@ -1014,9 +1050,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getImage,
     getCatAInformation,
     getOffenceHistory,
+    backToCategoriser,
     isRecat,
     getOptionalAssessmentAgencyDescription,
-    createInitialCategorisation,
+    createOrUpdateCategorisation,
     createSupervisorApproval,
     getCategorisedOffenders,
     getSecurityReviewedOffenders,

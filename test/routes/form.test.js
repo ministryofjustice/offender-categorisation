@@ -53,10 +53,11 @@ const offendersService = {
   getCatAInformation: jest.fn(),
   getOffenceHistory: jest.fn(),
   createSupervisorApproval: jest.fn(),
-  createInitialCategorisation: jest.fn(),
+  createOrUpdateCategorisation: jest.fn(),
   getPrisonerBackground: jest.fn(),
   getOptionalAssessmentAgencyDescription: jest.fn(),
   isRecat: jest.fn(),
+  backToCategoriser: jest.fn(),
 }
 
 const userService = {
@@ -82,7 +83,7 @@ beforeEach(() => {
   formService.isValid.mockResolvedValue(true)
   formService.recordNomisSeqNumber.mockReturnValue({})
   formService.getSecurityReferral.mockReturnValue({})
-  offendersService.createInitialCategorisation.mockReturnValue({ bookingId: 12, seq: 4 })
+  offendersService.createOrUpdateCategorisation.mockReturnValue({ bookingId: 12, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
@@ -997,7 +998,7 @@ describe('POST /supervisor/confirmBack', () => {
       .expect(302)
       .expect('Location', `/supervisorHome`)
       .expect(() => {
-        expect(formService.backToCategoriser).toBeCalledWith('12345', mockTransactionalClient)
+        expect(offendersService.backToCategoriser).toBeCalledWith(expect.anything(), '12345', mockTransactionalClient)
       }))
 })
 
@@ -1020,12 +1021,13 @@ describe('POST /categoriser/provisionalCategory', () => {
           const updateArg = formService.categoriserDecisionWithFormResponse.mock.calls[0][0]
           expect(updateArg.bookingId).toBe(12345)
           expect(updateArg.userId).toBe('CA_USER_TEST')
-          expect(offendersService.createInitialCategorisation).toBeCalledWith({
+          expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
             context: { user: { token: 'ABCDEF' } },
             bookingId: 12345,
             overriddenCategory: 'F',
             overriddenCategoryText: 'HHH',
             suggestedCategory: 'B',
+            transactionalDbClient: mockTransactionalClient,
           })
         }
       })
