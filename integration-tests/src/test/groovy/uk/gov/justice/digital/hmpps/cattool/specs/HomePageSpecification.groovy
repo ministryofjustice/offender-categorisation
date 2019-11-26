@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
@@ -349,6 +350,56 @@ class HomePageSpecification extends GebReportingSpec {
     prisonNos == ['B2345XY', 'C0001AA', 'B2345YZ', 'C0002AA']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     startButtons*.text() == ['Start', 'Start', 'Start', 'Start']
+  }
+
+
+  def "An offender RECAT Awaiting approval can be cancelled without affecting the visibility of a previously approved categorisation"() {
+
+    db.createDataWithIdAndStatusAndCatType(3, 11, 'APPROVED', JsonOutput.toJson([
+      ratings: fixture.defaultRatingsC ]), 'RECAT', 'B2345XY')
+
+    db.createNomisSeqNo(11,6, 1)
+    db.createReviewReason(11, 'DUE')
+
+    db.createDataWithIdAndStatusAndCatTypeAndSeq(4,11, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat    : TestFixture.defaultRecat,
+    ]), 'RECAT', 'B2345XY', 2)
+
+    db.createNomisSeqNo(11,7, 2)
+    db.createReviewReason(11, 'DUE')
+
+
+    when: 'A recategorisation user logs in'
+
+    elite2Api.stubRecategorise(['A','P','A','A'])
+    elite2Api.stubAssessments('B2345XY')
+    fixture.loginAs(RECATEGORISER_USER)
+    at RecategoriserHomePage
+
+    elite2Api.stubAgencyDetails('LPI') // existing assessments
+    elite2Api.stubGetOffenderDetails(11, "B2345XY")
+    startButtons[2].click()
+
+    then: 'The view page is displayed'
+    at RecategoriserAwaitingApprovalViewPage
+
+    when: 'The categorisation is cancelled'
+    cancelLink.click()
+    at CancelPage
+    elite2Api.stubSetInactive(11, 'PENDING')
+    confirmYes.click()
+    submitButton.click()
+    at CancelConfirmedPage
+    elite2Api.stubRecategorise(['A','A','A','A'])
+    finishButton.click()
+    at RecategoriserHomePage
+
+    elite2Api.stubCategorised([11])
+    doneTabLink.click()
+
+    then: 'The recategoriser done page is displayed, showing the completed categorisation (prior to the cancellation)'
+    at RecategoriserDonePage
+    prisonNos == ['B2345XY']
   }
 
   def "Log out"() {
