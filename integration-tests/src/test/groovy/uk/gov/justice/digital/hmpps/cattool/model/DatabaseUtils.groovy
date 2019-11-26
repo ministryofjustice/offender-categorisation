@@ -51,6 +51,11 @@ class DatabaseUtils {
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, 1, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
   }
 
+  def createDataWithIdAndStatusAndCatTypeAndSeq(id, bookingId, status, json, catType, offenderNo='dummy', seq) {
+    def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
+    doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, seq, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
+  }
+
   def createRiskProfileData(bookingId, json) {
     doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
@@ -59,8 +64,8 @@ class DatabaseUtils {
     sql.executeUpdate("update form set risk_profile = ?::JSON where booking_id = $bookingId", json)
   }
 
-  def createNomisSeqNo(bookingId, seq) {
-    sql.executeUpdate("update form set nomis_sequence_no = $seq where booking_id = $bookingId")
+  def createNomisSeqNo(bookingId, nomisSeq, existingSeq=1) {
+    sql.executeUpdate("update form set nomis_sequence_no = $nomisSeq where booking_id = $bookingId and sequence_no = $existingSeq")
   }
 
   def createNomisSeqNoWhenMultipleCategorisationsForOffender(bookingId, seq, nomisSeq) {

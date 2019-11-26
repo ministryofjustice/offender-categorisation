@@ -159,8 +159,7 @@ class NextReviewDateSpecification extends GebReportingSpec {
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
-    reviewDate << Keys.chord(Keys.CONTROL, "a") // highlight to clear
-    reviewDate << THREE_MONTHS_AHEAD
+    reviewDate = THREE_MONTHS_AHEAD
     submitButton.click()
 
     then: "we proceed to the confirmed page, the endpoint was called and database has been updated"
@@ -187,8 +186,7 @@ class NextReviewDateSpecification extends GebReportingSpec {
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
-    reviewDate << Keys.chord(Keys.CONTROL, "a")
-    reviewDate << THREE_MONTHS_AHEAD
+    reviewDate = THREE_MONTHS_AHEAD
     submitButton.click()
 
     then: "we proceed to the confirmed page, the endpoint was called and no data exists"

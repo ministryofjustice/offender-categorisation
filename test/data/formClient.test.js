@@ -37,7 +37,7 @@ describe('getFormDataForUser', () => {
                     prison_id              as "prisonId",
                     cat_type               as "catType",
                     review_reason          as "reviewReason",
-                    nomis_sequence_no      as "nomisSeq" from form f where f.booking_id = $1 and f.status <> 'CANCELLED' and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
+                    nomis_sequence_no      as "nomisSeq" from form f where f.booking_id = $1 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')`,
       values: ['bookingId1'],
     })
   })
@@ -62,7 +62,7 @@ describe('supervisorApproval', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType", nomis_sequence_no as "nomisSeq"
-        from form f where f.prison_id = $1 and f.status = $2 and f.approval_date >= $3 and ($4::cat_type_enum is null or f.cat_type = $4::cat_type_enum) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
+        from form f where f.prison_id = $1 and f.status = $2 and f.approval_date >= $3 and ($4::cat_type_enum is null or f.cat_type = $4::cat_type_enum) and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')`,
       values: ['MDI', 'APPROVED', fromDate, 'RECAT'],
     })
   })
@@ -74,7 +74,7 @@ describe('getSecurityReviewedCategorisationRecords', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType"
-        from form f where f.prison_id = $1 and f.security_reviewed_date is not null and f.status <> 'CANCELLED' and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`,
+        from form f where f.prison_id = $1 and f.security_reviewed_date is not null and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')`,
       values: ['MDI'],
     })
   })
@@ -85,8 +85,7 @@ describe('securityReviewed', () => {
     formClient.securityReviewed('12345', 'SECURITY', 'Meeeee', mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        'update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+      text: `update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')`,
       values: ['Meeeee', 'SECURITY', '12345'],
     })
   })
@@ -98,7 +97,7 @@ describe('updateRecordWithNomisSeqNumber', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'update form f set nomis_sequence_no = $1 where f.booking_id = $2 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+        "update form f set nomis_sequence_no = $1 where f.booking_id = $2 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
       values: [4, '12345'],
     })
   })
@@ -138,7 +137,7 @@ describe('categorisation record update', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'update form f set form_response = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+        "update form f set form_response = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
       values: [{}, 'STARTED', 'bookingId1'],
     })
   })
@@ -150,7 +149,7 @@ describe('supervisorApproval update', () => {
 
     expect(mockTransactionalClient.query).toBeCalledWith({
       text:
-        'update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)',
+        "update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
       values: [{}, 'APPROVED', 'Me', 'bookingId1'],
     })
   })
