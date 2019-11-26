@@ -35,7 +35,6 @@
         }) }}
       {% endif %}
       {% if not inProgress(data) %}
-        <p>Once started, you cannot cancel a categorisation.</p>
         {{ govukButton({
           text: 'Start initial categorisation',
           href: '/tasklist/' + data.details.bookingId + '?reason=MANUAL',
