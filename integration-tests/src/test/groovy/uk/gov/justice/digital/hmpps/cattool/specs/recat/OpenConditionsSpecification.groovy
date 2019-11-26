@@ -482,7 +482,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubAgencyDetails('LPI')
     startButtons[0].click() // B2345YZ / 12
     at SupervisorReviewPage
-    elite2Api.stubSupervisorApprove('D')
+    elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     appropriateNo.click()
     overriddenCategoryD.click()
     overriddenCategoryText << "super overriding C to D reason text"
@@ -530,7 +530,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at ReviewRecatPage
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
+    elite2Api.stubCategoriseUpdate('D', '2019-12-14', 12, 5)
     submitButton.click()
 
     then: 'the category is submitted'

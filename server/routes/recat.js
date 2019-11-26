@@ -431,15 +431,15 @@ module.exports = function Index({
 
         const nextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], formData)
 
-        const nomisKeyMap = await offendersService.createInitialCategorisation({
+        await offendersService.createOrUpdateCategorisation({
           context: res.locals,
           bookingId: bookingInt,
           suggestedCategory,
           overriddenCategoryText: 'Cat-tool Recat',
           nextReviewDate,
+          nomisSeq: formData.nomisSeq,
+          transactionalDbClient,
         })
-
-        await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)

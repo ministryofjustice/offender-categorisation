@@ -107,13 +107,21 @@ module.exports = context => {
       const path = `${apiUrl}api/agencies/${agencyId}?activeOnly=false`
       return nomisUserGet({ path })
     },
+    createCategorisation(details) {
+      const path = `${apiUrl}api/offender-assessments/category/categorise`
+      return nomisPost({ path, body: details })
+    },
+    updateCategorisation(details) {
+      const path = `${apiUrl}api/offender-assessments/category/categorise`
+      return nomisPut({ path, body: details })
+    },
     createSupervisorApproval(details) {
       const path = `${apiUrl}api/offender-assessments/category/approve`
       return nomisPut({ path, body: details })
     },
-    createInitialCategorisation(details) {
-      const path = `${apiUrl}api/offender-assessments/category/categorise`
-      return nomisPost({ path, body: details })
+    createSupervisorRejection(details) {
+      const path = `${apiUrl}api/offender-assessments/category/reject`
+      return nomisPut({ path, body: details })
     },
     getOffenderDetailList(offenderNos) {
       const path = `${apiUrl}api/bookings/offenders?activeOnly=false`
