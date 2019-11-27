@@ -592,7 +592,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at SupervisorHomePage
     startButtons[1].click() // B2345YZ / 12
     at SupervisorReviewPage
-    elite2Api.stubSupervisorApprove('D')
+    elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     appropriateNo.click()
     overriddenCategoryD.click()
@@ -644,7 +644,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     warning.text() contains 'Based on the information provided, the provisional category is D'
 
     when: 'I confirm the cat D category'
-    elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
+    elite2Api.stubCategoriseUpdate('D', '2019-12-14', 12, 5)
     appropriateYes.click()
     submitButton.click()
 

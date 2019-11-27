@@ -103,6 +103,7 @@ class SupervisorSpecification extends GebReportingSpec {
     when: 'The supervisor clicks continue'
     overriddenCategoryText << "reason text"
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
+    elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
     then: 'The record is sent back to the categoriser'
@@ -251,6 +252,7 @@ class SupervisorSpecification extends GebReportingSpec {
     when: 'the supervisor confirms to return to categoriser'
     messageText << "a message for categoriser"
     elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
     then: 'the supervisor home page is displayed'
@@ -309,6 +311,7 @@ class SupervisorSpecification extends GebReportingSpec {
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a D"
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
+    elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
     then: 'the record is returned to categoriser with open conditions requested and suggestedCategory forced to D'
@@ -342,6 +345,7 @@ class SupervisorSpecification extends GebReportingSpec {
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a J"
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
+    elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
     then: 'the record is returned to categoriser with open conditions requested and suggestedCategory forced to J'
@@ -598,7 +602,7 @@ class SupervisorSpecification extends GebReportingSpec {
     answerYes.click()
     messageText << "a message for re-categoriser"
     elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
-
+    elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
     then: 'the supervisor home page is displayed'
@@ -646,6 +650,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a D"
+    elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
     then: 'the record is returned to categoriser with open conditions requested and suggestedCategory forced to D'

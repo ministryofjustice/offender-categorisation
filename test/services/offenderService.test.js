@@ -21,8 +21,10 @@ const nomisClient = {
   getSentenceTerms: jest.fn(),
   getMainOffence: jest.fn(),
   getMainOffences: jest.fn(),
-  createInitialCategorisation: jest.fn(),
+  createCategorisation: jest.fn(),
+  updateCategorisation: jest.fn(),
   createSupervisorApproval: jest.fn(),
+  createSupervisorRejection: jest.fn(),
   getCategoryHistory: jest.fn(),
   getAgencyDetail: jest.fn(),
   getCategorisedOffenders: jest.fn(),
@@ -37,6 +39,8 @@ const formService = {
   updateStatusForOutstandingRiskChange: jest.fn(),
   getRiskChanges: jest.fn(),
   getHistoricalCategorisationRecords: jest.fn(),
+  backToCategoriser: jest.fn(),
+  recordNomisSeqNumber: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -59,7 +63,8 @@ afterEach(() => {
   nomisClient.getSentenceDetails.mockReset()
   nomisClient.getSentenceTerms.mockReset()
   nomisClient.getMainOffence.mockReset()
-  nomisClient.createInitialCategorisation.mockReset()
+  nomisClient.createCategorisation.mockReset()
+  nomisClient.updateCategorisation.mockReset()
   nomisClient.createSupervisorApproval.mockReset()
   formService.getCategorisationRecord.mockReset()
   formService.getSecurityReferredOffenders.mockReset()
@@ -795,7 +800,6 @@ describe('getUncategorisedOffenders', () => {
     nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
     nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
     nomisClient.getMainOffences.mockReturnValue(offences)
-    // formService.getCategorisationRecord.mockReturnValue(dbRecord)
 
     const results = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(results).toHaveLength(1)
@@ -803,16 +807,76 @@ describe('getUncategorisedOffenders', () => {
   })
 })
 
-test('create categorisation should propagate error response', async () => {
-  nomisClient.createInitialCategorisation.mockImplementation(() => {
-    throw new Error('our Error')
+describe('createOrUpdateCategorisation', () => {
+  test('create', async () => {
+    nomisClient.createCategorisation.mockReturnValue({ sequenceNumber: 9 })
+
+    const bookingId = 15
+    const overriddenCategory = 'B'
+    const suggestedCategory = 'C'
+    const overriddenCategoryText = 'some text'
+    const nextReviewDate = '14/11/2020'
+
+    await service.createOrUpdateCategorisation({
+      context,
+      bookingId,
+      overriddenCategory,
+      suggestedCategory,
+      overriddenCategoryText,
+      nextReviewDate,
+      transactionalDbClient: mockTransactionalClient,
+    })
+
+    expect(nomisClient.createCategorisation).toBeCalledWith({
+      bookingId,
+      category: overriddenCategory,
+      committee: 'OCA',
+      comment: overriddenCategoryText,
+      nextReviewDate: '2020-11-14',
+    })
+    expect(formService.recordNomisSeqNumber).toBeCalledWith(bookingId, 9, mockTransactionalClient)
   })
 
-  try {
-    await service.createInitialCategorisation({}, {}, {})
-  } catch (s) {
-    expect(s.message).toEqual('our Error')
-  }
+  test('update', async () => {
+    const bookingId = 15
+    const overriddenCategory = ''
+    const suggestedCategory = 'C'
+    const overriddenCategoryText = 'some text'
+    const nextReviewDate = '14/11/2020'
+    const nomisSeq = 8
+
+    await service.createOrUpdateCategorisation({
+      context,
+      bookingId,
+      overriddenCategory,
+      suggestedCategory,
+      overriddenCategoryText,
+      nextReviewDate,
+      nomisSeq,
+      transactionalDbClient: mockTransactionalClient,
+    })
+
+    expect(nomisClient.updateCategorisation).toBeCalledWith({
+      bookingId,
+      assessmentSeq: nomisSeq,
+      category: suggestedCategory,
+      committee: 'OCA',
+      comment: overriddenCategoryText,
+      nextReviewDate: '2020-11-14',
+    })
+  })
+
+  test('should propagate error response', async () => {
+    nomisClient.createCategorisation.mockImplementation(() => {
+      throw new Error('our Error')
+    })
+
+    try {
+      await service.createOrUpdateCategorisation({})
+    } catch (s) {
+      expect(s.message).toEqual('our Error')
+    }
+  })
 })
 
 test('createSupervisorApproval should propagate error response', async () => {
@@ -1138,6 +1202,25 @@ describe('pnomisOrInconsistentWarning', () => {
     const result = service.pnomisOrInconsistentWarning({ status: 'APPROVED' }, 'A')
     expect(result.pnomis).toBe(false)
     expect(result.requiresWarning).toBe(false)
+  })
+})
+
+describe('backToCategoriser', () => {
+  test('happy path', async () => {
+    const dbRecord = { nomisSeq: 6 }
+    formService.backToCategoriser.mockReturnValue(dbRecord)
+
+    await service.backToCategoriser(context, 12, mockTransactionalClient)
+
+    expect(formService.backToCategoriser).toBeCalledWith(12, mockTransactionalClient)
+    const expectedDetails = {
+      bookingId: 12,
+      assessmentSeq: 6,
+      evaluationDate: moment().format('YYYY-MM-DD'),
+      reviewCommitteeCode: 'OCA',
+      committeeCommentText: 'cat-tool rejected',
+    }
+    expect(nomisClient.createSupervisorRejection).toBeCalledWith(expectedDetails)
   })
 })
 
@@ -1652,6 +1735,7 @@ describe('getMatchedCategorisations', () => {
     expect(result).toMatchObject(expected)
   })
 })
+
 describe('mergeU21ResultWithNomisCategorisationData', () => {
   test('it should merge in the assessStatus by booking Id', async () => {
     const u21Cats = [

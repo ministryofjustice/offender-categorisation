@@ -494,7 +494,7 @@ module.exports = function Index({
       })
       const changeConfirmed = userInput.confirmation === 'Yes'
       if (changeConfirmed) {
-        await formService.backToCategoriser(bookingId, transactionalDbClient)
+        await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
       }
 
       const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`
@@ -575,16 +575,16 @@ module.exports = function Index({
 
         const nextReviewDate = R.path(['formObject', 'ratings', 'nextReviewDate', 'date'], formData)
 
-        const nomisKeyMap = await offendersService.createInitialCategorisation({
+        await offendersService.createOrUpdateCategorisation({
           context: res.locals,
           bookingId: bookingInt,
           overriddenCategory: userInput.overriddenCategory,
           suggestedCategory: userInput.suggestedCategory,
           overriddenCategoryText: userInput.overriddenCategoryText || 'Cat-tool Initial',
           nextReviewDate,
+          nomisSeq: formData.nomisSeq,
+          transactionalDbClient,
         })
-
-        await formService.recordNomisSeqNumber(bookingInt, nomisKeyMap.sequenceNumber, transactionalDbClient)
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
@@ -698,7 +698,7 @@ module.exports = function Index({
         }
 
         // send back to the categoriser for open conditions completion
-        await formService.backToCategoriser(bookingId, transactionalDbClient)
+        await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
         res.redirect(`/supervisorHome`)
       }
     })
