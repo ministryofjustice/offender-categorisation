@@ -320,13 +320,14 @@ class SupervisorSpecification extends GebReportingSpec {
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
     db.createNomisSeqNo(12,5)
 
-    navigateToReview(false, false)
+    navigateToReview(true, false)
 
     when: 'Supervisor chooses to override to category J'
     appropriateNo.click()
+    overriddenCategoryJ.click()
 
     then: 'A warning is displayed'
-    warnings[1].text() contains "Making this category change means that the categoriser will have to provide more information."
+    warnings[2].text() contains "Making this category change means that the categoriser will have to provide more information."
 
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a J"
@@ -346,7 +347,6 @@ class SupervisorSpecification extends GebReportingSpec {
     response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
-
 
   def "The supervisor review page validates input, suggested category B overridden with D"() {
     given: 'supervisor is viewing the review page for B2345YZ'
