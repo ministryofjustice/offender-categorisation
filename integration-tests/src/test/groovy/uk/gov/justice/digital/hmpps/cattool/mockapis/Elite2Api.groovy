@@ -1053,7 +1053,6 @@ class Elite2Api extends WireMockRule {
                   cellSharingAlertFlag : false,
                   assessmentDate       : '2012-03-28',
                   nextReviewDate       : '2012-06-07',
-                  approvalDate         : '2012-06-18',
                   assessmentAgencyId   : "LPI",
                   assessmentStatus     : 'P'
                 ],
@@ -1067,7 +1066,7 @@ class Elite2Api extends WireMockRule {
                   cellSharingAlertFlag : false,
                   assessmentDate       : '2013-03-24',
                   nextReviewDate       : '2013-09-17',
-                  approvalDate         : '2012-06-08',
+                  approvalDate         : '2013-03-24',
                   assessmentAgencyId   : "LPI",
                   assessmentStatus     : 'I'
                 ]
@@ -1110,7 +1109,6 @@ class Elite2Api extends WireMockRule {
               cellSharingAlertFlag : false,
               assessmentDate       : '2012-03-28',
               nextReviewDate       : '2012-06-07',
-              approvalDate         : '2012-06-18',
               assessmentAgencyId   : "LPI",
               assessmentStatus     : 'P',
               assessmentSeq        : 2
@@ -1125,7 +1123,7 @@ class Elite2Api extends WireMockRule {
               cellSharingAlertFlag : false,
               assessmentDate       : '2013-03-24',
               nextReviewDate       : '2013-09-17',
-              approvalDate         : '2012-06-08',
+              approvalDate         : '2013-03-24',
               assessmentAgencyId   : "LPI",
               assessmentStatus     : 'I',
               assessmentSeq        : 3
