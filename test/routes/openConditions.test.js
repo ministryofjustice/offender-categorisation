@@ -46,7 +46,7 @@ const offendersService = {
   getCatAInformation: jest.fn(),
   getOffenceHistory: jest.fn(),
   createSupervisorApproval: jest.fn(),
-  createInitialCategorisation: jest.fn(),
+  createOrUpdateCategorisation: jest.fn(),
 }
 
 const userService = {

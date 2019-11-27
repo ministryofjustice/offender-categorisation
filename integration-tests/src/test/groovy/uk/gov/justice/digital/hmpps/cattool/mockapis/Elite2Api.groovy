@@ -1184,6 +1184,20 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubCategoriseUpdate(String expectedCat, String nextReviewDate, long bookingId, sequenceNumber) {
+
+    def expectedBody = [bookingId: bookingId, assessmentSeq: sequenceNumber, category: expectedCat, committee: 'OCA', nextReviewDate: nextReviewDate]
+
+    this.stubFor(
+      put("/api/offender-assessments/category/categorise")
+        .withRequestBody(equalToJson(JsonOutput.toJson(expectedBody), true, true))
+        .willReturn(
+          aResponse()
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
   def stubCategoriseError() {
 
     this.stubFor(
@@ -1201,6 +1215,20 @@ class Elite2Api extends WireMockRule {
       put("/api/offender-assessments/category/approve")
         .withRequestBody(equalToJson(JsonOutput.toJson([
           category: expectedCat, reviewCommitteeCode: 'OCA'
+        ]), true, true))
+        .willReturn(
+          aResponse()
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
+  def stubSupervisorReject(String bookingId, int assessmentSeq, evaluationDate) {
+
+    this.stubFor(
+      put("/api/offender-assessments/category/reject")
+        .withRequestBody(equalToJson(JsonOutput.toJson([
+          bookingId: bookingId, assessmentSeq: assessmentSeq, reviewCommitteeCode: 'OCA', evaluationDate: evaluationDate
         ]), true, true))
         .willReturn(
           aResponse()

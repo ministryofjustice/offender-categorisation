@@ -455,16 +455,9 @@ module.exports = function createFormService(formClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     const currentStatus = currentCategorisation.status
     if (validateStatusIfProvided(currentStatus, Status.SUPERVISOR_BACK.name)) {
-      try {
-        await formClient.updateStatus(bookingId, Status.SUPERVISOR_BACK.name, transactionalClient)
-        log.info(
-          `Supervisor sent back categorisation record for : ${bookingId}, offender No: ${currentCategorisation.offenderNo}. user name: ${currentCategorisation.userId}`
-        )
-      } catch (error) {
-        logger.error(error)
-        throw error
-      }
+      await formClient.updateStatus(bookingId, Status.SUPERVISOR_BACK.name, transactionalClient)
     }
+    return R.assocPath(['status'], Status.SUPERVISOR_BACK.name, currentCategorisation)
   }
 
   async function backToCategoriserMessageRead(bookingId, transactionalClient) {

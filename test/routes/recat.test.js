@@ -53,7 +53,7 @@ const offendersService = {
   getImage: jest.fn(),
   getOffenceHistory: jest.fn(),
   createSupervisorApproval: jest.fn(),
-  createInitialCategorisation: jest.fn(),
+  createOrUpdateCategorisation: jest.fn(),
   getPrisonerBackground: jest.fn(),
   getRiskChangeForOffender: jest.fn(),
 }
@@ -88,7 +88,7 @@ beforeEach(() => {
   formService.deleteFormData.mockReturnValue({})
   formService.recordNomisSeqNumber.mockReturnValue({})
   formService.categoriserDecision.mockReturnValue({})
-  offendersService.createInitialCategorisation.mockReturnValue({ bookingId: 12345, seq: 4 })
+  offendersService.createOrUpdateCategorisation.mockReturnValue({ bookingId: 12345, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({
     displayName: 'Claire Dent',
     bookingId: 12345,
@@ -570,12 +570,13 @@ describe('POST /form/recat/review', () => {
       .expect('Location', `${nextPath}12345`)
       .expect(() => {
         expect(formService.update).toBeCalledTimes(0)
-        expect(offendersService.createInitialCategorisation).toBeCalledWith({
+        expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
           context: { user: { token: 'ABCDEF' } },
           bookingId: 12345,
           overriddenCategoryText: 'Cat-tool Recat',
           suggestedCategory: 'B',
           nextReviewDate: '16/02/2020',
+          transactionalDbClient: mockTransactionalClient,
         })
         expect(formService.categoriserDecision).toBeCalledWith('12345', 'CA_USER_TEST', mockTransactionalClient)
       })
