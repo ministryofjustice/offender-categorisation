@@ -1289,6 +1289,7 @@ describe('getPrisonerBackground', () => {
       classificationCode: 'A',
       classification: 'Cat A',
       assessmentDate: '2012-04-04',
+      approvalDate: '2012-05-05',
       assessmentAgencyId: 'MDI',
       assessmentStatus: 'A',
     },
@@ -1297,7 +1298,7 @@ describe('getPrisonerBackground', () => {
       offenderNo: 'ABC1',
       classificationCode: 'A',
       classification: 'Cat A',
-      assessmentDate: '2012-04-04',
+      assessmentDate: '2012-01-01',
       assessmentAgencyId: 'LEI',
       assessmentStatus: 'P',
     },
@@ -1307,6 +1308,7 @@ describe('getPrisonerBackground', () => {
       classificationCode: 'A',
       classification: 'Cat A',
       assessmentDate: '2010-02-04',
+      approvalDate: '2010-02-05',
       assessmentAgencyId: 'LEI',
       assessmentStatus: 'I',
     },
@@ -1316,7 +1318,17 @@ describe('getPrisonerBackground', () => {
       classificationCode: 'B',
       classification: 'Cat B',
       assessmentDate: '2013-03-24',
+      approvalDate: '2013-03-28',
       assessmentAgencyId: 'MDI',
+      assessmentStatus: 'I',
+    },
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'A',
+      classification: 'Cat A',
+      assessmentDate: '2018-04-04',
+      assessmentAgencyId: 'LEI',
       assessmentStatus: 'I',
     },
     {
@@ -1325,12 +1337,13 @@ describe('getPrisonerBackground', () => {
       classificationCode: 'B',
       classification: 'Cat B',
       assessmentDate: '2019-04-17',
+      approvalDate: '2019-04-17',
       assessmentAgencyId: 'BXI',
       assessmentStatus: 'A',
     },
   ]
 
-  test('it should return a list of historical categorisations, filtering out any pending and future categorisations, sorted by assessment date', async () => {
+  test('it should return a list of historical categorisations, filtering out any pending, cancelled and future categorisations, sorted by approval date', async () => {
     nomisClient.getCategoryHistory.mockReturnValue(cats)
     nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
 
@@ -1340,18 +1353,23 @@ describe('getPrisonerBackground', () => {
         offenderNo: 'ABC1',
         classificationCode: 'B',
         assessmentDate: '2013-03-24',
-        assessmentDateDisplay: '24/03/2013',
+        approvalDate: '2013-03-28',
+        approvalDateDisplay: '28/03/2013',
         assessmentAgencyId: 'MDI',
         agencyDescription: 'Moorlands',
         assessmentStatus: 'I',
+        classification: 'Cat B',
       },
       {
         bookingId: -45,
         offenderNo: 'ABC1',
         classificationCode: 'A',
+        classification: 'Cat A',
         assessmentDate: '2012-04-04',
-        assessmentDateDisplay: '04/04/2012',
+        approvalDate: '2012-05-05',
+        approvalDateDisplay: '05/05/2012',
         agencyDescription: 'Moorlands',
+        assessmentAgencyId: 'MDI',
         assessmentStatus: 'A',
       },
       {
@@ -1360,6 +1378,8 @@ describe('getPrisonerBackground', () => {
         classificationCode: 'A',
         classification: 'Cat A',
         assessmentDate: '2010-02-04',
+        approvalDate: '2010-02-05',
+        approvalDateDisplay: '05/02/2010',
         assessmentAgencyId: 'LEI',
         assessmentStatus: 'I',
       },
@@ -1372,7 +1392,7 @@ describe('getPrisonerBackground', () => {
     expect(result).toMatchObject(expected)
   })
 
-  test('it should return a list of historical categorisations, filtering out any pending categorisations, sorted by assessment date', async () => {
+  test('it should return a list of historical categorisations, filtering out any pending or cancelled categorisations, sorted by approval date', async () => {
     nomisClient.getCategoryHistory.mockReturnValue(cats)
     nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
 
@@ -1381,10 +1401,11 @@ describe('getPrisonerBackground', () => {
         bookingId: -45,
         offenderNo: 'ABC1',
         classificationCode: 'B',
+        classification: 'Cat B',
         assessmentDate: '2019-04-17',
-        assessmentDateDisplay: '17/04/2019',
+        approvalDate: '2019-04-17',
+        approvalDateDisplay: '17/04/2019',
         assessmentAgencyId: 'BXI',
-        agencyDescription: 'Moorlands',
         assessmentStatus: 'A',
       },
       {
@@ -1392,18 +1413,23 @@ describe('getPrisonerBackground', () => {
         offenderNo: 'ABC1',
         classificationCode: 'B',
         assessmentDate: '2013-03-24',
-        assessmentDateDisplay: '24/03/2013',
+        approvalDate: '2013-03-28',
+        approvalDateDisplay: '28/03/2013',
         assessmentAgencyId: 'MDI',
         agencyDescription: 'Moorlands',
         assessmentStatus: 'I',
+        classification: 'Cat B',
       },
       {
         bookingId: -45,
         offenderNo: 'ABC1',
         classificationCode: 'A',
+        classification: 'Cat A',
         assessmentDate: '2012-04-04',
-        assessmentDateDisplay: '04/04/2012',
+        approvalDate: '2012-05-05',
+        approvalDateDisplay: '05/05/2012',
         agencyDescription: 'Moorlands',
+        assessmentAgencyId: 'MDI',
         assessmentStatus: 'A',
       },
       {
@@ -1412,6 +1438,8 @@ describe('getPrisonerBackground', () => {
         classificationCode: 'A',
         classification: 'Cat A',
         assessmentDate: '2010-02-04',
+        approvalDate: '2010-02-05',
+        approvalDateDisplay: '05/02/2010',
         assessmentAgencyId: 'LEI',
         assessmentStatus: 'I',
       },
@@ -1432,6 +1460,7 @@ describe('getPrisonerBackground', () => {
         classificationCode: 'A',
         classification: 'Cat A',
         assessmentDate: '2012-04-04',
+        approvalDate: '2012-04-04',
       },
     ])
     nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
@@ -1442,7 +1471,7 @@ describe('getPrisonerBackground', () => {
         offenderNo: 'ABC1',
         classificationCode: 'A',
         assessmentDate: '2012-04-04',
-        assessmentDateDisplay: '04/04/2012',
+        approvalDateDisplay: '04/04/2012',
         agencyDescription: '',
       },
     ]
@@ -1474,7 +1503,6 @@ describe('getCategorisationHistory', () => {
       classificationCode: 'A',
       classification: 'Cat A',
       assessmentDate: '2012-04-04',
-      approvalDate: '2012-04-04',
       assessmentAgencyId: 'LEI',
       assessmentStatus: 'P',
       assessmentSeq: 6,
