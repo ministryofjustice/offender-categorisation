@@ -28,6 +28,7 @@ describe('getCatAInformation', () => {
         classificationCode: 'A',
         classification: 'Cat A',
         assessmentDate: '2012-04-04',
+        approvalDate: '2012-04-04',
         assessmentSeq: 2,
       },
       {
@@ -36,6 +37,7 @@ describe('getCatAInformation', () => {
         classificationCode: 'B',
         classification: 'Cat B',
         assessmentDate: '2013-03-24',
+        approvalDate: '2013-03-24',
         assessmentSeq: 3,
       },
     ]
@@ -109,7 +111,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'B',
         classification: 'Cat B',
-        assessmentDate: '2013-03-24',
+        approvalDate: '2013-03-24',
         assessmentSeq: 2,
       },
       {
@@ -117,7 +119,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'A',
         classification: 'Cat A',
-        assessmentDate: '2014-04-04',
+        approvalDate: '2014-04-04',
         assessmentSeq: 3,
       },
     ]
@@ -143,7 +145,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'A',
         classification: 'Cat A',
-        assessmentDate: '2012-04-04',
+        approvalDate: '2012-04-04',
         assessmentSeq: 3,
       },
       {
@@ -151,7 +153,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'B',
         classification: 'Cat B',
-        assessmentDate: '2013-03-24',
+        approvalDate: '2013-03-24',
         assessmentSeq: 4,
       },
       {
@@ -159,7 +161,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'C',
         classification: 'Cat C',
-        assessmentDate: '2014-03-24',
+        approvalDate: '2014-03-24',
       },
     ]
 
@@ -185,7 +187,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'D',
         classification: 'Cat D',
-        assessmentDate: '2015-04-04',
+        approvalDate: '2015-04-04',
         assessmentSeq: 7,
       },
       {
@@ -193,7 +195,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'C',
         classification: 'Cat C',
-        assessmentDate: '2010-04-04',
+        approvalDate: '2010-04-04',
         assessmentSeq: 2,
       },
       {
@@ -201,7 +203,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'B',
         classification: 'Cat B',
-        assessmentDate: '2013-03-24',
+        approvalDate: '2013-03-24',
         assessmentSeq: 4,
       },
       {
@@ -209,7 +211,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'B',
         classification: 'Cat B',
-        assessmentDate: '2011-03-24',
+        approvalDate: '2011-03-24',
         assessmentSeq: 6,
       },
       {
@@ -217,7 +219,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'A',
         classification: 'Cat A',
-        assessmentDate: '2012-04-04',
+        approvalDate: '2012-04-04',
         assessmentSeq: 3,
       },
     ]
@@ -265,7 +267,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'A',
         classification: 'Cat A',
-        assessmentDate: '2010-04-04',
+        approvalDate: '2010-04-04',
         assessmentSeq: 7,
       },
       {
@@ -273,7 +275,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'C',
         classification: 'Cat C',
-        assessmentDate: '2011-04-04',
+        approvalDate: '2011-04-04',
         assessmentSeq: 2,
       },
       {
@@ -281,7 +283,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'H',
         classification: 'Cat A high',
-        assessmentDate: '2012-03-24',
+        approvalDate: '2012-03-24',
         assessmentSeq: 4,
       },
       {
@@ -289,7 +291,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'B',
         classification: 'Cat B',
-        assessmentDate: '2013-03-24',
+        approvalDate: '2013-03-24',
         assessmentSeq: 6,
       },
     ]
@@ -315,7 +317,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'A',
         classification: 'Cat A',
-        assessmentDate: '2010-04-04',
+        approvalDate: '2010-04-04',
         assessmentSeq: 3,
       },
       {
@@ -323,7 +325,7 @@ describe('getCatAInformation', () => {
         offenderNo,
         classificationCode: 'B',
         classification: 'Cat B',
-        assessmentDate: '2011-03-24',
+        approvalDate: '2011-03-24',
         assessmentSeq: 6,
       },
     ]

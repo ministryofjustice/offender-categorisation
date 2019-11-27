@@ -782,7 +782,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   async function getCatAInformation(context, offenderNo, currentBookingIdString) {
     try {
       const nomisClient = nomisClientBuilder(context)
-      const categories = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
+      const categories = await getAllApprovedCategorisationsForOffender(nomisClient, offenderNo)
       const sortedCategories = categories.sort(sortByDescendingBookingAndAscendingSequence)
       const mostRecentCatA = sortedCategories.find(isCatA)
       const currentBookingId = parseInt(currentBookingIdString, 10)
@@ -796,10 +796,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         const categoriesForBooking = sortedCategories.filter(c => c.bookingId === mostRecentCatA.bookingId)
 
         catAType = mostRecentCatA.classificationCode
-        catAStartYear = getYear(mostRecentCatA.assessmentDate)
+        catAStartYear = getYear(mostRecentCatA.approvalDate)
         const catAIndex = categoriesForBooking.findIndex(isCatA)
         if (catAIndex < categoriesForBooking.length - 1) {
-          catAEndYear = getYear(categoriesForBooking[catAIndex + 1].assessmentDate)
+          catAEndYear = getYear(categoriesForBooking[catAIndex + 1].approvalDate)
         }
         finalCat = categoriesForBooking[categoriesForBooking.length - 1].classification
         // Populate release date if was not for current booking
@@ -827,10 +827,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   async function getPrisonerBackground(context, offenderNo, approvalDate = null) {
     try {
       const nomisClient = nomisClientBuilder(context)
-      const currentCats = await getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo)
+      const currentCats = await getAllApprovedCategorisationsForOffender(nomisClient, offenderNo)
       // If approved, omit any cats that were done later than the approval of this cat
       const filteredCats = approvalDate
-        ? currentCats.filter(o => !o.assessmentDate || moment(o.assessmentDate, 'YYYY-MM-DD') <= approvalDate)
+        ? currentCats.filter(o => !o.approvalDate || moment(o.approvalDate, 'YYYY-MM-DD') <= approvalDate)
         : currentCats
 
       const decoratedCats = await Promise.all(
@@ -839,24 +839,25 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           return {
             ...o,
             agencyDescription: description,
-            assessmentDateDisplay: dateConverter(o.assessmentDate),
+            approvalDateDisplay: dateConverter(o.approvalDate),
           }
         })
       )
 
-      return decoratedCats.sort((a, b) => sortByDateTime(a.assessmentDateDisplay, b.assessmentDateDisplay))
+      return decoratedCats.sort((a, b) => sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay))
     } catch (error) {
       logger.error(error, 'Error during getPrisonerBackground')
       throw error
     }
   }
 
-  async function getCategoryHistoryWithoutPendingCategories(nomisClient, offenderNo) {
+  async function getAllApprovedCategorisationsForOffender(nomisClient, offenderNo) {
     try {
       const allCategorisation = await nomisClient.getCategoryHistory(offenderNo)
-      return allCategorisation.filter(c => c.assessmentStatus !== 'P')
+      // remove any that don't have an approval date  - these could be pending, rejected, cancelled
+      return allCategorisation.filter(c => c.approvalDate)
     } catch (error) {
-      logger.error(error, 'Error during getCategoryHistoryWithoutPendingCategories')
+      logger.error(error, 'Error during getAllApprovedCategorisationsForOffender')
       throw error
     }
   }
@@ -865,7 +866,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const details = await getOffenderDetails(context, bookingId)
     const nomisClient = nomisClientBuilder(context)
     const catRecords = await formService.getHistoricalCategorisationRecords(details.offenderNo, transactionalDbClient)
-    const nomisRecords = await getCategoryHistoryWithoutPendingCategories(nomisClient, details.offenderNo)
+    const nomisRecords = await getAllApprovedCategorisationsForOffender(nomisClient, details.offenderNo)
 
     const dataDecorated = await Promise.all(
       nomisRecords.map(async nomisRecord => {
