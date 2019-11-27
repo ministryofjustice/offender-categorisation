@@ -24,7 +24,7 @@ class SupervisorRecatReviewPage extends Page {
     overriddenCategoryC(required: false) { $('#overriddenCategoryC') }
     overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
     changeLinks(required: false) { $('a.govuk-link', text: startsWith('Change')) }
-    newCatMessage(required: false) { $('#newCatMessage') }
+    indeterminateWarning(required: false) { $('#indeterminateWarning') }
     overriddenCategoryText(required: false) { $('#supervisorOverriddenCategoryText') }
     otherInformationText { $('#otherInformationText') }
 

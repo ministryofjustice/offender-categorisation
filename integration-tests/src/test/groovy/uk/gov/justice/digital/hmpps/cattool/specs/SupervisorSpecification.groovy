@@ -81,6 +81,12 @@ class SupervisorSpecification extends GebReportingSpec {
     response.categoriser == [provisionalCategory: [suggestedCategory: 'C', categoryAppropriate: 'Yes']]
     response.openConditionsRequested == null
     data.status == ["APPROVED"]
+
+    when: 'the supervisor clicks finish'
+    finishButton.click()
+
+    then: 'they return to the home page'
+    at SupervisorHomePage
   }
 
   def "The supervisor review page can be confirmed - youth offender"() {
@@ -98,9 +104,15 @@ class SupervisorSpecification extends GebReportingSpec {
 
     then: 'The page shows info Changing to Cat'
     warnings[0].text().contains 'the provisional category is YOI Closed'
-    newCatMessage.text() == 'Changing to YOI Open'
+    overriddenCategoryB.@type == 'radio'
+    overriddenCategoryC.@type == 'radio'
+    overriddenCategoryD.@type == 'radio'
+    overriddenCategoryI.@type == null
+    overriddenCategoryJ.@type == 'radio'
 
-    when: 'The supervisor clicks continue'
+    when: 'The supervisor continues'
+    overriddenCategoryJ.click()
+    assert !indeterminateWarning.displayed
     overriddenCategoryText << "reason text"
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
@@ -119,16 +131,17 @@ class SupervisorSpecification extends GebReportingSpec {
     response.openConditionsRequested
   }
 
-  def "The supervisor review page displays Open conditions data when category is D or J"() {
+  def "The supervisor review page displays Open conditions data and ISP warning when category has been D or J"() {
+
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
     db.createNomisSeqNo(12,5)
 
-    when: 'The supervisor views the review page for a category D'
-    navigateToReview(false, false)
+    when: 'The supervisor views the review page for an adult'
+    navigateToReview(false, true)
 
     then: 'the review page includes Open conditions information'
     openConditionsHeader.isDisplayed()
@@ -138,12 +151,12 @@ class SupervisorSpecification extends GebReportingSpec {
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
     riskLevel*.text() == ['', 'No']
 
-    when: 'The supervisor views the review page for a category J'
+    when: 'The supervisor views the review page for a juvenile'
     db.clearDb()
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "J", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
     db.createNomisSeqNo(12,5)
 
     to SupervisorHomePage
@@ -172,6 +185,21 @@ class SupervisorSpecification extends GebReportingSpec {
     offendingHistorySummary[2].text() == 'Yes\nsome convictions'
   }
 
+  def "The supervisor review page can be confirmed - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for B2345YZ'
+    db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings: TestFixture.defaultRatingsB,
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(12,5)
+
+    navigateToReview(false, true)
+    appropriateNo.click()
+
+    then: 'indeterminate warning is shown'
+    !indeterminateWarning.isDisplayed()
+    overriddenCategoryD.click()
+    indeterminateWarning.isDisplayed()
+  }
 
   def "The supervisor can send the case back to the categoriser"() {
     given: 'supervisor is viewing the review page for B2345YZ'
@@ -513,6 +541,29 @@ class SupervisorSpecification extends GebReportingSpec {
     response.openConditionsRequested == null
     data.status == ["APPROVED"]
     data.approved_by == ['SUPERVISOR_USER']
+  }
+
+  def "The supervisor review page for a recat shows indeterminate sentence warning"() {
+    when: 'supervisor is viewing the review page for an ISP'
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat: TestFixture.defaultRecat]), 'RECAT', 'B2345YZ')
+    db.createNomisSeqNo(12, 5)
+    db.createRiskProfileDataForExistingRow(12, '''{
+      "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
+      "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
+        "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": false, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]   
+      },
+      "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
+      "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}''')
+    db.createReviewReason(12, 'DUE')
+
+    navigateToReview(false, true, false)
+    appropriateNo.click()
+
+    then: 'the warning is shown'
+    !indeterminateWarning.displayed
+    overriddenCategoryD.click()
+    indeterminateWarning.displayed
   }
 
   def "The supervisor can send the case back to the recategoriser"() {

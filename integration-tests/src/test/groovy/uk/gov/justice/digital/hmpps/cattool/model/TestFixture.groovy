@@ -115,12 +115,12 @@ class TestFixture {
     browser.selectSecondPrisoner()
   }
 
-  def gotoTasklistRecat(transferToSecurity = false) {
+  def gotoTasklistRecat(transferToSecurity = false, indeterminateSentence = false) {
     elite2Api.stubRecategorise()
 
     loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, indeterminateSentence)
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', transferToSecurity)
     browser.selectFirstPrisoner()
   }
@@ -132,6 +132,16 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, false, 'I')
     riskProfilerApi.stubGetSocProfile('C0001AA', 'I', transferToSecurity)
+    browser.selectFirstPrisoner()
+  }
+
+  def gotoTasklistRecatForCatIIndeterminate(transferToSecurity = false) {
+    elite2Api.stubRecategoriseWithCatI()
+
+    loginAs(RECATEGORISER_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, true, 'I')
+    riskProfilerApi.stubGetSocProfile('C0001AA', 'C', transferToSecurity)
     browser.selectFirstPrisoner()
   }
 
