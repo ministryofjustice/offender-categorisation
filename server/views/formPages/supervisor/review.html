@@ -59,10 +59,10 @@
 
     {% if (currentCat == "D" or currentCat == "J" or data.openConditions) %}
 
-    <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+      <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
 
-    {% set showOpenConditionChangeLinks = false %}
-    {% include "../../partials/reviewContentsOpenConditions.html" %}
+      {% set showOpenConditionChangeLinks = false %}
+      {% include "../../partials/reviewContentsOpenConditions.html" %}
 
     {% endif %}
 
@@ -78,7 +78,11 @@
       ]
     }) }}
 
-    {% set radios = [
+  {% if currentCat == "D" or currentCat == "J" %}
+    {% include "../../partials/warningIndeterminate.html" %}
+  {% endif %}
+
+  {% set radios = [
       {
         value: "B",
         id: "overriddenCategoryB",
@@ -102,29 +106,42 @@
         conditional: {
           html: warningCategoryOpenConditions
         }
+      },
+      {
+        value: "J",
+        id: "overriddenCategoryJ",
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
+        text: "YOI (open)",
+        J: true,
+        conditional: {
+            html: warningCategoryOpenConditions
+          }
+      },
+      {
+        value: "I",
+        id: "overriddenCategoryI",
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'I',
+        text: "YOI (closed)",
+        I: true
       }
     ] %}
+
+    {% if not data.details.youngOffender%}
+      {% set radios = radios | rejectattr('I') | rejectattr('J')%}
+    {% endif %}
+
     {% set overriddenCategoryTextHtml %}
-        {% if (currentCat == "B" or currentCat == "C" or currentCat == "D") %}
-          {{ govukRadios({
-            name: "supervisorOverriddenCategory",
-            classes: "govuk-radios--inline",
-            fieldset: {
-            legend: {
-            text: "Which category is more appropriate?",
-            isPageHeading: false
-          }
-          },
-          items: radios | rejectattr(currentCat),
-          errorMessage: {
-            text: "Please select the new category"
-            } if (errors | findError('supervisorOverriddenCategory'))
-          }) }}
-        {% else %}
-          <h2 class="govuk-heading-m" id="newCatMessage">Changing to YOI Open</h2>
-          <input type="hidden" name="supervisorOverriddenCategory" value="J"/>
-          {{ warningCategoryOpenConditions | safe }}
-        {% endif %}
+      {{ govukRadios({
+        name: "supervisorOverriddenCategory",
+        classes: "govuk-radios--inline",
+        fieldset: {
+          legend: { text: "Which category is more appropriate?", isPageHeading: false }
+        },
+        items: radios | rejectattr(currentCat),
+        errorMessage: {
+          text: "Please select the new category"
+        } if (errors | findError('supervisorOverriddenCategory'))
+      }) }}
 
       {{ govukCharacterCount({
         name: "supervisorOverriddenCategoryText",
@@ -132,12 +149,8 @@
         id: "supervisorOverriddenCategoryText",
         maxlength: 50000,
         threshold: 50,
-        label: {
-          text: "Explain why you changed the category"
-        },
-        hint: {
-        text: "Your comments will be disclosed to the prisoner"
-        },
+        label: { text: "Explain why you changed the category" },
+        hint: { text: "Your comments will be disclosed to the prisoner" },
         errorMessage: {
           text: "Please enter the reason why you changed the category"
         } if (errors | findError('supervisorOverriddenCategoryText'))
@@ -173,20 +186,16 @@
       ]
     }) }}
 
-  {{ govukCharacterCount({
-    name: "otherInformationText",
-    type: "otherInformationText",
-    id: "otherInformationText",
-    maxlength: 50000,
-    threshold: 50,
-    label: {
-    text: "Is there any other relevant information that you want to record?"
-    },
-    hint: {
-    text: "Your comments will be disclosed to the prisoner"
-    },
-    value: data.supervisor.review.otherInformationText
-  }) }}
+    {{ govukCharacterCount({
+      name: "otherInformationText",
+      type: "otherInformationText",
+      id: "otherInformationText",
+      maxlength: 50000,
+      threshold: 50,
+      label: { text: "Is there any other relevant information that you want to record?" },
+      hint: { text: "Your comments will be disclosed to the prisoner" },
+      value: data.supervisor.review.otherInformationText
+    }) }}
 
     <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
     <input type="hidden" name="previousOverrideCategoryText" value="{{ data.supervisor.review.supervisorOverriddenCategoryText }}"/>
@@ -196,11 +205,12 @@
 
 {% set warningCategoryOpenConditions %}
 {% set categoryOpenConditionsText = "Making this category change means that the categoriser will have to provide more information." %}
+  {% include "../../partials/warningIndeterminate.html" %}
   {{ govukWarningText({
-  text: categoryOpenConditionsText,
-  iconFallbackText: "Warning",
-  id: "openConditionsInfoMessage",
-  classes: "forms-warning-text warning-overrides background-white"
+    text: categoryOpenConditionsText,
+    iconFallbackText: "Warning",
+    id: "openConditionsInfoMessage",
+    classes: "forms-warning-text warning-overrides background-white"
   }) }}
 
 {% endset %}

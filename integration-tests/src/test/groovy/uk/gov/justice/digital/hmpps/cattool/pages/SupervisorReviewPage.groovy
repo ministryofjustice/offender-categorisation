@@ -23,8 +23,10 @@ class SupervisorReviewPage extends Page {
     overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
     overriddenCategoryC(required: false) { $('#overriddenCategoryC') }
     overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
+    overriddenCategoryI(required: false) { $('#overriddenCategoryI') }
+    overriddenCategoryJ(required: false) { $('#overriddenCategoryJ') }
     changeLinks(required: false) { $('a.govuk-link', text: startsWith('Change')) }
-    newCatMessage(required: false) { $('#newCatMessage') }
+    indeterminateWarning(required: false) { $('#indeterminateWarning') }
     overriddenCategoryText(required: false) { $('#supervisorOverriddenCategoryText') }
     otherInformationText { $('#otherInformationText') }
 

@@ -21,6 +21,7 @@ class ProvisionalCategoryOpenPage extends HeaderPage {
     newCatMessage(required: false) { $('h2.govuk-heading-m') }
     overriddenCategoryText(required: false) { $('#overriddenCategoryText') }
     otherInformationText(required: false) { $('#otherInformationText') }
+    indeterminateWarning(required: false) { $('#indeterminateWarning') }
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }

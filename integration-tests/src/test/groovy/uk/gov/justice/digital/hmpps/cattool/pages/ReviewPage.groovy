@@ -20,7 +20,6 @@ class ReviewPage extends Page {
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
     changeLinks { $('a.govuk-link', text: startsWith('Change')) }
-    newCatMessage(required: false) { $('#newCatMessage') }
 
     offendingHistorySummary { $('.offendingHistorySummary .govuk-summary-list__value') }
     furtherChargesSummary { $('.furtherChargesSummary .govuk-summary-list__value') }

@@ -22,7 +22,7 @@
 
 <div class="govuk-body-s">
 
-    <h1 class="govuk-heading-l mainHeading">Approve category</h1>
+    <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
 
     {% set currentCat = data.recat.decision.category %}
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
@@ -39,11 +39,15 @@
 
     {% if (currentCat == "D" or currentCat == "J" or data.openConditions) %}
 
-    <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
+      <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
 
-    {% set showOpenConditionChangeLinks = false %}
-    {% include "../../partials/reviewContentsOpenConditions.html" %}
+      {% set showOpenConditionChangeLinks = false %}
+      {% include "../../partials/reviewContentsOpenConditions.html" %}
 
+    {% endif %}
+
+    {% if currentCat == "D" or currentCat == "J" %}
+      {% include "../../partials/warningIndeterminate.html" %}
     {% endif %}
 
     {% set radios = [
@@ -95,20 +99,17 @@
     {% endif %}
 
     {% set overriddenCategoryTextHtml %}
-        {{ govukRadios({
-          name: "supervisorOverriddenCategory",
-          classes: "govuk-radios--inline",
-          fieldset: {
-          legend: {
-          text: "Which category is more appropriate?",
-          isPageHeading: false
-        }
+      {{ govukRadios({
+        name: "supervisorOverriddenCategory",
+        classes: "govuk-radios--inline",
+        fieldset: {
+          legend: { text: "Which category is more appropriate?", isPageHeading: false }
         },
         items: radios | rejectattr(currentCat),
         errorMessage: {
           text: "Please select the new category"
-          } if (errors | findError('supervisorOverriddenCategory'))
-        }) }}
+        } if (errors | findError('supervisorOverriddenCategory'))
+      }) }}
 
       {{ govukCharacterCount({
         name: "supervisorOverriddenCategoryText",
@@ -116,61 +117,53 @@
         id: "supervisorOverriddenCategoryText",
         maxlength: 50000,
         threshold: 50,
-        label: {
-          text: "Explain why you changed the category"
-        },
-        hint: {
-        text: "Your comments will be disclosed to the prisoner"
-        },
+        label: { text: "Explain why you changed the category" },
+        hint: { text: "Your comments will be disclosed to the prisoner" },
         errorMessage: {
           text: "Please enter the reason why you changed the category"
         } if (errors | findError('supervisorOverriddenCategoryText'))
         }) }}
     {% endset %}
 
-      {{ govukRadios({
-        name: "supervisorCategoryAppropriate",
-        classes: "govuk-radios--inline",
-        fieldset: {
-          legend: {
-            text: "Do you agree with the provisional category?",
-            isPageHeading: false,
-            classes: "govuk-heading-m govuk-!-font-weight-bold"
-          },
-        classes: "govuk-!-margin-top-7"
+    {{ govukRadios({
+      name: "supervisorCategoryAppropriate",
+      classes: "govuk-radios--inline",
+      fieldset: {
+        legend: {
+          text: "Do you agree with the provisional category?",
+          isPageHeading: false,
+          classes: "govuk-heading-m govuk-!-font-weight-bold"
         },
-        errorMessage: {
-          text: "Select yes if you agree with the provisional category"
-        } if (errors | findError('supervisorCategoryAppropriate')),
-        items: [
-          {
-            value: "Yes",
-            text: "Yes"
-          },
-          {
-            value: "No",
-            text: "No",
-            conditional: {
-              html:overriddenCategoryTextHtml
-            }
+      classes: "govuk-!-margin-top-7"
+      },
+      errorMessage: {
+        text: "Select yes if you agree with the provisional category"
+      } if (errors | findError('supervisorCategoryAppropriate')),
+      items: [
+        {
+          value: "Yes",
+          text: "Yes"
+        },
+        {
+          value: "No",
+          text: "No",
+          conditional: {
+            html:overriddenCategoryTextHtml
           }
-        ]
-      }) }}
+        }
+      ]
+    }) }}
 
-  {{ govukCharacterCount({
-    name: "otherInformationText",
-    type: "otherInformationText",
-    id: "otherInformationText",
-    maxlength: 50000,
-    threshold: 50,
-    label: {
-    text: "Is there any other relevant information that you want to record?"
-    },
-    hint: {
-    text: "Your comments will be disclosed to the prisoner"
-    },
-    value: data.supervisor.review.otherInformationText
-  }) }}
+    {{ govukCharacterCount({
+      name: "otherInformationText",
+      type: "otherInformationText",
+      id: "otherInformationText",
+      maxlength: 50000,
+      threshold: 50,
+      label: { text: "Is there any other relevant information that you want to record?" },
+      hint: { text: "Your comments will be disclosed to the prisoner" },
+      value: data.supervisor.review.otherInformationText
+    }) }}
 
     <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
     <input type="hidden" name="previousOverrideCategoryText" value="{{ data.supervisor.review.supervisorOverriddenCategoryText }}"/>
@@ -180,11 +173,12 @@
 
 {% set warningCategoryOpenConditions %}
 {% set categoryOpenConditionsText = "Making this category change means that the categoriser will have to provide more information." %}
+  {% include "../../partials/warningIndeterminate.html" %}
   {{ govukWarningText({
-  text: categoryOpenConditionsText,
-  iconFallbackText: "Warning",
-  id: "openConditionsInfoMessage",
-  classes: "forms-warning-text warning-overrides background-white"
+    text: categoryOpenConditionsText,
+    iconFallbackText: "Warning",
+    id: "openConditionsInfoMessage",
+    classes: "forms-warning-text warning-overrides background-white"
   }) }}
 
 {% endset %}

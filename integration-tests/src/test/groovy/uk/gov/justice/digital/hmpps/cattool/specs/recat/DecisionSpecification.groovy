@@ -69,6 +69,19 @@ class DecisionSpecification extends GebReportingSpec {
     data.assigned_user_id == ['RECATEGORISER_USER']
   }
 
+  def "Indeterminate offender displays warning"() {
+
+    when: 'I go to the decision page'
+    fixture.gotoTasklistRecatForCatIIndeterminate(false)
+    at TasklistRecatPage
+    decisionButton.click()
+
+    then: 'The page is displayed without open condition options'
+    at DecisionPage
+    headerValue[1].text() == 'C0001AA'
+    indeterminateWarning.displayed
+  }
+
   def "The correct mini higher security page is displayed for I->B"() {
     when: 'I go to the Mini Higher Security Review page'
     fixture.gotoTasklistRecatForCatI(false)

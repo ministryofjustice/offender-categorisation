@@ -35,6 +35,10 @@
 
   <input type="hidden" name="currentCategory" value="{{data.details.categoryCode}}"/>
 
+{% set warningIndeterminate %}
+  {% include "../../partials/warningIndeterminate.html" %}
+{% endset %}
+
 {% set optionB =  {
     value: "B",
     id: "catBOption",
@@ -55,7 +59,7 @@
     value: "D",
     id: "catDOption",
     checked: data.recat.decision.category == 'D',
-    hint: { html: hintTextOpen('Category D') },
+    hint: { html: warningIndeterminate + hintTextOpen('Category D') },
     text: "Consider them for Category D",
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
@@ -76,8 +80,7 @@
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
 
-   {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
-
+  {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
 
   {{ govukRadios({
     name: "category",

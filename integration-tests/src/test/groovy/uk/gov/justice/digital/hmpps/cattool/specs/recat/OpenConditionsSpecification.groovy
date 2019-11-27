@@ -208,6 +208,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at TasklistRecatPage
     decisionButton.click()
     at DecisionPage
+    assert !indeterminateWarning.displayed
     categoryDOption.click()
     submitButton.click()
     at OpenConditionsAddedPage
@@ -485,6 +486,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     appropriateNo.click()
     overriddenCategoryD.click()
+    assert !indeterminateWarning.displayed
     overriddenCategoryText << "super overriding C to D reason text"
     otherInformationText << "super other info 1"
     submitButton.click()

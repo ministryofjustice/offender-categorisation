@@ -19,7 +19,8 @@
 
 {% set warningCategoryOpenConditions %}
   {% set categoryOpenConditionsText = "Making this category change means that the categoriser will have to provide more information." %}
-    {{ govukWarningText({
+  {% include "../../partials/warningIndeterminate.html" %}
+  {{ govukWarningText({
     text: categoryOpenConditionsText,
     iconFallbackText: "Warning",
     id: "openConditionsInfoMessage",
@@ -49,9 +50,7 @@
     checked: data.categoriser.provisionalCategory.overriddenCategory === 'D',
     text: "D",
     D: true,
-    conditional: {
-    html: warningCategoryOpenConditions
-    }
+    conditional: { html: warningCategoryOpenConditions }
   }
 ] %}
 {% set overriddenCategoryTextHtml %}
@@ -137,7 +136,6 @@
     }
   ]
 }) }}
-
 
 {{ govukCharacterCount({
   name: "otherInformationText",
