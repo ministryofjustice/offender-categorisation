@@ -1,9 +1,6 @@
 {% extends "../../formPages/formTemplate.html" %}
 
-{% from "warning-text/macro.njk" import govukWarningText %}
 {% from "radios/macro.njk" import govukRadios %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
-{% from "button/macro.njk" import govukButton %}
 {% from "details/macro.njk" import govukDetails %}
 
 {% set cat = data.openConditionsSuggestedCat %}
@@ -42,6 +39,8 @@
 <input type="hidden" name="overriddenCategory" value="{{ overriddenCat }}"/>
 <input type="hidden" name="otherInformationText" value="{{ data.categoriser.provisionalCategory.otherInformationText }}"/>
 <input type="hidden" name="openConditionsSuggestedCategory" value="{{ cat }}"/>
+
+{% include "../../partials/warningIndeterminate.html" %}
 
 {{ govukRadios({
   name: "openConditionsCategoryAppropriate",

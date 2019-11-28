@@ -22,7 +22,7 @@ class ProvisionalCategoryPage extends HeaderPage {
     newCatMessage(required: false) { $('h2.govuk-heading-m') }
     overriddenCategoryText(required: false) { $('#overriddenCategoryText') }
     otherInformationText(required: false) { $('#otherInformationText') }
-    indeterminateMessage(required: false) { $('p.govuk-body') }
+    indeterminateWarning(required: false) { $('#indeterminateWarning') }
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }

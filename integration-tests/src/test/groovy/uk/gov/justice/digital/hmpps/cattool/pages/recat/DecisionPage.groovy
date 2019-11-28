@@ -19,6 +19,7 @@ class DecisionPage extends HeaderPage {
     categoryDOption(required: false) { $('#catDOption') }
     categoryCOption { $('#catCOption') }
     hints { $('.govuk-radios__hint') }
+    indeterminateWarning(required: false) { $('#indeterminateWarning') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }

@@ -330,6 +330,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     appropriateNo.click()
     overriddenCategoryD.click()
+    assert !indeterminateWarning.displayed
     overriddenCategoryText << 'categoriser override to D comment'
     otherInformationText << 'categoriser relevant info 1'
     riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
@@ -386,6 +387,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     then: 'I am at the provision category page'
     at new ProvisionalCategoryOpenPage(bookingId: '12')
     warning.text() contains 'Based on the information provided, the provisional category is D'
+    !indeterminateWarning.displayed
 
     when: 'I confirm the cat D category'
     elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
@@ -596,6 +598,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     appropriateNo.click()
     overriddenCategoryD.click()
+    assert !indeterminateWarning.displayed
     overriddenCategoryText << "super overriding C to D reason text"
     otherInformationText << "super other info 1"
     submitButton.click()
