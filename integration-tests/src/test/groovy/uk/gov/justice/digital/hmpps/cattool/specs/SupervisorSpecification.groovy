@@ -464,6 +464,7 @@ class SupervisorSpecification extends GebReportingSpec {
     at SupervisorHomePage
 
     elite2Api.stubCategorisedMultiple()
+    elite2Api.stubGetStaffDetailsByUsernameList()
 
     doneTabLink.click()
 
@@ -475,7 +476,7 @@ class SupervisorSpecification extends GebReportingSpec {
     names == ['Scramble, Tim', 'Hemmel, Sarah']
     approvalDates == ['20/04/2019', '28/02/2019']
     categorisers == ['Lamb, John', 'Fan, Jane']
-    approvers == ['Helly, James', 'Helly, James']
+    approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
     outcomes == ['C', 'C']
     catTypes == ['Initial', 'Initial']
   }

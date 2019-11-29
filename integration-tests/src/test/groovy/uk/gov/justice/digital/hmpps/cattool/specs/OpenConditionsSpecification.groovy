@@ -452,6 +452,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     finishButton.click()
     at SupervisorHomePage
     elite2Api.stubCategorised([12])
+    elite2Api.stubGetStaffDetailsByUsernameList()
     doneTabLink.click()
     at SupervisorDonePage
     elite2Api.stubAgencyDetails('LEI')
@@ -553,6 +554,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     finishButton.click()
     at SupervisorHomePage
     elite2Api.stubCategorised([12])
+    elite2Api.stubGetStaffDetailsByUsernameList()
     doneTabLink.click()
     at SupervisorDonePage
     elite2Api.stubAgencyDetails('LEI')
@@ -691,6 +693,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     finishButton.click()
     at SupervisorHomePage
     elite2Api.stubCategorised([12])
+    elite2Api.stubGetStaffDetailsByUsernameList()
     doneTabLink.click()
     at SupervisorDonePage
     elite2Api.stubAgencyDetails('LEI')
