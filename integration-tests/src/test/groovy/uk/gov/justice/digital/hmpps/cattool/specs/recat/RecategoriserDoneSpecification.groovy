@@ -52,6 +52,7 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
     elite2Api.stubCategorisedMultiple([12,10])
+    elite2Api.stubGetStaffDetailsByUsernameList()
     checkTabLink.isDisplayed()
     doneTabLink.click()
 
@@ -62,7 +63,7 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     names == ['Scramble, Tim','Perfect, Peter']
     approvalDates == ['20/04/2019','20/03/2019']
     categorisers == ['Lamb, John','Dastardly, Dick']
-    approvers == ['Helly, James','Pending, Pat']
+    approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
     categories == ['C','B']
   }
 
@@ -79,7 +80,5 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     at RecategoriserDonePage
     prisonNos == []
     noResultsDiv.isDisplayed()
-
   }
-
 }

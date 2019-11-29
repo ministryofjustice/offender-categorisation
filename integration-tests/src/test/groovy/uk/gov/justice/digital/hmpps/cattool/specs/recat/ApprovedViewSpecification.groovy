@@ -119,6 +119,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubCategorised([12])
+    elite2Api.stubGetStaffDetailsByUsernameList()
     doneTabLink.click()
     at RecategoriserDonePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false)
@@ -140,6 +141,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
     elite2Api.stubCategorised([12])
     elite2Api.stubAgencyDetails('LEI')
+    elite2Api.stubGetStaffDetailsByUsernameList()
     doneTabLink.click()
     at SupervisorDonePage
 

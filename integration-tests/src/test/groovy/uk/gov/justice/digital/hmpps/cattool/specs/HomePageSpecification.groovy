@@ -23,9 +23,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
-import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
@@ -395,6 +393,7 @@ class HomePageSpecification extends GebReportingSpec {
     at RecategoriserHomePage
 
     elite2Api.stubCategorised([11])
+    elite2Api.stubGetStaffDetailsByUsernameList()
     doneTabLink.click()
 
     then: 'The recategoriser done page is displayed, showing the completed categorisation (prior to the cancellation)'

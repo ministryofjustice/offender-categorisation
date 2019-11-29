@@ -41,10 +41,11 @@ class ApprovedViewSpecification extends GebReportingSpec {
   def "The approved view page is correctly displayed (suggested Cat)"() {
 
     when: 'the approved view page for B2345YZ is selected'
-    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
+    db.doCreateCompleteRow(-1, 12, JsonOutput.toJson([
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]],
       supervisor : [review: [supervisorCategoryAppropriate: "Yes"]]
-    ]))
+    ]), 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null, 1, null, 'LEI',
+      'dummy', 'current_timestamp(2)', null, null, null, null, null, 'SUPERVISOR_USER')
     navigateToView()
 
     then: 'the cat details are correct'
@@ -61,13 +62,14 @@ class ApprovedViewSpecification extends GebReportingSpec {
   def "The approved view page is correctly displayed (Cat overridden by categoriser and supervisor)"() {
 
     when: 'the approved view page for B2345YZ is selected'
-    db.createDataWithStatus(12, 'APPROVED', JsonOutput.toJson([
-      categoriser: [provisionalCategory: [suggestedCategory     : "B", categoryAppropriate: "No", overriddenCategory: "C",
-                                          overriddenCategoryText: "Here are the categoriser's comments on why the category was changed"]],
-      supervisor : [review: [supervisorCategoryAppropriate   : "No", supervisorOverriddenCategory: "D",
-                             supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"]],
+    db.doCreateCompleteRow(-1, 12, JsonOutput.toJson([
+      categoriser   : [provisionalCategory: [suggestedCategory     : "B", categoryAppropriate: "No", overriddenCategory: "C",
+                                             overriddenCategoryText: "Here are the categoriser's comments on why the category was changed"]],
+      supervisor    : [review: [supervisorCategoryAppropriate   : "No", supervisorOverriddenCategory: "D",
+                                supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"]],
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"]]
-    ]))
+    ]), 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null, 1, null, 'LEI',
+      'dummy', 'current_timestamp(2)', null, null, null, null, null, 'SUPERVISOR_USER')
     navigateToView()
 
 
@@ -94,14 +96,14 @@ class ApprovedViewSpecification extends GebReportingSpec {
       recat: [decision: [category: "B", categoryAppropriate: "Yes"]]
     ]), 'CATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null,
       1, null, 'BXI', 'B2345YZ', 'current_timestamp(2)', null, null,
-    '2019-07-19')
+      '2019-07-19', null, null, 'SUPERVISOR_USER')
 
     db.doCreateCompleteRow(-2, 12, JsonOutput.toJson([
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]],
       supervisor : [review: [supervisorCategoryAppropriate: "Yes"]]
     ]), 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
       2, null, 'LEI', 'B2345YZ', 'current_timestamp(2)', null, null,
-      '2019-07-20')
+      '2019-07-20', null, null, 'SUPERVISOR_USER')
 
     navigateToView()
 
@@ -136,6 +138,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
 
     elite2Api.stubCategorised([12])
     elite2Api.stubAgencyDetails('LEI')
+    elite2Api.stubGetStaffDetailsByUsernameList()
     doneTabLink.click()
     at SupervisorDonePage
 
