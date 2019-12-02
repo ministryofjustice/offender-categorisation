@@ -6,10 +6,10 @@ import java.sql.Date
 
 class DatabaseUtils {
   private static final Map dbConnParams = [
-    url: 'jdbc:postgresql://localhost:5432/form-builder',
-    user: 'form-builder',
+    url     : 'jdbc:postgresql://localhost:5432/form-builder',
+    user    : 'form-builder',
     password: 'form-builder',
-    driver: 'org.postgresql.Driver']
+    driver  : 'org.postgresql.Driver']
 
   private static sql = Sql.newInstance(dbConnParams)
 
@@ -42,16 +42,16 @@ class DatabaseUtils {
     doCreateData(-1, bookingId, status, json)
   }
 
-  def createDataWithStatusAndCatType(bookingId, status, json, catType, offenderNo='dummy') {
+  def createDataWithStatusAndCatType(bookingId, status, json, catType, offenderNo = 'dummy') {
     createDataWithIdAndStatusAndCatType(-1, bookingId, status, json, catType, offenderNo)
   }
 
-  def createDataWithIdAndStatusAndCatType(id, bookingId, status, json, catType, offenderNo='dummy') {
+  def createDataWithIdAndStatusAndCatType(id, bookingId, status, json, catType, offenderNo = 'dummy') {
     def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, 1, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
   }
 
-  def createDataWithIdAndStatusAndCatTypeAndSeq(id, bookingId, status, json, catType, offenderNo='dummy', seq) {
+  def createDataWithIdAndStatusAndCatTypeAndSeq(id, bookingId, status, json, catType, offenderNo = 'dummy', seq) {
     def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, seq, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
   }
@@ -64,7 +64,7 @@ class DatabaseUtils {
     sql.executeUpdate("update form set risk_profile = ?::JSON where booking_id = $bookingId", json)
   }
 
-  def createNomisSeqNo(bookingId, nomisSeq, existingSeq=1) {
+  def createNomisSeqNo(bookingId, nomisSeq, existingSeq = 1) {
     sql.executeUpdate("update form set nomis_sequence_no = $nomisSeq where booking_id = $bookingId and sequence_no = $existingSeq")
   }
 
@@ -84,7 +84,7 @@ class DatabaseUtils {
     doCreateData(id, bookingId, status, json)
   }
 
-  def createSecurityReviewedData(id, bookingId, offenderNo, status, json, reviewedBy, reviewDate, catType='INITIAL') {
+  def createSecurityReviewedData(id, bookingId, offenderNo, status, json, reviewedBy, reviewDate, catType = 'INITIAL') {
     doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, catType, null, null, null, 1, null, 'LEI', offenderNo, 'current_timestamp(2)', reviewedBy, reviewDate)
   }
 
@@ -93,11 +93,13 @@ class DatabaseUtils {
   }
 
   def doCreateCompleteRow(id, bookingId, json, userId, status, catType, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate,
-                          securityReviewedBy, securityReviewedDate, approvalDate = null, assessmentDate = null, dueByDate = null) {
+                          securityReviewedBy, securityReviewedDate, approvalDate = null, assessmentDate = null, dueByDate = null, approvedBy = null) {
+
     def approvalDateDB = approvalDate != null ? approvalDate : status == 'APPROVED' ? new Date(Calendar.getInstance().getTimeInMillis()) : null
+    def approvedByDB = approvedBy != null ? approvedBy : status == 'APPROVED' ? 'SUPERVISOR_USER' : null
     sql.executeUpdate("""insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId', $referredDate, '$referredBy',
-      $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', $securityReviewedDate, ?::date, '$catType', null, ?::date, null, null, null, ?::date)""",
-      json, riskProfile, approvalDateDB, assessmentDate, dueByDate)
+      $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', $securityReviewedDate, ?::date, '$catType', null, ?::date, ?::text, null, null, ?::date)""",
+      json, riskProfile, approvalDateDB, assessmentDate, approvedByDB, dueByDate)
   }
 
   def createSecurityData(offenderNo) {
@@ -108,7 +110,7 @@ class DatabaseUtils {
     return sql.rows("select * from security_referral where offender_no = $offenderNo")
   }
 
-  def createRiskChange(id, offenderNo, userId, status, riskProfileOld, riskProfileNew, prisonId, raisedDate ) {
+  def createRiskChange(id, offenderNo, userId, status, riskProfileOld, riskProfileNew, prisonId, raisedDate) {
     sql.executeUpdate("""insert into risk_change (id, old_profile, new_profile, offender_no, user_id, prison_id, status, raised_date ) values ($id, ?::JSON, ?::JSON, '$offenderNo', '$userId', '$prisonId', '$status', '$raisedDate' )""",
       riskProfileOld, riskProfileNew)
   }

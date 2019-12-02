@@ -170,7 +170,7 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     elite2Api.stubUncategorised()
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
-    elite2Api.stubGetSecurityStaffDetailsByUsernameList()
+    elite2Api.stubGetStaffDetailsByUsernameList()
     fixture.loginAs(SECURITY_USER)
 
     when: 'The user arrives at the landing page'
@@ -271,7 +271,7 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     elite2Api.stubUncategorised()
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
-    elite2Api.stubGetSecurityStaffDetailsByUsernameList()
+    elite2Api.stubGetStaffDetailsByUsernameList()
     fixture.loginAs(SECURITY_USER)
 
     and: 'Refers a prisoner'

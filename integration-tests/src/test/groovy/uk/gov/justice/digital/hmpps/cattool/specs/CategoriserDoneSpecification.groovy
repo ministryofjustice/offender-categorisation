@@ -59,7 +59,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
     at CategoriserHomePage
 
     elite2Api.stubCategorisedMultiple()
-
+    elite2Api.stubGetStaffDetailsByUsernameList()
     doneTabLink.click()
 
     then: 'The categoriser done page is displayed, showing only approved initial cats'
@@ -71,7 +71,7 @@ class CategoriserDoneSpecification extends GebReportingSpec {
 
     approvalDates == ['20/04/2019', '28/02/2019']
     categorisers == ['Lamb, John', 'Fan, Jane']
-    approvers == ['Helly, James', 'Helly, James']
+    approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
   }
 
   def "The done page does not display offenders that haven't been categorised through the Categorisation tool"() {

@@ -1,8 +1,16 @@
 package uk.gov.justice.digital.hmpps.cattool.mockapis
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
+import com.github.tomakehurst.wiremock.common.FileSource
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
+import com.github.tomakehurst.wiremock.extension.Parameters
+import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformer
+import com.github.tomakehurst.wiremock.http.Request
+import com.github.tomakehurst.wiremock.http.ResponseDefinition
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 
@@ -13,7 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*
 class Elite2Api extends WireMockRule {
 
   Elite2Api() {
-    super(8080)
+    super(new WireMockConfiguration().extensions(new UserListTransformer()).port(8080))
   }
 
   void stubGetMyDetails(UserAccount user) {
@@ -434,8 +442,6 @@ class Elite2Api extends WireMockRule {
         assessmentSeq       : 7,
         categoriserFirstName: 'JOHN',
         categoriserLastName : 'LAMB',
-        approverFirstName   : 'JAMES',
-        approverLastName    : 'HELLY',
         category            : 'C'
       ])
     }
@@ -812,45 +818,49 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-
-  def stubGetSecurityStaffDetailsByUsernameList() {
+  def stubGetStaffDetailsByUsernameList() {
     this.stubFor(
       post("/api/users/list")
         .willReturn(
           aResponse()
-            .withBody(JsonOutput.toJson([
-              [
-                staffId         : 123,
-                username        : 'SECURITY_USER',
-                firstName       : 'Amy',
-                lastName        : 'Security',
-                email           : 'itaguser@syscon.net',
-                activeCaseLoadId: 'LEI'
-              ]]
-            ))
-            .withHeader('Content-Type', 'application/json')
-            .withStatus(200))
+            .withTransformers("UserListTransformer")
+        )
     )
   }
 
-  def stubGetCategoriserStaffDetailsByUsernameList(UserAccount user) {
-    this.stubFor(
-      post("/api/users/list")
-        .willReturn(
-          aResponse()
-            .withBody(JsonOutput.toJson([
-              [
-                staffId         : 123,
-                username        : user.username,
-                firstName       : 'Api',
-                lastName        : 'User',
-                email           : 'itaguser@syscon.net',
-                activeCaseLoadId: 'LEI'
-              ]]
-            ))
-            .withHeader('Content-Type', 'application/json')
-            .withStatus(200))
-    )
+  static class UserListTransformer extends ResponseDefinitionTransformer {
+
+    @Override
+    ResponseDefinition transform(Request request, ResponseDefinition responseDefinition, FileSource files, Parameters parameters) {
+      def body = new JsonSlurper().parseText(request.getBodyAsString())
+      def response = []
+      body.unique().each {
+        response.add(
+          [
+            staffId         : 123,
+            username        : it,
+            firstName       : 'firstName_' + it,
+            lastName        : 'lastName_' + it,
+            email           : 'itaguser@syscon.net',
+            activeCaseLoadId: 'LEI'
+          ])
+      }
+      return new ResponseDefinitionBuilder()
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)
+        .withBody(JsonOutput.toJson(response))
+        .build();
+    }
+
+    @Override
+    String getName() {
+      return "UserListTransformer";
+    }
+
+    @Override
+    boolean applyGlobally() {
+      return false;
+    }
   }
 
   def stubGetOffenderDetails(int bookingId, offenderNo = 'B2345YZ', youngOffender = false, indeterminateSentence = false, category = 'C', multipleSentences = false) {
