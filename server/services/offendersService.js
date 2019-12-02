@@ -177,23 +177,34 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const categorisedFromDB = await formService.getCategorisedOffenders(agencyId, catType, transactionalDbClient)
       if (!isNilOrEmpty(categorisedFromDB)) {
-        const categorisedFromElite = await nomisClient.getCategorisedOffenders(categorisedFromDB.map(c => c.bookingId))
+        const [categorisedFromElite, userDetailFromElite] = await Promise.all([
+          nomisClient.getCategorisedOffenders(categorisedFromDB.map(c => c.bookingId)),
+          nomisClient.getUserDetailList(categorisedFromDB.map(c => c.approvedBy)),
+        ])
 
         const matchedCategorisations = matchEliteAndDBCategorisations(categorisedFromElite, categorisedFromDB)
 
         const decoratedResults = await Promise.all(
-          matchedCategorisations.map(async o => ({
-            ...o,
-            ...(await decorateWithCategorisationData(o, user, nomisClient, o.dbRecord)),
-            displayName: o.lastName && `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-            displayApprovalDate: dateConverter(o.approvalDate),
-            displayCategoriserName:
-              o.categoriserLastName &&
-              `${properCaseName(o.categoriserLastName)}, ${properCaseName(o.categoriserFirstName)}`,
-            displayApproverName:
-              o.approverLastName && `${properCaseName(o.approverLastName)}, ${properCaseName(o.approverFirstName)}`,
-            catTypeDisplay: CatType[o.dbRecord.catType].value,
-          }))
+          matchedCategorisations.map(async o => {
+            // For the approver, preferably use the username stored in PG, and fallback
+            // to the unreliable Nomis modify_username for early cats before the approved_by column was created
+            const approver = o.dbRecord.approvedBy
+              ? userDetailFromElite.find(record => record.username === o.dbRecord.approvedBy)
+              : { lastName: o.approverLastName, firstName: o.approverFirstName }
+
+            return {
+              ...o,
+              ...(await decorateWithCategorisationData(o, user, nomisClient, o.dbRecord)),
+              displayName: o.lastName && `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+              displayApprovalDate: dateConverter(o.approvalDate),
+              displayCategoriserName:
+                o.categoriserLastName &&
+                `${properCaseName(o.categoriserLastName)}, ${properCaseName(o.categoriserFirstName)}`, //* **
+              displayApproverName:
+                approver.lastName && `${properCaseName(approver.lastName)}, ${properCaseName(approver.firstName)}`,
+              catTypeDisplay: CatType[o.dbRecord.catType].value,
+            }
+          })
         )
 
         return decoratedResults.sort((a, b) => sortByDateTime(a.displayApprovalDate, b.displayApprovalDate))
@@ -215,13 +226,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       if (!isNilOrEmpty(securityReferredFromDB)) {
         const sentenceMap = await getSentenceMap(securityReferredFromDB, nomisClient)
 
-        const offenderDetailsFromElite = await nomisClient.getOffenderDetailList(
-          securityReferredFromDB.map(c => c.offenderNo)
-        )
-
-        const userDetailFromElite = await nomisClient.getUserDetailList(
-          securityReferredFromDB.map(c => c.securityReferredBy)
-        )
+        const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
+          await nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
+          await nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.securityReferredBy)),
+        ])
 
         const decoratedResults = securityReferredFromDB.map(o => {
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
@@ -312,13 +320,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const securityReviewedFromDB = await formService.getSecurityReviewedOffenders(agencyId, transactionalDbClient)
       if (!isNilOrEmpty(securityReviewedFromDB)) {
-        const offenderDetailsFromElite = await nomisClient.getOffenderDetailList(
-          securityReviewedFromDB.map(c => c.offenderNo)
-        )
-
-        const userDetailFromElite = await nomisClient.getUserDetailList(
-          securityReviewedFromDB.map(c => c.securityReviewedBy)
-        )
+        const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
+          await nomisClient.getOffenderDetailList(securityReviewedFromDB.map(c => c.offenderNo)),
+          await nomisClient.getUserDetailList(securityReviewedFromDB.map(c => c.securityReviewedBy)),
+        ])
 
         const decoratedResults = securityReviewedFromDB.map(o => {
           const reviewedMoment = moment(o.securityReviewedDate, 'YYYY-MM-DD')

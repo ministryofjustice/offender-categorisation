@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.cattool.specs.recat
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
@@ -19,7 +18,6 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.SecurityInputPage
 
 import java.time.LocalDate
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SECURITY_USER
 
 class SecurityInputSpecification extends GebReportingSpec {
@@ -114,7 +112,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     $('#securitySection').text().contains("Manually referred to Security ($today)")
 
     when: 'a security user views their homepage'
-    elite2Api.stubGetCategoriserStaffDetailsByUsernameList(RECATEGORISER_USER)
+    elite2Api.stubGetStaffDetailsByUsernameList()
     fixture.logout()
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
@@ -123,7 +121,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     then: 'this prisoner is present'
     at SecurityHomePage
     prisonNos[0] == 'B2345YZ'
-    referredBy[0] == 'Api User'
+    referredBy[0] == 'Firstname_recategoriser_user Lastname_recategoriser_user'
 
     when: 'the security user enters data'
     startButtons[0].click()

@@ -79,7 +79,7 @@ class SecuritySpecification extends GebReportingSpec {
 
     elite2Api.stubCategorised()
     elite2Api.stubGetOffenderDetailsByOffenderNoList(['B2345XY', 'B2345YZ'])
-    elite2Api.stubGetSecurityStaffDetailsByUsernameList()
+    elite2Api.stubGetStaffDetailsByUsernameList()
 
     doneTabLink.click()
 
@@ -91,7 +91,7 @@ class SecuritySpecification extends GebReportingSpec {
     names == ['Dent, Jane', 'Clark, Frank']
     def today = LocalDate.now().format('dd/MM/yyyy')
     reviewedDates == ['31/01/2019','28/01/2019']
-    reviewer == ['Security, Amy', 'Security, Amy']
+    reviewer == ['Lastname_security_user, Firstname_security_user', 'Lastname_security_user, Firstname_security_user']
     catTypes == ['Initial', 'Recat']
 
     when: 'user click the view button'
