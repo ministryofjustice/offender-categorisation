@@ -40,6 +40,8 @@ class NextReviewDateSpecification extends GebReportingSpec {
 
   def setup() {
     db.clearDb()
+    elite2Api.stubAgencyDetails('LPI')
+    elite2Api.stubAssessments('B2345YZ')
   }
 
   TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)

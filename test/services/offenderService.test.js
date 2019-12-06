@@ -1131,21 +1131,77 @@ describe('getOffenderDetails', () => {
   })
 })
 
-describe('isRecat', () => {
-  test('it should return RECAT when supported cat in nomis', () => {
-    expect(service.isRecat('B')).toBe('RECAT')
+describe('requiredCatType', () => {
+  const BOOKING_ID = 5
+  const history = cat => [
+    {
+      bookingId: 5,
+      classificationCode: cat,
+    },
+  ]
+  test('when supported cat in nomis', () => {
+    expect(service.requiredCatType(BOOKING_ID, 'B', history('B'))).toBe('RECAT')
   })
 
-  test('it should return INITIAL when missing in nomis', () => {
-    expect(service.isRecat(null)).toBe('INITIAL')
+  test('when missing in nomis', () => {
+    expect(service.requiredCatType(BOOKING_ID, null, [])).toBe('INITIAL')
   })
 
-  test('it should return INITIAL when cat Z in nomis', () => {
-    expect(service.isRecat('Z')).toBe('INITIAL')
+  test('when cat Z in nomis', () => {
+    expect(service.requiredCatType(BOOKING_ID, 'Z', history('Z'))).toBe('INITIAL')
   })
 
-  test('it should return null when cat A in nomis', () => {
-    expect(service.isRecat('A')).toBe(null)
+  test('when cat A in nomis', () => {
+    expect(service.requiredCatType(BOOKING_ID, 'A', history('A'))).toBe(null)
+  })
+
+  test('when cat U in nomis but there is an earlier cat', () => {
+    expect(
+      service.requiredCatType(BOOKING_ID, 'U', [
+        {
+          bookingId: 5,
+          classificationCode: 'B',
+        },
+        {
+          bookingId: 5,
+          classificationCode: 'U',
+        },
+      ])
+    ).toBe('RECAT')
+  })
+
+  test('when cat U in nomis and there is no earlier cat', () => {
+    expect(
+      service.requiredCatType(BOOKING_ID, 'U', [
+        {
+          bookingId: 5,
+          classificationCode: 'X',
+        },
+        {
+          bookingId: 5,
+          classificationCode: 'Z',
+        },
+        {
+          bookingId: 5,
+          classificationCode: 'U',
+        },
+      ])
+    ).toBe('INITIAL')
+  })
+
+  test('when cat U in nomis with earlier cat for different booking', () => {
+    expect(
+      service.requiredCatType(BOOKING_ID, 'U', [
+        {
+          bookingId: 99,
+          classificationCode: 'B',
+        },
+        {
+          bookingId: 5,
+          classificationCode: 'U',
+        },
+      ])
+    ).toBe('INITIAL')
   })
 })
 
