@@ -271,16 +271,19 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { role, bookingId } = req.params
-      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-      const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+      const [details, categorisationRecord] = await Promise.all([
+        offendersService.getOffenderDetails(res.locals, bookingId),
+        formService.getCategorisationRecord(bookingId, transactionalDbClient),
+      ])
 
-      const nextReviewDate = extractNextReviewDate(details)
-      const requiredCatType = offendersService.isRecat(details.categoryCode)
-
-      const [securityReferral, categorisationUser] = await Promise.all([
+      const [securityReferral, categorisationUser, categoryHistory] = await Promise.all([
         getSecurityReferral(res.locals, details.offenderNo, transactionalDbClient),
         getCategorisationUserForSecurityDisplay(res.locals, categorisationRecord),
+        offendersService.getCategoryHistory(res.locals, bookingId, transactionalDbClient),
       ])
+
+      const nextReviewDate = extractNextReviewDate(details)
+      const requiredCatType = offendersService.requiredCatType(bookingId, details.categoryCode, categoryHistory.history)
 
       res.render(`pages/${role}Landing`, {
         data: {
