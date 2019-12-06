@@ -56,7 +56,7 @@ const offendersService = {
   createOrUpdateCategorisation: jest.fn(),
   getPrisonerBackground: jest.fn(),
   getOptionalAssessmentAgencyDescription: jest.fn(),
-  isRecat: jest.fn(),
+  requiredCatType: jest.fn(),
   backToCategoriser: jest.fn(),
 }
 
@@ -187,7 +187,7 @@ describe('GET /security/review', () => {
       bookingId: 12,
       displayName: 'Dexter Spaniel',
     })
-    offendersService.isRecat.mockResolvedValue('INITIAL')
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
       prisonId: 'LEI',
       userId: 'CT_SEC',
@@ -225,7 +225,7 @@ describe('GET /security/review', () => {
       bookingId: 12,
       displayName: 'Dexter Spaniel',
     })
-    offendersService.isRecat.mockResolvedValue('INITIAL')
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
       prisonId: 'ANI',
       userId: 'ANOTHER',
@@ -276,7 +276,7 @@ describe('GET /security/review', () => {
       bookingId: 12,
       displayName: 'Dexter Spaniel',
     })
-    offendersService.isRecat.mockResolvedValue('INITIAL')
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
       prisonId: 'LEI',
       userId: 'ANOTHER',
