@@ -23,6 +23,8 @@ class LandingPageSpecification extends GebReportingSpec {
 
   def setup() {
     db.clearDb()
+    elite2Api.stubAgencyDetails('LPI')
+    elite2Api.stubAssessments('B2345YZ')
   }
 
   @Rule
@@ -488,7 +490,6 @@ class LandingPageSpecification extends GebReportingSpec {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
-    elite2Api.stubAssessments('B2345XY')
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
     go '/12'
@@ -504,7 +505,6 @@ class LandingPageSpecification extends GebReportingSpec {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
-    elite2Api.stubAssessments('B2345XY')
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
     go '/12'
@@ -520,7 +520,6 @@ class LandingPageSpecification extends GebReportingSpec {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
-    elite2Api.stubAssessments('B2345XY')
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
     go '/12'
@@ -536,7 +535,6 @@ class LandingPageSpecification extends GebReportingSpec {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.now().toString()])
-    elite2Api.stubAssessments('B2345XY')
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
     go '/12'
@@ -552,7 +550,6 @@ class LandingPageSpecification extends GebReportingSpec {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
-    elite2Api.stubAssessments('B2345XY')
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
     go '/12'
