@@ -988,14 +988,20 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  function isRecat(classificationCodeFromNomis) {
+  function requiredCatType(bookingId, classificationCodeFromNomis, categoryHistory) {
     // Decide whether to do an INITIAL or RECAT (or neither).
-    // To detect Cat A etc reliably we have to get cat from nomis.
-    // If missing or UXZ it is INITIAL;
-    // if B,C,D,I,J it is RECAT;
+    // To detect Cat A etc reliably we have to get cats from nomis.
+    // If missing or all cats for this booking are UXZ it is INITIAL;
+    // if there is a B,C,D,I,J for this booking it is RECAT;
     // otherwise we cant process it (cat A, or female etc).
-    if (!classificationCodeFromNomis || /[UXZ]/.test(classificationCodeFromNomis)) {
+    if (!classificationCodeFromNomis) {
       return CatType.INITIAL.name
+    }
+    if (/[UXZ]/.test(classificationCodeFromNomis)) {
+      const catExistsForThisBooking = categoryHistory
+        .filter(c => c.bookingId === bookingId)
+        .some(c => !/[UXZ]/.test(c.classificationCode))
+      return catExistsForThisBooking ? CatType.RECAT.name : CatType.INITIAL.name
     }
     if (/[BCDIJ]/.test(classificationCodeFromNomis)) {
       return CatType.RECAT.name
@@ -1057,7 +1063,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getCatAInformation,
     getOffenceHistory,
     backToCategoriser,
-    isRecat,
+    requiredCatType,
     getOptionalAssessmentAgencyDescription,
     createOrUpdateCategorisation,
     createSupervisorApproval,

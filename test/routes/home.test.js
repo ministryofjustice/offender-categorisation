@@ -23,7 +23,8 @@ const offendersService = {
   getUnapprovedOffenders: jest.fn(),
   getRecategoriseOffenders: jest.fn(),
   getReferredOffenders: jest.fn(),
-  isRecat: jest.fn(),
+  requiredCatType: jest.fn(),
+  getCategoryHistory: jest.fn(),
 }
 
 const userService = {
@@ -366,6 +367,8 @@ describe('security home', () => {
 })
 
 describe('Landing page', () => {
+  offendersService.getCategoryHistory.mockResolvedValue({ history: {} })
+
   test('security user get', () => {
     roles = ['ROLE_CATEGORISATION_SECURITY']
     userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI', roles: { security: true } })
@@ -374,7 +377,7 @@ describe('Landing page', () => {
       bookingId: 12,
       displayName: 'Dexter Spaniel',
     })
-    offendersService.isRecat.mockResolvedValue('INITIAL')
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({})
 
     return request(app)
@@ -389,7 +392,7 @@ describe('Landing page', () => {
         expect(res.text).toMatch(/Home.+Categorisation home.+Manage categorisations/s)
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(userService.getUserByUserId).toBeCalledTimes(0)
-        expect(offendersService.isRecat).toBeCalledTimes(1)
+        expect(offendersService.requiredCatType).toBeCalledTimes(1)
       })
   })
 
@@ -411,7 +414,7 @@ describe('Landing page', () => {
       bookingId: 12,
       displayName: 'Dexter Spaniel',
     })
-    offendersService.isRecat.mockResolvedValue('INITIAL')
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
       prisonId: 'LEI',
       userId: 'CT_SEC',
@@ -468,7 +471,7 @@ describe('Landing page', () => {
       bookingId: 12,
       displayName: 'Dexter Spaniel',
     })
-    offendersService.isRecat.mockResolvedValue('INITIAL')
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
 
     return request(app)
       .get('/12345')
@@ -501,7 +504,7 @@ describe('Landing page', () => {
       bookingId: 12,
       displayName: 'Dexter Spaniel',
     })
-    offendersService.isRecat.mockResolvedValue('INITIAL')
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
       prisonId: 'ANI',
       userId: 'ANOTHER',
@@ -547,7 +550,7 @@ describe('Landing page', () => {
       bookingId: 12,
       displayName: 'Dexter Spaniel',
     })
-    offendersService.isRecat.mockResolvedValue('INITIAL')
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
       prisonId: 'LEI',
       userId: 'ANOTHER',
