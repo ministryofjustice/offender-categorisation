@@ -878,6 +878,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const catRecords = await formService.getHistoricalCategorisationRecords(details.offenderNo, transactionalDbClient)
     const nomisRecords = await getAllApprovedCategorisationsForOffender(nomisClient, details.offenderNo)
 
+    const uniqueAgencies = [...new Set(nomisRecords.map(o => o.assessmentAgencyId))]
+    const agencyMap = new Map(
+      await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)]))
+    )
+
     const dataDecorated = await Promise.all(
       nomisRecords.map(async nomisRecord => {
         const foundCatRecord = catRecords.find(
@@ -885,7 +890,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         )
         return {
           ...nomisRecord,
-          prisonDescription: await getOptionalAssessmentAgencyDescription(context, nomisRecord.assessmentAgencyId),
+          prisonDescription: agencyMap.get(nomisRecord.assessmentAgencyId),
           recordExists: !!foundCatRecord,
           approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
           sequence: foundCatRecord && foundCatRecord.sequence,
