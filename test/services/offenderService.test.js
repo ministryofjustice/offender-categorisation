@@ -1443,7 +1443,7 @@ describe('getPrisonerBackground', () => {
 
     const result = await service.getPrisonerBackground(context, 'ABC1', moment('2019-04-16'))
 
-    expect(nomisClient.getAgencyDetail).toBeCalledTimes(3)
+    expect(nomisClient.getAgencyDetail).toBeCalledTimes(2) // 1 for each unique agency
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
@@ -1503,7 +1503,7 @@ describe('getPrisonerBackground', () => {
 
     const result = await service.getPrisonerBackground(context, 'ABC1')
 
-    expect(nomisClient.getAgencyDetail).toBeCalledTimes(4)
+    expect(nomisClient.getAgencyDetail).toBeCalledTimes(3)
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
