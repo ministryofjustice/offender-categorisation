@@ -1663,7 +1663,7 @@ describe('getCategorisationHistory', () => {
 
     const result = await service.getCategoryHistory(context, -45, mockTransactionalClient)
 
-    expect(nomisClient.getAgencyDetail).toBeCalledTimes(4)
+    expect(nomisClient.getAgencyDetail).toBeCalledTimes(3) // once per unique agency
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
     expect(result.history).toMatchObject(expected)
   })
