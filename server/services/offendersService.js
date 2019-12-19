@@ -838,9 +838,14 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         ? currentCats.filter(o => !o.approvalDate || moment(o.approvalDate, 'YYYY-MM-DD') <= approvalDate)
         : currentCats
 
+      const uniqueAgencies = [...new Set(filteredCats.map(o => o.assessmentAgencyId))]
+      const agencyMap = new Map(
+        await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)]))
+      )
+
       const decoratedCats = await Promise.all(
         filteredCats.map(async o => {
-          const description = await getOptionalAssessmentAgencyDescription(context, o.assessmentAgencyId)
+          const description = agencyMap.get(o.assessmentAgencyId)
           return {
             ...o,
             agencyDescription: description,

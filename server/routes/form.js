@@ -632,8 +632,6 @@ module.exports = function Index({
           formName: form,
           transactionalClient: transactionalDbClient,
         })
-        await offendersService.createSupervisorApproval(res.locals, bookingId, userInput)
-
         const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
         if (userInput.catType === CatType.RECAT.name) {
@@ -647,6 +645,8 @@ module.exports = function Index({
 
           await formService.mergeRiskProfileData(bookingId, dataToStore, transactionalDbClient)
         }
+
+        await offendersService.createSupervisorApproval(res.locals, bookingId, userInput)
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
