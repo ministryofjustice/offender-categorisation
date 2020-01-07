@@ -283,7 +283,11 @@ module.exports = function Index({
       ])
 
       const nextReviewDate = extractNextReviewDate(details)
-      const requiredCatType = offendersService.requiredCatType(bookingId, details.categoryCode, categoryHistory.history)
+      const requiredCatType = offendersService.requiredCatType(
+        parseInt(bookingId, 10),
+        details.categoryCode,
+        categoryHistory.history
+      )
 
       res.render(`pages/${role}Landing`, {
         data: {

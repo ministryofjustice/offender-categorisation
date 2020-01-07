@@ -83,6 +83,22 @@ class LandingPageSpecification extends GebReportingSpec {
     warning.text() contains 'This prisoner seems to need an INITIAL category'
   }
 
+  def "A recategoriser user can proceed with a cat when prisoner is cat U but has previous cats"() {
+
+    given: 'A recategoriser is logged in'
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'U')
+    elite2Api.stubAssessments('B2345YZ', false, 12)
+    go '/12'
+
+    then: 'The page contains the recat button'
+    at LandingPage
+    recatButton.displayed
+  }
+
   def "A recategoriser user sees a warning for cat A"() {
 
     given: 'A recategoriser is logged in'
