@@ -21,4 +21,10 @@ data:
     pg_dump -h $DB_HOST -U $DB_USER -Fc --no-privileges -v --file=/tmp/db.dump $DB_NAME
     pg_restore -h $DB_HOST_PREPROD -U $DB_USER_PREPROD --clean --no-owner -v -d $DB_NAME_PREPROD /tmp/db.dump
     #psql -h $DB_HOST -U $DB_USER $DB_NAME
-    #psql -h $DB_HOST_PREPROD -U $DB_USER_PREPROD $DB_NAME_PREPROD
+
+    psql -h $DB_HOST_PREPROD -U $DB_USER_PREPROD $DB_NAME_PREPROD <<!
+      GRANT SELECT, INSERT, UPDATE         ON risk_profiler.PRISON_SUPPORTED TO risk_profiler;
+      GRANT SELECT, INSERT, UPDATE, DELETE ON risk_profiler.SHEDLOCK         TO risk_profiler;
+      GRANT SELECT, INSERT, UPDATE         ON risk_profiler.PREVIOUS_PROFILE TO risk_profiler;
+      GRANT ALL                            ON SCHEMA risk_profiler           TO risk_profiler;
+    !
