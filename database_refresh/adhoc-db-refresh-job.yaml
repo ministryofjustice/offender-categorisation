@@ -10,11 +10,17 @@ data:
     echo "${DB_HOST}:5432:${DB_NAME}:${DB_USER}:${DB_PASS}" > ~/.pgpass
     echo "${DB_HOST_PREPROD}:5432:${DB_NAME_PREPROD}:${DB_USER_PREPROD}:${DB_PASS_PREPROD}" >> ~/.pgpass
     chmod 0600 ~/.pgpass
-    set -x 
+    set -x
     pg_dump -h $DB_HOST -U $DB_USER -Fc --no-privileges -v --file=/tmp/db.dump $DB_NAME
     pg_restore -h $DB_HOST_PREPROD -U $DB_USER_PREPROD --clean --no-owner -v -d $DB_NAME_PREPROD /tmp/db.dump
     #psql -h $DB_HOST -U $DB_USER $DB_NAME
-    #psql -h $DB_HOST_PREPROD -U $DB_USER_PREPROD $DB_NAME_PREPROD
+
+    psql -h $DB_HOST_PREPROD -U $DB_USER_PREPROD $DB_NAME_PREPROD <<!
+      GRANT SELECT, INSERT, UPDATE         ON risk_profiler.PRISON_SUPPORTED TO risk_profiler;
+      GRANT SELECT, INSERT, UPDATE, DELETE ON risk_profiler.SHEDLOCK         TO risk_profiler;
+      GRANT SELECT, INSERT, UPDATE         ON risk_profiler.PREVIOUS_PROFILE TO risk_profiler;
+      GRANT ALL                            ON SCHEMA risk_profiler           TO risk_profiler;
+    !
 ---
 apiVersion: batch/v1
 kind: Job
@@ -33,7 +39,7 @@ spec:
         command:
         - /bin/entrypoint.sh
         volumeMounts:
-        - name: db-refresh-script-adhoc 
+        - name: db-refresh-script-adhoc
           mountPath: /bin/entrypoint.sh
           readOnly: true
           subPath: entrypoint.sh
