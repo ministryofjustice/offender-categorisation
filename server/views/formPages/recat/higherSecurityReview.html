@@ -30,6 +30,31 @@
     } if (errors | findError('behaviour'))
   }) }}
 
+{% set guidanceWhatBehaviour %}
+  <ul class="govuk-list govuk-list--bullet">
+    <li>Have they given genuine cause to suspect that they may escape?</li>
+    <li>Does the risk to the public if they did escape outweigh the benefits of holding them in lower category conditions?</li>
+    <li>Have they demonstrated a pattern of behaviour which clearly indicates that they are engaging in serious ongoing criminality?</li>
+    <li>Do they pose a serious risk to the safety of either staff or other prisoners in the establishment?</li>
+    <li>Do they frequently engage in behaviour which seriously impedes the delivery of the regime and/or the good order of the establishment?</li>
+    <li>Has the offender been charged or is highly likely to be charged with a serious further offence?</li>
+  </ul>
+  <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">Potential sources to consider include:</div>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>OASys</li>
+    <li>CSIP notes</li>
+    <li>Adjudications</li>
+    <li>The individual’s keyworker</li>
+    <li>NOMIS case notes</li>
+    <li>Referral to Security</li>
+  </ul>
+{% endset %}
+
+{{ govukDetails({
+  summaryText: "What sort of behaviour would suggest this?",
+  html: guidanceWhatBehaviour
+}) }}
+
  {{ govukCharacterCount({
     name: "steps",
     type: "steps",
@@ -44,6 +69,30 @@
       text: "Please enter details"
     } if (errors | findError('steps'))
   }) }}
+
+{% set guidanceWhatSteps %}
+<ul class="govuk-list govuk-list--bullet">
+  <li>Have they given genuine cause to suspect that they may escape?</li>
+  <li>Have they been placed on report? (how often and for what?)</li>
+  <li>Have they spent periods of time in Segregation? (How many, how long, for what?)</li>
+  <li>Have they been on CSIP or similar monitoring?</li>
+  <li>Have they been held in alternative locations within the current establishment?</li>
+</ul>
+<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">Potential sources to consider include:</div>
+<ul class="govuk-list govuk-list--bullet">
+  <li>OASys</li>
+  <li>CSIP notes</li>
+  <li>Adjudications</li>
+  <li>The individual’s keyworker</li>
+  <li>NOMIS case notes</li>
+  <li>Information from Security</li>
+</ul>
+{% endset %}
+
+{{ govukDetails({
+  summaryText: "What sort of information should I include?",
+  html: guidanceWhatSteps
+}) }}
 
 {% set transferTextHtml %}
 
@@ -108,5 +157,18 @@
       text: "Please enter details"
     } if (errors | findError('conditions'))
   }) }}
+
+{% set guidanceWhatConditions %}
+<ul class="govuk-list govuk-list--bullet">
+  <li>Do they require an increased staff/prisoner ratio to monitor their behaviour?</li>
+  <li>Are the additional physical security measures in higher category prisoners more appropriate to manage their behaviour?</li>
+  <li>Do they require management via a specialist supervision centre or other facility only available in higher category conditions?</li>
+</ul>
+{% endset %}
+
+{{ govukDetails({
+  summaryText: "What sort of information should I include?",
+  html: guidanceWhatConditions
+}) }}
 
 {% endblock %}

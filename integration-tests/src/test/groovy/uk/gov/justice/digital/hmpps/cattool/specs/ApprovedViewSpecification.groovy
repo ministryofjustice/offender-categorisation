@@ -90,20 +90,22 @@ class ApprovedViewSpecification extends GebReportingSpec {
   }
 
   def "An old cat can be displayed"() {
+    def threeMonthsAgoPlusOneDay = LocalDate.now().minusMonths(3).plusDays(1).format('yyyy-MM-dd')
+    def threeMonthsAgo = LocalDate.now().minusMonths(3).format('yyyy-MM-dd')
 
     when: 'the approved view page for B2345YZ is selected'
     db.doCreateCompleteRow(-1, 12, JsonOutput.toJson([
       recat: [decision: [category: "B", categoryAppropriate: "Yes"]]
     ]), 'CATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null,
       1, null, 'BXI', 'B2345YZ', 'current_timestamp(2)', null, null,
-      '2019-07-19', null, null, 'SUPERVISOR_USER')
+            threeMonthsAgo, null, null, 'SUPERVISOR_USER')
 
     db.doCreateCompleteRow(-2, 12, JsonOutput.toJson([
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]],
       supervisor : [review: [supervisorCategoryAppropriate: "Yes"]]
     ]), 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
       2, null, 'LEI', 'B2345YZ', 'current_timestamp(2)', null, null,
-      '2019-07-20', null, null, 'SUPERVISOR_USER')
+            threeMonthsAgoPlusOneDay, null, null, 'SUPERVISOR_USER')
 
     navigateToView()
 
@@ -111,7 +113,6 @@ class ApprovedViewSpecification extends GebReportingSpec {
     categories*.text() == ['C\nWarning\nCategory C',
                            'C\nWarning\nThe categoriser recommends category C',
                            'C\nWarning\nThe supervisor also recommends category C']
-    dateAndPrison*.text() == ['Saturday 20th July 2019', 'LEI prison']
 
     when: "I look at the old categorisation"
     elite2Api.stubAgencyDetails('BXI')
@@ -122,7 +123,6 @@ class ApprovedViewSpecification extends GebReportingSpec {
     categories*.text() == ['B\nWarning\nCategory B',
                            'B\nWarning\nThe categoriser recommends category B',
                            'B\nWarning\nThe supervisor also recommends category B']
-    dateAndPrison*.text() == ['Friday 19th July 2019', 'BXI prison']
   }
 
   private navigateToView() {
