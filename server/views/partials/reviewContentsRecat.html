@@ -34,7 +34,7 @@
 {% if data.violenceProfile.displayAssaults %}
     {% set violenceText %}
       This person has been reported as the perpetrator in {{ data.violenceProfile.numberOfAssaults }} assaults in custody before,
-      including {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults in the last 12 months
+      including {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults in the last 12 months. You should consider the dates and context of these assaults in your assessment.
     {% endset %}
   {% else %}
     {% set violenceText = "This person has not been reported as the perpetrator in any assaults in custody before" %}

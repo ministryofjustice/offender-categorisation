@@ -55,7 +55,7 @@ class PrisonerBackgroundSpecification extends GebReportingSpec {
       '''E-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
       'Escape Risk Alert: First xer comment 2016-09-16']
     extremismWarning.text() contains 'This person is at risk of engaging in, or vulnerable to, extremism'
-    violenceWarning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months'
+    violenceWarning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months. You should consider the dates and context of these assaults in your assessment.'
     !violenceNotifyWarning.displayed
     escapeWarning.text().contains('This person is considered an escape risk')
     !escapeInfo.displayed
