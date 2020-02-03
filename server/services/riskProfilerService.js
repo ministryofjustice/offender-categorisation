@@ -41,5 +41,15 @@ module.exports = function createRiskProfilerService(riskProfilerClientBuilder) {
         throw error
       }
     },
+
+    async getLifeProfile(offenderNo, context) {
+      try {
+        const riskProfilerClient = riskProfilerClientBuilder(context)
+        return await riskProfilerClient.getLifeProfile(offenderNo)
+      } catch (error) {
+        logger.error(error, 'Error during getLifeProfile')
+        throw error
+      }
+    },
   }
 }

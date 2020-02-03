@@ -520,6 +520,7 @@ describe('computeSuggestedCat', () => {
       securityBack: { catB: 'No' },
       extremismRating: { previousTerrorismOffences: 'No' },
     },
+    lifeProfile: { provisionalCategorisation: 'C' },
   }
   test.each`
     data                                                                      | category
@@ -534,6 +535,7 @@ describe('computeSuggestedCat', () => {
     ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}         | ${'B'}
     ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }} | ${'B'}
     ${{ extremismProfile: { provisionalCategorisation: 'B' } }}               | ${'B'}
+    ${{ lifeProfile: { provisionalCategorisation: 'B' } }}                    | ${'B'}
     ${nearMisses}                                                             | ${'C'}
   `('should return cat $category for data: $data', ({ data, category }) => {
     expect(service.computeSuggestedCat(data)).toEqual(category)

@@ -11,7 +11,7 @@ ext {
                 'chromeHeadless'
         ]
 
-        groovyVersion = '2.5.5'
+        groovyVersion = '2.5.9'
         gebVersion = '2.3'
         seleniumVersion = '3.14.0'
     }

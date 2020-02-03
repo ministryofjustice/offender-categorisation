@@ -110,6 +110,20 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
         ]))))
   }
 
+  void stubGetLifeProfile(String offenderno, String category) {
+    this.stubFor(
+      get("/risk-profile/life/$offenderno")
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withHeader('Content-Type', 'application/json')
+            .withBody(JsonOutput.toJson([
+              nomsId                   : offenderno,
+              riskType                 : 'LIFE',
+              provisionalCategorisation: category,
+            ]))))
+  }
+
   void stubHealth() {
     this.stubFor(
       get('/ping')
