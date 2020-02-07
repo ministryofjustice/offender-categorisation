@@ -957,7 +957,7 @@ class Elite2Api extends WireMockRule {
       )
     }
     this.stubFor(
-      get("/api/offender-sentences/booking/$bookingId/sentenceTerms?earliestOnly=false")
+      get("/api/offender-sentences/booking/$bookingId/sentenceTerms")
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson(terms))

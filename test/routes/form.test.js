@@ -44,6 +44,7 @@ const riskProfilerService = {
   getViolenceProfile: jest.fn(),
   getEscapeProfile: jest.fn(),
   getExtremismProfile: jest.fn(),
+  getLifeProfile: jest.fn(),
 }
 
 const offendersService = {

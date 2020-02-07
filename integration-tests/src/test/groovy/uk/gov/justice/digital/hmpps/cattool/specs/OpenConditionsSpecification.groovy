@@ -285,6 +285,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     continueButton.click()
 
     then: 'the review page is displayed and Data is stored correctly. Data is persisted and displayed - regardless of the decision to end the open conditions flow'
@@ -352,6 +353,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     openConditionsButton.isDisplayed()
     continueButton.click()
 
@@ -499,6 +501,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+
     openConditionsButton.isDisplayed()
     continueButton.click()
 
@@ -635,6 +639,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
+    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     openConditionsButton.isDisplayed()
     continueButton.click()
 

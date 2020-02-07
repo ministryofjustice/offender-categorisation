@@ -77,6 +77,7 @@ class ReviewSpecification extends GebReportingSpec {
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
 
     then: 'the completed text is displayed'
     summarySection[0].text() == 'Review and categorisation'
@@ -121,6 +122,7 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
     response.violenceProfile == [nomsId                 : 'B2345YZ', riskType: 'VIOLENCE', displayAssaults: false, numberOfAssaults: 5, notifySafetyCustodyLead: true,
                                  numberOfSeriousAssaults: 2, provisionalCategorisation: 'C', veryHighRiskViolentOffender: true]
     response.extremismProfile == [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: true, provisionalCategorisation: 'C']
+    response.lifeProfile == [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'C']
   }
 
   def "The review page can be displayed without security input"() {
@@ -144,6 +146,7 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     at new TasklistPage(bookingId: '12')
     continueButton.click()
 
