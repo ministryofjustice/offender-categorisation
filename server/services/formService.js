@@ -383,13 +383,15 @@ module.exports = function createFormService(formClient) {
       (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
     const isCatBDueToSeriousFurtherCharges =
       data.ratings && data.ratings.furtherCharges && data.ratings.furtherCharges.furtherChargesCatB === 'Yes'
+    const isCatBDueToLife = data.lifeProfile && data.lifeProfile.provisionalCategorisation === 'B'
     if (
       isCatBDueToPreviousCatA ||
       isCatBDueToSecurity ||
       isCatBDueToViolence ||
       isCatBDueToEscape ||
       isCatBDueToExtremism ||
-      isCatBDueToSeriousFurtherCharges
+      isCatBDueToSeriousFurtherCharges ||
+      isCatBDueToLife
     ) {
       return 'B'
     }

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const superagent = require('superagent')
 const logger = require('../../log')
 const config = require('../config')
@@ -13,8 +12,6 @@ const apiUrl = `${config.apis.riskProfiler.url}risk-profile/`
 
 module.exports = context => {
   const apiGet = riskProfilerGetBuilder(context.user.username)
-  const apiPost = riskProfilerPushBuilder('post', context.user.username)
-  const apiPut = riskProfilerPushBuilder('put', context.user.username)
 
   return {
     getSocProfile(offenderNo) {
@@ -39,6 +36,11 @@ module.exports = context => {
       )
       return apiGet({ path })
     },
+    getLifeProfile(offenderNo) {
+      const path = `${apiUrl}life/${offenderNo}`
+      logger.debug(`getLifeProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
+      return apiGet({ path })
+    },
   }
 }
 
@@ -61,44 +63,4 @@ function riskProfilerGetBuilder(username) {
       throw error
     }
   }
-}
-
-function riskProfilerPushBuilder(verb, username) {
-  const updateMethod = {
-    put,
-    post,
-  }
-
-  return async ({ path, body = '', headers = {}, responseType = '' } = {}) => {
-    try {
-      const oauthResult = await getApiClientToken(username)
-      const result = await updateMethod[verb](oauthResult.body.access_token, path, body, headers, responseType)
-      return result.body
-    } catch (error) {
-      logger.warn('Error calling riskProfiler api')
-      logger.warn(error)
-
-      throw error
-    }
-  }
-}
-
-async function post(token, path, body, headers, responseType) {
-  return superagent
-    .post(path)
-    .send(body)
-    .set('Authorization', `Bearer ${token}`)
-    .set(headers)
-    .responseType(responseType)
-    .timeout(timeoutSpec)
-}
-
-async function put(token, path, body, headers, responseType) {
-  return superagent
-    .put(path)
-    .send(body)
-    .set('Authorization', `Bearer ${token}`)
-    .set(headers)
-    .responseType(responseType)
-    .timeout(timeoutSpec)
 }
