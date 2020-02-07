@@ -143,6 +143,20 @@
     ]
   }) }}
 
+{% set guidanceTransferConditions %}
+<ul class="govuk-list govuk-list--bullet">
+  <li>Is their behaviour driven by something at their current prison?</li>
+  <li>Have all avenues to manage their behaviour at the current establishment been exhausted?</li>
+  <li>Have they been in custody at another establishment of the same category?</li>
+  <li>Does the risk that they pose (to the public, to staff, to other prisoners, and to the good order of the establishment) outweigh the risk of holding them in their current category?</li>
+</ul>
+{% endset %}
+
+{{ govukDetails({
+summaryText: "What sort of information should I include?",
+html: guidanceTransferConditions
+}) }}
+
  {{ govukCharacterCount({
     name: "conditions",
     type: "conditions",
