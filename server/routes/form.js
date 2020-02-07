@@ -153,6 +153,7 @@ module.exports = function Index({
           result.data.ratings.extremismRating.previousTerrorismOffences === 'Yes'
       )
       const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
+      const lifeProfile = await riskProfilerService.getLifeProfile(result.data.details.offenderNo, res.locals)
 
       const dataToStore = {
         history,
@@ -160,6 +161,7 @@ module.exports = function Index({
         escapeProfile,
         extremismProfile,
         violenceProfile,
+        lifeProfile,
       }
       const dataToDisplay = {
         ...result.data,

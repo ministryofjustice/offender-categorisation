@@ -56,7 +56,7 @@ module.exports = context => {
       return nomisClientGet({ path })
     },
     getSentenceTerms(bookingId) {
-      const path = `${apiUrl}api/offender-sentences/booking/${bookingId}/sentenceTerms?earliestOnly=false`
+      const path = `${apiUrl}api/offender-sentences/booking/${bookingId}/sentenceTerms`
       return nomisClientGet({ path })
     },
     getUser() {

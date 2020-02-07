@@ -49,6 +49,9 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB
     ]))
+    db. createRiskProfileDataForExistingRow(12, JsonOutput.toJson([
+      lifeProfile: [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'C']
+    ]))
 
     when: 'I go to the Provisional Category page'
     elite2Api.stubUncategorised()
@@ -97,6 +100,27 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'C',
                                                    categoryAppropriate: 'No', otherInformationText: 'other info  Text', overriddenCategoryText: 'Some Text']]
     response.openConditionsRequested == null
+  }
+
+  def 'Life sentence triggers provisional category B'() {
+    given: 'B2345YZ has a life sentence'
+    db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
+      ratings    : TestFixture.defaultRatingsC,
+    ]))
+    db. createRiskProfileDataForExistingRow(12, JsonOutput.toJson([
+      lifeProfile: [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'B']
+    ]))
+
+    when: 'I go to the Provisional Category page'
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().plusDays(-3).toString(), LocalDate.now().plusDays(-1).toString()])
+    fixture.loginAs(CATEGORISER_USER)
+    at CategoriserHomePage
+    elite2Api.stubGetOffenderDetails(12)
+    to new ProvisionalCategoryPage(bookingId: '12'), '12'
+
+    then: 'The provisional category is B'
+    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
   }
 
   def 'Validation test'() {
