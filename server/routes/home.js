@@ -7,6 +7,18 @@ const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
 
+const calculateLandingTarget = referer => {
+  const pathname = referer && new URL(referer).pathname
+  if (!pathname || !pathname.includes('Landing/')) {
+    return '/'
+  }
+  const index = pathname.lastIndexOf('/')
+  if (index < 0) {
+    return '/'
+  }
+  return pathname.substring(index)
+}
+
 module.exports = function Index({
   authenticationMiddleware,
   userService,
@@ -229,11 +241,12 @@ module.exports = function Index({
     '/switchRole/:role',
     asyncMiddleware(async (req, res) => {
       const { role } = req.params
+      const { referer } = req.headers
 
       req.session.currentRole = role
       res.locals.currentRole = role
 
-      res.redirect('/')
+      res.redirect(calculateLandingTarget(referer))
     })
   )
 

@@ -597,3 +597,28 @@ describe('Landing page', () => {
       })
   })
 })
+
+describe('Switching roles', () => {
+  test('when on landing page', () => {
+    return request(app)
+      .get('/switchRole/categoriser')
+      .set('referer', 'http://localhost/securityLanding/123456')
+      .expect(302)
+      .expect('Location', '/123456')
+  })
+
+  test('when no referer', () => {
+    return request(app)
+      .get('/switchRole/categoriser')
+      .expect(302)
+      .expect('Location', '/')
+  })
+
+  test('when some other page', () => {
+    return request(app)
+      .get('/switchRole/categoriser')
+      .set('referer', 'http://localhost/otherpage/123456')
+      .expect(302)
+      .expect('Location', '/')
+  })
+})
