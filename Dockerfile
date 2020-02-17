@@ -1,9 +1,12 @@
-FROM node:10.15-slim
+FROM node:10-buster-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-RUN apt-get update && apt-get install -y curl && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y curl && \
+    apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Europe/London
