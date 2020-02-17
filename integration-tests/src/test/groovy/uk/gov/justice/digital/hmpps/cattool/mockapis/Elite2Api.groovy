@@ -249,7 +249,7 @@ class Elite2Api extends WireMockRule {
                 offenderNo  : 'C0001AA',
                 firstName   : 'TINY',
                 lastName    : 'TIM',
-                dateOfBirth : today.minusYears(21).minusDays(3).format('yyyy-MM-dd'),
+                dateOfBirth : today.minusDays(3).minusYears(21).format('yyyy-MM-dd'),
                 age         : 20,
                 categoryCode: 'I',
               ],
@@ -258,7 +258,8 @@ class Elite2Api extends WireMockRule {
                 offenderNo  : 'C0002AA',
                 firstName   : 'ADRIAN',
                 lastName    : 'MOLE',
-                dateOfBirth : today.minusYears(21).plusDays(17).format('yyyy-MM-dd'),
+                // beware leap-years, when today + 17 days - 21 years DIFFERS from today - 21 years + 17 days (by one day!)
+                dateOfBirth : today.plusDays(17).minusYears(21).format('yyyy-MM-dd'),
                 age         : 20,
                 categoryCode: 'I',
               ],]
@@ -849,17 +850,17 @@ class Elite2Api extends WireMockRule {
         .withHeader('Content-Type', 'application/json')
         .withStatus(200)
         .withBody(JsonOutput.toJson(response))
-        .build();
+        .build()
     }
 
     @Override
     String getName() {
-      return "UserListTransformer";
+      return "UserListTransformer"
     }
 
     @Override
     boolean applyGlobally() {
-      return false;
+      return false
     }
   }
 
