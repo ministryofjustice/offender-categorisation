@@ -42,6 +42,9 @@ module.exports = {
   },
   sqs: {
     riskProfilerQueue: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', true),
+    eventQueue: get('EVENT_QUEUE_URL', 'http://localhost:4576/queue/event', true),
+    eventQueueAccessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', 'dummy'),
+    eventQueueSecretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', 'dummy'),
     enabled: get('SQS_ENABLED', 'true', true),
   },
   apis: {

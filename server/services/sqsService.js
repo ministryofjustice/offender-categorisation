@@ -1,11 +1,16 @@
 const { Consumer } = require('sqs-consumer')
+const AWS = require('aws-sdk')
 const logger = require('../../log.js')
 const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const db = require('../data/dataAccess/db')
 
+AWS.config.update({
+  region: 'eu-west-2',
+})
+
 module.exports = function createSqsService(offenderService, formService) {
-  const handleMessage = async message => {
+  const handleRiskProfilerMessage = async message => {
     logger.debug(`Received message with json message body : ${message.Body}`)
     const change = JSON.parse(message.Body)
     logger.info(`received risk change payload for offender ${change.offenderNo}`)
@@ -34,9 +39,7 @@ module.exports = function createSqsService(offenderService, formService) {
           )
         }
       } catch (error) {
-        logger.error(
-          `Problem processing risk change payload for offender ${change.offenderNo} \nError returned : ${error}`
-        )
+        logger.error(error, `Problem processing risk change payload for offender ${change.offenderNo}`)
         throw error
       }
     } else {
@@ -44,18 +47,16 @@ module.exports = function createSqsService(offenderService, formService) {
     }
   }
 
-  const app = Consumer.create({
+  const rpQueueConsumer = Consumer.create({
     queueUrl: config.sqs.riskProfilerQueue,
-    handleMessage,
+    handleMessage: handleRiskProfilerMessage,
   })
 
-  logger.info(`Consuming from queue ${config.sqs.riskProfilerQueue}`)
-
-  app.on('error', err => {
+  rpQueueConsumer.on('error', err => {
     logger.error(err.message)
   })
 
-  app.on('processing_error', err => {
+  rpQueueConsumer.on('processing_error', err => {
     logger.error(err.message)
   })
 
@@ -69,7 +70,48 @@ module.exports = function createSqsService(offenderService, formService) {
     return riskChangeHelper.assessRiskProfiles(oldProfile, newProfile).alertRequired
   }
 
+  // //////////////////////////////////////////////////////////////////////////////////////////////
+
+  const handleEventMessage = async message => {
+    logger.debug({ body: message.Body }, 'Received event message')
+    const event = JSON.parse(message.Body)
+
+    try {
+      db.doTransactional(async transactionalDbClient => {
+        if (event.eventType === 'BOOKING_NUMBER-CHANGED') {
+          logger.info({ event }, 'Received merge event payload')
+          await offenderService.checkAndMerge(event.bookingId, transactionalDbClient)
+        } else if (event.eventType === 'DATA_COMPLIANCE_DELETE-OFFENDER') {
+          // TODO
+        }
+      })
+    } catch (error) {
+      logger.error(error, `Problem processing event payload`)
+      throw error
+    }
+  }
+
+  const eventQueueConsumer = Consumer.create({
+    queueUrl: config.sqs.eventQueue,
+    handleMessage: handleEventMessage,
+    sqs: new AWS.SQS({
+      accessKeyId: config.sqs.eventQueueAccessKeyId,
+      secretAccessKey: config.sqs.eventQueueSecretAccessKey,
+    }),
+  })
+
+  logger.info(`Consuming from queues ${config.sqs.riskProfilerQueue}, ${config.sqs.eventQueue}`)
+
+  eventQueueConsumer.on('error', err => {
+    logger.error(err.message)
+  })
+
+  eventQueueConsumer.on('processing_error', err => {
+    logger.error(err.message)
+  })
+
   return {
-    app,
+    rpQueueConsumer,
+    eventQueueConsumer,
   }
 }

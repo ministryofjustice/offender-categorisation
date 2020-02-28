@@ -103,6 +103,24 @@ env:
         name: rp-sqs-instance-output
         key: sqs_rpc_url
 
+  - name: EVENT_QUEUE_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: ocu-events-sqs-instance-output
+        key: access_key_id
+
+  - name: EVENT_QUEUE_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: ocu-events-sqs-instance-output
+        key: secret_access_key
+
+  - name: EVENT_QUEUE_URL
+    valueFrom:
+      secretKeyRef:
+        name: ocu-events-sqs-instance-output
+        key: url
+
   - name: REDIS_HOST
     valueFrom:
       secretKeyRef:

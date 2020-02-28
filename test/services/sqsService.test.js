@@ -21,7 +21,7 @@ afterEach(() => {
 describe('handleMessage', () => {
   const profile = buildProfile()
   test('should ignore old and new profiles with no change', async () => {
-    await service.app.handleMessage({
+    await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
         profile
       )} }`,
@@ -30,7 +30,7 @@ describe('handleMessage', () => {
   })
   test('should ignore old and new profiles with a change that is not of interest', async () => {
     const newProfile = buildProfile({ socPC: 'B' })
-    await service.app.handleMessage({
+    await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
         newProfile
       )} }`,
@@ -44,7 +44,7 @@ describe('handleMessage', () => {
       categoryCode: 'B',
     })
     const newProfile = buildProfile({ increasedRiskOfExtremism: true })
-    await service.app.handleMessage({
+    await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
         newProfile
       )} }`,

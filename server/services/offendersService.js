@@ -233,6 +233,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
         const decoratedResults = securityReferredFromDB.map(o => {
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
+          if (!offenderDetail) {
+            logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
+            return o
+          }
 
           let securityReferredBy
           if (o.securityReferredBy) {
@@ -1062,6 +1066,23 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return nomisClient.getOffenderDetailsByOffenderNo(offenderNo)
   }
 
+  async function checkAndMerge(context, bookingId, transactionalDbClient) {
+    const nomisClient = nomisClientBuilder(context)
+    logger.debug(`Check for merged booking for ID ${bookingId}`)
+    const booking = await nomisClient.getBasicOffenderDetails(bookingId)
+    const ids = await nomisClient.getIdentifiersByBookingId(bookingId)
+    await Promise.all(
+      ids
+        .filter(id => id.type === 'MERGED')
+        .map(async id => {
+          const rows = await formService.updateOffenderIdentifier(id.value, booking.offenderNo, transactionalDbClient)
+          logger.info(
+            `Merge: ${rows} rows updated for bookingId ${bookingId}, changing offender no from ${id.value} to ${booking.offenderNo}`
+          )
+        })
+    )
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -1088,6 +1109,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     updateNextReviewDate,
     setInactive,
     getCategoryHistory,
+    checkAndMerge,
     // just for tests:
     buildSentenceData,
     getMatchedCategorisations: matchEliteAndDBCategorisations,
