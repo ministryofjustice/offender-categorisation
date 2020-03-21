@@ -2137,7 +2137,7 @@ describe('checkAndMergeOffenderNo', () => {
 
   test('single merge record pending', async () => {
     nomisClient.getBasicOffenderDetails.mockReturnValue({ offenderNo: 'G123NEW' })
-    nomisClient.getIdentifiersByBookingId.mockReturnValue([{ type: 'OTHER'},{ type: 'MERGED', value: 'G123OLD' }])
+    nomisClient.getIdentifiersByBookingId.mockReturnValue([{ type: 'OTHER' }, { type: 'MERGED', value: 'G123OLD' }])
     formService.updateOffenderIdentifier.mockReturnValue(1)
     formService.getCategorisationRecord.mockReturnValue({ status: Status.AWAITING_APPROVAL.name })
 
