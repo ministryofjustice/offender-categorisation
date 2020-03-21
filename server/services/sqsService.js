@@ -50,6 +50,10 @@ module.exports = function createSqsService(offenderService, formService) {
   const rpQueueConsumer = Consumer.create({
     queueUrl: config.sqs.riskProfilerQueue,
     handleMessage: handleRiskProfilerMessage,
+    sqs: new AWS.SQS({
+      accessKeyId: config.sqs.riskProfilerQueueAccessKeyId,
+      secretAccessKey: config.sqs.riskProfilerQueueSecretAccessKey,
+    }),
   })
 
   rpQueueConsumer.on('error', err => {
@@ -77,10 +81,11 @@ module.exports = function createSqsService(offenderService, formService) {
     const event = JSON.parse(message.Body)
 
     try {
-      db.doTransactional(async transactionalDbClient => {
+      await db.doTransactional(async transactionalDbClient => {
+        const context = { user: {} }
         if (event.eventType === 'BOOKING_NUMBER-CHANGED') {
           logger.info({ event }, 'Received merge event payload')
-          await offenderService.checkAndMerge(event.bookingId, transactionalDbClient)
+          await offenderService.checkAndMergeOffenderNo(context, event.bookingId, transactionalDbClient)
         } else if (event.eventType === 'DATA_COMPLIANCE_DELETE-OFFENDER') {
           // TODO
         }

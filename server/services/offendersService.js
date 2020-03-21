@@ -1066,11 +1066,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return nomisClient.getOffenderDetailsByOffenderNo(offenderNo)
   }
 
-  async function checkAndMerge(context, bookingId, transactionalDbClient) {
+  async function checkAndMergeOffenderNo(context, bookingId, transactionalDbClient) {
     const nomisClient = nomisClientBuilder(context)
     logger.debug(`Check for merged booking for ID ${bookingId}`)
     const booking = await nomisClient.getBasicOffenderDetails(bookingId)
     const ids = await nomisClient.getIdentifiersByBookingId(bookingId)
+    logger.info({ ids }, 'result from getIdentifiersByBookingId()')
     await Promise.all(
       ids
         .filter(id => id.type === 'MERGED')
@@ -1079,6 +1080,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           logger.info(
             `Merge: ${rows} rows updated for bookingId ${bookingId}, changing offender no from ${id.value} to ${booking.offenderNo}`
           )
+          const dbRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+          if (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.SUPERVISOR_BACK.name) {
+            // The merge process may have copied an older active record to a higher seq no than the pending record
+            await setInactive(context, bookingId, 'ACTIVE')
+          }
         })
     )
   }
@@ -1109,7 +1115,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     updateNextReviewDate,
     setInactive,
     getCategoryHistory,
-    checkAndMerge,
+    checkAndMergeOffenderNo,
     // just for tests:
     buildSentenceData,
     getMatchedCategorisations: matchEliteAndDBCategorisations,

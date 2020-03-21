@@ -2,6 +2,7 @@ const serviceCreator = require('../../server/services/sqsService')
 
 const offendersService = {
   getOffenderDetailWithFullInfo: jest.fn(),
+  checkAndMergeOffenderNo: jest.fn(),
 }
 
 const formService = {
@@ -18,7 +19,7 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('handleMessage', () => {
+describe('rpQueueConsumer', () => {
   const profile = buildProfile()
   test('should ignore old and new profiles with no change', async () => {
     await service.rpQueueConsumer.handleMessage({
@@ -101,3 +102,15 @@ function buildProfile({
     },
   }
 }
+
+describe('eventQueueConsumer', () => {
+  test('merge event', async () => {
+    await service.eventQueueConsumer.handleMessage({
+      Body: '{"eventType": "BOOKING_NUMBER-CHANGED", "bookingId":123 }',
+    })
+    expect(offendersService.checkAndMergeOffenderNo).toBeCalled()
+    expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][0].user).toBeTruthy()
+    expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][1]).toEqual(123)
+    expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][2]).toBeTruthy()
+  })
+})
