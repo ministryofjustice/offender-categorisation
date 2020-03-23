@@ -24,7 +24,7 @@ module.exports = function createSqsService(offenderService, formService) {
         if (categoryCouldMoveUp(detail)) {
           logger.info(`Creating risk change record for offender ${change.offenderNo}`)
 
-          db.doTransactional(async transactionalDbClient => {
+          await db.doTransactional(async transactionalDbClient => {
             await formService.createRiskChange(
               change.offenderNo,
               detail.agencyId,

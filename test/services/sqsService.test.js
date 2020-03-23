@@ -1,4 +1,8 @@
 const serviceCreator = require('../../server/services/sqsService')
+const db = require('../../server/data/dataAccess/db')
+
+const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+db.pool.connect = jest.fn()
 
 const offendersService = {
   getOffenderDetailWithFullInfo: jest.fn(),
@@ -13,6 +17,7 @@ let service
 
 beforeEach(() => {
   service = serviceCreator(offendersService, formService)
+  db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
 
 afterEach(() => {

@@ -2126,7 +2126,7 @@ describe('checkAndMergeOffenderNo', () => {
     formService.updateOffenderIdentifier.mockReturnValue(1)
     formService.getCategorisationRecord.mockReturnValue({ status: Status.APPROVED.name })
 
-    await service.checkAndMergeOffenderNo({ user: {} }, 123, mockTransactionalClient)
+    await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
     expect(nomisClient.getBasicOffenderDetails).toBeCalledWith(123)
     expect(nomisClient.getIdentifiersByBookingId).toBeCalledWith(123)
@@ -2141,7 +2141,7 @@ describe('checkAndMergeOffenderNo', () => {
     formService.updateOffenderIdentifier.mockReturnValue(1)
     formService.getCategorisationRecord.mockReturnValue({ status: Status.AWAITING_APPROVAL.name })
 
-    await service.checkAndMergeOffenderNo({ user: {} }, 123, mockTransactionalClient)
+    await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
     expect(nomisClient.getBasicOffenderDetails).toBeCalledWith(123)
     expect(nomisClient.getIdentifiersByBookingId).toBeCalledWith(123)
