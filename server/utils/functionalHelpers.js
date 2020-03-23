@@ -26,18 +26,11 @@ function isNilOrEmpty(item) {
 }
 
 function getFieldDetail(fieldPath, fieldConfig) {
-  return R.pipe(
-    R.values,
-    R.head,
-    R.path(fieldPath)
-  )(fieldConfig)
+  return R.pipe(R.values, R.head, R.path(fieldPath))(fieldConfig)
 }
 
 function getFieldName(fieldConfig) {
-  return R.pipe(
-    R.keys,
-    R.head
-  )(fieldConfig)
+  return R.pipe(R.keys, R.head)(fieldConfig)
 }
 
 function lastItem(array) {
@@ -60,10 +53,7 @@ function getWhereKeyLike(url, roleList) {
     // return lowerCaseString.includes(key.toLowerCase())
   }
 
-  return R.pipe(
-    R.pickBy(stringIncludesKey),
-    R.values
-  )(roleList)[0]
+  return R.pipe(R.pickBy(stringIncludesKey), R.values)(roleList)[0]
 }
 
 function replace(array, toReplace, newElement) {
