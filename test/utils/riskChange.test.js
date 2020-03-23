@@ -15,10 +15,16 @@ describe('it should assess the risk change status of a new and old risk profile 
   })
   it('Changes in escape risk alerts are detected', () => {
     const oldProfile = buildProfile({
-      escapeRiskAlerts: [{ newAlert: 'something1', alertId: '1' }, { alertId: '2', newAlert: 'something2' }],
+      escapeRiskAlerts: [
+        { newAlert: 'something1', alertId: '1' },
+        { alertId: '2', newAlert: 'something2' },
+      ],
     })
     const newProfile = buildProfile({
-      escapeRiskAlerts: [{ newAlert: 'somethingHasChanged', alertId: '1' }, { newAlert: 'something1', alertId: '2' }],
+      escapeRiskAlerts: [
+        { newAlert: 'somethingHasChanged', alertId: '1' },
+        { newAlert: 'something1', alertId: '2' },
+      ],
     })
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeRiskAlert).toBe(true)
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).escapeListAlert).toBe(false)

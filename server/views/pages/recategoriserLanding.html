@@ -34,6 +34,7 @@
           <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
           {{ govukButton({
             text: 'Start review',
+            type: 'submit',
             classes: 'grey-button',
             attributes: { 'id': 'recatButton','data-prevent-double-click': 'true' }
           }) }}
