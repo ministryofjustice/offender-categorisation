@@ -947,10 +947,16 @@ describe('getRiskChangeCount', () => {
 describe('getHistoricalCategorisationRecords', () => {
   test('a list of categorisation records are returned', async () => {
     formClient.getHistoricalFormData.mockReturnValue({
-      rows: [{ bookingId: 12, offenderNo: 'GD123' }, { bookingId: 13, offenderNo: 'GD123' }],
+      rows: [
+        { bookingId: 12, offenderNo: 'GD123' },
+        { bookingId: 13, offenderNo: 'GD123' },
+      ],
     })
     const result = await service.getHistoricalCategorisationRecords('GD123', mockTransactionalClient)
 
-    expect(result).toEqual([{ bookingId: 12, offenderNo: 'GD123' }, { bookingId: 13, offenderNo: 'GD123' }])
+    expect(result).toEqual([
+      { bookingId: 12, offenderNo: 'GD123' },
+      { bookingId: 13, offenderNo: 'GD123' },
+    ])
   })
 })

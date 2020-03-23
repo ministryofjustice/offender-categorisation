@@ -2090,8 +2090,14 @@ describe('getRiskChanges', () => {
 describe('mergeOffenderLists', () => {
   test('standard lists', () => {
     const result = service.mergeOffenderLists(
-      [{ bookingId: 1, name: 'first1' }, { bookingId: 2, name: 'first2' }],
-      [{ bookingId: 1, name: 'second1' }, { bookingId: 4, name: 'second4' }]
+      [
+        { bookingId: 1, name: 'first1' },
+        { bookingId: 2, name: 'first2' },
+      ],
+      [
+        { bookingId: 1, name: 'second1' },
+        { bookingId: 4, name: 'second4' },
+      ]
     )
     expect(result).toMatchObject([
       { bookingId: 1, name: 'first1' },
@@ -2102,20 +2108,38 @@ describe('mergeOffenderLists', () => {
   test('empty lists - master list', () => {
     const result = service.mergeOffenderLists(
       [],
-      [{ bookingId: 1, name: 'second1' }, { bookingId: 4, name: 'second4' }]
+      [
+        { bookingId: 1, name: 'second1' },
+        { bookingId: 4, name: 'second4' },
+      ]
     )
-    expect(result).toMatchObject([{ bookingId: 1, name: 'second1' }, { bookingId: 4, name: 'second4' }])
+    expect(result).toMatchObject([
+      { bookingId: 1, name: 'second1' },
+      { bookingId: 4, name: 'second4' },
+    ])
   })
   test('empty lists - second list', () => {
-    const result = service.mergeOffenderLists([{ bookingId: 1, name: 'first1' }, { bookingId: 2, name: 'first2' }], [])
-    expect(result).toMatchObject([{ bookingId: 1, name: 'first1' }, { bookingId: 2, name: 'first2' }])
+    const result = service.mergeOffenderLists(
+      [
+        { bookingId: 1, name: 'first1' },
+        { bookingId: 2, name: 'first2' },
+      ],
+      []
+    )
+    expect(result).toMatchObject([
+      { bookingId: 1, name: 'first1' },
+      { bookingId: 2, name: 'first2' },
+    ])
   })
   test('mergeOffenderLists - ignore nulls', () => {
     const result = service.mergeOffenderLists(
       [{ bookingId: 1, name: 'first1' }, null],
       [null, { bookingId: 4, name: 'first2' }]
     )
-    expect(result).toMatchObject([{ bookingId: 1, name: 'first1' }, { bookingId: 4, name: 'first2' }])
+    expect(result).toMatchObject([
+      { bookingId: 1, name: 'first1' },
+      { bookingId: 4, name: 'first2' },
+    ])
   })
 })
 

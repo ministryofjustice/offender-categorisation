@@ -133,8 +133,8 @@ module.exports = function Index({
 
     const fasttrackCancelled =
       getIn(['recat', 'fasttrackRemain', 'remainCatC'], formObject) === 'No' ||
-      (getIn(['recat', 'fasttrackEligibility', 'earlyCatD'], formObject) === 'Yes' ||
-        getIn(['recat', 'fasttrackEligibility', 'increaseCategory'], formObject) === 'Yes')
+      getIn(['recat', 'fasttrackEligibility', 'earlyCatD'], formObject) === 'Yes' ||
+      getIn(['recat', 'fasttrackEligibility', 'increaseCategory'], formObject) === 'Yes'
 
     log.debug(
       `eligible for fast track status: ${eligibleForFasttrack} for offender no ${

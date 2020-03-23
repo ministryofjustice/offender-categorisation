@@ -12,7 +12,6 @@ const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 
-const sassMiddleware = require('node-sass-middleware')
 const catToolSerialisers = require('./catToolSerialisers')
 const auth = require('./authentication/auth')
 const healthFactory = require('./services/healthCheck')
@@ -108,21 +107,6 @@ module.exports = function createApp({
       res.locals.version = moment.now().toString()
       return next()
     })
-  }
-
-  if (!production) {
-    app.use(
-      '/assets',
-      sassMiddleware({
-        src: path.join(__dirname, '../assets/sass'),
-        dest: path.join(__dirname, '../assets/stylesheets'),
-        debug: true,
-        outputStyle: 'compressed',
-        indentedSyntax: true,
-        prefix: '/stylesheets/',
-        includePaths: ['node_modules/govuk-frontend/govuk', 'node_modules/@ministryofjustice'],
-      })
-    )
   }
 
   //  Static Resources Configuration
@@ -306,7 +290,7 @@ function renderErrors(error, req, res, next) {
   logger.error(error)
 
   // code to handle unknown errors
-  const prodMessage = 'Something went wrong. The error has been logged. Please try again'
+  const prodMessage = `Something went wrong at ${moment()}. The error has been logged. Please try again`
   if (error.response) {
     res.locals.error = error.response.error
     res.locals.message = production ? prodMessage : error.response.res.statusMessage
