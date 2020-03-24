@@ -139,6 +139,10 @@ module.exports = context => {
       const path = `${apiUrl}api/offender-assessments/category/${bookingId}/inactive?status=${assessmentStatus}`
       return nomisClientPut({ path })
     },
+    getIdentifiersByBookingId(bookingId) {
+      const path = `${apiUrl}api/bookings/${bookingId}/identifiers`
+      return nomisClientGet({ path })
+    },
   }
 }
 
