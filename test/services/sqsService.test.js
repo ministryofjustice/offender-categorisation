@@ -1,7 +1,12 @@
 const serviceCreator = require('../../server/services/sqsService')
+const db = require('../../server/data/dataAccess/db')
+
+const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+db.pool.connect = jest.fn()
 
 const offendersService = {
   getOffenderDetailWithFullInfo: jest.fn(),
+  checkAndMergeOffenderNo: jest.fn(),
 }
 
 const formService = {
@@ -12,16 +17,17 @@ let service
 
 beforeEach(() => {
   service = serviceCreator(offendersService, formService)
+  db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
 
 afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('handleMessage', () => {
+describe('rpQueueConsumer', () => {
   const profile = buildProfile()
   test('should ignore old and new profiles with no change', async () => {
-    await service.app.handleMessage({
+    await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
         profile
       )} }`,
@@ -30,7 +36,7 @@ describe('handleMessage', () => {
   })
   test('should ignore old and new profiles with a change that is not of interest', async () => {
     const newProfile = buildProfile({ socPC: 'B' })
-    await service.app.handleMessage({
+    await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
         newProfile
       )} }`,
@@ -44,7 +50,7 @@ describe('handleMessage', () => {
       categoryCode: 'B',
     })
     const newProfile = buildProfile({ increasedRiskOfExtremism: true })
-    await service.app.handleMessage({
+    await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
         newProfile
       )} }`,
@@ -101,3 +107,15 @@ function buildProfile({
     },
   }
 }
+
+describe('eventQueueConsumer', () => {
+  test('merge event', async () => {
+    await service.eventQueueConsumer.handleMessage({
+      Body: '{"eventType": "BOOKING_NUMBER-CHANGED", "bookingId":123 }',
+    })
+    expect(offendersService.checkAndMergeOffenderNo).toBeCalled()
+    expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][0].user).toBeTruthy()
+    expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][1]).toEqual(123)
+    expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][2]).toBeTruthy()
+  })
+})

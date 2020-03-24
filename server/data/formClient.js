@@ -55,7 +55,7 @@ module.exports = {
                     prison_id     as "prisonId",
                     nomis_sequence_no as "nomisSeq"
              from form f
-             where f.offender_no = $1 and f.status = 'APPROVED' 
+             where f.offender_no = $1 and f.status = 'APPROVED'
              ${ignoreCancelledClause}
              order by sequence_no`,
       values: [offenderNo],
@@ -285,6 +285,15 @@ module.exports = {
     const query = {
       text: `update security_referral set status='NEW', processed_date=null where offender_no=$1 and status='REFERRED'`,
       values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  updateOffenderIdentifier(oldOffenderNo, newOffenderNo, transactionalClient) {
+    logger.info(`updateOffenderIdentifier from ${oldOffenderNo} to ${newOffenderNo}`)
+    const query = {
+      text: `update form set offender_no=$2 where offender_no=$1`,
+      values: [oldOffenderNo, newOffenderNo],
     }
     return transactionalClient.query(query)
   },
