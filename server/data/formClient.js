@@ -289,10 +289,10 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateOffenderIdentifier(oldOffenderNo, newOffenderNo, transactionalClient) {
-    logger.info(`updateOffenderIdentifier from ${oldOffenderNo} to ${newOffenderNo}`)
+  updateOffenderIdentifierReturningBookingId(oldOffenderNo, newOffenderNo, transactionalClient) {
+    logger.info(`updateOffenderIdentifierReturningBookingId from ${oldOffenderNo} to ${newOffenderNo}`)
     const query = {
-      text: `update form set offender_no=$2 where offender_no=$1`,
+      text: `update form set offender_no=$2 where offender_no=$1 returning booking_id`,
       values: [oldOffenderNo, newOffenderNo],
     }
     return transactionalClient.query(query)

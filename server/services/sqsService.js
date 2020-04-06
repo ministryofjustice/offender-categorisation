@@ -77,14 +77,14 @@ module.exports = function createSqsService(offenderService, formService) {
   // //////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleEventMessage = async message => {
-    logger.debug({ body: message.Body }, 'Received event message')
-    const event = JSON.parse(message.Body)
+    logger.debug({ Body: message.Body }, 'Received event message')
+    const event = JSON.parse(JSON.parse(message.Body).Message)
 
     try {
       await db.doTransactional(async transactionalDbClient => {
         const context = { user: {} }
         if (event.eventType === 'BOOKING_NUMBER-CHANGED') {
-          logger.info({ event }, 'Received merge event payload')
+          logger.info({ event }, 'Merge: Received payload')
           await offenderService.checkAndMergeOffenderNo(context, event.bookingId, transactionalDbClient)
         } else if (event.eventType === 'DATA_COMPLIANCE_DELETE-OFFENDER') {
           // TODO
