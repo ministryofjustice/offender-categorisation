@@ -111,8 +111,10 @@ function buildProfile({
 describe('eventQueueConsumer', () => {
   test('merge event', async () => {
     await service.eventQueueConsumer.handleMessage({
-      Body: '{"eventType": "BOOKING_NUMBER-CHANGED", "bookingId":123 }',
+      MessageId: '21b86d12-74be-4208-9f0b-7ffcb4213184',
+      Body: '{ "Message" : "{\\"eventType\\": \\"BOOKING_NUMBER-CHANGED\\", \\"bookingId\\": 123}"}',
     })
+
     expect(offendersService.checkAndMergeOffenderNo).toBeCalled()
     expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][0].user).toBeTruthy()
     expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][1]).toEqual(123)

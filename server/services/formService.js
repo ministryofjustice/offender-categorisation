@@ -639,9 +639,13 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function updateOffenderIdentifier(oldOffenderNo, newOffenderNo, transactionalClient) {
-    const result = await formClient.updateOffenderIdentifier(oldOffenderNo, newOffenderNo, transactionalClient)
-    return result.rowCount
+  async function updateOffenderIdentifierReturningBookingId(oldOffenderNo, newOffenderNo, transactionalClient) {
+    const result = await formClient.updateOffenderIdentifierReturningBookingId(
+      oldOffenderNo,
+      newOffenderNo,
+      transactionalClient
+    )
+    return result.rows
   }
 
   return {
@@ -683,6 +687,6 @@ module.exports = function createFormService(formClient) {
     getHistoricalCategorisationRecords,
     updateStatusForOutstandingRiskChange,
     getRiskChangeCount,
-    updateOffenderIdentifier,
+    updateOffenderIdentifierReturningBookingId,
   }
 }
