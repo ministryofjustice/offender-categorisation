@@ -44,7 +44,7 @@ const formService = {
   getHistoricalCategorisationRecords: jest.fn(),
   backToCategoriser: jest.fn(),
   recordNomisSeqNumber: jest.fn(),
-  updateOffenderIdentifier: jest.fn(),
+  updateOffenderIdentifierReturningBookingId: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -2144,33 +2144,83 @@ describe('mergeOffenderLists', () => {
 })
 
 describe('checkAndMergeOffenderNo', () => {
+  const realisticData = [
+    {
+      type: 'PNC',
+      value: '08/97846A',
+      offenderNo: 'G8879UH',
+      bookingId: 1122971,
+      issuedDate: '2016-11-14',
+      caseloadType: 'INST',
+    },
+    {
+      type: 'CRO',
+      value: '16851/08T',
+      offenderNo: 'G8879UH',
+      bookingId: 1122971,
+      issuedDate: '2016-11-14',
+      caseloadType: 'INST',
+    },
+    {
+      type: 'HOREF',
+      value: 'K1197211',
+      offenderNo: 'G8879UH',
+      bookingId: 1122971,
+      issuedDate: '2016-11-14',
+      caseloadType: 'INST',
+    },
+    {
+      type: 'MERGED',
+      value: 'G123OLD',
+      offenderNo: 'G123NEW',
+      bookingId: 1122971,
+      caseloadType: 'INST',
+    },
+    {
+      type: 'MERGE_HMPS',
+      value: '38384A',
+      offenderNo: 'G8879UH',
+      bookingId: 1122971,
+      caseloadType: 'INST',
+    },
+  ]
+
   test('single merge record', async () => {
     nomisClient.getBasicOffenderDetails.mockReturnValue({ offenderNo: 'G123NEW' })
-    nomisClient.getIdentifiersByBookingId.mockReturnValue([{ type: 'MERGED', value: 'G123OLD' }])
-    formService.updateOffenderIdentifier.mockReturnValue(1)
+
+    nomisClient.getIdentifiersByBookingId.mockReturnValue(realisticData)
+    formService.updateOffenderIdentifierReturningBookingId.mockReturnValue([{ booking_id: 456 }])
     formService.getCategorisationRecord.mockReturnValue({ status: Status.APPROVED.name })
 
     await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
     expect(nomisClient.getBasicOffenderDetails).toBeCalledWith(123)
     expect(nomisClient.getIdentifiersByBookingId).toBeCalledWith(123)
-    expect(formService.updateOffenderIdentifier).toBeCalledWith('G123OLD', 'G123NEW', mockTransactionalClient)
-    expect(formService.getCategorisationRecord).toBeCalledWith(123, mockTransactionalClient)
+    expect(formService.updateOffenderIdentifierReturningBookingId).toBeCalledWith(
+      'G123OLD',
+      'G123NEW',
+      mockTransactionalClient
+    )
+    expect(formService.getCategorisationRecord).toBeCalledWith(456, mockTransactionalClient)
     expect(nomisClient.setInactive).not.toBeCalled()
   })
 
-  test('single merge record pending', async () => {
+  test('single merge with cat record pending', async () => {
     nomisClient.getBasicOffenderDetails.mockReturnValue({ offenderNo: 'G123NEW' })
-    nomisClient.getIdentifiersByBookingId.mockReturnValue([{ type: 'OTHER' }, { type: 'MERGED', value: 'G123OLD' }])
-    formService.updateOffenderIdentifier.mockReturnValue(1)
+    nomisClient.getIdentifiersByBookingId.mockReturnValue(realisticData)
+    formService.updateOffenderIdentifierReturningBookingId.mockReturnValue([{ booking_id: 456 }])
     formService.getCategorisationRecord.mockReturnValue({ status: Status.AWAITING_APPROVAL.name })
 
     await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
     expect(nomisClient.getBasicOffenderDetails).toBeCalledWith(123)
     expect(nomisClient.getIdentifiersByBookingId).toBeCalledWith(123)
-    expect(formService.updateOffenderIdentifier).toBeCalledWith('G123OLD', 'G123NEW', mockTransactionalClient)
-    expect(formService.getCategorisationRecord).toBeCalledWith(123, mockTransactionalClient)
-    expect(nomisClient.setInactive).toBeCalledWith(123, 'ACTIVE')
+    expect(formService.updateOffenderIdentifierReturningBookingId).toBeCalledWith(
+      'G123OLD',
+      'G123NEW',
+      mockTransactionalClient
+    )
+    expect(formService.getCategorisationRecord).toBeCalledWith(456, mockTransactionalClient)
+    expect(nomisClient.setInactive).toBeCalledWith(456, 'ACTIVE')
   })
 })
