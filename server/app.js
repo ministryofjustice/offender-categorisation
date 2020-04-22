@@ -4,6 +4,7 @@ const moment = require('moment')
 const path = require('path')
 const bunyanRequestLogger = require('bunyan-request-logger')
 const helmet = require('helmet')
+const noCache = require('nocache')
 const csurf = require('csurf')
 const compression = require('compression')
 const passport = require('passport')
@@ -26,6 +27,7 @@ const config = require('../server/config')
 const createOpenConditionsRouter = require('./routes/openConditions')
 const createRecatRouter = require('./routes/recat')
 const createNextReviewDateRouter = require('./routes/nextReviewDate')
+const createLiteCategoriesRouter = require('./routes/liteCategories')
 
 const log = bunyanRequestLogger({ name: 'Cat tool http', serializers: catToolSerialisers })
 const { authenticationMiddleware } = auth
@@ -151,7 +153,7 @@ module.exports = function createApp({
   app.use(addTemplateVariables)
 
   // Don't cache dynamic resources
-  app.use(helmet.noCache())
+  app.use(noCache())
 
   // CSRF protection
   if (!testMode) {
@@ -263,6 +265,14 @@ module.exports = function createApp({
     authenticationMiddleware,
   })
   app.use('/form/nextReviewDate/', nextReviewDateRouter)
+
+  const liteCategoriesRouter = createLiteCategoriesRouter({
+    formService,
+    offendersService,
+    userService,
+    authenticationMiddleware,
+  })
+  app.use('/liteCategories/', liteCategoriesRouter)
 
   const formRouter = createFormRouter({
     formService,

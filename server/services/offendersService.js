@@ -5,7 +5,7 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
 const { isNilOrEmpty, inProgress, getIn, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { properCaseName, dateConverter, get10BusinessDays } = require('../utils/utils.js')
+const { properCaseName, dateConverter, dateConverterToISO, get10BusinessDays } = require('../utils/utils.js')
 const { sortByDateTime, sortByStatus } = require('./offenderSort.js')
 const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
@@ -510,7 +510,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
   async function updateNextReviewDate(context, bookingId, nextReviewDateUI) {
     try {
-      const nextReviewDate = moment(nextReviewDateUI, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      const nextReviewDate = dateConverterToISO(nextReviewDateUI)
       logger.info(`updating next review date for bookingId ${bookingId} to ${nextReviewDate}`)
       const nomisClient = nomisClientBuilder(context)
       await nomisClient.updateNextReviewDate(bookingId, nextReviewDate)
@@ -917,6 +917,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return ''
   }
 
+  function getAgencies(context) {
+    const nomisClient = nomisClientBuilder(context)
+    return nomisClient.getAgencies()
+  }
+
   async function createOrUpdateCategorisation({
     context,
     bookingId,
@@ -931,7 +936,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const category = overriddenCategory || suggestedCategory
       const comment = (overriddenCategoryText && overriddenCategoryText.substring(0, 4000)) || ''
       const nomisClient = nomisClientBuilder(context)
-      const nextReviewDateConverted = nextReviewDate && moment(nextReviewDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      const nextReviewDateConverted = dateConverterToISO(nextReviewDate)
       if (nomisSeq) {
         return await nomisClient.updateCategorisation({
           bookingId,
@@ -951,7 +956,53 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       })
       return await formService.recordNomisSeqNumber(bookingId, nomisKeyMap.sequenceNumber, transactionalDbClient)
     } catch (error) {
-      logger.error(error, 'Error during createOrUpdateCategorisation')
+      logger.error(
+        error,
+        `Error during createOrUpdateCategorisation for booking id ${bookingId} and user ${context.user.username}`
+      )
+      throw error
+    }
+  }
+
+  async function createLiteCategorisation({
+    context,
+    bookingId,
+    category,
+    authority,
+    nextReviewDate,
+    placement,
+    comment,
+    offenderNo,
+    prisonId,
+    transactionalClient,
+  }) {
+    try {
+      const nomisClient = nomisClientBuilder(context)
+      const nextReviewDateConverted = dateConverterToISO(nextReviewDate)
+
+      const nomisKeyMap = await nomisClient.createCategorisation({
+        bookingId,
+        category,
+        committee: authority,
+        comment,
+        nextReviewDate: nextReviewDateConverted,
+        placementAgencyId: placement,
+      })
+      logger.info(`Recording cat ${category} assessment for booking id ${bookingId} and user ${context.user.username}`)
+      return formService.recordLiteCategorisation({
+        context,
+        bookingId,
+        sequence: nomisKeyMap.sequenceNumber,
+        category,
+        offenderNo,
+        prisonId,
+        transactionalClient,
+      })
+    } catch (error) {
+      logger.error(
+        error,
+        `Error during createLiteCategorisation for booking id ${bookingId} and user ${context.user.username}`
+      )
       throw error
     }
   }
@@ -971,7 +1022,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         reviewCommitteeCode: 'OCA',
       })
     } catch (error) {
-      logger.error(error, 'Error during createSupervisorApproval')
+      logger.error(
+        error,
+        `Error during createSupervisorApproval for booking id ${bookingId} and user ${context.user.username}`
+      )
       throw error
     }
   }
@@ -1112,7 +1166,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     backToCategoriser,
     requiredCatType,
     getOptionalAssessmentAgencyDescription,
+    getAgencies,
     createOrUpdateCategorisation,
+    createLiteCategorisation,
     createSupervisorApproval,
     getCategorisedOffenders,
     getSecurityReviewedOffenders,

@@ -24,10 +24,15 @@ class DatabaseUtils {
     sql.executeUpdate("delete from form where booking_id < 1000")
     sql.executeUpdate("delete from security_referral")
     sql.executeUpdate("delete from risk_change")
+    sql.executeUpdate("delete from lite_category")
   }
 
   def getData(bookingId) {
     return sql.rows("select * from form where booking_id = $bookingId order by sequence_no")
+  }
+
+  def getLiteData(bookingId) {
+    return sql.rows("select * from lite_category where booking_id = $bookingId order by sequence")
   }
 
   def getRiskChange(offenderNo) {

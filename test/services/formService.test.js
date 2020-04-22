@@ -30,15 +30,15 @@ let service
 
 beforeEach(() => {
   service = serviceCreator(formClient)
-  formClient.getFormDataForUser.mockReturnValue({ rows: [{ a: 'b' }, { c: 'd' }] })
-  formClient.update.mockReturnValue({})
-  formClient.updateFormData.mockReturnValue({})
-  formClient.create.mockReturnValue({})
-  formClient.referToSecurity.mockReturnValue({})
-  formClient.updateStatus.mockReturnValue({})
-  formClient.securityReviewed.mockReturnValue({})
-  formClient.getRiskChangeByStatus.mockReturnValue({ rows: [] })
-  formClient.getHistoricalFormData.mockReturnValue({ rows: [] })
+  formClient.getFormDataForUser.mockResolvedValue({ rows: [{ a: 'b' }, { c: 'd' }] })
+  formClient.update.mockResolvedValue({})
+  formClient.updateFormData.mockResolvedValue({})
+  formClient.create.mockResolvedValue({})
+  formClient.referToSecurity.mockResolvedValue({})
+  formClient.updateStatus.mockResolvedValue({})
+  formClient.securityReviewed.mockResolvedValue({})
+  formClient.getRiskChangeByStatus.mockResolvedValue({ rows: [] })
+  formClient.getHistoricalFormData.mockResolvedValue({ rows: [] })
 })
 
 afterEach(() => {
@@ -84,7 +84,7 @@ describe('update', () => {
     }
 
     test('should store everything', async () => {
-      formClient.getFormDataForUser.mockReturnValue({
+      formClient.getFormDataForUser.mockResolvedValue({
         rows: [
           {
             formObject: {
@@ -125,7 +125,7 @@ describe('update', () => {
     })
 
     test('should call update', async () => {
-      formClient.getFormDataForUser.mockReturnValue({
+      formClient.getFormDataForUser.mockResolvedValue({
         rows: [
           {
             id: 'form1',
@@ -155,7 +155,7 @@ describe('update', () => {
     })
 
     test('should call create and pass in the user', async () => {
-      formClient.getFormDataForUser.mockReturnValue({ rows: [] })
+      formClient.getFormDataForUser.mockResolvedValue({ rows: [] })
 
       await service.createOrRetrieveCategorisationRecord(
         1234,
@@ -184,7 +184,7 @@ describe('update', () => {
     })
 
     test('should reject update if invalid status transition - SECURITY_BACK - APPROVED', async () => {
-      formClient.getFormDataForUser.mockReturnValue({
+      formClient.getFormDataForUser.mockResolvedValue({
         rows: [
           {
             id: 'form1',
@@ -201,7 +201,7 @@ describe('update', () => {
         followUp2: 'Town',
       }
 
-      expect(
+      await expect(
         service.update({
           bookingId: 1234,
           config: { fields: fieldMap },
@@ -211,11 +211,11 @@ describe('update', () => {
           status: 'APPROVED',
           transactionalClient: mockTransactionalClient,
         })
-      ).rejects.toEqual(new Error('Invalid state transition from SECURITY_BACK to APPROVED'))
+      ).rejects.toEqual(new Error('Cannot transition from status SECURITY_BACK to APPROVED'))
     })
 
     test('should reject update invalid status transition - APPROVED - STARTED', async () => {
-      formClient.getFormDataForUser.mockReturnValue({
+      formClient.getFormDataForUser.mockResolvedValue({
         rows: [
           {
             id: 'form1',
@@ -232,7 +232,7 @@ describe('update', () => {
         followUp2: 'Town',
       }
 
-      expect(
+      await expect(
         service.update({
           bookingId: 1234,
           config: { fields: fieldMap },
@@ -242,11 +242,11 @@ describe('update', () => {
           status: 'STARTED',
           transactionalClient: mockTransactionalClient,
         })
-      ).rejects.toEqual(new Error('Invalid state transition from APPROVED to STARTED'))
+      ).rejects.toEqual(new Error('Cannot transition from status APPROVED to STARTED'))
     })
 
     it('should add new sections and forms to the licence if they dont exist', async () => {
-      formClient.getFormDataForUser.mockReturnValue({
+      formClient.getFormDataForUser.mockResolvedValue({
         rows: [
           {
             formObject: {
@@ -315,7 +315,7 @@ describe('update', () => {
     ]
 
     test('should store dependents if predicate matches', async () => {
-      formClient.getFormDataForUser.mockReturnValue({
+      formClient.getFormDataForUser.mockResolvedValue({
         rows: [
           {
             formObject: {
@@ -357,7 +357,7 @@ describe('update', () => {
     })
 
     test('should remove dependents if predicate does not match', async () => {
-      formClient.getFormDataForUser.mockReturnValue({
+      formClient.getFormDataForUser.mockResolvedValue({
         rows: [
           {
             formObject: {
@@ -404,7 +404,7 @@ describe('mergeRiskProfileData', () => {
       section1: { value: 'old' },
       section3: { value: 'existing' },
     }
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ riskProfile: existingData }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ riskProfile: existingData }] })
     const data = {
       section1: { value: 'new1' },
       section2: { value: 'new2' },
@@ -556,7 +556,7 @@ describe('referToSecurityIfRiskAssessed', () => {
   })
 
   test('invalid status', async () => {
-    expect(
+    await expect(
       service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED', mockTransactionalClient)
     ).rejects.toThrow()
   })
@@ -569,7 +569,7 @@ describe('referToSecurityIfRiskAssessed', () => {
   test('database error', async () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
-    expect(
+    expect(() =>
       service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED', mockTransactionalClient)
     ).rejects.toThrow('TEST')
   })
@@ -580,7 +580,7 @@ describe('referToSecurityIfRequested', () => {
   const updatedFormObjectRecat = { recat: { securityInput: { securityInputNeeded: 'Yes' } } }
 
   test('happy path initial', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'STARTED' }] })
 
     await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
 
@@ -593,7 +593,7 @@ describe('referToSecurityIfRequested', () => {
   })
 
   test('happy path recat', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED', catType: 'RECAT' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'STARTED', catType: 'RECAT' }] })
 
     await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectRecat, mockTransactionalClient)
 
@@ -606,9 +606,9 @@ describe('referToSecurityIfRequested', () => {
   })
 
   test('no record in db', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [] })
 
-    expect(
+    await expect(
       service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
     ).rejects.toThrow()
 
@@ -616,9 +616,9 @@ describe('referToSecurityIfRequested', () => {
   })
 
   test('invalid status', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'APPROVED' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'APPROVED' }] })
 
-    expect(
+    await expect(
       service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
     ).rejects.toThrow()
 
@@ -626,7 +626,7 @@ describe('referToSecurityIfRequested', () => {
   })
 
   test('invalid SECURITY_MANUAL status', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
 
     await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
 
@@ -634,9 +634,10 @@ describe('referToSecurityIfRequested', () => {
   })
 
   test('database error', async () => {
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'STARTED' }] })
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
-    expect(
+    await expect(
       service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
     ).rejects.toThrow('TEST')
   })
@@ -644,7 +645,7 @@ describe('referToSecurityIfRequested', () => {
 
 describe('referToSecurityIfFlagged', () => {
   test('happy path', async () => {
-    formClient.getSecurityReferral.mockReturnValue({ rows: [{ status: 'NEW', userId: 'SEC_USER' }] })
+    formClient.getSecurityReferral.mockResolvedValue({ rows: [{ status: 'NEW', userId: 'SEC_USER' }] })
 
     await service.referToSecurityIfFlagged(bookingId, offenderNo, 'STARTED', mockTransactionalClient)
 
@@ -658,7 +659,7 @@ describe('referToSecurityIfFlagged', () => {
   })
 
   test('not flagged', async () => {
-    formClient.getSecurityReferral.mockReturnValue({ rows: [] })
+    formClient.getSecurityReferral.mockResolvedValue({ rows: [] })
 
     await service.referToSecurityIfFlagged(bookingId, offenderNo, 'STARTED', mockTransactionalClient)
 
@@ -667,7 +668,7 @@ describe('referToSecurityIfFlagged', () => {
   })
 
   test('flag processed', async () => {
-    formClient.getSecurityReferral.mockReturnValue({ rows: [{ status: 'REFERRED', userId: 'SEC_USER' }] })
+    formClient.getSecurityReferral.mockResolvedValue({ rows: [{ status: 'REFERRED', userId: 'SEC_USER' }] })
 
     await service.referToSecurityIfFlagged(bookingId, offenderNo, 'STARTED', mockTransactionalClient)
 
@@ -678,7 +679,7 @@ describe('referToSecurityIfFlagged', () => {
 
 describe('securityReviewed', () => {
   test('happy path', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_AUTO' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'SECURITY_AUTO' }] })
 
     await service.securityReviewed(bookingId, userId, mockTransactionalClient)
 
@@ -693,7 +694,7 @@ describe('securityReviewed', () => {
 
 describe('updateStatus', () => {
   test('happy path', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'AWAITING_APPROVAL' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'AWAITING_APPROVAL' }] })
 
     await service.backToCategoriser(bookingId, mockTransactionalClient)
 
@@ -701,37 +702,38 @@ describe('updateStatus', () => {
   })
 
   test('no record in db', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [] })
 
-    expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
+    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
 
   test('invalid status', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'STARTED' }] })
 
-    expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
+    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
 
   test('invalid SECURITY_BACK status', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_BACK' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'SECURITY_BACK' }] })
 
-    expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
+    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
 
   test('database error', async () => {
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'AWAITING_APPROVAL' }] })
     formClient.updateStatus.mockRejectedValue(new Error('TEST'))
 
-    expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow('TEST')
+    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow('TEST')
   })
 
   test('setAwaitingApproval happy path', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'STARTED' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'STARTED' }] })
 
     await service.setAwaitingApproval(bookingId, mockTransactionalClient)
 
@@ -741,7 +743,7 @@ describe('updateStatus', () => {
 
 describe('createOrRetrieveCategorisationRecord', () => {
   test('record exists', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'SECURITY_MANUAL' }] })
 
     await service.createOrRetrieveCategorisationRecord(
       bookingId,
@@ -757,7 +759,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
   })
 
   test('no record exists', async () => {
-    formClient.getFormDataForUser.mockReturnValue({ rows: [] })
+    formClient.getFormDataForUser.mockResolvedValue({ rows: [] })
 
     await service.createOrRetrieveCategorisationRecord(
       bookingId,
@@ -787,7 +789,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
 
 describe('deleteFormData', () => {
   test('happy path', async () => {
-    formClient.getFormDataForUser.mockReturnValue({
+    formClient.getFormDataForUser.mockResolvedValue({
       rows: [{ formObject: { a1: { b1: { c1: '123', c2: '321' }, b2ToRemove: { c1: '444' } } } }],
     })
 
@@ -806,7 +808,7 @@ describe('deleteFormData', () => {
   })
 
   test('attempt to delete a form from a non existant section', async () => {
-    formClient.getFormDataForUser.mockReturnValue({
+    formClient.getFormDataForUser.mockResolvedValue({
       rows: [{ formObject: { a1: { b1: { c1: '123', c2: '321' }, b2ToRemove: { c1: '444' } } } }],
     })
 
@@ -821,7 +823,7 @@ describe('deleteFormData', () => {
   })
 
   test('attempt to delete a non existant form', async () => {
-    formClient.getFormDataForUser.mockReturnValue({
+    formClient.getFormDataForUser.mockResolvedValue({
       rows: [{ formObject: { a1: { b1: { c1: '123', c2: '321' }, b2ToRemove: { c1: '444' } } } }],
     })
 
@@ -838,7 +840,7 @@ describe('deleteFormData', () => {
 
 describe('cancelOpenConditions', () => {
   test('initial', async () => {
-    formClient.getFormDataForUser.mockReturnValue({
+    formClient.getFormDataForUser.mockResolvedValue({
       rows: [
         {
           formObject: {
@@ -868,7 +870,7 @@ describe('cancelOpenConditions', () => {
   })
 
   test('recat', async () => {
-    formClient.getFormDataForUser.mockReturnValue({
+    formClient.getFormDataForUser.mockResolvedValue({
       rows: [
         {
           formObject: {
@@ -902,7 +904,7 @@ describe('createRiskChange', () => {
   const newProfile = { something: 'hello' }
   test('merge with existing', async () => {
     const existingRecord = { existing: true }
-    formClient.getNewRiskChangeByOffender.mockReturnValue({ rows: [{ existingRecord }] })
+    formClient.getNewRiskChangeByOffender.mockResolvedValue({ rows: [{ existingRecord }] })
 
     await service.createRiskChange(offenderNo, 'LEI', {}, newProfile, mockTransactionalClient)
 
@@ -914,7 +916,7 @@ describe('createRiskChange', () => {
   })
 
   test('create new record', async () => {
-    formClient.getNewRiskChangeByOffender.mockReturnValue({ rows: [] })
+    formClient.getNewRiskChangeByOffender.mockResolvedValue({ rows: [] })
 
     await service.createRiskChange(offenderNo, 'LEI', {}, newProfile, mockTransactionalClient)
 
@@ -932,7 +934,7 @@ describe('createRiskChange', () => {
 
 describe('getRiskChangeCount', () => {
   test('count is returned when record count is greater than 0', async () => {
-    formClient.getRiskChangeByStatus.mockReturnValue({ rows: [{ existingRecord: true }] })
+    formClient.getRiskChangeByStatus.mockResolvedValue({ rows: [{ existingRecord: true }] })
     const result = await service.getRiskChangeCount('LEI', mockTransactionalClient)
 
     expect(result).toEqual(1)
@@ -946,7 +948,7 @@ describe('getRiskChangeCount', () => {
 
 describe('getHistoricalCategorisationRecords', () => {
   test('a list of categorisation records are returned', async () => {
-    formClient.getHistoricalFormData.mockReturnValue({
+    formClient.getHistoricalFormData.mockResolvedValue({
       rows: [
         { bookingId: 12, offenderNo: 'GD123' },
         { bookingId: 13, offenderNo: 'GD123' },

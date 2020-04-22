@@ -876,7 +876,7 @@ describe('createOrUpdateCategorisation', () => {
     })
 
     try {
-      await service.createOrUpdateCategorisation({})
+      await service.createOrUpdateCategorisation({ context, bookingId: 12 })
     } catch (s) {
       expect(s.message).toEqual('our Error')
     }
@@ -889,7 +889,7 @@ test('createSupervisorApproval should propagate error response', async () => {
   })
 
   try {
-    await service.createSupervisorApproval({}, {}, {})
+    await service.createSupervisorApproval(context, 12, {})
   } catch (s) {
     expect(s.message).toEqual('our Error')
   }

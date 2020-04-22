@@ -1,0 +1,120 @@
+package uk.gov.justice.digital.hmpps.cattool.specs
+
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
+import geb.spock.GebReportingSpec
+import org.junit.Rule
+import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
+import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
+import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
+import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.pages.*
+
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
+
+class LiteSpecification extends GebReportingSpec {
+
+  def today = LocalDate.now().format('dd/MM/yyyy')
+
+  def setup() {
+    db.clearDb()
+    elite2Api.stubAgencyDetails('LPI')
+    elite2Api.stubAssessments('B2345YZ')
+  }
+
+  @Rule
+  Elite2Api elite2Api = new Elite2Api()
+
+  @Rule
+  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
+
+  @Rule
+  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
+    .extensions(new ResponseTemplateTransformer(false)))
+
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
+  DatabaseUtils db = new DatabaseUtils()
+
+  def "A categoriser user can create an assessment and a supervisor approve it"() {
+
+    given: 'a categoriser user is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'the user arrives at the landing page and clicks the link to check previous reviews'
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubGetBasicOffenderDetails(12)
+    go '/12'
+    at LandingPage
+    elite2Api.stubAgenciesPrison()
+    liteCategoriesButton.click()
+
+    then: 'The assessment page is displayed correctly'
+    at LiteCategoriesPage
+
+    when: 'Re-assessment is omitted'
+    form.nextReviewDate = ''
+    saveButton.click()
+
+    then: 'A validation error occurs'
+    at LiteCategoriesPage
+    errorSummaries*.text() == ['Enter a valid date that is after today']
+    errors*.text() == ['Error:\nEnter a valid date that is after today']
+
+    when: 'Re-assessment is set to a past date'
+    form.nextReviewDate = '21/11/2019'
+    saveButton.click()
+
+    then: 'A validation error occurs'
+    at LiteCategoriesPage
+    errorSummaries*.text() == ['Enter a valid date that is after today']
+    errors*.text() == ['Error:\nEnter a valid date that is after today']
+
+    when: 'Basic details are entered'
+    go 'liteCategories/12' // reset the nextReviewDate
+    form.category = 'R'
+    form.authority = 'RECP'
+    // form.placement
+    // form.comment
+    def SIX_MONTHS_TIME = LocalDate.now().plus(6, ChronoUnit.MONTHS).format('yyyy-MM-dd')
+    def expectedBody = [bookingId        : 12,
+                        category         : 'R',
+                        committee        : 'RECP',
+                        nextReviewDate   : SIX_MONTHS_TIME,
+                        comment          : "",
+                        placementAgencyId: ""
+    ]
+    elite2Api.stubCategorise(expectedBody, 1)
+
+    saveButton.click()
+
+    then: 'The confirmed page is shown and details are in the database'
+    at LiteCategoriesConfirmedPage
+    def data = db.getLiteData(12)[0]
+    data.sequence == 1
+    data.category == 'R'
+    data.offender_no == 'B2345YZ'
+    data.prison_id == 'LEI'
+    data.created_date.toLocalDate().equals(LocalDate.now())
+    data.assessed_by == 'CATEGORISER_USER'
+
+    when: 'A categoriser returns to the assessment page for the same offender'
+    go '/12'
+    at LandingPage
+    liteCategoriesButton.click()
+
+    then: 'A warning is shown'
+    at LiteCategoriesPage
+    warning.text() contains 'A categorisation is already in progress for this person'
+
+    // TODO when: 'A supervisor views their lite todo page' ...
+    //data.supervisor_category == ''
+    //data.approved_date  == ''
+    //data.approved_by    == ''
+  }
+}
