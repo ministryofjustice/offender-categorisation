@@ -107,6 +107,10 @@ module.exports = context => {
       const path = `${apiUrl}api/agencies/${agencyId}?activeOnly=false`
       return nomisUserGet({ path })
     },
+    getAgencies() {
+      const path = `${apiUrl}api/agencies/prison`
+      return nomisClientGet({ path })
+    },
     createCategorisation(details) {
       const path = `${apiUrl}api/offender-assessments/category/categorise`
       return nomisPost({ path, body: details })

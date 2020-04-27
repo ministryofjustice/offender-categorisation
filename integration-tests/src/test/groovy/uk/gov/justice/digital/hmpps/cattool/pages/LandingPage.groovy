@@ -22,5 +22,6 @@ class LandingPage extends Page {
     historyHeading { $('#previousCategoryHeading') }
     securityButton(required: false) { $('#securityButton') }
     paragraphs { $('p') }
+    liteCategoriesButton(required: false) { $('#liteCategoriesButton') }
   }
 }

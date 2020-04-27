@@ -270,6 +270,31 @@ module.exports = function createFormService(formClient) {
     return currentRecord
   }
 
+  function recordLiteCategorisation({
+    context,
+    bookingId,
+    sequence,
+    category,
+    offenderNo,
+    prisonId,
+    transactionalClient,
+  }) {
+    return formClient.recordLiteCategorisation({
+      bookingId,
+      sequence,
+      category,
+      offenderNo,
+      prisonId,
+      assessedBy: context.user.username,
+      transactionalClient,
+    })
+  }
+
+  async function getLiteCategorisation(bookingId, transactionalClient) {
+    const data = await formClient.getLiteCategorisation(bookingId, transactionalClient)
+    return dataIfExists(data) || {}
+  }
+
   async function createRiskChange(offenderNo, agencyId, oldProfile, newProfile, transactionalClient) {
     const newRiskChangeByOffender = await formClient.getNewRiskChangeByOffender(offenderNo, transactionalClient)
     const existingRecordOptional = dataIfExists(newRiskChangeByOffender)
@@ -662,6 +687,8 @@ module.exports = function createFormService(formClient) {
     validateStatusIfProvided,
     createOrRetrieveCategorisationRecord,
     createCategorisationRecord,
+    recordLiteCategorisation,
+    getLiteCategorisation,
     backToCategoriser,
     backToCategoriserMessageRead,
     setAwaitingApproval,

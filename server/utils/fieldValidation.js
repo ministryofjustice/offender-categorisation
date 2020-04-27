@@ -1,10 +1,24 @@
 const baseJoi = require('joi')
 const dateExtend = require('joi-date-extensions')
-const postcodeExtend = require('joi-postcode')
 const moment = require('moment')
 const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
 
-const joi = baseJoi.extend(dateExtend).extend(postcodeExtend)
+const joi = baseJoi.extend(dateExtend)
+
+function mapJoiErrors(joiErrors, fieldsConfig) {
+  if (isNilOrEmpty(joiErrors.error)) {
+    return []
+  }
+  return joiErrors.error.details.map(error => {
+    const fieldConfig = fieldsConfig.find(field => getFieldName(field) === error.path[0])
+    const errorMessage = getIn([...error.path, 'validationMessage'], fieldConfig) || error.message
+
+    return {
+      text: errorMessage,
+      href: `#${getFieldName(fieldConfig)}`,
+    }
+  })
+}
 
 module.exports = {
   validate(formResponse, pageConfig) {
@@ -12,20 +26,9 @@ module.exports = {
     const joiErrors = joi.validate(formResponse, formSchema, { stripUnknown: false, abortEarly: false })
     const fieldsConfig = getIn(['fields'], pageConfig)
 
-    if (isNilOrEmpty(joiErrors.error)) {
-      return []
-    }
-
-    return joiErrors.error.details.map(error => {
-      const fieldConfig = fieldsConfig.find(field => getFieldName(field) === error.path[0])
-      const errorMessage = getIn([...error.path, 'validationMessage'], fieldConfig) || error.message
-
-      return {
-        text: errorMessage,
-        href: `#${getFieldName(fieldConfig)}`,
-      }
-    })
+    return mapJoiErrors(joiErrors, fieldsConfig)
   },
+  mapJoiErrors,
 }
 
 function createSchemaFromConfig(pageConfig) {
@@ -65,7 +68,6 @@ function createSchemaFromConfig(pageConfig) {
       .format('D/M/YYYY')
       .max(yesterday)
       .optional(),
-    requiredPostcode: joi.postcode().required(),
     requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,

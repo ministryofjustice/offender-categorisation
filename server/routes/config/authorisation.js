@@ -44,4 +44,5 @@ module.exports = {
       'ROLE_CATEGORISATION_SECURITY',
     ],
   },
+  '/liteCategories(/confirmed)?/\\d+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
 }
