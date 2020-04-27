@@ -109,7 +109,6 @@ module.exports = context => {
     },
     getAgencies() {
       const path = `${apiUrl}api/agencies/prison`
-      // const headers = { 'Page-Limit': 5000 }
       return nomisClientGet({ path })
     },
     createCategorisation(details) {

@@ -32,16 +32,16 @@
   <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Other category assessment</h1>
   <p>Create a category assessment, exactly as in P-Nomis.</p>
   {% if inProgress(data) or liteInProgress %}
-    {% set warningText %}
-      A categorisation is already in progress for this person {{ stuff}}
-    {% endset %}
+
     {{ govukWarningText({
-      text: warningText,
+      text: 'A categorisation is already in progress for this person.',
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides",
       attributes: {  'id': 'inProgressWarning' }
     }) }}
+
   {% else %}
+
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
     <div class="govuk-grid-row govuk-body-s">

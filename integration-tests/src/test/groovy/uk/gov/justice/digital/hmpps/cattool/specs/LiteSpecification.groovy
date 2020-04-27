@@ -59,6 +59,23 @@ class LiteSpecification extends GebReportingSpec {
 
     when: 'Re-assessment is omitted'
     form.nextReviewDate = ''
+    form.category = 'T'
+    form.authority = 'GOV'
+    form.placement = 'BXI'
+    form.comment = 'comment text'
+    saveButton.click()
+
+    then: 'A validation error occurs but other fields are preserved'
+    at LiteCategoriesPage
+    errorSummaries*.text() == ['Enter a valid date that is after today']
+    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    form.category == 'T'
+    form.authority == 'GOV'
+    form.placement == 'BXI'
+    form.comment == 'comment text'
+
+    when: 'Re-assessment is set to a past date'
+    form.nextReviewDate = '21/11/2019'
     saveButton.click()
 
     then: 'A validation error occurs'
@@ -66,8 +83,8 @@ class LiteSpecification extends GebReportingSpec {
     errorSummaries*.text() == ['Enter a valid date that is after today']
     errors*.text() == ['Error:\nEnter a valid date that is after today']
 
-    when: 'Re-assessment is set to a past date'
-    form.nextReviewDate = '21/11/2019'
+    when: 'Re-assessment is set to an invalid date'
+    form.nextReviewDate = 'INVALID'
     saveButton.click()
 
     then: 'A validation error occurs'

@@ -23,23 +23,27 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { bookingId } = req.params
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const existingData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
+
+      const [details, categorisationRecord, existingData, prisonListFromApi] = await Promise.all([
+        offendersService.getBasicOffenderDetails(res.locals, bookingId),
+        formService.getCategorisationRecord(bookingId, transactionalDbClient),
+        formService.getLiteCategorisation(bookingId, transactionalDbClient),
+        offendersService.getAgencies(res.locals),
+      ])
       const liteInProgress = existingData.bookingId && !existingData.approvedDate
-      const details = await offendersService.getBasicOffenderDetails(res.locals, bookingId)
-      const prisonListFromApi = await offendersService.getAgencies(res.locals)
+
       const prisonList = [
         {},
         ...prisonListFromApi.map(p => ({ value: p.agencyId, text: sanitisePrisonName(p.description) })),
       ]
-      const errors = req.flash('errors')
 
       res.render(`pages/liteCategories`, {
         bookingId,
-        errors,
+        errors: [],
         liteInProgress,
         prisonList,
         nextReviewDate: calculateNextReviewDate('6'),
-        data: { details },
+        data: { details, status: categorisationRecord.status },
       })
     })
   )
@@ -48,9 +52,15 @@ module.exports = function Index({ formService, offendersService, userService, au
     '/confirmed/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
-      res.render(`pages/liteCategoriesConfirmed`, {
-        bookingId,
-      })
+      res.render(`pages/liteCategoriesConfirmed`, { bookingId })
+    })
+  )
+
+  router.get(
+    '/approve/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      res.render(`pages/liteApprove`, { bookingId })
     })
   )
 

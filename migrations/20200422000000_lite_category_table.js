@@ -12,10 +12,10 @@ exports.up = knex =>
       table.string('assessed_by').notNullable()
       table.string('approved_by')
 
+      table.primary(['booking_id', 'sequence'])
       table.index('offender_no')
       table.index('approved_date')
-      table.index('prison_id')
-      table.primary(['booking_id', 'sequence'])
+      table.index(['prison_id', 'approved_date'])
     }),
   ])
 

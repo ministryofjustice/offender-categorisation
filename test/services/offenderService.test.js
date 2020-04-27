@@ -45,6 +45,7 @@ const formService = {
   backToCategoriser: jest.fn(),
   recordNomisSeqNumber: jest.fn(),
   updateOffenderIdentifierReturningBookingId: jest.fn(),
+  recordLiteCategorisation: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -208,9 +209,9 @@ describe('getRecategoriseOffenders', () => {
         buttonText: 'Start',
       },
     ]
-    nomisClient.getRecategoriseOffenders.mockReturnValue(dueData)
-    nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
-    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(dueData)
+    nomisClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
+    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
     formService.getCategorisationRecord.mockImplementation((bookingId, transactionalClient) => {
       expect(transactionalClient).toEqual(mockTransactionalClient)
       switch (bookingId) {
@@ -271,10 +272,10 @@ describe('getRecategoriseOffenders', () => {
         buttonText: 'View',
       },
     ]
-    nomisClient.getRecategoriseOffenders.mockReturnValue(dueData)
-    nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
-    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
-    formService.getCategorisationRecord.mockReturnValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(dueData)
+    nomisClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
+    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+    formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
 
     const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
@@ -285,8 +286,8 @@ describe('getRecategoriseOffenders', () => {
   })
 
   test('No results from elite', async () => {
-    nomisClient.getRecategoriseOffenders.mockReturnValue([])
-    nomisClient.getPrisonersAtLocation.mockReturnValue([])
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([])
+    nomisClient.getPrisonersAtLocation.mockResolvedValue([])
 
     const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
     expect(result).toHaveLength(0)
@@ -322,19 +323,19 @@ describe('getRecategoriseOffenders', () => {
       },
     ]
     formService.getCategorisationRecord
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
         bookingId: 123,
         status: Status.SECURITY_BACK.name,
         catType: 'INITIAL',
       })
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
         bookingId: 21,
         status: Status.STARTED.name,
         catType: 'INITIAL',
       })
-    nomisClient.getRecategoriseOffenders.mockReturnValue(data)
-    nomisClient.getPrisonersAtLocation.mockReturnValue(u21Data)
-    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(u21CatData)
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(data)
+    nomisClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
+    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
 
     const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
 
@@ -450,23 +451,23 @@ describe('getUnapprovedOffenders', () => {
       },
     ]
 
-    nomisClient.getUncategorisedOffenders.mockReturnValue(data)
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(data)
 
     formService.getCategorisationRecord
-      .mockReturnValueOnce({ bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: Status.AWAITING_APPROVAL.name })
-      .mockReturnValueOnce({ bookingId: 2, nomisSeq: 12, catType: 'RECAT', status: Status.APPROVED.name })
-      .mockReturnValueOnce({ bookingId: 3, nomisSeq: 13, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
-      .mockReturnValueOnce({ bookingId: 5, nomisSeq: 15, catType: 'RECAT', status: Status.SUPERVISOR_BACK.name })
-      .mockReturnValueOnce({})
-      .mockReturnValueOnce({ bookingId: 7, nomisSeq: 17, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
-      .mockReturnValueOnce({ bookingId: 8, nomisSeq: 18, catType: 'RECAT', status: Status.SECURITY_BACK.name })
-      .mockReturnValueOnce({ bookingId: 9, nomisSeq: 19, catType: 'RECAT', status: Status.SECURITY_MANUAL.name })
+      .mockResolvedValueOnce({ bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: Status.AWAITING_APPROVAL.name })
+      .mockResolvedValueOnce({ bookingId: 2, nomisSeq: 12, catType: 'RECAT', status: Status.APPROVED.name })
+      .mockResolvedValueOnce({ bookingId: 3, nomisSeq: 13, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
+      .mockResolvedValueOnce({ bookingId: 5, nomisSeq: 15, catType: 'RECAT', status: Status.SUPERVISOR_BACK.name })
+      .mockResolvedValueOnce({})
+      .mockResolvedValueOnce({ bookingId: 7, nomisSeq: 17, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
+      .mockResolvedValueOnce({ bookingId: 8, nomisSeq: 18, catType: 'RECAT', status: Status.SECURITY_BACK.name })
+      .mockResolvedValueOnce({ bookingId: 9, nomisSeq: 19, catType: 'RECAT', status: Status.SECURITY_MANUAL.name })
 
     const sentenceDates = [
       { sentenceDetail: { bookingId: 1, sentenceStartDate: mockTodaySubtract(30) } }, // 2019-05-01
       { sentenceDetail: { bookingId: 6, sentenceStartDate: mockTodaySubtract(18) } }, // 2019-05-13
     ]
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
 
     const expected = [
       {
@@ -536,7 +537,7 @@ describe('getUnapprovedOffenders', () => {
   })
 
   test('No results from elite', async () => {
-    nomisClient.getUncategorisedOffenders.mockReturnValue([])
+    nomisClient.getUncategorisedOffenders.mockResolvedValue([])
     const result = await service.getUnapprovedOffenders(context, 'LEI', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })
@@ -613,9 +614,9 @@ describe('getUncategorisedOffenders', () => {
       },
     ]
 
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
-    formService.getCategorisationRecord.mockReturnValue({})
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    formService.getCategorisationRecord.mockResolvedValue({})
 
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
 
@@ -628,7 +629,7 @@ describe('getUncategorisedOffenders', () => {
     const uncategorised = []
     const expected = []
 
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
 
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
@@ -698,9 +699,9 @@ describe('getUncategorisedOffenders', () => {
 
     const expected = []
 
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
-    formService.getCategorisationRecord.mockReturnValue({})
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    formService.getCategorisationRecord.mockResolvedValue({})
 
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
@@ -708,9 +709,7 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should propagate an error response', async () => {
-    nomisClient.getUncategorisedOffenders.mockImplementation(() => {
-      throw new Error()
-    })
+    nomisClient.getUncategorisedOffenders.mockRejectedValue(new Error())
     try {
       service.getUncategorisedOffenders('MDI')
       expect(service.shouldNotReachHere) // service will rethrow error
@@ -737,9 +736,9 @@ describe('getUncategorisedOffenders', () => {
 
     const expected = []
 
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
-    formService.getCategorisationRecord.mockReturnValue({})
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    formService.getCategorisationRecord.mockResolvedValue({})
 
     const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
@@ -764,9 +763,9 @@ describe('getUncategorisedOffenders', () => {
         sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
       },
     ]
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
-    formService.getCategorisationRecord.mockReturnValue(dbRecord)
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    formService.getCategorisationRecord.mockResolvedValue(dbRecord)
 
     const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(result[0].pnomis).toBe(true)
@@ -801,9 +800,9 @@ describe('getUncategorisedOffenders', () => {
       { bookingId: 123, offenceCode: 'OKCODE', statuteCode: 'ZZ' },
       { bookingId: 111, offenceCode: 'IA99000-001N', statuteCode: 'ZZ' },
     ]
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
-    nomisClient.getMainOffences.mockReturnValue(offences)
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    nomisClient.getMainOffences.mockResolvedValue(offences)
 
     const results = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(results).toHaveLength(1)
@@ -813,7 +812,7 @@ describe('getUncategorisedOffenders', () => {
 
 describe('createOrUpdateCategorisation', () => {
   test('create', async () => {
-    nomisClient.createCategorisation.mockReturnValue({ sequenceNumber: 9 })
+    nomisClient.createCategorisation.mockResolvedValue({ sequenceNumber: 9 })
 
     const bookingId = 15
     const overriddenCategory = 'B'
@@ -871,9 +870,7 @@ describe('createOrUpdateCategorisation', () => {
   })
 
   test('should propagate error response', async () => {
-    nomisClient.createCategorisation.mockImplementation(() => {
-      throw new Error('our Error')
-    })
+    nomisClient.createCategorisation.mockRejectedValue(new Error('our Error'))
 
     try {
       await service.createOrUpdateCategorisation({ context, bookingId: 12 })
@@ -883,11 +880,46 @@ describe('createOrUpdateCategorisation', () => {
   })
 })
 
-test('createSupervisorApproval should propagate error response', async () => {
-  nomisClient.createSupervisorApproval.mockImplementation(() => {
-    throw new Error('our Error')
-  })
+describe('createLiteCategorisation', () => {
+  test('createLiteCategorisation', async () => {
+    nomisClient.createCategorisation.mockResolvedValue({ sequenceNumber: 9 })
 
+    const bookingId = 15
+    await service.createLiteCategorisation({
+      context,
+      bookingId,
+      category: 'B',
+      authority: 'GOV',
+      nextReviewDate: '14/03/2020',
+      placement: 'BXI',
+      comment: 'a comment',
+      offenderNo: 'B0003TT',
+      prisonId: 'LEI',
+      transactionalClient: mockTransactionalClient,
+    })
+
+    expect(nomisClient.createCategorisation).toBeCalledWith({
+      bookingId,
+      category: 'B',
+      committee: 'GOV',
+      comment: 'a comment',
+      nextReviewDate: '2020-03-14',
+      placementAgencyId: 'BXI',
+    })
+    expect(formService.recordLiteCategorisation).toBeCalledWith({
+      context,
+      bookingId,
+      sequence: 9,
+      category: 'B',
+      offenderNo: 'B0003TT',
+      prisonId: 'LEI',
+      transactionalClient: mockTransactionalClient,
+    })
+  })
+})
+
+test('createSupervisorApproval should propagate error response', async () => {
+  nomisClient.createSupervisorApproval.mockRejectedValue(new Error('our Error'))
   try {
     await service.createSupervisorApproval(context, 12, {})
   } catch (s) {
@@ -923,9 +955,9 @@ describe('getUncategorisedOffenders calculates inconsistent data correctly', () 
         sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
       },
     ]
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
-    formService.getCategorisationRecord.mockReturnValue(dbRecord)
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    formService.getCategorisationRecord.mockResolvedValue(dbRecord)
     const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
     expect(result[0].pnomis).toBe(pnomis)
   })
@@ -1001,9 +1033,9 @@ describe('getReferredOffenders', () => {
       { sentenceDetail: { bookingId: 122, sentenceStartDate: mockTodaySubtract(10) } },
     ]
 
-    nomisClient.getOffenderDetailList.mockReturnValue(offenderDetailList)
-    nomisClient.getUserDetailList.mockReturnValue(userDetailsList)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
+    nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
 
     formService.getSecurityReferredOffenders.mockImplementation(() => securityReferredOffenders)
 
@@ -1047,9 +1079,9 @@ describe('getReferredOffenders', () => {
       },
     ]
 
-    nomisClient.getOffenderDetailList.mockReturnValue(offenderDetailList)
-    nomisClient.getUserDetailList.mockReturnValue(userDetailsList)
-    nomisClient.getSentenceDatesForOffenders.mockReturnValue(sentenceDates)
+    nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
+    nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
 
     formService.getSecurityReferredOffenders.mockImplementation(() => [
       {
@@ -1107,7 +1139,7 @@ describe('getReferredOffenders', () => {
     const uncategorised = []
     const expected = []
 
-    nomisClient.getUncategorisedOffenders.mockReturnValue(uncategorised)
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
 
     const result = await service.getReferredOffenders(context, mockTransactionalClient)
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
@@ -1118,10 +1150,10 @@ describe('getReferredOffenders', () => {
 describe('getOffenderDetails', () => {
   test('should assemble details correctly', async () => {
     const sentenceTerms = [{ years: 2, months: 4, lifeSentence: true }]
-    nomisClient.getOffenderDetails.mockReturnValue({ firstName: 'SAM', lastName: 'SMITH' })
-    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
-    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
-    nomisClient.getMainOffence.mockReturnValue({ mainOffence: 'stuff' })
+    nomisClient.getOffenderDetails.mockResolvedValue({ firstName: 'SAM', lastName: 'SMITH' })
+    nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
+    nomisClient.getMainOffence.mockResolvedValue({ mainOffence: 'stuff' })
 
     const result = await service.getOffenderDetails(context, -5)
 
@@ -1268,7 +1300,7 @@ describe('pnomisOrInconsistentWarning', () => {
 describe('backToCategoriser', () => {
   test('happy path', async () => {
     const dbRecord = { nomisSeq: 6 }
-    formService.backToCategoriser.mockReturnValue(dbRecord)
+    formService.backToCategoriser.mockResolvedValue(dbRecord)
 
     await service.backToCategoriser(context, 12, mockTransactionalClient)
 
@@ -1404,8 +1436,8 @@ describe('getPrisonerBackground', () => {
   ]
 
   test('it should return a list of historical categorisations, filtering out any pending, cancelled and future categorisations, sorted by approval date', async () => {
-    nomisClient.getCategoryHistory.mockReturnValue(cats)
-    nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
+    nomisClient.getCategoryHistory.mockResolvedValue(cats)
+    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
 
     const expected = [
       {
@@ -1453,8 +1485,8 @@ describe('getPrisonerBackground', () => {
   })
 
   test('it should return a list of historical categorisations, filtering out any pending or cancelled categorisations, sorted by approval date', async () => {
-    nomisClient.getCategoryHistory.mockReturnValue(cats)
-    nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
+    nomisClient.getCategoryHistory.mockResolvedValue(cats)
+    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
 
     const expected = [
       {
@@ -1513,7 +1545,7 @@ describe('getPrisonerBackground', () => {
   })
 
   test('it should handle a missing assessment agency', async () => {
-    nomisClient.getCategoryHistory.mockReturnValue([
+    nomisClient.getCategoryHistory.mockResolvedValue([
       {
         bookingId: -45,
         offenderNo: 'ABC1',
@@ -1523,7 +1555,7 @@ describe('getPrisonerBackground', () => {
         approvalDate: '2012-04-04',
       },
     ])
-    nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
+    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
 
     const expected = [
       {
@@ -1603,16 +1635,16 @@ describe('getCategorisationHistory', () => {
   ]
   test('it should return a list of historical categorisations, decorated with prison description and cat tool record', async () => {
     const sentenceTerms = [{ years: 2, months: 4, lifeSentence: true }]
-    nomisClient.getOffenderDetails.mockReturnValue({ bookingId: 45, offenderNo: 'ABC1' })
-    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
-    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
-    nomisClient.getMainOffence.mockReturnValue({ mainOffence: 'stuff' })
-    nomisClient.getCategoryHistory.mockReturnValue(cats)
-    formService.getHistoricalCategorisationRecords.mockReturnValue([
+    nomisClient.getOffenderDetails.mockResolvedValue({ bookingId: 45, offenderNo: 'ABC1' })
+    nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
+    nomisClient.getMainOffence.mockResolvedValue({ mainOffence: 'stuff' })
+    nomisClient.getCategoryHistory.mockResolvedValue(cats)
+    formService.getHistoricalCategorisationRecords.mockResolvedValue([
       { bookingId: -45, sequence: 1, nomisSeq: 10, catType: 'INITIAL', status: Status.APPROVED.name },
       { bookingId: -45, sequence: 3, nomisSeq: 7, catType: 'INITIAL', status: Status.APPROVED.name },
     ])
-    nomisClient.getAgencyDetail.mockReturnValue({ description: 'Moorlands' })
+    nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
 
     const expected = [
       {
@@ -1876,7 +1908,7 @@ describe('mergeU21ResultWithNomisCategorisationData', () => {
         firstName: 'Inactive', // an inactive cat was returned here
       },
     ]
-    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(eliteU21Cats)
+    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(eliteU21Cats)
     const result = await service.mergeU21ResultWithNomisCategorisationData(nomisClient, 'LEI', u21Cats)
 
     expect(result).toMatchObject(expected)
@@ -1916,9 +1948,9 @@ describe('handleRiskChangeDecision', () => {
   test('should handle review required decision correctly', async () => {
     moment.now = jest.fn()
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
-    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
-    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
-    nomisClient.getOffenderDetails.mockReturnValue({
+    nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
+    nomisClient.getOffenderDetails.mockResolvedValue({
       offenderNo: 'GN123',
       lastName: 'SMITH',
       assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
@@ -1942,9 +1974,9 @@ describe('handleRiskChangeDecision', () => {
   test('should handle review required decision with next review date within 10 working days correctly', async () => {
     moment.now = jest.fn()
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
-    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
-    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
-    nomisClient.getOffenderDetails.mockReturnValue({
+    nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
+    nomisClient.getOffenderDetails.mockResolvedValue({
       offenderNo: 'GN123',
       lastName: 'SMITH',
       assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2019-06-10' }],
@@ -1968,9 +2000,9 @@ describe('handleRiskChangeDecision', () => {
   test('should handle review NOT required decision correctly', async () => {
     moment.now = jest.fn()
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
-    nomisClient.getSentenceDetails.mockReturnValue({ dummyDetails: 'stuff' })
-    nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
-    nomisClient.getOffenderDetails.mockReturnValue({
+    nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
+    nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
+    nomisClient.getOffenderDetails.mockResolvedValue({
       offenderNo: 'GN123',
       lastName: 'SMITH',
       assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
@@ -2048,9 +2080,9 @@ describe('getRiskChanges', () => {
       { offenderNo: 'G12345', bookingId: 22, assessStatus: 'A', nextReviewDate: '2020-05-15' },
     ]
 
-    formService.getRiskChanges.mockReturnValue(riskAlerts)
-    nomisClient.getLatestCategorisationForOffenders.mockReturnValue(latestCategorisations)
-    nomisClient.getOffenderDetailList.mockReturnValue(offenderDetailList)
+    formService.getRiskChanges.mockResolvedValue(riskAlerts)
+    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(latestCategorisations)
+    nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
 
     const expected = [
       {
@@ -2081,7 +2113,7 @@ describe('getRiskChanges', () => {
   })
 
   test('No results from elite', async () => {
-    nomisClient.getUncategorisedOffenders.mockReturnValue([])
+    nomisClient.getUncategorisedOffenders.mockResolvedValue([])
     const result = await service.getUnapprovedOffenders(context, 'LEI', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })
@@ -2186,11 +2218,11 @@ describe('checkAndMergeOffenderNo', () => {
   ]
 
   test('single merge record', async () => {
-    nomisClient.getBasicOffenderDetails.mockReturnValue({ offenderNo: 'G123NEW' })
+    nomisClient.getBasicOffenderDetails.mockResolvedValue({ offenderNo: 'G123NEW' })
 
-    nomisClient.getIdentifiersByBookingId.mockReturnValue(realisticData)
-    formService.updateOffenderIdentifierReturningBookingId.mockReturnValue([{ booking_id: 456 }])
-    formService.getCategorisationRecord.mockReturnValue({ status: Status.APPROVED.name })
+    nomisClient.getIdentifiersByBookingId.mockResolvedValue(realisticData)
+    formService.updateOffenderIdentifierReturningBookingId.mockResolvedValue([{ booking_id: 456 }])
+    formService.getCategorisationRecord.mockResolvedValue({ status: Status.APPROVED.name })
 
     await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
@@ -2206,10 +2238,10 @@ describe('checkAndMergeOffenderNo', () => {
   })
 
   test('single merge with cat record pending', async () => {
-    nomisClient.getBasicOffenderDetails.mockReturnValue({ offenderNo: 'G123NEW' })
-    nomisClient.getIdentifiersByBookingId.mockReturnValue(realisticData)
-    formService.updateOffenderIdentifierReturningBookingId.mockReturnValue([{ booking_id: 456 }])
-    formService.getCategorisationRecord.mockReturnValue({ status: Status.AWAITING_APPROVAL.name })
+    nomisClient.getBasicOffenderDetails.mockResolvedValue({ offenderNo: 'G123NEW' })
+    nomisClient.getIdentifiersByBookingId.mockResolvedValue(realisticData)
+    formService.updateOffenderIdentifierReturningBookingId.mockResolvedValue([{ booking_id: 456 }])
+    formService.getCategorisationRecord.mockResolvedValue({ status: Status.AWAITING_APPROVAL.name })
 
     await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 

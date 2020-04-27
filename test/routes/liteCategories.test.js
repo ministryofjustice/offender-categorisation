@@ -56,14 +56,49 @@ afterEach(() => {
 
 describe('assessment', () => {
   test('get form page', () => {
+    formService.getCategorisationRecord.mockResolvedValue({})
+    formService.getLiteCategorisation.mockResolvedValue({})
+    const sixMonths = moment()
+      .add(6, 'months')
+      .format('DD/MM/YYYY')
+
+    return request(app)
+      .get(`/12`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Other category assessment</h1>')
+        expect(res.text).toContain('<option value="RECP">Reception</option>')
+        expect(res.text).toContain('<option value="SECUR">Security</option>')
+        expect(res.text).toContain(
+          `<input class="govuk-input govuk-!-width-full" id="nextReviewDate" name="nextReviewDate" type="text" value="${sixMonths}">`
+        )
+        expect(res.text).toContain('<option value="SYI">Shrewsbury (HMP)</option>')
+        expect(res.text).toContain('<option value="MDI">Moorland</option>')
+      })
+  })
+
+  test('get form page - in progress lite', () => {
+    formService.getCategorisationRecord.mockResolvedValue({})
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 12 })
+    return request(app)
+      .get(`/12`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('A categorisation is already in progress for this person.')
+      })
+  })
+
+  test('get form page - in progress', () => {
+    formService.getCategorisationRecord.mockResolvedValue({ status: 'AWAITING_APPROVAL' })
     formService.getLiteCategorisation.mockResolvedValue({})
     return request(app)
       .get(`/12`)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        // expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list.+Next review date/s)
-        expect(res.text).toContain('Other category assessment</h1>')
+        expect(res.text).toContain('A categorisation is already in progress for this person.')
       })
   })
 
