@@ -6,6 +6,7 @@ const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
+const { dateConverterToISO } = require('../utils/utils')
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -171,8 +172,8 @@ module.exports = function Index({
 
   async function getParams(req, res) {
     const { startDate, endDate, scope } = req.query
-    const start = startDate ? moment(startDate, 'DD/MM/YYYY').format('YYYY-MM-DD') : null
-    const end = endDate ? moment(endDate, 'DD/MM/YYYY').format('YYYY-MM-DD') : null
+    const start = startDate ? dateConverterToISO(startDate) : null
+    const end = endDate ? dateConverterToISO(endDate) : null
     const prisonId = scope === 'all' ? null : res.locals.user.activeCaseLoadId
     return { start, end, prisonId }
   }

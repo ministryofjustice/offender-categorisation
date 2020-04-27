@@ -3,6 +3,7 @@ const R = require('ramda')
 const { dpsUrl, whereaboutsUrl } = require('../config')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
 function plural(value) {
   return value > 1 ? 's' : ''
@@ -149,8 +150,20 @@ const offenderCaseNotesLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/ca
 const offenderAdjudicationLink = offenderNo => `${whereaboutsUrl}offenders/${offenderNo}/adjudications`
 const offenderAlertsLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/alerts`
 
+const convertToTitleCase = sentence =>
+  sentence
+    .split(' ')
+    .map(word => properCaseName(word))
+    .join(' ')
+
+const sanitisePrisonName = prisonName => convertYoiToUpperCase(convertHmpToUpperCase(convertToTitleCase(prisonName)))
+
+const convertHmpToUpperCase = prisonName => prisonName.replace(/hmp/gi, 'HMP')
+const convertYoiToUpperCase = prisonName => prisonName.replace(/yoi/gi, 'YOI')
+
 module.exports = {
   dateConverter,
+  dateConverterToISO,
   formatLength,
   get10BusinessDays,
   properCase,
@@ -169,4 +182,5 @@ module.exports = {
   offenderCaseNotesLink,
   offenderAlertsLink,
   offenderAdjudicationLink,
+  sanitisePrisonName,
 }

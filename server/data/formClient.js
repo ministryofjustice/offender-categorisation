@@ -322,4 +322,35 @@ module.exports = {
     }
     return transactionalClient.query(query)
   },
+
+  recordLiteCategorisation({ bookingId, sequence, category, offenderNo, prisonId, assessedBy, transactionalClient }) {
+    logger.info(`creating lite categorisation record for booking id ${bookingId}, offenderNo ${offenderNo}`)
+    const query = {
+      text: `insert into lite_category (booking_id, sequence, category, offender_no,
+                                    prison_id, created_date, assessed_by)
+             values ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6)`,
+      values: [bookingId, sequence, category, offenderNo, prisonId, assessedBy],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getLiteCategorisation(bookingId, transactionalClient) {
+    const query = {
+      text: `select booking_id          as "bookingId",
+                    sequence,
+                    category,
+                    supervisor_category as "supervisorCategory",
+                    offender_no         as "offenderNo",
+                    prison_id           as "prisonId",
+                    created_date        as "createdDate",
+                    approved_date       as "approvedDate",
+                    assessed_by         as "assessedBy",
+                    approved_by         as "approvedBy"
+             from lite_category c
+             where c.booking_id = $1
+               and c.sequence = (select max(c2.sequence) from lite_category c2 where c2.booking_id = c.booking_id)`,
+      values: [bookingId],
+    }
+    return transactionalClient.query(query)
+  },
 }

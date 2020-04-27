@@ -1,0 +1,129 @@
+{% extends "../partials/layout.html" %}
+{% from "../macros/breadCrumb.html" import breadCrumb %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "select/macro.njk" import govukSelect %}
+{% from "input/macro.njk" import govukInput %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "button/macro.njk" import govukButton %}
+
+{% set pageTitle = "Other categories" %}
+
+{% block beforeContent %}
+
+  {% set breadCrumbList = [ {href: '/' + data.details.bookingId, title: 'Manage categorisations'} ] %}
+  {{ breadCrumb(pageTitle, breadCrumbList) }}
+
+  {% include "../partials/offenderBanner.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+{% if errors.length > 0 %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<div class="govuk-!-width-two-thirds">
+
+  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Other category assessment</h1>
+  <p>Create a category assessment, exactly as in P-Nomis.</p>
+  {% if inProgress(data) or liteInProgress %}
+
+    {{ govukWarningText({
+      text: 'A categorisation is already in progress for this person.',
+      iconFallbackText: "Warning",
+      classes: "forms-warning-text warning-overrides",
+      attributes: {  'id': 'inProgressWarning' }
+    }) }}
+
+  {% else %}
+
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+    <div class="govuk-grid-row govuk-body-s">
+      <div class="govuk-grid-column-one-third">
+      {{ govukSelect({
+        id: 'category',
+        name: 'category',
+        label: { text: 'Category' },
+        items: [
+          { value: 'A', text: 'Cat A'       , selected: category === 'A'},
+          { value: 'E', text: 'Cat A Ex'    , selected: category === 'E'},
+          { value: 'H', text: 'Cat A Hi'    , selected: category === 'H'},
+          { value: 'P', text: 'Prov A'      , selected: category === 'P' },
+          { value: 'R', text: 'Fem Closed'  , selected: category === 'R' },
+          { value: 'T', text: 'Fem Open'    , selected: category === 'T'},
+          { value: 'U', text: 'Unsentenced' , selected: category === 'U'},
+          { value: 'Z', text: 'Unclass'     , selected: category === 'Z'}
+        ],
+        classes: 'govuk-!-width-full',
+        value: category
+      }) }}
+      </div>
+      <div class="govuk-grid-column-one-third">
+      {{ govukSelect({
+        id: 'authority',
+        name: 'authority',
+        label: { text: 'Authority' },
+        items: [
+          { value: 'OCA',    text: 'OCA'       , selected: authority === 'OCA'  },
+          { value: 'REVIEW', text: 'Review'    , selected: authority === 'REVIEW'},
+          { value: 'RECP',   text: 'Reception' , selected: authority === 'RECP'},
+          { value: 'SECUR',  text: 'Security'  , selected: authority === 'SECUR'},
+          { value: 'GOV',    text: 'Governor'  , selected: authority === 'GOV' }
+        ],
+        classes: 'govuk-!-width-full'
+      }) }}
+      </div>
+      <div class="govuk-grid-column-one-third">
+      {{ govukInput({
+        id: 'nextReviewDate',
+        name: 'nextReviewDate',
+        label: { text: 'Re-Assessment Date' },
+        errorMessage: {
+          text: 'Enter a valid date that is after today'
+        } if (errors | findError('nextReviewDate')),
+        classes: 'govuk-!-width-full',
+        value: nextReviewDate
+      }) }}
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+     {{ govukSelect({
+        id: 'placement',
+        name: 'placement',
+        label: { text: 'Recommended Placement' },
+        items: prisonList,
+        value: placement
+      }) }}
+
+      {{ govukCharacterCount({
+      id: 'comment',
+        name: 'comment',
+        rows: 2,
+        maxlength: 4000,
+        attributes: {  'maxLength': 4000 },
+        label: { text: 'Comment' },
+        errorMessage: {
+          text: 'Please enter comment'
+        } if (errors | findError('comment')),
+        value: comment
+      }) }}
+
+      {{ govukButton({
+        text: 'Save',
+        attributes: {  }
+      }) }}
+      </div>
+    </div>
+  </form>
+  {% endif %}
+
+</div>
+
+{% endblock %}

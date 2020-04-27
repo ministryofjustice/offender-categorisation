@@ -6,7 +6,6 @@ import geb.spock.GebReportingSpec
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.junit.Rule
-import org.openqa.selenium.Keys
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi

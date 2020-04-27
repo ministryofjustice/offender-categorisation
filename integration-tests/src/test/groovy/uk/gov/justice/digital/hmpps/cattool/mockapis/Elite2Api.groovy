@@ -1175,9 +1175,12 @@ class Elite2Api extends WireMockRule {
           .withStatus(200)))
   }
 
-  def stubCategorise(String expectedCat, String nextReviewDate, long bookingId = 12, sequenceNumber = 4) {
+  def stubCategorise(String expectedCat, String nextReviewDate, long bookingId = 12, sequenceNumber = 4, committee = 'OCA') {
+    def expectedBody = [bookingId: bookingId, category: expectedCat, committee: committee, nextReviewDate: nextReviewDate]
+    stubCategorise(expectedBody, sequenceNumber)
+  }
 
-    def expectedBody = [bookingId: bookingId, category: expectedCat, committee: 'OCA', nextReviewDate: nextReviewDate]
+  def stubCategorise(Map expectedBody, sequenceNumber) {
 
     this.stubFor(
       post("/api/offender-assessments/category/categorise")
@@ -1185,8 +1188,8 @@ class Elite2Api extends WireMockRule {
         .willReturn(
           aResponse()
             .withBody(JsonOutput.toJson([
-              bookingId         : bookingId,
-              sequenceNumber    : sequenceNumber
+              bookingId     : expectedBody.bookingId,
+              sequenceNumber: sequenceNumber
             ]))
             .withHeader('Content-Type', 'application/json')
             .withStatus(201))
@@ -1286,6 +1289,21 @@ class Elite2Api extends WireMockRule {
               agencyId   : agency,
               description: "$agency prison",
               agencyType : "INST"
+            ]))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
+  def stubAgenciesPrison() {
+    this.stubFor(
+      get("/api/agencies/prison")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [agencyId: 'SYI', description: 'SHREWSBURY (HMP)'],
+              [agencyId: 'BXI', description: 'BRIXTON (HMP)'],
+              [agencyId: 'MDI', description: 'MOORLAND'],
             ]))
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
