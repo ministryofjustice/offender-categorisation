@@ -40,6 +40,11 @@
       attributes: {  'id': 'inProgressWarning' }
     }) }}
 
+    <div>
+      <a href="/" id="todoLink">Todo list</a>
+      <a href="/{{ bookingId }}" id="manageLink">Manage categorisations</a>
+    </div>
+
   {% else %}
 
   <form method="post">
@@ -51,14 +56,14 @@
         name: 'category',
         label: { text: 'Category' },
         items: [
+          { value: 'U', text: 'Unsentenced' , selected: category === 'U'},
+          { value: 'Z', text: 'Unclass'     , selected: category === 'Z'},
           { value: 'A', text: 'Cat A'       , selected: category === 'A'},
           { value: 'E', text: 'Cat A Ex'    , selected: category === 'E'},
           { value: 'H', text: 'Cat A Hi'    , selected: category === 'H'},
-          { value: 'P', text: 'Prov A'      , selected: category === 'P' },
-          { value: 'R', text: 'Fem Closed'  , selected: category === 'R' },
-          { value: 'T', text: 'Fem Open'    , selected: category === 'T'},
-          { value: 'U', text: 'Unsentenced' , selected: category === 'U'},
-          { value: 'Z', text: 'Unclass'     , selected: category === 'Z'}
+          { value: 'P', text: 'Prov A'      , selected: category === 'P'},
+          { value: 'R', text: 'Fem Closed'  , selected: category === 'R'},
+          { value: 'T', text: 'Fem Open'    , selected: category === 'T'}
         ],
         classes: 'govuk-!-width-full',
         value: category
@@ -70,11 +75,11 @@
         name: 'authority',
         label: { text: 'Authority' },
         items: [
-          { value: 'OCA',    text: 'OCA'       , selected: authority === 'OCA'  },
+          { value: 'OCA',    text: 'OCA'       , selected: authority === 'OCA'   },
           { value: 'REVIEW', text: 'Review'    , selected: authority === 'REVIEW'},
-          { value: 'RECP',   text: 'Reception' , selected: authority === 'RECP'},
-          { value: 'SECUR',  text: 'Security'  , selected: authority === 'SECUR'},
-          { value: 'GOV',    text: 'Governor'  , selected: authority === 'GOV' }
+          { value: 'RECP',   text: 'Reception' , selected: authority === 'RECP'  },
+          { value: 'SECUR',  text: 'Security'  , selected: authority === 'SECUR' },
+          { value: 'GOV',    text: 'Governor'  , selected: authority === 'GOV'   }
         ],
         classes: 'govuk-!-width-full'
       }) }}

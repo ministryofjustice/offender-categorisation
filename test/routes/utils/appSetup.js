@@ -19,7 +19,7 @@ module.exports = route => {
       token: 'token',
       username: 'CA_USER_TEST',
     }
-    res.locals.user = { token: 'ABCDEF' }
+    res.locals.user = { token: 'ABCDEF', username: 'me' }
     next()
   })
   app.use(cookieSession({ keys: [''] }))

@@ -11,6 +11,7 @@ const categoriser = require('../../server/config/categoriser')
 const security = require('../../server/config/security')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
+const context = { user: { token: 'ABCDEF', username: 'me' } }
 
 const formConfig = {
   ratings,
@@ -855,11 +856,7 @@ describe('POST /supervisor/review', () => {
       .expect(() => {
         expect(formService.supervisorApproval).toBeCalledTimes(1)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-        expect(offendersService.createSupervisorApproval).toBeCalledWith(
-          { user: { token: 'ABCDEF' } },
-          '12345',
-          userInput
-        )
+        expect(offendersService.createSupervisorApproval).toBeCalledWith(context, '12345', userInput)
         const updateArg = formService.supervisorApproval.mock.calls[0][0]
         expect(updateArg.bookingId).toBe(12345)
       })
@@ -956,7 +953,7 @@ describe('POST /categoriser/provisionalCategory', () => {
           expect(updateArg.bookingId).toBe(12345)
           expect(updateArg.userId).toBe('CA_USER_TEST')
           expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
-            context: { user: { token: 'ABCDEF' } },
+            context,
             bookingId: 12345,
             overriddenCategory: 'F',
             overriddenCategoryText: 'HHH',

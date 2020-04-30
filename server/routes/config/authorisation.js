@@ -44,5 +44,9 @@ module.exports = {
       'ROLE_CATEGORISATION_SECURITY',
     ],
   },
-  '/liteCategories(/confirmed)?/\\d+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
+  '/liteCategories/\\d+': { authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION'] },
+  '/liteCategories/(approve/\\d+|approveList)': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
+  '/liteCategories/confirmed/\\d+': {
+    authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'],
+  },
 }

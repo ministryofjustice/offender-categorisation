@@ -18,8 +18,6 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
 class LiteSpecification extends GebReportingSpec {
 
-  def today = LocalDate.now().format('dd/MM/yyyy')
-
   def setup() {
     db.clearDb()
     elite2Api.stubAgencyDetails('LPI')
@@ -43,7 +41,8 @@ class LiteSpecification extends GebReportingSpec {
 
     given: 'a categoriser user is logged in'
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    def now = LocalDate.now()
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [now.toString(), now.toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'the user arrives at the landing page and clicks the link to check previous reviews'
@@ -92,21 +91,20 @@ class LiteSpecification extends GebReportingSpec {
     errorSummaries*.text() == ['Enter a valid date that is after today']
     errors*.text() == ['Error:\nEnter a valid date that is after today']
 
-    when: 'Basic details are entered'
+    when: 'details are entered'
     go 'liteCategories/12' // reset the nextReviewDate
     form.category = 'R'
     form.authority = 'RECP'
-    // form.placement
-    // form.comment
-    def SIX_MONTHS_TIME = LocalDate.now().plus(6, ChronoUnit.MONTHS).format('yyyy-MM-dd')
-    def expectedBody = [bookingId        : 12,
-                        category         : 'R',
-                        committee        : 'RECP',
-                        nextReviewDate   : SIX_MONTHS_TIME,
-                        comment          : "",
-                        placementAgencyId: ""
-    ]
-    elite2Api.stubCategorise(expectedBody, 1)
+    form.placement = 'BXI'
+    form.comment = 'comment'
+    def SIX_MONTHS_TIME = now.plus(6, ChronoUnit.MONTHS)
+    elite2Api.stubCategorise([bookingId        : 12,
+                              category         : 'R',
+                              committee        : 'RECP',
+                              nextReviewDate   : SIX_MONTHS_TIME.format('yyyy-MM-dd'),
+                              comment          : "comment",
+                              placementAgencyId: "BXI"
+    ], 1)
 
     saveButton.click()
 
@@ -117,8 +115,12 @@ class LiteSpecification extends GebReportingSpec {
     data.category == 'R'
     data.offender_no == 'B2345YZ'
     data.prison_id == 'LEI'
-    data.created_date.toLocalDate().equals(LocalDate.now())
+    data.created_date.toLocalDate().equals(now)
     data.assessed_by == 'CATEGORISER_USER'
+    data.assessment_committee == 'RECP'
+    data.next_review_date.toLocalDate().equals(SIX_MONTHS_TIME)
+    data.assessment_comment == 'comment'
+    data.placement_prison_id == 'BXI'
 
     when: 'A categoriser returns to the assessment page for the same offender'
     go '/12'
@@ -129,9 +131,76 @@ class LiteSpecification extends GebReportingSpec {
     at LiteCategoriesPage
     warning.text() contains 'A categorisation is already in progress for this person'
 
-    // TODO when: 'A supervisor views their lite todo page' ...
-    //data.supervisor_category == ''
-    //data.approved_date  == ''
-    //data.approved_by    == ''
+    when: 'A supervisor views their lite todo page'
+    fixture.logout()
+    elite2Api.stubUncategorisedAwaitingApproval()
+    fixture.loginAs(SUPERVISOR_USER)
+    at SupervisorHomePage
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
+    elite2Api.stubGetStaffDetailsByUsernameList()
+    liteCategoriesTab.click()
+    at SupervisorLiteListPage
+
+    then: 'this categorisation is listed'
+    assessmentDates[0] == '30/04/2020'
+    names[0] == 'Dent, Jane'
+    prisonNos[0] == 'B2345YZ'
+    categorisers[0] == 'Firstname_categoriser_user Lastname_categoriser_user'
+    categories[0] == 'R'
+
+    when: 'a categorisation approval is attempted with a future approval Date and past nextReviewDate'
+    approveButtons[0].click()
+    at LiteApprovalPage
+    form.approvedDate = SIX_MONTHS_TIME.format('DD/MM/YYYY')
+    form.nextReviewDate = '21/11/2019'
+    saveButton.click()
+
+    then: 'A validation error occurs'
+    at LiteApprovalPage
+    errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
+    errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
+
+    when: 'Date are set to an invalid date'
+    form.approvedDate = '300/02/2020'
+    form.nextReviewDate = '4/5'
+    saveButton.click()
+
+    then: 'A validation error occurs'
+    at LiteApprovalPage
+    errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
+    errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
+
+    when: 'details are entered'
+    go 'liteCategories/approve/12' // reset the dates to defaults
+    form.supervisorCategory = 'T'
+    form.approvedCategoryComment = 'approvedCategoryComment'
+    form.approvedCommittee = 'GOV'
+    form.approvedPlacement = 'SYI'
+    form.approvedPlacementComment = 'approvedPlacementComment'
+    form.approvedComment = 'approvedComment'
+    elite2Api.stubSupervisorApprove([category                 : 'T',
+                                     "approvedCategoryComment": "approvedCategoryComment",
+                                     bookingId                : 12,
+                                     "assessmentSeq"          : 1,
+                                     reviewCommitteeCode      : 'GOV',
+                                     nextReviewDate           : SIX_MONTHS_TIME.format('yyyy-MM-dd'),
+                                     committeeCommentText     : "approvedComment",
+                                     approvedPlacementText    : "approvedPlacementComment",
+                                     approvedPlacementAgencyId: 'SYI',
+                                     "evaluationDate"         : now.format('yyyy-MM-dd'),
+    ])
+    saveButton.click()
+
+    then: 'The confirmed page is shown and details are in the database'
+    at LiteCategoriesConfirmedPage
+    def data2 = db.getLiteData(12)[0]
+    data2.supervisor_category == 'T'
+    data2.approved_date.toLocalDate().equals(now)
+    data2.approved_by == 'SUPERVISOR_USER'
+    data2.approved_committee == 'GOV'
+    data2.next_review_date.toLocalDate().equals(SIX_MONTHS_TIME)
+    data2.approved_placement_prison_id == 'SYI'
+    data2.approved_placement_comment == 'approvedPlacementComment'
+    data2.approved_comment == 'approvedComment'
   }
 }
