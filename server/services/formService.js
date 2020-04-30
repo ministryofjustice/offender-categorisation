@@ -351,7 +351,7 @@ module.exports = function createFormService(formClient) {
 
     if (existingRecordOptional) {
       log.info(`createRiskChange: updating existing risk profile record for offender ${offenderNo}`)
-      formClient.mergeRiskChangeForOffender(offenderNo, newProfile, transactionalClient)
+      await formClient.mergeRiskChangeForOffender(offenderNo, newProfile, transactionalClient)
     } else {
       log.info(`createRiskChange: creating risk profile record for offender ${offenderNo}`)
       await formClient.createRiskChange({
