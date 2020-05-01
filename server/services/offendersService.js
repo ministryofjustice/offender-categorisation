@@ -227,8 +227,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         const sentenceMap = await getSentenceMap(securityReferredFromDB, nomisClient)
 
         const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
-          await nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
-          await nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.securityReferredBy)),
+          nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
+          nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.securityReferredBy)),
         ])
 
         const decoratedResults = securityReferredFromDB.map(o => {
@@ -325,8 +325,8 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const securityReviewedFromDB = await formService.getSecurityReviewedOffenders(agencyId, transactionalDbClient)
       if (!isNilOrEmpty(securityReviewedFromDB)) {
         const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
-          await nomisClient.getOffenderDetailList(securityReviewedFromDB.map(c => c.offenderNo)),
-          await nomisClient.getUserDetailList(securityReviewedFromDB.map(c => c.securityReviewedBy)),
+          nomisClient.getOffenderDetailList(securityReviewedFromDB.map(c => c.offenderNo)),
+          nomisClient.getUserDetailList(securityReviewedFromDB.map(c => c.securityReviewedBy)),
         ])
 
         const decoratedResults = securityReviewedFromDB.map(o => {
@@ -423,6 +423,50 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       )
     } catch (error) {
       logger.error(error, 'Error during getUnapprovedOffenders')
+      throw error
+    }
+  }
+
+  async function getUnapprovedLite(context, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
+    try {
+      const nomisClient = nomisClientBuilder(context)
+
+      const unapprovedLite = await formService.getUnapprovedLite(agencyId, transactionalDbClient)
+
+      if (isNilOrEmpty(unapprovedLite)) {
+        logger.info(`getUnapprovedLite: No unapproved offenders found for ${agencyId}`)
+        return []
+      }
+
+      const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
+        nomisClient.getOffenderDetailList(unapprovedLite.map(c => c.offenderNo)),
+        nomisClient.getUserDetailList([...new Set(unapprovedLite.map(c => c.assessedBy))]),
+      ])
+
+      const decoratedResults = unapprovedLite.map(o => {
+        const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
+        const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
+        const assessor = userDetailFromElite.find(record => record.username === o.assessedBy)
+        const categoriserDisplayName = assessor
+          ? `${properCaseName(assessor.firstName)} ${properCaseName(assessor.lastName)}`
+          : o.assessedBy
+
+        if (!offenderDetail) {
+          logger.error(`getUnapprovedLite: Offender ${o.offenderNo} in DB not found in NOMIS`)
+          return { ...o, assessedDate, categoriserDisplayName }
+        }
+        return {
+          ...o,
+          assessedDate,
+          displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+          categoriserDisplayName,
+        }
+      })
+
+      return decoratedResults.sort((a, b) => sortByDateTime(b.createdDate, a.createdDate))
+    } catch (error) {
+      logger.error(error, `Error during getUnapprovedLite for agency ${agencyId}`)
       throw error
     }
   }
@@ -996,6 +1040,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         category,
         offenderNo,
         prisonId,
+        assessmentCommittee: authority,
+        assessmentComment: comment,
+        nextReviewDate: nextReviewDateConverted,
+        placementPrisonId: placement,
         transactionalClient,
       })
     } catch (error) {
@@ -1025,6 +1073,64 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       logger.error(
         error,
         `Error during createSupervisorApproval for booking id ${bookingId} and user ${context.user.username}`
+      )
+      throw error
+    }
+  }
+
+  async function approveLiteCategorisation({
+    context,
+    bookingId,
+    sequence,
+    approvedDate,
+    supervisorCategory,
+    approvedCategoryComment,
+    approvedCommittee,
+    nextReviewDate,
+    approvedPlacement,
+    approvedPlacementComment,
+    approvedComment,
+    transactionalClient,
+  }) {
+    try {
+      const nomisClient = nomisClientBuilder(context)
+      const approvedDateConverted = dateConverterToISO(approvedDate)
+      const nextReviewDateConverted = dateConverterToISO(nextReviewDate)
+
+      logger.info(
+        `Recording cat ${supervisorCategory} approval for booking id ${bookingId} and user ${context.user.username}`
+      )
+      await formService.approveLiteCategorisation({
+        context,
+        bookingId,
+        sequence,
+
+        approvedDate: approvedDateConverted,
+        supervisorCategory,
+        approvedCommittee,
+        nextReviewDate: nextReviewDateConverted,
+        approvedPlacement,
+        approvedPlacementComment,
+        approvedComment,
+        transactionalClient,
+      })
+      return nomisClient.createSupervisorApproval({
+        bookingId,
+        assessmentSeq: sequence,
+
+        category: supervisorCategory,
+        approvedCategoryComment,
+        reviewCommitteeCode: approvedCommittee,
+        nextReviewDate: nextReviewDateConverted,
+        approvedPlacementAgencyId: approvedPlacement,
+        approvedPlacementText: approvedPlacementComment,
+        evaluationDate: approvedDateConverted,
+        committeeCommentText: approvedComment,
+      })
+    } catch (error) {
+      logger.error(
+        error,
+        `Error during createLiteCategorisation for booking id ${bookingId} and user ${context.user.username}`
       )
       throw error
     }
@@ -1156,6 +1262,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
+    getUnapprovedLite,
     getReferredOffenders,
     getRecategoriseOffenders,
     getOffenderDetails,
@@ -1170,6 +1277,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     createOrUpdateCategorisation,
     createLiteCategorisation,
     createSupervisorApproval,
+    approveLiteCategorisation,
     getCategorisedOffenders,
     getSecurityReviewedOffenders,
     getPrisonerBackground,

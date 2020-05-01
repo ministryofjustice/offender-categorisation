@@ -277,6 +277,10 @@ module.exports = function createFormService(formClient) {
     category,
     offenderNo,
     prisonId,
+    assessmentCommittee,
+    assessmentComment,
+    nextReviewDate,
+    placementPrisonId,
     transactionalClient,
   }) {
     return formClient.recordLiteCategorisation({
@@ -285,6 +289,10 @@ module.exports = function createFormService(formClient) {
       category,
       offenderNo,
       prisonId,
+      assessmentCommittee,
+      assessmentComment,
+      nextReviewDate,
+      placementPrisonId,
       assessedBy: context.user.username,
       transactionalClient,
     })
@@ -292,7 +300,49 @@ module.exports = function createFormService(formClient) {
 
   async function getLiteCategorisation(bookingId, transactionalClient) {
     const data = await formClient.getLiteCategorisation(bookingId, transactionalClient)
-    return dataIfExists(data) || {}
+    if (data.rows.length === 0) {
+      return {}
+    }
+    return {
+      ...data.rows[0],
+      displayNextReviewDate: moment(data.rows[0].nextReviewDate).format('DD/MM/YYYY'),
+      displayCreatedDate: moment(data.rows[0].createdDate).format('DD/MM/YYYY'),
+    }
+  }
+
+  async function getUnapprovedLite(prisonId, transactionalClient) {
+    const data = await formClient.getUnapprovedLite(prisonId, transactionalClient)
+    return data.rows
+  }
+
+  function approveLiteCategorisation({
+    context,
+    bookingId,
+    sequence,
+
+    approvedDate,
+    supervisorCategory,
+    approvedCommittee,
+    nextReviewDate,
+    approvedPlacement,
+    approvedPlacementComment,
+    approvedComment,
+    transactionalClient,
+  }) {
+    return formClient.approveLiteCategorisation({
+      bookingId,
+      sequence,
+
+      approvedDate,
+      approvedBy: context.user.username,
+      supervisorCategory,
+      approvedCommittee,
+      nextReviewDate,
+      approvedPlacement,
+      approvedPlacementComment,
+      approvedComment,
+      transactionalClient,
+    })
   }
 
   async function createRiskChange(offenderNo, agencyId, oldProfile, newProfile, transactionalClient) {
@@ -689,6 +739,8 @@ module.exports = function createFormService(formClient) {
     createCategorisationRecord,
     recordLiteCategorisation,
     getLiteCategorisation,
+    getUnapprovedLite,
+    approveLiteCategorisation,
     backToCategoriser,
     backToCategoriserMessageRead,
     setAwaitingApproval,

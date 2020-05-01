@@ -323,33 +323,119 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  recordLiteCategorisation({ bookingId, sequence, category, offenderNo, prisonId, assessedBy, transactionalClient }) {
+  recordLiteCategorisation({
+    bookingId,
+    sequence,
+    category,
+    offenderNo,
+    prisonId,
+    assessmentCommittee,
+    assessmentComment,
+    nextReviewDate,
+    placementPrisonId,
+    assessedBy,
+    transactionalClient,
+  }) {
     logger.info(`creating lite categorisation record for booking id ${bookingId}, offenderNo ${offenderNo}`)
     const query = {
-      text: `insert into lite_category (booking_id, sequence, category, offender_no,
-                                    prison_id, created_date, assessed_by)
-             values ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6)`,
-      values: [bookingId, sequence, category, offenderNo, prisonId, assessedBy],
+      text: `insert into lite_category (booking_id, sequence, category, offender_no, prison_id, assessment_committee,
+                                        assessment_comment, next_review_date, placement_prison_id, created_date, assessed_by)
+             values ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP, $10)`,
+      values: [
+        bookingId,
+        sequence,
+        category,
+        offenderNo,
+        prisonId,
+        assessmentCommittee,
+        assessmentComment,
+        nextReviewDate,
+        placementPrisonId,
+        assessedBy,
+      ],
     }
     return transactionalClient.query(query)
   },
 
   getLiteCategorisation(bookingId, transactionalClient) {
     const query = {
-      text: `select booking_id          as "bookingId",
+      text: `select booking_id           as "bookingId",
                     sequence,
                     category,
-                    supervisor_category as "supervisorCategory",
-                    offender_no         as "offenderNo",
-                    prison_id           as "prisonId",
-                    created_date        as "createdDate",
-                    approved_date       as "approvedDate",
-                    assessed_by         as "assessedBy",
-                    approved_by         as "approvedBy"
+                    supervisor_category  as "supervisorCategory",
+                    offender_no          as "offenderNo",
+                    prison_id            as "prisonId",
+                    assessment_committee as "assessmentCommittee",
+                    assessment_comment   as "assessmentComment",
+                    next_review_date     as "nextReviewDate",
+                    placement_prison_id  as "placementPrisonId",
+                    created_date         as "createdDate",
+                    approved_date        as "approvedDate",
+                    assessed_by          as "assessedBy",
+                    approved_by          as "approvedBy"
              from lite_category c
              where c.booking_id = $1
                and c.sequence = (select max(c2.sequence) from lite_category c2 where c2.booking_id = c.booking_id)`,
       values: [bookingId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getUnapprovedLite(prisonId, transactionalClient) {
+    const query = {
+      text: `select booking_id          as "bookingId",
+                    sequence,
+                    category,
+                    offender_no         as "offenderNo",
+                    prison_id           as "prisonId",
+                    created_date        as "createdDate",
+                    assessed_by         as "assessedBy"
+             from lite_category c
+             where c.prison_id = $1 and approved_date is null`,
+      values: [prisonId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  approveLiteCategorisation({
+    bookingId,
+    sequence,
+
+    approvedDate,
+    approvedBy,
+    supervisorCategory,
+    approvedCommittee,
+    nextReviewDate,
+    approvedPlacement,
+    approvedPlacementComment,
+    approvedComment,
+    transactionalClient,
+  }) {
+    logger.info(`lite categorisation record for booking id ${bookingId} and user ${approvedBy}`)
+    const query = {
+      text: `update lite_category
+             set approved_date                = $3,
+                 approved_by                  = $4,
+                 supervisor_category          = $5,
+                 approved_committee           = $6,
+                 next_review_date             = $7,
+                 approved_placement_prison_id = $8,
+                 approved_placement_comment   = $9,
+                 approved_comment             = $10
+             where booking_id = $1
+               and sequence = $2`,
+      values: [
+        bookingId,
+        sequence,
+        approvedDate,
+        approvedBy,
+        supervisorCategory,
+        approvedCommittee,
+        nextReviewDate,
+        approvedPlacement,
+        approvedPlacementComment,
+        approvedComment,
+      ],
     }
     return transactionalClient.query(query)
   },

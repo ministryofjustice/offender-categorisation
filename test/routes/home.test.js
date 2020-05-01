@@ -417,7 +417,7 @@ describe('Landing page', () => {
     offendersService.requiredCatType.mockResolvedValue('INITIAL')
     formService.getSecurityReferral.mockResolvedValue({
       prisonId: 'LEI',
-      userId: 'CT_SEC',
+      userId: 'me',
       status: 'NEW',
       raisedDate: '2019-10-17T11:34:35.740Z',
     })

@@ -1222,12 +1222,16 @@ class Elite2Api extends WireMockRule {
   }
 
   def stubSupervisorApprove(String expectedCat) {
+    stubSupervisorApprove([
+      category: expectedCat, reviewCommitteeCode: 'OCA'
+    ])
+  }
+
+  def stubSupervisorApprove(Map expectedBody) {
 
     this.stubFor(
       put("/api/offender-assessments/category/approve")
-        .withRequestBody(equalToJson(JsonOutput.toJson([
-          category: expectedCat, reviewCommitteeCode: 'OCA'
-        ]), true, true))
+        .withRequestBody(equalToJson(JsonOutput.toJson(expectedBody), true, true))
         .willReturn(
           aResponse()
             .withHeader('Content-Type', 'application/json')
