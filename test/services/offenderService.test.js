@@ -947,7 +947,7 @@ describe('Lite', () => {
       context,
       bookingId,
       sequence: 6,
-      approvedDate: '15/04/2020',
+      approvedDate: '2020-04-15',
       supervisorCategory: 'E',
       // approvedCategoryComment: 'approvedCategoryComment',
       approvedCommittee: 'SECUR',

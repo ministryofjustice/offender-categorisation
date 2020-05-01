@@ -42,6 +42,8 @@ class LiteSpecification extends GebReportingSpec {
     given: 'a categoriser user is logged in'
     elite2Api.stubUncategorised()
     def now = LocalDate.now()
+    def SIX_MONTHS_TIME = now.plus(6, ChronoUnit.MONTHS)
+
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [now.toString(), now.toString()])
     fixture.loginAs(CATEGORISER_USER)
 
@@ -55,6 +57,8 @@ class LiteSpecification extends GebReportingSpec {
 
     then: 'The assessment page is displayed correctly'
     at LiteCategoriesPage
+    // check default
+    form.nextReviewDate == SIX_MONTHS_TIME.format('dd/MM/yyyy')
 
     when: 'Re-assessment is omitted'
     form.nextReviewDate = ''
@@ -97,7 +101,6 @@ class LiteSpecification extends GebReportingSpec {
     form.authority = 'RECP'
     form.placement = 'BXI'
     form.comment = 'comment'
-    def SIX_MONTHS_TIME = now.plus(6, ChronoUnit.MONTHS)
     elite2Api.stubCategorise([bookingId        : 12,
                               category         : 'R',
                               committee        : 'RECP',
@@ -151,6 +154,10 @@ class LiteSpecification extends GebReportingSpec {
     when: 'a categorisation approval is attempted with a future approval Date and past nextReviewDate'
     approveButtons[0].click()
     at LiteApprovalPage
+    // check defaults
+    form.approvedDate == now.format('dd/MM/yyyy')
+    form.nextReviewDate == SIX_MONTHS_TIME.format('dd/MM/yyyy')
+
     form.approvedDate = SIX_MONTHS_TIME.format('dd/MM/yyyy')
     form.nextReviewDate = '21/11/2019'
     saveButton.click()
@@ -171,24 +178,24 @@ class LiteSpecification extends GebReportingSpec {
     errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
 
     when: 'details are entered'
-    go 'liteCategories/approve/12' // reset the dates to defaults
-    at LiteApprovalPage
+    form.approvedDate = '29/04/2020'
     form.supervisorCategory = 'T'
     form.approvedCategoryComment = 'approvedCategoryComment'
     form.approvedCommittee = 'GOV'
     form.approvedPlacement = 'SYI'
     form.approvedPlacementComment = 'approvedPlacementComment'
+    form.nextReviewDate = now.plusMonths(12).format('dd/MM/yyyy')
     form.approvedComment = 'approvedComment'
     elite2Api.stubSupervisorApprove([category                 : 'T',
                                      "approvedCategoryComment": "approvedCategoryComment",
                                      bookingId                : 12,
                                      "assessmentSeq"          : 1,
                                      reviewCommitteeCode      : 'GOV',
-                                     nextReviewDate           : SIX_MONTHS_TIME.format('yyyy-MM-dd'),
+                                     nextReviewDate           : now.plusMonths(12).format('yyyy-MM-dd'),
                                      committeeCommentText     : "approvedComment",
                                      approvedPlacementText    : "approvedPlacementComment",
                                      approvedPlacementAgencyId: 'SYI',
-                                     "evaluationDate"         : now.format('yyyy-MM-dd'),
+                                     "evaluationDate"         : '2020-04-29',
     ])
     saveButton.click()
 
@@ -196,10 +203,10 @@ class LiteSpecification extends GebReportingSpec {
     at LiteCategoriesConfirmedPage
     def data2 = db.getLiteData(12)[0]
     data2.supervisor_category == 'T'
-    data2.approved_date.toLocalDate().equals(now)
+    data2.approved_date.toLocalDate().equals(LocalDate.of(2020, 4,29))
     data2.approved_by == 'SUPERVISOR_USER'
     data2.approved_committee == 'GOV'
-    data2.next_review_date.toLocalDate().equals(SIX_MONTHS_TIME)
+    data2.next_review_date.toLocalDate().equals(now.plusMonths(12))
     data2.approved_placement_prison_id == 'SYI'
     data2.approved_placement_comment == 'approvedPlacementComment'
     data2.approved_comment == 'approvedComment'

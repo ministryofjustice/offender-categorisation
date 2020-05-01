@@ -1094,6 +1094,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }) {
     try {
       const nomisClient = nomisClientBuilder(context)
+      const approvedDateConverted = dateConverterToISO(approvedDate)
       const nextReviewDateConverted = dateConverterToISO(nextReviewDate)
 
       logger.info(
@@ -1104,7 +1105,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         bookingId,
         sequence,
 
-        approvedDate,
+        approvedDate: approvedDateConverted,
         supervisorCategory,
         approvedCommittee,
         nextReviewDate: nextReviewDateConverted,
@@ -1123,7 +1124,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         nextReviewDate: nextReviewDateConverted,
         approvedPlacementAgencyId: approvedPlacement,
         approvedPlacementText: approvedPlacementComment,
-        evaluationDate: dateConverterToISO(approvedDate),
+        evaluationDate: approvedDateConverted,
         committeeCommentText: approvedComment,
       })
     } catch (error) {
