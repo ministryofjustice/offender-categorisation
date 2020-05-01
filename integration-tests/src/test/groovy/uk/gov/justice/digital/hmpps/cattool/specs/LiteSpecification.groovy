@@ -142,7 +142,7 @@ class LiteSpecification extends GebReportingSpec {
     at SupervisorLiteListPage
 
     then: 'this categorisation is listed'
-    assessmentDates[0] == '30/04/2020'
+    assessmentDates[0] == now.format('dd/MM/yyyy')
     names[0] == 'Dent, Jane'
     prisonNos[0] == 'B2345YZ'
     categorisers[0] == 'Firstname_categoriser_user Lastname_categoriser_user'
@@ -151,7 +151,7 @@ class LiteSpecification extends GebReportingSpec {
     when: 'a categorisation approval is attempted with a future approval Date and past nextReviewDate'
     approveButtons[0].click()
     at LiteApprovalPage
-    form.approvedDate = SIX_MONTHS_TIME.format('DD/MM/YYYY')
+    form.approvedDate = SIX_MONTHS_TIME.format('dd/MM/yyyy')
     form.nextReviewDate = '21/11/2019'
     saveButton.click()
 
@@ -172,6 +172,7 @@ class LiteSpecification extends GebReportingSpec {
 
     when: 'details are entered'
     go 'liteCategories/approve/12' // reset the dates to defaults
+    at LiteApprovalPage
     form.supervisorCategory = 'T'
     form.approvedCategoryComment = 'approvedCategoryComment'
     form.approvedCommittee = 'GOV'
