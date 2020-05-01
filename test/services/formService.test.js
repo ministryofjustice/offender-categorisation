@@ -211,7 +211,7 @@ describe('update', () => {
           status: 'APPROVED',
           transactionalClient: mockTransactionalClient,
         })
-      ).rejects.toEqual(new Error('Cannot transition from status SECURITY_BACK to APPROVED'))
+      ).rejects.toThrow('Cannot transition from status SECURITY_BACK to APPROVED')
     })
 
     test('should reject update invalid status transition - APPROVED - STARTED', async () => {
@@ -242,7 +242,7 @@ describe('update', () => {
           status: 'STARTED',
           transactionalClient: mockTransactionalClient,
         })
-      ).rejects.toEqual(new Error('Cannot transition from status APPROVED to STARTED'))
+      ).rejects.toThrow('Cannot transition from status APPROVED to STARTED')
     })
 
     it('should add new sections and forms to the licence if they dont exist', async () => {
@@ -432,7 +432,7 @@ describe('recordNomisSeqNumber', () => {
   })
   test('failed', async () => {
     formClient.updateRecordWithNomisSeqNumber.mockRejectedValue(new Error('TEST'))
-    await expect(service.recordNomisSeqNumber(bookingId, 3, mockTransactionalClient)).rejects.toThrow()
+    await expect(service.recordNomisSeqNumber(bookingId, 3, mockTransactionalClient)).rejects.toThrow('TEST')
   })
 })
 
@@ -558,7 +558,7 @@ describe('referToSecurityIfRiskAssessed', () => {
   test('invalid status', async () => {
     await expect(
       service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED', mockTransactionalClient)
-    ).rejects.toThrow()
+    ).rejects.toThrow('Cannot transition from status APPROVED to SECURITY_AUTO')
   })
 
   test('invalid SECURITY_AUTO status', async () => {
@@ -569,7 +569,7 @@ describe('referToSecurityIfRiskAssessed', () => {
   test('database error', async () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
-    expect(() =>
+    await expect(
       service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED', mockTransactionalClient)
     ).rejects.toThrow('TEST')
   })
@@ -610,7 +610,7 @@ describe('referToSecurityIfRequested', () => {
 
     await expect(
       service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
-    ).rejects.toThrow()
+    ).rejects.toThrow('Cannot transition from status undefined to SECURITY_MANUAL')
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -620,7 +620,7 @@ describe('referToSecurityIfRequested', () => {
 
     await expect(
       service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
-    ).rejects.toThrow()
+    ).rejects.toThrow('Cannot transition from status APPROVED to SECURITY_MANUAL')
 
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -704,7 +704,9 @@ describe('updateStatus', () => {
   test('no record in db', async () => {
     formClient.getFormDataForUser.mockResolvedValue({ rows: [] })
 
-    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
+    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow(
+      'Cannot transition from status undefined to SUPERVISOR_BACK'
+    )
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -712,7 +714,9 @@ describe('updateStatus', () => {
   test('invalid status', async () => {
     formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'STARTED' }] })
 
-    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
+    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow(
+      'Cannot transition from status STARTED to SUPERVISOR_BACK'
+    )
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -720,7 +724,9 @@ describe('updateStatus', () => {
   test('invalid SECURITY_BACK status', async () => {
     formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'SECURITY_BACK' }] })
 
-    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow()
+    await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow(
+      'Cannot transition from status SECURITY_BACK to SUPERVISOR_BACK'
+    )
 
     expect(formClient.updateStatus).not.toBeCalled()
   })
@@ -905,6 +911,7 @@ describe('createRiskChange', () => {
   test('merge with existing', async () => {
     const existingRecord = { existing: true }
     formClient.getNewRiskChangeByOffender.mockResolvedValue({ rows: [{ existingRecord }] })
+    formClient.mergeRiskChangeForOffender.mockResolvedValue({ rowCount: 1 })
 
     await service.createRiskChange(offenderNo, 'LEI', {}, newProfile, mockTransactionalClient)
 
@@ -929,6 +936,7 @@ describe('createRiskChange', () => {
         transactionalClient: mockTransactionalClient,
       },
     ])
+    expect(formClient.mergeRiskChangeForOffender).not.toBeCalled()
   })
 })
 
