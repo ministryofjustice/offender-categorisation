@@ -3,7 +3,7 @@ const moment = require('moment')
 const flash = require('connect-flash')
 const baseJoi = require('joi')
 const dateExtend = require('joi-date-extensions')
-const { calculateNextReviewDate, sanitisePrisonName } = require('../utils/utils')
+const { properCaseName, calculateNextReviewDate, sanitisePrisonName } = require('../utils/utils')
 const { handleCsrf } = require('../utils/routes')
 const validation = require('../utils/fieldValidation')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
@@ -12,8 +12,36 @@ const joi = baseJoi.extend(dateExtend)
 
 /**
  * 'Lite' categorisation is simply a P-Nomis style workflow for any cats other than B/C/D/I/J.
- * This renders it unnecessary to go to P-Nomis for category assessments at all.
+ * This renders it unnecessary to go to P-Nomis for category assessments at all, hopefully!
  */
+
+const getPrisonList = (prisonListFromApi, current) => [
+  { value: '' },
+  ...prisonListFromApi.map(p => ({
+    value: p.agencyId,
+    text: sanitisePrisonName(p.description),
+    selected: current === p.agencyId,
+  })),
+]
+
+const getCommitteeList = current => [
+  { value: 'OCA', text: 'OCA', selected: current === 'OCA' },
+  { value: 'REVIEW', text: 'Review', selected: current === 'REVIEW' },
+  { value: 'RECP', text: 'Reception', selected: current === 'RECP' },
+  { value: 'SECUR', text: 'Security', selected: current === 'SECUR' },
+  { value: 'GOV', text: 'Governor', selected: current === 'GOV' },
+]
+
+const getCatList = current => [
+  { value: 'U', text: 'Unsentenced', selected: current === 'U' },
+  { value: 'Z', text: 'Unclass', selected: current === 'Z' },
+  { value: 'A', text: 'Cat A', selected: current === 'A' },
+  { value: 'E', text: 'Cat A Ex', selected: current === 'E' },
+  { value: 'H', text: 'Cat A Hi', selected: current === 'H' },
+  { value: 'P', text: 'Prov A', selected: current === 'P' },
+  { value: 'R', text: 'Fem Closed', selected: current === 'R' },
+  { value: 'T', text: 'Fem Open', selected: current === 'T' },
+]
 
 module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()
@@ -40,22 +68,23 @@ module.exports = function Index({ formService, offendersService, userService, au
       res.locals.user = { ...user, ...res.locals.user }
 
       const [details, categorisationRecord, existingData, prisonListFromApi] = await Promise.all([
-        offendersService.getBasicOffenderDetails(res.locals, bookingId),
+        offendersService.getOffenderDetails(res.locals, bookingId),
         formService.getCategorisationRecord(bookingId, transactionalDbClient),
         formService.getLiteCategorisation(bookingId, transactionalDbClient),
         offendersService.getAgencies(res.locals),
       ])
       const liteInProgress = existingData.bookingId && !existingData.approvedDate
 
-      const prisonList = [
-        {},
-        ...prisonListFromApi.map(p => ({ value: p.agencyId, text: sanitisePrisonName(p.description) })),
-      ]
+      const prisonList = getPrisonList(prisonListFromApi)
+      const committees = getCommitteeList()
+      const cats = getCatList()
 
       res.render(`pages/liteCategories`, {
         bookingId,
         errors: [],
         liteInProgress,
+        cats,
+        committees,
         prisonList,
         nextReviewDate: calculateNextReviewDate('6'),
         data: { details, status: categorisationRecord.status },
@@ -78,27 +107,49 @@ module.exports = function Index({ formService, offendersService, userService, au
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      const [details, assessmentData, prisonListFromApi] = await Promise.all([
-        offendersService.getBasicOffenderDetails(res.locals, bookingId),
+      const [details, rawAssessmentData, prisonListFromApi] = await Promise.all([
+        offendersService.getOffenderDetails(res.locals, bookingId),
         formService.getLiteCategorisation(bookingId, transactionalDbClient),
         offendersService.getAgencies(res.locals),
       ])
-      const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
-      const sameUser = res.locals.user.username === assessmentData.assessedBy
+      const cats = getCatList(rawAssessmentData.category)
+      const category = cats.find(c => c.value === rawAssessmentData.category)
+      const categoryDisplay = category ? category.text : rawAssessmentData.category
 
-      const prisonList = [
-        {},
-        ...prisonListFromApi.map(p => ({ value: p.agencyId, text: sanitisePrisonName(p.description) })),
-      ]
+      const committees = getCommitteeList()
+      const committee = committees.find(c => c.value === rawAssessmentData.assessmentCommittee)
+      const assessmentCommitteeDisplay = committee ? committee.text : rawAssessmentData.assessmentCommittee
+
+      const assessedBy = await userService.getUserByUserId(res.locals, rawAssessmentData.assessedBy)
+      const assessedByDisplay = assessedBy
+        ? `${properCaseName(assessedBy.firstName)} ${properCaseName(assessedBy.lastName)}`
+        : rawAssessmentData.assessedBy
+
+      const prisonList = getPrisonList(prisonListFromApi)
+      const prison = prisonList.find(p => p.value === rawAssessmentData.placementPrisonId)
+      const placementPrisonIdDisplay = prison ? prison.text : rawAssessmentData.placementPrisonId
+
+      const liteInProgress = rawAssessmentData.bookingId && !rawAssessmentData.approvedDate
+      const sameUser = res.locals.user.username === rawAssessmentData.assessedBy
+
+      const assessmentData = {
+        categoryDisplay,
+        assessedByDisplay,
+        assessmentCommitteeDisplay,
+        placementPrisonIdDisplay,
+        ...rawAssessmentData,
+      }
+
       res.render(`pages/liteApprove`, {
         bookingId,
         liteInProgress,
         sameUser,
         errors: [],
         assessmentData,
+        cats,
+        committees,
         prisonList,
         approvedDate: moment().format('DD/MM/YYYY'),
-        supervisorCategory: assessmentData.category,
         nextReviewDate: assessmentData.displayNextReviewDate,
         data: { details },
       })
@@ -113,7 +164,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { category, authority, nextReviewDate, placement, comment } = req.body
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const details = await offendersService.getBasicOffenderDetails(res.locals, bookingIdInt)
+      const details = await offendersService.getOffenderDetails(res.locals, bookingIdInt)
 
       const tomorrow = moment()
         .add(1, 'd')
@@ -139,17 +190,15 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       if (errors.length) {
         const prisonListFromApi = await offendersService.getAgencies(res.locals)
-        const prisonList = [
-          { value: '' },
-          ...prisonListFromApi.map(p => ({
-            value: p.agencyId,
-            text: sanitisePrisonName(p.description),
-            selected: placement === p.agencyId,
-          })),
-        ]
+        const prisonList = getPrisonList(prisonListFromApi, placement)
+        const cats = getCatList(category)
+        const committees = getCommitteeList(authority)
+
         res.render(`pages/liteCategories`, {
           bookingId,
           errors,
+          cats,
+          committees,
           prisonList,
           category,
           authority,
@@ -194,10 +243,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      const [details, assessmentData] = await Promise.all([
-        offendersService.getBasicOffenderDetails(res.locals, bookingIdInt),
-        formService.getLiteCategorisation(bookingId, transactionalDbClient),
-      ])
+      const assessmentData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
 
       const tomorrow = moment()
         .add(1, 'd')
@@ -234,22 +280,24 @@ module.exports = function Index({ formService, offendersService, userService, au
       ])
 
       if (errors.length) {
-        const prisonListFromApi = await offendersService.getAgencies(res.locals)
+        const [details, prisonListFromApi] = await Promise.all([
+          offendersService.getOffenderDetails(res.locals, bookingIdInt),
+          offendersService.getAgencies(res.locals),
+        ])
+
         const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
 
-        const prisonList = [
-          { value: '' },
-          ...prisonListFromApi.map(p => ({
-            value: p.agencyId,
-            text: sanitisePrisonName(p.description),
-            selected: approvedPlacement === p.agencyId,
-          })),
-        ]
+        const prisonList = getPrisonList(prisonListFromApi, approvedPlacement)
+        const cats = getCatList(supervisorCategory)
+        const committees = getCommitteeList(approvedCommittee)
+
         res.render(`pages/liteApprove`, {
           bookingId,
           errors,
           liteInProgress,
           assessmentData,
+          cats,
+          committees,
           prisonList,
           approvedDate,
           supervisorCategory,

@@ -16,7 +16,7 @@ const formService = {
 }
 
 const offendersService = {
-  getBasicOffenderDetails: jest.fn(),
+  getOffenderDetails: jest.fn(),
   getAgencies: jest.fn(),
   createLiteCategorisation: jest.fn(),
   approveLiteCategorisation: jest.fn(),
@@ -24,6 +24,7 @@ const offendersService = {
 
 const userService = {
   getUser: jest.fn(),
+  getUserByUserId: jest.fn(),
 }
 
 const formRoute = createRouter({
@@ -37,7 +38,7 @@ let app
 
 beforeEach(() => {
   app = appSetup(formRoute)
-  offendersService.getBasicOffenderDetails.mockResolvedValue({
+  offendersService.getOffenderDetails.mockResolvedValue({
     bookingId: 12,
     agencyId: 'BXI',
     offenderNo: 'A1000EE',
@@ -140,9 +141,10 @@ describe('approve', () => {
       category: 'R',
       assessmentCommittee: 'GOV',
       displayCreatedDate: '01/01/2020',
-      placementPrisonId: 'EYI',
+      placementPrisonId: 'SYI',
       assessmentComment: 'comment text',
     })
+    userService.getUserByUserId.mockResolvedValue({ firstName: 'FRED', lastName: 'PERRY' })
 
     return request(app)
       .get(`/approve/12`)
@@ -150,11 +152,11 @@ describe('approve', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Other category approval</h1>')
-        expect(res.text).toContain('<div id="category" class="govuk-grid-column-one-third">R')
-        expect(res.text).toContain('<div id="assessmentCommittee" class="govuk-grid-column-one-third">GOV')
+        expect(res.text).toContain('<div id="category" class="govuk-grid-column-one-third">Fem Closed')
+        expect(res.text).toContain('<div id="assessmentCommittee" class="govuk-grid-column-one-third">Governor')
         expect(res.text).toContain('<div id="displayCreatedDate" class="govuk-grid-column-one-third">01/01/2020')
-        expect(res.text).toContain('<div id="assessedBy" class="govuk-grid-column-one-third">categoriser')
-        expect(res.text).toContain('<div id="placementPrisonId" class="govuk-grid-column-one-third">EYI')
+        expect(res.text).toContain('<div id="assessedBy" class="govuk-grid-column-one-third">Fred Perry')
+        expect(res.text).toContain('<div id="placementPrisonId" class="govuk-grid-column-one-third">Shrewsbury (HMP)')
         expect(res.text).toContain('<div id="assessmentComment" class="govuk-grid-column-one-third">comment text')
       })
   })
