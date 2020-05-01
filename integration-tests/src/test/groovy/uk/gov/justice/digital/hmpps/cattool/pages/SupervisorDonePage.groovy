@@ -21,6 +21,7 @@ class SupervisorDonePage extends Page {
     outcomes { bodyRows*.$('td', 5)*.text()  }
     catTypes { bodyRows*.$('td', 6)*.text()  }
     viewButtons { bodyRows*.$('td', 7)*.find('*')  }
+    liteCategoriesTab { $('a', href: '/liteCategories/approveList') }
     logoutLink { $('a', href: '/logout')}
   }
 }

@@ -46,6 +46,8 @@ const formService = {
   recordNomisSeqNumber: jest.fn(),
   updateOffenderIdentifierReturningBookingId: jest.fn(),
   recordLiteCategorisation: jest.fn(),
+  approveLiteCategorisation: jest.fn(),
+  getUnapprovedLite: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -880,7 +882,7 @@ describe('createOrUpdateCategorisation', () => {
   })
 })
 
-describe('createLiteCategorisation', () => {
+describe('Lite', () => {
   test('createLiteCategorisation', async () => {
     nomisClient.createCategorisation.mockResolvedValue({ sequenceNumber: 9 })
 
@@ -913,8 +915,174 @@ describe('createLiteCategorisation', () => {
       category: 'B',
       offenderNo: 'B0003TT',
       prisonId: 'LEI',
+      assessmentCommittee: 'GOV',
+      assessmentComment: 'a comment',
+      nextReviewDate: '2020-03-14',
+      placementPrisonId: 'BXI',
       transactionalClient: mockTransactionalClient,
     })
+  })
+
+  test('approveLiteCategorisation', async () => {
+    formService.approveLiteCategorisation.mockResolvedValue({})
+    nomisClient.createSupervisorApproval.mockResolvedValue({})
+
+    const bookingId = 14
+    await service.approveLiteCategorisation({
+      context,
+      bookingId,
+      sequence: 6,
+      approvedDate: '15/04/2020',
+      supervisorCategory: 'E',
+      approvedCategoryComment: 'approvedCategoryComment',
+      approvedCommittee: 'SECUR',
+      nextReviewDate: '14/03/2020',
+      approvedPlacement: 'BMI',
+      approvedPlacementComment: 'approvedPlacementComment',
+      approvedComment: 'approvedComment',
+      transactionalClient: mockTransactionalClient,
+    })
+
+    expect(formService.approveLiteCategorisation).toBeCalledWith({
+      context,
+      bookingId,
+      sequence: 6,
+      approvedDate: '2020-04-15',
+      supervisorCategory: 'E',
+      // approvedCategoryComment: 'approvedCategoryComment',
+      approvedCommittee: 'SECUR',
+      nextReviewDate: '2020-03-14',
+      approvedPlacement: 'BMI',
+      approvedPlacementComment: 'approvedPlacementComment',
+      approvedComment: 'approvedComment',
+      transactionalClient: mockTransactionalClient,
+    })
+    expect(nomisClient.createSupervisorApproval).toBeCalledWith({
+      bookingId,
+      assessmentSeq: 6,
+      category: 'E',
+      approvedCategoryComment: 'approvedCategoryComment',
+      reviewCommitteeCode: 'SECUR',
+      nextReviewDate: '2020-03-14',
+      approvedPlacementAgencyId: 'BMI',
+      approvedPlacementText: 'approvedPlacementComment',
+      evaluationDate: '2020-04-15',
+      committeeCommentText: 'approvedComment',
+    })
+  })
+
+  test('getUnapprovedLite', async () => {
+    formService.getUnapprovedLite.mockResolvedValue([
+      {
+        bookingId: 111,
+        sequence: 11,
+        category: 'E',
+        offenderNo: 'G12345',
+        createdDate: '2019-01-01',
+        assessedBy: 'JSMITH',
+      },
+      {
+        bookingId: 222,
+        sequence: 12,
+        category: 'H',
+        offenderNo: 'H12345',
+        createdDate: '2019-01-02',
+        assessedBy: 'JSMITH',
+      },
+      {
+        bookingId: 333,
+        sequence: 13,
+        category: 'A',
+        offenderNo: 'G55345',
+        createdDate: '2019-01-03',
+        assessedBy: 'BMAY',
+      },
+      {
+        bookingId: 444,
+        sequence: 14,
+        category: 'E',
+        offenderNo: 'G0001',
+        createdDate: '2019-01-01',
+        assessedBy: 'Unknown',
+      },
+    ])
+
+    nomisClient.getOffenderDetailList.mockResolvedValue([
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 111,
+        status: Status.UNCATEGORISED.name,
+      },
+      {
+        offenderNo: 'H12345',
+        firstName: 'Danny',
+        lastName: 'Doyle',
+        bookingId: 222,
+        status: Status.UNCATEGORISED.name,
+      },
+    ])
+
+    nomisClient.getUserDetailList.mockResolvedValue([
+      {
+        username: 'JSMITH',
+        firstName: 'John',
+        lastName: 'Smith',
+      },
+      {
+        username: 'BMAY',
+        firstName: 'Brian',
+        lastName: 'May',
+      },
+    ])
+
+    const data = await service.getUnapprovedLite(context, mockTransactionalClient)
+
+    expect(data).toEqual([
+      {
+        assessedBy: 'JSMITH',
+        assessedDate: '01/01/2019',
+        bookingId: 111,
+        categoriserDisplayName: 'John Smith',
+        category: 'E',
+        createdDate: '2019-01-01',
+        displayName: 'Brown, Jane',
+        offenderNo: 'G12345',
+        sequence: 11,
+      },
+      {
+        assessedBy: 'JSMITH',
+        assessedDate: '02/01/2019',
+        bookingId: 222,
+        categoriserDisplayName: 'John Smith',
+        category: 'H',
+        createdDate: '2019-01-02',
+        displayName: 'Doyle, Danny',
+        offenderNo: 'H12345',
+        sequence: 12,
+      },
+      {
+        assessedBy: 'BMAY',
+        assessedDate: '03/01/2019',
+        bookingId: 333,
+        categoriserDisplayName: 'Brian May',
+        category: 'A',
+        createdDate: '2019-01-03',
+        offenderNo: 'G55345',
+        sequence: 13,
+      },
+      {
+        assessedBy: 'Unknown',
+        assessedDate: '01/01/2019',
+        bookingId: 444,
+        categoriserDisplayName: 'Unknown',
+        category: 'E',
+        createdDate: '2019-01-01',
+        offenderNo: 'G0001',
+        sequence: 14,
+      },
+    ])
   })
 })
 

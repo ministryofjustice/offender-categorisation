@@ -24,6 +24,7 @@ class SupervisorHomePage extends Page {
     startButtons { bodyRows*.$('td', 8)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/supervisorDone')}
+    liteCategoriesTab { $('a', href: '/liteCategories/approveList') }
     multipleRoleDiv(required: false) { $('#multiple-role') }
     roleSwitchSelect(required: false) { $('#roleSwitch') }
   }
