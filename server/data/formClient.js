@@ -114,7 +114,7 @@ module.exports = {
   mergeRiskChangeForOffender(offenderNo, newProfile, transactionalClient) {
     logger.info(`mergeRiskChangeForOffender called with offenderNo ${offenderNo}`)
     const query = {
-      text: `update risk_change set new_profile = $2, raised_date = CURRENT_TIMESTAMP where r.offender_no= $1 and r.status = 'NEW'`,
+      text: `update risk_change set new_profile = $2, raised_date = CURRENT_TIMESTAMP where offender_no= $1 and status = 'NEW'`,
       values: [offenderNo, newProfile],
     }
     return transactionalClient.query(query)
