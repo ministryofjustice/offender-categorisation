@@ -49,7 +49,6 @@ class LiteSpecification extends GebReportingSpec {
 
     when: 'the user arrives at the landing page and clicks the link to check previous reviews'
     elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetBasicOffenderDetails(12)
     go '/12'
     at LandingPage
     elite2Api.stubAgenciesPrison()
@@ -134,6 +133,8 @@ class LiteSpecification extends GebReportingSpec {
     at LiteCategoriesPage
     warning.text() contains 'A categorisation is already in progress for this person'
 
+    ///////////////////////////////////////////////////////////////////////////////////////
+
     when: 'A supervisor views their lite todo page'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
@@ -152,6 +153,7 @@ class LiteSpecification extends GebReportingSpec {
     categories[0] == 'R'
 
     when: 'a categorisation approval is attempted with a future approval Date and past nextReviewDate'
+    elite2Api.stubGetUserDetails(CATEGORISER_USER, 'SYI')
     approveButtons[0].click()
     at LiteApprovalPage
     // check defaults
@@ -203,7 +205,7 @@ class LiteSpecification extends GebReportingSpec {
     at LiteCategoriesConfirmedPage
     def data2 = db.getLiteData(12)[0]
     data2.supervisor_category == 'T'
-    data2.approved_date.toLocalDate().equals(LocalDate.of(2020, 4,29))
+    data2.approved_date.toLocalDate().equals(LocalDate.of(2020, 4, 29))
     data2.approved_by == 'SUPERVISOR_USER'
     data2.approved_committee == 'GOV'
     data2.next_review_date.toLocalDate().equals(now.plusMonths(12))
