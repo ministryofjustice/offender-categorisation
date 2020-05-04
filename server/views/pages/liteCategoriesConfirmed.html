@@ -14,15 +14,27 @@
 {% block content %}
 
   {{ govukPanel({
-    titleText: "Categorisation has been saved"
+    titleText: "Categorisation has been submitted",
+    classes: "govuk-!-margin-bottom-6"
   }) }}
 
-  {{ govukButton({
-    text: "Back to todo list",
-    href: "/"
-  }) }}
-  <div>
-    <a href="/{{ bookingId }}" id="manageLink">Manage categorisations</a>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ govukButton({
+      text: "Return to Todo list",
+      href: "/",
+      classes: "grey-button"
+    }) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ govukButton({
+      text: "Return to Manage categorisations",
+      href: "/" + bookingId,
+      classes: "grey-button"
+    }) }}
+    </div>
   </div>
 
 {% endblock %}

@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.cattool.pages
 class LiteCategoriesConfirmedPage extends HeaderPage {
 
   static at = {
-    panelText.text() == 'Categorisation has been saved'
+    panelText.text() == 'Categorisation has been submitted'
   }
 
   static content = {

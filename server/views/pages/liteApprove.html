@@ -41,9 +41,23 @@
       attributes: {  'id': 'inProgressWarning' }
     }) }}
 
-    <div>
-      <a href="/" id="todoLink1">Todo list</a>
-      <a href="/{{ bookingId }}" id="manageLink1">Manage categorisations</a>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+      {{ govukButton({
+        text: "Return to Todo list",
+        href: "/",
+        classes: "grey-button"
+      }) }}
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+      {{ govukButton({
+        text: "Return to Manage categorisations",
+        href: "/" + bookingId,
+        classes: "grey-button"
+      }) }}
+      </div>
     </div>
 
   {% elif sameUser %}
@@ -55,22 +69,36 @@
       attributes: {  'id': 'inProgressWarning' }
     }) }}
 
-    <div>
-      <a href="/" id="todoLink2">Todo list</a>
-      <a href="/{{ bookingId }}" id="manageLink2">Manage categorisations</a>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+      {{ govukButton({
+        text: "Return to Todo list",
+        href: "/",
+        classes: "grey-button"
+      }) }}
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+      {{ govukButton({
+        text: "Return to Manage categorisations",
+        href: "/" + bookingId,
+        classes: "grey-button"
+      }) }}
+      </div>
     </div>
 
   {% else %}
   <hr />
-  <h2>Assessment details</h2>
+  <h2>Submitted assessment details</h2>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Category</div>
-    <div id="category" class="govuk-grid-column-one-third">{{ assessmentData.category }}</div>
+    <div id="category" class="govuk-grid-column-one-third">{{ assessmentData.categoryDisplay }}</div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Authority</div>
-    <div id="assessmentCommittee" class="govuk-grid-column-one-third">{{ assessmentData.assessmentCommittee }}</div>
+    <div id="assessmentCommittee" class="govuk-grid-column-one-third">{{ assessmentData.assessmentCommitteeDisplay }}</div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Assessment date</div>
@@ -78,17 +106,18 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Assessor</div>
-    <div id="assessedBy" class="govuk-grid-column-one-third">{{ assessmentData.assessedBy }}</div>
+    <div id="assessedBy" class="govuk-grid-column-one-third">{{ assessmentData.assessedByDisplay }}</div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Recommended placement</div>
-    <div id="placementPrisonId" class="govuk-grid-column-one-third">{{ assessmentData.placementPrisonId }}</div>
+    <div id="placementPrisonId" class="govuk-grid-column-one-third">{{ assessmentData.placementPrisonIdDisplay }}</div>
   </div>
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-margin-bottom-4">
     <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Assessment comment</div>
     <div id="assessmentComment" class="govuk-grid-column-one-third">{{ assessmentData.assessmentComment }}</div>
   </div>
   <hr />
+  <h2>Approval details</h2>
 
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
@@ -110,35 +139,19 @@
         id: 'approvedCommittee',
         name: 'approvedCommittee',
         label: { text: 'Department' },
-        items: [
-          { value: 'OCA',    text: 'OCA'       , selected: approvedCommittee === 'OCA'   },
-          { value: 'REVIEW', text: 'Review'    , selected: approvedCommittee === 'REVIEW'},
-          { value: 'RECP',   text: 'Reception' , selected: approvedCommittee === 'RECP'  },
-          { value: 'SECUR',  text: 'Security'  , selected: approvedCommittee === 'SECUR' },
-          { value: 'GOV',    text: 'Governor'  , selected: approvedCommittee === 'GOV'   }
-        ],
+        items: committees,
         classes: 'govuk-!-width-full'
       }) }}
       </div>
     </div>
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-third">
+      <div class="govuk-grid-column-one-third ">
       {{ govukSelect({
         id: 'supervisorCategory',
         name: 'supervisorCategory',
         label: { text: 'Approved category' },
-        items: [
-          { value: 'U', text: 'Unsentenced', selected: supervisorCategory === 'U'},
-          { value: 'Z', text: 'Unclass'    , selected: supervisorCategory === 'Z'},
-          { value: 'A', text: 'Cat A'      , selected: supervisorCategory === 'A'},
-          { value: 'E', text: 'Cat A Ex'   , selected: supervisorCategory === 'E'},
-          { value: 'H', text: 'Cat A Hi'   , selected: supervisorCategory === 'H'},
-          { value: 'P', text: 'Prov A'     , selected: supervisorCategory === 'P'},
-          { value: 'R', text: 'Fem Closed' , selected: supervisorCategory === 'R'},
-          { value: 'T', text: 'Fem Open'   , selected: supervisorCategory === 'T'}
-        ],
-        classes: 'govuk-!-width-full',
-        value: supervisorCategory
+        items: cats,
+        classes: 'govuk-!-width-full'
       }) }}
       </div>
       <div class="govuk-grid-column-two-thirds">
@@ -160,7 +173,7 @@
         name: 'approvedPlacement',
         label: { text: 'Approved placement' },
         items: prisonList,
-        value: approvedPlacement
+        classes: 'govuk-!-width-full'
       }) }}
       </div>
       <div class="govuk-grid-column-two-thirds">
@@ -186,12 +199,9 @@
         label: { text: 'Approved comment' },
         value: approvedComment
       }) }}
-
-      {{ govukButton({
-        text: 'Save',
-        attributes: {  }
-      }) }}
       </div>
+    </div>
+    <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-third">
       {{ govukInput({
         id: 'nextReviewDate',
@@ -205,6 +215,11 @@
       }) }}
       </div>
     </div>
+
+    {{ govukButton({
+      text: 'Submit',
+      attributes: {  }
+    }) }}
   </form>
   {% endif %}
 
