@@ -34,7 +34,7 @@ services:
     - POSTGRES_DB=form-builder
 
   nomis-oauth2-server:
-    image: mojdigitalstudio/nomis-oauth2-server:latest
+    image: quay.io/hmpps/nomis-oauth2-server:latest
     networks:
     - hmpps
     container_name: nomis-oauth2-server
