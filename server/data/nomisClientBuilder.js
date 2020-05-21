@@ -1,4 +1,7 @@
 const superagent = require('superagent')
+const Agent = require('agentkeepalive')
+const { HttpsAgent } = require('agentkeepalive')
+
 const moment = require('moment')
 const logger = require('../../log')
 const config = require('../config')
@@ -9,7 +12,14 @@ const timeoutSpec = {
   deadline: config.apis.elite2.timeout.deadline,
 }
 
+const agentOptions = {
+  maxSockets: config.apis.elite2.agent.maxSockets,
+  maxFreeSockets: config.apis.elite2.agent.maxFreeSockets,
+  freeSocketTimeout: config.apis.elite2.agent.freeSocketTimeout,
+}
+
 const apiUrl = config.apis.elite2.url
+const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
 module.exports = context => {
   const nomisUserGet = nomisUserGetBuilder(context.user.token)
@@ -156,6 +166,7 @@ function nomisUserGetBuilder(token) {
     try {
       const result = await superagent
         .get(path)
+        .agent(keepaliveAgent)
         .query(query)
         .set('Authorization', `Bearer ${token}`)
         .set(headers)
@@ -180,6 +191,7 @@ function nomisClientGetBuilder(username) {
 
       const result = await superagent
         .get(path)
+        .agent(keepaliveAgent)
         .query(query)
         .set('Authorization', `Bearer ${clientToken.body.access_token}`)
         .set(headers)
@@ -225,6 +237,7 @@ function nomisClientPostBuilder(username) {
 
       const result = await superagent
         .post(path)
+        .agent(keepaliveAgent)
         .send(body)
         .set('Authorization', `Bearer ${clientToken.body.access_token}`)
         .set(headers)
@@ -248,6 +261,7 @@ function nomisClientPutBuilder(username) {
 
       const result = await superagent
         .put(path)
+        .agent(keepaliveAgent)
         .send(body)
         .set('Authorization', `Bearer ${clientToken.body.access_token}`)
         .set(headers)
@@ -267,6 +281,7 @@ function nomisClientPutBuilder(username) {
 async function post(token, path, body, headers, responseType) {
   return superagent
     .post(path)
+    .agent(keepaliveAgent)
     .send(body)
     .set('Authorization', `Bearer ${token}`)
     .set(headers)
@@ -277,6 +292,7 @@ async function post(token, path, body, headers, responseType) {
 async function put(token, path, body, headers, responseType) {
   return superagent
     .put(path)
+    .agent(keepaliveAgent)
     .send(body)
     .set('Authorization', `Bearer ${token}`)
     .set(headers)
