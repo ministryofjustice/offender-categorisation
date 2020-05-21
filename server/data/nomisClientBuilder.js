@@ -6,6 +6,7 @@ const moment = require('moment')
 const logger = require('../../log')
 const config = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
+const getSanitisedError = require('../sanitisedError')
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,
@@ -177,8 +178,9 @@ function nomisUserGetBuilder(token) {
       logger.debug({ path, query, durationMillis }, 'Nomis GET using user credentials')
       return raw ? result : result.body
     } catch (error) {
-      logger.error({ ...error, path, query }, 'Error in Nomis GET using user credentials')
-      throw error
+      const sanitisedError = getSanitisedError(error)
+      logger.error({ ...sanitisedError, path, query }, 'Error in Nomis GET using user credentials')
+      throw sanitisedError
     }
   }
 }
@@ -202,8 +204,9 @@ function nomisClientGetBuilder(username) {
       logger.debug({ path, query, durationMillis }, 'Nomis GET using clientId credentials')
       return raw ? result : result.body
     } catch (error) {
-      logger.error({ ...error, path, query }, 'Error in Nomis GET using clientId credentials')
-      throw error
+      const sanitisedError = getSanitisedError(error)
+      logger.error({ ...sanitisedError, path, query }, 'Error in Nomis GET using clientId credentials')
+      throw sanitisedError
     }
   }
 }
@@ -223,8 +226,9 @@ function nomisPushBuilder(verb, token) {
       logger.debug({ path, body, durationMillis }, 'Nomis PUSH')
       return result.body
     } catch (error) {
-      logger.error({ ...error, path }, 'Error in Nomis PUSH')
-      throw error
+      const sanitisedError = getSanitisedError(error)
+      logger.error({ ...sanitisedError, path }, 'Error in Nomis PUSH')
+      throw sanitisedError
     }
   }
 }
@@ -247,8 +251,9 @@ function nomisClientPostBuilder(username) {
       logger.debug({ path, body, durationMillis }, 'Nomis POST')
       return result.body
     } catch (error) {
-      logger.error({ ...error, path }, 'Error in Nomis POST')
-      throw error
+      const sanitisedError = getSanitisedError(error)
+      logger.error({ ...sanitisedError, path }, 'Error in Nomis POST')
+      throw sanitisedError
     }
   }
 }
@@ -272,8 +277,9 @@ function nomisClientPutBuilder(username) {
       logger.debug({ path, body, durationMillis }, 'Nomis PUT')
       return result.body
     } catch (error) {
-      logger.error({ ...error, path }, 'Error in Nomis PUT')
-      throw error
+      const sanitisedError = getSanitisedError(error)
+      logger.error({ ...sanitisedError, path }, 'Error in Nomis PUT')
+      throw sanitisedError
     }
   }
 }

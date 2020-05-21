@@ -12,6 +12,7 @@ const bodyParser = require('body-parser')
 const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
+const getSanitisedError = require('./sanitisedError')
 
 const catToolSerialisers = require('./catToolSerialisers')
 const auth = require('./authentication/auth')
@@ -177,7 +178,8 @@ module.exports = function createApp({
           )
           req.user.refreshTime = newToken.refreshTime
         } catch (error) {
-          logger.error(`Token refresh error: ${req.user.username}`, error.stack)
+          const sanitisedError = getSanitisedError(error)
+          logger.error(sanitisedError, `Token refresh error: ${req.user.username}`)
           return res.redirect('/logout')
         }
       }
