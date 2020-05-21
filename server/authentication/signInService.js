@@ -1,9 +1,21 @@
 const superagent = require('superagent')
+const Agent = require('agentkeepalive')
+const { HttpsAgent } = require('agentkeepalive')
+
 const querystring = require('querystring')
 const log = require('../../log')
 const fiveMinutesBefore = require('../utils/fiveMinutesBefore')
 const { generateOauthClientToken } = require('./clientCredentials')
 const config = require('../config')
+
+const agentOptions = {
+  maxSockets: config.apis.oauth2.agent.maxSockets,
+  maxFreeSockets: config.apis.oauth2.agent.maxFreeSockets,
+  freeSocketTimeout: config.apis.oauth2.agent.freeSocketTimeout,
+}
+
+const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
+const keepaliveAgent = oauthUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
 function signInService() {
   return {
@@ -45,9 +57,10 @@ function getOauthToken(oauthClientToken, requestSpec) {
   const oauthRequest = querystring.stringify(requestSpec)
 
   return superagent
-    .post(`${config.apis.oauth2.url}/oauth/token`)
+    .post(oauthUrl)
     .set('Authorization', oauthClientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
+    .agent(keepaliveAgent)
     .send(oauthRequest)
     .timeout(config.apis.oauth2.timeout)
 }

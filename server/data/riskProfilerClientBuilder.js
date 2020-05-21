@@ -1,4 +1,6 @@
 const superagent = require('superagent')
+const Agent = require('agentkeepalive')
+const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log')
 const config = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
@@ -7,8 +9,14 @@ const timeoutSpec = {
   response: config.apis.riskProfiler.timeout.response,
   deadline: config.apis.riskProfiler.timeout.deadline,
 }
+const agentOptions = {
+  maxSockets: config.apis.riskProfiler.agent.maxSockets,
+  maxFreeSockets: config.apis.riskProfiler.agent.maxFreeSockets,
+  freeSocketTimeout: config.apis.riskProfiler.agent.freeSocketTimeout,
+}
 
 const apiUrl = `${config.apis.riskProfiler.url}risk-profile/`
+const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
 module.exports = context => {
   const apiGet = riskProfilerGetBuilder(context.user.username)
@@ -53,6 +61,7 @@ function riskProfilerGetBuilder(username) {
         .query(query)
         .set('Authorization', `Bearer ${oauthResult.body.access_token}`)
         .set(headers)
+        .agent(keepaliveAgent)
         .responseType(responseType)
         .timeout(timeoutSpec)
 
