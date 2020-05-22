@@ -12,6 +12,7 @@ describe('sanitised error', () => {
             property: 'not for logging',
           },
         },
+        res: { statusMessage: 'hi there' },
         headers: {
           date: 'Tue, 19 May 2020 15:16:20 GMT',
         },
@@ -25,7 +26,7 @@ describe('sanitised error', () => {
 
     expect(sanitisedError(error)).toEqual({
       headers: { date: 'Tue, 19 May 2020 15:16:20 GMT' },
-      message: 'Not Found',
+      message: 'hi there',
       stack: 'stack description',
       status: 404,
       statusText: 'Not found',
