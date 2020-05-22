@@ -3,22 +3,22 @@ module.exports = error => {
     return {
       status: error.response.status,
       statusText: error.response.statusText,
+      message: error.response.res.statusMessage || error.message,
       headers: error.response.headers,
-      stack: error.stack,
       data: error.response.body,
-      message: error.message,
+      stack: error.stack,
     }
   }
   if (error.request) {
     // request is too big and best skipped
     return {
       code: error.code,
-      stack: error.stack,
       message: error.message,
+      stack: error.stack,
     }
   }
   return {
-    stack: error.stack,
     message: error.message,
+    stack: error.stack,
   }
 }
