@@ -4,6 +4,7 @@ const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log')
 const config = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
+const getSanitisedError = require('../sanitisedError')
 
 const timeoutSpec = {
   response: config.apis.riskProfiler.timeout.response,
@@ -67,9 +68,9 @@ function riskProfilerGetBuilder(username) {
 
       return result.body
     } catch (error) {
-      logger.warn(error, 'Error calling riskProfiler api')
-
-      throw error
+      const sanitisedError = getSanitisedError(error)
+      logger.error({ sanitisedError, path, query }, 'Error calling riskProfiler api')
+      throw sanitisedError
     }
   }
 }
