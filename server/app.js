@@ -12,6 +12,7 @@ const bodyParser = require('body-parser')
 const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
+const getSanitisedError = require('./sanitisedError')
 
 const catToolSerialisers = require('./catToolSerialisers')
 const auth = require('./authentication/auth')
@@ -177,7 +178,8 @@ module.exports = function createApp({
           )
           req.user.refreshTime = newToken.refreshTime
         } catch (error) {
-          logger.error(`Token refresh error: ${req.user.username}`, error.stack)
+          const sanitisedError = getSanitisedError(error)
+          logger.error(sanitisedError, `Token refresh error: ${req.user.username}`)
           return res.redirect('/logout')
         }
       }
@@ -301,13 +303,8 @@ function renderErrors(error, req, res, next) {
 
   // code to handle unknown errors
   const prodMessage = `Something went wrong at ${moment()}. The error has been logged. Please try again`
-  if (error.response) {
-    res.locals.error = error.response.error
-    res.locals.message = production ? prodMessage : error.response.res.statusMessage
-  } else {
-    res.locals.error = error
-    res.locals.message = production ? prodMessage : error.message
-  }
+  res.locals.error = error
+  res.locals.message = production ? prodMessage : error.message
   res.status(error.status || 500)
 
   res.render('pages/error')

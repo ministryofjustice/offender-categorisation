@@ -2,6 +2,7 @@ const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log.js')
+const getSanitisedError = require('../sanitisedError')
 
 const agentOptions = {
   maxSockets: 100,
@@ -27,7 +28,8 @@ function serviceCheckFactory(name, url) {
         })
         .end((error, result) => {
           if (error) {
-            logger.error(error.stack, `Error calling ${name}`)
+            const sanitisedError = getSanitisedError(error)
+            logger.error(sanitisedError, `Error calling ${name}`)
             reject(error)
           } else if (result.status === 200) {
             resolve('UP')
