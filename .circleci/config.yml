@@ -1,61 +1,9 @@
 version: 2.1
-commands:
-  setup:
-    description: "Install tools and configure kubectl"
-    steps:
-      - aws-cli/install
-      - kubernetes/install
-      - helm/install-helm-client:
-          version: v3.0.2
-      - run:
-          name: Setup kubectl
-          command: |
-            echo -n "${KUBE_ENV_CACERT}" | base64 -d > /tmp/cluster_ca.crt
-            kubectl config set-cluster "${KUBE_ENV_NAME}" \
-              --certificate-authority="/tmp/cluster_ca.crt" \
-              --server="https://api.${KUBE_ENV_NAME}"
-            kubectl config set-credentials circleci \
-              --token="${KUBE_ENV_TOKEN}"
-            kubectl config set-context circleci \
-              --cluster="${KUBE_ENV_NAME}" \
-              --user="circleci" \
-              --namespace="${KUBE_ENV_NAMESPACE}"
-            # confirm setup is ok
-            kubectl config use-context circleci
-  deploy_to_env:
-    parameters:
-      env:
-        type: string
-      slack_notification:
-        type: boolean
-        default: false
-    steps:
-      - setup
-      - checkout:
-          path: ~/git
-      - attach_workspace:
-          at: ~/app
-      - deploy:
-          name: Deploy to << parameters.env >>
-          command: |
-            APP=offender-categorisation
-            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            echo "export APP_VERSION=$APP_VERSION;export APP=$APP" >> $BASH_ENV
-            sed -i "s/appVersion: \".*\"/appVersion: \"${APP_VERSION}\"/g" ~/git/helm_deploy/${APP}/Chart.yaml
-            aws secretsmanager get-secret-value --secret-id ${KUBE_ENV_NAMESPACE} | jq -r .SecretString | \
-            helm upgrade ${APP} ~/git/helm_deploy/${APP}/. \
-              --install --wait --reset-values --timeout 5m --history-max 10 \
-              --namespace=${KUBE_ENV_NAMESPACE} \
-              --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
-              --values - \
-              --set image.tag="${APP_VERSION}"
-      - when:
-          condition: <<parameters.slack_notification>>
-          steps:
-            - slack/notify:
-                message: "*${APP}* version:*${APP_VERSION}* deployed to << parameters.env >>"
-                include_project_field: false
-                include_job_number_field: false
+
+orbs:
+  hmpps: ministryofjustice/hmpps@1.1
+  owasp: entur/owasp@0.0.10
+
 executors:
   deployer:
     docker:
@@ -65,12 +13,6 @@ executors:
     docker:
       - image: circleci/node:10-buster-browsers
     working_directory: ~/app
-
-orbs:
-  aws-cli: circleci/aws-cli@0.1.18
-  kubernetes: circleci/kubernetes@0.10.1
-  helm: circleci/helm@0.2.3
-  slack: circleci/slack@3.4.2
 
 jobs:
   build:
@@ -159,54 +101,6 @@ jobs:
           destination: integration/geb
       - store_test_results:
           path: integration-tests/build/test-results
-  build_docker:
-    executor: deployer
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/app
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build container and publish to docker hub
-          command: |
-            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-
-            docker build --rm=false . \
-              --build-arg BUILD_NUMBER=$APP_VERSION \
-              --build-arg GIT_REF=$CIRCLE_SHA1 \
-              --tag "mojdigitalstudio/categorisation-tool:$APP_VERSION" \
-              --label "maintainer=dps-hmpps@digital.justice.gov.uk" \
-              --label "app.version=$APP_VERSION" \
-              --label "build.version=$APP_VERSION" \
-              --label "build.number=$CIRCLE_BUILD_NUM" \
-              --label "build.url=$CIRCLE_BUILD_URL" \
-              --label "build.gitref=$CIRCLE_SHA1"
-
-             if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-               #publish to docker hub as the tag
-               docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-               docker tag mojdigitalstudio/categorisation-tool:$APP_VERSION mojdigitalstudio/categorisation-tool:latest
-               docker push mojdigitalstudio/categorisation-tool:$APP_VERSION
-               docker push mojdigitalstudio/categorisation-tool:latest
-             fi
-
-  deploy_dev:
-    executor: deployer
-    steps:
-      - deploy_to_env:
-          env: "dev"
-  deploy_preprod:
-    executor: deployer
-    steps:
-      - deploy_to_env:
-          env: "preprod"
-  deploy_prod:
-    executor: deployer
-    steps:
-      - deploy_to_env:
-          env: "prod"
-          slack_notification: true
 
 workflows:
   version: 2
@@ -222,20 +116,30 @@ workflows:
       - integration_tests:
           requires:
           - test
-      - build_docker:
-          requires:
-            - integration_tests
+      - hmpps/build_docker:
+          name: build_docker
           filters:
             branches:
-              only: master
-      - deploy_dev:
+              only:
+                - main
+      - hmpps/deploy_env:
+          name: deploy_dev
+          env: "dev"
+          filters:
+            branches:
+              only:
+                - main
           requires:
+            - test
+            - integration_tests
             - build_docker
       - request-preprod-approval:
           type: approval
           requires:
             - deploy_dev
-      - deploy_preprod:
+      - hmpps/deploy_env:
+          name: deploy_preprod
+          env: "preprod"
           context: offender-categorisation-preprod
           requires:
             - request-preprod-approval
@@ -243,9 +147,23 @@ workflows:
           type: approval
           requires:
             - deploy_preprod
-      - deploy_prod:
+      - hmpps/deploy_env:
+          name: deploy_prod
+          env: "prod"
+          slack_notification: true
           context: offender-categorisation-prod
           requires:
             - request-prod-approval
+
+  scheduled:
+    triggers:
+      - schedule:
+          cron: "0 6 * * 1-5"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - hmpps/npm_security_audit
 
 
