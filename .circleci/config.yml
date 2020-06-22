@@ -125,6 +125,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          release_name: "offender-categorisation"
+          chart_name: "offender-categorisation"
           filters:
             branches:
               only:
@@ -140,6 +142,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
+          release_name: "offender-categorisation"
+          chart_name: "offender-categorisation"
           context: offender-categorisation-preprod
           requires:
             - request-preprod-approval
@@ -150,6 +154,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
+          release_name: "offender-categorisation"
+          chart_name: "offender-categorisation"
           slack_notification: true
           context: offender-categorisation-prod
           requires:
