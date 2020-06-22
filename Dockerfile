@@ -22,7 +22,6 @@ ADD . .
 
 # Install AWS RDS Root cert
 RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem > /app/root.cert
-RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2015-root.pem >> /app/root.cert
 
 RUN npm install && \
     npm run build && \
