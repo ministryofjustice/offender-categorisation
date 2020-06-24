@@ -11,6 +11,7 @@
     "test": "jest",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info",
+    "security_audit": "npx audit-ci --config audit-ci.json",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },
