@@ -41,7 +41,7 @@ module.exports = function healthcheckFactory(authUrl, elite2Url, riskProfilerUrl
     Promise.all(checks.map(fn => fn())).then(checkResults => {
       const allOk = checkResults.every(item => item.status === 'UP') ? 'UP' : 'DOWN'
       const result = {
-        name: 'categorisation-tool',
+        name: 'offender-categorisation',
         status: allOk,
         api: checkResults.reduce(gatherCheckInfo, {}),
       }
