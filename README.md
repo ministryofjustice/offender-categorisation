@@ -1,8 +1,8 @@
-# categorisation-tool
+# offender-categorisation
 A digital service for categorising prisoners
 
 # Dev Website
-https://categorisation-tool.apps.cloud-platform-live-0.k8s.integration.dsd.io/
+https://dev.offender-categorisation.apps.cloud-platform-live-0.k8s.integration.dsd.io/
 
 # Based on GOVUK startkit
 
