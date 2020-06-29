@@ -429,8 +429,8 @@ describe('getUnapprovedOffenders', () => {
       },
       {
         offenderNo: 'G0008',
-        firstName: 'DIFFERENT',
-        lastName: 'SEQUENCES',
+        firstName: 'WRONG',
+        lastName: 'STATUS',
         categoriserFirstName: 'CATTER',
         categoriserLastName: 'EIGHT',
         bookingId: 8,
@@ -441,8 +441,8 @@ describe('getUnapprovedOffenders', () => {
       },
       {
         offenderNo: 'G0009',
-        firstName: 'DIFFERENT',
-        lastName: 'SEQUENCES',
+        firstName: 'WRONG',
+        lastName: 'STATUS',
         categoriserFirstName: 'CATTER',
         categoriserLastName: 'NINE',
         bookingId: 9,
@@ -451,9 +451,22 @@ describe('getUnapprovedOffenders', () => {
         status: 'AWAITING_APPROVAL',
         assessmentSeq: 99,
       },
+      {
+        offenderNo: 'G0010',
+        firstName: 'IN',
+        lastName: 'OTHER_CATEGORIES',
+        categoriserFirstName: 'CATTER',
+        categoriserLastName: 'TEN',
+        bookingId: 10,
+        category: 'C',
+        nextReviewDate: '2019-05-29',
+        status: 'AWAITING_APPROVAL',
+        assessmentSeq: 99,
+      },
     ]
 
     nomisClient.getUncategorisedOffenders.mockResolvedValue(data)
+    formService.getUnapprovedLite.mockResolvedValue([{ bookingId: 10 }])
 
     formService.getCategorisationRecord
       .mockResolvedValueOnce({ bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: Status.AWAITING_APPROVAL.name })
@@ -464,6 +477,7 @@ describe('getUnapprovedOffenders', () => {
       .mockResolvedValueOnce({ bookingId: 7, nomisSeq: 17, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
       .mockResolvedValueOnce({ bookingId: 8, nomisSeq: 18, catType: 'RECAT', status: Status.SECURITY_BACK.name })
       .mockResolvedValueOnce({ bookingId: 9, nomisSeq: 19, catType: 'RECAT', status: Status.SECURITY_MANUAL.name })
+      .mockResolvedValueOnce({ bookingId: 10, nomisSeq: 1, catType: 'RECAT', status: Status.AWAITING_APPROVAL.name })
 
     const sentenceDates = [
       { sentenceDetail: { bookingId: 1, sentenceStartDate: mockTodaySubtract(30) } }, // 2019-05-01
@@ -532,7 +546,7 @@ describe('getUnapprovedOffenders', () => {
     const result = await service.getUnapprovedOffenders(context, mockTransactionalClient)
 
     expect(nomisClient.getUncategorisedOffenders.mock.calls[0][0]).toEqual('LEI')
-    expect(formService.getCategorisationRecord).toBeCalledTimes(8)
+    expect(formService.getCategorisationRecord).toBeCalledTimes(9)
     expect(formService.getCategorisationRecord).nthCalledWith(1, 1, mockTransactionalClient)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledWith([1, 6])
     expect(result).toMatchObject(expected)
@@ -540,6 +554,7 @@ describe('getUnapprovedOffenders', () => {
 
   test('No results from elite', async () => {
     nomisClient.getUncategorisedOffenders.mockResolvedValue([])
+    formService.getUnapprovedLite.mockResolvedValue([])
     const result = await service.getUnapprovedOffenders(context, 'LEI', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })

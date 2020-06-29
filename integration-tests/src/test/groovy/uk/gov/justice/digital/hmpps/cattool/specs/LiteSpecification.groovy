@@ -138,6 +138,7 @@ class LiteSpecification extends GebReportingSpec {
     when: 'A supervisor views their lite todo page'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubSentenceData(['B2345XY'], [11], [now.toString()])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
