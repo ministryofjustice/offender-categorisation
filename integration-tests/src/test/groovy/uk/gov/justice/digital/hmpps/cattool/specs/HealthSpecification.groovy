@@ -44,7 +44,7 @@ class HealthSpecification extends Specification {
     def response = this.http.get()
     then:
     response.uptime > 0.0
-    response.name == "categorisation-tool"
+    response.name == "offender-categorisation"
     !response.version.isEmpty()
     response.api == [auth: 'UP', elite2: 'UP', riskProfiler: 'UP']
   }
@@ -65,7 +65,7 @@ class HealthSpecification extends Specification {
     }
 
     then:
-    response.name == "categorisation-tool"
+    response.name == "offender-categorisation"
     !response.version.isEmpty()
     response.api == [auth: 'UP', elite2: 'UP', riskProfiler: [timeout: 1000, code: 'ECONNABORTED', errno: 'ETIMEDOUT', retries: 2]]
   }

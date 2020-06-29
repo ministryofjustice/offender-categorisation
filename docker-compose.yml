@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   form-builder:
-    image: quay.io/hmpps/categorisation-tool
+    image: quay.io/hmpps/offender-categorisation
     networks:
     - hmpps
     depends_on:
