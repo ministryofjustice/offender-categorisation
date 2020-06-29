@@ -356,9 +356,16 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
-      const uncategorisedResult = (await nomisClient.getUncategorisedOffenders(agencyId)).filter(
-        s => s.status === Status.AWAITING_APPROVAL.name // the status coming back from nomis
-      )
+
+      const [allUncategorised, allUnapprovedLite] = await Promise.all([
+        nomisClient.getUncategorisedOffenders(agencyId),
+        formService.getUnapprovedLite(agencyId, transactionalDbClient),
+      ])
+
+      // We only want AWAITING_APPROVAL coming back from nomis
+      const uncategorisedResult = allUncategorised.filter(s => s.status === Status.AWAITING_APPROVAL.name)
+
+      const unapprovedLiteBookingIds = allUnapprovedLite.map(u => u.bookingId)
 
       const unapprovedWithDbRecord = await Promise.all(
         uncategorisedResult.map(async s => {
@@ -368,12 +375,15 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       )
 
       // remove any sent back to categoriser records
-      const unapprovedOffenders = unapprovedWithDbRecord.filter(
-        o =>
-          o.dbRecord.status !== Status.SUPERVISOR_BACK.name &&
-          o.dbRecord.status !== Status.SECURITY_BACK.name &&
-          o.dbRecord.status !== Status.SECURITY_MANUAL.name
-      )
+      const unapprovedOffenders = unapprovedWithDbRecord
+        .filter(
+          o =>
+            o.dbRecord.status !== Status.SUPERVISOR_BACK.name &&
+            o.dbRecord.status !== Status.SECURITY_BACK.name &&
+            o.dbRecord.status !== Status.SECURITY_MANUAL.name
+        )
+        // remove any which are on the 'Other categories' tab
+        .filter(o => !unapprovedLiteBookingIds.includes(o.bookingId))
 
       if (isNilOrEmpty(unapprovedOffenders)) {
         logger.info(`getUnapprovedOffenders: No unapproved offenders found for ${agencyId}`)
