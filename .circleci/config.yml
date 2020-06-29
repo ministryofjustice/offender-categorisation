@@ -5,10 +5,6 @@ orbs:
   owasp: entur/owasp@0.0.10
 
 executors:
-  deployer:
-    docker:
-      - image: circleci/python:3
-    working_directory: ~/app
   builder:
     docker:
       - image: circleci/node:10-buster-browsers
@@ -37,15 +33,10 @@ jobs:
       - run:
           command: |
             npm run build
-            DATE=$(date '+%Y-%m-%d')
-            export BUILD_NUMBER=${DATE}.${CIRCLE_BUILD_NUM}
-            export GIT_REF="$CIRCLE_SHA1"
-            npm run record-build-info
       - persist_to_workspace:
           root: .
           paths:
           - node_modules
-          - build-info.json
           - assets/stylesheets
   test:
     executor: builder
@@ -125,8 +116,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
-          release_name: "offender-categorisation"
-          chart_name: "offender-categorisation"
           filters:
             branches:
               only:
@@ -142,8 +131,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
-          release_name: "offender-categorisation"
-          chart_name: "offender-categorisation"
           context: offender-categorisation-preprod
           requires:
             - request-preprod-approval
@@ -154,8 +141,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
-          release_name: "offender-categorisation"
-          chart_name: "offender-categorisation"
           slack_notification: true
           context: offender-categorisation-prod
           requires:

@@ -2,7 +2,7 @@
 A digital service for categorising prisoners
 
 # Dev Website
-https://dev.offender-categorisation.apps.cloud-platform-live-0.k8s.integration.dsd.io/
+https://dev.offender-categorisation.service.justice.gov.uk/
 
 # Based on GOVUK startkit
 
