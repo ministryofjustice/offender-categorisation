@@ -23,5 +23,6 @@ class LandingPage extends Page {
     securityButton(required: false) { $('#securityButton') }
     paragraphs { $('p') }
     liteCategoriesButton(required: false) { $('#liteCategoriesButton') }
+    nextReviewDate(required: false) { $('.data-qa-nextReviewDate') }
   }
 }

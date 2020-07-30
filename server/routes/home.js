@@ -324,8 +324,9 @@ module.exports = function Index({
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      const nextReviewDate = extractNextReviewDate(details)
 
-      res.render(`pages/landing`, { data: { details } })
+      res.render(`pages/landing`, { data: { details, nextReviewDate } })
     })
   )
 
