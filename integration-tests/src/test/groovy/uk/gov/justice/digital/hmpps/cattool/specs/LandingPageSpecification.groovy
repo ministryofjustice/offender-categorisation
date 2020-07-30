@@ -324,7 +324,7 @@ class LandingPageSpecification extends GebReportingSpec {
     data.referred_by == 'SECURITY_USER'
   }
 
-  def "A basic user can view previous categorisations if prisoner is in their prison"() {
+  def "A basic user can view previous categorisations and next review date if prisoner is in their prison"() {
     db.createData(12, '{}') // should get ignored
     // category history is driven by the nomis response, a link to view the record is provided if a postgres record exists -  matched on nomis sequence
     db.doCreateCompleteRow(-2, 12, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
@@ -340,11 +340,16 @@ class LandingPageSpecification extends GebReportingSpec {
     given: 'a basic user is logged in'
     fixture.loginAs(READONLY_USER)
 
-    when: 'the user arrives at the landing page and clicks the link to check previous reviews'
+    when: 'the user arrives at the landing page'
     elite2Api.stubGetOffenderDetails(12)
     elite2Api.stubGetBasicOffenderDetails(12)
     go '/12'
     at LandingPage
+
+    then: "next review date is shown correctly"
+    nextReviewDate.text() == "They are due to be reviewed by Thursday 16th January 2020."
+
+    when: "link is clicked to check previous reviews"
     elite2Api.stubAssessmentsWithCurrent("B2345YZ")
     elite2Api.stubAgencyDetails('LPI')
     historyButton.click()
