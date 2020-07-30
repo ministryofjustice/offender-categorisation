@@ -22,6 +22,10 @@
 
 <div class="govuk-!-width-two-thirds">
 
+  {% if data.nextReviewDate %}
+    <p class="data-qa-nextReviewDate">They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
+  {% endif %}
+
   <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
   <p>See all information from previous category reviews.</p>
   {{ govukButton({
