@@ -2,6 +2,8 @@ const querystring = require('querystring')
 const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
+const redis = require('redis')
+const { promisify } = require('util')
 const logger = require('../../log')
 const config = require('../config')
 
@@ -9,6 +11,21 @@ module.exports = {
   generateOauthClientToken,
   getApiClientToken,
 }
+
+const client = redis.createClient({
+  port: config.redis.port,
+  password: config.redis.password,
+  host: config.redis.host,
+  tls: config.redis.tls_enabled === 'true' ? {} : false,
+  prefix: 'clientToken:',
+})
+
+client.on('error', error => {
+  logger.error(error, `Redis error`)
+})
+
+const getRedisAsync = promisify(client.get).bind(client)
+const setRedisAsync = promisify(client.set).bind(client)
 
 const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
 const timeoutSpec = {
@@ -35,6 +52,12 @@ function generate(clientId, clientSecret) {
 }
 
 async function getApiClientToken(username) {
+  const redisKey = username || '%ANONYMOUS%'
+  const tokenFromRedis = await getRedisAsync(redisKey)
+  if (tokenFromRedis) {
+    return { body: { access_token: tokenFromRedis } }
+  }
+
   const oauthRiskProfilerClientToken = generateOauthClientToken()
 
   const oauthRequest = username
@@ -45,11 +68,16 @@ async function getApiClientToken(username) {
     `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`
   )
 
-  return superagent
+  const newToken = await superagent
     .post(oauthUrl)
     .set('Authorization', oauthRiskProfilerClientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
     .agent(keepaliveAgent)
     .send(oauthRequest)
     .timeout(timeoutSpec)
+
+  // set TTL slightly less than expiry of token
+  await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
+
+  return newToken
 }
