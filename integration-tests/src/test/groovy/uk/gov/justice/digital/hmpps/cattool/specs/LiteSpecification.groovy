@@ -135,13 +135,13 @@ class LiteSpecification extends GebReportingSpec {
     warning.text() contains 'A categorisation is already in progress for this person'
 
     when: 'I go to the recat tasklist page'
-    // not in todo list so have to go directly
     fixture.logout()
     elite2Api.stubRecategorise()
     fixture.loginAs(RECATEGORISER_USER)
+    // not in to-do list so have to go directly
     go '/tasklistRecat/12'
 
-    then: 'The correct error is shown. an error when an incomplete lite categorisation is present'
+    then: 'The correct error is shown'
     at ErrorPage
     errorSummaryTitle.text() == 'Categorisation is in progress in "other categories" section'
 
@@ -150,7 +150,7 @@ class LiteSpecification extends GebReportingSpec {
     fixture.gotoTasklist()
     go '/tasklist/12' // no clickable button available, so force to page
 
-    then: 'The correct error is shown. an error when an incomplete lite categorisation is present'
+    then: 'The correct error is shown'
     at ErrorPage
     errorSummaryTitle.text() == 'Categorisation is in progress in "other categories" section'
 
