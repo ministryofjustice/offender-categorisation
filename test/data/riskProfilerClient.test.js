@@ -1,10 +1,15 @@
 const nock = require('nock')
+const redis = require('redis')
+
+const redisFunctions = { on: jest.fn(), get: jest.fn(), set: jest.fn() }
+redis.createClient = jest.fn().mockReturnValue(redisFunctions)
+redisFunctions.get.mockImplementation((key, callback) => callback(null, 'redis-token'))
+
 const config = require('../../server/config')
 const riskProfilerClientBuilder = require('../../server/data/riskProfilerClientBuilder')
 
 describe('riskProfilerClient', () => {
   let fakeRiskProfilerApi
-  let fakeNomisAuth
   let riskProfilerClient
 
   const socProfileResponse = {
@@ -15,7 +20,6 @@ describe('riskProfilerClient', () => {
   }
 
   beforeEach(() => {
-    fakeNomisAuth = nock(`${config.apis.oauth2.url}`)
     fakeRiskProfilerApi = nock(`${config.apis.riskProfiler.url}`)
     riskProfilerClient = riskProfilerClientBuilder({ user: { username: 'username' } })
   })
@@ -26,7 +30,6 @@ describe('riskProfilerClient', () => {
 
   describe('getSocProfile', () => {
     it('should return data from api', async () => {
-      fakeNomisAuth.post(`/oauth/token`).reply(200, { access_token: 'token123' })
       fakeRiskProfilerApi.get(`/risk-profile/soc/AN1234`).reply(200, socProfileResponse)
 
       const output = await riskProfilerClient.getSocProfile('AN1234')
