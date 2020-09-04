@@ -18,6 +18,7 @@ const formService = {
   referToSecurityIfFlagged: jest.fn(),
   updateStatusForOutstandingRiskChange: jest.fn(),
   addSocProfile: jest.fn(),
+  getLiteCategorisation: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -50,6 +51,7 @@ beforeEach(() => {
   formService.createOrRetrieveCategorisationRecord.mockResolvedValue({})
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.updateStatusForOutstandingRiskChange.mockResolvedValue({})
+  formService.getLiteCategorisation.mockResolvedValue({})
   offendersService.getOffenderDetails.mockResolvedValue({
     offenderNo: 'GN123',
     sentence: {

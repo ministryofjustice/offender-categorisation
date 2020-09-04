@@ -66,6 +66,12 @@ module.exports = function Index({
         throw new Error('Initial categorisation is still in progress')
       }
 
+      const assessmentData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
+      const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
+      if (liteInProgress) {
+        throw new Error('Categorisation is in progress in "other categories" section')
+      }
+
       // If retrieved - check if APPROVED / CANCELLED and if it is, create new
       if (categorisationRecord.status === Status.APPROVED.name) {
         categorisationRecord = await formService.createCategorisationRecord(
