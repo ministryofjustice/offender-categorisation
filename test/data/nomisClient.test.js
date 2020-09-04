@@ -1,10 +1,15 @@
 const nock = require('nock')
+const redis = require('redis')
+
+const redisFunctions = { on: jest.fn(), get: jest.fn(), set: jest.fn() }
+redis.createClient = jest.fn().mockReturnValue(redisFunctions)
+redisFunctions.get.mockImplementation((key, callback) => callback(null, 'redis-token'))
+
 const config = require('../../server/config')
 const nomisClientBuilder = require('../../server/data/nomisClientBuilder')
 
 describe('nomisClient', () => {
   let fakeElite2Api
-  let fakeOauth
   let nomisClient
 
   const uncatResponse = [{}]
@@ -13,7 +18,6 @@ describe('nomisClient', () => {
 
   beforeEach(() => {
     fakeElite2Api = nock(`${config.apis.elite2.url}`) // .log(console.log)
-    fakeOauth = nock(`${config.apis.oauth2.url}`) // .log(console.log)
     nomisClient = nomisClientBuilder({ user: { username: 'myuser', token: '1234321' } })
   })
 
@@ -32,7 +36,6 @@ describe('nomisClient', () => {
 
   describe('getCategorisedOffenders', () => {
     it('should construct an api call', async () => {
-      fakeOauth.post(`/oauth/token`, 'grant_type=client_credentials&username=myuser').reply(200, '')
       fakeElite2Api.post(`/api/offender-assessments/category?latestOnly=false`).reply(200, uncatResponse)
 
       const output = await nomisClient.getCategorisedOffenders(['1', '2'])
@@ -72,7 +75,6 @@ describe('nomisClient', () => {
 
   describe('getOffenderDetailList', () => {
     it('should return data from api', async () => {
-      fakeOauth.post(`/oauth/token`, 'grant_type=client_credentials&username=myuser').reply(200, '')
       fakeElite2Api.post(`/api/bookings/offenders?activeOnly=false`).reply(200, emptyListResponse)
 
       const output = await nomisClient.getOffenderDetailList([123, 321])
