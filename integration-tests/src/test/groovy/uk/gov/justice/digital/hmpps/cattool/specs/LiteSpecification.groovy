@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -132,6 +133,26 @@ class LiteSpecification extends GebReportingSpec {
     then: 'A warning is shown'
     at LiteCategoriesPage
     warning.text() contains 'A categorisation is already in progress for this person'
+
+    when: 'I go to the recat tasklist page'
+    fixture.logout()
+    elite2Api.stubRecategorise()
+    fixture.loginAs(RECATEGORISER_USER)
+    // not in to-do list so have to go directly
+    go '/tasklistRecat/12'
+
+    then: 'The correct error is shown'
+    at ErrorPage
+    errorSummaryTitle.text() == 'Categorisation is in progress in "other categories" section'
+
+    when: 'I go to the initial tasklist page'
+    fixture.logout()
+    fixture.gotoTasklist()
+    go '/tasklist/12' // no clickable button available, so force to page
+
+    then: 'The correct error is shown'
+    at ErrorPage
+    errorSummaryTitle.text() == 'Categorisation is in progress in "other categories" section'
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
