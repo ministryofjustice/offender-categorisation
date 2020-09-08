@@ -24,7 +24,7 @@ module.exports = {
     tls_enabled: get('REDIS_TLS_ENABLED', 'false', true),
     port: get('REDIS_PORT', 6379, true),
     host: get('REDIS_HOST', '127.0.0.1', true),
-    auth_token: get('REDIS_AUTH_TOKEN', ''),
+    auth_token: process.env.REDIS_AUTH_TOKEN,
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),

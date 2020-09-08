@@ -14,7 +14,7 @@ module.exports = {
 
 const client = redis.createClient({
   port: config.redis.port,
-  password: config.redis.password,
+  password: config.redis.auth_token,
   host: config.redis.host,
   tls: config.redis.tls_enabled === 'true' ? {} : false,
   prefix: 'clientToken:',
