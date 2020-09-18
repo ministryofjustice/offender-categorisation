@@ -97,12 +97,12 @@ class LiteSpecification extends GebReportingSpec {
 
     when: 'details are entered'
     go 'liteCategories/12' // reset the nextReviewDate
-    form.category = 'R'
+    form.category = 'V'
     form.authority = 'RECP'
     form.placement = 'BXI'
     form.comment = 'comment'
     elite2Api.stubCategorise([bookingId        : 12,
-                              category         : 'R',
+                              category         : 'V',
                               committee        : 'RECP',
                               nextReviewDate   : SIX_MONTHS_TIME.format('yyyy-MM-dd'),
                               comment          : "comment",
@@ -115,7 +115,7 @@ class LiteSpecification extends GebReportingSpec {
     at LiteCategoriesConfirmedPage
     def data = db.getLiteData(12)[0]
     data.sequence == 1
-    data.category == 'R'
+    data.category == 'V'
     data.offender_no == 'B2345YZ'
     data.prison_id == 'LEI'
     data.created_date.toLocalDate().equals(now)
@@ -172,7 +172,7 @@ class LiteSpecification extends GebReportingSpec {
     names[0] == 'Dent, Jane'
     prisonNos[0] == 'B2345YZ'
     categorisers[0] == 'Firstname_categoriser_user Lastname_categoriser_user'
-    categories[0] == 'R'
+    categories[0] == 'V'
 
     when: 'a categorisation approval is attempted with a future approval Date and past nextReviewDate'
     elite2Api.stubGetUserDetails(CATEGORISER_USER, 'SYI')
