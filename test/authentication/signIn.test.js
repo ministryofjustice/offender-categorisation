@@ -1,3 +1,8 @@
+const redis = require('redis')
+
+const redisFunctions = { on: jest.fn(), get: jest.fn(), set: jest.fn() }
+redis.createClient = jest.fn().mockReturnValue(redisFunctions)
+
 const signInService = require('../../server/authentication/signInService')
 
 describe('signInService', () => {
