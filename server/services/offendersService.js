@@ -134,7 +134,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
               pnomis,
             }
-            if (inconsistent) {
+            if (inconsistent && !liteInProgress) {
               logger.warn(
                 `getUncategorisedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, PG status=${dbRecord.status}`
               )

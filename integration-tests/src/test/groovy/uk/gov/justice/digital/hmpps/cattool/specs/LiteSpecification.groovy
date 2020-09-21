@@ -147,7 +147,7 @@ class LiteSpecification extends GebReportingSpec {
 
     when: 'I go to the initial todo list'
     fixture.logout()
-    fixture.loginAs(CATEGORISER_USER)// gotoTasklist()
+    fixture.loginAs(CATEGORISER_USER)
 
     then: 'OTHER is shown rather than PNOMIS'
     browser.at CategoriserHomePage
