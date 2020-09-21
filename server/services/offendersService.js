@@ -107,11 +107,14 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           .filter(o => sentenceMap.get(o.bookingId)) // filter out offenders without sentence
           .filter(filterIS91s)
           .map(async o => {
-            const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
+            const [dbRecord, assessmentData] = await Promise.all([
+              formService.getCategorisationRecord(o.bookingId, transactionalDbClient),
+              formService.getLiteCategorisation(o.bookingId, transactionalDbClient),
+            ])
             if (dbRecord.catType === 'RECAT') {
               return null
             }
-
+            const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
             const nomisStatusAwaitingApproval = o.status === Status.AWAITING_APPROVAL.name
             const nomisStatusUncategorised = o.status === Status.UNCATEGORISED.name
 
@@ -120,12 +123,16 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               (nomisStatusUncategorised &&
                 (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
 
+            const pnomis = liteInProgress
+              ? 'OTHER'
+              : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
+
             const row = {
               ...o,
               displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
               ...buildSentenceData(sentenceMap.get(o.bookingId).sentenceDate),
               ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
-              pnomis: inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status),
+              pnomis,
             }
             if (inconsistent) {
               logger.warn(
@@ -489,12 +496,18 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
     return Promise.all(
       resultsReview.map(async o => {
-        const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-        if (unwanted(dbRecord)) return null
-        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus)
+        const [dbRecord, assessmentData] = await Promise.all([
+          formService.getCategorisationRecord(o.bookingId, transactionalDbClient),
+          formService.getLiteCategorisation(o.bookingId, transactionalDbClient),
+        ])
+        if (unwanted(dbRecord)) {
+          return null
+        }
+        const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
+        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus, liteInProgress)
         if (requiresWarning) {
           logger.warn(
-            `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
+            `getDueRecats: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
           )
         }
 
@@ -614,15 +627,21 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
     return Promise.all(
       eliteCategorisationResultsU21.map(async o => {
-        const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-        if (unwanted(dbRecord)) return null
+        const [dbRecord, assessmentData] = await Promise.all([
+          formService.getCategorisationRecord(o.bookingId, transactionalDbClient),
+          formService.getLiteCategorisation(o.bookingId, transactionalDbClient),
+        ])
+        if (unwanted(dbRecord)) {
+          return null
+        }
+        const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
         const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
 
-        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus)
+        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus, liteInProgress)
 
         if (requiresWarning) {
           logger.warn(
-            `geRecategoriseOffenders: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
+            `getU21Recats: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
           )
         }
         const nextReviewDate = moment(o.dateOfBirth, 'YYYY-MM-DD')
@@ -1214,12 +1233,15 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return buttonStatus
   }
 
-  function pnomisOrInconsistentWarning(dbRecord, pnomisStatus) {
+  function pnomisOrInconsistentWarning(dbRecord, pnomisStatus, liteInProgress) {
+    if (liteInProgress) {
+      return { requiresWarning: false, pnomis: 'OTHER' }
+    }
     const inconsistent = inconsistentCategorisation(dbRecord, pnomisStatus)
 
     return {
       requiresWarning: inconsistent,
-      pnomis: inconsistent || (pnomisStatus === 'P' && (!dbRecord || !dbRecord.status)),
+      pnomis: (inconsistent || (pnomisStatus === 'P' && (!dbRecord || !dbRecord.status))) && 'PNOMIS',
     }
   }
 

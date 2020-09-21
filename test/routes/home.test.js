@@ -232,14 +232,14 @@ describe('GET /categoriserHome', () => {
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })
-  test('button is replaced with PNOMIS for categorisations that have been progresses in PNOMIS (without a db record)', () => {
+  test('button is replaced with PNOMIS for categorisations that have been progressed in PNOMIS (without a db record)', () => {
     offendersService.getUncategorisedOffenders.mockResolvedValue([
       {
         offenderNo: 'B2345XY',
         bookingId: 12,
         displayName: 'Tim Handle',
         displayStatus: 'Any other status',
-        pnomis: true,
+        pnomis: 'PNOMIS',
       },
     ])
     return request(app)
