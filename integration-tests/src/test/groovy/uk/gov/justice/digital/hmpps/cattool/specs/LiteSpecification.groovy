@@ -145,9 +145,15 @@ class LiteSpecification extends GebReportingSpec {
     at ErrorPage
     errorSummaryTitle.text() == 'Categorisation is in progress in "other categories" section'
 
-    when: 'I go to the initial tasklist page'
+    when: 'I go to the initial todo list'
     fixture.logout()
-    fixture.gotoTasklist()
+    fixture.loginAs(CATEGORISER_USER)
+
+    then: 'OTHER is shown rather than PNOMIS'
+    browser.at CategoriserHomePage
+    startButtons[0].text() == 'OTHER'
+
+    when: 'I go to the initial tasklist page'
     go '/tasklist/12' // no clickable button available, so force to page
 
     then: 'The correct error is shown'

@@ -48,6 +48,7 @@ const formService = {
   recordLiteCategorisation: jest.fn(),
   approveLiteCategorisation: jest.fn(),
   getUnapprovedLite: jest.fn(),
+  getLiteCategorisation: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -58,6 +59,7 @@ beforeEach(() => {
   service = serviceCreator(nomisClientBuilder, formService)
   nomisClient.getMainOffences.mockReturnValue([])
   formService.getCategorisationRecord.mockReturnValue({})
+  formService.getLiteCategorisation.mockReturnValue({})
 })
 
 afterEach(() => {
@@ -785,7 +787,7 @@ describe('getUncategorisedOffenders', () => {
     formService.getCategorisationRecord.mockResolvedValue(dbRecord)
 
     const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
-    expect(result[0].pnomis).toBe(true)
+    expect(result[0].pnomis).toBe('PNOMIS')
   })
 
   test('it filters out IS91s', async () => {
@@ -1115,11 +1117,11 @@ describe('getUncategorisedOffenders calculates inconsistent data correctly', () 
     nomisStatus                      | localStatus                      | pnomis
     ${Status.UNCATEGORISED.name}     | ${Status.SUPERVISOR_BACK.name}   | ${false}
     ${Status.UNCATEGORISED.name}     | ${Status.SECURITY_BACK.name}     | ${false}
-    ${Status.UNCATEGORISED.name}     | ${Status.AWAITING_APPROVAL.name} | ${true}
+    ${Status.UNCATEGORISED.name}     | ${Status.AWAITING_APPROVAL.name} | ${'PNOMIS'}
     ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_BACK.name}     | ${false}
     ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_MANUAL.name}   | ${false}
     ${Status.AWAITING_APPROVAL.name} | ${Status.SUPERVISOR_BACK.name}   | ${false}
-    ${Status.AWAITING_APPROVAL.name} | ${Status.STARTED.name}           | ${true}
+    ${Status.AWAITING_APPROVAL.name} | ${Status.STARTED.name}           | ${'PNOMIS'}
   `('should return errors $expectedContent for form return', async ({ nomisStatus, localStatus, pnomis }) => {
     const uncategorised = [
       {
@@ -1425,57 +1427,63 @@ describe('requiredCatType', () => {
 })
 
 describe('pnomisOrInconsistentWarning', () => {
-  test('should return true for nomis status is P but not locally FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'STARTED' }, 'P')
-    expect(result.pnomis).toBe(true)
+  test('should return PNOMIS for nomis status is P but not locally FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'STARTED' }, 'P', false)
+    expect(result.pnomis).toBe('PNOMIS')
     expect(result.requiresWarning).toBe(true)
   })
 
-  test('should return true for nomis status is A with local status AWAITING_APPROVAL FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'AWAITING_APPROVAL' }, 'A')
-    expect(result.pnomis).toBe(true)
+  test('should return PNOMIS for nomis status is A with local status AWAITING_APPROVAL FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'AWAITING_APPROVAL' }, 'A', false)
+    expect(result.pnomis).toBe('PNOMIS')
     expect(result.requiresWarning).toBe(true)
   })
 
   test('should return false for nomis status is A with local status STARTED FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'STARTED' }, 'A')
+    const result = service.pnomisOrInconsistentWarning({ status: 'STARTED' }, 'A', false)
     expect(result.pnomis).toBe(false)
     expect(result.requiresWarning).toBe(false)
   })
 
   test('should return false for nomis status is A with local status SECURITY_AUTO FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_AUTO' }, 'A')
+    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_AUTO' }, 'A', false)
     expect(result.pnomis).toBe(false)
     expect(result.requiresWarning).toBe(false)
   })
 
   test('should return false for nomis status is P and local status is SUPERVISOR_BACK FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'SUPERVISOR_BACK' }, 'P')
+    const result = service.pnomisOrInconsistentWarning({ status: 'SUPERVISOR_BACK' }, 'P', false)
     expect(result.pnomis).toBe(false)
     expect(result.requiresWarning).toBe(false)
   })
 
   test('should return false for nomis status is P and local status is SECURITY_BACK FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_BACK' }, 'P')
+    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_BACK' }, 'P', false)
     expect(result.pnomis).toBe(false)
     expect(result.requiresWarning).toBe(false)
   })
 
   test('should return false for nomis status is P and local status is SECURITY_MANUAL FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_MANUAL' }, 'P')
+    const result = service.pnomisOrInconsistentWarning({ status: 'SECURITY_MANUAL' }, 'P', false)
     expect(result.pnomis).toBe(false)
     expect(result.requiresWarning).toBe(false)
   })
 
   test('should return false for nomis status is P and local status is SUPERVISOR_BACK FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'SUPERVISOR_BACK' }, 'P')
+    const result = service.pnomisOrInconsistentWarning({ status: 'SUPERVISOR_BACK' }, 'P', false)
     expect(result.pnomis).toBe(false)
     expect(result.requiresWarning).toBe(false)
   })
 
-  test('should return true for nomis status is P (without warning) but not locally FOR RECAT', async () => {
-    const result = service.pnomisOrInconsistentWarning({ status: 'APPROVED' }, 'A')
+  test('should return false for nomis status is P (without warning) but not locally FOR RECAT', async () => {
+    const result = service.pnomisOrInconsistentWarning({ status: 'APPROVED' }, 'A', false)
     expect(result.pnomis).toBe(false)
+    expect(result.requiresWarning).toBe(false)
+  })
+
+  test('should return OTHER for other categorisation in progress', async () => {
+    const result = service.pnomisOrInconsistentWarning({}, 'A', true)
+    expect(result.pnomis).toBe('OTHER')
     expect(result.requiresWarning).toBe(false)
   })
 })
