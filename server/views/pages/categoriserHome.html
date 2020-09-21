@@ -78,7 +78,7 @@
         {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
         {% set classes = basicClasses + " grey-button" if row.dbRecordExists else basicClasses %}
         {% if row.pnomis %}
-          <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">PNOMIS</div>
+          <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ row.pnomis }}</div>
         {% else %}
           {% if row.displayStatus == 'Awaiting approval' %}
             {{ govukButton({
