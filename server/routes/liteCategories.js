@@ -40,6 +40,7 @@ const getCatList = current => [
   { value: 'H', text: 'Cat A Hi', selected: current === 'H' },
   { value: 'P', text: 'Prov A', selected: current === 'P' },
   { value: 'V', text: 'YOI Restricted', selected: current === 'V' },
+  { value: 'D', text: 'Cat D', selected: current === 'D' },
   { value: 'R', text: 'Fem Closed', selected: current === 'R' },
   { value: 'T', text: 'Fem Open', selected: current === 'T' },
 ]
