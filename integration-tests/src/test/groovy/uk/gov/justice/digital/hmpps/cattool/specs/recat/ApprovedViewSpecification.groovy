@@ -53,9 +53,9 @@ class ApprovedViewSpecification extends GebReportingSpec {
     db.createRiskProfileDataForExistingRow(12, '''{
       "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
       "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
-        "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": true, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]   
+        "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": true, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]
       },
-      "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
+      "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "numberOfNonSeriousAssaults": 3, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
       "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}''')
     db.createReviewReason(12, 'AGE')
 
@@ -74,7 +74,7 @@ class ApprovedViewSpecification extends GebReportingSpec {
       '', 'Age 21', ('Categorisation date Category decision Review location\n' +
       '24/03/2013 B LPI prison\n' +
       '08/06/2012 A LPI prison'),
-      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months. You should consider the dates and context of these assaults in your assessment.',
+      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14 (expired)',
       'This person is at risk of engaging in, or vulnerable to, extremism.', '']
   }

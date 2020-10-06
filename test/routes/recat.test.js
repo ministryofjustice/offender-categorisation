@@ -253,6 +253,7 @@ describe('recat', () => {
       displayAssaults: true,
       numberOfAssaults: 5,
       numberOfSeriousAssaults: 2,
+      numberOfNonSeriousAssaults: 4,
     })
     return request(app)
       .get(`/review/12345`)
@@ -260,9 +261,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('This person has been reported as the perpetrator in 5 assaults in custody before,')
-        expect(res.text).toContain(
-          'including 2 serious assaults in the last 12 months. You should consider the dates and context of these assaults in your assessment'
-        )
+        expect(res.text).toContain('including 2 serious assaults and 4 non-serious assaults in the past 12 months.')
         expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list.+Check your answers/s)
       })
   })

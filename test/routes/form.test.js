@@ -644,6 +644,7 @@ describe('GET /ratings/violence', () => {
       displayAssaults: true,
       numberOfAssaults: 5,
       numberOfSeriousAssaults: 2,
+      numberOfNonSeriousAssaults: 3,
     })
     return request(app)
       .get(`/ratings/violenceRating/12345`)
@@ -652,9 +653,7 @@ describe('GET /ratings/violence', () => {
       .expect(res => {
         expect(res.text).toMatch(/Home.+Categorisation home.+Safety and good order/s)
         expect(res.text).toContain('This person has been reported as the perpetrator in 5 assaults in custody before,')
-        expect(res.text).toContain(
-          'including 2 serious assaults in the last 12 months. You should consider the dates and context of these assaults in your assessment.'
-        )
+        expect(res.text).toContain('including 2 serious assaults and 3 non-serious assaults in the past 12 months.')
         expect(res.text).toContain('Please notify your safer custody lead about this prisoner')
       })
   })

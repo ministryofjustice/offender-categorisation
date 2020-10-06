@@ -76,7 +76,7 @@ class ViolenceSpecification extends GebReportingSpec {
 
     then: 'The violence page is displayed with a warning'
     at ViolencePage
-    warning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults in the last 12 months'
+    warning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months'
     !info.displayed
 
     when: 'The risk profiler returns the safer custody lead flag'
