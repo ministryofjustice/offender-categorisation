@@ -31,6 +31,8 @@ whitelist:
   quantum3: "195.92.38.16/28"
   health-kick: "35.177.252.195/32"
   mojvpn: "81.134.202.29/32"
+  sodexo-northumberland: "88.98.48.10/32"
+  sodexo2: "51.148.9.201/32"
   ark-nps-hmcts-ttp1: "195.59.75.0/24"
   ark-nps-hmcts-ttp2: "194.33.192.0/25"
   ark-nps-hmcts-ttp3: "194.33.193.0/25"
