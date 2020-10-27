@@ -3,8 +3,9 @@ const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const path = require('path')
 const nunjucksSetup = require('../../../server/utils/nunjucksSetup')
+const errorHandler = require('../../../server/errorHandler')
 
-module.exports = route => {
+module.exports = (route, production = false) => {
   const app = express()
 
   app.set('view engine', 'html')
@@ -30,6 +31,8 @@ module.exports = route => {
   app.use((error, req, res, next) => {
     // eslint-disable-next-line no-console
     console.log(error)
+    next(error)
   })
+  app.use(errorHandler(production))
   return app
 }
