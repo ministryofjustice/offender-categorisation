@@ -12,9 +12,9 @@
 
   {{ govukErrorSummary({
     titleText: message,
-    descriptionText: 'status ' + error.status if error.status
+    descriptionText: 'status ' + status if status
   }) }}
 
-  <pre>{{ error.stack }}</pre>
+  <pre>{{ stack }}</pre>
 
 {% endblock %}
