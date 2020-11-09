@@ -31,7 +31,7 @@
     value: data.ratings.furtherCharges.furtherChargesText,
     errorMessage: {
       text: "Please enter details"
-  } if (errors | findError('furtherChargesText'))
+    } if (errors | findError('furtherChargesText'))
   }) }}
 
   {{ govukRadios({
@@ -39,11 +39,11 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Do any of these further charges mean they should be in Cat B?",
-          isPageHeading: false
-        }
-      },
-      errorMessage: {
+        text: "Do any of these further charges indicate that Category B is appropriate?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
       text: "Please select yes or no"
     } if (errors | findError('furtherChargesCatB')),
     items: [
