@@ -1171,6 +1171,20 @@ describe('getReferredOffenders', () => {
       bookingId: 122,
       status: Status.UNCATEGORISED.name,
     },
+    {
+      offenderNo: 'A1000AA',
+      firstName: 'Peter',
+      lastName: 'Purves',
+      bookingId: 135,
+      status: Status.UNCATEGORISED.name,
+    },
+    {
+      offenderNo: 'A1000AB',
+      firstName: 'JOHN',
+      lastName: 'NOAKES',
+      bookingId: 137,
+      status: Status.UNCATEGORISED.name,
+    },
   ]
   const userDetailsList = [
     {
@@ -1209,6 +1223,28 @@ describe('getReferredOffenders', () => {
       securityReferredBy: 'BMAY',
       catType: 'INITIAL',
     },
+    {
+      id: -5,
+      bookingId: 135,
+      offenderNo: 'A1000AA',
+      userId: 'me',
+      status: Status.SECURITY_FLAGGED.name,
+      formObject: '',
+      securityReferredDate: '2019-02-04',
+      securityReferredBy: 'BMAY',
+      catType: 'RECAT',
+    },
+    {
+      id: -7,
+      bookingId: 137,
+      offenderNo: 'A1000AB',
+      userId: 'me',
+      status: Status.SECURITY_MANUAL.name,
+      formObject: '',
+      securityReferredDate: '2019-02-04',
+      securityReferredBy: 'BMAY',
+      catType: 'RECAT',
+    },
   ]
 
   test('it should return a list of offenders and sentence information', async () => {
@@ -1220,9 +1256,13 @@ describe('getReferredOffenders', () => {
 
     nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
     nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
+    nomisClient.getLatestCategorisationForOffenders.mockResolvedValue([
+      { bookingId: 135, nextReviewDate: '2020-09-20' },
+      { bookingId: 137, nextReviewDate: '2020-09-30' },
+      { bookingId: -99, nextReviewDate: '2011-09-30' },
+    ])
     nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
-
-    formService.getSecurityReferredOffenders.mockImplementation(() => securityReferredOffenders)
+    formService.getSecurityReferredOffenders.mockResolvedValue(securityReferredOffenders)
 
     const expected = [
       {
@@ -1245,12 +1285,31 @@ describe('getReferredOffenders', () => {
         catTypeDisplay: 'Initial',
         buttonText: 'Start',
       },
+      {
+        offenderNo: 'A1000AA',
+        displayName: 'Purves, Peter',
+        bookingId: 135,
+        dateRequired: expect.stringMatching(DATE_MATCHER),
+        securityReferredBy: 'Brian May',
+        catTypeDisplay: 'Recat',
+        buttonText: 'Start',
+      },
+      {
+        offenderNo: 'A1000AB',
+        displayName: 'Noakes, John',
+        bookingId: 137,
+        dateRequired: expect.stringMatching(DATE_MATCHER),
+        securityReferredBy: 'Brian May',
+        catTypeDisplay: 'Recat',
+        buttonText: 'Start',
+      },
     ]
 
     const result = await service.getReferredOffenders(context, mockTransactionalClient)
 
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
     expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(nomisClient.getLatestCategorisationForOffenders).toBeCalledWith(['A1000AA', 'A1000AB'])
     expect(result).toMatchObject(expected)
   })
 
@@ -1268,7 +1327,7 @@ describe('getReferredOffenders', () => {
     nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
     nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
 
-    formService.getSecurityReferredOffenders.mockImplementation(() => [
+    formService.getSecurityReferredOffenders.mockResolvedValue([
       {
         id: -1,
         bookingId: 123,
@@ -1321,14 +1380,11 @@ describe('getReferredOffenders', () => {
   })
 
   test('it should handle an empty response', async () => {
-    const uncategorised = []
-    const expected = []
-
-    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    nomisClient.getUncategorisedOffenders.mockResolvedValue([])
 
     const result = await service.getReferredOffenders(context, mockTransactionalClient)
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
-    expect(result).toEqual(expected)
+    expect(result).toEqual([])
   })
 })
 

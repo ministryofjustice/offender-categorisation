@@ -233,13 +233,16 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       if (!isNilOrEmpty(securityReferredFromDB)) {
         const sentenceMap = await getSentenceMap(securityReferredFromDB, nomisClient)
 
-        const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
+        const [offenderDetailsFromNomis, userDetailFromElite, nomisCatData] = await Promise.all([
           nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
           nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.securityReferredBy)),
+          nomisClient.getLatestCategorisationForOffenders(
+            securityReferredFromDB.filter(c => c.catType === CatType.RECAT.name).map(c => c.offenderNo)
+          ),
         ])
 
         const decoratedResults = securityReferredFromDB.map(o => {
-          const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
+          const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
           if (!offenderDetail) {
             logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
             return o
@@ -252,16 +255,22 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               ? `${properCaseName(referrer.firstName)} ${properCaseName(referrer.lastName)}`
               : o.securityReferredBy
           }
-          const sentenceData = sentenceMap.get(o.bookingId)
-            ? buildSentenceData(sentenceMap.get(o.bookingId).sentenceDate)
-            : {}
+
+          let sentenceAndDate
+          if (o.catType === CatType.INITIAL.name) {
+            const entry = sentenceMap.get(o.bookingId)
+            sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
+          } else {
+            const nomisCat = nomisCatData.find(record => record.bookingId === o.bookingId)
+            sentenceAndDate = { dateRequired: nomisCat && dateConverter(nomisCat.nextReviewDate) }
+          }
 
           return {
             ...o,
             offenderNo: offenderDetail.offenderNo,
             displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
             securityReferredBy,
-            ...sentenceData,
+            ...sentenceAndDate,
             catTypeDisplay: CatType[o.catType].value,
             buttonText: getIn(['formObject', 'security', 'review', 'securityReview'], o) ? 'Edit' : 'Start',
           }
