@@ -116,12 +116,16 @@ class SecurityInputSpecification extends GebReportingSpec {
     fixture.logout()
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    elite2Api.stubGetLatestCategorisationForOffenders()
     fixture.loginAs(SECURITY_USER)
 
     then: 'this prisoner is present'
     at SecurityHomePage
     prisonNos[0] == 'B2345YZ'
     referredBy[0] == 'Firstname_recategoriser_user Lastname_recategoriser_user'
+    days[0] == '' // sentence irrelevant
+    dates[0] == '25/07/2019' // nextReviewDate
+    catTypes[0] == 'Recat'
 
     when: 'the security user enters data'
     startButtons[0].click()
