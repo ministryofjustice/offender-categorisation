@@ -61,15 +61,24 @@ module.exports = function Index({
         calculateDueDate(reason, details),
         transactionalDbClient
       )
+      const backLink = req.get('Referrer')
 
       if (categorisationRecord.catType === CatType.INITIAL.name && inProgress(categorisationRecord)) {
-        throw new Error('Initial categorisation is still in progress')
+        await transactionalDbClient.query('ROLLBACK')
+        return res.render('pages/error', {
+          message: 'Error: The initial categorisation is still in progress',
+          backLink,
+        })
       }
 
       const assessmentData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
       const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
       if (liteInProgress) {
-        throw new Error('Categorisation is in progress in "other categories" section')
+        await transactionalDbClient.query('ROLLBACK')
+        return res.render('pages/error', {
+          message: 'Error: There is an unapproved categorisation in the "other categories" section',
+          backLink,
+        })
       }
 
       // If retrieved - check if APPROVED / CANCELLED and if it is, create new
@@ -113,7 +122,6 @@ module.exports = function Index({
         categorisationRecord,
         bookingId
       )
-      const backLink = req.get('Referrer')
       const data = {
         details,
         ...res.locals.formObject,
@@ -125,7 +133,7 @@ module.exports = function Index({
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
       }
-      res.render('pages/tasklistRecat', { data, backLink, reason })
+      return res.render('pages/tasklistRecat', { data, backLink, reason })
     })
   )
 
