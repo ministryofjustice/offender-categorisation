@@ -36,9 +36,13 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'nextReviewDateStandalone'
       const result = await buildFormData(res, req, form, bookingId, false, transactionalDbClient)
       if (result.status && result.status !== Status.APPROVED.name) {
-        throw new Error('Categorisation is in progress: please use the tasklist to change date')
+        await transactionalDbClient.query('ROLLBACK')
+        return res.render('pages/error', {
+          message: 'Categorisation is in progress: please use the tasklist to change date',
+          backLink: `/${bookingId}`,
+        })
       }
-      res.render(`formPages/nextReviewDate/${form}`, result)
+      return res.render(`formPages/nextReviewDate/${form}`, result)
     })
   )
 
@@ -98,10 +102,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     }
   }
 
-  const clearConditionalFields = body => {
-    const updated = Object.assign({}, body)
-    return updated
-  }
+  const clearConditionalFields = body => Object.assign({}, body)
 
   router.post(
     '/nextReviewDateQuestion/:bookingId',

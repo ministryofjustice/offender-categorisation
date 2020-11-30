@@ -45,15 +45,24 @@ module.exports = function Index({
         dueByDate,
         transactionalDbClient
       )
+      const backLink = req.get('Referrer')
 
       if (categorisationRecord.catType === CatType.RECAT.name && inProgress(categorisationRecord)) {
-        throw new Error('A categorisation review is in progress')
+        await transactionalDbClient.query('ROLLBACK')
+        return res.render('pages/error', {
+          message: 'Error: A categorisation review is in progress',
+          backLink,
+        })
       }
 
       const assessmentData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
       const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
       if (liteInProgress) {
-        throw new Error('Categorisation is in progress in "other categories" section')
+        await transactionalDbClient.query('ROLLBACK')
+        return res.render('pages/error', {
+          message: 'Error: There is an unapproved categorisation in the "other categories" section',
+          backLink,
+        })
       }
 
       // If retrieved - check if APPROVED and if it is, create new
@@ -76,7 +85,7 @@ module.exports = function Index({
 
       if (reason === ReviewReason.MANUAL.name && isFirstVisit(res)) {
         // Ensure this categorisation appears on the to-do list
-        await offendersService.setInactive(res.locals, bookingId, 'ACTIVE')
+        await offendersService.setInactive(res.locals, bookingId, 'ACTIVE') // TODO suppose we then cancel !!!???
       }
 
       categorisationRecord = await addSocProfile({
@@ -90,8 +99,6 @@ module.exports = function Index({
         categorisationRecord,
       })
 
-      const backLink = req.get('Referrer')
-
       const data = {
         details,
         ...res.locals.formObject,
@@ -101,7 +108,7 @@ module.exports = function Index({
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
       }
-      res.render('pages/tasklist', { data, backLink })
+      return res.render('pages/tasklist', { data, backLink })
     })
   )
 
