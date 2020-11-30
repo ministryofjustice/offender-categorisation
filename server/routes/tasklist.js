@@ -85,7 +85,7 @@ module.exports = function Index({
 
       if (reason === ReviewReason.MANUAL.name && isFirstVisit(res)) {
         // Ensure this categorisation appears on the to-do list
-        await offendersService.setInactive(res.locals, bookingId, 'ACTIVE') // TODO suppose we then cancel !!!???
+        await offendersService.setInactive(res.locals, bookingId, 'ACTIVE')
       }
 
       categorisationRecord = await addSocProfile({
