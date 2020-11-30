@@ -191,7 +191,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
 
     then: 'The correct error is displayed'
     at ErrorPage
-    errorSummaryTitle.text() == 'Initial categorisation is still in progress'
+    errorSummaryTitle.text() == 'Error: The initial categorisation is still in progress'
   }
 
   def "The recat tasklist correctly continues the current recat when an incomplete recat record present"() {
