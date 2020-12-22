@@ -81,7 +81,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     overriddenCategoryD.click()
     overriddenCategoryText << 'categoriser override to D comment'
     otherInformationText << 'categoriser relevant info 1'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
     at OpenConditionsAddedPage
     button.click()
@@ -269,7 +269,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     def date12 = LocalDate.now().plusDays(-1).toString()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     stillReferNo.click()
     submitButton.click()
 
@@ -334,7 +334,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     assert !indeterminateWarning.displayed
     overriddenCategoryText << 'categoriser override to D comment'
     otherInformationText << 'categoriser relevant info 1'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
     at OpenConditionsAddedPage
     button.click()
@@ -482,7 +482,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     overriddenCategoryD.click()
     overriddenCategoryText << 'categoriser override to D comment'
     otherInformationText << 'categoriser relevant info 1'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
     at OpenConditionsAddedPage
     button.click()
@@ -587,7 +587,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     appropriateYes.click()
     otherInformationText << 'categoriser relevant info for accept'
     elite2Api.stubCategorise('C', '2019-12-14', 12, 5)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
 
     then: 'the cat C is submitted'
@@ -736,7 +736,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     def date12 = LocalDate.now().plusDays(-1).toString()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
   }
 }

@@ -11,6 +11,11 @@ class RiskProfilerApi extends WireMockRule {
     super(8082)
   }
 
+  void stubForTasklists(String offenderno, String category, boolean transferToSecurity = false, boolean increasedRisk = false, boolean notifyRegionalCTLead = false) {
+    stubGetSocProfile(offenderno, category, transferToSecurity)
+    stubGetExtremismProfile(offenderno, category, increasedRisk, notifyRegionalCTLead)
+  }
+
   void stubGetSocProfile(String offenderno, String category, boolean transferToSecurity) {
     this.stubFor(
       get("/risk-profile/soc/${offenderno}")

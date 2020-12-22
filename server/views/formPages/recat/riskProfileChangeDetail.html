@@ -69,41 +69,12 @@ attributes: {  'id': 'escapeWarning'},
 
 {% endif %}
 
-{% if data.increasedRiskOfExtremism or data.notifyRegionalCTLeadExtremism %}
-<h2 id="extremismSection" class="govuk-heading-m  govuk-!-padding-top-4">Extremism</h2>
-
-{% if data.increasedRiskOfExtremism %}
- {{ govukWarningText({
-      text: "This person is now at risk, or vulnerable to, extremism",
-      iconFallbackText: "Warning",
-      attributes: {  'id': 'increasedRiskExtremismWarning'},
-      classes: "forms-warning-text warning-overrides"
-    }) }}
-{% endif %}
-
-{% if data.notifyRegionalCTLeadExtremism %}
- {{ govukWarningText({
-      text: 'Notify your regional CT leader that you have this person in custody',
-      iconFallbackText: "Warning",
-      attributes: {  'id': 'notifyCtExtremismWarning'},
-      classes: "forms-warning-text warning-overrides"
-    }) }}
-{% endif %}
-
-{% endif %}
-
 {% if data.violenceChange %}
 <h2 id="violenceSection" class="govuk-heading-m  govuk-!-padding-top-4">Safety and good order</h2>
 
-     {% set totalNewAssaults =  (data.newProfile.violence.numberOfSeriousAssaults + data.newProfile.violence.numberOfAssaults)%}
     {% set warningText %}
-      They have been reported as the perpetrator of {{ totalNewAssaults }} assaults in total during this sentence
-      <br/>
-      {% if data.newProfile.violence.numberOfSeriousAssaults == 1 %}
-      Of these, 1 was a serious assault committed in the past 12 months
-      {% else %}
-      Of these, {{ data.newProfile.violence.numberOfSeriousAssaults }} were serious assaults committed in the past 12 months
-      {% endif %}
+      They have been reported as the perpetrator of {{ data.newProfile.violence.numberOfAssaults }} assaults in custody before,
+      including {{ data.newProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.newProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults in the past 12 months
     {% endset %}
     {{ govukWarningText({
       html: warningText,
@@ -126,18 +97,12 @@ attributes: {  'id': 'escapeWarning'},
     </span>
   </summary>
   <div class="govuk-details__text">
-    {% set totalOldAssaults =  (data.oldProfile.violence.numberOfSeriousAssaults + data.oldProfile.violence.numberOfAssaults)%}
     {% set warningText %}
-    {% if totalOldAssaults == 0 %}
+    {% if data.oldProfile.violence.numberOfAssaults == 0 %}
       There are no reported assaults during this sentence
     {% else %}
-      They have been reported as the perpetrator of {{ totalOldAssaults }} assaults in total during this sentence
-      <br/>
-      {% if data.oldProfile.violence.numberOfSeriousAssaults == 1 %}
-      Of these, 1 was a serious assault committed in the past 12 months
-      {% else %}
-      Of these, {{ data.oldProfile.violence.numberOfSeriousAssaults }} were serious assaults committed in the past 12 months
-      {% endif %}
+      They have been reported as the perpetrator of {{ data.oldProfile.violence.numberOfAssaults }} assaults in custody before,
+      including {{ data.oldProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.oldProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults in the past 12 months
     {% endif %}
     {% endset %}
     {{ govukWarningText({

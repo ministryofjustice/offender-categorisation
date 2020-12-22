@@ -22,8 +22,6 @@ class RiskProfileChangeDetailPage extends Page {
     escapeWarning {$('#escapeWarning')}
     escapeAlerts {$('#escapeAlerts')}
     escapeAlertsOld {$('#escapeAlertsOld')}
-    extremismNotifyWarning {$('#notifyCtExtremismWarning')}
-    increasedRiskExtremismWarning {$('#increasedRiskExtremismWarning')}
     violenceWarningOld {$('#violenceWarningOld')}
     violenceWarningNew {$('#violenceWarningNew')}
     violenceNotifyWarning {$('#notifyCTViolenceWarning')}

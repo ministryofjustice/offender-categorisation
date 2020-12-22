@@ -48,24 +48,6 @@ describe('it should assess the risk change status of a new and old risk profile 
     const newProfile = buildProfile({ provisionalCategorisation: 'B' })
     expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).violenceChange).toBe(true)
   })
-  it('Changes in extremism notify lead', () => {
-    const oldProfile = buildProfile({ notifyRegionalCTLead: false })
-    const newProfile = buildProfile({ notifyRegionalCTLead: true })
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).increasedRiskOfExtremism).toBe(false)
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).notifyRegionalCTLeadExtremism).toBe(true)
-  })
-  it('Changes in extremism increasedRiskOfExtremism', () => {
-    const oldProfile = buildProfile({ increasedRiskOfExtremism: false })
-    const newProfile = buildProfile({ increasedRiskOfExtremism: true })
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).increasedRiskOfExtremism).toBe(true)
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).notifyRegionalCTLeadExtremism).toBe(false)
-  })
-  it('Changes in extremism increasedRiskOfExtremism change to false is ignored', () => {
-    const oldProfile = buildProfile({ increasedRiskOfExtremism: true })
-    const newProfile = buildProfile({ increasedRiskOfExtremism: false })
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).increasedRiskOfExtremism).toBe(false)
-    expect(riskProfileHelper.assessRiskProfiles(oldProfile, newProfile).notifyRegionalCTLeadExtremism).toBe(false)
-  })
   it('Changes in soc referral notify lead', () => {
     const oldProfile = buildProfile({ transferToSecurity: false })
     const newProfile = buildProfile({ transferToSecurity: true })
@@ -81,14 +63,11 @@ function buildProfile({
   numberOfAssaults = 0,
   provisionalCategorisation = 'C',
   notifySafetyCustodyLead = false,
-  notifyRegionalCTLead = false,
-  increasedRiskOfExtremism = false,
   transferToSecurity = false,
 } = {}) {
   return {
     escape: { activeEscapeList, activeEscapeRisk, escapeRiskAlerts, escapeListAlerts },
     violence: { numberOfAssaults, provisionalCategorisation, notifySafetyCustodyLead },
-    extremism: { notifyRegionalCTLead, increasedRiskOfExtremism },
     soc: { transferToSecurity },
   }
 }

@@ -60,7 +60,7 @@ module.exports = function Index({
       if (liteInProgress) {
         await transactionalDbClient.query('ROLLBACK')
         return res.render('pages/error', {
-          message: 'Error: There is an unapproved categorisation in the "other categories" section',
+          message: 'Error: This prisoner has an unapproved categorisation in the "Other categories" section',
           backLink,
         })
       }
