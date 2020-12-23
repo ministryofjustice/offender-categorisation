@@ -57,8 +57,9 @@ class TasklistSpecification extends GebReportingSpec {
     def data = db.getData(12)
     data.status == ["STARTED"]
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile   : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
-                 escapeProfile: [nomsId: "Dummy"]]
+    response == [socProfile      : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
+                 extremismProfile: [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'C'],
+                 escapeProfile   : [nomsId: "Dummy"]]
   }
 
   def "The continue button behaves correctly"() {

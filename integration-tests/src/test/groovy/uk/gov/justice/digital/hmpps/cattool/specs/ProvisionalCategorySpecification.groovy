@@ -186,7 +186,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     when: 'Changing to Cat J'
     overriddenCategoryText << "Some Text"
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
     at OpenConditionsAddedPage
     button.click()
@@ -226,7 +226,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     otherInformationText << TRICKY_TEXT
     overriddenCategoryD.click()
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
     at OpenConditionsAddedPage
     button.click()
@@ -370,7 +370,7 @@ class ProvisionalCategorySpecification extends GebReportingSpec {
     warning[0].text() == 'D\nWarning\nBased on the information provided, the provisional category is D'
 
     when: 'I reject Cat D'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     appropriateNo.click()
     submitButton.click()
 

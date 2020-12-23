@@ -609,7 +609,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     commentLabel.size() == 1
   }
 
-  def completeOpenConditionsWorkflow() {
+  private completeOpenConditionsWorkflow() {
     openConditionsButton.click()
     at EarliestReleasePage
     threeOrMoreYearsNo.click()
@@ -630,7 +630,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     def date12 = LocalDate.now().plusDays(-1).toString()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
   }
 }

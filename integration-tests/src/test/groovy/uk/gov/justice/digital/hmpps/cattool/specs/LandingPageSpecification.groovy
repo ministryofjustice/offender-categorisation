@@ -55,7 +55,7 @@ class LandingPageSpecification extends GebReportingSpec {
     recatButton.displayed
 
     when: 'It is clicked'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     recatButton.click()
 
@@ -134,7 +134,7 @@ class LandingPageSpecification extends GebReportingSpec {
     !warning.displayed
 
     when: 'It is clicked'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     editButton.click()
 
@@ -227,7 +227,7 @@ class LandingPageSpecification extends GebReportingSpec {
     at LandingPage
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     recatButton.click()
 
     then: 'Security is locked'
@@ -306,7 +306,7 @@ class LandingPageSpecification extends GebReportingSpec {
     go '/12'
     at LandingPage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', true)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', true)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     recatButton.click()
 
@@ -391,7 +391,7 @@ class LandingPageSpecification extends GebReportingSpec {
     !warning.displayed
 
     when: 'It is clicked'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
 
@@ -423,7 +423,7 @@ class LandingPageSpecification extends GebReportingSpec {
     warning.text() endsWith 'This prisoner already has a category of Cat B.'
 
     when: 'It is clicked'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
 
@@ -457,7 +457,7 @@ class LandingPageSpecification extends GebReportingSpec {
     !warning.displayed
 
     when: 'It is clicked'
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     editButton.click()
 

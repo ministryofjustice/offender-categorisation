@@ -22,6 +22,7 @@ const formService = {
 
 const riskProfilerService = {
   getSecurityProfile: jest.fn(),
+  getExtremismProfile: jest.fn(),
 }
 
 const offendersService = {
@@ -106,7 +107,11 @@ describe('GET /tasklist/', () => {
       transferToSecurity: true,
       provisionalCategorisation: 'B',
     }
+    const sampleExtremismProfile = {
+      provisionalCategorisation: 'B',
+    }
     riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
+    riskProfilerService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
       securityReferredDate: `${todayISO}`,
@@ -127,6 +132,7 @@ describe('GET /tasklist/', () => {
           '12345',
           {
             socProfile: sampleSocProfile,
+            extremismProfile: sampleExtremismProfile,
           },
           mockTransactionalClient
         )
@@ -134,6 +140,7 @@ describe('GET /tasklist/', () => {
           '12345',
           'CA_USER_TEST',
           sampleSocProfile,
+          sampleExtremismProfile,
           'STARTED',
           mockTransactionalClient
         )

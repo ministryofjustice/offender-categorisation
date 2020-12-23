@@ -487,8 +487,18 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function referToSecurityIfRiskAssessed(bookingId, userId, socProfile, currentStatus, transactionalClient) {
-    if (socProfile.transferToSecurity && currentStatus !== Status.SECURITY_BACK.name) {
+  async function referToSecurityIfRiskAssessed(
+    bookingId,
+    userId,
+    socProfile,
+    extremismProfile,
+    currentStatus,
+    transactionalClient
+  ) {
+    if (
+      (socProfile.transferToSecurity || extremismProfile.notifyRegionalCTLead) &&
+      currentStatus !== Status.SECURITY_BACK.name
+    ) {
       if (validateStatusIfProvided(currentStatus, Status.SECURITY_AUTO.name)) {
         await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name, transactionalClient)
         return Status.SECURITY_AUTO.name

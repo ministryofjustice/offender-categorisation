@@ -58,7 +58,9 @@ class TasklistRecatSpecification extends GebReportingSpec {
     and: 'SOC data is stored and merged correctly'
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile: [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C']]
+    response == [socProfile      : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
+                 extremismProfile: [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'C']
+    ]
     def row = data[0]
     row.booking_id == 12L
     row.user_id == "RECATEGORISER_USER"
@@ -87,7 +89,9 @@ class TasklistRecatSpecification extends GebReportingSpec {
     and: 'data is stored correctly'
     def data = db.getData(21)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile: [nomsId: "C0001AA", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'I']]
+    response == [socProfile      : [nomsId: 'C0001AA', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'I'],
+                 extremismProfile: [nomsId: 'C0001AA', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'I']
+    ]
     def row = data[0]
     row.booking_id == 21L
     row.offender_no == "C0001AA"
@@ -151,7 +155,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     // TODO: was not in the to-do list so have to go directly, BUT NOW IS with wrong button label 'edit'
     to TasklistRecatPage, '12', reason: 'DUE'
 
@@ -186,7 +190,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     via TasklistRecatPage, '12'
 
     then: 'The correct error is displayed'

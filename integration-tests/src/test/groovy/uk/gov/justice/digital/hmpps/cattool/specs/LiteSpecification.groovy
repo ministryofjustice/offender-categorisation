@@ -143,7 +143,7 @@ class LiteSpecification extends GebReportingSpec {
 
     then: 'The correct error is shown'
     at ErrorPage
-    errorSummaryTitle.text() == 'Error: There is an unapproved categorisation in the "other categories" section'
+    errorSummaryTitle.text() == 'Error: This prisoner has an unapproved categorisation in the "Other categories" section'
 
     when: 'I go to the initial todo list'
     fixture.logout()
@@ -158,7 +158,7 @@ class LiteSpecification extends GebReportingSpec {
 
     then: 'The correct error is shown'
     at ErrorPage
-    errorSummaryTitle.text() == 'Error: There is an unapproved categorisation in the "other categories" section'
+    errorSummaryTitle.text() == 'Error: This prisoner has an unapproved categorisation in the "Other categories" section'
 
     ///////////////////////////////////////////////////////////////////////////////////////
 

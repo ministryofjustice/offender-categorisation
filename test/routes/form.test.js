@@ -652,8 +652,8 @@ describe('GET /ratings/violence', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toMatch(/Home.+Categorisation home.+Safety and good order/s)
-        expect(res.text).toContain('This person has been reported as the perpetrator in 5 assaults in custody before,')
-        expect(res.text).toContain('including 2 serious assaults and 3 non-serious assaults in the past 12 months.')
+        expect(res.text).toContain(`This person has been reported as the perpetrator in 5 assaults in custody before,
+      including 2 serious assaults and 3 non-serious assaults in the past 12 months.`)
         expect(res.text).toContain('Please notify your safer custody lead about this prisoner')
       })
   })
