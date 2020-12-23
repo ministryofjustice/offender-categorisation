@@ -49,7 +49,7 @@ describe('rpQueueConsumer', () => {
       bookingId: 12,
       categoryCode: 'B',
     })
-    const newProfile = buildProfile({ increasedRiskOfExtremism: true })
+    const newProfile = buildProfile({ activeEscapeList: true })
     await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
         newProfile
@@ -68,8 +68,6 @@ function buildProfile({
   violentOffender = false,
   escapeListAlerts = [],
   escapeRiskAlerts = [],
-  notifyRCTL = false,
-  increasedRiskOfExtremism = false,
   socPC = 'C',
 } = {}) {
   return {
@@ -97,13 +95,6 @@ function buildProfile({
       numberOfSeriousAssaults: seriousAssaults,
       provisionalCategorisation: 'C',
       veryHighRiskViolentOffender: violentOffender,
-    },
-    extremism: {
-      nomsId: 'G1709GX',
-      riskType: 'EXTREMISM',
-      notifyRegionalCTLead: notifyRCTL,
-      increasedRiskOfExtremism,
-      provisionalCategorisation: 'C',
     },
   }
 }

@@ -412,15 +412,15 @@ describe('mergeRiskProfileData', () => {
 
     await service.mergeRiskProfileData(bookingId, data, mockTransactionalClient)
 
-    expect(formClient.updateRiskProfileData.mock.calls[0]).toEqual([
+    expect(formClient.updateRiskProfileData).toBeCalledWith(
       bookingId,
       {
         section1: { value: 'new1' },
         section2: { value: 'new2' },
         section3: { value: 'existing' },
       },
-      mockTransactionalClient,
-    ])
+      mockTransactionalClient
+    )
   })
 })
 
@@ -428,7 +428,7 @@ describe('recordNomisSeqNumber', () => {
   test('happy path', async () => {
     await service.recordNomisSeqNumber(bookingId, 3, mockTransactionalClient)
 
-    expect(formClient.updateRecordWithNomisSeqNumber.mock.calls[0]).toEqual([bookingId, 3, mockTransactionalClient])
+    expect(formClient.updateRecordWithNomisSeqNumber).toBeCalledWith(bookingId, 3, mockTransactionalClient)
   })
   test('failed', async () => {
     formClient.updateRecordWithNomisSeqNumber.mockRejectedValue(new Error('TEST'))
@@ -544,25 +544,64 @@ describe('computeSuggestedCat', () => {
 
 describe('referToSecurityIfRiskAssessed', () => {
   const socProfile = { transferToSecurity: true }
+  const extremismProfile = { notifyRegionalCTLead: true }
 
-  test('valid status', async () => {
-    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED', mockTransactionalClient)
-    expect(formClient.referToSecurity.mock.calls[0]).toEqual([
+  test('valid status SOC', async () => {
+    await service.referToSecurityIfRiskAssessed(
+      bookingId,
+      userId,
+      { transferToSecurity: true },
+      { notifyRegionalCTLead: false },
+      'STARTED',
+      mockTransactionalClient
+    )
+    expect(formClient.referToSecurity).toBeCalledWith(
       bookingId,
       null,
       Status.SECURITY_AUTO.name,
-      mockTransactionalClient,
-    ])
+      mockTransactionalClient
+    )
+  })
+
+  test('valid status SOC', async () => {
+    await service.referToSecurityIfRiskAssessed(
+      bookingId,
+      userId,
+      { transferToSecurity: false },
+      { notifyRegionalCTLead: true },
+      'STARTED',
+      mockTransactionalClient
+    )
+    expect(formClient.referToSecurity).toBeCalledWith(
+      bookingId,
+      null,
+      Status.SECURITY_AUTO.name,
+      mockTransactionalClient
+    )
   })
 
   test('invalid status', async () => {
     await expect(
-      service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'APPROVED', mockTransactionalClient)
+      service.referToSecurityIfRiskAssessed(
+        bookingId,
+        userId,
+        socProfile,
+        extremismProfile,
+        'APPROVED',
+        mockTransactionalClient
+      )
     ).rejects.toThrow('Cannot transition from status APPROVED to SECURITY_AUTO')
   })
 
   test('invalid SECURITY_AUTO status', async () => {
-    await service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'SECURITY_AUTO', mockTransactionalClient)
+    await service.referToSecurityIfRiskAssessed(
+      bookingId,
+      userId,
+      socProfile,
+      extremismProfile,
+      'SECURITY_AUTO',
+      mockTransactionalClient
+    )
     expect(formClient.referToSecurity).not.toBeCalled()
   })
 
@@ -570,7 +609,14 @@ describe('referToSecurityIfRiskAssessed', () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
     await expect(
-      service.referToSecurityIfRiskAssessed(bookingId, userId, socProfile, 'STARTED', mockTransactionalClient)
+      service.referToSecurityIfRiskAssessed(
+        bookingId,
+        userId,
+        socProfile,
+        extremismProfile,
+        'STARTED',
+        mockTransactionalClient
+      )
     ).rejects.toThrow('TEST')
   })
 })
@@ -584,12 +630,12 @@ describe('referToSecurityIfRequested', () => {
 
     await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
 
-    expect(formClient.referToSecurity.mock.calls[0]).toEqual([
+    expect(formClient.referToSecurity).toBeCalledWith(
       bookingId,
       userId,
       Status.SECURITY_MANUAL.name,
-      mockTransactionalClient,
-    ])
+      mockTransactionalClient
+    )
   })
 
   test('happy path recat', async () => {
@@ -597,12 +643,12 @@ describe('referToSecurityIfRequested', () => {
 
     await service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectRecat, mockTransactionalClient)
 
-    expect(formClient.referToSecurity.mock.calls[0]).toEqual([
+    expect(formClient.referToSecurity).toBeCalledWith(
       bookingId,
       userId,
       Status.SECURITY_MANUAL.name,
-      mockTransactionalClient,
-    ])
+      mockTransactionalClient
+    )
   })
 
   test('no record in db', async () => {
@@ -649,13 +695,13 @@ describe('referToSecurityIfFlagged', () => {
 
     await service.referToSecurityIfFlagged(bookingId, offenderNo, 'STARTED', mockTransactionalClient)
 
-    expect(formClient.referToSecurity.mock.calls[0]).toEqual([
+    expect(formClient.referToSecurity).toBeCalledWith(
       bookingId,
       'SEC_USER',
       Status.SECURITY_FLAGGED.name,
-      mockTransactionalClient,
-    ])
-    expect(formClient.setSecurityReferralProcessed.mock.calls[0]).toEqual([offenderNo, mockTransactionalClient])
+      mockTransactionalClient
+    )
+    expect(formClient.setSecurityReferralProcessed).toBeCalledWith(offenderNo, mockTransactionalClient)
   })
 
   test('not flagged', async () => {
@@ -683,12 +729,7 @@ describe('securityReviewed', () => {
 
     await service.securityReviewed(bookingId, userId, mockTransactionalClient)
 
-    expect(formClient.securityReviewed.mock.calls[0]).toEqual([
-      bookingId,
-      'SECURITY_BACK',
-      userId,
-      mockTransactionalClient,
-    ])
+    expect(formClient.securityReviewed).toBeCalledWith(bookingId, 'SECURITY_BACK', userId, mockTransactionalClient)
   })
 })
 
@@ -698,7 +739,7 @@ describe('updateStatus', () => {
 
     await service.backToCategoriser(bookingId, mockTransactionalClient)
 
-    expect(formClient.updateStatus.mock.calls[0]).toEqual([bookingId, 'SUPERVISOR_BACK', mockTransactionalClient])
+    expect(formClient.updateStatus).toBeCalledWith(bookingId, 'SUPERVISOR_BACK', mockTransactionalClient)
   })
 
   test('no record in db', async () => {
@@ -915,11 +956,7 @@ describe('createRiskChange', () => {
 
     await service.createRiskChange(offenderNo, 'LEI', {}, newProfile, mockTransactionalClient)
 
-    expect(formClient.mergeRiskChangeForOffender.mock.calls[0]).toEqual([
-      offenderNo,
-      newProfile,
-      mockTransactionalClient,
-    ])
+    expect(formClient.mergeRiskChangeForOffender).toBeCalledWith(offenderNo, newProfile, mockTransactionalClient)
   })
 
   test('create new record', async () => {
@@ -927,15 +964,13 @@ describe('createRiskChange', () => {
 
     await service.createRiskChange(offenderNo, 'LEI', {}, newProfile, mockTransactionalClient)
 
-    expect(formClient.createRiskChange.mock.calls[0]).toEqual([
-      {
-        agencyId: 'LEI',
-        offenderNo,
-        oldProfile: {},
-        newProfile,
-        transactionalClient: mockTransactionalClient,
-      },
-    ])
+    expect(formClient.createRiskChange).toBeCalledWith({
+      agencyId: 'LEI',
+      offenderNo,
+      oldProfile: {},
+      newProfile,
+      transactionalClient: mockTransactionalClient,
+    })
     expect(formClient.mergeRiskChangeForOffender).not.toBeCalled()
   })
 })

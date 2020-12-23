@@ -700,14 +700,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return []
       }
 
-      const decoratedReviewAndU21 = mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
+      return mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
         })
-      return decoratedReviewAndU21
     } catch (error) {
-      logger.error(error, 'Error during getRecategorisedOffenders')
+      logger.error(error, 'Error during getRecategoriseOffenders')
       throw error
     }
   }

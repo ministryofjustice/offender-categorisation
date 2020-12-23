@@ -30,18 +30,6 @@ function isNewlyReferredToSecurity(oldP, newP) {
   return !oldRisk && newRisk
 }
 
-function nowRequiresNotifyRegionalCTLead(oldP, newP) {
-  const oldNotify = oldP.extremism.notifyRegionalCTLead
-  const newNotify = newP.extremism.notifyRegionalCTLead
-  return !oldNotify && newNotify
-}
-
-function isIncreasedRiskOfExtremism(oldP, newP) {
-  const oldNotify = oldP.extremism.increasedRiskOfExtremism
-  const newNotify = newP.extremism.increasedRiskOfExtremism
-  return !oldNotify && newNotify
-}
-
 function changeInViolenceCategoryRecommendation(oldP, newP) {
   const oldCategory = oldP.violence.provisionalCategorisation
   const newCategory = newP.violence.provisionalCategorisation
@@ -53,8 +41,6 @@ const assessRiskProfiles = (oldP, newP) => {
   const escapeRiskAlert = riskAlertChange(oldP, newP)
   const escapeList = isNewlyOnTheEscapeList(oldP, newP)
   const escapeRisk = isNewEscapeRisk(oldP, newP)
-  const increasedRiskOfExtremism = isIncreasedRiskOfExtremism(oldP, newP)
-  const notifyRegionalCTLeadExtremism = nowRequiresNotifyRegionalCTLead(oldP, newP)
   const violenceChange = changeInViolenceCategoryRecommendation(oldP, newP)
   const socNewlyReferred = isNewlyReferredToSecurity(oldP, newP)
   return {
@@ -62,19 +48,9 @@ const assessRiskProfiles = (oldP, newP) => {
     escapeRiskAlert,
     escapeList,
     escapeRisk,
-    increasedRiskOfExtremism,
-    notifyRegionalCTLeadExtremism,
     violenceChange,
     socNewlyReferred,
-    alertRequired:
-      escapeListAlert ||
-      escapeRiskAlert ||
-      escapeRisk ||
-      escapeList ||
-      increasedRiskOfExtremism ||
-      notifyRegionalCTLeadExtremism ||
-      violenceChange ||
-      socNewlyReferred,
+    alertRequired: escapeListAlert || escapeRiskAlert || escapeRisk || escapeList || violenceChange || socNewlyReferred,
   }
 }
 

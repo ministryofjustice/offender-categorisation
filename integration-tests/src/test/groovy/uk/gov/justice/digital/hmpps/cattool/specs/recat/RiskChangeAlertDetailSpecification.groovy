@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.cattool.specs.recat
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
+import groovy.json.JsonOutput
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -54,14 +55,12 @@ class RiskChangeAlertDetailSpecification extends GebReportingSpec {
     escapeWarning.isDisplayed()
     escapeAlerts.isDisplayed()
     escapeAlertsOld.isDisplayed()
-    extremismNotifyWarning.isDisplayed()
-    increasedRiskExtremismWarning.isDisplayed()
 
     when: 'I select yes to process'
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
 
     elite2Api.stubGetOffenderDetails(12, 'B2345XY')
-    riskProfilerApi.stubGetSocProfile('B2345XY', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345XY', 'C', false)
     answerYes.click()
     submitButton.click()
 
@@ -70,7 +69,6 @@ class RiskChangeAlertDetailSpecification extends GebReportingSpec {
 
     def data = db.getRiskChange('B2345XY')
     data.status == ["REVIEW_REQUIRED"]
-
   }
 
   def "The risk change alert can be ignored"() {
@@ -95,11 +93,17 @@ class RiskChangeAlertDetailSpecification extends GebReportingSpec {
   }
 
   void gotoRiskChangeDetail() {
-   /* db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsC]), 'INITIAL') */
+    /* db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([
+       ratings: TestFixture.defaultRatingsC]), 'INITIAL') */
     def raisedDate = LocalDate.of(2019, 1, 31)
-    def oldProfile = '{"soc": {"nomsId": "B2345XY", "riskType": "SOC", "transferToSecurity": false, "provisionalCategorisation": "C"}, "escape": {"nomsId": "G5021GJ", "riskType": "ESCAPE", "activeEscapeList": false, "activeEscapeRisk": false, "escapeListAlerts": [], "escapeRiskAlerts": [], "provisionalCategorisation": "C"}, "violence": {"nomsId": "G5021GJ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 10, "notifySafetyCustodyLead": false, "numberOfSeriousAssaults": 0, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false}, "extremism": {"nomsId": "G5021GJ", "riskType": "EXTREMISM", "notifyRegionalCTLead": false, "increasedRiskOfExtremism": false, "provisionalCategorisation": "C"}}'
-    def newProfile = '{"soc": {"nomsId": "B2345XY", "riskType": "SOC", "transferToSecurity": true, "provisionalCategorisation": "C"}, "escape": {"nomsId": "G5021GJ", "riskType": "ESCAPE", "activeEscapeList": false, "activeEscapeRisk": true, "escapeListAlerts": [], "escapeRiskAlerts": [{"active": true, "alertId": 23, "comment": "WozkLbgfVNNRkjsYGmLfWozkLbgfVNNRkjsYGmLf", "expired": false, "ranking": 0, "alertCode": "XER", "alertType": "X", "bookingId": 869603, "offenderNo": "G5021GJ", "dateCreated": "2016-08-15", "alertCodeDescription": "Escape Risk", "alertTypeDescription": "Security"}], "provisionalCategorisation": "C"}, "violence": {"nomsId": "G5021GJ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 10, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 1, "provisionalCategorisation": "B", "veryHighRiskViolentOffender": false}, "extremism": {"nomsId": "G5021GJ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}'
+    def oldProfile = JsonOutput.toJson([
+      "soc": ["nomsId": "B2345XY", "riskType": "SOC", "transferToSecurity": false, "provisionalCategorisation": "C"],
+      "escape": ["nomsId": "G5021GJ", "riskType": "ESCAPE", "activeEscapeList": false, "activeEscapeRisk": false, "escapeListAlerts": [], "escapeRiskAlerts": [], "provisionalCategorisation": "C"],
+      "violence": ["nomsId": "G5021GJ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 10, "notifySafetyCustodyLead": false, "numberOfSeriousAssaults": 0, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false]])
+    def newProfile = JsonOutput.toJson([
+      "soc": ["nomsId": "B2345XY", "riskType": "SOC", "transferToSecurity": true, "provisionalCategorisation": "C"],
+      "escape": ["nomsId": "G5021GJ", "riskType": "ESCAPE", "activeEscapeList": false, "activeEscapeRisk": true, "escapeListAlerts": [], "escapeRiskAlerts": [["active": true, "alertId": 23, "comment": "text", "expired": false, "ranking": 0, "alertCode": "XER", "alertType": "X", "bookingId": 869603, "offenderNo": "G5021GJ", "dateCreated": "2016-08-15", "alertCodeDescription": "Escape Risk", "alertTypeDescription": "Security"]], "provisionalCategorisation": "C"],
+      "violence": ["nomsId": "G5021GJ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 10, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 1, "provisionalCategorisation": "B", "veryHighRiskViolentOffender": false]])
 
     db.createRiskChange(-1, 'B2345XY', null, 'NEW',
       oldProfile,

@@ -200,7 +200,7 @@ class HomePageSpecification extends GebReportingSpec {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(678, "ON678")
-    riskProfilerApi.stubGetSocProfile('ON678', 'C', false)
+    riskProfilerApi.stubForTasklists('ON678', 'C', false)
     startButtons[0].click() // selects B2345YZ
     at(new TasklistPage(bookingId: '678'))
     headerValue*.text() == ['Hillmob, Ant', 'ON678', '17/02/1970', 'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']

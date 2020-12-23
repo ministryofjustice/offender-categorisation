@@ -50,7 +50,7 @@ class SecurityInputSpecification extends GebReportingSpec {
 
     elite2Api.stubAssessments(['B2345YZ'])
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
-    riskProfilerApi.stubGetSocProfile('B2345YZ', 'C', false)
+    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
 
     securityButton.click()
 
