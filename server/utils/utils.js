@@ -1,6 +1,6 @@
 const moment = require('moment')
 const R = require('ramda')
-const { dpsUrl, whereaboutsUrl } = require('../config')
+const { dpsUrl } = require('../config')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
@@ -145,10 +145,10 @@ const calculateNextReviewDate = R.cond([
 const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB'])
 const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
-const offenderLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/quick-look`
-const offenderCaseNotesLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/case-notes`
-const offenderAdjudicationLink = offenderNo => `${whereaboutsUrl}offenders/${offenderNo}/adjudications`
-const offenderAlertsLink = offenderNo => `${dpsUrl}offenders/${offenderNo}/alerts`
+const offenderLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}`
+const offenderCaseNotesLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}/case-notes`
+const offenderAdjudicationLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}/adjudications`
+const offenderAlertsLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}/alerts`
 
 const convertToTitleCase = sentence =>
   sentence

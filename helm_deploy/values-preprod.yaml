@@ -22,7 +22,6 @@ env:
   ELITE2API_ENDPOINT_URL: https://api-preprod.prison.service.justice.gov.uk/
   RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
   DPS_URL: https://digital-preprod.prison.service.justice.gov.uk/
-  WHEREABOUTS_URL: https://whereabouts-preprod.prison.service.justice.gov.uk/
 
 whitelist:
   office: "217.33.148.210/32"

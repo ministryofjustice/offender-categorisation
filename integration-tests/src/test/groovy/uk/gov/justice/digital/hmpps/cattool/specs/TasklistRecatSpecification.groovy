@@ -51,7 +51,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     at TasklistRecatPage
     headerValue*.text() == fixture.FULL_HEADER
     headerLink.text() == 'Hillmob, Ant'
-    headerLink.@href == 'http://localhost:3000/offenders/B2345YZ/quick-look'
+    headerLink.@href == 'http://localhost:3000/prisoner/B2345YZ'
     !continueButton
     continueButtonDisabled.displayed
 

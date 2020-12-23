@@ -92,7 +92,6 @@ module.exports = {
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
   dpsUrl: `${get('DPS_URL', 'http://localhost:3000/', true)}`,
-  whereaboutsUrl: `${get('WHEREABOUTS_URL', 'http://localhost:3666/', true)}`,
   googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', ' ', true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 6, true)}`,
   recatMarginMonths: `${get('RECAT_MARGIN_MONTHS', 2, true)}`,

@@ -238,9 +238,9 @@ describe('recat', () => {
         expect(res.text).toContain('extremismInfo')
         expect(res.text).toMatch(/Home.+Categorisation home.+Prisoner background/s)
         expect(res.text).toContain('escapeInfo')
-        expect(res.text).toContain('/offenders/GH123/case-notes')
-        expect(res.text).toContain('/offenders/GH123/alerts')
-        expect(res.text).toContain('/offenders/GH123/adjudications')
+        expect(res.text).toContain('/prisoner/GH123/case-notes')
+        expect(res.text).toContain('/prisoner/GH123/alerts')
+        expect(res.text).toContain('/prisoner/GH123/adjudications')
         expect(res.text).toContain('/categoryHistory/12345')
       }))
 
