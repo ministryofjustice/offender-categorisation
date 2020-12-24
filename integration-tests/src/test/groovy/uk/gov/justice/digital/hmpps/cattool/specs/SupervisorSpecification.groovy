@@ -126,7 +126,7 @@ class SupervisorSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == [review     : [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'reason text'],
-                            confirmBack: [messageText: 'reason text']]
+                            confirmBack: [messageText: 'reason text', supervisorName: 'Test User']]
     response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
@@ -250,7 +250,7 @@ class SupervisorSpecification extends GebReportingSpec {
     def data = db.getData(12)
     data.status == ["SUPERVISOR_BACK"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
-    response.supervisor == [confirmBack: [confirmation: 'Yes', messageText: 'a message for categoriser']]
+    response.supervisor == [confirmBack: [confirmation: 'Yes', messageText: 'a message for categoriser', supervisorName: 'Test User']]
 
     when: 'the categorisor views the tasklist and clicks the message task'
     fixture.logout()
@@ -268,7 +268,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     then: 'the message is displayed'
     at SupervisorMessagePage
-    messageText.text() == 'a message for categoriser'
+    messageValues*.text() == ['Test User','a message for categoriser']
 
     when: 'the message is dismissed'
     submitButton.click()
@@ -308,7 +308,7 @@ class SupervisorSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == [review     : [proposedCategory: 'B', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D'],
-                            confirmBack: [messageText: 'should be a D']]
+                            confirmBack: [messageText: 'should be a D', supervisorName: 'Test User']]
     response.categoriser == [provisionalCategory: [suggestedCategory: 'D', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
@@ -343,7 +343,7 @@ class SupervisorSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == [review     : [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a J'],
-                            confirmBack: [messageText: 'should be a J']]
+                            confirmBack: [messageText: 'should be a J', supervisorName: 'Test User']]
     response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
@@ -606,7 +606,7 @@ class SupervisorSpecification extends GebReportingSpec {
 
     then: 'the message is displayed'
     at SupervisorMessagePage
-    messageText.text() == 'a message for re-categoriser'
+    messageValues*.text() == ['Test User','a message for re-categoriser']
 
     when: 'the message is dismissed'
     submitButton.click()
@@ -655,7 +655,7 @@ class SupervisorSpecification extends GebReportingSpec {
       ]
     ]
     response.supervisor == [review     : [proposedCategory: 'C', supervisorOverriddenCategory: 'D', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'should be a D'],
-                            confirmBack: [messageText: 'should be a D']]
+                            confirmBack: [messageText: 'should be a D', supervisorName: 'Test User']]
     response.openConditionsRequested
   }
 }

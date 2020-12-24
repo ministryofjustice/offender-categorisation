@@ -9,7 +9,7 @@ class SupervisorMessagePage extends HeaderPage {
   }
 
   static content = {
-    messageText { $('#messageText') }
+    messageValues { $('dd') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }

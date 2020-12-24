@@ -1,4 +1,5 @@
 {% extends "../formTemplate.html" %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
 {% set pageTitle = "Message from supervisor" %}
 
 {% block navigation %}
@@ -13,10 +14,15 @@
 
 {% block formItems %}
 
-<div>
-  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
-</div>
+  <div>
+    <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+  </div>
 
-<p id="messageText">{{ data.supervisor.confirmBack.messageText }}</p>
+  {{ govukSummaryList({
+    rows: [
+      { key: { text: "Supervisor" }, value: { text: data.supervisor.confirmBack.supervisorName } },
+      { key: { text: "Message" },    value: { text: data.supervisor.confirmBack.messageText | striptags(true) | escape | nl2br } }
+    ]
+  }) }}
 
 {% endblock %}
