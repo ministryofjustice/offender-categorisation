@@ -385,8 +385,20 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
+      // ensure cat not in progress.
+      const assessmentData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
+      const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+      const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
+      if (liteInProgress || inProgress(categorisationRecord)) {
+        const backLink = req.get('Referrer')
+        return res.render('pages/error', {
+          message: 'Error: A categorisation is already in progress',
+          backLink,
+        })
+      }
+
       formService.createSecurityReferral(details.agencyId, details.offenderNo, user.username, transactionalDbClient)
-      res.render('pages/securityReferralSubmitted')
+      return res.render('pages/securityReferralSubmitted')
     })
   )
 
