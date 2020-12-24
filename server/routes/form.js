@@ -669,9 +669,10 @@ module.exports = function Index({
 
         const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
         const { formObject } = categorisationRecord
-        const formObjectWithMessageText = R.assocPath(
-          ['supervisor', 'confirmBack', 'messageText'],
-          userInput.supervisorOverriddenCategoryText,
+        const user = await userService.getUser(res.locals)
+        const formObjectWithMessageValues = R.assocPath(
+          ['supervisor', 'confirmBack'],
+          { messageText: userInput.supervisorOverriddenCategoryText, supervisorName: user.displayNameAlternative },
           formObject
         )
 
@@ -684,11 +685,11 @@ module.exports = function Index({
               categoryAppropriate: 'Yes',
               otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
             },
-            formObjectWithMessageText
+            formObjectWithMessageValues
           )
           await formService.updateFormData(bookingId, newData, transactionalDbClient)
         } else {
-          await formService.updateFormData(bookingId, formObjectWithMessageText, transactionalDbClient)
+          await formService.updateFormData(bookingId, formObjectWithMessageValues, transactionalDbClient)
 
           // delete recat decision to force a new decision once open conditions completed
           await formService.deleteFormData({

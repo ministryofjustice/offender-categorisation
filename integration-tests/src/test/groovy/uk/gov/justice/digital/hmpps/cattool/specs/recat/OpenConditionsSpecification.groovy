@@ -198,7 +198,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
   def "The happy path is correct for recategoriser setting cat D, all nos"() {
     when: 'The categoriser overrides to D'
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
-      recat         : TestFixture.defaultRecat
+      recat: TestFixture.defaultRecat
     ]), 'RECAT')
 
     fixture.gotoTasklistRecat()
@@ -249,11 +249,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
     data.assessment_date == [null]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.recat == [
-      decision      : [category: "D"],
-      securityInput : [securityInputNeeded: "No"],
-      nextReviewDate: [date: "14/12/2019"],
-      prisonerBackground: [offenceDetails:"offence Details text"],
-      riskAssessment: [
+      decision          : [category: "D"],
+      securityInput     : [securityInputNeeded: "No"],
+      nextReviewDate    : [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails: "offence Details text"],
+      riskAssessment    : [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",
         higherCategory   : "higher security category text",
@@ -273,7 +273,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     when: 'The record is viewed by the recategoriser'
 
-    elite2Api.stubRecategorise(['P','A','A','A'])
+    elite2Api.stubRecategorise(['P', 'A', 'A', 'A'])
 
     to RecategoriserHomePage
     startButtons[0].click()
@@ -292,11 +292,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     afterSubmitData.status == ["AWAITING_APPROVAL"]
     afterSubmitResponse.recat == [
-      decision      : [category: "D"],
-      securityInput : [securityInputNeeded: "No"],
-      nextReviewDate: [date: "14/12/2019"],
-      prisonerBackground: [offenceDetails:"offence Details text"],
-      riskAssessment: [
+      decision          : [category: "D"],
+      securityInput     : [securityInputNeeded: "No"],
+      nextReviewDate    : [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails: "offence Details text"],
+      riskAssessment    : [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",
         higherCategory   : "higher security category text",
@@ -353,7 +353,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
   def "recategoriser sets D, supervisor overrides to C"() {
     when: 'The categoriser overrides to D'
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
-      recat         : TestFixture.defaultRecat
+      recat: TestFixture.defaultRecat
     ]), 'RECAT')
 
     fixture.gotoTasklistRecat()
@@ -418,11 +418,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at SupervisorReviewOutcomePage
     data.status == ["APPROVED"]
     response.recat == [
-      decision      : [category: "D"],
-      securityInput : [securityInputNeeded: "No"],
-      nextReviewDate: [date: "14/12/2019"],
-      prisonerBackground: [offenceDetails:"offence Details text"],
-      riskAssessment: [
+      decision          : [category: "D"],
+      securityInput     : [securityInputNeeded: "No"],
+      nextReviewDate    : [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails: "offence Details text"],
+      riskAssessment    : [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",
         higherCategory   : "higher security category text",
@@ -456,7 +456,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
   def "The happy path is correct for supervisor overriding to D"() {
     when: 'The categoriser submits cat C'
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
-      recat         : TestFixture.defaultRecat
+      recat: TestFixture.defaultRecat
     ]), 'RECAT')
 
     fixture.gotoTasklistRecat()
@@ -516,7 +516,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'the supervisor message is available'
     at SupervisorMessagePage
-    messageText.text() == 'super overriding C to D reason text'
+    messageValues*.text() == ['Test User', 'super overriding C to D reason text']
 
     when: 'the recategoriser chooses cat D instead of C'
     submitButton.click()
@@ -541,7 +541,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at CategoriserSubmittedPage
 
     when: 'The record is viewed by the recategoriser'
-    elite2Api.stubRecategorise(['P','A','A','A'])
+    elite2Api.stubRecategorise(['P', 'A', 'A', 'A'])
     to RecategoriserHomePage
     startButtons[0].click()
 
@@ -570,11 +570,11 @@ class OpenConditionsSpecification extends GebReportingSpec {
     at SupervisorReviewOutcomePage
     data.status == ["APPROVED"]
     response.recat == [
-      decision      : [category: "D"],
-      securityInput : [securityInputNeeded: "No"],
-      nextReviewDate: [date: "14/12/2019"],
-      prisonerBackground: [offenceDetails:"offence Details text"],
-      riskAssessment: [
+      decision          : [category: "D"],
+      securityInput     : [securityInputNeeded: "No"],
+      nextReviewDate    : [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails: "offence Details text"],
+      riskAssessment    : [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",
         higherCategory   : "higher security category text",
@@ -586,7 +586,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
                                           supervisorCategoryAppropriate: 'Yes',
                                           otherInformationText         : 'super other info 1 + 2',
                                           previousOverrideCategoryText : 'super overriding C to D reason text'],
-                            confirmBack: [isRead: true, messageText: 'super overriding C to D reason text']]
+                            confirmBack: [isRead: true, messageText: 'super overriding C to D reason text', supervisorName: 'Test User']]
     response.openConditions == allNoAnswers
     response.openConditionsRequested
 

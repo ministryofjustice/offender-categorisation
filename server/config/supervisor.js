@@ -43,6 +43,11 @@ module.exports = {
   confirmBack: {
     fields: [
       {
+        supervisorName: {
+          responseType: 'optionalString',
+        },
+      },
+      {
         confirmation: {
           responseType: 'requiredString',
           validationMessage: 'Please select yes or no',
