@@ -462,7 +462,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'details are correct'
     at ApprovedViewPage
-    categories*.text() == ['D\nWarning\nCategory D', 'B\nD\nWarning\nThe recommended category was changed from a B to a D','D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['D\nWarning\nCategory D', 'B\nD\nWarning\nThe recommended category was changed from a B to a D', 'D\nWarning\nThe supervisor also recommends category D']
     comments*.text() == ['categoriser override to D comment']
     otherInformationSummary.text() == 'categoriser relevant info 1'
     commentLabel.size() == 1
@@ -569,7 +569,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     categories*.text() == ['C\nWarning\nCategory C',
                            'B\nD\nWarning\nThe recommended category was changed from a B to a D',
                            'D\nC\nWarning\nThe recommended category was changed from a D to a C']
-    comments*.text() == ['categoriser override to D comment','super changed D to C','super other info']
+    comments*.text() == ['categoriser override to D comment', 'super changed D to C', 'super other info']
     otherInformationSummary.text() == 'categoriser relevant info 1'
     commentLabel.size() == 2
   }
@@ -624,7 +624,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'the supervisor message is available'
     at SupervisorMessagePage
-    messageText.text() == 'super overriding C to D reason text'
+    messageValues*.text() == ['Test User', 'super overriding C to D reason text']
 
     when: 'open conditions forms are completed'
     submitButton.click()
@@ -690,7 +690,7 @@ class OpenConditionsSpecification extends GebReportingSpec {
     response.categoriser == [review             : [:],
                              provisionalCategory: [suggestedCategory: 'D', categoryAppropriate: 'Yes', otherInformationText: 'categoriser relevant info for accept']]
     response.supervisor == [review     : [proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes', otherInformationText: 'super other info 1', previousOverrideCategoryText: 'super overriding C to D reason text',],
-                            confirmBack: [isRead: true, messageText: 'super overriding C to D reason text']]
+                            confirmBack: [isRead: true, messageText: 'super overriding C to D reason text', supervisorName: 'Test User']]
     response.openConditions == allNoAnswers
     response.openConditionsRequested
 
@@ -706,8 +706,8 @@ class OpenConditionsSpecification extends GebReportingSpec {
 
     then: 'details are correct'
     at ApprovedViewPage
-    categories*.text() == ['D\nWarning\nCategory D', 'D\nWarning\nThe categoriser recommends category D','D\nWarning\nThe supervisor also recommends category D']
-    comments*.text() == ['super overriding C to D reason text','super other info 1']
+    categories*.text() == ['D\nWarning\nCategory D', 'D\nWarning\nThe categoriser recommends category D', 'D\nWarning\nThe supervisor also recommends category D']
+    comments*.text() == ['super overriding C to D reason text', 'super other info 1']
     otherInformationSummary.text() == 'categoriser relevant info for accept'
     commentLabel.size() == 1
   }
