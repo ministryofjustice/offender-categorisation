@@ -2,6 +2,7 @@ const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const db = require('../../server/data/dataAccess/db')
+const Status = require('../../server/utils/statusEnum')
 
 let roles
 // This needs mocking early, before 'requiring' jwt-decode
@@ -39,6 +40,7 @@ const formService = {
   getSecurityReferral: jest.fn(),
   getRiskChangeCount: jest.fn(),
   getCategorisationRecord: jest.fn(),
+  getLiteCategorisation: jest.fn(),
 }
 
 const homeRoute = createRouter({
@@ -81,8 +83,11 @@ afterEach(() => {
   offendersService.getOptionalAssessmentAgencyDescription.mockReset()
   offendersService.getReferredOffenders.mockReset()
   formService.getRiskChangeCount.mockReset()
+  formService.getCategorisationRecord.mockReset()
+  formService.getSecurityReferral.mockReset()
   userService.getUser.mockReset()
   userService.getUserByUserId.mockReset()
+  formService.createSecurityReferral.mockReset()
 })
 
 describe('GET /categoriserDone', () => {
@@ -584,8 +589,10 @@ describe('Landing page', () => {
   })
 
   test('security user post', () => {
-    userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI', roles: { security: true } })
-    offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12 })
+    userService.getUser.mockResolvedValue({ username: 'meee', activeCaseLoad: 'LEI', roles: { security: true } })
+    offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12, agencyId: 'BXI' })
+    formService.getLiteCategorisation.mockResolvedValue({})
+    formService.getCategorisationRecord.mockResolvedValue({})
     return request(app)
       .post('/securityLanding/12345')
       .expect(200)
@@ -593,7 +600,37 @@ describe('Landing page', () => {
       .expect(res => {
         expect(res.text).toContain('Automatic referral setup successful')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
-        expect(formService.createSecurityReferral).toBeCalledTimes(1)
+        expect(formService.createSecurityReferral).toBeCalledWith('BXI', 'B2345XY', 'meee', mockTransactionalClient)
+      })
+  })
+
+  test('security user post - cat in progress', () => {
+    userService.getUser.mockResolvedValue({ username: 'meee', activeCaseLoad: 'LEI', roles: { security: true } })
+    offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12, agencyId: 'BXI' })
+    formService.getLiteCategorisation.mockResolvedValue({})
+    formService.getCategorisationRecord.mockResolvedValue({ status: Status.STARTED.name })
+    return request(app)
+      .post('/securityLanding/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Error: A categorisation is already in progress')
+        expect(formService.createSecurityReferral).not.toBeCalled()
+      })
+  })
+
+  test('security user post - lite cat in progress', () => {
+    userService.getUser.mockResolvedValue({ username: 'meee', activeCaseLoad: 'LEI', roles: { security: true } })
+    offendersService.getOffenderDetails.mockResolvedValue({ offenderNo: 'B2345XY', bookingId: 12, agencyId: 'BXI' })
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 12 })
+    formService.getCategorisationRecord.mockResolvedValue({})
+    return request(app)
+      .post('/securityLanding/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Error: A categorisation is already in progress')
+        expect(formService.createSecurityReferral).not.toBeCalled()
       })
   })
 })
