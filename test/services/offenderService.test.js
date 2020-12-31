@@ -42,6 +42,7 @@ const formService = {
   updateStatusForOutstandingRiskChange: jest.fn(),
   getRiskChanges: jest.fn(),
   getHistoricalCategorisationRecords: jest.fn(),
+  getCategorisationRecords: jest.fn(),
   backToCategoriser: jest.fn(),
   recordNomisSeqNumber: jest.fn(),
   updateOffenderIdentifierReturningBookingId: jest.fn(),
@@ -79,11 +80,13 @@ afterEach(() => {
   formService.getSecurityReferredOffenders.mockReset()
   formService.getCategorisedOffenders.mockReset()
   formService.getHistoricalCategorisationRecords.mockReset()
+  formService.getCategorisationRecords.mockReset()
   nomisClient.getCategoryHistory.mockReset()
   nomisClient.getAgencyDetail.mockReset()
   nomisClient.getCategorisedOffenders.mockReset()
   nomisClient.getLatestCategorisationForOffenders.mockReset()
   nomisClient.updateNextReviewDate.mockReset()
+  nomisClient.getBasicOffenderDetails.mockReset()
 })
 
 moment.now = jest.fn()
@@ -634,6 +637,7 @@ describe('getUncategorisedOffenders', () => {
     ]
 
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    formService.getCategorisationRecords.mockResolvedValue([])
     nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue({})
 
@@ -719,6 +723,7 @@ describe('getUncategorisedOffenders', () => {
     const expected = []
 
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    formService.getCategorisationRecords.mockResolvedValue([])
     nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue({})
 
@@ -735,33 +740,6 @@ describe('getUncategorisedOffenders', () => {
     } catch (error) {
       /* do nothing */
     }
-  })
-  test('it should not return offenders without sentence data', async () => {
-    const uncategorised = [
-      {
-        offenderNo: 'G12345',
-        firstName: 'Jane',
-        lastName: 'Brown',
-        bookingId: 123,
-        status: Status.UNCATEGORISED.name,
-      },
-    ]
-
-    const sentenceDates = [
-      {
-        sentenceDetail: { bookingId: 123 },
-      },
-    ]
-
-    const expected = []
-
-    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
-    formService.getCategorisationRecord.mockResolvedValue({})
-
-    const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
-    expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
-    expect(result).toEqual(expected)
   })
 
   test('it returns a pnomis marker for inconsistent data', async () => {
@@ -783,10 +761,11 @@ describe('getUncategorisedOffenders', () => {
       },
     ]
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    formService.getCategorisationRecords.mockResolvedValue([])
     nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue(dbRecord)
 
-    const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
+    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
     expect(result[0].pnomis).toBe('PNOMIS')
   })
 
@@ -820,12 +799,109 @@ describe('getUncategorisedOffenders', () => {
       { bookingId: 111, offenceCode: 'IA99000-001N', statuteCode: 'ZZ' },
     ]
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    formService.getCategorisationRecords.mockResolvedValue([])
     nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
     nomisClient.getMainOffences.mockResolvedValue(offences)
 
-    const results = await service.getUncategorisedOffenders(context, mockTransactionalClient)
+    const results = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
     expect(results).toHaveLength(1)
     expect(results[0].bookingId).toEqual(123)
+  })
+
+  test('it includes manual cats in progress', async () => {
+    const uncategorised = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+      },
+    ]
+
+    const sentenceDates = [
+      { sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) } },
+      // { sentenceDetail: { bookingId: 111, sentenceStartDate: mockTodaySubtract(7) } },
+    ]
+
+    const expected = [
+      {
+        offenderNo: 'G55345',
+        firstName: 'Manual',
+        lastName: 'Guy',
+        displayName: 'Guy, Manual',
+        bookingId: 111,
+        displayStatus: Status.STARTED.value,
+      },
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        displayName: 'Brown, Jane',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+        displayStatus: Status.UNCATEGORISED.value,
+        sentenceDate: '2019-01-25',
+        daysSinceSentence: 4,
+        dateRequired: '08/02/2019',
+      },
+    ]
+
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    formService.getCategorisationRecords.mockResolvedValue([
+      { bookingId: 111, offenderNo: 'G55345', status: Status.STARTED.name },
+    ])
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    formService.getCategorisationRecord.mockResolvedValue({})
+    nomisClient.getBasicOffenderDetails.mockResolvedValue({
+      bookingId: 111,
+      offenderNo: 'G55345',
+      firstName: 'Manual',
+      lastName: 'Guy',
+    })
+
+    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+
+    expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
+    expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(result).toMatchObject(expected)
+  })
+
+  describe('getUncategorisedOffenders calculates inconsistent data correctly', () => {
+    test.each`
+      nomisStatus                      | localStatus                      | pnomis
+      ${Status.UNCATEGORISED.name}     | ${Status.SUPERVISOR_BACK.name}   | ${false}
+      ${Status.UNCATEGORISED.name}     | ${Status.SECURITY_BACK.name}     | ${false}
+      ${Status.UNCATEGORISED.name}     | ${Status.AWAITING_APPROVAL.name} | ${'PNOMIS'}
+      ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_BACK.name}     | ${false}
+      ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_MANUAL.name}   | ${false}
+      ${Status.AWAITING_APPROVAL.name} | ${Status.SUPERVISOR_BACK.name}   | ${false}
+      ${Status.AWAITING_APPROVAL.name} | ${Status.STARTED.name}           | ${'PNOMIS'}
+    `('should return pnomis $pnomis for localStatus $localStatus', async ({ nomisStatus, localStatus, pnomis }) => {
+      const uncategorised = [
+        {
+          offenderNo: 'G12345',
+          firstName: 'Jane',
+          lastName: 'Brown',
+          bookingId: 123,
+          status: nomisStatus,
+        },
+      ]
+
+      const dbRecord = { bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: localStatus }
+
+      const sentenceDates = [
+        {
+          sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
+        },
+      ]
+      nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+      formService.getCategorisationRecords.mockResolvedValue([])
+      nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+      formService.getCategorisationRecord.mockResolvedValue(dbRecord)
+      const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+      expect(result[0].pnomis).toBe(pnomis)
+    })
   })
 })
 
@@ -1110,42 +1186,6 @@ test('createSupervisorApproval should propagate error response', async () => {
   } catch (s) {
     expect(s.message).toEqual('our Error')
   }
-})
-
-describe('getUncategorisedOffenders calculates inconsistent data correctly', () => {
-  test.each`
-    nomisStatus                      | localStatus                      | pnomis
-    ${Status.UNCATEGORISED.name}     | ${Status.SUPERVISOR_BACK.name}   | ${false}
-    ${Status.UNCATEGORISED.name}     | ${Status.SECURITY_BACK.name}     | ${false}
-    ${Status.UNCATEGORISED.name}     | ${Status.AWAITING_APPROVAL.name} | ${'PNOMIS'}
-    ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_BACK.name}     | ${false}
-    ${Status.AWAITING_APPROVAL.name} | ${Status.SECURITY_MANUAL.name}   | ${false}
-    ${Status.AWAITING_APPROVAL.name} | ${Status.SUPERVISOR_BACK.name}   | ${false}
-    ${Status.AWAITING_APPROVAL.name} | ${Status.STARTED.name}           | ${'PNOMIS'}
-  `('should return errors $expectedContent for form return', async ({ nomisStatus, localStatus, pnomis }) => {
-    const uncategorised = [
-      {
-        offenderNo: 'G12345',
-        firstName: 'Jane',
-        lastName: 'Brown',
-        bookingId: 123,
-        status: nomisStatus,
-      },
-    ]
-
-    const dbRecord = { bookingId: 1, nomisSeq: 11, catType: 'INITIAL', status: localStatus }
-
-    const sentenceDates = [
-      {
-        sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
-      },
-    ]
-    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
-    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
-    formService.getCategorisationRecord.mockResolvedValue(dbRecord)
-    const result = await service.getUncategorisedOffenders(context, mockTransactionalClient)
-    expect(result[0].pnomis).toBe(pnomis)
-  })
 })
 
 describe('getReferredOffenders', () => {

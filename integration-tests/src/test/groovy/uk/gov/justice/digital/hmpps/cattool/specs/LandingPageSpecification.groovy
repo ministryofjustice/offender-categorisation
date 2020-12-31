@@ -402,7 +402,6 @@ class LandingPageSpecification extends GebReportingSpec {
     data.status == ["STARTED"]
     data.cat_type.value == ["INITIAL"]
     data.review_reason.value == ["MANUAL"]
-    elite2Api.verifySetInactive() == null
   }
 
   def "A categoriser user can start an initial cat where a cat already exists"() {
@@ -434,7 +433,6 @@ class LandingPageSpecification extends GebReportingSpec {
     data.status == ["STARTED"]
     data.cat_type.value == ["INITIAL"]
     data.review_reason.value == ["MANUAL"]
-    elite2Api.verifySetInactive() == null
   }
 
   def "A categoriser user sees a continue button when an initial cat is in progress"() {

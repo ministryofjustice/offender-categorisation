@@ -98,12 +98,12 @@ class DatabaseUtils {
   }
 
   def doCreateCompleteRow(id, bookingId, json, userId, status, catType, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate,
-                          securityReviewedBy, securityReviewedDate, approvalDate = null, assessmentDate = null, dueByDate = null, approvedBy = null) {
+                          securityReviewedBy, securityReviewedDate, approvalDate = null, assessmentDate = null, dueByDate = null, approvedBy = null, reviewReason = 'DUE') {
 
     def approvalDateDB = approvalDate != null ? approvalDate : status == 'APPROVED' ? new Date(Calendar.getInstance().getTimeInMillis()) : null
     def approvedByDB = approvedBy != null ? approvedBy : status == 'APPROVED' ? 'SUPERVISOR_USER' : null
     sql.executeUpdate("""insert into form values ($id, ?::JSON, $bookingId, '$assignedUserId', '$status', '$userId', $referredDate, '$referredBy',
-      $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', $securityReviewedDate, ?::date, '$catType', null, ?::date, ?::text, null, null, ?::date)""",
+      $seq, ?::JSON, '$prisonId', '$offenderNo', $startDate, '$securityReviewedBy', $securityReviewedDate, ?::date, '$catType', null, ?::date, ?::text, null, '$reviewReason', ?::date)""",
       json, riskProfile, approvalDateDB, assessmentDate, approvedByDB, dueByDate)
   }
 

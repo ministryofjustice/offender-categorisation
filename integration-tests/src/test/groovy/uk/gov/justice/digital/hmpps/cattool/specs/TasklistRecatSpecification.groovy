@@ -164,7 +164,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     data.status == ['APPROVED', 'STARTED']
     data.cat_type*.toString() == ['INITIAL', 'RECAT']
     data.sequence_no == [1, 2]
-    data.review_reason*.toString() == [null, 'DUE']
+    data.review_reason*.toString() == ['DUE', 'DUE']
   }
 
   def "The recat tasklist correctly creates a subsequent database sequence when a completed recat record present"() {

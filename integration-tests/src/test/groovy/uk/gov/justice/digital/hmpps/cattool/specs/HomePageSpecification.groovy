@@ -60,6 +60,10 @@ class HomePageSpecification extends GebReportingSpec {
     db.createDataWithStatus(-6, 37, 'AWAITING_APPROVAL', '{}')
     db.createDataWithStatus(-7, 38, 'APPROVED', '{}')
     db.createDataWithStatus(-8, 39, 'SUPERVISOR_BACK', '{}')
+    // This one (Anthill Mob) was started manually and does not come back from the nomis query:
+    db.doCreateCompleteRow(-10, 40, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null,
+      null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null,
+      null, null, null, null, 'MANUAL')
 
     when: 'I go to the home page as categoriser'
 
@@ -72,27 +76,30 @@ class HomePageSpecification extends GebReportingSpec {
     def sentenceStartDate37 = TODAY.minusDays(14)
     def sentenceStartDate38 = TODAY.minusDays(5)
     def sentenceStartDate39 = TODAY.minusDays(1)
+    def sentenceStartDate40 = TODAY.minusDays(70)
     elite2Api.stubUncategorisedFull()
-    elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA'],
-      [31, 32, 33, 34, 35, 36, 37, 38, 39],
+    elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA', 'B0040AA'],
+      [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
       [sentenceStartDate31.toString(), sentenceStartDate32.toString(), sentenceStartDate33.toString(), sentenceStartDate34.toString(),
-       sentenceStartDate35.toString(), sentenceStartDate36.toString(), sentenceStartDate37.toString(), sentenceStartDate38.toString(), sentenceStartDate39.toString()],
+       sentenceStartDate35.toString(), sentenceStartDate36.toString(), sentenceStartDate37.toString(), sentenceStartDate38.toString(),
+       sentenceStartDate39.toString(), sentenceStartDate40.toString()],
     )
+    elite2Api.stubGetBasicOffenderDetails(40, 'B0040AA')
 
     fixture.loginAs(CATEGORISER_USER)
 
     then: 'The categoriser home page is displayed'
     at CategoriserHomePage
-    prisonNos == ['B0039AA', 'B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA']
-    names == ['Supervisor_back, Awaiting', 'Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised',
+    prisonNos == ['B0039AA', 'B0040AA', 'B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA']
+    names == ['Supervisor_back, Awaiting', 'Hillmob, Ant', 'Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised',
               'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised']
-    days == ['1', '55', '50', '47', '43', '39', '19', '14', '5']
+    days == ['1', '70', '55', '50', '47', '43', '39', '19', '14', '5']
     dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
-              'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE',
+              'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE',
               sentenceStartDate37.plusDays(fixture.get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
               sentenceStartDate38.plusDays(fixture.get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
-    statuses == ['REJECTED BY\nSUPERVISOR', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
-    startButtons*.text() == ['Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
+    statuses == ['REJECTED BY\nSUPERVISOR', 'Started (Api User)', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
+    startButtons*.text() == ['Edit', 'Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
   }
 
   def "The home page for a supervisor is present"() {
@@ -107,7 +114,7 @@ class HomePageSpecification extends GebReportingSpec {
 
     when: 'I go to the home page as supervisor'
 
-    def sentenceStartDate31= LocalDate.of(2019, 2, 8)
+    def sentenceStartDate31 = LocalDate.of(2019, 2, 8)
     def sentenceStartDate32 = LocalDate.of(2019, 2, 4)
     def sentenceStartDate33 = LocalDate.of(2019, 1, 31)
     def sentenceStartDate34 = LocalDate.of(2019, 1, 28)
