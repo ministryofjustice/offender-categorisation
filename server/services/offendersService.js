@@ -81,13 +81,23 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       const nomisClient = nomisClientBuilder(context)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
 
+      const dbManualInProgress = await formService.getCategorisationRecords(
+        agencyId,
+        [Status.STARTED.name, Status.SECURITY_BACK.name, Status.SUPERVISOR_BACK.name],
+        CatType.INITIAL.name,
+        ReviewReason.MANUAL.name,
+        transactionalDbClient
+      )
+
       if (isNilOrEmpty(uncategorisedResult)) {
         logger.info(`No uncategorised offenders found for ${agencyId}`)
         return []
       }
+
+      const combined = [...uncategorisedResult, ...dbManualInProgress]
       const [sentenceMap, offenceMap] = await Promise.all([
-        getSentenceMap(uncategorisedResult, nomisClient),
-        getOffenceMap(uncategorisedResult, nomisClient),
+        getSentenceMap(combined, nomisClient),
+        getOffenceMap(combined, nomisClient),
       ])
 
       const filterIS91s = o => {
@@ -102,45 +112,53 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         return true
       }
 
+      const nomisFiltered = uncategorisedResult
+        .filter(o => sentenceMap.get(o.bookingId)) // filter out offenders without sentence
+        .filter(filterIS91s)
+
+      // trim db results to only those not in the Nomis-derived list
+      const dbInProgressFiltered = dbManualInProgress.filter(d => !nomisFiltered.some(n => d.bookingId === n.bookingId))
+
       const decoratedResults = await Promise.all(
-        uncategorisedResult
-          .filter(o => sentenceMap.get(o.bookingId)) // filter out offenders without sentence
-          .filter(filterIS91s)
-          .map(async o => {
-            const [dbRecord, assessmentData] = await Promise.all([
-              formService.getCategorisationRecord(o.bookingId, transactionalDbClient),
-              formService.getLiteCategorisation(o.bookingId, transactionalDbClient),
-            ])
-            if (dbRecord.catType === 'RECAT') {
-              return null
-            }
-            const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
-            const nomisStatusAwaitingApproval = o.status === Status.AWAITING_APPROVAL.name
-            const nomisStatusUncategorised = o.status === Status.UNCATEGORISED.name
+        [...nomisFiltered, ...dbInProgressFiltered].map(async raw => {
+          const nomisRecord = raw.lastName ? raw : await nomisClient.getBasicOffenderDetails(raw.bookingId)
+          const dbRecord = raw.lastName
+            ? await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
+            : raw
 
-            const inconsistent =
-              (nomisStatusAwaitingApproval && localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)) ||
-              (nomisStatusUncategorised &&
-                (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
+          if (dbRecord.catType === 'RECAT') {
+            return null
+          }
 
-            const pnomis = liteInProgress
-              ? 'OTHER'
-              : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
+          const assessmentData = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
+          const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
+          const nomisStatusAwaitingApproval = nomisRecord.status === Status.AWAITING_APPROVAL.name
+          const nomisStatusUncategorised = nomisRecord.status === Status.UNCATEGORISED.name
 
-            const row = {
-              ...o,
-              displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
-              ...buildSentenceData(sentenceMap.get(o.bookingId).sentenceDate),
-              ...(await decorateWithCategorisationData(o, user, nomisClient, dbRecord)),
-              pnomis,
-            }
-            if (inconsistent && !liteInProgress) {
-              logger.warn(
-                `getUncategorisedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, PG status=${dbRecord.status}`
-              )
-            }
-            return row
-          })
+          const inconsistent =
+            (nomisStatusAwaitingApproval && localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)) ||
+            (nomisStatusUncategorised &&
+              (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
+
+          const pnomis = liteInProgress
+            ? 'OTHER'
+            : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
+
+          const sentence = sentenceMap.get(nomisRecord.bookingId)
+          const row = {
+            ...nomisRecord,
+            displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
+            ...buildSentenceData(sentence && sentence.sentenceDate),
+            ...(await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)),
+            pnomis,
+          }
+          if (inconsistent && !liteInProgress) {
+            logger.warn(
+              `getUncategorisedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`
+            )
+          }
+          return row
+        })
       )
 
       return decoratedResults
@@ -747,6 +765,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   function buildSentenceData(sentenceDate) {
+    if (!sentenceDate) {
+      return {}
+    }
     const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
     const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
 

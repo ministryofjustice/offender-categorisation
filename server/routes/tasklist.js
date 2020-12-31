@@ -3,8 +3,7 @@ const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
-const ReviewReason = require('../utils/reviewReasonEnum')
-const { addSocProfile, isFirstVisit, inProgress } = require('../utils/functionalHelpers')
+const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
 const { get10BusinessDays } = require('../utils/utils.js')
 
 function add10BusinessDays(isoDate) {
@@ -82,11 +81,6 @@ module.exports = function Index({
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
-
-      if (reason === ReviewReason.MANUAL.name && isFirstVisit(res)) {
-        // Ensure this categorisation appears on the to-do list
-        await offendersService.setInactive(res.locals, bookingId, 'ACTIVE')
-      }
 
       categorisationRecord = await addSocProfile({
         res,
