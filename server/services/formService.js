@@ -45,6 +45,22 @@ module.exports = function createFormService(formClient) {
     }
   }
 
+  async function getCategorisationRecords(agencyId, statusList, catType, reviewReason, transactionalClient) {
+    try {
+      const data = await formClient.getCategorisationRecords(
+        agencyId,
+        statusList,
+        catType,
+        reviewReason,
+        transactionalClient
+      )
+      return data.rows
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
   async function getRiskChanges(agencyId, transactionalClient) {
     try {
       const data = await formClient.getRiskChangeByStatus(agencyId, RiskChange.NEW.name, transactionalClient)
@@ -774,6 +790,7 @@ module.exports = function createFormService(formClient) {
     getSecurityReferral,
     getRiskChangeForOffender,
     getHistoricalCategorisationRecords,
+    getCategorisationRecords,
     updateStatusForOutstandingRiskChange,
     getRiskChangeCount,
     updateOffenderIdentifierReturningBookingId,
