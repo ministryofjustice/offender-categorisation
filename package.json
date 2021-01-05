@@ -34,7 +34,7 @@
     "applicationinsights": "^1.8.8",
     "applicationinsights-native-metrics": "0.0.5",
     "aws-sdk": "^2.816.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "bunyan": "^1.8.14",
     "bunyan-format": "^0.2.1",
