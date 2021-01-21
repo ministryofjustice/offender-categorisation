@@ -65,7 +65,7 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.5.0",
-    "pg": "^8.0.3",
+    "pg": "^7.18.2",
     "querystring": "^0.2.0",
     "ramda": "^0.25.0",
     "redis": "^2.8.0",
