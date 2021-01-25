@@ -220,6 +220,15 @@
       text: 'Submit',
       attributes: {  }
     }) }}
+
+    {{ govukButton({
+      text: "Cancel",
+      href: "/",
+      classes: "govuk-button--secondary govuk-!-margin-left-2",
+      attributes: {
+        'data-qa': 'cancel-lite-categorisation'
+      }
+    }) }}
   </form>
   {% endif %}
 
