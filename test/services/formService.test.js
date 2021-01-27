@@ -1008,7 +1008,7 @@ describe('getHistoricalCategorisationRecords', () => {
 })
 
 describe('deleteLiteCategorisation', () => {
-  test('', async () => {
+  test('that it calls the client with expected values', async () => {
     formClient.deleteLiteCategorisation.mockResolvedValue({ rows: [{ status: 'SECURITY_AUTO' }] })
 
     await service.deleteLiteCategorisation(bookingId, 1, mockTransactionalClient)
