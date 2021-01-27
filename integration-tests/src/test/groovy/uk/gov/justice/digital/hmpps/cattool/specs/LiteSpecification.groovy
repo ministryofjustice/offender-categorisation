@@ -241,4 +241,50 @@ class LiteSpecification extends GebReportingSpec {
     data2.approved_placement_comment == 'approvedPlacementComment'
     data2.approved_comment == 'approvedComment'
   }
+
+  def "An assessment is removed if already approved on Nomis"() {
+    def now = LocalDate.now()
+    elite2Api.stubSentenceData(['B2345YZ'], [11], [now.toString(), now.toString()])
+    elite2Api.stubGetUserDetails(CATEGORISER_USER, 'SYI')
+    elite2Api.stubGetStaffDetailsByUsernameList()
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
+    elite2Api.stubGetOffenderDetails(12)
+    elite2Api.stubAgenciesPrison()
+    elite2Api.stubUncategorised()
+
+    given: 'there is an assessment waiting for approval'
+    db.createUnapprovedLiteCategorisation(12,1,'B2345YZ','V', 'LEI', 'CATEGORISER_USER')
+    assert db.getLiteData(12).size() == 1
+
+    and: 'a supervisor user is logged in'
+    fixture.loginAs(SUPERVISOR_USER)
+
+    when: 'a supervisor approves the assessment'
+    go '/liteCategories/approveList'
+    at SupervisorLiteListPage
+    approveButtons[0].click()
+    at LiteApprovalPage
+    form.nextReviewDate = now.plusMonths(12).format('dd/MM/yyyy')
+
+    and: 'an error is received from nomis stating that the assessment is not found'
+    elite2Api.stubSupervisorApproveNoPendingAssessmentError([
+      "bookingId" : 12,
+      "assessmentSeq" : 1,
+      "category" : "V",
+      "approvedCategoryComment" : "",
+      "reviewCommitteeCode" : "OCA",
+      "nextReviewDate" : "2022-01-27",
+      "approvedPlacementAgencyId" : "",
+      "approvedPlacementText" : "",
+      "evaluationDate" : "2021-01-27",
+      "committeeCommentText" : ""
+    ])
+    saveButton.click()
+
+    then: 'the already approved page is shown'
+    at LiteCategoriesAlreadyApprovedPage
+
+    and: 'the lite categorisation is removed from the database'
+    assert db.getLiteData(12).isEmpty()
+  }
 }

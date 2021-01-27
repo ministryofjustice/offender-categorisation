@@ -1,0 +1,34 @@
+{% set mainClasses = 'govuk-!-width-two-thirds' %}
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "panel/macro.njk" import govukPanel %}
+
+{% set pageTitle = "Already approved" %}
+
+{% block beforeContent %}
+
+{% include "../partials/breadCrumb.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+  {{ govukPanel({
+    titleText: "Categorisation has already been approved"
+  }) }}
+
+  <h2 class="govuk-heading-l">What does this mean?</h2>
+  <p class="govuk-body">
+    This categorisation has already been approved manually on P-Nomis. It will be visible on the <a href="/categoryHistory/{{ bookingId }}">prisoners categorisation history</a>
+  </p>
+
+  {{ govukButton({
+    text: "Finish",
+    href: "/"
+  }) }}
+
+  <div>
+    <a href="/{{ bookingId }}" >Manage prisoner</a>
+  </div>
+
+{% endblock %}

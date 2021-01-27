@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+  form-db:
+    image: postgres
+    networks:
+      - hmpps
+    container_name: form-builder-db
+    restart: always
+    ports:
+    - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=form-builder
+      - POSTGRES_USER=form-builder
+      - POSTGRES_DB=form-builder
+
+  form-builder-redis:
+    image: redis
+    networks:
+      - hmpps
+    container_name: form-builder-reids
+    restart: always
+    ports:
+      - "6379:6379"
+
+networks:
+  hmpps:

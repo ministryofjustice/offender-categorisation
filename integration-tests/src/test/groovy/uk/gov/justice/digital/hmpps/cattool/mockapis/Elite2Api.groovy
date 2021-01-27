@@ -1239,6 +1239,27 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def stubSupervisorApproveNoPendingAssessmentError(Map expectedBody) {
+    def category = expectedBody.get("category")
+    def bookingId = expectedBody.get("bookingId")
+    def assessmentSeq = expectedBody.get("assessmentSeq")
+
+    this.stubFor(
+      put("/api/offender-assessments/category/approve")
+        .withRequestBody(equalToJson(JsonOutput.toJson(expectedBody), true, true))
+        .willReturn(
+          aResponse()
+            .withStatus(400)
+            .withHeader('Content-Type', 'application/json')
+            .withBody(JsonOutput.toJson([
+              developerMessage: "400 No pending category assessment found, $category, booking $bookingId, seq $assessmentSeq",
+              status: 400,
+              userMessage: "No pending category assessment found, category $category, booking $bookingId, seq $assessmentSeq"
+            ]))
+        )
+    )
+  }
+
   def stubSupervisorReject(String bookingId, int assessmentSeq, evaluationDate) {
 
     this.stubFor(

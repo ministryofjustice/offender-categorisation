@@ -13,6 +13,7 @@ const formService = {
   getCategorisationRecord: jest.fn(),
   getLiteCategorisation: jest.fn(),
   recordLiteCategorisation: jest.fn(),
+  deleteLiteCategorisation: jest.fn(),
 }
 
 const offendersService = {
@@ -216,6 +217,62 @@ describe('approve', () => {
           ...userInput,
           transactionalClient: mockTransactionalClient,
         })
+      })
+  })
+
+  test('Post form page - categorisation not found on nomis will redirect to /alreadyApproved', () => {
+    const futureDate = moment()
+      .add(5, 'months')
+      .format('DD/MM/YYYY')
+    const userInput = {
+      approvedDate: '15/04/2020',
+      supervisorCategory: 'E',
+      approvedCategoryComment: 'approvedCategoryComment',
+      approvedCommittee: 'SECUR',
+      nextReviewDate: futureDate,
+      approvedPlacement: 'BMI',
+      approvedPlacementComment: 'approvedPlacementComment',
+      approvedComment: 'approvedComment',
+    }
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 12, sequence: 4, assessedBy: 'me' })
+    offendersService.approveLiteCategorisation.mockImplementation(() => {
+      const error = {
+        status: 400,
+        data: {
+          developerMessage: '400 No pending category assessment found, E, booking 12345, seq 4',
+          status: 400,
+          userMessage: 'No pending category assessment found, category E, booking 12345, seq 4',
+        },
+      }
+      throw error
+    })
+
+    return request(app)
+      .post(`/approve/12345`)
+      .send(userInput)
+      .expect(302)
+      .expect('Location', `/liteCategories/alreadyApproved/12345`)
+      .expect(() => {
+        expect(formService.deleteLiteCategorisation).toBeCalledWith('12345', 4, mockTransactionalClient)
+      })
+  })
+})
+
+describe('alreadyApproved', () => {
+  test('get alreadyApproved', () => {
+    userService.getUserByUserId.mockResolvedValue({ firstName: 'FRED', lastName: 'PERRY' })
+
+    return request(app)
+      .get(`/alreadyApproved/12`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(`Categorisation has already been approved`)
+        expect(res.text).toContain(
+          `This categorisation has already been approved manually on P-Nomis. It will be visible on the <a href="/categoryHistory/12">prisoners categorisation history</a>`
+        )
+        expect(res.text).toContain(`Finish`)
+        expect(res.text).toContain(`<a href="/12">Manage prisoner</a>`)
       })
   })
 })

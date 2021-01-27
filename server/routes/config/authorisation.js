@@ -49,4 +49,7 @@ module.exports = {
   '/liteCategories/confirmed/\\d+': {
     authorised: ['ROLE_CREATE_CATEGORISATION', 'ROLE_CREATE_RECATEGORISATION', 'ROLE_APPROVE_CATEGORISATION'],
   },
+  '/liteCategories/alreadyApproved/\\d+': {
+    authorised: ['ROLE_APPROVE_CATEGORISATION'],
+  },
 }

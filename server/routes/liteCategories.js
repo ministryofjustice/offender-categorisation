@@ -46,6 +46,10 @@ const getCatList = current => [
   { value: 'T', text: 'Fem Open', selected: current === 'T' },
 ]
 
+const assessmentHasBeenApprovedInNomisMannually = error => {
+  return error.status === 400 && error.data.developerMessage.startsWith('400 No pending category assessment found')
+}
+
 module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()
 
@@ -313,22 +317,42 @@ module.exports = function Index({ formService, offendersService, userService, au
           data: { details },
         })
       } else {
-        await offendersService.approveLiteCategorisation({
-          context: res.locals,
-          bookingId: bookingIdInt,
-          sequence: assessmentData.sequence,
-          approvedDate,
-          supervisorCategory,
-          approvedCategoryComment,
-          approvedCommittee,
-          nextReviewDate,
-          approvedPlacement,
-          approvedPlacementComment,
-          approvedComment,
-          transactionalClient: transactionalDbClient,
-        })
-        res.redirect(`/liteCategories/confirmed/${bookingId}`)
+        try {
+          await offendersService.approveLiteCategorisation({
+            context: res.locals,
+            bookingId: bookingIdInt,
+            sequence: assessmentData.sequence,
+            approvedDate,
+            supervisorCategory,
+            approvedCategoryComment,
+            approvedCommittee,
+            nextReviewDate,
+            approvedPlacement,
+            approvedPlacementComment,
+            approvedComment,
+            transactionalClient: transactionalDbClient,
+          })
+          res.redirect(`/liteCategories/confirmed/${bookingId}`)
+        } catch (error) {
+          if (assessmentHasBeenApprovedInNomisMannually(error)) {
+            formService.deleteLiteCategorisation(bookingId, assessmentData.sequence, transactionalDbClient)
+            res.redirect(`/liteCategories/alreadyApproved/${bookingId}`)
+          } else {
+            throw error
+          }
+        }
       }
+    })
+  )
+
+  router.get(
+    '/alreadyApproved/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+
+      res.render(`pages/liteAlreadyApproved`, { context: res.locals, bookingId })
     })
   )
 
