@@ -449,4 +449,13 @@ module.exports = {
     }
     return transactionalClient.query(query)
   },
+
+  deleteLiteCategorisation({ bookingId, sequence, transactionalClient }) {
+    logger.info(`deleting lite categorisation record for booking id ${bookingId} and sequence ${sequence}`)
+    const query = {
+      text: `delete from lite_category where booking_id = $1 and sequence = $2`,
+      values: [bookingId, sequence],
+    }
+    return transactionalClient.query(query)
+  },
 }
