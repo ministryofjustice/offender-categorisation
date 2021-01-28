@@ -273,10 +273,10 @@ class LiteSpecification extends GebReportingSpec {
       "category" : "V",
       "approvedCategoryComment" : "",
       "reviewCommitteeCode" : "OCA",
-      "nextReviewDate" : "2022-01-27",
+      "nextReviewDate" : now.plusMonths(12).format('yyyy-MM-dd'),
       "approvedPlacementAgencyId" : "",
       "approvedPlacementText" : "",
-      "evaluationDate" : "2021-01-27",
+      "evaluationDate" : now.format('yyyy-MM-dd'),
       "committeeCommentText" : ""
     ])
     saveButton.click()
