@@ -35,6 +35,15 @@ class DatabaseUtils {
     return sql.rows("select * from lite_category where booking_id = $bookingId order by sequence")
   }
 
+  def createUnapprovedLiteCategorisation(bookingId, sequence, offenderNo, category, prisonId, assessedBy) {
+    sql.executeUpdate("""
+      insert into lite_category
+        (booking_id,sequence,category,supervisor_category,offender_no,prison_id,created_date,approved_date,assessed_by,approved_by,assessment_committee,assessment_comment,next_review_date,placement_prison_id,approved_committee,approved_placement_prison_id,approved_placement_comment,approved_comment)
+      values
+        ($bookingId,$sequence,$category,NULL,$offenderNo,$prisonId,current_timestamp(2),NULL,$assessedBy,NULL,'',NULL,current_timestamp(2),NULL,NULL,NULL,NULL,NULL);
+    """)
+  }
+
   def getRiskChange(offenderNo) {
     return sql.rows("select * from risk_change where offender_no = $offenderNo")
   }

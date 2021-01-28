@@ -361,6 +361,10 @@ module.exports = function createFormService(formClient) {
     })
   }
 
+  async function deleteLiteCategorisation(bookingId, sequence, transactionalClient) {
+    await formClient.deleteLiteCategorisation({ bookingId, sequence, transactionalClient })
+  }
+
   async function createRiskChange(offenderNo, agencyId, oldProfile, newProfile, transactionalClient) {
     const newRiskChangeByOffender = await formClient.getNewRiskChangeByOffender(offenderNo, transactionalClient)
     const existingRecordOptional = dataIfExists(newRiskChangeByOffender)
@@ -767,6 +771,7 @@ module.exports = function createFormService(formClient) {
     getLiteCategorisation,
     getUnapprovedLite,
     approveLiteCategorisation,
+    deleteLiteCategorisation,
     backToCategoriser,
     backToCategoriserMessageRead,
     setAwaitingApproval,

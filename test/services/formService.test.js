@@ -25,6 +25,7 @@ const formClient = {
   setSecurityReferralProcessed: jest.fn(),
   getRiskChangeByStatus: jest.fn(),
   getHistoricalFormData: jest.fn(),
+  deleteLiteCategorisation: jest.fn(),
 }
 let service
 
@@ -1003,5 +1004,19 @@ describe('getHistoricalCategorisationRecords', () => {
       { bookingId: 12, offenderNo: 'GD123' },
       { bookingId: 13, offenderNo: 'GD123' },
     ])
+  })
+})
+
+describe('deleteLiteCategorisation', () => {
+  test('that it calls the client with expected values', async () => {
+    formClient.deleteLiteCategorisation.mockResolvedValue({ rows: [{ status: 'SECURITY_AUTO' }] })
+
+    await service.deleteLiteCategorisation(bookingId, 1, mockTransactionalClient)
+
+    expect(formClient.deleteLiteCategorisation).toBeCalledWith({
+      bookingId,
+      sequence: 1,
+      transactionalClient: mockTransactionalClient,
+    })
   })
 })

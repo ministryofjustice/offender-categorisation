@@ -229,3 +229,18 @@ describe('updateNewRiskChangeStatus', () => {
     })
   })
 })
+
+describe('deleteLiteCategorisation', () => {
+  test('it should delete the lite categorisation', () => {
+    formClient.deleteLiteCategorisation({
+      bookingId: 1,
+      sequence: 1,
+      transactionalClient: mockTransactionalClient,
+    })
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text: `delete from lite_category where booking_id = $1 and sequence = $2`,
+      values: [1, 1],
+    })
+  })
+})
