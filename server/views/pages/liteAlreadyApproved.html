@@ -1,7 +1,9 @@
 {% set mainClasses = 'govuk-!-width-two-thirds' %}
 {% extends "../partials/layout.html" %}
 {% from "button/macro.njk" import govukButton %}
-{% from "panel/macro.njk" import govukPanel %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+
 
 {% set pageTitle = "Already approved" %}
 
@@ -13,8 +15,9 @@
 
 {% block content %}
 
-  {{ govukPanel({
-    titleText: "Categorisation has already been approved"
+  {{ govukWarningText({
+    text: "Categorisation has already been approved",
+    iconFallbackText: "Warning"
   }) }}
 
   <h2 class="govuk-heading-l">What does this mean?</h2>
