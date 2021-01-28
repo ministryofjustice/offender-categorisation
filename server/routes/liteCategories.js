@@ -335,7 +335,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           res.redirect(`/liteCategories/confirmed/${bookingId}`)
         } catch (error) {
           if (assessmentHasBeenApprovedInNomisMannually(error)) {
-            formService.deleteLiteCategorisation(bookingId, assessmentData.sequence, transactionalDbClient)
+            await formService.deleteLiteCategorisation(bookingId, assessmentData.sequence, transactionalDbClient)
             res.redirect(`/liteCategories/alreadyApproved/${bookingId}`)
           } else {
             throw error
