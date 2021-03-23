@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@3.0
-  owasp: entur/owasp@0.0.10
 
 executors:
   builder:
