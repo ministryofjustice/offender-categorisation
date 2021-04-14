@@ -8,7 +8,7 @@ data:
     #!/bin/bash
     set -e
     # Refreshes only happen every other week, crontab doesnt really support this
-    week=$(date +%U)
+    week=$(date +%-U)
     if [ $(($week % 2)) == 0 ]; then
       echo "Not running refresh this week, refreshes only happens on odd week numbers, check back next week."
       exit 0

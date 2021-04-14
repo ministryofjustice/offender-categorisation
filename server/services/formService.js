@@ -745,12 +745,30 @@ module.exports = function createFormService(formClient) {
   }
 
   async function updateOffenderIdentifierReturningBookingId(oldOffenderNo, newOffenderNo, transactionalClient) {
-    const result = await formClient.updateOffenderIdentifierReturningBookingId(
+    const result1 = await formClient.updateOffenderIdentifierReturningBookingIdForm(
       oldOffenderNo,
       newOffenderNo,
       transactionalClient
     )
-    return result.rows
+    const result2 = await formClient.updateOffenderIdentifierReturningBookingIdLite(
+      oldOffenderNo,
+      newOffenderNo,
+      transactionalClient
+    )
+    const result3 = await formClient.updateOffenderIdentifierRiskChange(
+      oldOffenderNo,
+      newOffenderNo,
+      transactionalClient
+    )
+    const result4 = await formClient.updateOffenderIdentifierSecurityReferral(
+      oldOffenderNo,
+      newOffenderNo,
+      transactionalClient
+    )
+    logger.info(
+      `Merge summary: rows updated = ${result1.rowCount} ${result2.rowCount} ${result3.rowCount} ${result4.rowCount}`
+    )
+    return { formRows: result1.rows, liteRows: result2.rows }
   }
 
   return {

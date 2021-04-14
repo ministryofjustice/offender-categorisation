@@ -26,6 +26,10 @@ const formClient = {
   getRiskChangeByStatus: jest.fn(),
   getHistoricalFormData: jest.fn(),
   deleteLiteCategorisation: jest.fn(),
+  updateOffenderIdentifierReturningBookingIdForm: jest.fn(),
+  updateOffenderIdentifierReturningBookingIdLite: jest.fn(),
+  updateOffenderIdentifierRiskChange: jest.fn(),
+  updateOffenderIdentifierSecurityReferral: jest.fn(),
 }
 let service
 
@@ -1018,5 +1022,35 @@ describe('deleteLiteCategorisation', () => {
       sequence: 1,
       transactionalClient: mockTransactionalClient,
     })
+  })
+})
+
+describe('updateOffenderIdentifierReturningBookingId', () => {
+  test('that it calls the client with expected values', async () => {
+    formClient.updateOffenderIdentifierReturningBookingIdForm.mockResolvedValue({
+      rowCount: 1,
+      rows: [{ bookingId: 1234 }],
+    })
+    formClient.updateOffenderIdentifierReturningBookingIdLite.mockResolvedValue({
+      rowCount: 2,
+      rows: [{ bookingId: 1234 }],
+    })
+    formClient.updateOffenderIdentifierRiskChange.mockResolvedValue({ rowCount: 3, rows: [{}] })
+    formClient.updateOffenderIdentifierSecurityReferral.mockResolvedValue({ rowCount: 4, rows: [{}] })
+
+    await service.updateOffenderIdentifierReturningBookingId('OLD', 'NEW', mockTransactionalClient)
+
+    expect(formClient.updateOffenderIdentifierReturningBookingIdForm).toBeCalledWith(
+      'OLD',
+      'NEW',
+      mockTransactionalClient
+    )
+    expect(formClient.updateOffenderIdentifierReturningBookingIdLite).toBeCalledWith(
+      'OLD',
+      'NEW',
+      mockTransactionalClient
+    )
+    expect(formClient.updateOffenderIdentifierRiskChange).toBeCalledWith('OLD', 'NEW', mockTransactionalClient)
+    expect(formClient.updateOffenderIdentifierSecurityReferral).toBeCalledWith('OLD', 'NEW', mockTransactionalClient)
   })
 })
