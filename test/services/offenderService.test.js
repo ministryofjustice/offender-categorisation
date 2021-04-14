@@ -2514,7 +2514,7 @@ describe('checkAndMergeOffenderNo', () => {
       liteRows: [{ booking_id: 789 }],
     })
     formService.getCategorisationRecord.mockResolvedValue({ status: Status.APPROVED.name })
-    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 1,approvedDate: '2021-03-31' })
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 1, approvedDate: '2021-03-31' })
 
     await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
@@ -2539,7 +2539,7 @@ describe('checkAndMergeOffenderNo', () => {
       liteRows: [{ booking_id: 789 }],
     })
     formService.getCategorisationRecord.mockResolvedValue({ status: Status.AWAITING_APPROVAL.name })
-    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 1,approvedDate: null })
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 1, approvedDate: null })
 
     await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
