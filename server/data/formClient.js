@@ -299,10 +299,37 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateOffenderIdentifierReturningBookingId(oldOffenderNo, newOffenderNo, transactionalClient) {
-    logger.info(`updateOffenderIdentifierReturningBookingId from ${oldOffenderNo} to ${newOffenderNo}`)
+  updateOffenderIdentifierReturningBookingIdForm(oldOffenderNo, newOffenderNo, transactionalClient) {
+    logger.info(`updateOffenderIdentifierReturningBookingIdForm from ${oldOffenderNo} to ${newOffenderNo}`)
     const query = {
       text: `update form set offender_no=$2 where offender_no=$1 returning booking_id`,
+      values: [oldOffenderNo, newOffenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  updateOffenderIdentifierReturningBookingIdLite(oldOffenderNo, newOffenderNo, transactionalClient) {
+    logger.info(`updateOffenderIdentifierReturningBookingIdLite from ${oldOffenderNo} to ${newOffenderNo}`)
+    const query = {
+      text: `update lite_category set offender_no=$2 where offender_no=$1 returning booking_id`,
+      values: [oldOffenderNo, newOffenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  updateOffenderIdentifierRiskChange(oldOffenderNo, newOffenderNo, transactionalClient) {
+    logger.info(`updateOffenderIdentifierRiskChange from ${oldOffenderNo} to ${newOffenderNo}`)
+    const query = {
+      text: `update risk_change set offender_no=$2 where offender_no=$1`,
+      values: [oldOffenderNo, newOffenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  updateOffenderIdentifierSecurityReferral(oldOffenderNo, newOffenderNo, transactionalClient) {
+    logger.info(`updateOffenderIdentifierSecurityReferral from ${oldOffenderNo} to ${newOffenderNo}`)
+    const query = {
+      text: `update security_referral set offender_no=$2 where offender_no=$1`,
       values: [oldOffenderNo, newOffenderNo],
     }
     return transactionalClient.query(query)

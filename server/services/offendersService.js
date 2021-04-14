@@ -1275,11 +1275,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   function inconsistentCategorisation(dbRecord, pnomisStatus) {
-    if (pnomisStatus === 'A') {
-      return dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status
+    if (pnomisStatus === 'P') {
+      // record is pending, valid status is AWAITING_APPROVAL OR SUPERVISOR_BACK OR SECURITY_BACK OR SECURITY_MANUAL
+      return localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)
     }
-    // record is pending, valid status is AWAITING_APPROVAL OR SUPERVISOR_BACK OR SECURITY_BACK OR SECURITY_MANUAL
-    return localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)
+    return dbRecord && Status.AWAITING_APPROVAL.name === dbRecord.status
   }
 
   async function getOffenderDetailWithFullInfo(context, offenderNo) {
@@ -1299,18 +1299,35 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         .map(async id => {
           const from = id.value
           const to = booking.offenderNo
-          const rows = await formService.updateOffenderIdentifierReturningBookingId(from, to, transactionalDbClient)
+          const { formRows, liteRows } = await formService.updateOffenderIdentifierReturningBookingId(
+            from,
+            to,
+            transactionalDbClient
+          )
           await Promise.all(
-            rows.map(async r => {
+            formRows.map(async r => {
               logger.info(
-                `Merge: row updated for bookingId ${r.booking_id}, changing offender no from ${from} to ${to}`
+                `Merge: form row updated for bookingId ${r.booking_id}, changing offender no from ${from} to ${to}`
               )
               const dbRecord = await formService.getCategorisationRecord(r.booking_id, transactionalDbClient)
               if (
                 dbRecord.status === Status.AWAITING_APPROVAL.name ||
                 dbRecord.status === Status.SUPERVISOR_BACK.name
               ) {
-                logger.info(`Merge: calling setInactive for ${r.booking_id}`)
+                logger.info(`Merge: form calling setInactive for ${r.booking_id}`)
+                // The merge process may have copied an older active record to a higher seq no than the pending record
+                await setInactive(context, r.booking_id, 'ACTIVE')
+              }
+            })
+          )
+          await Promise.all(
+            liteRows.map(async r => {
+              logger.info(
+                `Merge: lite row updated for bookingId ${r.booking_id}, changing offender no from ${from} to ${to}`
+              )
+              const dbRecord = await formService.getLiteCategorisation(r.booking_id, transactionalDbClient)
+              if (dbRecord.bookingId && !dbRecord.approvedDate) {
+                logger.info(`Merge: lite calling setInactive for ${r.booking_id}`)
                 // The merge process may have copied an older active record to a higher seq no than the pending record
                 await setInactive(context, r.booking_id, 'ACTIVE')
               }

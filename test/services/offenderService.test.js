@@ -87,6 +87,7 @@ afterEach(() => {
   nomisClient.getLatestCategorisationForOffenders.mockReset()
   nomisClient.updateNextReviewDate.mockReset()
   nomisClient.getBasicOffenderDetails.mockReset()
+  formService.getLiteCategorisation.mockReset()
 })
 
 moment.now = jest.fn()
@@ -2508,8 +2509,12 @@ describe('checkAndMergeOffenderNo', () => {
     nomisClient.getBasicOffenderDetails.mockResolvedValue({ offenderNo: 'G123NEW' })
 
     nomisClient.getIdentifiersByBookingId.mockResolvedValue(realisticData)
-    formService.updateOffenderIdentifierReturningBookingId.mockResolvedValue([{ booking_id: 456 }])
+    formService.updateOffenderIdentifierReturningBookingId.mockResolvedValue({
+      formRows: [{ booking_id: 123 }, { booking_id: 456 }],
+      liteRows: [{ booking_id: 789 }],
+    })
     formService.getCategorisationRecord.mockResolvedValue({ status: Status.APPROVED.name })
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 1, approvedDate: '2021-03-31' })
 
     await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
@@ -2520,15 +2525,21 @@ describe('checkAndMergeOffenderNo', () => {
       'G123NEW',
       mockTransactionalClient
     )
-    expect(formService.getCategorisationRecord).toBeCalledWith(456, mockTransactionalClient)
+    expect(formService.getCategorisationRecord).toHaveBeenNthCalledWith(1, 123, mockTransactionalClient)
+    expect(formService.getCategorisationRecord).toHaveBeenNthCalledWith(2, 456, mockTransactionalClient)
+    expect(formService.getLiteCategorisation).toHaveBeenNthCalledWith(1, 789, mockTransactionalClient)
     expect(nomisClient.setInactive).not.toBeCalled()
   })
 
   test('single merge with cat record pending', async () => {
     nomisClient.getBasicOffenderDetails.mockResolvedValue({ offenderNo: 'G123NEW' })
     nomisClient.getIdentifiersByBookingId.mockResolvedValue(realisticData)
-    formService.updateOffenderIdentifierReturningBookingId.mockResolvedValue([{ booking_id: 456 }])
+    formService.updateOffenderIdentifierReturningBookingId.mockResolvedValue({
+      formRows: [{ booking_id: 123 }, { booking_id: 456 }],
+      liteRows: [{ booking_id: 789 }],
+    })
     formService.getCategorisationRecord.mockResolvedValue({ status: Status.AWAITING_APPROVAL.name })
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 1, approvedDate: null })
 
     await service.checkAndMergeOffenderNo(context, 123, mockTransactionalClient)
 
@@ -2539,7 +2550,11 @@ describe('checkAndMergeOffenderNo', () => {
       'G123NEW',
       mockTransactionalClient
     )
-    expect(formService.getCategorisationRecord).toBeCalledWith(456, mockTransactionalClient)
-    expect(nomisClient.setInactive).toBeCalledWith(456, 'ACTIVE')
+    expect(formService.getCategorisationRecord).toHaveBeenNthCalledWith(1, 123, mockTransactionalClient)
+    expect(formService.getCategorisationRecord).toHaveBeenNthCalledWith(2, 456, mockTransactionalClient)
+    expect(formService.getLiteCategorisation).toHaveBeenNthCalledWith(1, 789, mockTransactionalClient)
+    expect(nomisClient.setInactive).toHaveBeenNthCalledWith(1, 123, 'ACTIVE')
+    expect(nomisClient.setInactive).toHaveBeenNthCalledWith(2, 456, 'ACTIVE')
+    expect(nomisClient.setInactive).toHaveBeenNthCalledWith(3, 789, 'ACTIVE')
   })
 })

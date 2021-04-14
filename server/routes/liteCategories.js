@@ -46,7 +46,7 @@ const getCatList = current => [
   { value: 'T', text: 'Fem Open', selected: current === 'T' },
 ]
 
-const assessmentHasBeenApprovedInNomisMannually = error => {
+const assessmentHasBeenApprovedInNomisManually = error => {
   return error.status === 400 && error.data.developerMessage.startsWith('400 No pending category assessment found')
 }
 
@@ -334,7 +334,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           })
           res.redirect(`/liteCategories/confirmed/${bookingId}`)
         } catch (error) {
-          if (assessmentHasBeenApprovedInNomisMannually(error)) {
+          if (assessmentHasBeenApprovedInNomisManually(error)) {
             await formService.deleteLiteCategorisation(bookingId, assessmentData.sequence, transactionalDbClient)
             res.redirect(`/liteCategories/alreadyApproved/${bookingId}`)
           } else {
