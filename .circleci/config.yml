@@ -61,7 +61,7 @@ jobs:
       - image: localstack/localstack:0.11.2
         environment:
           SERVICES: sqs
-          PORT-WEB-UI: 8088
+          PORT_WEB_UI: 8088
           DATA_DIR: /tmp/localstack/data
           TMP_DIR: /private
           DEFAULT_REGION: eu-west-2
