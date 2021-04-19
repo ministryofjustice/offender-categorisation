@@ -1352,23 +1352,35 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     switch (movementType) {
       case 'ADM':
         {
+          const results = []
           const dbRecord = await formService.getCategorisationRecord(bookingId, client)
           const prisonHasChanged = toAgencyLocationId !== dbRecord.prisonId
           if (inProgress(dbRecord) && prisonHasChanged) {
-            await formService.updatePrisonForm(bookingId, toAgencyLocationId, client)
+            const result = await formService.updatePrisonForm(bookingId, toAgencyLocationId, client)
+            results.push({ name: 'form', ...result })
           }
 
           const assessmentData = await formService.getLiteCategorisation(bookingId, client)
           const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
           const litePrisonHasChanged = toAgencyLocationId !== assessmentData.prisonId
           if (liteInProgress && litePrisonHasChanged) {
-            await formService.updatePrisonLite(bookingId, toAgencyLocationId, client)
+            const result = await formService.updatePrisonLite(bookingId, toAgencyLocationId, client)
+            results.push({ name: 'lite', ...result })
           }
 
           if (offenderNo) {
-            await formService.updatePrisonRiskChange(offenderNo, toAgencyLocationId, client)
-            await formService.updatePrisonSecurityReferral(offenderNo, toAgencyLocationId, client)
+            const resultRiskChange = await formService.updatePrisonRiskChange(offenderNo, toAgencyLocationId, client)
+            const resultSecurity = await formService.updatePrisonSecurityReferral(
+              offenderNo,
+              toAgencyLocationId,
+              client
+            )
+            results.push({ name: 'riskChange', ...resultRiskChange })
+            results.push({ name: 'securityReferral', ...resultSecurity })
           }
+          logger.info(
+            `Movement summary: rows updated =${results.reduce((s, item) => `${s} ${item.name}: ${item.rowCount}`, '')}`
+          )
         }
         break
       default:

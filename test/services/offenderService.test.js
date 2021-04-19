@@ -2568,6 +2568,13 @@ describe('checkAndMergeOffenderNo', () => {
 })
 
 describe('handleExternalMovementEvent', () => {
+  beforeEach(() => {
+    formService.updatePrisonForm.mockReturnValue({ rowCount: 1 })
+    formService.updatePrisonLite.mockReturnValue({ rowCount: 2 })
+    formService.updatePrisonRiskChange.mockReturnValue({ rowCount: 3 })
+    formService.updatePrisonSecurityReferral.mockReturnValue({ rowCount: 4 })
+  })
+
   test('changed', async () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: Status.AWAITING_APPROVAL.name,
@@ -2576,7 +2583,7 @@ describe('handleExternalMovementEvent', () => {
     })
     formService.getLiteCategorisation.mockResolvedValue({ bookingId: 123, prisonId: 'FROM', approvedDate: null })
 
-    await service.handleExternalMovementEvent(context, 123, 'ADM', 'FROM', 'TO', mockTransactionalClient)
+    await service.handleExternalMovementEvent(context, 123, 'A1234AA', 'ADM', 'FROM', 'TO', mockTransactionalClient)
 
     expect(formService.updatePrisonForm).toHaveBeenCalledWith(123, 'TO', mockTransactionalClient)
     expect(formService.updatePrisonLite).toHaveBeenCalledWith(123, 'TO', mockTransactionalClient)
@@ -2592,7 +2599,7 @@ describe('handleExternalMovementEvent', () => {
       approvedDate: '2021-04-21',
     })
 
-    await service.handleExternalMovementEvent(context, 123, 'ADM', 'FROM', 'TO', mockTransactionalClient)
+    await service.handleExternalMovementEvent(context, 123, 'A1234AA', 'ADM', 'FROM', 'TO', mockTransactionalClient)
 
     expect(formService.updatePrisonForm).not.toHaveBeenCalled()
     expect(formService.updatePrisonLite).not.toHaveBeenCalled()
@@ -2602,7 +2609,7 @@ describe('handleExternalMovementEvent', () => {
     formService.getCategorisationRecord.mockResolvedValue({ status: Status.STARTED.name, prisonId: 'TO' })
     formService.getLiteCategorisation.mockResolvedValue({ bookingId: 123, prisonId: 'TO', approvedDate: null })
 
-    await service.handleExternalMovementEvent(context, 123, 'ADM', 'FROM', 'TO', mockTransactionalClient)
+    await service.handleExternalMovementEvent(context, 123, 'A1234AA', 'ADM', 'FROM', 'TO', mockTransactionalClient)
 
     expect(formService.updatePrisonForm).not.toHaveBeenCalled()
     expect(formService.updatePrisonLite).not.toHaveBeenCalled()
@@ -2612,7 +2619,7 @@ describe('handleExternalMovementEvent', () => {
     formService.getCategorisationRecord.mockResolvedValue({})
     formService.getLiteCategorisation.mockResolvedValue({})
 
-    await service.handleExternalMovementEvent(context, 123, 'ADM', 'FROM', 'TO', mockTransactionalClient)
+    await service.handleExternalMovementEvent(context, 123, 'A1234AA', 'ADM', 'FROM', 'TO', mockTransactionalClient)
 
     expect(formService.updatePrisonForm).not.toHaveBeenCalled()
     expect(formService.updatePrisonLite).not.toHaveBeenCalled()
