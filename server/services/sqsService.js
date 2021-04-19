@@ -97,12 +97,12 @@ module.exports = function createSqsService(offenderService, formService) {
             break
           case 'EXTERNAL_MOVEMENT_RECORD-INSERTED':
             {
-              const { bookingId, offenderNo, movementType, fromAgencyLocationId, toAgencyLocationId } = event
+              const { bookingId, offenderIdDisplay, movementType, fromAgencyLocationId, toAgencyLocationId } = event
               logger.info({ event }, 'Movement: Received payload')
               await offenderService.handleExternalMovementEvent(
                 context,
                 bookingId,
-                offenderNo,
+                offenderIdDisplay,
                 movementType,
                 fromAgencyLocationId,
                 toAgencyLocationId,

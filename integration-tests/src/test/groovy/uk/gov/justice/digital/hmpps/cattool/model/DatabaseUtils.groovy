@@ -124,8 +124,8 @@ class DatabaseUtils {
       json, riskProfile, approvalDateDB, assessmentDate, approvedByDB, dueByDate)
   }
 
-  def createSecurityData(offenderNo, prisonId = 'LEI', id = -1) {
-    sql.executeUpdate("insert into security_referral values ($id, '$offenderNo', 'SECURITY_USER', $prisonId, 'NEW', current_timestamp(2))")
+  def createSecurityData(offenderNo, prisonId = 'LEI', id = -1, status = 'NEW') {
+    sql.executeUpdate("insert into security_referral values ($id, '$offenderNo', 'SECURITY_USER', $prisonId, $status::security_referral_status_enum, current_timestamp(2))")
   }
 
   def getSecurityData(offenderNo) {

@@ -7,36 +7,14 @@ import com.amazonaws.services.sqs.AmazonSQSClientBuilder
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
-import groovy.json.JsonOutput
 import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
-import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-
 import java.time.LocalDate
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
-
 class EventSpecification extends GebReportingSpec {
-
-//  class JasonBuilder {
-//    String suggested
-//    String overridden
-//    String supervisor
-//
-//    JasonBuilder securityType(securityType) {
-//      return this
-//    }
-//
-//    String build() {
-//      def contents = [categoriser: [provisionalCategory: [suggestedCategory: suggested, overriddenCategory: overridden]],
-//                      supervisor : [review: supervisor ? [supervisorOverriddenCategory: supervisor] : null]
-//      ]
-//      return JsonOutput.toJson(contents)
-//    }
-//  }
 
   @Rule
   Elite2Api elite2Api = new Elite2Api()
@@ -47,7 +25,6 @@ class EventSpecification extends GebReportingSpec {
   @Rule
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration().extensions(new ResponseTemplateTransformer(false)))
 
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   AmazonSQS sqs = AmazonSQSClientBuilder
@@ -60,29 +37,26 @@ class EventSpecification extends GebReportingSpec {
     db.clearDb()
   }
 
-  def "prison transfer events should change the agency"() {
+  def "prison transfer events should change the prison id in all tables"() {
 
     db.doCreateCompleteRow(1, 123, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
       1, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
     db.doCreateCompleteRow(2, 123, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
       2, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
-    db.doCreateCompleteRow(3, 124, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
+    db.doCreateCompleteRow(3, 124, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
       1, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
-    db.doCreateCompleteRow(4, 125, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
+    db.doCreateCompleteRow(4, 125, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
       1, null, 'MDI', 'A1234AB', 'current_timestamp(2)', null, null)
 
-//    db.createRiskChange(1, 'A1234AA', null, 'NEW', '{}', '{}', 'MDI', LocalDate.now())
-//    db.createRiskChange(2, 'A1234AA', null, 'NEW', '{}', '{}', 'MDI', LocalDate.now())
-//    db.createSecurityData('A1234AA', 'MDI', 1)
-//    db.createSecurityData('A1234AA', 'MDI', 2)
-    db.createLiteCategorisation(131, 1, 'A1234AA', 'V', 'MDI')
-    db.createUnapprovedLiteCategorisation(131, 2, 'A1234AA', 'V', 'MDI', 'CATEGORISER_USER')
-    db.createLiteCategorisation(132, 1, 'A1234AB', 'V', 'MDI')
+    db.createRiskChange(1, 'A1234AA', null, 'PROCESSED', '{}', '{}', 'MDI', LocalDate.now())
+    db.createRiskChange(2, 'A1234AA', null, 'NEW', '{}', '{}', 'MDI', LocalDate.now())
 
-//    given: 'a categoriser is logged in with unapproved categorisations'
-//    elite2Api.stubUncategorised()
-//    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
-//    fixture.loginAs(CATEGORISER_USER)
+    db.createSecurityData('A1234AA', 'MDI', 1, 'NEW')
+    db.createSecurityData('A1234AB', 'MDI', 2, 'NEW')
+
+    db.createLiteCategorisation(123, 1, 'A1234AA', 'V', 'MDI')
+    db.createUnapprovedLiteCategorisation(123, 2, 'A1234AA', 'V', 'MDI', 'CATEGORISER_USER')
+    db.createLiteCategorisation(124, 1, 'A1234AA', 'V', 'MDI')
 
     when: 'a prison transfer event arrives'
 
@@ -104,17 +78,22 @@ class EventSpecification extends GebReportingSpec {
 
     waitFor {
       def data = db.getData(123)
-      data.id ==[1,2]
+      data.id == [1, 2]
       data.prison_id == ['MDI', 'LEI']
-      db.getData(124).prison_id == ['MDI']
-      def lite = db.getLiteData(131)
-      lite.seq==[1,2]
-      lite.prison_id == ['MDI', 'LEI']
-      db.getLiteData(132).prison_id == ['MDI']
-
     }
+    waitFor {
+      db.getData(124).prison_id == ['MDI']
 
+      def lite = db.getLiteData(123)
+      lite.sequence == [1, 2]
+      lite.prison_id == ['MDI', 'LEI']
+      db.getLiteData(124).prison_id == ['MDI']
 
+      def rc = db.getRiskChange('A1234AA')
+      rc.id == [1, 2]
+      rc.prison_id == ['MDI', 'LEI']
+      db.getSecurityData('A1234AA').prison_id == ['LEI']
+      db.getSecurityData('A1234AB').prison_id == ['MDI']
+    }
   }
-
 }
