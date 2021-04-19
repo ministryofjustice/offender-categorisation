@@ -157,6 +157,51 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  updatePrisonForm(bookingId, prisonId, transactionalClient) {
+    logger.info(`updatePrisonForm called for booking id ${bookingId} and status ${prisonId}`)
+    const query = {
+      text: `update form f set prison_id = $1 where f.booking_id = $2 ${sequenceClause}`,
+      values: [prisonId, bookingId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  updatePrisonLite(bookingId, prisonId, transactionalClient) {
+    logger.info(`updatePrisonForm called for booking id ${bookingId} and status ${prisonId}`)
+    const query = {
+      text: `update lite_category c
+             set prison_id = $1
+             where c.booking_id = $2
+               and c.sequence = (select max(c2.sequence) from lite_category c2 where c2.booking_id = c.booking_id)`,
+      values: [prisonId, bookingId],
+    }
+    return transactionalClient.query(query)
+  },
+
+  updatePrisonRiskChange(offenderNo, prisonId, transactionalClient) {
+    logger.info(`updatePrisonRiskChange called for offenderNo ${offenderNo} and status ${prisonId}`)
+    const query = {
+      text: `update risk_change c
+             set prison_id = $1
+             where c.offender_no = $2
+               and c.status = 'NEW'`,
+      values: [prisonId, offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  updatePrisonSecurityReferral(offenderNo, prisonId, transactionalClient) {
+    logger.info(`updatePrisonSecurityReferral called for offenderNo ${offenderNo} and status ${prisonId}`)
+    const query = {
+      text: `update security_referral c
+             set prison_id = $1
+             where c.offender_no = $2
+               and c.status = 'NEW'`,
+      values: [prisonId, offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
   updateRecordWithNomisSeqNumber(bookingId, seq, transactionalClient) {
     logger.info(`updateRecordWithNomisSeqNumber called for booking id ${bookingId} and seq ${seq}`)
     const query = {

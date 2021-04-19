@@ -7,6 +7,7 @@ db.pool.connect = jest.fn()
 const offendersService = {
   getOffenderDetailWithFullInfo: jest.fn(),
   checkAndMergeOffenderNo: jest.fn(),
+  handleExternalMovementEvent: jest.fn(),
 }
 
 const formService = {
@@ -110,5 +111,19 @@ describe('eventQueueConsumer', () => {
     expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][0].user).toBeTruthy()
     expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][1]).toEqual(123)
     expect(offendersService.checkAndMergeOffenderNo.mock.calls[0][2]).toBeTruthy()
+  })
+
+  test('movement event', async () => {
+    await service.eventQueueConsumer.handleMessage({
+      MessageId: '21b86d12-74be-4208-9f0b-7ffcb4213184',
+      Body:
+        '{ "Message" : "{\\"eventType\\": \\"EXTERNAL_MOVEMENT_RECORD-INSERTED\\", \\"bookingId\\": 124, \\"movementType\\": \\"ADM\\"}"}',
+    })
+
+    expect(offendersService.handleExternalMovementEvent).toBeCalled()
+    expect(offendersService.handleExternalMovementEvent.mock.calls[0][0].user).toBeTruthy()
+    expect(offendersService.handleExternalMovementEvent.mock.calls[0][1]).toEqual(124)
+    expect(offendersService.handleExternalMovementEvent.mock.calls[0][2]).toEqual('ADM')
+    expect(offendersService.handleExternalMovementEvent.mock.calls[0][3]).toBeTruthy()
   })
 })

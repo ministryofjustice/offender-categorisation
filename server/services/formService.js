@@ -434,6 +434,22 @@ module.exports = function createFormService(formClient) {
     await formClient.updateFormData(bookingId, data, transactionalClient)
   }
 
+  function updatePrisonForm(bookingId, prisonId, transactionalClient) {
+    return formClient.updatePrisonForm(bookingId, prisonId, transactionalClient)
+  }
+
+  function updatePrisonLite(bookingId, prisonId, transactionalClient) {
+    return formClient.updatePrisonLite(bookingId, prisonId, transactionalClient)
+  }
+
+  function updatePrisonRiskChange(offenderNo, prisonId, transactionalClient) {
+    return formClient.updatePrisonRiskChange(offenderNo, prisonId, transactionalClient)
+  }
+
+  function updatePrisonSecurityReferral(offenderNo, prisonId, transactionalClient) {
+    return formClient.updatePrisonSecurityReferral(offenderNo, prisonId, transactionalClient)
+  }
+
   async function recordNomisSeqNumber(bookingId, nomisSeq, transactionalClient) {
     try {
       await formClient.updateRecordWithNomisSeqNumber(bookingId, nomisSeq, transactionalClient)
@@ -803,6 +819,10 @@ module.exports = function createFormService(formClient) {
     isYoungOffender,
     supervisorApproval,
     deleteFormData,
+    updatePrisonForm,
+    updatePrisonLite,
+    updatePrisonRiskChange,
+    updatePrisonSecurityReferral,
     recordNomisSeqNumber,
     categoriserDecisionWithFormResponse,
     categoriserDecision,

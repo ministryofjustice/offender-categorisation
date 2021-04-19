@@ -1337,6 +1337,48 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     )
   }
 
+  const handleExternalMovementEvent = async (
+    context,
+    bookingId,
+    offenderNo,
+    movementType,
+    fromAgencyLocationId,
+    toAgencyLocationId,
+    client
+  ) => {
+    logger.info(
+      `Processing EXTERNAL_MOVEMENT_RECORD-INSERTED event for bookingId: ${bookingId}, offenderNo: ${offenderNo}, movementType: ${movementType} from: ${fromAgencyLocationId} to: ${toAgencyLocationId}`
+    )
+    switch (movementType) {
+      case 'ADM':
+        {
+          const dbRecord = await formService.getCategorisationRecord(bookingId, client)
+          const prisonHasChanged = toAgencyLocationId !== dbRecord.prisonId
+          if (inProgress(dbRecord) && prisonHasChanged) {
+            await formService.updatePrisonForm(bookingId, toAgencyLocationId, client)
+          }
+
+          const assessmentData = await formService.getLiteCategorisation(bookingId, client)
+          const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
+          const litePrisonHasChanged = toAgencyLocationId !== assessmentData.prisonId
+          if (liteInProgress && litePrisonHasChanged) {
+            await formService.updatePrisonLite(bookingId, toAgencyLocationId, client)
+          }
+
+          if (offenderNo) {
+            await formService.updatePrisonRiskChange(offenderNo, toAgencyLocationId, client)
+            await formService.updatePrisonSecurityReferral(offenderNo, toAgencyLocationId, client)
+          }
+        }
+        break
+      default:
+        logger.debug(
+          `Ignoring EXTERNAL_MOVEMENT_RECORD-INSERTED event for nomsId: ${bookingId}, movementType: ${movementType}`
+        )
+        break
+    }
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -1368,6 +1410,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     setInactive,
     getCategoryHistory,
     checkAndMergeOffenderNo,
+    handleExternalMovementEvent,
     // just for tests:
     buildSentenceData,
     getMatchedCategorisations: matchEliteAndDBCategorisations,

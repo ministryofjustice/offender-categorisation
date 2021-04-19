@@ -50,6 +50,10 @@ const formService = {
   approveLiteCategorisation: jest.fn(),
   getUnapprovedLite: jest.fn(),
   getLiteCategorisation: jest.fn(),
+  updatePrisonLite: jest.fn(),
+  updatePrisonForm: jest.fn(),
+  updatePrisonRiskChange: jest.fn(),
+  updatePrisonSecurityReferral: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -88,6 +92,10 @@ afterEach(() => {
   nomisClient.updateNextReviewDate.mockReset()
   nomisClient.getBasicOffenderDetails.mockReset()
   formService.getLiteCategorisation.mockReset()
+  formService.updatePrisonLite.mockReset()
+  formService.updatePrisonForm.mockReset()
+  formService.updatePrisonRiskChange.mockReset()
+  formService.updatePrisonSecurityReferral.mockReset()
 })
 
 moment.now = jest.fn()
@@ -2556,5 +2564,57 @@ describe('checkAndMergeOffenderNo', () => {
     expect(nomisClient.setInactive).toHaveBeenNthCalledWith(1, 123, 'ACTIVE')
     expect(nomisClient.setInactive).toHaveBeenNthCalledWith(2, 456, 'ACTIVE')
     expect(nomisClient.setInactive).toHaveBeenNthCalledWith(3, 789, 'ACTIVE')
+  })
+})
+
+describe('handleExternalMovementEvent', () => {
+  test('changed', async () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: Status.AWAITING_APPROVAL.name,
+      prisonId: 'FROM',
+      offenderNo: 'A1234AA',
+    })
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 123, prisonId: 'FROM', approvedDate: null })
+
+    await service.handleExternalMovementEvent(context, 123, 'ADM', 'FROM', 'TO', mockTransactionalClient)
+
+    expect(formService.updatePrisonForm).toHaveBeenCalledWith(123, 'TO', mockTransactionalClient)
+    expect(formService.updatePrisonLite).toHaveBeenCalledWith(123, 'TO', mockTransactionalClient)
+    expect(formService.updatePrisonRiskChange).toHaveBeenCalledWith('A1234AA', 'TO', mockTransactionalClient)
+    expect(formService.updatePrisonSecurityReferral).toHaveBeenCalledWith('A1234AA', 'TO', mockTransactionalClient)
+  })
+
+  test('not in progress', async () => {
+    formService.getCategorisationRecord.mockResolvedValue({ status: Status.APPROVED.name, prisonId: 'FROM' })
+    formService.getLiteCategorisation.mockResolvedValue({
+      bookingId: 123,
+      prisonId: 'FROM',
+      approvedDate: '2021-04-21',
+    })
+
+    await service.handleExternalMovementEvent(context, 123, 'ADM', 'FROM', 'TO', mockTransactionalClient)
+
+    expect(formService.updatePrisonForm).not.toHaveBeenCalled()
+    expect(formService.updatePrisonLite).not.toHaveBeenCalled()
+  })
+
+  test('prison not changed', async () => {
+    formService.getCategorisationRecord.mockResolvedValue({ status: Status.STARTED.name, prisonId: 'TO' })
+    formService.getLiteCategorisation.mockResolvedValue({ bookingId: 123, prisonId: 'TO', approvedDate: null })
+
+    await service.handleExternalMovementEvent(context, 123, 'ADM', 'FROM', 'TO', mockTransactionalClient)
+
+    expect(formService.updatePrisonForm).not.toHaveBeenCalled()
+    expect(formService.updatePrisonLite).not.toHaveBeenCalled()
+  })
+
+  test('no records', async () => {
+    formService.getCategorisationRecord.mockResolvedValue({})
+    formService.getLiteCategorisation.mockResolvedValue({})
+
+    await service.handleExternalMovementEvent(context, 123, 'ADM', 'FROM', 'TO', mockTransactionalClient)
+
+    expect(formService.updatePrisonForm).not.toHaveBeenCalled()
+    expect(formService.updatePrisonLite).not.toHaveBeenCalled()
   })
 })

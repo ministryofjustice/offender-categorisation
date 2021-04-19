@@ -69,6 +69,7 @@ function isFirstVisit(res) {
 }
 
 function inProgress(dbRecord) {
+  // Note cancelled rows are invisible
   return dbRecord && dbRecord.status && dbRecord.status !== Status.APPROVED.name
 }
 
