@@ -43,6 +43,7 @@ dependencies {
     testCompile 'org.slf4j:slf4j-api:1.7.25'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'com.auth0:java-jwt:3.3.0'
+    testCompile 'com.amazonaws:aws-java-sdk-sqs:1.11.998'
 }
 
 drivers.each { driver ->
