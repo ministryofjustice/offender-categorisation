@@ -1337,6 +1337,60 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     )
   }
 
+  const handleExternalMovementEvent = async (
+    context,
+    bookingId,
+    offenderNo,
+    movementType,
+    fromAgencyLocationId,
+    toAgencyLocationId,
+    client
+  ) => {
+    logger.info(
+      `Processing EXTERNAL_MOVEMENT_RECORD-INSERTED event for bookingId: ${bookingId}, offenderNo: ${offenderNo}, movementType: ${movementType} from: ${fromAgencyLocationId} to: ${toAgencyLocationId}`
+    )
+    switch (movementType) {
+      case 'ADM':
+        {
+          const results = []
+          const dbRecord = await formService.getCategorisationRecord(bookingId, client)
+          const prisonHasChanged = toAgencyLocationId !== dbRecord.prisonId
+          if (inProgress(dbRecord) && prisonHasChanged) {
+            const result = await formService.updatePrisonForm(bookingId, toAgencyLocationId, client)
+            results.push({ name: 'form', ...result })
+          }
+
+          const assessmentData = await formService.getLiteCategorisation(bookingId, client)
+          const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
+          const litePrisonHasChanged = toAgencyLocationId !== assessmentData.prisonId
+          if (liteInProgress && litePrisonHasChanged) {
+            const result = await formService.updatePrisonLite(bookingId, toAgencyLocationId, client)
+            results.push({ name: 'lite', ...result })
+          }
+
+          if (offenderNo) {
+            const resultRiskChange = await formService.updatePrisonRiskChange(offenderNo, toAgencyLocationId, client)
+            const resultSecurity = await formService.updatePrisonSecurityReferral(
+              offenderNo,
+              toAgencyLocationId,
+              client
+            )
+            results.push({ name: 'riskChange', ...resultRiskChange })
+            results.push({ name: 'securityReferral', ...resultSecurity })
+          }
+          logger.info(
+            `Movement summary: rows updated =${results.reduce((s, item) => `${s} ${item.name}: ${item.rowCount}`, '')}`
+          )
+        }
+        break
+      default:
+        logger.debug(
+          `Ignoring EXTERNAL_MOVEMENT_RECORD-INSERTED event for nomsId: ${bookingId}, movementType: ${movementType}`
+        )
+        break
+    }
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -1368,6 +1422,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     setInactive,
     getCategoryHistory,
     checkAndMergeOffenderNo,
+    handleExternalMovementEvent,
     // just for tests:
     buildSentenceData,
     getMatchedCategorisations: matchEliteAndDBCategorisations,

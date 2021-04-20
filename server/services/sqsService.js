@@ -83,11 +83,36 @@ module.exports = function createSqsService(offenderService, formService) {
     try {
       await db.doTransactional(async transactionalDbClient => {
         const context = { user: {} }
-        if (event.eventType === 'BOOKING_NUMBER-CHANGED') {
-          logger.info({ event }, 'Merge: Received payload')
-          await offenderService.checkAndMergeOffenderNo(context, event.bookingId, transactionalDbClient)
-        } else if (event.eventType === 'DATA_COMPLIANCE_DELETE-OFFENDER') {
-          // TODO
+
+        switch (event.eventType) {
+          case 'BOOKING_NUMBER-CHANGED':
+            {
+              const { bookingId } = event
+              logger.info({ event }, 'Merge: Received payload')
+              await offenderService.checkAndMergeOffenderNo(context, bookingId, transactionalDbClient)
+            }
+            break
+          case 'DATA_COMPLIANCE_DELETE-OFFENDER':
+            // TODO
+            break
+          case 'EXTERNAL_MOVEMENT_RECORD-INSERTED':
+            {
+              const { bookingId, offenderIdDisplay, movementType, fromAgencyLocationId, toAgencyLocationId } = event
+              logger.info({ event }, 'Movement: Received payload')
+              await offenderService.handleExternalMovementEvent(
+                context,
+                bookingId,
+                offenderIdDisplay,
+                movementType,
+                fromAgencyLocationId,
+                toAgencyLocationId,
+                transactionalDbClient
+              )
+            }
+            break
+          default:
+            logger.debug(`Ignored event of type ${event.eventType}`)
+            break
         }
       })
     } catch (error) {

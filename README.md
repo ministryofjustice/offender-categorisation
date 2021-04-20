@@ -60,5 +60,7 @@ In config.js you can see all the required variables. These are set with defaults
 
 ### Run tests
 
+You will need chromedriver.exe on your path to run integration tests, see https://chromedriver.chromium.org/downloads
+
 `npm run test`
 
