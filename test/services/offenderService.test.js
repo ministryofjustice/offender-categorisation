@@ -2705,3 +2705,40 @@ describe('handleExternalMovementEvent', () => {
     expect(formService.updatePrisonLite).not.toHaveBeenCalled()
   })
 })
+
+describe('getOffenderDetailsWithNextReviewDate', () => {
+  test('details with nextReviewdate found', async () => {
+    nomisClient.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      bookingId: 123,
+      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
+    })
+
+    const result = await service.getOffenderDetailsWithNextReviewDate(nomisClient, 123)
+
+    expect(result).toEqual({
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      bookingId: 123,
+      assessments: [{ assessmentCode: 'CATEGORY', nextReviewDate: '2020-01-16' }],
+      nextReviewDate: '2020-01-16',
+    })
+  })
+  test('details without assessments found', async () => {
+    nomisClient.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      bookingId: 123,
+    })
+
+    const result = await service.getOffenderDetailsWithNextReviewDate(nomisClient, 123)
+
+    expect(result).toEqual({
+      offenderNo: 'GN123',
+      lastName: 'SMITH',
+      bookingId: 123,
+      nextReviewDate: undefined,
+    })
+  })
+})

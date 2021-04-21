@@ -521,7 +521,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       .format('YYYY-MM-DD')
 
     const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
-    // what about security auto?
     const dbManualInProgress = await formService.getCategorisationRecords(
       agencyId,
       [Status.STARTED.name, Status.SECURITY_BACK.name, Status.SUPERVISOR_BACK.name, Status.SECURITY_AUTO],
@@ -1451,5 +1450,6 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     calculateButtonStatus,
     mergeU21ResultWithNomisCategorisationData,
     mergeOffenderLists: mergeOffenderListsRemovingNulls,
+    getOffenderDetailsWithNextReviewDate,
   }
 }
