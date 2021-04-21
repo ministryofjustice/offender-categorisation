@@ -224,10 +224,42 @@ describe('getRecategoriseOffenders', () => {
         overdue: false,
         buttonText: 'Start',
       },
+      {
+        bookingId: 555,
+        buttonText: 'Edit',
+        dbRecordExists: true,
+        dbStatus: 'STARTED',
+        displayName: 'Franks, Manual',
+        displayStatus: 'Started',
+        firstName: 'Manual',
+        lastName: 'Franks',
+        nextReviewDateDisplay: '11/02/2024',
+        offenderNo: 'G88456',
+        overdue: false,
+        reason: ReviewReason.MANUAL,
+      },
     ]
     nomisClient.getRecategoriseOffenders.mockResolvedValue(dueData)
     nomisClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
     nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+    // looking for any manually started cats to add them in
+    formService.getCategorisationRecords.mockResolvedValue([
+      { bookingId: 555, offenderNo: 'G55345', status: Status.STARTED.name },
+    ])
+    nomisClient.getOffenderDetails.mockResolvedValue({
+      bookingId: 555,
+      offenderNo: 'G88456',
+      firstName: 'Manual',
+      lastName: 'Franks',
+      assessments: [
+        {
+          assessmentCode: 'CATEGORY',
+          assessmentStatus: 'A',
+          bookingId: 555,
+          nextReviewDate: '2024-02-11T00:00:00.000+00:00',
+        },
+      ],
+    })
     formService.getCategorisationRecord.mockImplementation((bookingId, transactionalClient) => {
       expect(transactionalClient).toEqual(mockTransactionalClient)
       switch (bookingId) {
@@ -237,6 +269,8 @@ describe('getRecategoriseOffenders', () => {
           return { bookingId, status: Status.APPROVED.name }
         case 123:
           return { bookingId, status: Status.SECURITY_MANUAL.name }
+        case 555:
+          return { bookingId, status: Status.STARTED.name, reviewReason: 'MANUAL' }
         default:
           return {}
       }
@@ -246,7 +280,49 @@ describe('getRecategoriseOffenders', () => {
 
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(nomisClient.getPrisonersAtLocation).toBeCalled()
-    expect(formService.getCategorisationRecord).toBeCalledTimes(5)
+    expect(nomisClient.getOffenderDetails).toBeCalled()
+    expect(formService.getCategorisationRecord).toBeCalledTimes(6)
+    expect(result).toMatchObject(expected)
+  })
+
+  test('it should filter out duplicates from the manually started recats', async () => {
+    const dueData = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        category: 'B',
+        nextReviewDate: '2019-04-20',
+        assessStatus: 'A',
+      },
+    ]
+
+    const expected = [
+      {
+        offenderNo: 'G12345',
+        displayName: 'Brown, Jane',
+        bookingId: 123,
+        displayStatus: Status.SECURITY_MANUAL.value,
+        nextReviewDateDisplay: '20/04/2019',
+        reason: ReviewReason.DUE,
+        overdue: true,
+        buttonText: 'Edit',
+      },
+    ]
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(dueData)
+    nomisClient.getPrisonersAtLocation.mockResolvedValue([])
+    // looking for any manually started cats to add them in - finds one that is already in the recat list
+    formService.getCategorisationRecords.mockResolvedValue([
+      { bookingId: 123, offenderNo: 'G55345', status: Status.STARTED.name },
+    ])
+
+    formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.SECURITY_MANUAL.name })
+
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
+
+    expect(nomisClient.getOffenderDetails).not.toBeCalled()
+    expect(formService.getCategorisationRecord).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
 
@@ -291,6 +367,8 @@ describe('getRecategoriseOffenders', () => {
     nomisClient.getRecategoriseOffenders.mockResolvedValue(dueData)
     nomisClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
     nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+    // no manually started recats
+    formService.getCategorisationRecords.mockResolvedValue([])
     formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
 
     const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
@@ -304,6 +382,7 @@ describe('getRecategoriseOffenders', () => {
   test('No results from elite', async () => {
     nomisClient.getRecategoriseOffenders.mockResolvedValue([])
     nomisClient.getPrisonersAtLocation.mockResolvedValue([])
+    formService.getCategorisationRecords.mockResolvedValue([])
 
     const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
     expect(result).toHaveLength(0)
@@ -352,6 +431,7 @@ describe('getRecategoriseOffenders', () => {
     nomisClient.getRecategoriseOffenders.mockResolvedValue(data)
     nomisClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
     nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+    formService.getCategorisationRecords.mockResolvedValue([])
 
     const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
 

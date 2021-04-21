@@ -83,7 +83,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const dbManualInProgress = await formService.getCategorisationRecords(
         agencyId,
-        [Status.STARTED.name, Status.SECURITY_BACK.name, Status.SUPERVISOR_BACK.name],
+        [Status.STARTED.name, Status.SECURITY_BACK.name, Status.SUPERVISOR_BACK.name, Status.SECURITY_AUTO],
         CatType.INITIAL.name,
         ReviewReason.MANUAL.name,
         transactionalDbClient
@@ -521,38 +521,59 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       .format('YYYY-MM-DD')
 
     const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
+    // what about security auto?
+    const dbManualInProgress = await formService.getCategorisationRecords(
+      agencyId,
+      [Status.STARTED.name, Status.SECURITY_BACK.name, Status.SUPERVISOR_BACK.name, Status.SECURITY_AUTO],
+      CatType.RECAT.name,
+      ReviewReason.MANUAL.name,
+      transactionalDbClient
+    )
+
+    // trim db results to only those not in the Nomis-derived list
+    const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
     return Promise.all(
-      resultsReview.map(async o => {
-        const [dbRecord, assessmentData] = await Promise.all([
-          formService.getCategorisationRecord(o.bookingId, transactionalDbClient),
-          formService.getLiteCategorisation(o.bookingId, transactionalDbClient),
-        ])
+      [...resultsReview, ...dbInProgressFiltered].map(async raw => {
+        const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
+        const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
+
         if (unwanted(dbRecord)) {
           return null
         }
-        const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
-        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(dbRecord, o.assessStatus, liteInProgress)
+
+        const liteDbRecord = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
+        const liteInProgress = liteDbRecord.bookingId && !liteDbRecord.approvedDate
+        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(
+          dbRecord,
+          nomisRecord.assessStatus,
+          liteInProgress
+        )
         if (requiresWarning) {
           logger.warn(
-            `getDueRecats: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
+            `getDueRecats: Detected status inconsistency for booking id=${nomisRecord.bookingId}, offenderNo=${nomisRecord.offenderNo}, Nomis assessment status=${nomisRecord.assessStatus}, PG status=${dbRecord.status}`
           )
         }
 
-        const decorated = await decorateWithCategorisationData(o, user, nomisClient, dbRecord)
+        const decorated = await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)
         return {
-          ...o,
-          displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
+          ...nomisRecord,
+          displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
-          nextReviewDateDisplay: dateConverter(o.nextReviewDate),
-          overdue: isOverdue(o.nextReviewDate),
+          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
+          overdue: isOverdue(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
-          buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
+          buttonText: calculateButtonStatus(dbRecord, nomisRecord.assessStatus),
         }
       })
     )
+  }
+
+  const getOffenderDetailsWithNextReviewDate = async (nomisClient, bookingId) => {
+    const offenderDetails = await nomisClient.getOffenderDetails(bookingId)
+    return (offenderDetails && { ...offenderDetails, nextReviewDate: extractNextReviewDate(offenderDetails) }) || {}
   }
 
   async function handleRiskChangeDecision(context, bookingId, user, decision, transactionalDbClient) {
