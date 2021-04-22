@@ -83,7 +83,14 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
       const dbManualInProgress = await formService.getCategorisationRecords(
         agencyId,
-        [Status.STARTED.name, Status.SECURITY_BACK.name, Status.SUPERVISOR_BACK.name, Status.SECURITY_AUTO],
+        [
+          Status.STARTED.name,
+          Status.SECURITY_BACK.name,
+          Status.SUPERVISOR_BACK.name,
+          Status.SECURITY_AUTO,
+          Status.SECURITY_FLAGGED,
+          Status.SECURITY_MANUAL,
+        ],
         CatType.INITIAL.name,
         ReviewReason.MANUAL.name,
         transactionalDbClient
@@ -523,7 +530,14 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
     const dbManualInProgress = await formService.getCategorisationRecords(
       agencyId,
-      [Status.STARTED.name, Status.SECURITY_BACK.name, Status.SUPERVISOR_BACK.name, Status.SECURITY_AUTO],
+      [
+        Status.STARTED.name,
+        Status.SECURITY_BACK.name,
+        Status.SUPERVISOR_BACK.name,
+        Status.SECURITY_AUTO,
+        Status.SECURITY_FLAGGED,
+        Status.SECURITY_MANUAL,
+      ],
       CatType.RECAT.name,
       ReviewReason.MANUAL.name,
       transactionalDbClient
