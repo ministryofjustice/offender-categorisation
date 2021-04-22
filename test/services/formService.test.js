@@ -30,6 +30,7 @@ const formClient = {
   updateOffenderIdentifierReturningBookingIdLite: jest.fn(),
   updateOffenderIdentifierRiskChange: jest.fn(),
   updateOffenderIdentifierSecurityReferral: jest.fn(),
+  deleteSecurityReferral: jest.fn(),
 }
 let service
 
@@ -1036,21 +1037,73 @@ describe('updateOffenderIdentifierReturningBookingId', () => {
       rows: [{ bookingId: 1234 }],
     })
     formClient.updateOffenderIdentifierRiskChange.mockResolvedValue({ rowCount: 3, rows: [{}] })
+
+    formClient.getSecurityReferral.mockImplementation(offender =>
+      offender === 'SURVIVES'
+        ? { rows: [] }
+        : { rows: [{ id: 100, status: 'REFERRED', raisedDate: '2021-01-01T00:00:00' }] }
+    )
     formClient.updateOffenderIdentifierSecurityReferral.mockResolvedValue({ rowCount: 4, rows: [{}] })
 
-    await service.updateOffenderIdentifierReturningBookingId('OLD', 'NEW', mockTransactionalClient)
+    await service.updateOffenderIdentifierReturningBookingId('REMOVE', 'SURVIVES', mockTransactionalClient)
 
     expect(formClient.updateOffenderIdentifierReturningBookingIdForm).toBeCalledWith(
-      'OLD',
-      'NEW',
+      'REMOVE',
+      'SURVIVES',
       mockTransactionalClient
     )
     expect(formClient.updateOffenderIdentifierReturningBookingIdLite).toBeCalledWith(
-      'OLD',
-      'NEW',
+      'REMOVE',
+      'SURVIVES',
       mockTransactionalClient
     )
-    expect(formClient.updateOffenderIdentifierRiskChange).toBeCalledWith('OLD', 'NEW', mockTransactionalClient)
-    expect(formClient.updateOffenderIdentifierSecurityReferral).toBeCalledWith('OLD', 'NEW', mockTransactionalClient)
+    expect(formClient.updateOffenderIdentifierRiskChange).toBeCalledWith('REMOVE', 'SURVIVES', mockTransactionalClient)
+    expect(formClient.updateOffenderIdentifierSecurityReferral).toBeCalledWith(
+      'REMOVE',
+      'SURVIVES',
+      mockTransactionalClient
+    )
   })
+
+  test.each`
+    removeStatus   | surviveStatus  | removeDate               | surviveDate              | update   | deleted
+    ${'COMPLETED'} | ${'COMPLETED'} | ${'irrelevant'}          | ${'irrelevant'}          | ${false} | ${false}
+    ${'NEW'}       | ${'COMPLETED'} | ${'irrelevant'}          | ${'irrelevant'}          | ${true}  | ${true}
+    ${'COMPLETED'} | ${'REFERRED'}  | ${'irrelevant'}          | ${'irrelevant'}          | ${false} | ${false}
+    ${'NEW'}       | ${'NEW'}       | ${'2021-01-01T00:00:00'} | ${'2021-11-22T00:00:00'} | ${false} | ${false}
+    ${'NEW'}       | ${'NEW'}       | ${'2021-11-22T00:00:00'} | ${'2021-01-01T00:00:00'} | ${true}  | ${true}
+    ${'COMPLETED'} | ${null}        | ${'irrelevant'}          | ${'irrelevant'}          | ${true}  | ${false}
+  `(
+    'both security referral rows exist with $removeStatus $surviveStatus $removeDate $surviveDate $update $replace',
+    async ({ removeStatus, surviveStatus, removeDate, surviveDate, update, deleted }) => {
+      const dummyResult = { rowCount: 1, rows: [{ bookingId: 1234 }] }
+      formClient.updateOffenderIdentifierReturningBookingIdForm.mockResolvedValue(dummyResult)
+      formClient.updateOffenderIdentifierReturningBookingIdLite.mockResolvedValue(dummyResult)
+      formClient.updateOffenderIdentifierRiskChange.mockResolvedValue(dummyResult)
+      formClient.updateOffenderIdentifierSecurityReferral.mockResolvedValue({ dummyResult })
+      formClient.deleteSecurityReferral.mockResolvedValue({ dummyResult })
+      formClient.getSecurityReferral.mockImplementation(offender =>
+        offender === 'SURVIVES'
+          ? { rows: [surviveStatus ? { id: 100, status: surviveStatus, raisedDate: surviveDate } : {}] }
+          : { rows: [{ id: 101, status: removeStatus, raisedDate: removeDate }] }
+      )
+
+      await service.updateOffenderIdentifierReturningBookingId('REMOVE', 'SURVIVES', mockTransactionalClient)
+
+      if (update) {
+        expect(formClient.updateOffenderIdentifierSecurityReferral).toBeCalledWith(
+          'REMOVE',
+          'SURVIVES',
+          mockTransactionalClient
+        )
+      } else {
+        expect(formClient.updateOffenderIdentifierSecurityReferral).not.toBeCalled()
+      }
+      if (deleted) {
+        expect(formClient.deleteSecurityReferral).toBeCalledWith('SURVIVES', mockTransactionalClient)
+      } else {
+        expect(formClient.deleteSecurityReferral).not.toBeCalled()
+      }
+    }
+  )
 })

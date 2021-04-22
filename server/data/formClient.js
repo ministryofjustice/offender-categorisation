@@ -380,6 +380,15 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  deleteSecurityReferral(offenderNo, transactionalClient) {
+    logger.info(`deleting security_referral record for offenderNo ${offenderNo}`)
+    const query = {
+      text: `delete from security_referral where offender_no=$1`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
   create({
     bookingId,
     catType,
