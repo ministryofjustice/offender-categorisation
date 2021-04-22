@@ -766,24 +766,63 @@ module.exports = function createFormService(formClient) {
       newOffenderNo,
       transactionalClient
     )
+    logger.info(`Merge: updateOffenderIdentifierReturningBookingIdForm: rows updated = ${result1.rowCount}`)
+
     const result2 = await formClient.updateOffenderIdentifierReturningBookingIdLite(
       oldOffenderNo,
       newOffenderNo,
       transactionalClient
     )
+    logger.info(`Merge: updateOffenderIdentifierReturningBookingIdLite: rows updated = ${result2.rowCount}`)
+
     const result3 = await formClient.updateOffenderIdentifierRiskChange(
       oldOffenderNo,
       newOffenderNo,
       transactionalClient
     )
-    const result4 = await formClient.updateOffenderIdentifierSecurityReferral(
-      oldOffenderNo,
-      newOffenderNo,
-      transactionalClient
-    )
-    logger.info(
-      `Merge summary: rows updated = ${result1.rowCount} ${result2.rowCount} ${result3.rowCount} ${result4.rowCount}`
-    )
+    logger.info(`Merge: updateOffenderIdentifierRiskChange: rows updated = ${result3.rowCount}`)
+
+    const securityReferralRemove = await getSecurityReferral(oldOffenderNo, transactionalClient)
+    const securityReferralSurvives = await getSecurityReferral(newOffenderNo, transactionalClient)
+
+    // If row for surviving offenderNo exists, or to-be-removed offenderNo exists, use that.
+    // If both exist, use whichever is not in COMPLETED status
+    // If neither COMPLETED, use the later raisedDate
+    // If both COMPLETED, do nothing.
+    // NOTE no need to delete the removed record when not used.
+
+    const exists = record => !!record.status
+
+    if (exists(securityReferralRemove)) {
+      if (exists(securityReferralSurvives)) {
+        if (securityReferralRemove.status !== 'COMPLETED') {
+          if (
+            securityReferralSurvives.status === 'COMPLETED' ||
+            securityReferralRemove.raisedDate > securityReferralSurvives.raisedDate
+          ) {
+            // choose data of removed over survivor
+            const result5 = await formClient.deleteSecurityReferral(newOffenderNo, transactionalClient)
+            logger.info(`Merge: deleteSecurityReferral: rows updated = ${result5.rowCount}`)
+
+            const result4 = await formClient.updateOffenderIdentifierSecurityReferral(
+              oldOffenderNo,
+              newOffenderNo,
+              transactionalClient
+            )
+            logger.info(`Merge: updateOffenderIdentifierSecurityReferral: rows updated = ${result4.rowCount}`)
+          }
+          // .. otherwise use survivor
+        }
+      } else {
+        const result4 = await formClient.updateOffenderIdentifierSecurityReferral(
+          oldOffenderNo,
+          newOffenderNo,
+          transactionalClient
+        )
+        logger.info(`Merge: updateOffenderIdentifierSecurityReferral: rows updated = ${result4.rowCount}`)
+      }
+    }
+
     return { formRows: result1.rows, liteRows: result2.rows }
   }
 

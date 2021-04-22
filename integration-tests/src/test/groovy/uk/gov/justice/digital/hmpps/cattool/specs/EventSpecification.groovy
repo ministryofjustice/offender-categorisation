@@ -12,6 +12,9 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
+import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
+import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
+
 import java.time.LocalDate
 
 class EventSpecification extends GebReportingSpec {
@@ -25,6 +28,7 @@ class EventSpecification extends GebReportingSpec {
   @Rule
   OauthApi oauthApi = new OauthApi(new WireMockConfiguration().extensions(new ResponseTemplateTransformer(false)))
 
+  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
   DatabaseUtils db = new DatabaseUtils()
 
   AmazonSQS sqs = AmazonSQSClientBuilder
@@ -58,12 +62,13 @@ class EventSpecification extends GebReportingSpec {
     db.createUnapprovedLiteCategorisation(123, 2, 'A1234AA', 'V', 'MDI', 'CATEGORISER_USER')
     db.createLiteCategorisation(124, 1, 'A1234AA', 'V', 'MDI')
 
+    elite2Api.stubGetBasicOffenderDetails(123, 'A1234AB')
+    fixture.stubLogin(UserAccount.CATEGORISER_USER)
+
     when: 'a prison transfer event arrives'
 
-    def bookingId = 123
-    def toAgency = 'LEI'
     sqs.sendMessage('http://localhost:4576/queue/event', """{
-      "Message" : "{ \\"eventType\\": \\"EXTERNAL_MOVEMENT_RECORD-INSERTED\\", \\"offenderIdDisplay\\": \\"A1234AA\\",\\"bookingId\\": ${bookingId}, \\"fromAgencyLocationId\\": \\"MDI\\", \\"toAgencyLocationId\\": \\"${toAgency}\\", \\"movementType\\": \\"ADM\\", \\"movementSeq\\": 1, \\"movementDateTime\\": \\"2020-02-25T15:57:45\\", \\"directionCode\\": \\"IN\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"M1_RESULT\\" }",
+      "Message" : "{ \\"eventType\\": \\"EXTERNAL_MOVEMENT_RECORD-INSERTED\\", \\"offenderIdDisplay\\": \\"A1234AA\\",\\"bookingId\\":123, \\"fromAgencyLocationId\\": \\"MDI\\", \\"toAgencyLocationId\\": \\"LEI\\", \\"movementType\\": \\"ADM\\", \\"movementSeq\\": 1, \\"movementDateTime\\": \\"2020-02-25T15:57:45\\", \\"directionCode\\": \\"IN\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"M1_RESULT\\" }",
       "Timestamp" : "2020-01-14T15:14:33.624Z",
       "MessageAttributes" : {
         "code" : { "Type" : "String", "Value" : "" } ,
@@ -80,8 +85,7 @@ class EventSpecification extends GebReportingSpec {
       def data = db.getData(123)
       data.id == [1, 2]
       data.prison_id == ['MDI', 'LEI']
-    }
-    waitFor {
+
       db.getData(124).prison_id == ['MDI']
 
       def lite = db.getLiteData(123)
@@ -92,8 +96,65 @@ class EventSpecification extends GebReportingSpec {
       def rc = db.getRiskChange('A1234AA')
       rc.id == [1, 2]
       rc.prison_id == ['MDI', 'LEI']
+
       db.getSecurityData('A1234AA').prison_id == ['LEI']
       db.getSecurityData('A1234AB').prison_id == ['MDI']
+    }
+  }
+
+  def "merge events should change the offenderNo in all tables"() {
+
+    db.doCreateCompleteRow(1, 123, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
+      1, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
+    db.doCreateCompleteRow(2, 123, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
+      2, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
+    db.doCreateCompleteRow(3, 124, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
+      1, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
+    db.doCreateCompleteRow(4, 125, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
+      1, null, 'MDI', 'Z9999ZZ', 'current_timestamp(2)', null, null)
+
+    db.createLiteCategorisation(123, 1, 'A1234AA', 'V', 'MDI')
+    db.createUnapprovedLiteCategorisation(123, 2, 'A1234AA', 'V', 'MDI', 'CATEGORISER_USER')
+    db.createLiteCategorisation(124, 1, 'A1234AA', 'V', 'MDI')
+
+    db.createRiskChange(1, 'A1234AA', null, 'PROCESSED', '{}', '{}', 'MDI', LocalDate.now())
+    db.createRiskChange(2, 'A1234AA', null, 'NEW', '{}', '{}', 'MDI', LocalDate.now())
+
+    db.createSecurityData('A1234AB', 'MDI', 1, 'COMPLETED')
+    db.createSecurityData('A1234AA', 'MDI', 2, 'NEW')
+
+    elite2Api.stubGetBasicOffenderDetails(123, 'A1234AB')
+    elite2Api.stubGetIdentifiersByBookingId(123)
+    elite2Api.stubSetInactive(123, 'ACTIVE')
+
+    when: 'a merge event arrives merging A1234AA to A1234AB'
+
+    fixture.stubLogin(UserAccount.CATEGORISER_USER)
+    sqs.sendMessage('http://localhost:4576/queue/event', """{
+      "Message" : "{ \\"eventType\\": \\"BOOKING_NUMBER-CHANGED\\", \\"bookingId\\":123, \\"offenderId\\":1577871, \\"previousBookingNumber\\": \\"M07037\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"BOOK_UPD_OASYS\\" }",
+      "MessageAttributes" : {
+        "eventType" : { "Type" : "String", "Value" : "BOOKING_NUMBER-CHANGED" } ,
+        "id" : { "Type" : "String", "Value" : "f9f1e5e4-999a-78ad-d1d8-442d8864481a" } ,
+        "contentType" : { "Type" : "String", "Value" : "text/plain;charset=UTF-8" } ,
+        "timestamp" : { "Type" : "Number.java.lang.Long", "Value" : "1579014873619" }
+      }
+    }""")
+
+    then: 'The offenderNo is updated as follows'
+
+    waitFor {
+      db.getData(123).offender_no == ['A1234AB', 'A1234AB']
+      db.getData(124).offender_no == ['A1234AB']
+      db.getData(125).offender_no == ['Z9999ZZ']
+
+      db.getLiteData(123).offender_no == ['A1234AB', 'A1234AB']
+      db.getLiteData(124).offender_no == ['A1234AB']
+
+      db.getRiskChange('A1234AA').id == []
+      db.getRiskChange('A1234AB').id == [1,2]
+
+      db.getSecurityData('A1234AA').id == []
+      db.getSecurityData('A1234AB').id == [2]
     }
   }
 }
