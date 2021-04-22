@@ -369,10 +369,6 @@ module.exports = function Index({
     '/recategoriserLanding/:bookingId',
     asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
-
-      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-
-      await offendersService.updateNextReviewDateIfRequired(res.locals, bookingId, details)
       res.redirect(`/tasklistRecat/${bookingId}?reason=MANUAL`)
     })
   )
