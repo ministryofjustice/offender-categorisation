@@ -68,7 +68,7 @@
     "pg": "^7.18.2",
     "querystring": "^0.2.0",
     "ramda": "^0.25.0",
-    "redis": "^2.8.0",
+    "redis": "^3.1.1",
     "sass-middleware": "^0.0.3",
     "snyk": "^1.437.3",
     "sqs-consumer": "^5.5.0",
