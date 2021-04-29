@@ -7,7 +7,7 @@ orbs:
 executors:
   builder:
     docker:
-      - image: circleci/node:10-buster-browsers
+      - image: cimg/node:14.15.3-browsers
     working_directory: ~/app
 
 jobs:
@@ -52,7 +52,7 @@ jobs:
   integration_tests:
     working_directory: ~/app
     docker:
-      - image: circleci/openjdk:11-jdk-node-browsers
+      - image: cimg/node:14.15.3-browsers
       - image: circleci/postgres:alpine-ram
         environment:
           POSTGRES_USER: form-builder
@@ -74,7 +74,7 @@ jobs:
           name: Wait for localstack to start before creating resources
           command: sleep 10
       - run:
-          name: Create localstack bucket and queues
+          name: Create localstack queues
           command: |
             export AWS_PAGER=""
             aws --endpoint-url http://localhost:4576 sqs create-queue --queue-name event
