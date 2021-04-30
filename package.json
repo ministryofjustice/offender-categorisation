@@ -4,8 +4,9 @@
   "scripts": {
     "start": "node server.js",
     "start:dev": "npm build && DEBUG=gov-starter-server* nodemon server.js | bunyan -o short",
-    "build": "npm run css-build",
-    "css-build": "./bin/build-css",
+    "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend ./assets/sass/application.sass:./assets/stylesheets/application.css ./assets/sass/application-ie8.sass:./assets/stylesheets/application-ie8.css --style compressed",
+    "watch-sass": "npm run compile-sass -- --watch",
+    "build": "npm run compile-sass",
     "clean": "rm -rf assets/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
     "test": "jest",
@@ -29,7 +30,6 @@
     "delay": 2500
   },
   "dependencies": {
-    "@ministryofjustice/frontend": "0.2.2",
     "agentkeepalive": "^4.1.4",
     "applicationinsights": "^1.8.10",
     "applicationinsights-native-metrics": "0.0.6",
@@ -70,7 +70,6 @@
     "querystring": "^0.2.0",
     "ramda": "^0.27.1",
     "redis": "^3.1.1",
-    "sass-middleware": "^0.0.3",
     "snyk": "^1.561.0",
     "sqs-consumer": "^5.5.0",
     "superagent": "^5.3.1",
@@ -86,6 +85,7 @@
     "nock": "^12.0.3",
     "prettier": "^2.2.1",
     "redis-cli": "^1.4.0",
+    "sass": "^1.32.12",
     "supertest": "^4.0.2"
   },
   "snyk": true
