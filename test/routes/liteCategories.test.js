@@ -61,9 +61,7 @@ describe('assessment', () => {
   test('get form page', () => {
     formService.getCategorisationRecord.mockResolvedValue({})
     formService.getLiteCategorisation.mockResolvedValue({})
-    const sixMonths = moment()
-      .add(6, 'months')
-      .format('DD/MM/YYYY')
+    const sixMonths = moment().add(6, 'months').format('DD/MM/YYYY')
 
     return request(app)
       .get(`/12`)
@@ -106,9 +104,7 @@ describe('assessment', () => {
   })
 
   test('Post form page', () => {
-    const futureDate = moment()
-      .add(5, 'months')
-      .format('DD/MM/YYYY')
+    const futureDate = moment().add(5, 'months').format('DD/MM/YYYY')
     const userInput = {
       category: 'R',
       authority: 'RECP',
@@ -189,9 +185,7 @@ describe('approve', () => {
   })
 
   test('Post form page', () => {
-    const futureDate = moment()
-      .add(5, 'months')
-      .format('DD/MM/YYYY')
+    const futureDate = moment().add(5, 'months').format('DD/MM/YYYY')
     const userInput = {
       approvedDate: '15/04/2020',
       supervisorCategory: 'E',
@@ -221,9 +215,7 @@ describe('approve', () => {
   })
 
   test('Post form page - categorisation not found on nomis will redirect to /alreadyApproved', () => {
-    const futureDate = moment()
-      .add(5, 'months')
-      .format('DD/MM/YYYY')
+    const futureDate = moment().add(5, 'months').format('DD/MM/YYYY')
     const userInput = {
       approvedDate: '15/04/2020',
       supervisorCategory: 'E',

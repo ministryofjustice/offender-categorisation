@@ -150,10 +150,7 @@ describe('recat', () => {
         displayStatus: 'Any other status',
         formObject: {},
       })
-      return request(app)
-        .get('/securityInput/12345')
-        .expect(302)
-        .expect('Location', `/tasklistRecat/12345`)
+      return request(app).get('/securityInput/12345').expect(302).expect('Location', `/tasklistRecat/12345`)
     })
   })
 

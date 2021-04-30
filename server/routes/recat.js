@@ -201,7 +201,7 @@ module.exports = function Index({
   }
 
   const clearConditionalFields = body => {
-    const updated = Object.assign({}, body)
+    const updated = { ...body }
     if (body.securityInputNeeded === 'No') {
       delete updated.securityInputNeededText
     }
@@ -252,7 +252,7 @@ module.exports = function Index({
       const form = 'riskProfileChangeDetail'
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
-      const userInput = Object.assign({}, req.body)
+      const userInput = { ...req.body }
 
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
