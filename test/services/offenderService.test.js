@@ -103,9 +103,7 @@ moment.now = jest.fn()
 moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 
 function mockTodaySubtract(days) {
-  return moment()
-    .subtract(days, 'day')
-    .format('YYYY-MM-DD')
+  return moment().subtract(days, 'day').format('YYYY-MM-DD')
 }
 
 describe('getRecategoriseOffenders', () => {

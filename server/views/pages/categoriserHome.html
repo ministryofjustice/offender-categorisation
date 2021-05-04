@@ -66,8 +66,7 @@
       <td class="govuk-table__cell">
         {% if row.displayStatus == 'Back from Supervisor' %}
           {{ govukTag({
-            html: 'Rejected by<br/>supervisor',
-            classes: 'moj-tag--blue'
+            html: 'Rejected by<br/>supervisor'
           }) }}
         {% else %}
           {{ row.displayStatus }}

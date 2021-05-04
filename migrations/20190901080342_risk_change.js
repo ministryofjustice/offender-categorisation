@@ -7,10 +7,7 @@ exports.up = knex =>
       table.string('offender_no').notNullable()
       table.string('user_id').nullable()
       table.string('prison_id', 6).notNullable()
-      table
-        .string('status', 20)
-        .notNullable()
-        .defaultTo('NEW')
+      table.string('status', 20).notNullable().defaultTo('NEW')
       table.timestamp('raised_date').notNullable()
       table.index('prison_id')
     }),

@@ -173,16 +173,10 @@ module.exports = function Index({ formService, offendersService, userService, au
       res.locals.user = { ...user, ...res.locals.user }
       const details = await offendersService.getOffenderDetails(res.locals, bookingIdInt)
 
-      const tomorrow = moment()
-        .add(1, 'd')
-        .format('MM/DD/YYYY')
+      const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
 
       const fieldOptions = {
-        nextReviewDate: joi
-          .date()
-          .format('D/M/YYYY')
-          .min(tomorrow)
-          .required(),
+        nextReviewDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
       }
 
       const joiErrors = joi.validate(req.body, fieldOptions, { stripUnknown: true, abortEarly: false })
@@ -252,22 +246,12 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const assessmentData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
 
-      const tomorrow = moment()
-        .add(1, 'd')
-        .format('MM/DD/YYYY')
+      const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
       const today = moment().format('MM/DD/YYYY')
 
       const fieldOptions = {
-        nextReviewDate: joi
-          .date()
-          .format('D/M/YYYY')
-          .min(tomorrow)
-          .required(),
-        approvedDate: joi
-          .date()
-          .format('D/M/YYYY')
-          .max(today)
-          .required(),
+        nextReviewDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
+        approvedDate: joi.date().format('D/M/YYYY').max(today).required(),
       }
 
       const joiErrors = joi.validate(req.body, fieldOptions, { stripUnknown: true, abortEarly: false })

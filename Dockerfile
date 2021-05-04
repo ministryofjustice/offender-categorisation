@@ -1,4 +1,4 @@
-FROM node:10-buster-slim
+FROM node:14.15-buster-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -23,11 +23,13 @@ ADD . .
 # Install AWS RDS Root cert
 RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem > /app/root.cert
 
-RUN npm install && \
+RUN npm ci --no-audit && \
     npm run build && \
     export BUILD_NUMBER=${BUILD_NUMBER} && \
     export GIT_REF=${GIT_REF} && \
     npm run record-build-info
+
+RUN npm prune --no-audit --production
 
 ENV PORT=3000
 ENV NODE_ENV='production'

@@ -102,7 +102,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     }
   }
 
-  const clearConditionalFields = body => Object.assign({}, body)
+  const clearConditionalFields = body => ({ ...body })
 
   router.post(
     '/nextReviewDateQuestion/:bookingId',

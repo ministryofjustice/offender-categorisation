@@ -356,7 +356,7 @@ module.exports = function Index({
   }
 
   const clearConditionalFields = body => {
-    const updated = Object.assign({}, body)
+    const updated = { ...body }
     if (body.securityInputNeeded === 'No') {
       delete updated.securityInputNeededText
     }

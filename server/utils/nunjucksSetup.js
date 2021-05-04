@@ -1,6 +1,6 @@
 const nunjucks = require('nunjucks')
-const Status = require('../utils/statusEnum')
-const ReviewReason = require('../utils/reviewReasonEnum')
+const Status = require('./statusEnum')
+const ReviewReason = require('./reviewReasonEnum')
 const {
   dateConverter,
   formatLength,
@@ -9,9 +9,9 @@ const {
   choosingHigherCategory,
   offenderLink,
   dpsUrl,
-} = require('../utils/utils.js')
+} = require('./utils.js')
 const config = require('../config')
-const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
+const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
 
 const findError = (array, formFieldId) => {
   const item = array.find(error => error.href === `#${formFieldId}`)

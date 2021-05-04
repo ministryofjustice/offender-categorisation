@@ -1,7 +1,7 @@
 const baseJoi = require('joi')
 const dateExtend = require('joi-date-extensions')
 const moment = require('moment')
-const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('../utils/functionalHelpers')
+const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('./functionalHelpers')
 
 const joi = baseJoi.extend(dateExtend)
 
@@ -32,42 +32,17 @@ module.exports = {
 }
 
 function createSchemaFromConfig(pageConfig) {
-  const yesterday = moment()
-    .subtract(1, 'd')
-    .format('MM/DD/YYYY')
-  const tomorrow = moment()
-    .add(1, 'd')
-    .format('MM/DD/YYYY')
+  const yesterday = moment().subtract(1, 'd').format('MM/DD/YYYY')
+  const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
 
   const fieldOptions = {
     requiredString: joi.string().required(),
-    optionalString: joi
-      .string()
-      .allow('')
-      .optional(),
-    requiredDay: joi
-      .date()
-      .format('DD')
-      .required(),
-    requiredMonth: joi
-      .date()
-      .format('MM')
-      .required(),
-    requiredYear: joi
-      .date()
-      .format('YYYY')
-      .required(),
-    futureDate: joi
-      .date()
-      .format('D/M/YYYY')
-      .min(tomorrow)
-      .required(),
-    pastDate: joi
-      .date()
-      .allow('')
-      .format('D/M/YYYY')
-      .max(yesterday)
-      .optional(),
+    optionalString: joi.string().allow('').optional(),
+    requiredDay: joi.date().format('DD').required(),
+    requiredMonth: joi.date().format('MM').required(),
+    requiredYear: joi.date().format('YYYY').required(),
+    futureDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
+    pastDate: joi.date().allow('').format('D/M/YYYY').max(yesterday).optional(),
     requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,

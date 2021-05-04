@@ -1,3 +1,4 @@
+const fs = require('fs')
 const config = require('./server/config')
 
 module.exports = {
@@ -7,7 +8,13 @@ module.exports = {
     user: config.db.username,
     password: config.db.password,
     database: config.db.database,
-    ssl: config.db.sslEnabled === 'true',
+    ssl:
+      config.db.sslEnabled === 'true'
+        ? {
+            ca: fs.readFileSync('root.cert'),
+            rejectUnauthorized: true,
+          }
+        : false,
   },
   acquireConnectionTimeout: 5000,
 }

@@ -1,4 +1,4 @@
-const { equals } = require('../utils/functionalHelpers')
+const { equals } = require('./functionalHelpers')
 
 function listAlertChange(oldP, newP) {
   const newEscapeAlerts = newP.escape.escapeListAlerts
