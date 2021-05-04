@@ -144,7 +144,7 @@ module.exports = function Index({ formService, offendersService, userService, au
   }
 
   const clearConditionalFields = body => {
-    const updated = Object.assign({}, body)
+    const updated = { ...body }
     if (body.threeOrMoreYears === 'No') {
       delete updated.justify
       delete updated.justifyText

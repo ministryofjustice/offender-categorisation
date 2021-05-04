@@ -272,26 +272,17 @@ describe('GET /', () => {
 
   test('cat user', () => {
     roles = ['other_role', 'ROLE_CREATE_CATEGORISATION']
-    return request(app)
-      .get('/')
-      .expect(302)
-      .expect('location', '/categoriserHome')
+    return request(app).get('/').expect(302).expect('location', '/categoriserHome')
   })
 
   test('supervisor user', () => {
     roles = ['ROLE_APPROVE_CATEGORISATION', 'other_role']
-    return request(app)
-      .get('/')
-      .expect(302)
-      .expect('location', '/supervisorHome')
+    return request(app).get('/').expect(302).expect('location', '/supervisorHome')
   })
 
   test('security user', () => {
     roles = ['ROLE_CATEGORISATION_SECURITY']
-    return request(app)
-      .get('/')
-      .expect(302)
-      .expect('location', '/securityHome')
+    return request(app).get('/').expect(302).expect('location', '/securityHome')
   })
 })
 
@@ -643,11 +634,7 @@ describe('Switching roles', () => {
       .expect(302)
       .expect('Location', '/123456'))
 
-  test('when no referer', () =>
-    request(app)
-      .get('/switchRole/categoriser')
-      .expect(302)
-      .expect('Location', '/'))
+  test('when no referer', () => request(app).get('/switchRole/categoriser').expect(302).expect('Location', '/'))
 
   test('when some other page', () =>
     request(app)

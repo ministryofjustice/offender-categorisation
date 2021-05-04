@@ -58,13 +58,7 @@ function isBlank(str) {
  * @param name name to be converted.
  * @returns name converted to proper case.
  */
-const properCaseName = name =>
-  isBlank(name)
-    ? ''
-    : name
-        .split('-')
-        .map(properCase)
-        .join('-')
+const properCaseName = name => (isBlank(name) ? '' : name.split('-').map(properCase).join('-'))
 
 const getHoursMinutes = timestamp => {
   const indexOfT = timestamp.indexOf('T')
@@ -125,20 +119,8 @@ const catDisplay = cat => {
 
 // R.cond is like a switch statement
 const calculateNextReviewDate = R.cond([
-  [
-    R.equals('6'),
-    () =>
-      moment()
-        .add(6, 'months')
-        .format('DD/MM/YYYY'),
-  ],
-  [
-    R.equals('12'),
-    () =>
-      moment()
-        .add(1, 'years')
-        .format('DD/MM/YYYY'),
-  ],
+  [R.equals('6'), () => moment().add(6, 'months').format('DD/MM/YYYY')],
+  [R.equals('12'), () => moment().add(1, 'years').format('DD/MM/YYYY')],
   [R.T, R.always('')],
 ])
 

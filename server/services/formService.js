@@ -6,7 +6,7 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
-const conf = require('../../server/config')
+const conf = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
 
@@ -185,7 +185,7 @@ module.exports = function createFormService(formClient) {
   }
 
   function removeFormdata(bookingId, formObject, formSection, formName) {
-    const updated = Object.assign({}, formObject)
+    const updated = { ...formObject }
     if (updated[formSection]) {
       if (updated[formSection][formName]) {
         log.debug(`deleting form for booking Id: ${bookingId}, form section: ${formSection}, form name: ${formName}`)
@@ -628,9 +628,7 @@ module.exports = function createFormService(formClient) {
 
   async function getCategorisedOffenders(agencyId, catType, transactionalClient) {
     const displayMonths = conf.approvedDisplayMonths
-    const fromDate = moment()
-      .subtract(displayMonths, 'months')
-      .toDate()
+    const fromDate = moment().subtract(displayMonths, 'months').toDate()
     try {
       const data = await formClient.getApprovedCategorisations(agencyId, fromDate, catType, transactionalClient)
       return data.rows || []
@@ -729,7 +727,7 @@ module.exports = function createFormService(formClient) {
   const cancelOpenConditions = async (bookingId, userId, transactionalDbClient) => {
     const categorisationRecord = await getCategorisationRecord(bookingId, transactionalDbClient)
 
-    const updated = Object.assign({}, categorisationRecord.formObject)
+    const updated = { ...categorisationRecord.formObject }
     if (categorisationRecord.catType === 'INITIAL' && updated.categoriser && updated.categoriser.provisionalCategory) {
       delete updated.categoriser.provisionalCategory
     }

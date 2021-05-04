@@ -523,9 +523,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
   }
 
   async function getDueRecats(agencyId, user, nomisClient, transactionalDbClient) {
-    const reviewTo = moment()
-      .add(config.recatMarginMonths, 'months')
-      .format('YYYY-MM-DD')
+    const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
     const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
     const dbManualInProgress = await formService.getCategorisationRecords(
@@ -666,10 +664,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const u21From = moment()
       .subtract(22, 'years') // allow up to a year overdue
       .format('YYYY-MM-DD')
-    const u21To = moment()
-      .subtract(21, 'years')
-      .add(config.recatMarginMonths, 'months')
-      .format('YYYY-MM-DD')
+    const u21To = moment().subtract(21, 'years').add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
     const resultsU21 = await nomisClient.getPrisonersAtLocation(agencyId, u21From, u21To)
 

@@ -158,10 +158,7 @@ describe('GET /ratings/securityInput', () => {
       displayStatus: 'Any other status',
       formObject: {},
     })
-    return request(app)
-      .get('/ratings/securityInput/12345')
-      .expect(302)
-      .expect('Location', `/tasklist/12345`)
+    return request(app).get('/ratings/securityInput/12345').expect(302).expect('Location', `/tasklist/12345`)
   })
 })
 
