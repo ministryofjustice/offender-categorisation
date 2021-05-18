@@ -82,9 +82,9 @@ class TasklistRecatSpecification extends GebReportingSpec {
 
     then: 'The tasklist page is displayed'
     at TasklistRecatPage
-    headerValue[1].text() == 'C0001AA'
-    headerValue[2].text() == '01/01/2018'
-    headerValue[3].text() == 'I'
+    headerValue[0].text() == 'C0001AA'
+    headerValue[1].text() == '01/01/2018'
+    headerValue[2].text() == 'I'
 
     and: 'data is stored correctly'
     def data = db.getData(21)

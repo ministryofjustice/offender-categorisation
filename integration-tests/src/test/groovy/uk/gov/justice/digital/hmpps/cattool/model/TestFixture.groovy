@@ -64,7 +64,7 @@ class TestFixture {
     riskLevels         : ['likelyToAbscond': 'No']
   ]
 
-  public static final FULL_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C',
+  public static final FULL_HEADER = ['B2345YZ', '17/02/1970', 'C',
   'C-04-02', 'Coventry',
   'Latvian',
   'A Felony', 'Another Felony',
