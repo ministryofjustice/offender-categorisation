@@ -1,12 +1,12 @@
 {% macro headerTitle(text) %}
 <div class="govuk-grid-row">
-  <p class="govuk-!-margin-bottom-1">{{ text }}</p>
+  <p class="govuk-!-margin-bottom-1 govuk-!-margin-top-4">{{ text }}</p>
 </div>
 {% endmacro %}
 
 {% macro headerValue(text, classes='') %}
-<div class="govuk-grid-row govuk-!-font-weight-bold">
-  <p class="govuk-!-margin-top-1 {{ classes }}">{{ text if text | length else '-' }}</p>
+<div class="govuk-grid-row">
+  <p class="govuk-!-margin-top-1 govuk-!-font-weight-bold {{ classes }}">{{ text if text | length else '-' }}</p>
 </div>
 {% endmacro %}
 
@@ -15,8 +15,8 @@
 
   <div class="govuk-grid-column-one-third">
     {{ headerTitle('Name') }}
-    <div class="govuk-grid-row govuk-!-font-weight-bold">
-      <a class="govuk-!-margin-top-1" target="_blank" href="{{ data.details.offenderNo | offenderLink }}">{{ data.details.displayName }}</a>
+    <div class="govuk-grid-row">
+      <a class="govuk-!-margin-top-1 govuk-!-font-weight-bold" target="_blank" href="{{ data.details.offenderNo | offenderLink }}">{{ data.details.displayName }}</a>
     </div>
 
     {{ headerTitle('NOMIS ID') }}
@@ -99,8 +99,8 @@
     {% if sentence.list | length == 1 %}
       {% set first = sentence.list[0] %}
       {{ headerTitle('Court-issued sentence') }}
-      <div class="govuk-grid-row govuk-!-font-weight-bold">
-        <p class="govuk-!-margin-top-1">{{ formatLength(first) }} ({{ first.sentenceTypeDescription }})</p>
+      <div class="govuk-grid-row">
+        <p class="govuk-!-margin-top-1 govuk-!-font-weight-bold">{{ formatLength(first) }} ({{ first.sentenceTypeDescription }})</p>
       </div>
     {% elif sentence.list | length == 0 %}
       {{ headerTitle('Court-issued sentence') }}
