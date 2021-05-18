@@ -13,7 +13,7 @@ class SupervisorRecatReviewPage extends Page {
   static content = {
     headingText { $('h1.mainHeading').text() }
     headerBlock { $('div.govuk-grid-column-one-third') }
-    headerValue { headerBlock.$('div.govuk-\\!-font-weight-bold') }
+    headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
 
     warning { $('div.govuk-warning-text', 0) }
     form { $('form') }
