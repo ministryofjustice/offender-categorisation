@@ -1,7 +1,7 @@
 const whereClause = `status = 'APPROVED' and
   cat_type = $1::cat_type_enum and
-  ($2::date is null or $2::date <= approval_date) and 
-  ($3::date is null or approval_date <= $3::date) and 
+  ($2::date is null or $2::date <= approval_date) and
+  ($3::date is null or approval_date <= $3::date) and
   ($4::varchar is null or $4::varchar = prison_id)`
 
 module.exports = {
@@ -34,22 +34,31 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  /** For now the startDate is ignored. The latest category before the end date is considered along with its predecessor */
   getRecatFromTo(startDate, endDate, prisonId, transactionalClient) {
     const query = {
       text: `
         with cat_table as (
           select booking_id,
                  sequence_no,
-                 coalesce (form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory',
-                           form_response -> 'recat' -> 'decision' ->>'category') as cat
-          from form)
-        select count(*),
-          (select cat from cat_table where booking_id = f.booking_id and sequence_no = (select max(f2.sequence_no) - 1 from form f2 where f2.booking_id = f.booking_id)) as previous,
-          (select cat from cat_table where booking_id = f.booking_id and sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)) as current
-        from form f
-        where ${whereClause} and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)
+                 prison_id,
+                 coalesce(form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory',
+                          form_response -> 'recat' -> 'decision' ->> 'category') as cat
+          from form
+          where status = 'APPROVED'
+            and cat_type = 'RECAT'
+            and ($1::date is null or approval_date <= $1::date)
+        ),
+             arrays_table as (
+               select array_agg(array [prison_id,cat] order by sequence_no desc) as data
+               from cat_table
+               group by booking_id
+             )
+        select count(*), data[2][2] as previous, data[1][2] as current
+        from arrays_table
+        where ($2::varchar is null or $2::varchar = data[1][1])
         group by previous, current`,
-      values: ['RECAT', startDate, endDate, prisonId],
+      values: [endDate, prisonId],
     }
     return transactionalClient.query(query)
   },
@@ -60,7 +69,7 @@ module.exports = {
                CASE WHEN
                  risk_profile -> 'socProfile' ->> 'transferToSecurity' is not null and
                  risk_profile -> 'socProfile' ->> 'transferToSecurity' = 'true' THEN 'auto'
-               WHEN 
+               WHEN
                  form_response -> 'ratings' -> 'securityInput' ->> 'securityInputNeeded' is not null or
                  form_response -> 'recat' -> 'securityInput' ->> 'securityInputNeeded' is not null THEN 'manual'
                ELSE 'flagged'

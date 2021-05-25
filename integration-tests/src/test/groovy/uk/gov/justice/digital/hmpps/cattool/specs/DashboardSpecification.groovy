@@ -340,6 +340,7 @@ class DashboardSpecification extends GebReportingSpec {
 
     then: 'the results totals are now reduced'
     at DashboardRecatPage
-    reviewNumbersTableRows[5].find('td')*.text() == ['Total', '2', '0', '0', '0', '0', '2']
+    // TODO atm the start date is ignored
+    reviewNumbersTableRows[5].find('td')*.text() == ['Total', '3', '0', '1', '0', '0', '4']
   }
 }
