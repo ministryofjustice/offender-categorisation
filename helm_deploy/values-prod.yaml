@@ -58,3 +58,7 @@ allowlist:
   sodexo3: 80.86.46.18/32
   sodexo4: 51.148.9.201
   sodoxeo-forest-bank: 51.155.85.249/32
+
+# determine which slack channel alerts are sent to, via the correct Alert Manager receiver
+generic-prometheus-alerts:
+  alertSeverity: digital-prison-service
