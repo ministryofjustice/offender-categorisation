@@ -219,7 +219,41 @@ class LandingPageSpecification extends GebReportingSpec {
     driver.pageSource =~ /This person will automatically be referred to security at next category review/
     driver.pageSource.contains('Referred by Another User of LEEDS (HMP) on ' +  LocalDate.now().format('dd/MM/yyyy'))
 
-    when: 'A re-categoriser starts a recat'
+    when: 'The security user starts to cancel the referral'
+    securityCancelLink.click()
+    at SecurityCancelReferralPage
+    submitButton.click()
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
+
+    when: 'The security user selects no'
+    radio = 'No'
+    submitButton.click()
+
+    then: 'they are back at landing page and db is unchanged'
+    at LandingPage
+    db.getSecurityData('B2345YZ')[0].status.value == 'NEW'
+
+    when: 'The security user selects yes'
+    securityCancelLink.click()
+    at SecurityCancelReferralPage
+    radio = 'Yes'
+    submitButton.click()
+
+    then: 'The referral is cancelled'
+    driver.pageSource =~ /Cancellation confirmed/
+    db.getSecurityData('B2345YZ')[0].status.value == 'CANCELLED'
+
+    when: 'the referral is re-done'
+    go '/12'
+    at LandingPage
+    securityButton.click()
+
+    and: 'A re-categoriser starts a recat'
     fixture.logout()
     elite2Api.stubRecategorise()
     fixture.loginAs(RECATEGORISER_USER)

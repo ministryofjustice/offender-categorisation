@@ -4,8 +4,6 @@ import geb.Page
 
 class LandingPage extends Page {
 
-  static url = '/'
-
   static at = {
     historyHeading.text() == 'Check previous category reviews'
   }
@@ -21,6 +19,7 @@ class LandingPage extends Page {
     historyButton { $('#historyButton') }
     historyHeading { $('#previousCategoryHeading') }
     securityButton(required: false) { $('#securityButton') }
+    securityCancelLink(required: false) { $('a#securityCancelLink') }
     paragraphs { $('p') }
     liteCategoriesButton(required: false) { $('#liteCategoriesButton') }
     nextReviewDate(required: false) { $('.data-qa-nextReviewDate') }

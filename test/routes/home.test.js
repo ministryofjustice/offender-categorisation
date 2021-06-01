@@ -41,6 +41,8 @@ const formService = {
   getRiskChangeCount: jest.fn(),
   getCategorisationRecord: jest.fn(),
   getLiteCategorisation: jest.fn(),
+  isValid: jest.fn(),
+  cancelSecurityReferral: jest.fn(),
 }
 
 const homeRoute = createRouter({
@@ -362,7 +364,7 @@ describe('security home', () => {
   })
 })
 
-describe('Landing page', () => {
+describe('Security Landing page', () => {
   offendersService.getCategoryHistory.mockResolvedValue({ history: {} })
 
   test('security user get', () => {
@@ -622,6 +624,69 @@ describe('Landing page', () => {
       .expect(res => {
         expect(res.text).toContain('Error: A categorisation is already in progress')
         expect(formService.createSecurityReferral).not.toBeCalled()
+      })
+  })
+
+  test('Cancel referral', () => {
+    roles = ['ROLE_CATEGORISATION_SECURITY']
+    userService.getUser.mockResolvedValue({
+      username: 'CT_SEC',
+      activeCaseLoad: {
+        caseLoadId: 'LEI',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+    })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+    })
+
+    return request(app)
+      .get('/securityLanding/cancel/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Dexter Spaniel')
+        expect(res.text).toContain('Confirm Cancellation')
+        expect(res.text).toContain('Are you sure you want to cancel this referral?')
+      })
+  })
+
+  test('Post cancel referral', () => {
+    roles = ['ROLE_CATEGORISATION_SECURITY']
+    userService.getUser.mockResolvedValue({
+      username: 'CT_SEC',
+      activeCaseLoad: {
+        caseLoadId: 'LEI',
+        description: 'Leeds (HMP)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+      },
+      roles: { security: true },
+    })
+    formService.isValid.mockReturnValue(true)
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+    })
+    formService.cancelSecurityReferral.mockResolvedValue(true)
+
+    return request(app)
+      .post('/securityLanding/cancel/12345')
+      .send({ confirm: 'Yes' })
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Security cancellation confirmed')
+        expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
+        expect(formService.cancelSecurityReferral).toBeCalledWith('B2345XY', mockTransactionalClient)
       })
   })
 })

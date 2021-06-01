@@ -326,11 +326,11 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  setSecurityReferralCompleted(offenderNo, transactionalClient) {
-    logger.info(`setSecurityReferralCompleted for ${offenderNo}`)
+  setSecurityReferralStatus(offenderNo, status, transactionalClient) {
+    logger.info(`setSecurityReferralStatus for ${offenderNo} to ${status}`)
     const query = {
-      text: `update security_referral set status='COMPLETED' where offender_no=$1`,
-      values: [offenderNo],
+      text: `update security_referral set status=$2 where offender_no=$1`,
+      values: [offenderNo, status],
     }
     return transactionalClient.query(query)
   },

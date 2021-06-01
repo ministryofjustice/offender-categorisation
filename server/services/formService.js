@@ -227,7 +227,7 @@ module.exports = function createFormService(formClient) {
         )}`
       )
       await formClient.supervisorApproval(newCategorisationForm, bookingId, userId, transactionalClient)
-      await formClient.setSecurityReferralCompleted(currentCategorisation.offenderNo, transactionalClient)
+      await formClient.setSecurityReferralStatus(currentCategorisation.offenderNo, 'COMPLETED', transactionalClient)
     }
     return newCategorisationForm
   }
@@ -396,9 +396,14 @@ module.exports = function createFormService(formClient) {
     )
   }
 
-  async function createSecurityReferral(agencyId, offenderNo, userId, transactionalClient) {
+  function createSecurityReferral(agencyId, offenderNo, userId, transactionalClient) {
     log.info(`createSecurityReferral: creating security referral record for offenderNo ${offenderNo}`)
-    await formClient.createSecurityReferral({ agencyId, offenderNo, userId, transactionalClient })
+    return formClient.createSecurityReferral({ agencyId, offenderNo, userId, transactionalClient })
+  }
+
+  function cancelSecurityReferral(offenderNo, transactionalClient) {
+    log.info(`cancelSecurityReferral: cancelling security referral record for offenderNo ${offenderNo}`)
+    return formClient.setSecurityReferralStatus(offenderNo, 'CANCELLED', transactionalClient)
   }
 
   async function getSecurityReferral(offenderNo, transactionalClient) {
@@ -791,11 +796,13 @@ module.exports = function createFormService(formClient) {
 
     const exists = record => !!record.status
 
+    const isComplete = referral => referral.status === 'COMPLETED' || referral.status === 'CANCELLED'
+
     if (exists(securityReferralRemove)) {
       if (exists(securityReferralSurvives)) {
-        if (securityReferralRemove.status !== 'COMPLETED') {
+        if (!isComplete(securityReferralRemove)) {
           if (
-            securityReferralSurvives.status === 'COMPLETED' ||
+            isComplete(securityReferralSurvives) ||
             securityReferralRemove.raisedDate > securityReferralSurvives.raisedDate
           ) {
             // choose data of removed over survivor
@@ -867,6 +874,7 @@ module.exports = function createFormService(formClient) {
     getRiskChanges,
     createRiskChange,
     createSecurityReferral,
+    cancelSecurityReferral,
     getSecurityReferral,
     getRiskChangeForOffender,
     getHistoricalCategorisationRecords,
