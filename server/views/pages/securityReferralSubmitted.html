@@ -19,9 +19,23 @@
 <h2>What happens next</h2>
 <p>At this person’s next category review, they’ll automatically be referred to security.</p>
 
-{{ govukButton({
-  text: "Finish",
-  href: "/"
-}) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ govukButton({
+      text: "Return to Todo list",
+      href: "/",
+      classes: "grey-button"
+    }) }}
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+    {{ govukButton({
+      text: "Return to Manage categorisations",
+      href: "/" + bookingId,
+      classes: "grey-button"
+    }) }}
+    </div>
+  </div>
 
 {% endblock %}

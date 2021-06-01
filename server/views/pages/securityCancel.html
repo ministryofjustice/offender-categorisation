@@ -1,0 +1,52 @@
+{% extends "../partials/layout.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "../macros/breadCrumb.html" import breadCrumb %}
+
+{% set pageTitle = "Automatic referral confirmation" %}
+
+{% block beforeContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% set breadCrumbList = [ {href: '/' + data.details.bookingId, title: 'Manage categorisations'} ] %}
+      {{ breadCrumb("Confirm Cancellation", breadCrumbList) }}
+    </div>
+  </div>
+
+  {% include "../partials/offenderBanner.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+  <div class="govuk-!-width-two-thirds">
+    {% if errors.length > 0 %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: errors
+      }) }}
+    {% endif %}
+  </div>
+
+  <h1 class="govuk-heading-l">Confirm Cancellation</h1>
+
+  <p class="govuk-!-margin-bottom-8">This prisoner will no longer be flagged for automatic referral to security.</p>
+
+  <h2 class="govuk-heading-m">Are you sure you want to cancel this referral?</h2>
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+    {{ govukRadios({
+      name: "confirm",
+      errorMessage: { text: "Please select yes or no" } if (errors | findError('confirm')),
+      items: [
+        { value: "Yes", text: "Yes" },
+        { value: "No",  text: "No" }
+      ]
+    }) }}
+
+    {{ govukButton({ text: 'Submit', attributes: {  } }) }}
+  </form>
+
+{% endblock %}

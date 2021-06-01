@@ -37,7 +37,6 @@
     "body-parser": "^1.19.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
-    "bunyan-request-logger": "^2.1.0",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-redis": "^4.0.4",

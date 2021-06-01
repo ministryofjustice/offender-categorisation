@@ -18,5 +18,6 @@ build-info.json
 yarn-error.log
 .eslintcache
 .gradle
+.localstack
 integration-tests/build
 integration-tests/out
