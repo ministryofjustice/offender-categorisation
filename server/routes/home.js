@@ -7,6 +7,11 @@ const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { dateConverterToISO } = require('../utils/utils')
+const securityConfig = require('../config/security')
+
+const formConfig = {
+  security: securityConfig,
+}
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -393,8 +398,50 @@ module.exports = function Index({
         })
       }
 
-      formService.createSecurityReferral(details.agencyId, details.offenderNo, user.username, transactionalDbClient)
-      return res.render('pages/securityReferralSubmitted')
+      await formService.createSecurityReferral(
+        details.agencyId,
+        details.offenderNo,
+        user.username,
+        transactionalDbClient
+      )
+      return res.render('pages/securityReferralSubmitted', { bookingId })
+    })
+  )
+
+  router.get(
+    '/securityLanding/cancel/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const { bookingId } = req.params
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      const errors = req.flash('errors')
+      res.render(`pages/securityCancel`, { data: { details }, errors })
+    })
+  )
+
+  router.post(
+    '/securityLanding/cancel/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const { bookingId } = req.params
+      const formPageConfig = formConfig.security.cancel
+
+      const valid = formService.isValid(formPageConfig, req, res, `/securityLanding/cancel/${bookingId}`, req.body)
+      if (!valid) {
+        return null
+      }
+
+      if (req.body.confirm !== 'Yes') {
+        return res.redirect(`/${bookingId}`)
+      }
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+      formService.cancelSecurityReferral(details.offenderNo, transactionalDbClient)
+
+      return res.render('pages/securityCancelConfirmed', { bookingId })
     })
   )
 

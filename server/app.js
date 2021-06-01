@@ -2,7 +2,6 @@ const express = require('express')
 const addRequestId = require('express-request-id')()
 const moment = require('moment')
 const path = require('path')
-const bunyanRequestLogger = require('bunyan-request-logger')
 const helmet = require('helmet')
 const noCache = require('nocache')
 const csurf = require('csurf')
@@ -14,7 +13,6 @@ const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 const getSanitisedError = require('./sanitisedError')
 
-const catToolSerialisers = require('./catToolSerialisers')
 const auth = require('./authentication/auth')
 const healthFactory = require('./services/healthCheck')
 const createHomeRouter = require('./routes/home')
@@ -31,7 +29,6 @@ const createNextReviewDateRouter = require('./routes/nextReviewDate')
 const createLiteCategoriesRouter = require('./routes/liteCategories')
 const errorHandler = require('./errorHandler')
 
-const log = bunyanRequestLogger({ name: 'Cat tool http', serializers: catToolSerialisers })
 const { authenticationMiddleware } = auth
 
 const version = moment.now().toString()
@@ -95,8 +92,6 @@ module.exports = function createApp({
   // Request Processing Configuration
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
-
-  app.use(log.requestLogger())
 
   // Resource Delivery Configuration
   app.use(compression())

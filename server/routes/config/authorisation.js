@@ -34,6 +34,7 @@ module.exports = {
   '/categoriserLanding/\\d+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/supervisorLanding/\\d+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/securityLanding/\\d+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
+  '/securityLanding/cancel/\\d+': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
   '/recategoriserLanding/\\d+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/landing/\\d+': { authorised: ['BOOKING_ID_IN_CASELOAD'] },
   '/switchRole/[A-Z_]+': {
