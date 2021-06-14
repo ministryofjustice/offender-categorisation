@@ -12,7 +12,7 @@ const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 const getSanitisedError = require('./sanitisedError')
-
+require('./catToolSerialisers') // do not remove, logging requires it!
 const auth = require('./authentication/auth')
 const healthFactory = require('./services/healthCheck')
 const createHomeRouter = require('./routes/home')
