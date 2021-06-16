@@ -1,5 +1,5 @@
 {
-  "medium": true,
+  "moderate": true,
   "package-manager": "auto",
   "registry": "https://registry.npmjs.org"
 }
