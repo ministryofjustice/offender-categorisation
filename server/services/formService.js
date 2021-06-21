@@ -668,6 +668,17 @@ module.exports = function createFormService(formClient) {
     }
   }
 
+  async function getSecurityReferrals(agencyId, transactionalClient) {
+    try {
+      const data = await formClient.getSecurityReferrals(agencyId, transactionalClient)
+
+      return data.rows || []
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
   function calculateStatus(currentStatus, newStatus) {
     return newStatus || currentStatus || Status.STARTED.name // status may not be changing
   }
@@ -860,6 +871,7 @@ module.exports = function createFormService(formClient) {
     getCategorisedOffenders,
     getSecurityReviewedOffenders,
     getSecurityReferredOffenders,
+    getSecurityReferrals,
     isYoungOffender,
     supervisorApproval,
     deleteFormData,

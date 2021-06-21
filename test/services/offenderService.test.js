@@ -54,6 +54,7 @@ const formService = {
   updatePrisonForm: jest.fn(),
   updatePrisonRiskChange: jest.fn(),
   updatePrisonSecurityReferral: jest.fn(),
+  getSecurityReferrals: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -65,6 +66,7 @@ beforeEach(() => {
   nomisClient.getMainOffences.mockReturnValue([])
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
+  formService.getSecurityReferrals.mockResolvedValue([])
 })
 
 afterEach(() => {

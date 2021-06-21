@@ -317,6 +317,22 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
+  getSecurityReferrals(agencyId, transactionalClient) {
+    logger.debug(`getSecurityReferrals called with agencyId ${agencyId}`)
+    const query = {
+      text: `select prison_id   as "prisonId",
+                    user_id     as "userId",
+                    status,
+                    raised_date as "raisedDate",
+                    offender_no as "offenderNo",
+                    processed_date as "processedDate"
+             from security_referral s
+             where prison_id = $1 `,
+      values: [agencyId],
+    }
+    return transactionalClient.query(query)
+  },
+
   setSecurityReferralProcessed(offenderNo, transactionalClient) {
     logger.info(`setSecurityReferralProcessed for ${offenderNo}`)
     const query = {

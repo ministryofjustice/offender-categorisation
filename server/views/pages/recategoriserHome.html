@@ -3,6 +3,8 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "tag/macro.njk" import govukTag %}
 {% from "../macros/breadCrumb.html" import breadCrumb %}
+{% from "moj/components/badge/macro.njk" import mojBadge %}
+{% from "tag/macro.njk" import govukTag %}
 
 {% block beforeContent %}
 
@@ -64,7 +66,14 @@
           {{ row.nextReviewDateDisplay }}
         {% endif %}
       </td>
-      <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a></td>
+      <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
+        {% if row.securityReferred %}
+        {{ govukTag({
+        text: 'Security Referred',
+        classes: 'moj-tag--blue'
+        }) }}
+        {% endif %}
+      </td>
       <td class="govuk-table__cell">{{ row.offenderNo }}</td>
       <td class="govuk-table__cell">{{ row.reason.value }}</td>
       <td class="govuk-table__cell">
