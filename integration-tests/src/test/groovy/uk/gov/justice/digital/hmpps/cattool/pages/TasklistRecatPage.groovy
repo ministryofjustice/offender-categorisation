@@ -18,7 +18,6 @@ class TasklistRecatPage extends Page {
     logoutLink { $('a', href: '/logout') }
 
     supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
-    prisonerBackgroundButton { $('#prisonerBackgroundButton') }
     fastrackEligibilityButton(required: false) { $('#fastrackEligibilityButton') }
     prisonerBackgroundButton { $('#prisonerBackgroundButton') }
     securityButton { $('#securityButton') }

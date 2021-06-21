@@ -107,6 +107,15 @@ function mockTodaySubtract(days) {
 }
 
 describe('getRecategoriseOffenders', () => {
+  beforeEach(() => {
+    const sentenceDates = [
+      { sentenceDetail: { bookingId: 123, releaseDate: '2019-04-21' } },
+      { sentenceDetail: { bookingId: 122, releaseDate: '2020-11-30' } },
+      { sentenceDetail: { bookingId: 121, releaseDate: '2019-04-18' } },
+    ]
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+  })
+
   test('it should return a list of offenders and sentence information', async () => {
     const dueData = [
       {
@@ -134,6 +143,15 @@ describe('getRecategoriseOffenders', () => {
         bookingId: 122,
         category: 'D',
         nextReviewDate: '2019-06-22',
+        assessStatus: 'A',
+      },
+      {
+        offenderNo: 'G55345',
+        firstName: 'Soon',
+        lastName: 'Released',
+        bookingId: 121,
+        category: 'D',
+        nextReviewDate: '2019-04-19',
         assessStatus: 'A',
       },
     ]
@@ -279,7 +297,7 @@ describe('getRecategoriseOffenders', () => {
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(nomisClient.getPrisonersAtLocation).toBeCalled()
     expect(nomisClient.getOffenderDetails).toBeCalled()
-    expect(formService.getCategorisationRecord).toBeCalledTimes(6)
+    expect(formService.getCategorisationRecord).toBeCalledTimes(7) // includes omitted 'Soon released'
     expect(result).toMatchObject(expected)
   })
 
