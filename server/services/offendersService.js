@@ -43,6 +43,23 @@ async function getSentenceMap(offenderList, nomisClient) {
   )
 }
 
+async function getReleaseDateMap(offenderList, nomisClient) {
+  const bookingIds = offenderList
+    .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.RECAT.name)
+    .map(o => o.bookingId)
+
+  const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
+
+  return new Map(
+    sentenceDates
+      .filter(s => s.sentenceDetail.releaseDate) // the endpoint returns records for offenders without sentences
+      .map(s => {
+        const { sentenceDetail } = s
+        return [sentenceDetail.bookingId, sentenceDetail.releaseDate]
+      })
+  )
+}
+
 async function getOffenceMap(offenderList, nomisClient) {
   const bookingIds = offenderList
     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
@@ -63,11 +80,8 @@ function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
   )
 }
 
-function unwanted(dbRecord) {
-  return (
-    // Initial cat in progress
-    dbRecord.catType === CatType.INITIAL.name && inProgress(dbRecord)
-  )
+function isInitialInProgress(dbRecord) {
+  return dbRecord.catType === CatType.INITIAL.name && inProgress(dbRecord)
 }
 
 function calculateRecatDisplayStatus(displayStatus) {
@@ -584,6 +598,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
+  function isNextReviewAfterRelease(nomisRecord, releaseDate) {
+    const { nextReviewDate } = nomisRecord
+    return nextReviewDate && releaseDate && moment(nextReviewDate).isAfter(moment(releaseDate))
+  }
+
   async function getDueRecats(agencyId, user, nomisClient, transactionalDbClient) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
@@ -605,12 +624,16 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
     // trim db results to only those not in the Nomis-derived list
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
+
+    const allOffenders = [...resultsReview, ...dbInProgressFiltered]
+    const releaseDateMap = await getReleaseDateMap(allOffenders, nomisClient)
+
     return Promise.all(
-      [...resultsReview, ...dbInProgressFiltered].map(async raw => {
+      allOffenders.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
 
-        if (unwanted(dbRecord)) {
+        if (isInitialInProgress(dbRecord) || isNextReviewAfterRelease(nomisRecord, releaseDateMap.get(raw.bookingId))) {
           return null
         }
 
@@ -749,7 +772,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           formService.getCategorisationRecord(o.bookingId, transactionalDbClient),
           formService.getLiteCategorisation(o.bookingId, transactionalDbClient),
         ])
-        if (unwanted(dbRecord)) {
+        if (isInitialInProgress(dbRecord)) {
           return null
         }
         const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate

@@ -292,6 +292,7 @@ class Elite2Api extends WireMockRule {
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )
+    stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [today.toString(), today.toString()])
   }
 
   void stubRecategoriseWithCatI() {
@@ -376,6 +377,7 @@ class Elite2Api extends WireMockRule {
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
     )
+    stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
   }
 
   void stubGetLatestCategorisationForOffenders(){
@@ -690,7 +692,8 @@ class Elite2Api extends WireMockRule {
       [
         offenderNo    : no,
         sentenceDetail: [bookingId        : bookingIds[index],
-                         sentenceStartDate: startDate[index]],
+                         sentenceStartDate: startDate[index],
+                         releaseDate      : LocalDate.now().toString()],
         firstName     : "firstName-${index}",
         lastName      : "lastName-${index++}"
       ]
@@ -710,7 +713,7 @@ class Elite2Api extends WireMockRule {
       [
         bookingId  : no,
         offenceCode: "OFF${no}",
-        statuteCode : "ST${no}"
+        statuteCode: "ST${no}"
       ]
     })
 
@@ -916,7 +919,7 @@ class Elite2Api extends WireMockRule {
       licenceExpiryDate                 : '2020-06-16',
       sentenceExpiryDate                : '2020-06-17',]
     if (!indeterminateSentence) {
-      sentenceDetail.releaseDate = '2019-01-01'
+      sentenceDetail.releaseDate = LocalDate.now().toString()
       sentenceDetail.conditionalReleaseDate = '2020-02-02'
       sentenceDetail.confirmedReleaseDate = LocalDate.now().plusYears(4).format('yyyy-MM-dd') // > 3
       sentenceDetail.automaticReleaseDate = '2020-06-11'
