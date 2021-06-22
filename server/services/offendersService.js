@@ -841,10 +841,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         .map(o => {
           return {
             ...o,
-            securityReferred:
-              securityReferredOffenders
-                .filter(s => s.offenderNo === o.offenderNo)
-                .filter(s => s.status === 'NEW' || s.status === 'REFERRED').length > 0,
+            securityReferred: securityReferredOffenders
+              .filter(s => s.offenderNo === o.offenderNo)
+              .some(s => s.status === 'NEW' || s.status === 'REFERRED'),
           }
         })
     } catch (error) {
