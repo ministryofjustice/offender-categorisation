@@ -88,12 +88,19 @@ function calculateRecatDisplayStatus(displayStatus) {
   return displayStatus === Status.APPROVED.value || !displayStatus ? 'Not started' : displayStatus
 }
 
+function isSecurityReferred(offenderNo, securityReferredOffenders) {
+  return securityReferredOffenders
+    .filter(s => s.offenderNo === offenderNo)
+    .some(s => s.status === 'NEW' || s.status === 'REFERRED')
+}
+
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
   async function getUncategorisedOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
+      const securityReferredOffenders = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
 
       const dbManualInProgress = await formService.getCategorisationRecords(
         agencyId,
@@ -187,6 +194,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.dateRequired, a.dateRequired) : status
+        })
+        .map(o => {
+          return {
+            ...o,
+            securityReferred: isSecurityReferred(o.offenderNo, securityReferredOffenders),
+          }
         })
     } catch (error) {
       logger.error(error, 'Error during getUncategorisedOffenders')
@@ -841,9 +854,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         .map(o => {
           return {
             ...o,
-            securityReferred: securityReferredOffenders
-              .filter(s => s.offenderNo === o.offenderNo)
-              .some(s => s.status === 'NEW' || s.status === 'REFERRED'),
+            securityReferred: isSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
     } catch (error) {

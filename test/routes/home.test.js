@@ -259,6 +259,20 @@ describe('GET /categoriserHome', () => {
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })
+  test('shows security referred tag', () => {
+    offendersService.getUncategorisedOffenders.mockResolvedValue([
+      {
+        securityReferred: true,
+      },
+    ])
+    return request(app)
+      .get('/categoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Security referred')
+      })
+  })
 })
 
 describe('GET /', () => {
