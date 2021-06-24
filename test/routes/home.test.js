@@ -26,6 +26,7 @@ const offendersService = {
   getReferredOffenders: jest.fn(),
   requiredCatType: jest.fn(),
   getCategoryHistory: jest.fn(),
+  getUpcomingReferredOffenders: jest.fn(),
 }
 
 const userService = {
@@ -258,6 +259,20 @@ describe('GET /categoriserHome', () => {
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })
+  test('shows security referred tag', () => {
+    offendersService.getUncategorisedOffenders.mockResolvedValue([
+      {
+        securityReferred: true,
+      },
+    ])
+    return request(app)
+      .get('/categoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Security referred')
+      })
+  })
 })
 
 describe('GET /', () => {
@@ -314,6 +329,18 @@ describe('Recategoriser home', () => {
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
       })
   })
+  test('security referred tag is displayed', () => {
+    offendersService.getRecategoriseOffenders.mockResolvedValue([{ securityReferred: true }])
+    formService.getRiskChangeCount.mockResolvedValue(4)
+    return request(app)
+      .get('/recategoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Security referred')
+        expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
+      })
+  })
 })
 
 describe('security home', () => {
@@ -360,6 +387,64 @@ describe('security home', () => {
         expect(res.text).toMatch(/Home.+Categorisation home/s)
         expect(res.text).toMatch(/G9964UP.+G0581UW/s)
         expect(offendersService.getReferredOffenders).toBeCalledTimes(1)
+      })
+  })
+})
+
+describe('security upcoming', () => {
+  const upcoming = [
+    {
+      prisonId: 'MDI',
+      userId: 'CGLYNN_TEST',
+      status: 'NEW',
+      raisedDate: '2021-06-21T14:31:01.123Z',
+      offenderNo: 'G9084UJ',
+      processedDate: null,
+      displayName: 'Wygant, Fairfax',
+      securityReferredBy: 'Connor Glynn',
+      bookingId: 1201174,
+    },
+    {
+      prisonId: 'MDI',
+      userId: 'CGLYNN_TEST',
+      status: 'REFERRED',
+      raisedDate: '2021-04-20T16:18:50.866Z',
+      offenderNo: 'G0242GG',
+      processedDate: '2021-04-20T16:19:00.215Z',
+      displayName: 'Scarton, Adolphus',
+      securityReferredBy: 'Connor Glynn',
+      daysSinceSentence: 2617,
+      dateRequired: '06/05/2014',
+      sentenceDate: '2014-04-22',
+      overdue: true,
+      bookingId: 801953,
+    },
+    {
+      prisonId: 'MDI',
+      userId: 'CGLYNN_TEST',
+      status: 'NEW',
+      raisedDate: '2021-02-16T11:04:17.421Z',
+      offenderNo: 'G2996UX',
+      processedDate: null,
+      displayName: 'Aves, Benjie',
+      securityReferredBy: 'Connor Glynn',
+      daysSinceSentence: 2437,
+      dateRequired: '03/11/2014',
+      sentenceDate: '2014-10-19',
+      overdue: true,
+      bookingId: 913232,
+    },
+  ]
+  test('displays offenders returned from service', () => {
+    offendersService.getUpcomingReferredOffenders.mockResolvedValue(upcoming)
+    return request(app)
+      .get('/securityUpcoming')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Home.+Categorisation home/s)
+        expect(res.text).toMatch(/.+G9084UJ.+G0242GG.+G2996UX/s)
+        expect(offendersService.getUpcomingReferredOffenders).toBeCalledTimes(1)
       })
   })
 })

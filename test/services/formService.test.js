@@ -31,6 +31,7 @@ const formClient = {
   updateOffenderIdentifierRiskChange: jest.fn(),
   updateOffenderIdentifierSecurityReferral: jest.fn(),
   deleteSecurityReferral: jest.fn(),
+  getSecurityReferrals: jest.fn(),
 }
 let service
 
@@ -1106,4 +1107,13 @@ describe('updateOffenderIdentifierReturningBookingId', () => {
       }
     }
   )
+})
+
+describe('getSecurityReferrals', () => {
+  test('Returns results from client', async () => {
+    formClient.getSecurityReferrals.mockResolvedValue({ rows: ['test'] })
+    const result = await service.getSecurityReferrals('LEI', mockTransactionalClient)
+
+    expect(result).toEqual(['test'])
+  })
 })

@@ -244,3 +244,21 @@ describe('deleteLiteCategorisation', () => {
     })
   })
 })
+
+describe('getSecurityReferrals', () => {
+  test('it a list of security referracls', () => {
+    formClient.getSecurityReferrals('MDI', mockTransactionalClient)
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text: `select prison_id   as "prisonId",
+                    user_id     as "userId",
+                    status,
+                    raised_date as "raisedDate",
+                    offender_no as "offenderNo",
+                    processed_date as "processedDate"
+             from security_referral s
+             where prison_id = $1 `,
+      values: ['MDI'],
+    })
+  })
+})

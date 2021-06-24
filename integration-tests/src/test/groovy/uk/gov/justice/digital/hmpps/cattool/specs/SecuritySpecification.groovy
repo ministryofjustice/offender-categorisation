@@ -113,4 +113,32 @@ class SecuritySpecification extends GebReportingSpec {
     securityInputSummary*.text() == ['Automatic', 'this is the text from the security team for a recat']
 
   }
+
+  def "The upcoming page for a security user is present"() {
+    when: 'I go to the home page as security and select the upcoming tab'
+    db.createSecurityData('B2345XY', 'LEI', 1, 'NEW')
+    db.createSecurityData('B2345YZ', 'LEI', 2, 'NEW')
+
+    def sentenceStartDate13 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate14 = LocalDate.of(2019, 1, 31)
+
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [13, 14], [sentenceStartDate13.toString(), sentenceStartDate14.toString()])
+    elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
+
+    fixture.loginAs(SECURITY_USER)
+    at SecurityHomePage
+
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(['B2345XY', 'B2345YZ'])
+    elite2Api.stubGetStaffDetailsByUsernameList()
+
+    upcomingTabLink.click()
+
+    then: 'The security upcoming page is displayed'
+    at SecurityUpcomingPage
+    prisonNos == ['B2345XY', 'B2345YZ']
+    names == ['Clark, Frank','Dent, Jane']
+    def today = LocalDate.now().format('dd/MM/yyyy')
+    dueDates == ['11/02/2019', '14/02/2019',]
+    referrer == ['Lastname_security_user, Firstname_security_user', 'Lastname_security_user, Firstname_security_user']
+  }
 }

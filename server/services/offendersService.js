@@ -88,12 +88,17 @@ function calculateRecatDisplayStatus(displayStatus) {
   return displayStatus === Status.APPROVED.value || !displayStatus ? 'Not started' : displayStatus
 }
 
+function isNewSecurityReferred(offenderNo, securityReferredOffenders) {
+  return securityReferredOffenders.filter(s => s.offenderNo === offenderNo).some(s => s.status === 'NEW')
+}
+
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
   async function getUncategorisedOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
+      const securityReferredOffenders = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
 
       const dbManualInProgress = await formService.getCategorisationRecords(
         agencyId,
@@ -187,6 +192,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.dateRequired, a.dateRequired) : status
+        })
+        .map(o => {
+          return {
+            ...o,
+            securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
+          }
         })
     } catch (error) {
       logger.error(error, 'Error during getUncategorisedOffenders')
@@ -320,6 +331,69 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       return []
     } catch (error) {
       logger.error(error, 'Error during getReferredOffenders')
+      throw error
+    }
+  }
+
+  async function getUpcomingReferredOffenders(context, transactionalDbClient) {
+    const agencyId = context.user.activeCaseLoad.caseLoadId
+    try {
+      const nomisClient = nomisClientBuilder(context)
+
+      const securityReferred = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
+      const newSecurityReferred = securityReferred.filter(s => s.status === 'NEW')
+
+      if (!isNilOrEmpty(newSecurityReferred)) {
+        const [offenderDetailsFromNomis, userDetailFromElite] = await Promise.all([
+          nomisClient.getOffenderDetailList(newSecurityReferred.map(c => c.offenderNo)),
+          nomisClient.getUserDetailList(newSecurityReferred.map(c => c.userId)),
+        ])
+        const sentenceDates = await nomisClient.getSentenceDatesForOffenders(
+          offenderDetailsFromNomis.map(o => o.bookingId)
+        )
+
+        const sentenceMap = new Map(
+          sentenceDates
+            .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
+            .map(s => {
+              const { sentenceDetail } = s
+              return [sentenceDetail.bookingId, { sentenceDate: sentenceDetail.sentenceStartDate }]
+            })
+        )
+
+        const decoratedResults = newSecurityReferred.map(o => {
+          const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
+          if (!offenderDetail) {
+            logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
+            return o
+          }
+
+          let securityReferredBy
+          if (o.userId) {
+            const referrer = userDetailFromElite.find(record => record.username === o.userId)
+            securityReferredBy = referrer
+              ? `${properCaseName(referrer.lastName)}, ${properCaseName(referrer.firstName)}`
+              : o.userId
+          }
+
+          const entry = sentenceMap.get(offenderDetail.bookingId)
+          const sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
+
+          return {
+            ...o,
+            offenderNo: offenderDetail.offenderNo,
+            displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+            securityReferredBy,
+            ...sentenceAndDate,
+            bookingId: offenderDetail.bookingId,
+          }
+        })
+
+        return decoratedResults.sort((a, b) => sortByDateTime(b.dateRequired, a.dateRequired))
+      }
+      return []
+    } catch (error) {
+      logger.error(error, 'Error during getUpcomingReferredOffenders')
       throw error
     }
   }
@@ -760,9 +834,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       const nomisClient = nomisClientBuilder(context)
 
-      const [decoratedResultsReview, decoratedResultsU21] = await Promise.all([
+      const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
         getDueRecats(agencyId, user, nomisClient, transactionalDbClient),
         getU21Recats(agencyId, user, nomisClient, transactionalDbClient),
+        formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
       if (isNilOrEmpty(decoratedResultsReview) && isNilOrEmpty(decoratedResultsU21)) {
@@ -774,6 +849,12 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
+        })
+        .map(o => {
+          return {
+            ...o,
+            securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
+          }
         })
     } catch (error) {
       logger.error(error, 'Error during getRecategoriseOffenders')
@@ -1448,6 +1529,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     getUnapprovedOffenders,
     getUnapprovedLite,
     getReferredOffenders,
+    getUpcomingReferredOffenders,
     getRecategoriseOffenders,
     getOffenderDetails,
     getBasicOffenderDetails,
