@@ -89,9 +89,7 @@ function calculateRecatDisplayStatus(displayStatus) {
 }
 
 function isSecurityReferred(offenderNo, securityReferredOffenders) {
-  return securityReferredOffenders
-    .filter(s => s.offenderNo === offenderNo)
-    .some(s => s.status === 'NEW' || s.status === 'REFERRED')
+  return securityReferredOffenders.filter(s => s.offenderNo === offenderNo).some(s => s.status === 'NEW')
 }
 
 module.exports = function createOffendersService(nomisClientBuilder, formService) {
@@ -342,7 +340,9 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       const nomisClient = nomisClientBuilder(context)
 
-      const securityReferred = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
+      const securityReferred = await formService
+        .getSecurityReferrals(agencyId, transactionalDbClient)
+        .some(s => s.status === 'NEW')
 
       if (!isNilOrEmpty(securityReferred)) {
         const [offenderDetailsFromNomis, userDetailFromElite] = await Promise.all([
