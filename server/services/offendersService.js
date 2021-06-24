@@ -88,7 +88,7 @@ function calculateRecatDisplayStatus(displayStatus) {
   return displayStatus === Status.APPROVED.value || !displayStatus ? 'Not started' : displayStatus
 }
 
-function isSecurityReferred(offenderNo, securityReferredOffenders) {
+function isNewSecurityReferred(offenderNo, securityReferredOffenders) {
   return securityReferredOffenders.filter(s => s.offenderNo === offenderNo).some(s => s.status === 'NEW')
 }
 
@@ -196,7 +196,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         .map(o => {
           return {
             ...o,
-            securityReferred: isSecurityReferred(o.offenderNo, securityReferredOffenders),
+            securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
     } catch (error) {
@@ -340,14 +340,13 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     try {
       const nomisClient = nomisClientBuilder(context)
 
-      const securityReferred = await formService
-        .getSecurityReferrals(agencyId, transactionalDbClient)
-        .some(s => s.status === 'NEW')
+      const securityReferred = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
+      const newSecurityReferred = securityReferred.filter(s => s.status === 'NEW')
 
-      if (!isNilOrEmpty(securityReferred)) {
+      if (!isNilOrEmpty(newSecurityReferred)) {
         const [offenderDetailsFromNomis, userDetailFromElite] = await Promise.all([
-          nomisClient.getOffenderDetailList(securityReferred.map(c => c.offenderNo)),
-          nomisClient.getUserDetailList(securityReferred.map(c => c.userId)),
+          nomisClient.getOffenderDetailList(newSecurityReferred.map(c => c.offenderNo)),
+          nomisClient.getUserDetailList(newSecurityReferred.map(c => c.userId)),
         ])
         const sentenceDates = await nomisClient.getSentenceDatesForOffenders(
           offenderDetailsFromNomis.map(o => o.bookingId)
@@ -362,7 +361,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             })
         )
 
-        const decoratedResults = securityReferred.map(o => {
+        const decoratedResults = newSecurityReferred.map(o => {
           const offenderDetail = offenderDetailsFromNomis.find(record => record.offenderNo === o.offenderNo)
           if (!offenderDetail) {
             logger.error(`Offender ${o.offenderNo} in DB not found in NOMIS`)
@@ -854,7 +853,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         .map(o => {
           return {
             ...o,
-            securityReferred: isSecurityReferred(o.offenderNo, securityReferredOffenders),
+            securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
     } catch (error) {
