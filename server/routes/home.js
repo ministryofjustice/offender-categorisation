@@ -125,6 +125,19 @@ module.exports = function Index({
   )
 
   router.get(
+    '/securityUpcoming',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+
+      const offenders = res.locals.user.activeCaseLoad
+        ? await offendersService.getUpcomingReferredOffenders(res.locals, transactionalDbClient)
+        : []
+      res.render('pages/securityUpcoming', { offenders })
+    })
+  )
+
+  router.get(
     '/recategoriserHome',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)

@@ -54,6 +54,7 @@ const formService = {
   updatePrisonForm: jest.fn(),
   updatePrisonRiskChange: jest.fn(),
   updatePrisonSecurityReferral: jest.fn(),
+  getSecurityReferrals: jest.fn(),
 }
 
 const nomisClientBuilder = () => nomisClient
@@ -65,6 +66,7 @@ beforeEach(() => {
   nomisClient.getMainOffences.mockReturnValue([])
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
+  formService.getSecurityReferrals.mockResolvedValue([])
 })
 
 afterEach(() => {
@@ -964,6 +966,94 @@ describe('getUncategorisedOffenders', () => {
       firstName: 'Manual',
       lastName: 'Guy',
     })
+
+    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+
+    expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
+    expect(nomisClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(result).toMatchObject(expected)
+  })
+
+  test('only flags security referred with NEW status', async () => {
+    const expected = [
+      {
+        offenderNo: 'G12346',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: 'UNCATEGORISED',
+        displayName: 'Brown, Jane',
+        daysSinceSentence: 7,
+        dateRequired: expect.anything(),
+        sentenceDate: expect.anything(),
+        overdue: false,
+        displayStatus: 'Not categorised',
+        pnomis: false,
+        securityReferred: false,
+      },
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 111,
+        status: 'UNCATEGORISED',
+        displayName: 'Brown, Jane',
+        daysSinceSentence: 4,
+        dateRequired: expect.anything(),
+        sentenceDate: expect.anything(),
+        overdue: false,
+        displayStatus: 'Not categorised',
+        pnomis: false,
+        securityReferred: true,
+      },
+    ]
+
+    const uncategorised = [
+      {
+        offenderNo: 'G12346',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: 'UNCATEGORISED',
+        displayName: 'Brown, Jane',
+        daysSinceSentence: 7,
+        dateRequired: '07/06/2019',
+        sentenceDate: '2019-05-24',
+        overdue: false,
+        displayStatus: 'Not categorised',
+        pnomis: false,
+        securityReferred: false,
+      },
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 111,
+        status: 'UNCATEGORISED',
+        displayName: 'Brown, Jane',
+        daysSinceSentence: 4,
+        dateRequired: '10/06/2019',
+        sentenceDate: '2019-05-27',
+        overdue: false,
+        displayStatus: 'Not categorised',
+        pnomis: false,
+        securityReferred: true,
+      },
+    ]
+
+    const sentenceDates = [
+      { sentenceDetail: { bookingId: 111, sentenceStartDate: mockTodaySubtract(4) } },
+      { sentenceDetail: { bookingId: 123, sentenceStartDate: mockTodaySubtract(7) } },
+    ]
+
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    formService.getCategorisationRecords.mockResolvedValue([])
+    nomisClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    formService.getCategorisationRecord.mockResolvedValue({})
+    formService.getSecurityReferrals.mockResolvedValue([
+      { offenderNo: 'G12345', status: 'NEW' },
+      { offenderNo: 'G12346', status: 'NOT NEW' },
+    ])
 
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
 

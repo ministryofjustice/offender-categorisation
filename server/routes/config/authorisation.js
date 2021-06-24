@@ -3,7 +3,7 @@ module.exports = {
   '/recategoriser(Home|Done|Check)': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/riskProfileChangeDetail/\\d+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/supervisor(Home|Done)': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
-  '/security(Home|Done)': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
+  '/security(Home|Done|Upcoming)': { authorised: ['ROLE_CATEGORISATION_SECURITY'] },
   '/dashboard(Initial|Recat)(\\?.+)?': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/categoryHistory/\\d+': { authorised: ['BOOKING_ID_IN_CASELOAD'] },
   '/tasklist/\\d+(\\?.+)?': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
