@@ -4,6 +4,7 @@
 {% from "tag/macro.njk" import govukTag %}
 {% from "../macros/breadCrumb.html" import breadCrumb %}
 {% from "tag/macro.njk" import govukTag %}
+{% from "details/macro.njk" import govukDetails %}
 
 {% block beforeContent %}
 
@@ -67,10 +68,11 @@
       </td>
       <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
         {% if row.securityReferred %}
-        {{ govukTag({
-        text: 'Security Referred',
-        classes: 'moj-tag--blue'
-        }) }}
+          {{ govukDetails({
+          summaryText: 'Security referred',
+          text: 'Security have flagged this person as being of interest. They will be automatically referred to security when the categorisation starts.',
+          classes: 'govuk-body govuk-!-font-size-14 govuk-!-margin-bottom-0'
+          }) }}
         {% endif %}
       </td>
       <td class="govuk-table__cell">{{ row.offenderNo }}</td>

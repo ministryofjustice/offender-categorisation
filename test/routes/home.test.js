@@ -323,7 +323,7 @@ describe('Recategoriser home', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Security Referred')
+        expect(res.text).toContain('Security referred')
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
       })
   })
