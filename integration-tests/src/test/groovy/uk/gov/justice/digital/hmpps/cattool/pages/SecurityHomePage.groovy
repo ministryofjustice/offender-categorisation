@@ -24,5 +24,6 @@ class SecurityHomePage extends Page {
     noOffendersText(required: false) { $('#no-results-message').text() }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/securityDone')}
+    upcomingTabLink { $('a', href: '/securityUpcoming')}
   }
 }
