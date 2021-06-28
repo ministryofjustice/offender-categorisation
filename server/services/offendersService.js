@@ -663,17 +663,22 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         }
 
         const decorated = await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)
+        const buttonText = calculateButtonStatus(dbRecord, nomisRecord.assessStatus)
+        // if this review hasn't been started the reason is always 'Review Due', for started reviews, use the persisted reason
+        const reason =
+          (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
+          ReviewReason.DUE
         return {
           ...nomisRecord,
           displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
-          reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.DUE,
+          reason,
           nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
           overdue: isOverdue(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
-          buttonText: calculateButtonStatus(dbRecord, nomisRecord.assessStatus),
+          buttonText,
         }
       })
     )
@@ -799,17 +804,22 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
         }
         const nextReviewDate = moment(o.dateOfBirth, 'YYYY-MM-DD')
         const nextReviewDateDisplay = nextReviewDate.add(21, 'years').format('DD/MM/YYYY')
+        const buttonText = calculateButtonStatus(dbRecord, o.assessStatus)
+        // if this review hasn't been started the reason is always 'age 21'. For started reviews, use the persisted reason
+        const reason =
+          (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
+          ReviewReason.AGE
         return {
           ...o,
           displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
-          reason: (dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) || ReviewReason.AGE,
+          reason,
           nextReviewDateDisplay,
           overdue: isOverdue(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
-          buttonText: calculateButtonStatus(dbRecord, o.assessStatus),
+          buttonText,
         }
       })
     )
