@@ -282,9 +282,9 @@ describe('getRecategoriseOffenders', () => {
       expect(transactionalClient).toEqual(mockTransactionalClient)
       switch (bookingId) {
         case 22:
-          return { bookingId, status: Status.APPROVED.name }
+          return { bookingId, status: Status.APPROVED.name, reviewReason: 'MANUAL' }
         case 122:
-          return { bookingId, status: Status.APPROVED.name }
+          return { bookingId, status: Status.APPROVED.name, reviewReason: 'MANUAL' }
         case 123:
           return { bookingId, status: Status.SECURITY_MANUAL.name }
         case 555:
