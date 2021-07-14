@@ -70,9 +70,6 @@ env:
   - name: ELITE2API_ENDPOINT_URL
     value: {{ .Values.env.ELITE2API_ENDPOINT_URL | quote }}
 
-  - name: CUSTODY_ENDPOINT_URL
-    value: {{ .Values.env.CUSTODY_ENDPOINT_URL | quote }}
-
   - name: RISK_PROFILER_ENDPOINT_URL
     value: {{ .Values.env.RISK_PROFILER_ENDPOINT_URL | quote }}
 
@@ -81,6 +78,7 @@ env:
 
   - name: DPS_URL
     value: {{ .Values.env.DPS_URL | quote }}
+
 
   - name: RP_QUEUE_ACCESS_KEY_ID
     valueFrom:
@@ -100,6 +98,25 @@ env:
         name: rp-sqs-instance-output
         key: sqs_rpc_url
 
+  - name: RP_DL_QUEUE_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: rp-sqs-dl-instance-output
+        key: access_key_id
+
+  - name: RP_DL_QUEUE_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: rp-sqs-dl-instance-output
+        key: secret_access_key
+
+  - name: RP_DL_QUEUE_URL
+    valueFrom:
+      secretKeyRef:
+        name: rp-sqs-dl-instance-output
+        key: sqs_rpc_url
+
+
   - name: EVENT_QUEUE_ACCESS_KEY_ID
     valueFrom:
       secretKeyRef:
@@ -115,8 +132,27 @@ env:
   - name: EVENT_QUEUE_URL
     valueFrom:
       secretKeyRef:
+        name: ocu-events-sqs-dl-instance-output
+        key: url
+
+  - name: EVENT_DL_QUEUE_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: ocu-events-sqs-dl-instance-output
+        key: access_key_id
+
+  - name: EVENT_DL_QUEUE_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: ocu-events-sqs-dl-instance-output
+        key: secret_access_key
+
+  - name: EVENT_DL_QUEUE_URL
+    valueFrom:
+      secretKeyRef:
         name: ocu-events-sqs-instance-output
         key: url
+
 
   - name: REDIS_HOST
     valueFrom:
@@ -132,6 +168,5 @@ env:
 
   - name: REDIS_TLS_ENABLED
     value: "true"
-
 
 {{- end -}}

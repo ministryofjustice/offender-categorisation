@@ -157,4 +157,42 @@ class EventSpecification extends GebReportingSpec {
       db.getSecurityData('A1234AB').id == [2]
     }
   }
+
+  def "Clear DLQ job moves messages to the normal queue"() {
+    given: 'There are messages stuck on the DLQs'
+
+    sqs.sendMessage('http://localhost:4576/queue/event_dlq', """{
+      "Message" : "{ \\"eventType\\": \\"BOOKING_NUMBER-CHANGED\\", \\"bookingId\\":1234, \\"offenderId\\":1577871, \\"previousBookingNumber\\": \\"M07037\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"BOOK_UPD_OASYS\\" }",
+      "MessageAttributes" : {
+        "eventType" : { "Type" : "String", "Value" : "BOOKING_NUMBER-CHANGED" } ,
+        "id" : { "Type" : "String", "Value" : "f9f1e5e4-999a-78ad-d1d8-442d8864481a" } ,
+        "contentType" : { "Type" : "String", "Value" : "text/plain;charset=UTF-8" } ,
+        "timestamp" : { "Type" : "Number.java.lang.Long", "Value" : "1579014873619" }
+      }
+    }""")
+
+    sqs.sendMessage('http://localhost:4576/queue/risk_profiler_change_dlq', """{
+      "offenderNo": "G1234FF",
+      "oldProfile": {"soc": {"transferToSecurity": false} , "escape": {"escapeListAlerts": [], "escapeRiskAlerts": [] }, "violence" : {} },
+      "newProfile": {"soc": {"transferToSecurity": true } , "escape": {"escapeListAlerts": [], "escapeRiskAlerts": [] }, "violence" : {} }
+    }""")
+
+    elite2Api.stubGetBasicOffenderDetails(1234, 'A1234AB')
+    elite2Api.stubGetIdentifiersByBookingId(1234)
+    elite2Api.stubGetFullOffenderDetails(1235, 'G1234FF')
+
+    when: 'the job runs'
+
+    def file = new File("../jobs/dead-letter/clearDeadLetterQueuesWithExit.js")
+    def command = "node " + file.absolutePath
+    def proc = command.execute([], new File('..'))
+    proc.getInputStream().transferTo(System.out)
+    proc.getErrorStream().transferTo(System.err)
+    proc.waitFor()
+
+    then: 'the messages are received'
+    proc.exitValue() == 0
+    elite2Api.verifyGetBasicOffenderDetails(1234) == null // used during event Q processing
+    elite2Api.verifyGetFullOffenderDetails('G1234FF') == null // used during risk_profiler_change Q processing
+  }
 }
