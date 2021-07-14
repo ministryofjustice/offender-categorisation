@@ -11,3 +11,4 @@ tests
 scss-report.txt
 eslint-report.html
 test-report.html
+coverage

@@ -1,0 +1,25 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: dead-letter
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  schedule: "11 */6 * * *"
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 1200
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: offender-categorisation
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            args:
+            - node
+            - jobs/dead-letter/clearDeadLetterQueuesWithExit
+{{ include "deployment.envs" . | nindent 12 }}
+          restartPolicy: Never
+          activeDeadlineSeconds: 1200
