@@ -1008,6 +1008,35 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+  def verifyGetBasicOffenderDetails(int bookingId) {
+    verify(getRequestedFor(urlEqualTo("/api/bookings/$bookingId?basicInfo=true")))
+  }
+
+  def stubGetFullOffenderDetails(int bookingId, offenderNo) {
+    this.stubFor(
+      get("/api/bookings/offenderNo/$offenderNo?fullInfo=true")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson(
+              [
+                bookingId  : bookingId,
+                offenderNo : offenderNo,
+                agencyId   : 'LEI',
+                firstName  : 'ANT',
+                lastName   : 'HILLMOB',
+                dateOfBirth: '1970-02-17',
+                categoryCode: 'C',
+              ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
+  def verifyGetFullOffenderDetails(offenderNo) {
+    verify(getRequestedFor(urlEqualTo("/api/bookings/offenderNo/$offenderNo?fullInfo=true")))
+  }
+
   def stubOffenceHistory(offenderNo) {
     this.stubFor(
       get("/api/bookings/offenderNo/$offenderNo/offenceHistory")

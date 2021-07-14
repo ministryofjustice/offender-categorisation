@@ -16,9 +16,6 @@ jobs:
     executor: builder
     steps:
       - checkout
-#      - run:
-#          name: Update npm
-#          command: 'sudo npm install -g npm@latest'
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
@@ -82,6 +79,8 @@ jobs:
             export AWS_PAGER=""
             aws --endpoint-url http://localhost:4576 sqs create-queue --queue-name event
             aws --endpoint-url http://localhost:4576 sqs create-queue --queue-name risk_profiler_change
+            aws --endpoint-url http://localhost:4576 sqs create-queue --queue-name event_dlq
+            aws --endpoint-url http://localhost:4576 sqs create-queue --queue-name risk_profiler_change_dlq
       - run:
           name: Run the node app.
           command: npm start

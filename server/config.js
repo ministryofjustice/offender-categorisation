@@ -41,12 +41,32 @@ module.exports = {
     sslEnabled: get('DB_SSL_ENABLED', 'false', true),
   },
   sqs: {
-    riskProfilerQueue: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', true),
-    riskProfilerQueueAccessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', 'dummy'),
-    riskProfilerQueueSecretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', 'dummy'),
-    eventQueue: get('EVENT_QUEUE_URL', 'http://localhost:4576/queue/event', true),
-    eventQueueAccessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', 'dummy'),
-    eventQueueSecretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', 'dummy'),
+    riskProfiler: {
+      queueUrl: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', false, {
+        requireInProduction: true,
+      }),
+      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', 'dummy'),
+      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', 'dummy'),
+      dlq: {
+        queueUrl: get('RP_DL_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change_dlq', false, {
+          requireInProduction: true,
+        }),
+        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', 'dummy'),
+        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', 'dummy'),
+      },
+    },
+    event: {
+      queueUrl: get('EVENT_QUEUE_URL', 'http://localhost:4576/queue/event', true),
+      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', 'dummy'),
+      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', 'dummy'),
+      dlq: {
+        queueUrl: get('EVENT_DL_QUEUE_URL', 'http://localhost:4576/queue/event_dlq', false, {
+          requireInProduction: true,
+        }),
+        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', 'dummy'),
+        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', 'dummy'),
+      },
+    },
     enabled: get('SQS_ENABLED', 'true', true),
   },
   apis: {

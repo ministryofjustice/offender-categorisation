@@ -11,9 +11,8 @@ AWS.config.update({
 
 module.exports = function createSqsService(offenderService, formService) {
   const handleRiskProfilerMessage = async message => {
-    logger.debug(`Received message with json message body : ${message.Body}`)
+    logger.debug({ Body: message.Body }, 'Received risk profiler message')
     const change = JSON.parse(message.Body)
-    logger.info(`received risk change payload for offender ${change.offenderNo}`)
 
     if (alertIsRequired(change)) {
       try {
@@ -48,11 +47,11 @@ module.exports = function createSqsService(offenderService, formService) {
   }
 
   const rpQueueConsumer = Consumer.create({
-    queueUrl: config.sqs.riskProfilerQueue,
+    queueUrl: config.sqs.riskProfiler.queueUrl,
     handleMessage: handleRiskProfilerMessage,
     sqs: new AWS.SQS({
-      accessKeyId: config.sqs.riskProfilerQueueAccessKeyId,
-      secretAccessKey: config.sqs.riskProfilerQueueSecretAccessKey,
+      accessKeyId: config.sqs.riskProfiler.accessKeyId,
+      secretAccessKey: config.sqs.riskProfiler.secretAccessKey,
     }),
   })
 
@@ -122,15 +121,15 @@ module.exports = function createSqsService(offenderService, formService) {
   }
 
   const eventQueueConsumer = Consumer.create({
-    queueUrl: config.sqs.eventQueue,
+    queueUrl: config.sqs.event.queueUrl,
     handleMessage: handleEventMessage,
     sqs: new AWS.SQS({
-      accessKeyId: config.sqs.eventQueueAccessKeyId,
-      secretAccessKey: config.sqs.eventQueueSecretAccessKey,
+      accessKeyId: config.sqs.event.accessKeyId,
+      secretAccessKey: config.sqs.event.secretAccessKey,
     }),
   })
 
-  logger.info(`Consuming from queues ${config.sqs.riskProfilerQueue}, ${config.sqs.eventQueue}`)
+  logger.info(`Consuming from queues ${config.sqs.riskProfiler.queueUrl}, ${config.sqs.event.queueUrl}`)
 
   eventQueueConsumer.on('error', err => {
     logger.error(err.message)
