@@ -132,7 +132,7 @@ env:
   - name: EVENT_QUEUE_URL
     valueFrom:
       secretKeyRef:
-        name: ocu-events-sqs-dl-instance-output
+        name: ocu-events-sqs-instance-output
         key: url
 
   - name: EVENT_DL_QUEUE_ACCESS_KEY_ID
@@ -150,7 +150,7 @@ env:
   - name: EVENT_DL_QUEUE_URL
     valueFrom:
       secretKeyRef:
-        name: ocu-events-sqs-instance-output
+        name: ocu-events-sqs-dl-instance-output
         key: url
 
 
