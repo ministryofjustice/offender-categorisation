@@ -1,4 +1,4 @@
-const riskProfileHelper = require('../../server/utils/riskChange.js')
+const riskProfileHelper = require('../../server/utils/riskChange')
 
 describe('it should assess the risk change status of a new and old risk profile ', () => {
   it('Change in escape list status is detected', () => {

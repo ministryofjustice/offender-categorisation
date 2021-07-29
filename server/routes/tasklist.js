@@ -4,7 +4,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
-const { get10BusinessDays } = require('../utils/utils.js')
+const { get10BusinessDays } = require('../utils/utils')
 
 function add10BusinessDays(isoDate) {
   const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')

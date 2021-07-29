@@ -1,5 +1,5 @@
 require('dotenv').config()
-const logger = require('../log.js')
+const logger = require('../log')
 
 const production = process.env.NODE_ENV === 'production'
 

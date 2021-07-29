@@ -9,7 +9,7 @@ const {
   choosingHigherCategory,
   offenderLink,
   dpsUrl,
-} = require('./utils.js')
+} = require('./utils')
 const config = require('../config')
 const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
 

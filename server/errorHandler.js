@@ -1,7 +1,8 @@
 const moment = require('moment')
 const logger = require('../log')
 
-module.exports = production =>
+module.exports =
+  production =>
   // NOTE 'next' param MUST be included so that express recognises this as an error handler
   // eslint-disable-next-line no-unused-vars
   (error, req, res, next) => {

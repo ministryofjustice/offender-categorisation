@@ -1,4 +1,4 @@
-const logger = require('../../log.js')
+const logger = require('../../log')
 const Status = require('../utils/statusEnum')
 
 const selectClause = `select id,
