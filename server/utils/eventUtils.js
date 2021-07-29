@@ -1,4 +1,4 @@
-const logger = require('../../log.js')
+const logger = require('../../log')
 
 const deleteDlqMessage = async (sqsDlq, deleteParams) => {
   await sqsDlq.deleteMessage(deleteParams).promise()

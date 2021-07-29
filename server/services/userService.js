@@ -1,5 +1,5 @@
-const logger = require('../../log.js')
-const { properCaseName } = require('../utils/utils.js')
+const logger = require('../../log')
+const { properCaseName } = require('../utils/utils')
 
 module.exports = function createUserService(nomisClientBuilder) {
   async function getUser(context) {
