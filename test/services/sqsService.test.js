@@ -116,8 +116,7 @@ describe('eventQueueConsumer', () => {
   test('movement event', async () => {
     await service.eventQueueConsumer.handleMessage({
       MessageId: '21b86d12-74be-4208-9f0b-7ffcb4213184',
-      Body:
-        '{ "Message" : "{\\"eventType\\": \\"EXTERNAL_MOVEMENT_RECORD-INSERTED\\", \\"bookingId\\": 124, \\"offenderIdDisplay\\": \\"A1234AA\\", \\"movementType\\": \\"ADM\\", \\"fromAgencyLocationId\\": \\"FROM\\", \\"toAgencyLocationId\\": \\"TO\\"}"}',
+      Body: '{ "Message" : "{\\"eventType\\": \\"EXTERNAL_MOVEMENT_RECORD-INSERTED\\", \\"bookingId\\": 124, \\"offenderIdDisplay\\": \\"A1234AA\\", \\"movementType\\": \\"ADM\\", \\"fromAgencyLocationId\\": \\"FROM\\", \\"toAgencyLocationId\\": \\"TO\\"}"}',
     })
 
     expect(offendersService.handleExternalMovementEvent).toBeCalled()

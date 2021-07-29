@@ -96,8 +96,7 @@ describe('updateRecordWithNomisSeqNumber', () => {
     formClient.updateRecordWithNomisSeqNumber('12345', 4, mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        "update form f set nomis_sequence_no = $1 where f.booking_id = $2 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
+      text: "update form f set nomis_sequence_no = $1 where f.booking_id = $2 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
       values: [4, '12345'],
     })
   })
@@ -136,8 +135,7 @@ describe('categorisation record update', () => {
     formClient.update({}, 'bookingId1', 'STARTED', mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        "update form f set form_response = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
+      text: "update form f set form_response = $1, status = $2 where f.booking_id = $3 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
       values: [{}, 'STARTED', 'bookingId1'],
     })
   })
@@ -148,8 +146,7 @@ describe('supervisorApproval update', () => {
     formClient.supervisorApproval({}, 'bookingId1', 'Me', mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        "update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
+      text: "update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')",
       values: [{}, 'APPROVED', 'Me', 'bookingId1'],
     })
   })
@@ -166,8 +163,7 @@ describe('createRiskChange', () => {
     })
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        'insert into risk_change ( prison_id, offender_no, old_profile, new_profile, raised_date ) values ($1, $2, $3, $4, CURRENT_TIMESTAMP )',
+      text: 'insert into risk_change ( prison_id, offender_no, old_profile, new_profile, raised_date ) values ($1, $2, $3, $4, CURRENT_TIMESTAMP )',
 
       values: ['LEI', 'ABC123', '{old}', '{new}'],
     })
@@ -179,8 +175,7 @@ describe('getRiskChangeByStatus', () => {
     formClient.getRiskChangeByStatus('LEI', RiskChangeStatus.NEW.name, mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        'select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2',
+      text: 'select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2',
 
       values: ['LEI', 'NEW'],
     })
@@ -192,8 +187,7 @@ describe('getNewRiskChangeByOffender', () => {
     formClient.getNewRiskChangeByOffender('GN12345', mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        'select old_profile as "oldProfile", new_profile as "newProfile", status, raised_date as "raisedDate" from risk_change r where r.offender_no= $1 and r.status = \'NEW\'',
+      text: 'select old_profile as "oldProfile", new_profile as "newProfile", status, raised_date as "raisedDate" from risk_change r where r.offender_no= $1 and r.status = \'NEW\'',
 
       values: ['GN12345'],
     })
@@ -205,8 +199,7 @@ describe('mergeRiskChangeForOffender', () => {
     formClient.mergeRiskChangeForOffender('GN12345', { hello: 'hello' }, mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text:
-        "update risk_change set new_profile = $2, raised_date = CURRENT_TIMESTAMP where offender_no= $1 and status = 'NEW'",
+      text: "update risk_change set new_profile = $2, raised_date = CURRENT_TIMESTAMP where offender_no= $1 and status = 'NEW'",
 
       values: ['GN12345', { hello: 'hello' }],
     })
