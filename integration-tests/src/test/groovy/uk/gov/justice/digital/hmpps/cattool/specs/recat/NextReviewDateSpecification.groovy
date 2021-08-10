@@ -89,7 +89,7 @@ class NextReviewDateSpecification extends GebReportingSpec {
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
-    data.cat_type.value == ['RECAT']
+    data.cat_type == ['RECAT']
     response.recat == [nextReviewDate: [date: SIX_MONTHS_AHEAD]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']

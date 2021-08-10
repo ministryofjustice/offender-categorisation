@@ -230,7 +230,6 @@ class HomePageSpecification extends GebReportingSpec {
 
     fixture.logout()
 
-    fixture.setBrowser(createBrowser())
     oauthApi.resetAll()
     // call to retrieve another users's details for assigned user name
     elite2Api.stubGetUserDetails(CATEGORISER_USER, Caseload.LEI.id)
