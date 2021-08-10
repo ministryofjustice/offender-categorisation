@@ -33,10 +33,20 @@
 {% endblock %}
 
 {% block footer %}
+  <footer class="govuk-footer govuk-!-padding-top-2 govuk-!-padding-bottom-0">
+    <div class="feedback-banner govuk-!-display-none-print" data-test="feedback-banner">
+      <a id="surveyLink"
+         href=""
+         class="govuk-link govuk-link--inverse govuk-!-font-size-16"
+         target="_blank"
+         rel="noopener noreferrer"
+      >Give feedback on Digital Prison Services</a>
+    </div>
+  </footer>
   {{ govukFooter({
     meta: {
       title: 'Support',
-      items: [{ text:'Feedback and support', href:'https://support.hmpps.service.justice.gov.uk/feedback-and-support' }]
+      items: [{ text:'Support', href:'https://support.hmpps.service.justice.gov.uk/feedback-and-support' }]
     }
   }) }}
 {% endblock %}
@@ -45,4 +55,5 @@
 {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
 <script src="/assets/all.js"></script>
 <script>window.GOVUKFrontend.initAll();</script>
+<script>document.getElementById('surveyLink').setAttribute("href", "https://eu.surveymonkey.com/r/GYB8Y9Q?source=" + window.location.hostname + window.location.pathname);</script>
 {% endblock %}
