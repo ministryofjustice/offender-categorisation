@@ -64,7 +64,7 @@ class LandingPageSpecification extends GebReportingSpec {
     currentUrl.contains '/tasklistRecat/12'
     def data = db.getData(12)
     data.status == ["STARTED"]
-    data.review_reason.value == ["MANUAL"]
+    data.review_reason == ["MANUAL"]
   }
 
   def "A recategoriser user sees a warning for initial cat"() {
@@ -206,7 +206,7 @@ class LandingPageSpecification extends GebReportingSpec {
     at SecurityReferralSubmittedPage
     def securityNew = db.getSecurityData('B2345YZ')[0]
     securityNew.offender_no == 'B2345YZ'
-    securityNew.status.value == 'NEW'
+    securityNew.status == 'NEW'
     securityNew.prison_id == 'LEI'
     securityNew.user_id == SECURITY_USER.getUsername()
     System.currentTimeMillis() - securityNew.raised_date.getTime() < 10000
@@ -236,7 +236,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     then: 'they are back at landing page and db is unchanged'
     at LandingPage
-    db.getSecurityData('B2345YZ')[0].status.value == 'NEW'
+    db.getSecurityData('B2345YZ')[0].status == 'NEW'
 
     when: 'The security user selects yes'
     securityCancelLink.click()
@@ -246,7 +246,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     then: 'The referral is cancelled'
     driver.pageSource =~ /Cancellation confirmed/
-    db.getSecurityData('B2345YZ')[0].status.value == 'CANCELLED'
+    db.getSecurityData('B2345YZ')[0].status == 'CANCELLED'
 
     when: 'the referral is re-done'
     go '/12'
@@ -271,7 +271,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     and: 'the security database table is updated correctly'
     def securityReferred = db.getSecurityData('B2345YZ')[0]
-    securityReferred.status.value == 'REFERRED'
+    securityReferred.status == 'REFERRED'
     System.currentTimeMillis() - securityReferred.processed_date.getTime() < 10000
 
     when: 'the security user reviews the prisoner'
@@ -296,7 +296,7 @@ class LandingPageSpecification extends GebReportingSpec {
     def response = new JsonSlurper().parseText(data.form_response.toString())
     response.security.review.securityReview == 'security info'
     data.status == 'SECURITY_FLAGGED'
-    data.cat_type.value == 'RECAT'
+    data.cat_type == 'RECAT'
     data.referred_by == 'SECURITY_USER'
     data.security_reviewed_by == null
 
@@ -351,10 +351,10 @@ class LandingPageSpecification extends GebReportingSpec {
 
     and: 'the database is updated correctly'
     def securityReferred = db.getSecurityData('B2345YZ')[0]
-    securityReferred.status.value == 'REFERRED'
+    securityReferred.status == 'REFERRED'
     def data = db.getData(12)[0]
     data.status == 'SECURITY_FLAGGED'
-    data.cat_type.value == 'RECAT'
+    data.cat_type == 'RECAT'
     data.referred_by == 'SECURITY_USER'
   }
 
@@ -434,8 +434,8 @@ class LandingPageSpecification extends GebReportingSpec {
     currentUrl.contains '/tasklist/12?reason=MANUAL'
     def data = db.getData(12)
     data.status == ["STARTED"]
-    data.cat_type.value == ["INITIAL"]
-    data.review_reason.value == ["MANUAL"]
+    data.cat_type == ["INITIAL"]
+    data.review_reason == ["MANUAL"]
   }
 
   def "A categoriser user can start an initial cat where a cat already exists"() {
@@ -465,8 +465,8 @@ class LandingPageSpecification extends GebReportingSpec {
     currentUrl.contains '/tasklist/12?reason=MANUAL'
     def data = db.getData(12)
     data.status == ["STARTED"]
-    data.cat_type.value == ["INITIAL"]
-    data.review_reason.value == ["MANUAL"]
+    data.cat_type == ["INITIAL"]
+    data.review_reason == ["MANUAL"]
   }
 
   def "A categoriser user sees a continue button when an initial cat is in progress"() {

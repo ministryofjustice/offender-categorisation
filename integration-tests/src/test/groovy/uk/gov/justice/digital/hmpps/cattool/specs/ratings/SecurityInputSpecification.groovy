@@ -142,7 +142,7 @@ class SecurityInputSpecification extends GebReportingSpec {
     fixture.sameDate(LocalDate.now(), data.referred_date)
     data.security_reviewed_by == ["SECURITY_USER"]
     fixture.sameDate(LocalDate.now(), data.security_reviewed_date)
-    data.cat_type.value == ["INITIAL"]
+    data.cat_type == ["INITIAL"]
     response.ratings == [securityBack: [catB: "No"], securityInput: [securityInputNeeded: "Yes", securityInputNeededText: "Some text"]]
     response.security.review == [securityReview: "security info"]
 
