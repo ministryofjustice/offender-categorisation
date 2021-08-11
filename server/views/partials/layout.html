@@ -33,16 +33,14 @@
 {% endblock %}
 
 {% block footer %}
-  <footer class="govuk-footer govuk-!-padding-top-2 govuk-!-padding-bottom-0">
-    <div class="feedback-banner govuk-!-display-none-print" data-test="feedback-banner">
-      <a id="surveyLink"
-         href=""
-         class="govuk-link govuk-link--inverse govuk-!-font-size-16"
-         target="_blank"
-         rel="noopener noreferrer"
-      >Give feedback on Digital Prison Services</a>
-    </div>
-  </footer>
+  <div class="feedback-banner govuk-!-display-none-print" data-test="feedback-banner">
+    <a id="surveyLink"
+       href=""
+       class="govuk-link govuk-link--inverse govuk-!-font-size-16"
+       target="_blank"
+       rel="noopener noreferrer"
+    >Give feedback on Digital Prison Services</a>
+  </div>
   {{ govukFooter({
     meta: {
       title: 'Support',
