@@ -63,7 +63,7 @@ class DecisionSpecification extends GebReportingSpec {
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
-    data.cat_type.value == ['RECAT']
+    data.cat_type == ['RECAT']
     response.recat == [decision: [category: "C"]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
@@ -115,7 +115,7 @@ class DecisionSpecification extends GebReportingSpec {
     def data = db.getData(21)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
-    data.cat_type.value == ['RECAT']
+    data.cat_type == ['RECAT']
     response.recat == [decision: [category: "B"], miniHigherSecurityReview: [conditions: 'some text']]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
@@ -132,7 +132,7 @@ class DecisionSpecification extends GebReportingSpec {
     def dataAfterClear = db.getData(21)
     def responseAfterClear = new JsonSlurper().parseText(dataAfterClear.form_response[0].toString())
     dataAfterClear.status == ['STARTED']
-    dataAfterClear.cat_type.value == ['RECAT']
+    dataAfterClear.cat_type == ['RECAT']
     responseAfterClear.recat == [decision: [category: "D"]]
     dataAfterClear.user_id == ['RECATEGORISER_USER']
     dataAfterClear.assigned_user_id == ['RECATEGORISER_USER']
@@ -180,7 +180,7 @@ class DecisionSpecification extends GebReportingSpec {
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
-    data.cat_type.value == ['RECAT']
+    data.cat_type == ['RECAT']
     response.recat == [
       decision            : [category: "B"],
       higherSecurityReview: [steps       : "Some steps text",
@@ -207,7 +207,7 @@ class DecisionSpecification extends GebReportingSpec {
     def dataAfterClear = db.getData(12)
     def responseAfterClear = new JsonSlurper().parseText(dataAfterClear.form_response[0].toString())
     dataAfterClear.status == ['STARTED']
-    dataAfterClear.cat_type.value == ['RECAT']
+    dataAfterClear.cat_type == ['RECAT']
     responseAfterClear.recat == [decision: [category: "D"]]
     dataAfterClear.user_id == ['RECATEGORISER_USER']
     dataAfterClear.assigned_user_id == ['RECATEGORISER_USER']

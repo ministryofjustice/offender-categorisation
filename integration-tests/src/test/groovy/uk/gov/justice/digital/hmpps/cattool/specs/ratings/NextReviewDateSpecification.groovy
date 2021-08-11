@@ -92,7 +92,7 @@ class NextReviewDateSpecification extends GebReportingSpec {
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
-    data.cat_type.value == ['INITIAL']
+    data.cat_type == ['INITIAL']
     response.ratings == [nextReviewDate: [date: SIX_MONTHS_AHEAD]]
     data.user_id == ['CATEGORISER_USER']
     data.assigned_user_id == ['CATEGORISER_USER']

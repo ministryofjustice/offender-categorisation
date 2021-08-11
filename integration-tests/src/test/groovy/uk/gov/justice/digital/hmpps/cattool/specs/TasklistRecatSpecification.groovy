@@ -70,8 +70,8 @@ class TasklistRecatSpecification extends GebReportingSpec {
     row.prison_id == "LEI"
     row.offender_no == "B2345YZ"
     row.start_date.toLocalDate().equals(LocalDate.now())
-    row.cat_type.value == "RECAT"
-    row.review_reason.value == "DUE"
+    row.cat_type == "RECAT"
+    row.review_reason == "DUE"
     row.due_by_date.toLocalDate().equals(LocalDate.of(2020, 1, 16))
   }
 
@@ -95,8 +95,8 @@ class TasklistRecatSpecification extends GebReportingSpec {
     def row = data[0]
     row.booking_id == 21L
     row.offender_no == "C0001AA"
-    row.cat_type.value == "RECAT"
-    row.review_reason.value == "AGE"
+    row.cat_type == "RECAT"
+    row.review_reason == "AGE"
     row.due_by_date.toLocalDate().equals(LocalDate.of(2039, 1, 1))
   }
 
@@ -128,7 +128,7 @@ class TasklistRecatSpecification extends GebReportingSpec {
     manageLink.displayed
 
     and: 'any security flag is reset'
-    db.getSecurityData('B2345YZ')[0].status.value == 'NEW'
+    db.getSecurityData('B2345YZ')[0].status == 'NEW'
   }
 
   def "The tasklist page displays an alert when status is transferred to security"() {

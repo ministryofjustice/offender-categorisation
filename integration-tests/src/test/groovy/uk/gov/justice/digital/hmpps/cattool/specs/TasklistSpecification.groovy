@@ -148,7 +148,7 @@ class TasklistSpecification extends GebReportingSpec {
     data.prison_id == "LEI"
     data.offender_no == "B2345YZ"
     data.start_date.toLocalDate().equals(LocalDate.now())
-    data.cat_type.value == "INITIAL"
+    data.cat_type == "INITIAL"
     data.due_by_date.toLocalDate().equals(LocalDate.of(2019, 8, 29))
   }
 

@@ -45,7 +45,8 @@ async function runJob() {
       sqsQueueUrl: sqsRiskProfilerQueueUrl,
     })
   } catch (error) {
-    logger.error(error, 'Problem processing RiskProfiler DLQ transfer job')
+    logger.error(error, 'Problem processing RiskProfiler DLQ transfer job') // NOTE alert depends on this
+    // See Azure monitoring alerts -> DLQ jobs DCS UI
   }
   try {
     await transferDlqEventMessages({
@@ -55,9 +56,9 @@ async function runJob() {
       sqsQueueUrl: sqsEventQueueUrl,
     })
   } catch (error) {
-    logger.error(error, 'Problem processing Event DLQ transfer job')
+    logger.error(error, 'Problem processing Event DLQ transfer job') // NOTE alert depends on this
   }
-  logger.info('DLQ transfer job finished')
+  logger.info('DLQ transfer job finished') // NOTE alert depends on this
 }
 
 module.exports = runJob
