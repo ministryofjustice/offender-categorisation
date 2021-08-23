@@ -73,7 +73,7 @@
       <td class="govuk-table__cell">
         {{ govukButton({
           text: "View",
-          href: "/form/approvedView/" + row.bookingId,
+          href: "/form/approvedView/" + row.bookingId + "?sequenceNo=" + row.sequence,
           classes: "tableButton grey-button govuk-!-padding-left-3 govuk-!-padding-right-3"
         }) }}
       </td>

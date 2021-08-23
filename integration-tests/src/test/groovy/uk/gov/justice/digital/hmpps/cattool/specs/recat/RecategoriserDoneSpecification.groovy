@@ -13,9 +13,13 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 
+import java.time.LocalDate
+
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 
 class RecategoriserDoneSpecification extends GebReportingSpec {
+
+  static final TODAY = LocalDate.now()
 
   def setup() {
     db.clearDb()
@@ -42,10 +46,14 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     db.createDataWithIdAndStatusAndCatType(-2,11, 'APPROVED', JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'INITIAL')
 
-    db.createDataWithIdAndStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
-      recat: fixture.defaultRecat]), 'RECAT')
+    db.createApprovedCategorisationWithSeqAndApprovalDate(-3,10, JsonOutput.toJson([
+      recat: fixture.defaultRecat]), 'RECAT', 1, TODAY)
 
-    db.createNomisSeqNo(10, 7)
+    db.createApprovedCategorisationWithSeqAndApprovalDate(-4,10, JsonOutput.toJson([
+       recat: fixture.defaultRecat]), 'RECAT', 2, TODAY.minusDays(1).toString())
+
+    db.createNomisSeqNo(10, 7, 2)
+    db.createNomisSeqNo(10, 5, 1)
     db.createNomisSeqNo(12, 8)
 
     elite2Api.stubRecategorise()
@@ -59,12 +67,12 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     then: 'The recategoriser done page is displayed, showing only approved recats'
     at RecategoriserDonePage
 
-    prisonNos == ['B2345XY','B1234AB']
-    names == ['Scramble, Tim','Perfect, Peter']
-    approvalDates == ['20/04/2019','20/03/2019']
-    categorisers == ['Lamb, John','Dastardly, Dick']
-    approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
-    categories == ['C','B']
+    prisonNos == ['B2345XY','B1234AB','B1234AB']
+    names == ['Scramble, Tim','Perfect, Peter','Perfect, Peter']
+    approvalDates == ['20/04/2019','20/03/2019','19/01/2019']
+    categorisers == ['Lamb, John','Dastardly, Dick','Table, Simon']
+    approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
+    categories == ['C','B','B']
   }
 
   def "The done page does not display offenders that haven't been categorised through the Categorisation tool"() {

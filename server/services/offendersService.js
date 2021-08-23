@@ -260,6 +260,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
               displayApproverName:
                 approver.lastName && `${properCaseName(approver.lastName)}, ${properCaseName(approver.firstName)}`,
               catTypeDisplay: CatType[o.dbRecord.catType].value,
+              sequence: o.dbRecord.sequence,
             }
           })
         )

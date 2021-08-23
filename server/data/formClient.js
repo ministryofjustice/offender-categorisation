@@ -86,8 +86,8 @@ module.exports = {
   getApprovedCategorisations(agencyId, fromDate, catType, transactionalClient) {
     logger.debug(`getApprovedCategorisations called for ${agencyId}, date ${fromDate}`)
     const query = {
-      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", approved_by as "approvedBy", offender_no as "offenderNo", cat_type as "catType", nomis_sequence_no as "nomisSeq"
-        from form f where f.prison_id = $1 and f.status = $2 and f.approval_date >= $3 and ($4::cat_type_enum is null or f.cat_type = $4::cat_type_enum) ${sequenceClause}`,
+      text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", approved_by as "approvedBy", offender_no as "offenderNo", cat_type as "catType", nomis_sequence_no as "nomisSeq", sequence_no as "sequence"
+        from form f where f.prison_id = $1 and f.status = $2 and f.approval_date >= $3 and ($4::cat_type_enum is null or f.cat_type = $4::cat_type_enum) and f.status <> 'CANCELLED'`,
       values: [agencyId, 'APPROVED', fromDate, catType],
     }
     return transactionalClient.query(query)
