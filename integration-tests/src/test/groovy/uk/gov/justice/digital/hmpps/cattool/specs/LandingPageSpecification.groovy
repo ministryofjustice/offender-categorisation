@@ -24,7 +24,6 @@ class LandingPageSpecification extends GebReportingSpec {
   def setup() {
     db.clearDb()
     elite2Api.stubAgencyDetails('LPI')
-    elite2Api.stubAssessments('B2345YZ')
   }
 
   @Rule
@@ -44,15 +43,17 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page'
     elite2Api.stubGetOffenderDetails(12)
     go '/12'
 
-    then: 'The page contains a recat button'
+    then: 'The page contains a recat button and a next review button'
     at LandingPage
     recatButton.displayed
+    nextReviewDateButton.displayed
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
@@ -71,6 +72,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page'
@@ -87,6 +89,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page'
@@ -94,15 +97,17 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubAssessments('B2345YZ', false, 12)
     go '/12'
 
-    then: 'The page contains the recat button'
+    then: 'The page contains the recat button and the next review button'
     at LandingPage
     recatButton.displayed
+    nextReviewDateButton.displayed
   }
 
   def "A recategoriser user sees a warning for cat A"() {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page'
@@ -121,6 +126,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
@@ -149,6 +155,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
@@ -168,6 +175,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page for a cat in awaiting approval status'
@@ -181,6 +189,22 @@ class LandingPageSpecification extends GebReportingSpec {
     viewButton.displayed
   }
 
+  def "A recategoriser user sees no next review button if there are no existing cats"() {
+
+    given: 'A recategoriser is logged in'
+    elite2Api.stubRecategorise()
+    elite2Api.stubAssessmentsEmpty()
+    fixture.loginAs(RECATEGORISER_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', false, null)
+    go '/12'
+
+    then: 'The page does not contain a next review button'
+    at LandingPage
+    !nextReviewDateButton.displayed
+  }
+
   def "A security user can flag a prisoner for later referral"() {
 
     given: 'A security user is logged in'
@@ -189,6 +213,7 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubUncategorised()
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
     elite2Api.stubGetStaffDetailsByUsernameList()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(SECURITY_USER)
 
     when: 'The user arrives at the landing page'
@@ -322,6 +347,7 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
     elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     elite2Api.stubUncategorised()
+    elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
     elite2Api.stubGetStaffDetailsByUsernameList()
     fixture.loginAs(SECURITY_USER)
@@ -336,6 +362,7 @@ class LandingPageSpecification extends GebReportingSpec {
     when: 'A re-categoriser starts a recat which is automatically referred'
     fixture.logout()
     elite2Api.stubRecategorise()
+    elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
     go '/12'
     at LandingPage
@@ -411,18 +438,20 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
+    elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page'
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'U')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'U', false, null)
     go '/12'
 
-    then: 'The page contains an initial cat button'
+    then: 'The page contains an initial cat button but not a next review button'
     at LandingPage
     initialButton.displayed
     initialButton.@href.contains('/tasklist/12?reason=MANUAL')
     !warning.displayed
+    !nextReviewDateButton.displayed
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
@@ -442,6 +471,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
+    elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
@@ -475,6 +505,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
+    elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
@@ -504,6 +535,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
+    elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
@@ -524,6 +556,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
+    elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
@@ -538,10 +571,28 @@ class LandingPageSpecification extends GebReportingSpec {
     viewButton.displayed
   }
 
+  def "A categoriser user sees a next review button when a previous cat exists"() {
+
+    given: 'A categoriser is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'U')
+    go '/12'
+
+    then: 'The page contains a next review button'
+    at LandingPage
+    nextReviewDateButton.displayed
+  }
+
   def "A supervisor user sees a prisoner with no cat data"() {
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
@@ -557,6 +608,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
@@ -572,6 +624,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
@@ -587,6 +640,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
@@ -602,6 +656,7 @@ class LandingPageSpecification extends GebReportingSpec {
 
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')

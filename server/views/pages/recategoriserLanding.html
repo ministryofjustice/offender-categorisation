@@ -80,7 +80,7 @@
     {% endif %}
   </div>
 
-  {% if not inProgress(data) %}
+  {% if data.nextReviewDate and not inProgress(data) %}
     <h1 class="govuk-heading-m govuk-!-padding-top-4">Change next review date</h1>
     {{ govukButton({
       text: 'Change next review date',

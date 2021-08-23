@@ -257,8 +257,7 @@ describe('recat', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(`This person has been reported as the perpetrator in 5 assaults in custody before,
-      including 2 serious assaults and 4 non-serious assaults in the past 12 months.`)
+        expect(res.text).toMatch(/This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 4 non-serious assaults in the past 12 months./)
         expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list.+Check your answers/s)
       })
   })
@@ -388,9 +387,8 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
         )
         expect(res.text).toContain('Notify your safer custody lead about this prisoner')
         expect(res.text).toContain('This person is now considered a risk of escape')
-        expect(res.text).toContain(
-          `They have been reported as the perpetrator of 4 assaults in custody before,
-      including 1 serious assaults and 2 non-serious assaults in the past 12 months`
+        expect(res.text).toMatch(
+          /They have been reported as the perpetrator of 4 assaults in custody before,\s+including 1 serious assaults and 2 non-serious assaults in the past 12 months/
         )
         expect(res.text).toContain('There are no reported assaults during this sentence')
         expect(res.text).toContain('Do you want to start an early category review?')
@@ -411,13 +409,11 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       .expect(res => {
         expect(res.text).not.toContain('Risk of escape')
         expect(res.text).not.toContain('Security referral')
-        expect(res.text).toContain(
-          `They have been reported as the perpetrator of 7 assaults in custody before,
-      including 3 serious assaults and 2 non-serious assaults in the past 12 months`
+        expect(res.text).toMatch(
+          /They have been reported as the perpetrator of 7 assaults in custody before,\s+including 3 serious assaults and 2 non-serious assaults in the past 12 months/
         )
-        expect(res.text).toContain(
-          `They have been reported as the perpetrator of 6 assaults in custody before,
-      including 0 serious assaults and 5 non-serious assaults in the past 12 months`
+        expect(res.text).toMatch(
+          /They have been reported as the perpetrator of 6 assaults in custody before,\s+including 0 serious assaults and 5 non-serious assaults in the past 12 months/
         )
       })
   })
@@ -436,13 +432,11 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       .expect(res => {
         expect(res.text).not.toContain('Risk of escape')
         expect(res.text).not.toContain('Security referral')
-        expect(res.text).toContain(
-          `They have been reported as the perpetrator of 3 assaults in custody before,
-      including 1 serious assaults and 2 non-serious assaults in the past 12 months`
+        expect(res.text).toMatch(
+          /They have been reported as the perpetrator of 3 assaults in custody before,\s+including 1 serious assaults and 2 non-serious assaults in the past 12 months/
         )
-        expect(res.text).toContain(
-          `They have been reported as the perpetrator of 5 assaults in custody before,
-      including 1 serious assaults and 4 non-serious assaults in the past 12 months`
+        expect(res.text).toMatch(
+          /They have been reported as the perpetrator of 5 assaults in custody before,\s+including 1 serious assaults and 4 non-serious assaults in the past 12 months/
         )
       })
   })
