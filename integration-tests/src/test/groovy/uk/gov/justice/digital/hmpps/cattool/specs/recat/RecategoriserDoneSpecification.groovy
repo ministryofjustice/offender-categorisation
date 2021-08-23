@@ -42,10 +42,14 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     db.createDataWithIdAndStatusAndCatType(-2,11, 'APPROVED', JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'INITIAL')
 
-    db.createDataWithIdAndStatusAndCatType(-3,10, 'APPROVED', JsonOutput.toJson([
-      recat: fixture.defaultRecat]), 'RECAT')
+    db.createApprovedCategorisationWithSeqAndApprovalDate(-3,10, JsonOutput.toJson([
+      recat: fixture.defaultRecat]), 'RECAT', 1, '2021-05-03')
 
-    db.createNomisSeqNo(10, 7)
+    db.createApprovedCategorisationWithSeqAndApprovalDate(-3,10, JsonOutput.toJson([
+       recat: fixture.defaultRecat]), 'RECAT', 2, '2021-07-03')
+
+    db.createNomisSeqNo(10, 7, 1)
+    db.createNomisSeqNo(10, 9, 2)
     db.createNomisSeqNo(12, 8)
 
     elite2Api.stubRecategorise()
@@ -63,7 +67,7 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     names == ['Scramble, Tim','Perfect, Peter']
     approvalDates == ['20/04/2019','20/03/2019']
     categorisers == ['Lamb, John','Dastardly, Dick']
-    approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
+    approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
     categories == ['C','B']
   }
 
