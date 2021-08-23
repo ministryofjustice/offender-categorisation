@@ -63,7 +63,7 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     then: 'The recategoriser done page is displayed, showing only approved recats'
     at RecategoriserDonePage
 
-    prisonNos == ['B2345XY','B1234AB']
+    prisonNos == ['dummy','B2345XY','B1234AB']
     names == ['Scramble, Tim','Perfect, Peter']
     approvalDates == ['20/04/2019','20/03/2019']
     categorisers == ['Lamb, John','Dastardly, Dick']
