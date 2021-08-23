@@ -78,7 +78,7 @@ class DatabaseUtils {
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, seq, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
   }
 
-  def createApprovedCategorisationWithSeqAndApprovalDate(id, bookingId, json, catType, offenderNo = 'dummy', seq, approvedDate) {
+  def createApprovedCategorisationWithSeqAndApprovalDate(id, bookingId, json, catType, offenderNo = 'dummy', seq, approvalDate) {
     def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
     doCreateCompleteRow(id, bookingId, json, userId, 'APPROVED', catType, null, null, null, seq, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null, approvalDate)
   }
