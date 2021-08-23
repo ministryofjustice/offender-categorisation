@@ -257,7 +257,9 @@ describe('recat', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 4 non-serious assaults in the past 12 months./)
+        expect(res.text).toMatch(
+          /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 4 non-serious assaults in the past 12 months./
+        )
         expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list.+Check your answers/s)
       })
   })
