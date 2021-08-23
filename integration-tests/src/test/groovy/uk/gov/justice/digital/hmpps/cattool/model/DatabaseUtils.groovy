@@ -78,6 +78,11 @@ class DatabaseUtils {
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, seq, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
   }
 
+  def createApprovedCategorisationWithSeqAndApprovalDate(id, bookingId, json, catType, offenderNo = 'dummy', seq, approvalDate) {
+    def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
+    doCreateCompleteRow(id, bookingId, json, userId, 'APPROVED', catType, null, null, null, seq, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null, approvalDate)
+  }
+
   def createRiskProfileData(bookingId, json) {
     doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }

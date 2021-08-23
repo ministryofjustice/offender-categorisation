@@ -469,6 +469,20 @@ class Elite2Api extends WireMockRule {
         firstName: 'PETER',
         lastName: 'PERFECT',
         assessmentDate: '2018-03-28',
+        approvalDate: '2019-01-19',
+        assessmentSeq: 5,
+        categoriserFirstName: 'SIMON',
+        categoriserLastName: 'TABLE',
+        approverFirstName: 'SAM',
+        approverLastName: 'HAND',
+        category: 'B'
+      ])
+      response.add ( [
+        offenderNo: 'B1234AB',
+        bookingId: 10,
+        firstName: 'PETER',
+        lastName: 'PERFECT',
+        assessmentDate: '2018-03-28',
         approvalDate: '2019-03-20',
         assessmentSeq: 7,
         categoriserFirstName: 'DICK',
