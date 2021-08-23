@@ -45,7 +45,7 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     db.createApprovedCategorisationWithSeqAndApprovalDate(-3,10, JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'RECAT', 1, '2021-05-03')
 
-    db.createApprovedCategorisationWithSeqAndApprovalDate(-3,10, JsonOutput.toJson([
+    db.createApprovedCategorisationWithSeqAndApprovalDate(-4,10, JsonOutput.toJson([
        recat: fixture.defaultRecat]), 'RECAT', 2, '2021-07-03')
 
     db.createNomisSeqNo(10, 7, 1)
