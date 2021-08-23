@@ -43,13 +43,13 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
       recat: fixture.defaultRecat]), 'INITIAL')
 
     db.createApprovedCategorisationWithSeqAndApprovalDate(-3,10, JsonOutput.toJson([
-      recat: fixture.defaultRecat]), 'RECAT', 1, '2021-05-03')
+      recat: fixture.defaultRecat]), 'RECAT', 1, '2019-01-19')
 
     db.createApprovedCategorisationWithSeqAndApprovalDate(-4,10, JsonOutput.toJson([
-       recat: fixture.defaultRecat]), 'RECAT', 2, '2021-07-03')
+       recat: fixture.defaultRecat]), 'RECAT', 2, '2019-03-20')
 
-    db.createNomisSeqNo(10, 7, 1)
-    db.createNomisSeqNo(10, 9, 2)
+    db.createNomisSeqNo(10, 7, 2)
+    db.createNomisSeqNo(10, 5, 1)
     db.createNomisSeqNo(12, 8)
 
     elite2Api.stubRecategorise()
@@ -63,12 +63,12 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
     then: 'The recategoriser done page is displayed, showing only approved recats'
     at RecategoriserDonePage
 
-    prisonNos == ['dummy','B2345XY','B1234AB']
-    names == ['Scramble, Tim','Perfect, Peter']
-    approvalDates == ['20/04/2019','20/03/2019']
-    categorisers == ['Lamb, John','Dastardly, Dick']
+    prisonNos == ['B2345XY','B1234AB','B1234AB']
+    names == ['Scramble, Tim','Perfect, Peter','Perfect, Peter']
+    approvalDates == ['20/04/2019','20/03/2019','19/01/2019']
+    categorisers == ['Lamb, John','Dastardly, Dick','Table, Simon']
     approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
-    categories == ['C','B']
+    categories == ['C','B','B']
   }
 
   def "The done page does not display offenders that haven't been categorised through the Categorisation tool"() {
