@@ -13,9 +13,13 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 
+import java.time.LocalDate
+
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 
 class RecategoriserDoneSpecification extends GebReportingSpec {
+
+  static final TODAY = LocalDate.now()
 
   def setup() {
     db.clearDb()
@@ -43,10 +47,10 @@ class RecategoriserDoneSpecification extends GebReportingSpec {
       recat: fixture.defaultRecat]), 'INITIAL')
 
     db.createApprovedCategorisationWithSeqAndApprovalDate(-3,10, JsonOutput.toJson([
-      recat: fixture.defaultRecat]), 'RECAT', 1, '2019-01-19')
+      recat: fixture.defaultRecat]), 'RECAT', 1, TODAY)
 
     db.createApprovedCategorisationWithSeqAndApprovalDate(-4,10, JsonOutput.toJson([
-       recat: fixture.defaultRecat]), 'RECAT', 2, '2019-03-20')
+       recat: fixture.defaultRecat]), 'RECAT', 2, TODAY.minusDays(1).toString())
 
     db.createNomisSeqNo(10, 7, 2)
     db.createNomisSeqNo(10, 5, 1)
