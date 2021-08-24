@@ -13,25 +13,24 @@ services:
       - POSTGRES_USER=form-builder
       - POSTGRES_DB=form-builder
 
-  form-builder-redis:
+  categorisation-redis:
     image: redis
     networks:
       - hmpps
-    container_name: form-builder-redis
+    container_name: categorisation-redis
     restart: always
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "6379:6379"
 
-  localstack:
+  categorisation-localstack:
     image: localstack/localstack:0.11.2
     ports:
       - "4567-4584:4567-4584"
-      - "${PORT_WEB_UI-8088}:${PORT_WEB_UI-8088}"
     networks:
       - hmpps
-    container_name: localstack
+    container_name: categorisation-localstack
     restart: always
     environment:
       - SERVICES=${SERVICES-sqs}
@@ -44,15 +43,15 @@ services:
     volumes:
       - './.localstack:/tmp/localstack'
 
-  form-builder-localstack-setup:
+  categorisation-localstack-setup:
     image: jetbrainsinfra/aws-cli
     networks:
       - hmpps
     depends_on:
-      - localstack
+      - categorisation-localstack
     volumes:
       - ./dev_env:/project/dev_env
-    container_name: form-builder-localstack-setup
+    container_name: categorisation-localstack-setup
     environment:
       - AWS_ACCESS_KEY_ID=foo
       - AWS_SECRET_ACCESS_KEY=bar
@@ -60,10 +59,10 @@ services:
     entrypoint: /bin/sh -c
     command: >
       "
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name event
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name risk_profiler_change
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name event_dlq
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name risk_profiler_change_dlq
+        aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name event
+        aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name risk_profiler_change
+        aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name event_dlq
+        aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name risk_profiler_change_dlq
         exit 0
       "
 
