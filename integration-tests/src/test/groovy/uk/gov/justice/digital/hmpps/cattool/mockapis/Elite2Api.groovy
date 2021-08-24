@@ -881,7 +881,7 @@ class Elite2Api extends WireMockRule {
     }
   }
 
-  def stubGetOffenderDetails(int bookingId, offenderNo = 'B2345YZ', youngOffender = false, indeterminateSentence = false, category = 'C', multipleSentences = false) {
+  def stubGetOffenderDetails(int bookingId, offenderNo = 'B2345YZ', youngOffender = false, indeterminateSentence = false, category = 'C', multipleSentences = false, nextReviewDate = '2020-01-16') {
     this.stubFor(
       get("/api/bookings/$bookingId?basicInfo=false")
         .willReturn(
@@ -896,12 +896,12 @@ class Elite2Api extends WireMockRule {
                 dateOfBirth       : youngOffender ? '2018-01-01' : '1970-02-17',
                 category          : 'Cat ' + category,
                 categoryCode      : category,
-                assessments       : [
+                assessments       : nextReviewDate ? [
                   [
                     assessmentCode: 'CATEGORY',
-                    nextReviewDate: '2020-01-16',
+                    nextReviewDate: nextReviewDate,
                   ],
-                ],
+                ] : null,
                 assignedLivingUnit:
                   [
                     description: 'C-04-02',
@@ -1219,6 +1219,18 @@ class Elite2Api extends WireMockRule {
         )
           .withHeader('Content-Type', 'application/json')
           .withStatus(200)))
+  }
+
+  def stubAssessmentsEmpty() {
+    this.stubFor(
+      get(urlMatching("/api/offender-assessments/CATEGORY\\?offenderNo=\\w+&latestOnly=false&activeOnly=false"))
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([]))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200)
+        )
+    )
   }
 
   def stubCategorise(String expectedCat, String nextReviewDate, long bookingId = 12, sequenceNumber = 4, committee = 'OCA') {
