@@ -595,12 +595,13 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C', false, null)
     go '/12'
 
-    then: 'they are treated as no cat in progress'
+    then: 'they are treated as no cat in progress and no next review button is shown'
     at LandingPage
-    paragraphs*.text() contains 'They are due to be reviewed by Thursday 16th January 2020.'
+    !(paragraphs*.text().contains('This prisoner has a categorisation review in progress'))
+    !nextReviewDateButton.displayed
   }
 
   def "A supervisor user sees a prisoner awaiting approval"() {
@@ -611,7 +612,7 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C', false, null)
     go '/12'
 
     then: 'they are given a start button'
@@ -627,7 +628,7 @@ class LandingPageSpecification extends GebReportingSpec {
     elite2Api.stubAssessmentsEmpty()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', false, null)
     go '/12'
 
     then: 'they are informed there is a cat in progress'
@@ -665,5 +666,21 @@ class LandingPageSpecification extends GebReportingSpec {
     then: 'they are treated as no cat in progress'
     at LandingPage
     paragraphs*.text() contains 'They are due to be reviewed by Thursday 16th January 2020.'
+  }
+
+  def "A supervisor user sees a next review button when there is an existing cat"() {
+    db.createDataWithStatus(-4, 12, 'APPROVED', '{}')
+
+    when: 'The supervisor visits the landing page'
+    elite2Api.stubUncategorisedAwaitingApproval()
+    elite2Api.stubAssessments('B2345YZ')
+    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(SUPERVISOR_USER)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
+    go '/12'
+
+    then: ' a next review button is shown'
+    at LandingPage
+    nextReviewDateButton.displayed
   }
 }

@@ -24,13 +24,14 @@
   {% if not inProgress(data) %}
     {% if data.nextReviewDate %}
       <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
+
+      {{ govukButton({
+        text: 'Change next review date',
+        href: '/form/nextReviewDate/nextReviewDateStandalone/' + data.details.bookingId,
+        classes: 'grey-button',
+        attributes: { 'id': 'nextReviewDateButton' }
+      }) }}
     {% endif %}
-    {{ govukButton({
-      text: 'Change next review date',
-      href: '/form/nextReviewDate/nextReviewDateStandalone/' + data.details.bookingId,
-      classes: 'grey-button',
-      attributes: { 'id': 'nextReviewDateButton' }
-    }) }}
   {% elif data.status == Status.AWAITING_APPROVAL.name %}
     <p>This prisoner is awaiting supervisor approval</p>
     {{ govukButton({
