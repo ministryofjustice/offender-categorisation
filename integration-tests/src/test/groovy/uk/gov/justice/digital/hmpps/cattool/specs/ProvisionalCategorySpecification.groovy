@@ -1,48 +1,19 @@
 package uk.gov.justice.digital.hmpps.cattool.specs
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
-import geb.spock.GebReportingSpec
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.junit.Rule
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
-import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
-import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.ProvisionalCategoryOpenPage
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
-class ProvisionalCategorySpecification extends GebReportingSpec {
+class ProvisionalCategorySpecification extends AbstractSpecification {
 
   public static final TRICKY_TEXT = '!"£$%^&*()_+-={}[]:@~;\'#<>?,./|\\'
-
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
-
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
-  DatabaseUtils db = new DatabaseUtils()
-
-  def setup() {
-    db.clearDb()
-  }
 
   def 'The Provisional Category page is present'() {
     given: 'Ratings data exists for B2345YZ'

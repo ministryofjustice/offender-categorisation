@@ -143,6 +143,13 @@ const sanitisePrisonName = prisonName => convertYoiToUpperCase(convertHmpToUpper
 const convertHmpToUpperCase = prisonName => prisonName.replace(/hmp/gi, 'HMP')
 const convertYoiToUpperCase = prisonName => prisonName.replace(/yoi/gi, 'YOI')
 
+const getNamesFromString = string =>
+  string
+    ?.split(', ')
+    .reverse()
+    .map(name => properCaseName(name))
+    .join(' ')
+
 module.exports = {
   dateConverter,
   dateConverterToISO,
@@ -165,4 +172,5 @@ module.exports = {
   offenderAlertsLink,
   offenderAdjudicationLink,
   sanitisePrisonName,
+  getNamesFromString,
 }

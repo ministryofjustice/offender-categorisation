@@ -1,29 +1,12 @@
 package uk.gov.justice.digital.hmpps.cattool.specs
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
+
 import groovyx.net.http.HttpBuilder
 import groovyx.net.http.HttpException
-import org.junit.Rule
-import spock.lang.Specification
-
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 
 import static groovyx.net.http.HttpBuilder.configure
 
-class HealthSpecification extends Specification {
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
+class HealthSpecification extends AbstractSpecification {
 
   HttpBuilder http
 
@@ -39,6 +22,7 @@ class HealthSpecification extends Specification {
     riskProfilerApi.stubHealth()
     elite2Api.stubHealth()
     oauthApi.stubHealth()
+    allocationApi.stubHealth()
 
     when:
     def response = this.http.get()
@@ -46,7 +30,7 @@ class HealthSpecification extends Specification {
     response.uptime > 0.0
     response.name == "offender-categorisation"
     !response.version.isEmpty()
-    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: 'UP']
+    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: 'UP', allocation: 'UP']
   }
 
   def "Health page reports API down"() {
@@ -55,6 +39,7 @@ class HealthSpecification extends Specification {
     riskProfilerApi.stubDelayedError('/ping', 500)
     elite2Api.stubHealth()
     oauthApi.stubHealth()
+    allocationApi.stubHealth()
 
     when:
     def response
@@ -67,6 +52,6 @@ class HealthSpecification extends Specification {
     then:
     response.name == "offender-categorisation"
     !response.version.isEmpty()
-    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: [timeout: 1000, code: 'ECONNABORTED', errno: 'ETIMEDOUT', retries: 2]]
+    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: [timeout: 1000, code: 'ECONNABORTED', errno: 'ETIMEDOUT', retries: 2], allocation: 'UP']
   }
 }

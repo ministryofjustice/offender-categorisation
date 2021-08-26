@@ -18,7 +18,8 @@ class RecategoriserHomePage extends Page {
     prisonNos { bodyRows*.$('td', 2)*.text()  }
     reasons { bodyRows*.$('td', 3)*.text()  }
     statuses { bodyRows*.$('td', 4)*.text()  }
-    startButtons { bodyRows*.$('td', 5)*.find('*')  }
+    poms { bodyRows*.$('td', 5)*.text()  }
+    startButtons { bodyRows*.$('td', 6)*.find('*')  }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/recategoriserDone')}
     checkTabLink { $('a', href: '/recategoriserCheck')}
