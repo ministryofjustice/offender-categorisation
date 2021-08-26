@@ -8,8 +8,8 @@ const { getApiClientToken } = require('../authentication/clientCredentials')
 const getSanitisedError = require('../sanitisedError')
 
 // there are about 80000 prisoner altogether but they wont all be due for categorisation
-// 3 hours TTL is fine for slowly changing POM data but should give good hit ratio
-const cache = new LRU({ max: 30000, maxAge: 1000 * 60 * 60 * 3 })
+// 1 hour TTL is fine for slowly changing POM data but should give good hit ratio
+const cache = new LRU({ max: 30000, maxAge: 1000 * 60 * 60 })
 
 const timeoutSpec = {
   response: config.apis.allocationManager.timeout.response,
@@ -31,12 +31,10 @@ module.exports = context => {
     async getPomByOffenderNo(offenderNo) {
       const cached = cache.get(offenderNo)
       if (cached) {
-        logger.debug(`getPomByOffenderNo found in cache for offenderNo ${offenderNo}`)
         return cached
       }
 
       const path = `${apiUrl}allocation/${offenderNo}`
-      logger.debug(`getPomByOffenderNo calling allocationManager api : ${path} for offenderNo ${offenderNo}`)
       const value = await apiGet({ path })
 
       cache.set(offenderNo, value)
