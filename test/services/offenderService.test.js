@@ -35,6 +35,10 @@ const nomisClient = {
   setInactive: jest.fn(),
 }
 
+const allocationClient = {
+  getPomByOffenderNo: jest.fn(),
+}
+
 const formService = {
   getCategorisationRecord: jest.fn(),
   getSecurityReferredOffenders: jest.fn(),
@@ -58,15 +62,17 @@ const formService = {
 }
 
 const nomisClientBuilder = () => nomisClient
+const allocationClientBuilder = () => allocationClient
 
 let service
 
 beforeEach(() => {
-  service = serviceCreator(nomisClientBuilder, formService)
+  service = serviceCreator(nomisClientBuilder, allocationClientBuilder, formService)
   nomisClient.getMainOffences.mockReturnValue([])
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
   formService.getSecurityReferrals.mockResolvedValue([])
+  allocationClient.getPomByOffenderNo.mockResolvedValue({ primary_pom: { name: 'RENDELL, STEVE' } })
 })
 
 afterEach(() => {
@@ -201,6 +207,7 @@ describe('getRecategoriseOffenders', () => {
         reason: ReviewReason.DUE,
         overdue: true,
         buttonText: 'Edit',
+        pom: 'Steve Rendell',
       },
       {
         offenderNo: 'U2101AA',
@@ -716,6 +723,7 @@ describe('getUncategorisedOffenders', () => {
         sentenceDate: '2019-05-21',
         daysSinceSentence: 10,
         dateRequired: '04/06/2019',
+        pom: 'Steve Rendell',
       },
       {
         offenderNo: 'H12345',
@@ -840,12 +848,12 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should propagate an error response', async () => {
-    nomisClient.getUncategorisedOffenders.mockRejectedValue(new Error())
+    nomisClient.getUncategorisedOffenders.mockRejectedValue(new Error('test'))
     try {
-      service.getUncategorisedOffenders('MDI')
+      await service.getUncategorisedOffenders(context, 'MDI', mockTransactionalClient)
       expect(service.shouldNotReachHere) // service will rethrow error
     } catch (error) {
-      /* do nothing */
+      expect(error.message).toEqual('test')
     }
   })
 

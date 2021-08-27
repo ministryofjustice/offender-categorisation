@@ -1,35 +1,11 @@
 package uk.gov.justice.digital.hmpps.cattool.specs.ratings
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
-import geb.spock.GebReportingSpec
-import org.junit.Rule
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
-import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
-import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
+
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
+import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
-class OffendingHistorySpecification extends GebReportingSpec {
-
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
-
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
-  DatabaseUtils db = new DatabaseUtils()
-
-  def setup() {
-    db.clearDb()
-  }
+class OffendingHistorySpecification extends AbstractSpecification {
 
   def "The Offending history page is shown correctly for a previous cat A"() {
     when: 'I go to the Offending history page'

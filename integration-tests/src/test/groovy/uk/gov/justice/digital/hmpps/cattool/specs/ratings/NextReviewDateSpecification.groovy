@@ -1,53 +1,24 @@
 package uk.gov.justice.digital.hmpps.cattool.specs.ratings
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
-import geb.spock.GebReportingSpec
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.junit.Rule
-import org.openqa.selenium.Keys
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
-import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.ErrorPage
-import uk.gov.justice.digital.hmpps.cattool.pages.LandingPage
-import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDateStandaloneConfirmedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDateStandalonePage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDateEditingPage
-import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDatePage
-import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDateQuestionPage
+import uk.gov.justice.digital.hmpps.cattool.pages.*
+import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
-class NextReviewDateSpecification extends GebReportingSpec {
-
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
+class NextReviewDateSpecification extends AbstractSpecification {
 
   def setup() {
-    db.clearDb()
     elite2Api.stubAgencyDetails('LPI')
     elite2Api.stubAssessments('B2345YZ')
   }
 
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
-  DatabaseUtils db = new DatabaseUtils()
   static final SIX_MONTHS_AHEAD = LocalDate.now().plusMonths(6).format('dd/MM/yyyy')
   static final THREE_MONTHS_AHEAD = LocalDate.now().plusMonths(3).format('dd/MM/yyyy')
   static final THREE_MONTHS_AHEAD_ISO = LocalDate.now().plusMonths(3).format('yyyy-MM-dd')

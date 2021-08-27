@@ -1,39 +1,13 @@
 package uk.gov.justice.digital.hmpps.cattool.specs.recat
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
-import geb.interaction.InteractionsSupport
-import geb.spock.GebReportingSpec
+
 import groovy.json.JsonOutput
-import org.junit.Rule
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
-import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
-import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.ReviewRecatPage
+import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
-class ReviewSpecification extends GebReportingSpec {
-
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
-
-  def setup() {
-    db.clearDb()
-  }
-
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
-  DatabaseUtils db = new DatabaseUtils()
-
+class ReviewSpecification extends AbstractSpecification {
 
   def "The recat review page can be displayed and submitted with security input"() {
     given: 'data has been entered for the pages'

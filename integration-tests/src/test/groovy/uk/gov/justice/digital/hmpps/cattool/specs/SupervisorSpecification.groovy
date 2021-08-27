@@ -1,15 +1,8 @@
 package uk.gov.justice.digital.hmpps.cattool.specs
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
-import geb.spock.GebReportingSpec
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.junit.Rule
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
-import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.SupervisorRecatReviewPage
@@ -19,25 +12,7 @@ import java.time.LocalDate
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
-class SupervisorSpecification extends GebReportingSpec {
-
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
-
-  def setup() {
-    db.clearDb()
-  }
-
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
-  DatabaseUtils db = new DatabaseUtils()
-
+class SupervisorSpecification extends AbstractSpecification {
 
   def "The supervisor review page can be confirmed"() {
     when: 'supervisor is viewing the review page for B2345YZ'
