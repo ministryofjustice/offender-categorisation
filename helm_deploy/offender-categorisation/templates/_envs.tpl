@@ -73,6 +73,9 @@ env:
   - name: RISK_PROFILER_ENDPOINT_URL
     value: {{ .Values.env.RISK_PROFILER_ENDPOINT_URL | quote }}
 
+  - name: ALLOCATION_MANAGER_ENDPOINT_URL
+    value: {{ .Values.env.ALLOCATION_MANAGER_ENDPOINT_URL | quote }}
+
   - name: INGRESS_URL
     value: 'https://{{ .Values.ingress.host }}'
 
