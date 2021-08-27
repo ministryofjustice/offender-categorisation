@@ -29,6 +29,8 @@ allowlist:
   ark-nps-hmcts-ttp3: 194.33.193.0/25
   ark-nps-hmcts-ttp4: 194.33.196.0/25
   ark-nps-hmcts-ttp5: 194.33.197.0/25
+  moj-official-ark-c-vodafone: 194.33.248.0/29
+  moj-official-ark-f-vodafone: 194.33.249.0/29
   cloudplatform-live1-1: 35.178.209.113/32
   cloudplatform-live1-2: 3.8.51.207/32
   cloudplatform-live1-3: 35.177.252.54/32
@@ -38,6 +40,8 @@ allowlist:
   dxc_webproxy3: 195.92.38.22/32
   dxc_webproxy4: 195.92.38.23/32
   health-kick: 35.177.252.195/32
+  moj-official-ark-c-expo-e: 51.149.249.0/29
+  moj-official-ark-f-expo-e: 51.149.249.32/29
   moj-official-tgw-preprod: 51.149.251.0/24
   moj-official-tgw-prod: 51.149.250.0/24
   mojvpn: 81.134.202.29/32
