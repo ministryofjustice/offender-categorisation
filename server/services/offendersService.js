@@ -5,7 +5,13 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
 const { isNilOrEmpty, inProgress, getIn, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { properCaseName, dateConverter, dateConverterToISO, get10BusinessDays } = require('../utils/utils')
+const {
+  properCaseName,
+  dateConverter,
+  dateConverterToISO,
+  get10BusinessDays,
+  getNamesFromString,
+} = require('../utils/utils')
 const { sortByDateTime, sortByStatus } = require('./offenderSort')
 const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
@@ -92,11 +98,12 @@ function isNewSecurityReferred(offenderNo, securityReferredOffenders) {
   return securityReferredOffenders.filter(s => s.offenderNo === offenderNo).some(s => s.status === 'NEW')
 }
 
-module.exports = function createOffendersService(nomisClientBuilder, formService) {
+module.exports = function createOffendersService(nomisClientBuilder, allocationClientBuilder, formService) {
   async function getUncategorisedOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const allocationClient = allocationClientBuilder(context)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
       const securityReferredOffenders = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
 
@@ -160,7 +167,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
           const nomisStatusAwaitingApproval = nomisRecord.status === Status.AWAITING_APPROVAL.name
           const nomisStatusUncategorised = nomisRecord.status === Status.UNCATEGORISED.name
-
+          const pomData = await allocationClient.getPomByOffenderNo(nomisRecord.offenderNo)
           const inconsistent =
             (nomisStatusAwaitingApproval && localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)) ||
             (nomisStatusUncategorised &&
@@ -177,6 +184,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
             ...buildSentenceData(sentence && sentence.sentenceDate),
             ...(await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)),
             pnomis,
+            pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
           }
           if (inconsistent && !liteInProgress) {
             logger.warn(
@@ -616,7 +624,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     return nextReviewDate && releaseDate && moment(nextReviewDate).isAfter(moment(releaseDate))
   }
 
-  async function getDueRecats(agencyId, user, nomisClient, transactionalDbClient) {
+  async function getDueRecats(agencyId, user, nomisClient, allocationClient, transactionalDbClient) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
     const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
@@ -645,6 +653,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
       allOffenders.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
+        const pomData = await allocationClient.getPomByOffenderNo(nomisRecord.offenderNo)
 
         if (isInitialInProgress(dbRecord) || isNextReviewAfterRelease(nomisRecord, releaseDateMap.get(raw.bookingId))) {
           return null
@@ -680,6 +689,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
+          pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
         }
       })
     )
@@ -763,7 +773,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     }
   }
 
-  async function getU21Recats(agencyId, user, nomisClient, transactionalDbClient) {
+  async function getU21Recats(agencyId, user, nomisClient, allocationClient, transactionalDbClient) {
     const u21From = moment()
       .subtract(22, 'years') // allow up to a year overdue
       .format('YYYY-MM-DD')
@@ -786,10 +796,10 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
 
     return Promise.all(
       eliteCategorisationResultsU21.map(async o => {
-        const [dbRecord, assessmentData] = await Promise.all([
-          formService.getCategorisationRecord(o.bookingId, transactionalDbClient),
-          formService.getLiteCategorisation(o.bookingId, transactionalDbClient),
-        ])
+        const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
+        const assessmentData = await formService.getLiteCategorisation(o.bookingId, transactionalDbClient)
+        const pomData = await allocationClient.getPomByOffenderNo(o.offenderNo)
+
         if (isInitialInProgress(dbRecord)) {
           return null
         }
@@ -821,6 +831,7 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
+          pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
         }
       })
     )
@@ -844,10 +855,11 @@ module.exports = function createOffendersService(nomisClientBuilder, formService
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const allocationClient = allocationClientBuilder(context)
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
-        getDueRecats(agencyId, user, nomisClient, transactionalDbClient),
-        getU21Recats(agencyId, user, nomisClient, transactionalDbClient),
+        getDueRecats(agencyId, user, nomisClient, allocationClient, transactionalDbClient),
+        getU21Recats(agencyId, user, nomisClient, allocationClient, transactionalDbClient),
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 

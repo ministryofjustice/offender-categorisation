@@ -1,15 +1,7 @@
 package uk.gov.justice.digital.hmpps.cattool.specs
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
-import geb.spock.GebReportingSpec
+
 import groovy.json.JsonSlurper
-import org.junit.Rule
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
-import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
-import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
 
@@ -17,29 +9,15 @@ import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
-class LandingPageSpecification extends GebReportingSpec {
+class LandingPageSpecification extends AbstractSpecification {
 
   def today = LocalDate.now().format('dd/MM/yyyy')
 
   def setup() {
-    db.clearDb()
     elite2Api.stubAgencyDetails('LPI')
   }
 
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
-
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
-  DatabaseUtils db = new DatabaseUtils()
-
-  def "A recategoriser user can start a recat from the landing page"() {
+   def "A recategoriser user can start a recat from the landing page"() {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()

@@ -57,6 +57,7 @@ drivers.each { driver ->
 }
 
 test {
+    useJUnitPlatform()
     dependsOn drivers.collect { tasks["${it}Test"] }
     enabled = false
 }

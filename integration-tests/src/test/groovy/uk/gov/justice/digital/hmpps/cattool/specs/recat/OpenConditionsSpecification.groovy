@@ -1,36 +1,19 @@
 package uk.gov.justice.digital.hmpps.cattool.specs.recat
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
-import geb.spock.GebReportingSpec
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.junit.Rule
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
-import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.OpenConditionsAddedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorMessagePage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.ApprovedViewRecatPage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorDonePage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
-import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
+import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.openConditions.*
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.DecisionPage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.ReviewRecatPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.*
+import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
 import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
-class OpenConditionsSpecification extends GebReportingSpec {
+class OpenConditionsSpecification extends AbstractSpecification {
 
   static final allNoAnswers = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
@@ -39,23 +22,6 @@ class OpenConditionsSpecification extends GebReportingSpec {
     furtherCharges     : [furtherCharges: 'No'],
     riskLevels         : [likelyToAbscond: 'No'],
   ]
-
-  def setup() {
-    db.clearDb()
-  }
-
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
-
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
-  DatabaseUtils db = new DatabaseUtils()
 
   def "The happy path is correct for recategoriser setting cat D, all yeses, then cancelling open conditions"() {
     given:

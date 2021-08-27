@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.cattool.model
 
 import geb.Browser
+import uk.gov.justice.digital.hmpps.cattool.mockapis.AllocationApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
@@ -19,6 +20,7 @@ class TestFixture {
   Browser browser
   Elite2Api elite2Api
   RiskProfilerApi riskProfilerApi
+  AllocationApi allocationApi
   OauthApi oauthApi
 
   UserAccount currentUser
@@ -79,10 +81,11 @@ class TestFixture {
   '6 years, 3 months (Std sentence)']
   public static final MINI_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
 
-  TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1) {
+  TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1, AllocationApi allocationApi1) {
     this.browser = browser
     this.elite2Api = elite2Api
     this.riskProfilerApi = riskProfilerApi1
+    this.allocationApi = allocationApi1
     this.oauthApi = oauthApi
   }
 
@@ -100,6 +103,7 @@ class TestFixture {
     oauthApi.stubValidOAuthTokenRequest currentUser
     elite2Api.stubGetMyDetails currentUser
     elite2Api.stubGetMyCaseloads currentUser.caseloads
+    allocationApi.stubGetPomByOffenderNo()
   }
 
   def gotoTasklist(transferToSecurity = false, multipleSentences = false) {

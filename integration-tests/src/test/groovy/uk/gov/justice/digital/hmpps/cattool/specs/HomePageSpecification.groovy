@@ -1,58 +1,23 @@
 package uk.gov.justice.digital.hmpps.cattool.specs
 
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
-import geb.spock.GebReportingSpec
+
 import groovy.json.JsonOutput
-import org.junit.Rule
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.Caseload
-import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CancelConfirmedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CancelPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserDonePage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserAwaitingApprovalViewPage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.ITAG_USER_COLLEAGUE
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.MULTIROLE_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
-class HomePageSpecification extends GebReportingSpec {
+class HomePageSpecification extends AbstractSpecification {
 
-  def setup() {
-    db.clearDb()
-  }
-
-  @Rule
-  Elite2Api elite2Api = new Elite2Api()
-
-  @Rule
-  RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
-
-  @Rule
-  OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
-    .extensions(new ResponseTemplateTransformer(false)))
-
-  TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi)
-  DatabaseUtils db = new DatabaseUtils()
-  static final TODAY = LocalDate.now()
-
-  def "The home page for a categoriser is present"() {
+   def "The home page for a categoriser is present"() {
     db.createDataWithStatus(-2, 32, 'STARTED', '{}')
     db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
     db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
@@ -100,6 +65,7 @@ class HomePageSpecification extends GebReportingSpec {
               sentenceStartDate38.plusDays(fixture.get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
     statuses == ['REJECTED BY\nSUPERVISOR', 'Started (Api User)', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
     startButtons*.text() == ['Edit', 'Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
+    poms[0] == 'Engelbert Humperdinck'
   }
 
   def "The home page for a supervisor is present"() {
@@ -157,6 +123,7 @@ class HomePageSpecification extends GebReportingSpec {
     dates == ['OVERDUE', 'OVERDUE', 'OVERDUE', TODAY.plusDays(17).format('dd/MM/yyyy')]
     reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
+    poms[0] == 'Engelbert Humperdinck'
     startButtons[0].text() == 'Start'
     startButtons[0].@href.contains('/tasklistRecat/12?reason=DUE')
     checkTabLink.isDisplayed()
