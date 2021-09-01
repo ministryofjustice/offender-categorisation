@@ -69,7 +69,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/app
-      - hmpps/wait_till_ready: # Wait for localstack to start before creating resources
+      - hmpps/wait_till_ready # Wait for localstack to start before creating resources
       - run:
           name: Create localstack queues
           command: |
@@ -82,7 +82,7 @@ jobs:
           name: Run the node app.
           command: npm start
           background: true
-      - hmpps/wait_till_ready # Wait for node app to start
+      - hmpps/wait_till_ready: # Wait for node app to start
           port: 3000
       - restore_cache:
           key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
