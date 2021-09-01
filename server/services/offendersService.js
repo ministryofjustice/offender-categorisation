@@ -76,6 +76,23 @@ async function getOffenceMap(offenderList, nomisClient) {
   return new Map(offences.map(offence => [offence.bookingId, offence]))
 }
 
+async function getPomMap(offenderList, allocationClient) {
+  const result = new Map()
+  const BATCH_SIZE = 15
+  for (let range = 0; range < offenderList.length; range += BATCH_SIZE) {
+    const offenderBatch = offenderList.slice(range, range + BATCH_SIZE)
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      offenderBatch.map(async offender => {
+        const pomData = await allocationClient.getPomByOffenderNo(offender.offenderNo)
+        result.set(offender.offenderNo, pomData)
+      })
+    )
+  }
+  logger.debug('end getPomMap')
+  return result
+}
+
 function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
   return (
     !!dbRecord &&
@@ -105,7 +122,6 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
       const nomisClient = nomisClientBuilder(context)
       const allocationClient = allocationClientBuilder(context)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
-      const securityReferredOffenders = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
 
       const dbManualInProgress = await formService.getCategorisationRecords(
         agencyId,
@@ -128,9 +144,11 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
       }
 
       const combined = [...uncategorisedResult, ...dbManualInProgress]
-      const [sentenceMap, offenceMap] = await Promise.all([
+      const [sentenceMap, offenceMap, pomMap, securityReferredOffenders] = await Promise.all([
         getSentenceMap(combined, nomisClient),
         getOffenceMap(combined, nomisClient),
+        getPomMap(combined, allocationClient),
+        formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
       const filterIS91s = o => {
@@ -167,7 +185,7 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
           const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
           const nomisStatusAwaitingApproval = nomisRecord.status === Status.AWAITING_APPROVAL.name
           const nomisStatusUncategorised = nomisRecord.status === Status.UNCATEGORISED.name
-          const pomData = await allocationClient.getPomByOffenderNo(nomisRecord.offenderNo)
+          const pomData = pomMap.get(nomisRecord.offenderNo)
           const inconsistent =
             (nomisStatusAwaitingApproval && localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)) ||
             (nomisStatusUncategorised &&
@@ -647,13 +665,16 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
-    const releaseDateMap = await getReleaseDateMap(allOffenders, nomisClient)
+    const [releaseDateMap, pomMap] = await Promise.all([
+      getReleaseDateMap(allOffenders, nomisClient),
+      getPomMap(allOffenders, allocationClient),
+    ])
 
     return Promise.all(
       allOffenders.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
-        const pomData = await allocationClient.getPomByOffenderNo(nomisRecord.offenderNo)
+        const pomData = pomMap.get(nomisRecord.offenderNo)
 
         if (isInitialInProgress(dbRecord) || isNextReviewAfterRelease(nomisRecord, releaseDateMap.get(raw.bookingId))) {
           return null
@@ -787,18 +808,17 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
       return resultsU21IJ
     }
 
-    // we meed the categorisation records for all the U21 offenders identified
-    const eliteCategorisationResultsU21 = await mergeU21ResultWithNomisCategorisationData(
-      nomisClient,
-      agencyId,
-      resultsU21IJ
-    )
+    const [eliteCategorisationResultsU21, pomMap] = await Promise.all([
+      // we meed the categorisation records for all the U21 offenders identified
+      mergeU21ResultWithNomisCategorisationData(nomisClient, agencyId, resultsU21IJ),
+      getPomMap(resultsU21IJ, allocationClient),
+    ])
 
     return Promise.all(
       eliteCategorisationResultsU21.map(async o => {
         const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
         const assessmentData = await formService.getLiteCategorisation(o.bookingId, transactionalDbClient)
-        const pomData = await allocationClient.getPomByOffenderNo(o.offenderNo)
+        const pomData = pomMap.get(o.offenderNo)
 
         if (isInitialInProgress(dbRecord)) {
           return null
