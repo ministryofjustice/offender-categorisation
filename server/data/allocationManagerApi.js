@@ -8,8 +8,8 @@ const { getApiClientToken } = require('../authentication/clientCredentials')
 const getSanitisedError = require('../sanitisedError')
 
 // there are about 80000 prisoner altogether but they wont all be due for categorisation
-// 1 hour TTL is fine for slowly changing POM data but should give good hit ratio
-const cache = new LRU({ max: 30000, maxAge: 1000 * 60 * 60 })
+// 4 hour TTL is fine for slowly changing POM data but should give good hit ratio
+const cache = new LRU({ max: 30000, maxAge: 1000 * 60 * 60 * 4 })
 
 const timeoutSpec = {
   response: config.apis.allocationManager.timeout.response,
