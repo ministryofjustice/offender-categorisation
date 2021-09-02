@@ -2,8 +2,7 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@3.11
-  aws-cli: circleci/aws-cli@1.0.0
-  browser-tools: circleci/browser-tools@1.1.3
+  browser-tools: circleci/browser-tools@1.2.1
 
 executors:
   builder:
@@ -64,15 +63,13 @@ jobs:
           TMP_DIR: /private
           DEFAULT_REGION: eu-west-2
     steps:
-      - aws-cli/install
+      - hmpps/install_aws_cli
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
       - checkout
       - attach_workspace:
           at: ~/app
-      - run:
-          name: Wait for localstack to start before creating resources
-          command: sleep 10
+      - hmpps/wait_till_ready # Wait for localstack to start before creating resources
       - run:
           name: Create localstack queues
           command: |
@@ -85,9 +82,8 @@ jobs:
           name: Run the node app.
           command: npm start
           background: true
-      - run:
-          name: Wait for node app to start
-          command: sleep 5
+      - hmpps/wait_till_ready: # Wait for node app to start
+          port: 3000
       - restore_cache:
           key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - restore_cache:
