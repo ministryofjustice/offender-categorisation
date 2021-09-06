@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rds-snapshot-script-adhoc
+data:
+  entrypoint.sh: |-
+    #!/bin/bash
+    set -xe
+    DB_INSTANCE_IDENTIFIER=$(echo -n $DB_INSTANCE | cut -d"." -f1)
+    SNAPSHOT_PREFIX="dps-manual-snapshot"
+    SNAPSHOT_TIME="$(date +%s)"
+    DB_SNAPSHOT_IDENTIFIER="${SNAPSHOT_PREFIX}-${SNAPSHOT_TIME}"
+    SORT_FIELD="$(echo -n "${DB_SNAPSHOT_IDENTIFIER}-" | tr -cd '-' | wc -c)"
+    aws rds create-db-snapshot --db-instance-identifier $DB_INSTANCE_IDENTIFIER  --db-snapshot-identifier $DB_SNAPSHOT_IDENTIFIER
+    aws rds wait db-snapshot-available --db-instance-identifier $DB_INSTANCE_IDENTIFIER  --db-snapshot-identifier $DB_SNAPSHOT_IDENTIFIER
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rds-snapshot
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 1200
+  template:
+    spec:
+      securityContext:
+        runAsUser: 999
+      containers:
+        - name: dbsnapshot
+          image: "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools:latest"
+          command:
+            - /bin/entrypoint.sh
+          volumeMounts:
+            - name: rds-snapshot-script-adhoc
+              mountPath: /bin/entrypoint.sh
+              readOnly: true
+              subPath: entrypoint.sh
+          env:
+            - name: DB_INSTANCE
+              valueFrom:
+                secretKeyRef:
+                  name: dps-rds-instance-output
+                  key: rds_instance_address
+            - name: AWS_DEFAULT_REGION
+              value: "eu-west-2"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: dps-rds-instance-output
+                  key: access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dps-rds-instance-output
+                  key: secret_access_key
+      restartPolicy: "Never"
+      volumes:
+        - name: rds-snapshot-script-adhoc
+          configMap:
+            name: rds-snapshot-script-adhoc
+            defaultMode: 0755
