@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rds-snapshot-script
+data:
+  entrypoint.sh: |-
+    #!/bin/bash
+    set -xe
+    DB_INSTANCE_IDENTIFIER=$(echo -n $DB_INSTANCE | cut -d"." -f1)
+    SNAPSHOT_PREFIX="offender-categorisation-monthly"
+    # Total number of snapshots to retain
+    RETENTION=12
+    SNAPSHOT_TIME="$(date +%s)"
+    DB_SNAPSHOT_IDENTIFIER="${SNAPSHOT_PREFIX}-${SNAPSHOT_TIME}"
+    SORT_FIELD="$(echo -n "${DB_SNAPSHOT_IDENTIFIER}-" | tr -cd '-' | wc -c)"
+    aws rds create-db-snapshot --db-instance-identifier $DB_INSTANCE_IDENTIFIER  --db-snapshot-identifier $DB_SNAPSHOT_IDENTIFIER
+    aws rds wait db-snapshot-available --db-instance-identifier $DB_INSTANCE_IDENTIFIER  --db-snapshot-identifier $DB_SNAPSHOT_IDENTIFIER
+    aws rds describe-db-snapshots --snapshot-type manual --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r  ".[][] | select(.DBSnapshotIdentifier | startswith(\"${SNAPSHOT_PREFIX}\")) | .DBSnapshotIdentifier" | sort -nr | tail -n +$RETENTION
+    FOR_DELETE=$(aws rds describe-db-snapshots --snapshot-type manual --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r  ".[][] | select(.DBSnapshotIdentifier | startswith(\"${SNAPSHOT_PREFIX}\")) | .DBSnapshotIdentifier" | sort -nr -t"-" -k${SORT_FIELD} | tail -n +$((RETENTION+1)))
+    if [[ ! -z $FOR_DELETE ]]; then
+      for i in $FOR_DELETE; do
+        echo "Deleting old snapshots - ${i}";
+        aws rds delete-db-snapshot --db-snapshot-identifier "${i}"
+        aws rds wait db-snapshot-deleted --db-snapshot-identifier "${i}"
+      done
+    fi
