@@ -1,0 +1,20 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app: dps-db-snapshot-job
+    prometheus: cloud-platform
+  name: dps-prometheus-rules-db-snapshot
+spec:
+  groups:
+    - name: kubernetes-apps
+      rules:
+        - alert: DB-rds-snapshot-job-failed
+          annotations:
+            message: Database snapshot job {{ $labels.namespace }}/{{ $labels.job_name }} failed to complete.
+            runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubejobfailed
+          expr: max((kube_job_status_failed{job_name=~"rds-snapshot-job.*",namespace="offender-categorisation-prod"} > 0) + ((time() - kube_job_status_start_time) < 60 * 10)) by (job_name,namespace)
+          for: 1m
+          labels:
+            severity: digital-prison-service
