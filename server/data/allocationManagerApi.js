@@ -63,6 +63,10 @@ function allocationManagerGetBuilder(username) {
       }
       const sanitisedError = getSanitisedError(error)
       logger.error({ sanitisedError, path, query }, 'Error calling allocationManager api')
+      if (error.response?.status === 500) {
+        // Possible bug is causing occasional 500 errors in preprod
+        return {}
+      }
       throw sanitisedError
     }
   }
