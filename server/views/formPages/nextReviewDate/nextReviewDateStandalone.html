@@ -1,9 +1,10 @@
 {% extends "../formTemplate.html" %}
 {% from "input/macro.njk" import govukInput %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Next review date" %}
-{% set greenButtonText = "Change" %}
+{% set greenButtonText = "Submit" %}
 
 {% block navigation %}
 
@@ -14,25 +15,44 @@
 
 {% block formItems %}
 
-  <h1 class="govuk-heading-l">Change the next review date</h1>
+  <h1 class="govuk-heading-l">Change the review date</h1>
   {% if data.details.sentence.conditionalReleaseDate %}
-    <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}.</p>
+    <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">Their conditional release date is:</p>
+    <p>{{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}</p>
   {% endif %}
-  <p>This page can alter the prisoner's next review date (Re-Assessment date) without needing to create a new categorisation.</p>
+  <p>You can alter the prisoner's next review date (Re-assessment date) without needing to create a new categorisation.</p>
+
+  <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0"> Current review date:</p>
+  <p id="existingDate">{{ date }}</p>
 
   {{ govukInput({
     id: "reviewDate",
     name: "date",
-    label: {
-      text: "Date",
-      classes: "govuk-!-font-weight-bold"
-    },
+    value: data.nextReviewDate.nextReviewDateStandalone.date,
+    label: { text: "New date", classes: "govuk-!-font-weight-bold" },
     errorMessage: {
       text: "Enter a valid date that is after today"
     } if (errors | findError('date')),
-    classes: "dateInputWidth",
-    value: date or dateConverter(nomisDate)
+    classes: "dateInputWidth"
   }) }}
-  <!-- NOMIS = {{ dateConverter(nomisDate) }} -->
 
+ {{ govukCharacterCount({
+    id: 'reason',
+    name: 'reason',
+    value: data.nextReviewDate.nextReviewDateStandalone.reason,
+    maxlength: 1000,
+    attributes: {  'maxLength': 1000 },
+    threshold: 50,
+    label: { text: "Reason for date change", classes: "govuk-!-font-weight-bold" },
+    errorMessage: { text: "Please enter details" } if (errors | findError('reason'))
+  }) }}
+
+{% endblock %}
+
+{% block additionalItems %}
+  {{ govukButton({
+    text: 'Cancel',
+    href: '/' + data.details.bookingId,
+    classes: "grey-button"
+  }) }}
 {% endblock %}

@@ -7,7 +7,7 @@ class NextReviewDateStandalonePage extends Page {
   static url = '/form/nextReviewDate/nextReviewDateStandalone'
 
   static at = {
-    headingText == 'Change the next review date'
+    headingText == 'Change the review date'
   }
 
   static content = {
@@ -16,7 +16,9 @@ class NextReviewDateStandalonePage extends Page {
     headerValue { headerBlock.$('div.govuk-\\!-font-weight-bold') }
 
     form { $('form') }
+    existingDate { $('#existingDate') }
     reviewDate { $('#reviewDate') }
+    reason { $('#reason') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }

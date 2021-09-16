@@ -19,10 +19,6 @@ class NextReviewDateSpecification extends AbstractSpecification {
     elite2Api.stubAssessments('B2345YZ')
   }
 
-  static final SIX_MONTHS_AHEAD = LocalDate.now().plusMonths(6).format('dd/MM/yyyy')
-  static final THREE_MONTHS_AHEAD = LocalDate.now().plusMonths(3).format('dd/MM/yyyy')
-  static final THREE_MONTHS_AHEAD_ISO = LocalDate.now().plusMonths(3).format('yyyy-MM-dd')
-
   def "The nextReviewDate page saves details correctly - 6 months"() {
     when: 'I go to the Next Review Date Question page'
     fixture.gotoTasklist(false)
@@ -115,27 +111,52 @@ class NextReviewDateSpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
-    browser.at CategoriserHomePage
+    at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
     go '/12'
     at LandingPage
     nextReviewDateButton.click()
 
-    then: 'The page is displayed with db date'
+    then: 'The page is displayed with Nomis next-review-date'
     at NextReviewDateStandalonePage
-    reviewDate.value() == '14/12/2019'
+    existingDate.text() == '16/01/2020'
+
+    when: 'invalid date is entered, with no reason'
+    reviewDate << 'rubbish'
+    submitButton.click()
+
+    then: 'there are 2 validation errors'
+    errorSummaries*.text() == ['Enter a valid date that is after today','Please enter a reason for the change']
+    errors*.text() == ['Error:\nEnter a valid date that is after today','Error:\nPlease enter details']
+
+    when: 'reason entered'
+    reason = 'test reason'
+    submitButton.click()
+
+    then: 'there is 1 validation error'
+    errorSummaries*.text() == ['Enter a valid date that is after today']
+    errors*.text() == ['Error:\nEnter a valid date that is after today']
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
     reviewDate = THREE_MONTHS_AHEAD
     submitButton.click()
 
-    then: "we proceed to the confirmed page, the endpoint was called and database has been updated"
-    at NextReviewDateStandaloneConfirmedPage
+    then: "we return to the landing page, the endpoint was called and database has been updated"
+    at LandingPage
     elite2Api.verifyUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO) == null
+    nextReviewDateHistory[0].find('td')[0].text() == THREE_MONTHS_AHEAD_LONG
+    nextReviewDateHistory[0].find('td')[1].text() == 'test reason'
+
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
-    response.ratings.nextReviewDate == [date: THREE_MONTHS_AHEAD]
+    response.ratings.nextReviewDate == [date: '14/12/2019'] // left unchanged
+
+    def nextReviewData = db.getNextReviewData('B2345YZ')
+    nextReviewData[0].reason == 'test reason'
+    nextReviewData[0].next_review_date.toString() == THREE_MONTHS_AHEAD_ISO
+    nextReviewData[0].changed_by == 'CATEGORISER_USER'
+    nextReviewData.size() == 1
   }
 
   def "The nextReviewDate Standalone page saves details correctly - not in PG"() {
@@ -143,7 +164,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
-    browser.at CategoriserHomePage
+    at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
     go '/12'
     at LandingPage
@@ -151,30 +172,36 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'The page is displayed with existing date'
     at NextReviewDateStandalonePage
-    reviewDate.value() == '16/01/2020'
+    existingDate.text() == '16/01/2020'
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
     reviewDate = THREE_MONTHS_AHEAD
+    reason = 'A test reason'
     submitButton.click()
 
-    then: "we proceed to the confirmed page, the endpoint was called and no data exists"
-    at NextReviewDateStandaloneConfirmedPage
+    then: "we return to the landing page, the endpoint was called and no form data exists"
+    at LandingPage
     elite2Api.verifyUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO) == null
     db.getData(12).empty
+
+    def nextReviewData = db.getNextReviewData('B2345YZ')
+    nextReviewData[0].reason == 'A test reason'
+    nextReviewData[0].next_review_date.toString() == THREE_MONTHS_AHEAD_ISO
+    nextReviewData[0].changed_by == 'CATEGORISER_USER'
   }
 
   def "The nextReviewDate Standalone page saves details correctly - in progress"() {
 
     given: 'there is an in-progress db record'
-    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL','{}',
+    db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', '{}',
       'INITIAL', 'B2345YZ');
 
     when: 'I go to the landing page'
     elite2Api.stubUncategorised()
     elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
-    browser.at CategoriserHomePage
+    at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
     go '/12'
     at LandingPage
@@ -209,18 +236,28 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'The page is displayed with db date'
     at NextReviewDateStandalonePage
-    reviewDate.value() == '14/12/2019'
+    existingDate.text() == '16/01/2020'
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
     reviewDate = THREE_MONTHS_AHEAD
+    reason = 'A test reason'
     submitButton.click()
 
-    then: "we proceed to the confirmed page, the endpoint was called and database has been updated"
-    at NextReviewDateStandaloneConfirmedPage
+    then: "we return to the landing page, the endpoint was called and database has been updated"
+    at LandingPage
     elite2Api.verifyUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO) == null
+    nextReviewDateHistory[0].find('td')[0].text() == THREE_MONTHS_AHEAD_LONG
+    nextReviewDateHistory[0].find('td')[1].text() == 'A test reason'
+
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
-    response.ratings.nextReviewDate == [date: THREE_MONTHS_AHEAD]
+    response.ratings.nextReviewDate == [date: '14/12/2019'] // left unchanged
+
+    def nextReviewData = db.getNextReviewData('B2345YZ')
+    nextReviewData[0].reason == 'A test reason'
+    nextReviewData[0].next_review_date.toString() == THREE_MONTHS_AHEAD_ISO
+    nextReviewData[0].changed_by == 'SUPERVISOR_USER'
+    nextReviewData.size() == 1
   }
 }

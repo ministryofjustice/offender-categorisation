@@ -555,4 +555,31 @@ module.exports = {
     }
     return transactionalClient.query(query)
   },
+
+  recordNextReview({ bookingId, offenderNo, nextReviewDate, reason, user, transactionalClient }) {
+    logger.info(`creating next_review record for booking id ${bookingId}, offenderNo ${offenderNo}`)
+    const query = {
+      text: `insert into next_review (booking_id, offender_no, next_review_date, reason, change_date, changed_by)
+             values ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5)`,
+      values: [bookingId, offenderNo, nextReviewDate, reason, user],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getNextReview(offenderNo, transactionalClient) {
+    const query = {
+      text: `select id,
+                    booking_id          as "bookingId",
+                    offender_no         as "offenderNo",
+                    next_review_date    as "nextReviewDate",
+                    reason,
+                    change_date         as "changeDate",
+                    changed_by          as "changedBy"
+             from next_review c
+             where c.offender_no = $1
+             order by next_review_date desc`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
 }

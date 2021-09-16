@@ -23,14 +23,14 @@ This app is transactional for Postgres database operations but NOT elite2 calls.
 Otherwise when an error occurs, Nomis could get updated with the corresponding postgres changes being rolled back.
 
 ###Users
-You can log in with users stored int eh seeded nomis oauth db e.g. `CA_USER, password123456`
+You can log in with users stored in the seeded nomis oauth db e.g. `CA_USER, password123456`
 
 ### Dependencies
 The app authenticates using nomis `Nomis Oauth2 Server` and saves to a Postgres database.
 
 The app uses redis (cloud platform elasticache when deployed to our environments) to store the user session.
 
-### Running the app for development**
+### Running the app for development
 
 #### Local Redis
 Run redis as a local docker container on the default port of 6379 when running the app locally with tls disabled (the default)
@@ -45,7 +45,7 @@ NODE_TLS_REJECT_UNAUTHORIZED=0
 #### Build assets
 `npm run build`
 
-Install dependencies using `npm install` ensure you are using >= `Node v8.4.0`
+Install dependencies using `npm install`.
 
 #### Env variables
 In config.js you can see all the required variables. These are set with defaults that will allow the application to run, but you will need to add a `.env` file at some point.
@@ -60,7 +60,13 @@ In config.js you can see all the required variables. These are set with defaults
 
 ### Run tests
 
-You will need chromedriver.exe on your path to run integration tests, see https://chromedriver.chromium.org/downloads
+You will need chromedriver.exe on your path to run integration tests, see https://chromedriver.chromium.org/downloads.
+Also run docker-compose-test.yml
 
 `npm run test`
 
+Verification gradle tasks are provided to run the integration tests with or without a visible browser:
+- chromeTest
+- chromeHeadlessTest
+
+These can be run in debug mode for troubleshooting.

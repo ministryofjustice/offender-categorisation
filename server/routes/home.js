@@ -321,6 +321,8 @@ module.exports = function Index({
         categoryHistory.history
       )
 
+      const nextReviewDateHistory = await formService.getNextReview(details.offenderNo, transactionalDbClient)
+
       res.render(`pages/${role}Landing`, {
         data: {
           requiredCatType,
@@ -330,6 +332,7 @@ module.exports = function Index({
           details,
           categorisationUser,
           status: categorisationRecord.status,
+          nextReviewDateHistory,
         },
       })
     })

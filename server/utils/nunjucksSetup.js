@@ -5,6 +5,7 @@ const {
   dateConverter,
   formatLength,
   getLongDateFormat,
+  getVerboseDateFormat,
   catDisplay,
   choosingHigherCategory,
   offenderLink,
@@ -44,6 +45,7 @@ module.exports = (app, path) => {
     .addGlobal('ReviewReason', ReviewReason)
     .addGlobal('dateConverter', dateConverter)
     .addGlobal('getLongDateFormat', getLongDateFormat)
+    .addGlobal('getVerboseDateFormat', getVerboseDateFormat)
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
     .addGlobal('catDisplay', catDisplay)

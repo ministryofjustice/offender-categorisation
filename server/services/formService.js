@@ -842,6 +842,22 @@ module.exports = function createFormService(formClient) {
     return { formRows: result1.rows, liteRows: result2.rows }
   }
 
+  function recordNextReview(context, { bookingId, offenderNo, nextReviewDate, reason }, transactionalClient) {
+    return formClient.recordNextReview({
+      bookingId,
+      offenderNo,
+      nextReviewDate,
+      reason,
+      user: context.user.username,
+      transactionalClient,
+    })
+  }
+
+  async function getNextReview(offenderNo, transactionalClient) {
+    const data = await formClient.getNextReview(offenderNo, transactionalClient)
+    return data.rows
+  }
+
   return {
     getCategorisationRecord,
     update,
@@ -894,5 +910,7 @@ module.exports = function createFormService(formClient) {
     updateStatusForOutstandingRiskChange,
     getRiskChangeCount,
     updateOffenderIdentifierReturningBookingId,
+    recordNextReview,
+    getNextReview,
   }
 }

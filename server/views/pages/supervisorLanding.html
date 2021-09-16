@@ -21,29 +21,23 @@
 {% block content %}
 
 <div class="govuk-!-width-two-thirds">
-  {% if not inProgress(data) %}
-    {% if data.nextReviewDate %}
-      <p>They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
 
+  {% include "../partials/nextReviewDate.html" %}
+
+  {% if inProgress(data) %}
+    {% if data.status == Status.AWAITING_APPROVAL.name %}
+      <p>This prisoner is awaiting supervisor approval</p>
       {{ govukButton({
-        text: 'Change next review date',
-        href: '/form/nextReviewDate/nextReviewDateStandalone/' + data.details.bookingId,
+        text: 'Start approval',
+        href: "/form/supervisor/review/" + data.details.bookingId,
         classes: 'grey-button',
-        attributes: { 'id': 'nextReviewDateButton' }
+        attributes: { 'id': 'approveButton' }
       }) }}
+    {% elif data.inProgressCatType == 'RECAT' %}
+      <p>This prisoner has a categorisation review in progress.</p>
+    {% else %}
+      <p>This prisoner's initial categorisation is in progress.</p>
     {% endif %}
-  {% elif data.status == Status.AWAITING_APPROVAL.name %}
-    <p>This prisoner is awaiting supervisor approval</p>
-    {{ govukButton({
-      text: 'Start approval',
-      href: "/form/supervisor/review/" + data.details.bookingId,
-      classes: 'grey-button',
-      attributes: { 'id': 'approveButton' }
-    }) }}
-  {% elif data.inProgressCatType == 'RECAT' %}
-    <p>This prisoner has a categorisation review in progress.</p>
-  {% else %}
-    <p>This prisoner's initial categorisation is in progress.</p>
   {% endif %}
 
   {% if data.isSecurityReferred %}

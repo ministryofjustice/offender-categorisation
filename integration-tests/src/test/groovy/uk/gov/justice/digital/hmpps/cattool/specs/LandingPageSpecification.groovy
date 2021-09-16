@@ -386,7 +386,7 @@ class LandingPageSpecification extends AbstractSpecification {
     at LandingPage
 
     then: "next review date is shown correctly"
-    nextReviewDate.text() == "They are due to be reviewed by Thursday 16th January 2020."
+    nextReviewDate.text() == "They are due to be reviewed by Thursday 16 January 2020."
 
     when: "link is clicked to check previous reviews"
     elite2Api.stubAssessmentsWithCurrent("B2345YZ")
@@ -404,7 +404,7 @@ class LandingPageSpecification extends AbstractSpecification {
     when: 'the user selects a review'
     elite2Api.stubAgencyDetails('BXI')
     elite2Api.stubAgencyDetails('LEI')
-    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubAssessments(['B2345YZ']) // incorrect param type?
 
     then: 'the approved view page is shown'
     withNewWindow({ rows[0].find('td > a').click() }) {
@@ -643,7 +643,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     then: 'they are treated as no cat in progress'
     at LandingPage
-    paragraphs*.text() contains 'They are due to be reviewed by Thursday 16th January 2020.'
+    paragraphs*.text() contains 'They are due to be reviewed by:'
+    paragraphs*.text() contains 'Thursday 16 January 2020'
   }
 
   def "A supervisor user sees a next review button when there is an existing cat"() {

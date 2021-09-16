@@ -23,7 +23,7 @@
 
 <div class="govuk-!-width-two-thirds">
 
-  <h1 class="govuk-heading-m">Start an initial categorisation</h1>
+  <h1 class="govuk-heading-l">Start an initial categorisation</h1>
 
   <div>
     {% if data.requiredCatType %}
@@ -77,22 +77,14 @@
     {% endif %}
   </div>
 
-  {% if data.nextReviewDate and not inProgress(data) %}
-    <h1 class="govuk-heading-m govuk-!-padding-top-4">Change next review date</h1>
-    {{ govukButton({
-      text: 'Change next review date',
-      href: '/form/nextReviewDate/nextReviewDateStandalone/' + data.details.bookingId,
-      classes: 'grey-button',
-      attributes: { 'id': 'nextReviewDateButton' }
-    }) }}
-  {% endif %}
+  {% include "../partials/nextReviewDate.html" %}
 
   {% if data.isSecurityReferred %}
     <h1 class="govuk-heading-m">This person will automatically be referred to security at next category review</h1>
     <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
   {% endif %}
 
-  <h1 class="govuk-heading-m govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
   <p>See all information from previous category reviews.</p>
   {{ govukButton({
     text: 'Check previous reviews',
@@ -101,7 +93,7 @@
     attributes: { 'id': 'historyButton' }
   }) }}
 
-  <h1 class="govuk-heading-m govuk-!-padding-top-4" id="liteCategoriesHeading">Categorise to other categories</h1>
+  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="liteCategoriesHeading">Categorise to other categories</h1>
   <p>This allows you to categorise to Cat A, female or unclassified etc. without needing classic Nomis.</p>
   {{ govukButton({
     text: 'Create assessment',
