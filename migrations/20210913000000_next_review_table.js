@@ -1,7 +1,7 @@
 exports.up = knex =>
   Promise.all([
-    knex.schema.createTable('next_review', table => {
-      table.increments('id').primary('pk_next_review')
+    knex.schema.createTable('next_review_change_history', table => {
+      table.increments('id').primary('pk_next_review_change_history')
       table.bigInteger('booking_id')
       table.string('offender_no', 10).notNullable()
       table.date('next_review_date').notNullable()
@@ -13,4 +13,4 @@ exports.up = knex =>
     }),
   ])
 
-exports.down = knex => knex.schema.dropTable('next_review')
+exports.down = knex => knex.schema.dropTable('next_review_change_history')

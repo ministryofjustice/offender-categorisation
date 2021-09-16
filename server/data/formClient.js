@@ -557,9 +557,9 @@ module.exports = {
   },
 
   recordNextReview({ bookingId, offenderNo, nextReviewDate, reason, user, transactionalClient }) {
-    logger.info(`creating next_review record for booking id ${bookingId}, offenderNo ${offenderNo}`)
+    logger.info(`creating next_review_change_history record for booking id ${bookingId}, offenderNo ${offenderNo}`)
     const query = {
-      text: `insert into next_review (booking_id, offender_no, next_review_date, reason, change_date, changed_by)
+      text: `insert into next_review_change_history (booking_id, offender_no, next_review_date, reason, change_date, changed_by)
              values ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5)`,
       values: [bookingId, offenderNo, nextReviewDate, reason, user],
     }
@@ -575,7 +575,7 @@ module.exports = {
                     reason,
                     change_date         as "changeDate",
                     changed_by          as "changedBy"
-             from next_review c
+             from next_review_change_history c
              where c.offender_no = $1
              order by next_review_date desc`,
       values: [offenderNo],

@@ -24,7 +24,7 @@ class DatabaseUtils {
     sql.executeUpdate("delete from security_referral")
     sql.executeUpdate("delete from risk_change")
     sql.executeUpdate("delete from lite_category")
-    sql.executeUpdate("delete from next_review")
+    sql.executeUpdate("delete from next_review_change_history")
   }
 
   def getData(bookingId) {
@@ -58,7 +58,7 @@ class DatabaseUtils {
   }
 
   def getNextReviewData(offenderNo) {
-    return sql.rows("select * from next_review where offender_no = $offenderNo")
+    return sql.rows("select * from next_review_change_history where offender_no = $offenderNo")
   }
 
   def createData(bookingId, json) {
