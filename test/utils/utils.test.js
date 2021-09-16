@@ -4,6 +4,7 @@ const {
   formatLength,
   calculateNextReviewDate,
   getLongDateFormat,
+  getVerboseDateFormat,
 } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
@@ -49,13 +50,28 @@ describe('calculateDate', () => {
 
 describe('getLongDateFormat', () => {
   test.each`
-    nextDateChoice  | expectedValue
-    ${undefined}    | ${''}
-    ${''}           | ${''}
-    ${'23/04/2025'} | ${'Wednesday 23rd April 2025'}
-    ${'21/1/1974'}  | ${'Monday 21st January 1974'}
+    nextDateChoice           | expectedValue
+    ${undefined}             | ${''}
+    ${''}                    | ${''}
+    ${'23/04/2025'}          | ${'Wednesday 23 April 2025'}
+    ${'21/1/1974'}           | ${'Monday 21 January 1974'}
+    ${new Date(2020, 0, 15)} | ${'Wednesday 15 January 2020'}
   `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {
     const actualDate = getLongDateFormat(nextDateChoice)
+    expect(actualDate).toEqual(expectedValue)
+  })
+})
+
+describe('getVerboseDateFormat', () => {
+  test.each`
+    nextDateChoice           | expectedValue
+    ${undefined}             | ${''}
+    ${''}                    | ${''}
+    ${'23/04/2025'}          | ${'23 April 2025'}
+    ${'21/1/1974'}           | ${'21 January 1974'}
+    ${new Date(2020, 0, 15)} | ${'15 January 2020'}
+  `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {
+    const actualDate = getVerboseDateFormat(nextDateChoice)
     expect(actualDate).toEqual(expectedValue)
   })
 })

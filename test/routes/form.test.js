@@ -332,7 +332,7 @@ describe('GET /approvedView', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Next category review date')
-        expect(res.text).toContain('Monday 25th November 2024')
+        expect(res.text).toContain('Monday 25 November 2024')
       })
   })
 
@@ -376,7 +376,7 @@ describe('GET /approvedView', () => {
       .expect(res => {
         expect(res.text).toContain('Open Conditions')
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')
-        expect(res.text).toContain('Tuesday 13th August 2019')
+        expect(res.text).toContain('Tuesday 13 August 2019')
         expect(res.text).toContain('HMP MyPrison')
       })
   })

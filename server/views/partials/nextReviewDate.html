@@ -1,0 +1,44 @@
+{% from "button/macro.njk" import govukButton %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+
+{% if data.nextReviewDate  %}
+    <h1 class="govuk-heading-l govuk-!-padding-top-4">Review date</h1>
+    {% if not inProgress(data) %}
+      <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0"><b>They are due to be reviewed by:</b></p>
+      <p>{{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}</p>
+    {% endif %}
+
+    <h2 class="govuk-heading-m">Change history</h2>
+    <table class="govuk-table" id="nextReviewDateTable">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Previous&nbsp;review&nbsp;date</th>
+          <th class="govuk-table__header" scope="col">Reason for change</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for row in data.nextReviewDateHistory %}
+          <tr class="govuk-table__row ">
+            <td class="govuk-table__cell">{{ getVerboseDateFormat(row.nextReviewDate) }}</td>
+            <td class="govuk-table__cell">{{ row.reason }}</td>
+          </tr>
+        {% else %}
+        <tr class="govuk-table__row ">
+        <td class="govuk-table__cell">
+          None recorded yet
+          </td>
+          <td class="govuk-table__cell"/>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if not inProgress(data) %}
+      {{ govukButton({
+        text: 'Change review date',
+        href: '/form/nextReviewDate/nextReviewDateStandalone/' + data.details.bookingId,
+        classes: 'grey-button',
+        attributes: { 'id': 'nextReviewDateButton' }
+    }) }}
+   {% endif %}
+{% endif %}

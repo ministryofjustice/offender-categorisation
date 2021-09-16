@@ -1,7 +1,7 @@
 const express = require('express')
 const flash = require('connect-flash')
 const { firstItem, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { calculateNextReviewDate } = require('../utils/utils')
+const { calculateNextReviewDate, dateConverter, dateConverterToISO } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const nextReviewDate = require('../config/nextReviewDate')
@@ -24,7 +24,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { bookingId } = req.params
       const { nextDateChoice } = req.query
       const form = 'nextReviewDate'
-      const result = await buildFormData(res, req, form, bookingId, true, transactionalDbClient)
+      const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
       res.render(`formPages/nextReviewDate/${form}`, { ...result, date: calculateNextReviewDate(nextDateChoice) })
     })
   )
@@ -34,7 +34,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'nextReviewDateStandalone'
-      const result = await buildFormData(res, req, form, bookingId, false, transactionalDbClient)
+      const result = await buildFormData(res, req, true, form, bookingId, false, transactionalDbClient)
       if (result.status && result.status !== Status.APPROVED.name) {
         await transactionalDbClient.query('ROLLBACK')
         return res.render('pages/error', {
@@ -51,7 +51,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'nextReviewDateStandaloneConfirmed'
-      const result = await buildFormData(res, req, form, bookingId, false, transactionalDbClient)
+      const result = await buildFormData(res, req, true, form, bookingId, false, transactionalDbClient)
       res.render(`pages/nextReviewDateStandaloneConfirmed`, result)
     })
   )
@@ -60,12 +60,12 @@ module.exports = function Index({ formService, offendersService, userService, au
     '/:form/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
-      const result = await buildFormData(res, req, form, bookingId, true, transactionalDbClient)
+      const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
       res.render(`formPages/nextReviewDate/${form}`, result)
     })
   )
 
-  const buildFormData = async (res, req, form, bookingId, strict, transactionalDbClient) => {
+  const buildFormData = async (res, req, standalone, form, bookingId, strict, transactionalDbClient) => {
     const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
 
@@ -77,7 +77,12 @@ module.exports = function Index({ formService, offendersService, userService, au
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
-    const section = formData.catType === 'RECAT' ? 'recat' : 'ratings'
+    let section
+    if (standalone) {
+      section = 'nextReviewDate'
+    } else {
+      section = formData.catType === 'RECAT' ? 'recat' : 'ratings'
+    }
     const pageData = res.locals.formObject
     if (!pageData[section]) {
       pageData[section] = {}
@@ -86,8 +91,10 @@ module.exports = function Index({ formService, offendersService, userService, au
 
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-    const date = pageData[section] && pageData[section].nextReviewDate && pageData[section].nextReviewDate.date
-    const nomisDate = extractNextReviewDate(details)
+    const nomisDate = dateConverter(extractNextReviewDate(details))
+    const date = standalone
+      ? nomisDate
+      : pageData[section] && pageData[section].nextReviewDate && pageData[section].nextReviewDate.date
 
     return {
       data: { ...pageData, details },
@@ -96,7 +103,6 @@ module.exports = function Index({ formService, offendersService, userService, au
       reviewReason: formData.reviewReason,
       catType: formData.catType,
       date,
-      nomisDate,
       backLink,
       errors,
     }
@@ -143,8 +149,25 @@ module.exports = function Index({ formService, offendersService, userService, au
         return
       }
 
-      // Handle the possibility that there is no PG database entry: still allow Nomis update for standalone
-      if (userInput.catType) {
+      if (form === 'nextReviewDateStandalone') {
+        // Handle the possibility that there is no Postgres form entry: still allow Nomis update for standalone
+
+        const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+        await formService.recordNextReview(
+          res.locals,
+          {
+            bookingId,
+            offenderNo: details.offenderNo,
+            nextReviewDate: dateConverterToISO(userInput.date),
+            reason: userInput.reason,
+          },
+          transactionalDbClient
+        )
+
+        await offendersService.updateNextReviewDate(res.locals, bookingId, userInput.date)
+      } else if (userInput.catType) {
+        // Only update the json when categorising; it is a snapshot
         const formSection = userInput.catType === 'RECAT' ? 'recat' : 'ratings'
         await formService.update({
           bookingId: parseInt(bookingId, 10),
@@ -155,10 +178,6 @@ module.exports = function Index({ formService, offendersService, userService, au
           formName: 'nextReviewDate',
           transactionalClient: transactionalDbClient,
         })
-      }
-
-      if (form === 'nextReviewDateStandalone') {
-        await offendersService.updateNextReviewDate(res.locals, bookingId, userInput.date)
       }
 
       const nextPath = getPathFor({ data: userInput, config: formPageConfig })
