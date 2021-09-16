@@ -34,5 +34,11 @@ abstract class AbstractSpecification extends GebReportingSpec {
 
   protected TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi, allocationApi)
   protected DatabaseUtils db = new DatabaseUtils()
+
   static final TODAY = LocalDate.now()
+  static final SIX_MONTHS_AHEAD = LocalDate.now().plusMonths(6).format('dd/MM/yyyy')
+  private static final threeMonthsAhead = LocalDate.now().plusMonths(3)
+  static final THREE_MONTHS_AHEAD = threeMonthsAhead.format('dd/MM/yyyy')
+  static final THREE_MONTHS_AHEAD_ISO = threeMonthsAhead.format('yyyy-MM-dd')
+  static final THREE_MONTHS_AHEAD_LONG = threeMonthsAhead.format('d MMMM yyyy')
 }

@@ -23,5 +23,6 @@ class LandingPage extends Page {
     paragraphs { $('p') }
     liteCategoriesButton(required: false) { $('#liteCategoriesButton') }
     nextReviewDate(required: false) { $('.data-qa-nextReviewDate') }
+    nextReviewDateHistory(required: false) { $('#nextReviewDateTable > tbody > tr') }
   }
 }

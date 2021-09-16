@@ -5,6 +5,16 @@ const { dpsUrl } = require('../config')
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
+const getLongDateFormat = date => {
+  if (date) return moment(date, 'DD/MM/YYYY').format('dddd D MMMM YYYY')
+  return ''
+}
+
+const getVerboseDateFormat = date => {
+  if (date) return moment(date, 'DD/MM/YYYY').format('D MMMM YYYY')
+  return ''
+}
+
 function plural(value) {
   return value > 1 ? 's' : ''
 }
@@ -87,11 +97,6 @@ const stripAgencyPrefix = (location, agency) => {
   return location
 }
 
-const getLongDateFormat = date => {
-  if (date) return moment(date, 'DD/MM/YYYY').format('dddd Do MMMM YYYY')
-  return ''
-}
-
 const linkOnClick = handlerFn => ({
   tabIndex: 0,
   role: 'link',
@@ -153,6 +158,8 @@ const getNamesFromString = string =>
 module.exports = {
   dateConverter,
   dateConverterToISO,
+  getLongDateFormat,
+  getVerboseDateFormat,
   formatLength,
   get10BusinessDays,
   properCase,
@@ -160,7 +167,6 @@ module.exports = {
   getHoursMinutes,
   isTodayOrAfter,
   stripAgencyPrefix,
-  getLongDateFormat,
   linkOnClick,
   filterJsonObjectForLogging,
   catDisplay,

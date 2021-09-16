@@ -44,6 +44,7 @@ const formService = {
   getLiteCategorisation: jest.fn(),
   isValid: jest.fn(),
   cancelSecurityReferral: jest.fn(),
+  getNextReview: jest.fn(),
 }
 
 const homeRoute = createRouter({
@@ -451,6 +452,7 @@ describe('security upcoming', () => {
 
 describe('Security Landing page', () => {
   offendersService.getCategoryHistory.mockResolvedValue({ history: {} })
+  formService.getNextReview.mockResolvedValue([])
 
   test('security user get', () => {
     roles = ['ROLE_CATEGORISATION_SECURITY']

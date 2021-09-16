@@ -35,10 +35,16 @@ module.exports = {
           validationMessage: 'Enter a valid date that is after today',
         },
       },
+      {
+        reason: {
+          responseType: 'requiredString',
+          validationMessage: 'Please enter a reason for the change',
+        },
+      },
     ],
     validate: true,
     nextPath: {
-      path: '/form/nextReviewDate/nextReviewDateStandaloneConfirmed/',
+      path: '/',
     },
   },
 }
