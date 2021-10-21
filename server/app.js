@@ -64,7 +64,8 @@ module.exports = function createApp({
   // Secure code best practice - see:
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
   // 2. https://www.npmjs.com/package/helmet
-  app.use(helmet())
+  app.use(helmet({ contentSecurityPolicy: false })) // compatible with helmet 3.x
+  app.use(helmet.referrerPolicy({ policy: 'same-origin' }))
 
   app.use(addRequestId)
 

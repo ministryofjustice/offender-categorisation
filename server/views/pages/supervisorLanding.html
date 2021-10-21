@@ -41,11 +41,11 @@
   {% endif %}
 
   {% if data.isSecurityReferred %}
-    <h1 class="govuk-heading-l">This person will automatically be referred to security at next category review</h1>
+    <h2 class="govuk-heading-m">This person will automatically be referred to security at next category review</h2>
     <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
   {% endif %}
 
-  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <h2 class="govuk-heading-m govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h2>
   <p>See all information from previous category reviews.</p>
   {{ govukButton({
     text: 'Check previous reviews',
