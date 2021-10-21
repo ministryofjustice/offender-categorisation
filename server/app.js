@@ -64,18 +64,9 @@ module.exports = function createApp({
   // Secure code best practice - see:
   // 1. https://expressjs.com/en/advanced/best-practice-security.html,
   // 2. https://www.npmjs.com/package/helmet
-  app.use(helmet({ contentSecurityPolicy: false }))
+  app.use(helmet({ contentSecurityPolicy: false })) // compatible with helmet 3.x
   app.use(helmet.referrerPolicy({ policy: 'same-origin' }))
-  // app.use(
-  //   helmet.contentSecurityPolicy({
-  //     directives: {
-  //       defaultSrc: ["'self'"],
-  //       scriptSrc: ["'self'", 'example.com'],
-  //       objectSrc: ["'none'"],
-  //       upgradeInsecureRequests: [],
-  //     },
-  //   })
-  // )
+
   app.use(addRequestId)
 
   const client = redis.createClient({

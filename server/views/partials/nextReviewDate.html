@@ -2,13 +2,13 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
 {% if data.nextReviewDate  %}
-    <h1 class="govuk-heading-l govuk-!-padding-top-4">Review date</h1>
+    <h2 class="govuk-heading-m govuk-!-padding-top-4">Review date</h2>
     {% if not inProgress(data) %}
       <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0"><b>They are due to be reviewed by:</b></p>
       <p>{{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}</p>
     {% endif %}
 
-    <h2 class="govuk-heading-m">Change history</h2>
+    <h3 class="govuk-heading-m">Change history</h3>
     <table class="govuk-table" id="nextReviewDateTable">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">

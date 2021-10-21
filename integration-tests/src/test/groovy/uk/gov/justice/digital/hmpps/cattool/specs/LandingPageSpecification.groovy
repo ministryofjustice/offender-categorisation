@@ -95,7 +95,7 @@ class LandingPageSpecification extends AbstractSpecification {
     then: 'The page contains a warning'
     at LandingPage
     !recatButton.displayed
-    warning.text() contains 'This prisoner is Cat A. They cannot be categorised here.'
+    warning.text() contains 'This prisoner is Cat A. They cannot be categorised here'
   }
 
   def "A recategoriser user sees a continue button when a recat is in progress"() {
@@ -219,7 +219,7 @@ class LandingPageSpecification extends AbstractSpecification {
     at LandingPage
 
     then: 'A message is shown instead of a button'
-    driver.pageSource =~ /This person will automatically be referred to security at next category review/
+    driver.pageSource =~ /This person will automatically be referred to security at the next category review./
     driver.pageSource.contains('Referred by Another User of LEEDS (HMP) on ' +  LocalDate.now().format('dd/MM/yyyy'))
 
     when: 'The security user starts to cancel the referral'
@@ -461,7 +461,7 @@ class LandingPageSpecification extends AbstractSpecification {
     at LandingPage
     !recatButton.displayed
     initialButton.displayed
-    warning.text() endsWith 'This prisoner already has a category of Cat B.'
+    warning.text() endsWith 'This prisoner is already Cat B'
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
