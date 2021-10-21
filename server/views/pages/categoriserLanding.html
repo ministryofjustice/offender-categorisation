@@ -23,20 +23,20 @@
 
 <div class="govuk-!-width-two-thirds">
 
-  <h1 class="govuk-heading-l">Start an initial categorisation</h1>
+  <h1 class="govuk-heading-m">Start an initial categorisation</h1>
 
   <div>
     {% if data.requiredCatType %}
       {% if data.requiredCatType == 'RECAT' %}
         {{ govukWarningText({
-          text: 'This prisoner already has a category of ' + data.details.category + '.',
+          text: 'This prisoner is already ' + data.details.category,
           iconFallbackText: "Warning",
           classes: "forms-warning-text warning-overrides"
         }) }}
       {% endif %}
       {% if not inProgress(data) %}
         {{ govukButton({
-          text: 'Start initial categorisation',
+          text: 'Start categorisation',
           href: '/tasklist/' + data.details.bookingId + '?reason=MANUAL',
           classes: 'grey-button',
           attributes: { 'id': 'initialButton','data-prevent-double-click': 'true' }
@@ -70,7 +70,7 @@
       {% endif %}
     {% else %}
       {{ govukWarningText({
-        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here.',
+        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here',
         iconFallbackText: "Warning",
         classes: "forms-warning-text warning-overrides"
       }) }}
@@ -84,7 +84,7 @@
     <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
   {% endif %}
 
-  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <h1 class="govuk-heading-m govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
   <p>See all information from previous category reviews.</p>
   {{ govukButton({
     text: 'Check previous reviews',
@@ -93,10 +93,10 @@
     attributes: { 'id': 'historyButton' }
   }) }}
 
-  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="liteCategoriesHeading">Categorise to other categories</h1>
-  <p>This allows you to categorise to Cat A, female or unclassified etc. without needing classic Nomis.</p>
+  <h1 class="govuk-heading-m govuk-!-padding-top-4" id="liteCategoriesHeading">Change category assessment</h1>
+  <p>This allows you to recategorise, for example to unclassified, Cat A or female without using P&#8209NOMIS.</p>
   {{ govukButton({
-    text: 'Create assessment',
+    text: 'Change category',
     href: '/liteCategories/' + data.details.bookingId,
     classes: 'grey-button',
     attributes: { 'id': 'liteCategoriesButton' }

@@ -23,11 +23,13 @@
 
 <div class="govuk-!-width-two-thirds">
 
-  <h1 class="govuk-heading-l">Start a category review early</h1>
+  {% include "../partials/nextReviewDate.html" %}
+
+  <h2 class="govuk-heading-m">Start a category review early</h2>
   <div>
     {% if data.requiredCatType == 'RECAT' %}
       {% if not inProgress(data) %}
-        <p>Once an early category review is started, you will have until their review due date to finish it.</p>
+        <p>Once started, you will have until their review due date to finish it.</p>
         <form method="post">
           <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
           {{ govukButton({
@@ -72,21 +74,19 @@
       }) }}
     {% else %}
       {{ govukWarningText({
-        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here.',
+        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here',
         iconFallbackText: "Warning",
         classes: "forms-warning-text warning-overrides"
       }) }}
     {% endif %}
   </div>
 
-  {% include "../partials/nextReviewDate.html" %}
-
   {% if data.isSecurityReferred %}
     <h1 class="govuk-heading-m">This person will automatically be referred to security at next category review</h1>
     <p>Referred by {{ data.referrerUser.displayNameAlternative }}{% if data.prisonDescription %} of {{ data.prisonDescription}}{% endif %} on {{ data.referredDate }}.</p>
   {% endif %}
 
-  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <h1 class="govuk-heading-m govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
   <p>See all information from previous category reviews.</p>
   {{ govukButton({
     text: 'Check previous reviews',
@@ -95,10 +95,10 @@
     attributes: { 'id': 'historyButton' }
   }) }}
 
-  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="liteCategoriesHeading">Categorise to other categories</h1>
-  <p>This allows you to categorise to Cat A, female or unclassified etc. without needing classic Nomis.</p>
+  <h1 class="govuk-heading-m govuk-!-padding-top-4" id="liteCategoriesHeading">Change category assessment</h1>
+  <p>This allows you to recategorise, for example to unclassified, Cat A or female without using P&#8209NOMIS.</p>
   {{ govukButton({
-    text: 'Create assessment',
+    text: 'Change category',
     href: '/liteCategories/' + data.details.bookingId,
     classes: 'grey-button',
     attributes: { 'id': 'liteCategoriesButton' }
