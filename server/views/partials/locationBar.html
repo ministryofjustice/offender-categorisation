@@ -1,0 +1,9 @@
+<div class="location-bar">
+  {% include "./multirole.html" %}
+  <span class="location-bar__location govuk-!-padding-left-8 govuk-!-padding-top-2" data-test="active-location">
+    <span>{{ user.activeCaseLoad.description }}</span>
+  </span>
+  {% if user.activeCaseLoads.length > 1 %}
+    <a class="location-bar__link govuk-!-padding-top-2" href="{{ dpsHome }}change-caseload" data-test="change-location-link">Change your location</a>
+  {% endif %}
+</div>

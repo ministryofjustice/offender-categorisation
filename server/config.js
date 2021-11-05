@@ -19,6 +19,8 @@ function get(name, fallback, log, options = {}) {
   throw new Error(`Missing env var ${name}`)
 }
 
+const authUrl = get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true)
+
 module.exports = {
   redis: {
     tls_enabled: get('REDIS_TLS_ENABLED', 'false', true),
@@ -71,8 +73,9 @@ module.exports = {
   },
   apis: {
     oauth2: {
-      url: get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true),
+      url: authUrl,
       externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'), true),
+      manageAccountUrl: `${authUrl}/account-details`,
       timeout: {
         response: 30000,
         deadline: 35000,
