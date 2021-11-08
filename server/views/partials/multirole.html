@@ -1,28 +1,24 @@
-
 {% if user.roles and user.numberOfRoles > 1 %}
-
-      <div id="multiple-role" class="govuk-width-container no-print">
-        <div class="govuk-form-group">
-          <label class="govuk-label govuk-!-display-inline" for="roleSwitch">
-            Current role
-          </label>
-              {# NOTE: order must match redirectUsingRole() #}
-              <select class="govuk-select govuk-!-margin-left-1" id="roleSwitch" name="roleSwitch" onchange="location = '/switchRole/' + this.value">
-                {% if user.roles.supervisor %}
-                  <option value="supervisor" {{ "selected" if currentRole === 'supervisor' }}>Supervisor</option>
-                {% endif %}
-                {% if user.roles.recategoriser %}
-                  <option value="recategoriser" {{ "selected" if currentRole === 'recategoriser' }}>Recategoriser</option>
-                {% endif %}
-                {% if user.roles.categoriser %}
-                  <option value="categoriser" {{ "selected" if currentRole === 'categoriser' }}>Categoriser</option>
-                {% endif %}
-                {% if user.roles.security %}
-                  <option value="security" {{ "selected" if currentRole === 'security' }}>Security</option>
-                {% endif %}
-              </select>
-          <hr class="govuk-section-break govuk-!-padding-top-2 govuk-section-break--visible">
-        </div>
-      </div>
-
+  <div id="multiple-role">
+    <span class="location-bar__location" data-test="active-location">
+      <label class="govuk-label govuk-!-display-inline" for="roleSwitch">
+        Current role
+      </label>
+    </span>
+    {# NOTE: order must match redirectUsingRole() #}
+    <select class="govuk-select govuk-!-margin-left-1" id="roleSwitch" name="roleSwitch" onchange="location = '/switchRole/' + this.value">
+      {% if user.roles.supervisor %}
+        <option value="supervisor" {{ "selected" if currentRole === 'supervisor' }}>Supervisor</option>
+      {% endif %}
+      {% if user.roles.recategoriser %}
+        <option value="recategoriser" {{ "selected" if currentRole === 'recategoriser' }}>Recategoriser</option>
+      {% endif %}
+      {% if user.roles.categoriser %}
+        <option value="categoriser" {{ "selected" if currentRole === 'categoriser' }}>Categoriser</option>
+      {% endif %}
+      {% if user.roles.security %}
+        <option value="security" {{ "selected" if currentRole === 'security' }}>Security</option>
+      {% endif %}
+    </select>
+  </div>
 {% endif %}

@@ -41,6 +41,7 @@ module.exports = (app, path) => {
     .addFilter('findError', findError)
     .addFilter('offenderLink', offenderLink)
     .addGlobal('dpsHome', dpsUrl)
+    .addGlobal('manageAccountUrl', config.apis.oauth2.manageAccountUrl)
     .addGlobal('Status', Status)
     .addGlobal('ReviewReason', ReviewReason)
     .addGlobal('dateConverter', dateConverter)
@@ -52,4 +53,12 @@ module.exports = (app, path) => {
     .addGlobal('choosingHigherCategory', choosingHigherCategory)
     .addGlobal('inProgress', inProgress)
     .addGlobal('extractNextReviewDate', extractNextReviewDate)
+    .addFilter('initialiseName', fullName => {
+      // this check is for the authError page
+      if (!fullName) {
+        return null
+      }
+      const array = fullName.split(' ')
+      return `${array[0][0]}. ${array.reverse()[0]}`
+    })
 }
