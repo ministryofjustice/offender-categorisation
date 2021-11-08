@@ -3,7 +3,11 @@ kind: CronJob
 metadata:
   name: dead-letter
   labels:
-    {{- include "app.labels" . | nindent 4 }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/version: "{{ with index .Values "generic-service" }}{{ .image.tag }}{{ end }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: offender-categorisation
+    app.kubernetes.io/instance: offender-categorisation
 spec:
   schedule: "11 */6 * * *"
   concurrencyPolicy: Replace
@@ -16,10 +20,10 @@ spec:
         spec:
           containers:
           - name: offender-categorisation
-            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            image: "{{ with index .Values "generic-service" }}{{ .image.repository }}:{{ .image.tag }}{{ end }}"
             args:
             - node
             - jobs/dead-letter/clearDeadLetterQueuesWithExit
-{{ include "deployment.envs" . | nindent 12 }}
+{{- include "deployment.envs" (index .Values "generic-service") | nindent 12 }}
           restartPolicy: Never
           activeDeadlineSeconds: 1200
