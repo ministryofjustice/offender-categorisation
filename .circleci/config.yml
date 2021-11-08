@@ -7,7 +7,7 @@ orbs:
 executors:
   builder:
     docker:
-      - image: cimg/node:14.17.6-browsers
+      - image: cimg/node:14.18.1-browsers
     working_directory: ~/app
 
 jobs:
@@ -49,8 +49,8 @@ jobs:
   integration_tests:
     working_directory: ~/app
     docker:
-      - image: cimg/node:14.17.6-browsers
-      - image: circleci/postgres:alpine-ram
+      - image: cimg/node:14.18.1-browsers
+      - image: cimg/postgres:14.0
         environment:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder

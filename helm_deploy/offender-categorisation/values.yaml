@@ -1,5 +1,79 @@
 ---
-# Values here are the same across all environments
+generic-service:
+  nameOverride: offender-categorisation
+
+  image:
+    repository: quay.io/hmpps/offender-categorisation
+    tag: latest
+    pullPolicy: IfNotPresent
+    port: 3000
+
+  ingress:
+    enabled: true
+    modsecurity_enabled: false
+    modsecurity_audit_enabled: false
+    tlsSecretName: "offender-categorisation-cert"
+    path: /
+
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: http
+    periodSeconds: 30
+    initialDelaySeconds: 90
+    timeoutSeconds: 20
+    failureThreshold: 10
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: http
+    periodSeconds: 20
+    initialDelaySeconds: 60
+    timeoutSeconds: 30
+    failureThreshold: 15
+
+  env:
+    DB_SSL_ENABLED: "true"
+    REDIS_TLS_ENABLED: "true"
+
+  namespace_secrets:
+    dps-rds-instance-output:
+      DB_PASS: "database_password"
+      DB_USER: "database_username"
+      DB_SERVER: "rds_instance_address"
+      DB_NAME: "database_name"
+
+    offender-categorisation:
+      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      API_CLIENT_ID: "API_CLIENT_ID"
+      API_CLIENT_SECRET: "API_CLIENT_SECRET"
+      SESSION_SECRET: "SESSION_SECRET"
+      GOOGLE_ANALYTICS_ID: "GOOGLE_ANALYTICS_ID"
+
+    rp-sqs-instance-output:
+      RP_QUEUE_ACCESS_KEY_ID: "access_key_id"
+      RP_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
+      RP_QUEUE_URL: "sqs_rpc_url"
+
+    rp-sqs-dl-instance-output:
+      RP_DL_QUEUE_ACCESS_KEY_ID: "access_key_id"
+      RP_DL_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
+      RP_DL_QUEUE_URL: "sqs_rpc_url"
+
+    ocu-events-sqs-instance-output:
+      EVENT_QUEUE_ACCESS_KEY_ID: "access_key_id"
+      EVENT_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
+      EVENT_QUEUE_URL: "url"
+
+    ocu-events-sqs-dl-instance-output:
+      EVENT_DL_QUEUE_ACCESS_KEY_ID: "access_key_id"
+      EVENT_DL_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
+      EVENT_DL_QUEUE_URL: "url"
+
+    oc-elasticache-redis:
+      REDIS_HOST: "primary_endpoint_address"
+      REDIS_AUTH_TOKEN: "auth_token"
+
 
 generic-prometheus-alerts:
   targetApplication: offender-categorisation
