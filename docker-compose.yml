@@ -25,7 +25,7 @@ services:
     networks:
     - hmpps
     container_name: form-builder-db
-    restart: always
+    restart: unless-stopped
     ports:
     - "5432:5432"
     environment:

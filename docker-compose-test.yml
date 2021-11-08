@@ -18,7 +18,7 @@ services:
     networks:
       - hmpps
     container_name: categorisation-redis
-    restart: always
+    restart: unless-stopped
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
@@ -31,7 +31,7 @@ services:
     networks:
       - hmpps
     container_name: categorisation-localstack
-    restart: always
+    restart: unless-stopped
     environment:
       - SERVICES=${SERVICES-sqs}
       - DEBUG=${DEBUG- }
