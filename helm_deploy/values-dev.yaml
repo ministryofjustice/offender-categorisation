@@ -11,6 +11,7 @@ generic-service:
 
   ingress:
     host: dev.offender-categorisation.service.justice.gov.uk
+    contextColour: green
 
   env:
     INGRESS_URL: https://dev.offender-categorisation.service.justice.gov.uk
