@@ -17,7 +17,7 @@ generic-service:
 
   livenessProbe:
     httpGet:
-      path: /health
+      path: /ping
       port: http
     periodSeconds: 30
     initialDelaySeconds: 90
@@ -25,7 +25,7 @@ generic-service:
     failureThreshold: 10
   readinessProbe:
     httpGet:
-      path: /health
+      path: /ping
       port: http
     periodSeconds: 20
     initialDelaySeconds: 60
