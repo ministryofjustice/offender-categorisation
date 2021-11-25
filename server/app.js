@@ -53,6 +53,10 @@ module.exports = function createApp({
   // https://expressjs.com/en/guide/behind-proxies.html
   app.set('trust proxy', true)
 
+  app.get('/ping', (req, res) => {
+    return res.send('pong')
+  })
+
   // View Engine Configuration
   app.set('view engine', 'html')
 
