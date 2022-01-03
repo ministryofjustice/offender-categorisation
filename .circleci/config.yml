@@ -4,10 +4,15 @@ orbs:
   hmpps: ministryofjustice/hmpps@3.11
   browser-tools: circleci/browser-tools@1.2.1
 
+parameters:
+  node-version:
+    type: string
+    default: 14.18.1-browsers
+
 executors:
   builder:
     docker:
-      - image: cimg/node:14.18.1-browsers
+      - image: cimg/node:<< pipeline.parameters.node-version >>
     working_directory: ~/app
 
 jobs:
@@ -49,7 +54,7 @@ jobs:
   integration_tests:
     working_directory: ~/app
     docker:
-      - image: cimg/node:14.18.1-browsers
+      - image: cimg/node:<< pipeline.parameters.node-version >>
       - image: cimg/postgres:14.0
         environment:
           POSTGRES_USER: form-builder
