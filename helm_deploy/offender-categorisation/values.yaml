@@ -14,6 +14,7 @@ generic-service:
     modsecurity_audit_enabled: false
     tlsSecretName: "offender-categorisation-cert"
     path: /
+    contextColour: green
 
   livenessProbe:
     httpGet:
