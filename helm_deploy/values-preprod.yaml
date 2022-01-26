@@ -12,7 +12,6 @@ generic-service:
   ingress:
     enable_allowlist: true
     host: preprod.offender-categorisation.service.justice.gov.uk
-    contextColour: green
 
   env:
     INGRESS_URL: https://preprod.offender-categorisation.service.justice.gov.uk
