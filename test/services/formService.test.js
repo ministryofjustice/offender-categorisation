@@ -1,3 +1,4 @@
+const moment = require('moment')
 const serviceCreator = require('../../server/services/formService')
 const { validate } = require('../../server/utils/fieldValidation')
 const Status = require('../../server/utils/statusEnum')
@@ -529,10 +530,11 @@ describe('computeSuggestedCat', () => {
     },
     lifeProfile: { provisionalCategorisation: 'C' },
   }
+  const dateOfBirth = moment().subtract(20, 'years')
   test.each`
     data                                                                      | category
     ${{}}                                                                     | ${'C'}
-    ${{ details: { dateOfBirth: '2001-03-15' } }}                             | ${'I'}
+    ${{ details: { dateOfBirth } }}                                           | ${'I'}
     ${{ history: { catAType: 'A' } }}                                         | ${'B'}
     ${{ ratings: { securityBack: { catB: 'Yes' } } }}                         | ${'B'}
     ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}             | ${'B'}
