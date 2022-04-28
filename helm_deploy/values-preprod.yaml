@@ -30,6 +30,7 @@ generic-service:
     ark-nps-hmcts-ttp5: 194.33.197.0/25
     moj-official-ark-c-vodafone: 194.33.248.0/29
     moj-official-ark-f-vodafone: 194.33.249.0/29
+    global-protect: 35.176.93.186/32
     cloudplatform-live1-1: 35.178.209.113/32
     cloudplatform-live1-2: 3.8.51.207/32
     cloudplatform-live1-3: 35.177.252.54/32
