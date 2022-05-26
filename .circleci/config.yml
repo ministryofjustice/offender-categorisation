@@ -8,6 +8,12 @@ parameters:
   node-version:
     type: string
     default: 14.18.1-browsers
+  alerts-slack-channel:
+    type: string
+    default: dps_sed_alerts
+  releases-slack-channel:
+    type: string
+    default: dps-releases
 
 executors:
   builder:
@@ -169,6 +175,7 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           context:
             - offender-categorisation-prod
             - hmpps-common-vars
@@ -185,12 +192,15 @@ workflows:
                 - main
     jobs:
       - hmpps/npm_security_audit:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
@@ -204,6 +214,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
