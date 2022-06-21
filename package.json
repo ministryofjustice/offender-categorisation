@@ -13,7 +13,7 @@
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "engines": {
@@ -51,7 +51,7 @@
     "helmet": "^5.1.0",
     "http-errors": "~2.0.0",
     "joi": "^17.6.0",
-    "joi-date-extensions": "^1.2.0",
+    "@joi/date": "^2.1.0",
     "jwt-decode": "^3.1.2",
     "knex": "^2.1.0",
     "lru-cache": "^7.10.1",
@@ -63,10 +63,10 @@
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.6.1",
     "pg": "^8.7.3",
-    "querystring": "^0.2.0",
+    "querystring": "^0.2.1",
     "ramda": "^0.28.0",
     "redis": "^4.1.0",
-    "snyk": "^1.954.0",
+    "@snyk/protect": "^1.954.0",
     "sqs-consumer": "^5.7.0",
     "superagent": "^7.1.6",
     "uuid": "^8.3.2"
