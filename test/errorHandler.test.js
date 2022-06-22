@@ -52,7 +52,7 @@ describe('GET 500', () => {
       .expect(500)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Sorry, there is a problem with this service .*. We have logged the error and saved any content you entered./)
+        expect(res.text).toMatch(/Sorry, there is a problem with this service/)
         expect(res.text).not.toContain('Some error!')
       })
   })
