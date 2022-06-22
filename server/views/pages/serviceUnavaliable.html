@@ -1,0 +1,22 @@
+{% set mainClasses = 'govuk-!-width-two-thirds' %}
+{% extends "../partials/layout.html" %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% block content %}
+
+{{ govukBackLink({
+text: "Back",
+href: backLink or "/"
+}) }}
+
+<h1 class="govuk-heading-l"> Sorry, there is a problem with this service</h1>
+<p class="govuk-body">
+  Try refreshing the page or returning to the Digital Categorisation Service later.
+  We have logged the error and saved any content you entered.
+</p>
+
+<a class="govuk-link" href="{{dpsHome}}"> Go to digital services home page </a>
+
+
+{% endblock %}
