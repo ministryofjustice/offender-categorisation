@@ -36,7 +36,7 @@ describe('GET 500', () => {
       .expect(500)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Some error!')
+        expect(res.text).toMatch(/Sorry, there is a problem with this service/)
         expect(res.text).not.toMatch(/Something went wrong at .*. The error has been logged. Please try again/)
       })
   })
