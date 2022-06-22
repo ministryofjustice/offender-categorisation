@@ -25,7 +25,6 @@ class ProvisionalCategoryPage extends HeaderPage {
     indeterminateWarning(required: false) { $('#indeterminateWarning') }
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
-    errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }
   }
 }
