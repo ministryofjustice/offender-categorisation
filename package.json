@@ -30,7 +30,7 @@
     "delay": 2500
   },
   "dependencies": {
-    "agentkeepalive": "^4.2.1",
+    "agentkeepalive": "^4.1.4",
     "applicationinsights": "^2.3.3",
     "aws-sdk": "^2.1160.0",
     "body-parser": "^1.20.0",
