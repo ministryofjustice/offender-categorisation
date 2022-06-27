@@ -1,7 +1,5 @@
 module.exports = error => {
   if (error.response) {
-
-    console.log('ERR RES', error.response);
     return {
       status: error.response.status,
       statusText: error.response.statusText,
