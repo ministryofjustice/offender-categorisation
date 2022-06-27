@@ -216,13 +216,12 @@ module.exports = function createApp({
     })(req, res, next)
   )
 
-  app.use('/logout', (req, res, next) => {
+  app.use('/logout', (req, res) => {
     if (req.user) {
-      req.logout(err => {
-        if (err) return next(err)
-        return req.session.destroy(() => res.redirect(authLogoutUrl))
-      })
+      req.logout()
+      req.session.destroy()
     }
+    res.redirect(authLogoutUrl)
   })
 
   app.use(authorisationMiddleware(userService, offendersService))
