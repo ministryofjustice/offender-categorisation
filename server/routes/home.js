@@ -51,10 +51,11 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-
+      console.log('CASELOAD', res.locals.user.activeCaseLoad)
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUncategorisedOffenders(res.locals, user, transactionalDbClient)
         : []
+      console.log("oioi", offenders)
       res.render('pages/categoriserHome', { offenders })
     })
   )

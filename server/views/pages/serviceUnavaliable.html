@@ -3,20 +3,34 @@
 {% from "back-link/macro.njk" import govukBackLink %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
+
+<!--<h1 class="govuk-heading-l" id="error-summary-title"> Sorry, there is a problem with this service</h1>-->
+<!--<p class="govuk-error-summary__body">-->
+<!--  Try refreshing the page or returning to the Digital Categorisation Service later.-->
+<!--  We have logged the error and saved any content you entered.-->
+<!--</p>-->
+
+<!--<a class="govuk-link" href="{{dpsHome}}"> Go to digital services home page </a>-->
 {% block content %}
 
-{{ govukBackLink({
-text: "Back",
-href: backLink or "/"
-}) }}
+<main class="app-container">
 
-<h1 class="govuk-heading-l" id="error-summary-title"> Sorry, there is a problem with this service</h1>
-<p class="govuk-error-summary__body">
-  Try refreshing the page or returning to the Digital Categorisation Service later.
-  We have logged the error and saved any content you entered.
-</p>
-
-<a class="govuk-link" href="{{dpsHome}}"> Go to digital services home page </a>
-
+  <div class="govuk-grid-row">
+    {{ govukBackLink({
+    text: "Back",
+    href: backLink or "/"
+    }) }}
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
+      <p class="govuk-body">Try refreshing the page or returning to the Digital Categorisation Service later.
+        We have logged the error and saved any content you entered
+      </p>
+      <p class="govuk-body">We have logged the error and saved any content you entered</p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{dpsHome}}"> Go to digital services home page </a>
+      </p>
+    </div>
+  </div>
+</main>
 
 {% endblock %}
