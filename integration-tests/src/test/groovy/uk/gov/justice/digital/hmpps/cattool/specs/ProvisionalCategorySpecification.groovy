@@ -260,7 +260,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'An error is displayed and the data is not persisted'
     at ErrorPage
-    errorSummaryTitle.text() == 'Server Error'
+    errorSummaryTitle.text() == 'Sorry, there is a problem with the service'
 
     def data = db.getData(12)
     data.status == ["STARTED"]

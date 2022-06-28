@@ -18,7 +18,7 @@ class ErrorSpecification extends AbstractSpecification {
 
     then: 'the error page is displayed'
     at ErrorPage
-    errorSummaryTitle.text() == 'A test error'
+    errorSummaryTitle.text() == 'Sorry, there is a problem with the service'
     errorText.text() == 'status 500'
   }
 
