@@ -1,8 +1,5 @@
 module.exports = error => {
-  console.log('ERR', error);
   if (error.response) {
-
-    console.log('ERR RES', error.response);
     return {
       status: error.response.status,
       statusText: error.response.statusText,
@@ -14,7 +11,6 @@ module.exports = error => {
   }
   if (error.request) {
     // request is too big and best skipped
-    console.log('ERR REQ', error.request);
     return {
       code: error.code,
       message: error.message,
