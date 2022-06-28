@@ -19,7 +19,6 @@ class ErrorSpecification extends AbstractSpecification {
     then: 'the error page is displayed'
     at ErrorPage
     errorSummaryTitle.text() == 'Sorry, there is a problem with the service'
-    errorText.text() == 'status 500'
   }
 
   def "The auth page is displayed when a user does not have the correct role for the url"() {
