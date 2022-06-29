@@ -7,12 +7,11 @@
 {% block content %}
 
 <main class="app-container">
-
+  {{ govukBackLink({
+  text: "Back",
+  href: backLink or "/"
+  }) }}
   <div class="govuk-grid-row">
-    {{ govukBackLink({
-    text: "Back",
-    href: backLink or "/"
-    }) }}
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l" id="error-summary-title">Sorry, there is a problem with the service</h1>
       <p class="govuk-body">Try refreshing the page or returning to the Digital Categorisation Service later.
