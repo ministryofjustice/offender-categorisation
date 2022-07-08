@@ -55,7 +55,7 @@
     "jwt-decode": "^2.2.0",
     "knex": "^0.95.8",
     "lru-cache": "^6.0.0",
-    "moment": "^2.29.3",
+    "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "nocache": "^3.0.4",
     "nunjucks": "^3.2.3",
