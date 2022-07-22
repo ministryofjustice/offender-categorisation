@@ -10,11 +10,17 @@ generic-service:
 
   ingress:
     enabled: true
-    modsecurity_enabled: false
-    modsecurity_audit_enabled: false
-    tlsSecretName: "offender-categorisation-cert"
-    path: /
-    contextColour: green
+    v1_2_enabled: true
+    v0_47_enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        server_tokens off;
+  @@ -18,7 +20,6 @@ generic-service:
+       return 401;
+       }
+    tlsSecretName: offender-categorisation-cert
+
+
 
   livenessProbe:
     httpGet:
