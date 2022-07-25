@@ -13,7 +13,7 @@ generic-service:
     modsecurity_enabled: true
     v1_2_enabled: true
     annotations:
-    modsecurity-snippet: |
+    modsecurity_snippet: |
         SecRuleEngine On
         SecRuleRemoveById 949110
     tlsSecretName: offender-categorisation-cert
