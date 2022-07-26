@@ -16,7 +16,6 @@ generic-service:
     modsecurity_snippet: |
         SecRuleEngine On
         SecRuleRemoveById 949110
-        SecAuditLogParts AHIJKZ
     tlsSecretName: offender-categorisation-cert
 
   livenessProbe:
