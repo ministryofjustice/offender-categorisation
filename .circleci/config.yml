@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@5.1
-  browser-tools: circleci/browser-tools@1.4.0
+  browser-tools: circleci/browser-tools@1.2.1
 
 parameters:
   node-version:
@@ -61,12 +61,12 @@ jobs:
     working_directory: ~/app
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
-      - image: cimg/postgres:14.4
+      - image: cimg/postgres:14.0
         environment:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder
       - image: redis
-      - image: localstack/localstack:1.0.1
+      - image: localstack/localstack:0.11.2
         environment:
           SERVICES: sqs
           PORT_WEB_UI: 8088
