@@ -7,7 +7,7 @@
     "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend ./assets/sass/application.sass:./assets/stylesheets/application.css ./assets/sass/application-ie8.sass:./assets/stylesheets/application-ie8.css --style compressed",
     "watch-sass": "npm run compile-sass -- --watch",
     "build": "npm run compile-sass",
-    "clean": "rm -rf assets/* .port.tmp *.log build/* uploads/* test-results.xml",
+    "clean": "rm -rf assets/stylesheets/* .port.tmp *.log build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
     "test": "jest",
     "migrate": "knex migrate:latest",
