@@ -31,8 +31,8 @@
   },
   "dependencies": {
     "agentkeepalive": "^4.2.1",
-    "applicationinsights": "^2.3.3",
-    "aws-sdk": "^2.1184.0",
+    "applicationinsights": "^2.3.4",
+    "aws-sdk": "^2.1210.0",
     "body-parser": "^1.20.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
@@ -62,17 +62,17 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.6.1",
-    "pg": "^8.7.3",
+    "pg": "^8.8.0",
     "querystring": "^0.2.1",
     "ramda": "^0.28.0",
     "redis": "^3.1.2",
-    "snyk": "^1.981.0",
+    "snyk": "^1.998.0",
     "sqs-consumer": "^5.7.0",
     "superagent": "^6.1.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "eslint": "^8.20.0",
+    "eslint": "^8.23.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
@@ -80,7 +80,7 @@
     "jest": "^27.5.1",
     "nock": "^13.2.9",
     "prettier": "~2.7.1",
-    "sass": "^1.54.0",
+    "sass": "^1.54.8",
     "supertest": "^6.2.4"
   },
   "snyk": true
