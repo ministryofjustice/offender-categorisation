@@ -23,6 +23,6 @@ class NextReviewDateQuestionPage extends Page {
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
     errorSummaries { $('ul.govuk-error-summary__list li') }
-    errors(required: false) { $('span.govuk-error-message') }
+    errors(required: false) { $('govuk-error-message') }
   }
 }

@@ -16,6 +16,6 @@ abstract class DashboardPage extends Page {
     total {$('p#total')}
 
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
-    errors(required: false) { $('span.govuk-error-message') }
+    errors(required: false) { $('.govuk-error-message') }
   }
 }

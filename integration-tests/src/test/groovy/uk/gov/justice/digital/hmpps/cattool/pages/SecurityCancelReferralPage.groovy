@@ -13,6 +13,6 @@ class SecurityCancelReferralPage extends Page {
     radio { $('input', name: 'confirm') }
     submitButton { $('button.govuk-button') }
     errorSummaries { $('ul.govuk-error-summary__list li') }
-    errors(required: false) { $('span.govuk-error-message') }
+    errors(required: false) { $('.govuk-error-message') }
   }
 }
