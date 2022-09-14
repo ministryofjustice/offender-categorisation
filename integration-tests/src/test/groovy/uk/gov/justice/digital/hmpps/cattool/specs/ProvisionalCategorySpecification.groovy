@@ -110,7 +110,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    errors*.text() == ['Error:\n Please select yes or no ']
 
     when: 'I just select appropriate "No"'
     appropriateNo.click()
