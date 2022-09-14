@@ -67,7 +67,7 @@ class FasttrackCSpecification extends AbstractSpecification {
     then: 'presented with validation message'
 
     errorSummaries*.text() == ['Please enter details']
-    errors*.text() == ['Error:\nPlease enter details']
+    //errors*.text() == ['Error:\nPlease enter details']
 
     when: 'form is submitted complete'
 
