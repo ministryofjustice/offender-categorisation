@@ -32,7 +32,7 @@
   "dependencies": {
     "agentkeepalive": "^4.2.1",
     "applicationinsights": "^2.3.4",
-    "aws-sdk": "^2.1212.0",
+    "aws-sdk": "^2.1210.0",
     "body-parser": "^1.20.0",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
@@ -58,6 +58,7 @@
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "nocache": "^3.0.4",
+    "npm-check": "^6.0.1",
     "nunjucks": "^3.2.3",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",

@@ -7,7 +7,7 @@ ext {
     ext {
         groovyVersion = '2.5.14'
         gebVersion = '4.1'
-        seleniumVersion = '3.141.59'
+        seleniumVersion = '4.4.0'
     }
 }
 
@@ -24,14 +24,14 @@ dependencies {
     testImplementation "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
 
     testImplementation 'io.github.http-builder-ng:http-builder-ng-apache:1.0.4'
-    testImplementation 'org.postgresql:postgresql:42.2.23'
+    testImplementation 'org.postgresql:postgresql:42.5.0'
 
     testImplementation 'com.github.tomakehurst:wiremock-standalone:2.27.2'
     testImplementation 'com.github.tomjankes:wiremock-groovy:0.2.0'
     testImplementation 'org.slf4j:slf4j-api:1.7.32'
-    testImplementation 'ch.qos.logback:logback-classic:1.2.4'
+    testImplementation 'ch.qos.logback:logback-classic:1.4.0'
     testImplementation 'com.auth0:java-jwt:3.18.1'
-    testImplementation 'com.amazonaws:aws-java-sdk-sqs:1.11.998'
+    testImplementation 'com.amazonaws:aws-java-sdk-sqs:1.12.300'
 }
 
 drivers.each { driver ->
