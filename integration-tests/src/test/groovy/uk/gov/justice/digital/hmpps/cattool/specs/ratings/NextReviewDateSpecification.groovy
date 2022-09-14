@@ -81,7 +81,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: "Error is displayed"
     errorSummaries*.text() == ['Please select a choice']
-    //errors*.text() == ['Error:\nPlease select a choice']
+    errors*.text() == ['Error:\nPlease select a choice']
 
     when: "specific date is selected"
     specificOption.click()
@@ -97,7 +97,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: "Error is displayed"
     errorSummaries*.text() == ['Enter a valid date that is after today']
-    //errors*.text() == ['Error:\nEnter a valid date that is after today']
+    errors*.text() == ['Error:\nEnter a valid date that is after today']
   }
 
   def "The nextReviewDate Standalone page saves details correctly - in PG"() {
@@ -127,7 +127,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'there are 2 validation errors'
     errorSummaries*.text() == ['Enter a valid date that is after today','Please enter a reason for the change']
-    //errors*.text() == ['Error:\nEnter a valid date that is after today','Error:\nPlease enter details']
+    errors*.text() == ['Error:\nEnter a valid date that is after today','Error:\nPlease enter details']
 
     when: 'reason entered'
     reason = 'test reason'
@@ -135,7 +135,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'there is 1 validation error'
     errorSummaries*.text() == ['Enter a valid date that is after today']
-    //errors*.text() == ['Error:\nEnter a valid date that is after today']
+    errors*.text() == ['Error:\nEnter a valid date that is after today']
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
