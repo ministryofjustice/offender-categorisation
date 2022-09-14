@@ -22,6 +22,6 @@ class EarliestReleasePage extends Page {
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
     errorSummaries { $('ul.govuk-error-summary__list li') }
-    errors { $('span#threeOrMoreYears-error.govuk-error-message') }
+    errors { $('#threeOrMoreYears-error.govuk-error-message') }
   }
 }

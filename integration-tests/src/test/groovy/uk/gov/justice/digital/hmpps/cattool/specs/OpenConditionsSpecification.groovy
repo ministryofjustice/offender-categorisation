@@ -65,7 +65,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\n Please select yes or no ']
+      errors*.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit the page with just threeOrMoreYears=Yes'
@@ -101,7 +101,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\n Please select yes or no ']
+      errors*.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after isForeignNationalYes'
@@ -111,7 +111,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\n Please select yes or no ']
+      errors*.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after formCompletedYes'
@@ -121,7 +121,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\n Please select yes or no ']
+      errors*.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after dueDeportedYes'
@@ -131,7 +131,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\n Please select yes or no ']
+      errors*.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'the Foreign National page is completed'
@@ -147,7 +147,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\n Please select yes or no ']
+      errors*.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after seriousHarmYes'
