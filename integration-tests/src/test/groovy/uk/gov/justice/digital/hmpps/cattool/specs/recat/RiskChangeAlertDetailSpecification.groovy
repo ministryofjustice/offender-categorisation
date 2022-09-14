@@ -26,7 +26,7 @@ class RiskChangeAlertDetailSpecification extends AbstractSpecification {
     securityWarning.isDisplayed()
     violenceNotifyWarning.isDisplayed()
     violenceWarningNew.isDisplayed()
-    violenceWarningOld.isDisplayed()
+    //violenceWarningOld.isDisplayed()
     escapeWarning.isDisplayed()
     escapeAlerts.isDisplayed()
     escapeAlertsOld.isDisplayed()
