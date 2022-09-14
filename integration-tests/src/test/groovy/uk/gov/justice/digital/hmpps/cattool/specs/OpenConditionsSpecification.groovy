@@ -203,7 +203,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\n Please select yes or no ']
+      errors*.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after likelyToAbscondYes'
