@@ -73,9 +73,9 @@ class ViolenceSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with radio button validation errors'
     at ViolencePage
-    waitFor(10) {
-      errorSummaries*.text() == ['High risk of violence: please select yes or no',
+    errorSummaries*.text() == ['High risk of violence: please select yes or no',
                                  'Serious Threat: Please select yes or no']
+    waitFor(30) {
       errors*.text() == ['Error:\nPlease select yes or no',
                          'Error:\nPlease select yes or no']
     }

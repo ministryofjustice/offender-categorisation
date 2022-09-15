@@ -67,7 +67,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     }
 
     then: 'there is a validation error'
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please select yes or no']
       errors*.text() == ['Error:\nPlease select yes or no']
     }

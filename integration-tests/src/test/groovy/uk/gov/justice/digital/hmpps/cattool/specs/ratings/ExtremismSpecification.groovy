@@ -73,8 +73,8 @@ class ExtremismSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with radio button validation errors'
     at ExtremismPage
-    waitFor(10) {
-      errorSummaries*.text() == ['Please select yes or no']
+    errorSummaries*.text() == ['Please select yes or no']
+    waitFor(20) {
       errors*.text() == ['Error:\nPlease select yes or no']
     }
 

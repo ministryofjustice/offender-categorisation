@@ -205,8 +205,8 @@ class SupervisorSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'there is a validation error'
+    errorSummaries*.text() == ['Please enter a message for the categorisor']
     waitFor(10) {
-      errorSummaries*.text() == ['Please enter a message for the categorisor']
       errors*.text() == ['Error:\nPlease enter a message']
     }
 
