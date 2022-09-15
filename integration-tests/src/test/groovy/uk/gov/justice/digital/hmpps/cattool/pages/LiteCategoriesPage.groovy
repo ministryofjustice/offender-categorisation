@@ -16,6 +16,6 @@ class LiteCategoriesPage extends Page {
     saveButton(required: false) { $('button.govuk-button') }
     warning(required: false) { $('div.govuk-warning-text') }
     errorSummaries {$('ul.govuk-error-summary__list li')}
-    errors { $(span, class:'govuk-error-message') }
+    errors { $('span', class:'govuk-error-message') }
   }
 }
