@@ -54,7 +54,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '12'))
 
     when: 'open conditions task is selected'
-    openConditionsButton.click()
+    waitFor {
+      openConditionsButton.click()
+    }
 
     then: 'the Earliest Release page is displayed'
     at

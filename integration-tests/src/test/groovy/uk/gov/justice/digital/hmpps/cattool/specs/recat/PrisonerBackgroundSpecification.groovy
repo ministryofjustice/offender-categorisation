@@ -75,6 +75,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     at PrisonerBackgroundPage
+    waitFor(PrisonerBackgroundPage.errors.isDisplayed())
     errorSummaries*.text() == ['Please enter details']
     errors*.text() == ['Error:\nPlease enter details']
   }

@@ -73,15 +73,19 @@ class ExtremismSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with radio button validation errors'
     at ExtremismPage
-    errorSummaries*.text() == ['Please select yes or no']
-    //errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'I click yes but fail to add details'
     previousTerrorismOffencesYes.click()
     submitButton.click()
 
     then: 'I stay on the page with textarea validation errors'
-    errorSummaries*.text() == ['Please enter the previous offences']
-    //errors*.text() == ['Error:\nPlease enter details']
+    waitfor {
+      errorSummaries*.text() == ['Please enter the previous offences']
+      errors*.text() == ['Error:\nPlease enter details']
+    }
   }
 }

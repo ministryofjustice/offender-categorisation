@@ -26,10 +26,14 @@ class RiskChangeAlertDetailSpecification extends AbstractSpecification {
     securityWarning.isDisplayed()
     violenceNotifyWarning.isDisplayed()
     violenceWarningNew.isDisplayed()
-    //violenceWarningOld.isDisplayed()
+    waitFor {
+      violenceWarningOld.isDisplayed()
+    }
     escapeWarning.isDisplayed()
     escapeAlerts.isDisplayed()
-    //escapeAlertsOld.isDisplayed()
+    waitFor {
+      escapeAlertsOld.isDisplayed()
+    }
 
     when: 'I select yes to process'
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))

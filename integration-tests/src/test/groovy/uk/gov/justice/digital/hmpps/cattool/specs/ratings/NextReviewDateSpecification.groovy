@@ -80,8 +80,10 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDateQuestionPage
 
     then: "Error is displayed"
-    errorSummaries*.text() == ['Please select a choice']
-    //errors*.text() == ['Error:\nPlease select a choice']
+    waitFor {
+      errorSummaries*.text() == ['Please select a choice']
+      errors*.text() == ['Error:\nPlease select a choice']
+    }
 
     when: "specific date is selected"
     specificOption.click()
@@ -96,8 +98,10 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDatePage
 
     then: "Error is displayed"
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    waitFor {
+      errorSummaries*.text() == ['Enter a valid date that is after today']
+      errors*.text() == ['Error:\nEnter a valid date that is after today']
+    }
   }
 
   def "The nextReviewDate Standalone page saves details correctly - in PG"() {

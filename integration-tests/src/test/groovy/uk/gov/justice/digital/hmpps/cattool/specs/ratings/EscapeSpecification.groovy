@@ -109,8 +109,10 @@ class EscapeSpecification extends AbstractSpecification {
     saveButton.click()
 
     then:
-    errorSummaries*.text() == ['Please select yes or no', 'Please select yes or no']
-    //errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no', 'Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease select yes or no']
+    }
 
     when: 'the escape page is submitted with no reason text'
     escapeOtherEvidenceRadio = 'Yes'
@@ -118,8 +120,10 @@ class EscapeSpecification extends AbstractSpecification {
     saveButton.click()
 
     then:
-    errorSummaries*.text() == ['Please enter details explaining cat B', 'Please enter details of escape risk evidence']
-    //errors*.text() == ['Error:\nPlease enter details explaining your answer', 'Error:\nPlease provide details']
+    waitFor {
+      errorSummaries*.text() == ['Please enter details explaining cat B', 'Please enter details of escape risk evidence']
+      errors*.text() == ['Error:\nPlease enter details explaining your answer', 'Error:\nPlease provide details']
+    }
   }
 
   def "Validation without alerts"() {
@@ -138,16 +142,20 @@ class EscapeSpecification extends AbstractSpecification {
     saveButton.click()
 
     then: 'radio errors are shown'
-    errorSummaries*.text() == ['Please select yes or no']
-    //errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'the escape page is submitted with no reason text'
     escapeOtherEvidenceRadio = 'Yes'
     saveButton.click()
 
     then: 'textarea errors are shown'
-    errorSummaries*.text() == ['Please enter details of escape risk evidence']
-    //errors*.text() == ['Error:\nPlease provide details']
+    waitFor {
+      errorSummaries*.text() == ['Please enter details of escape risk evidence']
+      errors*.text() == ['Error:\nPlease provide details']
+    }
 
     when: 'the escape page is submitted with reason text'
     escapeOtherEvidenceTextarea << 'Details'

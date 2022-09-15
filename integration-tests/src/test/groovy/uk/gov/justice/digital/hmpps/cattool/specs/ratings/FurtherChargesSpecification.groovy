@@ -21,8 +21,10 @@ class FurtherChargesSpecification extends AbstractSpecification {
     saveButton.click()
 
     then: 'There is a validation error'
-    errorSummaries*.text() == ['Please select yes or no']
-    //errors*.text() == ['Error:\nPlease select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors*.text() == ['Error:\nPlease select yes or no']
+    }
 
     when: 'Some data is saved and accessed'
     furtherChargesYes.click()

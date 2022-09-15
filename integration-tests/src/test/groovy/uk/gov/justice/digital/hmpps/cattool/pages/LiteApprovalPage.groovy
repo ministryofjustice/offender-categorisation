@@ -16,6 +16,6 @@ class LiteApprovalPage extends Page {
     saveButton(required: false) { $('button.govuk-button') }
     warning(required: false) { $('div.govuk-warning-text') }
     errorSummaries {$('ul.govuk-error-summary__list li')}
-    errors {$('.govuk-error-message')}
+    errors {$('span.govuk-error-message')}
   }
 }

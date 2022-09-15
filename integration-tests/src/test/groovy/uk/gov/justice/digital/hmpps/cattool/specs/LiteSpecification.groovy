@@ -46,8 +46,10 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs but other fields are preserved'
     at LiteCategoriesPage
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    waitFor {
+      errorSummaries*.text() == ['Enter a valid date that is after today']
+      errors*.text() == ['Error:\nEnter a valid date that is after today']
+    }
     form.category == 'T'
     form.authority == 'GOV'
     form.placement == 'BXI'
@@ -59,8 +61,10 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteCategoriesPage
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    waitFor {
+      errorSummaries*.text() == ['Enter a valid date that is after today']
+      errors*.text() == ['Error:\nEnter a valid date that is after today']
+    }
 
     when: 'Re-assessment is set to an invalid date'
     form.nextReviewDate = 'INVALID'
@@ -68,8 +72,10 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteCategoriesPage
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    waitFor {
+      errorSummaries*.text() == ['Enter a valid date that is after today']
+      errors*.text() == ['Error:\nEnter a valid date that is after today']
+    }
 
     when: 'details are entered'
     go 'liteCategories/12' // reset the nextReviewDate
@@ -170,8 +176,10 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteApprovalPage
-    errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
-    errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
+    waitFor {
+      errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
+      errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
+    }
 
     when: 'Date are set to an invalid date'
     form.approvedDate = '300/02/2020'
@@ -180,8 +188,10 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteApprovalPage
-    errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
-    errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
+    waitFor {
+      errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
+      errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
+    }
 
     when: 'details are entered'
     form.approvedDate = '29/04/2020'
