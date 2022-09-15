@@ -109,7 +109,7 @@ class EscapeSpecification extends AbstractSpecification {
     saveButton.click()
 
     then:
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please select yes or no', 'Please select yes or no']
       errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease select yes or no']
     }
@@ -142,7 +142,7 @@ class EscapeSpecification extends AbstractSpecification {
     saveButton.click()
 
     then: 'radio errors are shown'
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please select yes or no']
       errors*.text() == ['Error:\nPlease select yes or no']
     }

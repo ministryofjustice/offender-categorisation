@@ -46,7 +46,7 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs but other fields are preserved'
     at LiteCategoriesPage
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Enter a valid date that is after today']
       errors*.text() == ['Error:\nEnter a valid date that is after today']
     }
@@ -61,7 +61,7 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteCategoriesPage
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Enter a valid date that is after today']
       errors*.text() == ['Error:\nEnter a valid date that is after today']
     }
@@ -72,7 +72,7 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteCategoriesPage
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Enter a valid date that is after today']
       errors*.text() == ['Error:\nEnter a valid date that is after today']
     }
@@ -176,7 +176,7 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteApprovalPage
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
       errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
     }
@@ -188,7 +188,7 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteApprovalPage
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
       errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
     }

@@ -26,12 +26,12 @@ class RiskChangeAlertDetailSpecification extends AbstractSpecification {
     securityWarning.isDisplayed()
     violenceNotifyWarning.isDisplayed()
     violenceWarningNew.isDisplayed()
-    waitFor {
+    waitFor(10) {
       violenceWarningOld.isDisplayed()
     }
     escapeWarning.isDisplayed()
     escapeAlerts.isDisplayed()
-    waitFor {
+    waitFor(10) {
       escapeAlertsOld.isDisplayed()
     }
 

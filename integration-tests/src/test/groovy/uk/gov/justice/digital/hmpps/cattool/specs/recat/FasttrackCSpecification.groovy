@@ -25,7 +25,7 @@ class FasttrackCSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'presented with validation message'
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please enter yes or no', 'Please enter yes or no']
       errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease select yes or no']
     }
@@ -47,7 +47,7 @@ class FasttrackCSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'presented with validation message'
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please enter yes or no']
       errors*.text() == ['Error:\nPlease select yes or no']
     }
@@ -67,7 +67,7 @@ class FasttrackCSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'presented with validation message'
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please enter details']
       errors*.text() == ['Error:\nPlease enter details']
     }

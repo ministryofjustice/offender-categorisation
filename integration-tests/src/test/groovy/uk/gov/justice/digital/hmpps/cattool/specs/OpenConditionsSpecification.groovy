@@ -59,11 +59,12 @@ class OpenConditionsSpecification extends AbstractSpecification {
     }
 
     then: 'the Earliest Release page is displayed'
-    at
-    EarliestReleasePage
+    at EarliestReleasePage
 
     when: 'I submit a blank page'
-    submitButton.click()
+    waitFor(5) {
+      submitButton.click()
+    }
 
     then: 'there is a validation error'
     waitFor {

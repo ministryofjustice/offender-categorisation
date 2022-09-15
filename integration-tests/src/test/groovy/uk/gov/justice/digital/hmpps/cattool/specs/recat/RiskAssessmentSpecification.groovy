@@ -54,7 +54,7 @@ class RiskAssessmentSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     at RiskAssessmentPage
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please enter lower security category details', 'Please enter higher security category details', 'Please select yes or no']
       errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease enter details', 'Error:\nPlease select yes or no']
     }
@@ -64,7 +64,7 @@ class RiskAssessmentSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with an additional textarea validation error'
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please enter lower security category details', 'Please enter higher security category details', 'Please enter other relevant information']
       errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease enter details', 'Error:\nPlease enter details']
     }

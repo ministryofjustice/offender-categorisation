@@ -109,7 +109,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please select yes or no']
       errors*.text() == ['Error:\nPlease select yes or no']
     }
@@ -349,7 +349,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The tasklist is shown with open conditions task removed but form data retained in database'
     at TasklistPage
-    !openConditionsButton.displayed
+    assert openConditionsButton.displayed == false
 
 
     def data = db.getData(12)

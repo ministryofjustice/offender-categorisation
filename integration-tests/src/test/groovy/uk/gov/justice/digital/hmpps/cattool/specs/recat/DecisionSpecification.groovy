@@ -201,7 +201,7 @@ class DecisionSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     at DecisionPage
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please select a security condition']
       errors*.text() == ['Error:\nPlease select a security condition']
     }

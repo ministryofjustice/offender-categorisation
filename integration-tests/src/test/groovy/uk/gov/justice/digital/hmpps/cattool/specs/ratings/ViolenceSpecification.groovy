@@ -73,7 +73,7 @@ class ViolenceSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with radio button validation errors'
     at ViolencePage
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['High risk of violence: please select yes or no',
                                  'Serious Threat: Please select yes or no']
       errors*.text() == ['Error:\nPlease select yes or no',
@@ -86,7 +86,7 @@ class ViolenceSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with textarea validation errors'
-    waitFor {
+    waitFor(10) {
       errorSummaries*.text() == ['Please enter high risk of violence details',
                                  'Please enter serious threat details']
       errors*.text() == ['Error:\nPlease enter details',
