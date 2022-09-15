@@ -22,6 +22,6 @@ class CategoriserOffendingHistoryPage extends HeaderPage {
     previousConvictionsNo { $('#previousConvictions-2') }
     history { $('div.forms-comments-text li') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
-    errors(required: false) errors { $('span.govuk-error-message') }
+    errors(required: false) { $('span.govuk-error-message') }
   }
 }
