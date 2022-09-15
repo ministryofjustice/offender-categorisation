@@ -206,7 +206,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'there is a validation error'
     errorSummaries*.text() == ['Please enter a message for the categorisor']
-    waitFor(10) {
+    waitFor(30) {
       errors*.text() == ['Error:\nPlease enter a message']
     }
 

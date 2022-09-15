@@ -110,7 +110,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     errorSummaries*.text() == ['Please select yes or no']
-    waitFor(10) {
+    waitFor(30) {
       errors*.text() == ['Error:\nPlease select yes or no']
     }
 

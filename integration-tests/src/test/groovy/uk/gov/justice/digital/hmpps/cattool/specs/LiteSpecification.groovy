@@ -46,8 +46,8 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs but other fields are preserved'
     at LiteCategoriesPage
-    waitFor(10) {
-      errorSummaries*.text() == ['Enter a valid date that is after today']
+    errorSummaries*.text() == ['Enter a valid date that is after today']
+    waitFor(20) {
       errors*.text() == ['Error:\nEnter a valid date that is after today']
     }
     form.category == 'T'
@@ -61,8 +61,8 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteCategoriesPage
-    waitFor(10) {
-      errorSummaries*.text() == ['Enter a valid date that is after today']
+    errorSummaries*.text() == ['Enter a valid date that is after today']
+    waitFor(20) {
       errors*.text() == ['Error:\nEnter a valid date that is after today']
     }
 
@@ -72,8 +72,8 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteCategoriesPage
-    waitFor(10) {
-      errorSummaries*.text() == ['Enter a valid date that is after today']
+    errorSummaries*.text() == ['Enter a valid date that is after today']
+    waitFor(20) {
       errors*.text() == ['Error:\nEnter a valid date that is after today']
     }
 
@@ -176,8 +176,8 @@ class LiteSpecification extends AbstractSpecification {
 
     then: 'A validation error occurs'
     at LiteApprovalPage
-    waitFor(10) {
-      errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
+    errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
+    waitFor(20) {
       errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
     }
 
@@ -189,7 +189,7 @@ class LiteSpecification extends AbstractSpecification {
     then: 'A validation error occurs'
     at LiteApprovalPage
     errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
-    waitFor(10) {
+    waitFor(20) {
       errors*.text() == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
     }
 

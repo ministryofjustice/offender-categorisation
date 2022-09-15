@@ -228,8 +228,8 @@ class LandingPageSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'there is a validation error'
-    waitFor(10) {
-      errorSummaries*.text() == ['Please select yes or no']
+    errorSummaries*.text() == ['Please select yes or no']
+    waitFor(20) {
       errors*.text() == ['Error:\nPlease select yes or no']
     }
 

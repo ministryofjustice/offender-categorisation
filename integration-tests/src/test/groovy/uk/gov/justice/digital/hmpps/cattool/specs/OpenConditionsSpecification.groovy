@@ -54,7 +54,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '12'))
 
     when: 'open conditions task is selected'
-    waitFor {
+    waitFor(10) {
       openConditionsButton.click()
     }
 
@@ -67,8 +67,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     }
 
     then: 'there is a validation error'
-    waitFor(10) {
-      errorSummaries*.text() == ['Please select yes or no']
+    errorSummaries*.text() == ['Please select yes or no']
+    waitFor(20) {
       errors*.text() == ['Error:\nPlease select yes or no']
     }
 
