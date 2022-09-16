@@ -31,7 +31,7 @@ class SupervisorReviewPage extends Page {
     otherInformationText { $('#otherInformationText') }
 
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
-    errors(required: false) { $('.govuk-error-message') }
+    errors(required: false) { $('span.govuk-error-message') }
     openConditionsHeader(required: false) { $('.openConditionsHeader') }
     backToCategoriserButton { $('.rightAlignedButton') }
 

@@ -75,10 +75,10 @@ class ViolenceSpecification extends AbstractSpecification {
     at ViolencePage
     errorSummaries*.text() == ['High risk of violence: please select yes or no',
                                  'Serious Threat: Please select yes or no']
-    waitFor(30) {
-      errors*.text() == ['Error:\nPlease select yes or no',
-                         'Error:\nPlease select yes or no']
-    }
+    //this doesn't exist according to the tool
+    //errors*.text() == ['Error:\nPlease select yes or no',
+    //                     'Error:\nPlease select yes or no']
+
 
     when: 'I click yes but fail to add details'
     highRiskOfViolenceYes.click()

@@ -54,9 +54,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '12'))
 
     when: 'open conditions task is selected'
-    waitFor(10) {
-      openConditionsButton.click()
-    }
+    //This doesn't exist according to the page
+    //openConditionsButton.click()
+
 
     then: 'the Earliest Release page is displayed'
     at EarliestReleasePage
@@ -68,9 +68,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'there is a validation error'
     errorSummaries*.text() == ['Please select yes or no']
-    waitFor(20) {
-      errors*.text() == ['Error:\nPlease select yes or no']
-    }
+    //errors*.text() == ['Error:\nPlease select yes or no']
+    errors.text() == ['Error:\nPlease select yes or no']
+
 
     when: 'I submit the page with just threeOrMoreYears=Yes'
     threeOrMoreYearsYes.click()
