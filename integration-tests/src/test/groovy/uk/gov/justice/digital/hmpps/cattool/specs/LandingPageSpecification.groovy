@@ -229,7 +229,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     then: 'there is a validation error'
     errorSummaries*.text() == ['Please select yes or no']
-    $('.govuk-error-message').text().toString() == "[Error:\nPlease select yes or no]"
+    errors.text().toString() == "Error:\nPlease select yes or no"
 
     when: 'The security user selects no'
     radio = 'No'

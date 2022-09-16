@@ -7,7 +7,7 @@ class EarliestReleasePage extends Page {
   static url = '/form/openConditions/earliestReleaseDate'
 
   static at = {
-    headingText == 'Categorisation task list'
+    headingText == 'Earliest release date'
   }
 
   static content = {
