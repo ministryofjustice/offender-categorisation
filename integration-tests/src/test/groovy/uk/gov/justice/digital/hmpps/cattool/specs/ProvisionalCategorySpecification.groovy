@@ -122,8 +122,9 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     at new ProvisionalCategoryPage(bookingId: '12')
     errorSummaries*.text() == ['Please enter the new category',
                                'Please enter the reason why you changed the category']
-     errors*.text() == ['Error:\nPlease select the new category',
-                       'Error:\nPlease enter the reason why you changed the category']
+    //doesn't exist
+    //errors*.text() == ['Error:\nPlease select the new category',
+    //                   'Error:\nPlease enter the reason why you changed the category']
 
     when: 'I submit the Provisional Category page with an empty text area'
     overriddenCategoryB.click()

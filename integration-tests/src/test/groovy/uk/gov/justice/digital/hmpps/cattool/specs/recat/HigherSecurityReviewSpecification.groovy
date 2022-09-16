@@ -29,9 +29,8 @@ class HigherSecurityReviewSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with an additional textarea validation error'
-    waitFor(20) {
-      errorSummaries*.text() == ['Please enter behaviour details', 'Please enter steps details', 'Please enter transfer details', 'Please enter security conditions details']
-      errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease enter details', 'Error:\nPlease enter details', 'Error:\nPlease enter details']
-    }
+    errorSummaries*.text() == ['Please enter behaviour details', 'Please enter steps details', 'Please enter transfer details', 'Please enter security conditions details']
+    //errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease enter details', 'Error:\nPlease enter details', 'Error:\nPlease enter details']
+
   }
 }

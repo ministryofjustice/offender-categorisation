@@ -55,7 +55,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     when: 'open conditions task is selected'
     //This doesn't exist according to the page
-    //openConditionsButton.click()
+    waitFor(20) {
+      openConditionsButton.click()
+    }
 
 
     then: 'the Earliest Release page is displayed'
