@@ -75,7 +75,7 @@ class ViolenceSpecification extends AbstractSpecification {
     at ViolencePage
     errorSummaries*.text() == ['High risk of violence: please select yes or no',
                                  'Serious Threat: Please select yes or no']
-    errors == ['Please select yes or no', 'Please select yes or no']
+    errors.text() == ['Error\nPlease select yes or no', 'Error:\nPlease select yes or no']
 
 
     when: 'I click yes but fail to add details'
@@ -87,7 +87,7 @@ class ViolenceSpecification extends AbstractSpecification {
 
     errorSummaries*.text() == ['Please enter high risk of violence details',
                                'Please enter serious threat details']
-    errors == ['Please enter details', 'Please enter details']
+    errors.text() == ['Error:\nPlease enter details', 'Error:\nPlease enter details']
 
   }
 }

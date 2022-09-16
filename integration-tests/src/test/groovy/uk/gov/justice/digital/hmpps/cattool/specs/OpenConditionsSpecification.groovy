@@ -71,7 +71,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      ($('.govuk-error-message').text().toString() == "Errors:\nPlease select yes or no")
+      ($('.govuk-error-message').text().toString() == "Error:\nPlease select yes or no")
     }
 
 
@@ -82,7 +82,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors.text() == ['Errors:\nPlease select yes or no']
+      errors.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
@@ -92,7 +92,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please enter details']
-      errors.text() == ['Errors:\nPlease enter details']
+      errors.text() == ['Error:\nPlease enter details']
     }
 
     when: 'the Earliest Release page is completed'
@@ -108,7 +108,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors == ['Please select yes or no']
+      errors.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after isForeignNationalYes'
@@ -118,7 +118,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors.text() == ['Errors:\nPlease select yes or no']
+      errors.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after formCompletedYes'
@@ -128,7 +128,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after dueDeportedYes'
@@ -138,7 +138,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'the Foreign National page is completed'
@@ -154,7 +154,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after seriousHarmYes'
@@ -164,7 +164,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no', 'Please enter details']
-      errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease enter details']
+      errors.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease enter details']
     }
 
     when: 'I submit page after harmManagedYes'
@@ -174,7 +174,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please enter details']
-      errors*.text() == ['Error:\nPlease enter details']
+      errors.text() == ['Error:\nPlease enter details']
     }
 
     when: 'the Risk of Serious Harm page is completed'
@@ -192,7 +192,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please enter details', 'Please select yes or no']
-      errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease select yes or no']
+      errors.text() == ['Error:\nPlease enter details', 'Error:\nPlease select yes or no']
     }
 
     when: 'the Further Charges page is completed'
@@ -210,7 +210,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit page after likelyToAbscondYes'
@@ -220,7 +220,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please enter details']
-      errors*.text() == ['Error:\nPlease enter details']
+      errors.text() == ['Error:\nPlease enter details']
     }
 
     when: 'the Risk Levels page is completed'

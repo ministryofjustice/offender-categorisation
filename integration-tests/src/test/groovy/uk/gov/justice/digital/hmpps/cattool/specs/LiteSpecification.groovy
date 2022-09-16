@@ -174,7 +174,7 @@ class LiteSpecification extends AbstractSpecification {
     then: 'A validation error occurs'
     at LiteApprovalPage
     errorSummaries*.text() == ['Enter a valid date that is after today', 'Enter a valid date that is today or earlier']
-    $('.govuk-error-message')  == ['Error:\nEnter a valid date', 'Enter a valid future date']
+    $('.govuk-error-message')  == ['Error:\nEnter a valid date', 'Error:\nEnter a valid future date']
 
 
     when: 'Date are set to an invalid date'
