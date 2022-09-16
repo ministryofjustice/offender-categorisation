@@ -22,6 +22,7 @@ class CategoriserFurtherChargesPage extends HeaderPage {
     furtherChargesText { $('#furtherChargesText') }
     history { $('div.forms-comments-text li') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
-    errors(required: false) { $('span#furtherCharges-error.govuk-error-message') }
+    errors(required: false) { $('span.govuk-error-message') }
+    furtherChargesErrors {$(By.xpath'//*[@id="furtherCharges-errors"]')}
   }
 }
