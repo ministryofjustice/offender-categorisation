@@ -71,7 +71,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     errorSummaries*.text() == ['Please select yes or no']
     //errors*.text() == ['Error:\nPlease select yes or no']
-    $('.govuk-error-message').text()  == ['Please select yes or no']
+    $('.govuk-error-message') == ['Please select yes or no']
 
 
     when: 'I submit the page with just threeOrMoreYears=Yes'
@@ -81,7 +81,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors == ['Please select yes or no']
     }
 
     when: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
@@ -91,7 +91,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please enter details']
-      errors*.text() == ['Error:\nPlease enter details']
+      errors == ['Please enter details']
     }
 
     when: 'the Earliest Release page is completed'
@@ -107,7 +107,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors == ['Please select yes or no']
     }
 
     when: 'I submit page after isForeignNationalYes'
@@ -117,7 +117,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors == ['Please select yes or no']
     }
 
     when: 'I submit page after formCompletedYes'
