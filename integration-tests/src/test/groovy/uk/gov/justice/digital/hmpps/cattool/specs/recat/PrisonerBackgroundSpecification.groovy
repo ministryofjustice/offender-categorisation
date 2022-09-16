@@ -76,8 +76,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     then: 'I stay on the page with validation errors'
     at PrisonerBackgroundPage
     errorSummaries*.text() == ['Please enter details']
-    //This doesn't exist on the page according to the code
-    //errors*.text() == ['Error:\nPlease enter details']
+    errors == ['Please enter details']
 
   }
 

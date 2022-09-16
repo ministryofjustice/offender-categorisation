@@ -78,7 +78,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: "Error is displayed"
     errorSummaries*.text() == ['Please select a choice']
-    //errors*.text() == ['Error:\nPlease select a choice']
+    errors == ['Please select a choice']
 
 
     when: "specific date is selected"
@@ -95,7 +95,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: "Error is displayed"
     errorSummaries*.text() == ['Enter a valid date that is after today']
-    //errors*.text() == ['Error:\nEnter a valid date that is after today']
+    errors == ['Enter a valid date that is after today']
 
   }
 
@@ -125,8 +125,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'there are 2 validation errors'
     errorSummaries*.text() == ['Enter a valid date that is after today', 'Please enter a reason for the change']
-    //This doesn't exist according to the tool
-    //errors*.text() == ['Error:\nEnter a valid date that is after today', 'Error:\nPlease enter details']
+    errors == ['Enter a valid date that is after today', 'Please enter details']
 
 
     when: 'reason entered'
@@ -134,9 +133,9 @@ class NextReviewDateSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'there is 1 validation error'
-    waitFor(10) {
+    waitFor {
       errorSummaries*.text() == ['Enter a valid date that is after today']
-      errors*.text() == ['Error:\nEnter a valid date that is after today']
+      errors == ['Enter a valid date that is after today']
     }
 
     when: 'date is modified'

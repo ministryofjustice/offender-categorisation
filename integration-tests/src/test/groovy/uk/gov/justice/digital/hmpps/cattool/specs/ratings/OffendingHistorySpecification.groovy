@@ -28,8 +28,7 @@ class OffendingHistorySpecification extends AbstractSpecification {
 
     then: 'There is a validation error'
     errorSummaries*.text() == ['Please select yes or no']
-    //this doesn't exist according to the tool
-    //errors*.text() == ['Error:\nPlease select yes or no']
+    errors == ['Please select yes or no']
 
 
     when: 'Some data is saved and accessed'

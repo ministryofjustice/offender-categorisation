@@ -110,8 +110,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     errorSummaries*.text() == ['Please select yes or no']
-    //this doesn't exist
-    //errors*.text() == ['Error:\nPlease select yes or no']
+    errors == ['Please select yes or no']
 
 
     when: 'I just select appropriate "No"'
@@ -122,9 +121,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     at new ProvisionalCategoryPage(bookingId: '12')
     errorSummaries*.text() == ['Please enter the new category',
                                'Please enter the reason why you changed the category']
-    //doesn't exist
-    //errors*.text() == ['Error:\nPlease select the new category',
-    //                   'Error:\nPlease enter the reason why you changed the category']
+    errors == ['Please select the new category', 'Please enter the reason why you changed the category']
 
     when: 'I submit the Provisional Category page with an empty text area'
     overriddenCategoryB.click()
@@ -133,8 +130,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     then: 'I stay on the page with validation errors'
     at new ProvisionalCategoryPage(bookingId: '12')
     errorSummaries*.text() == ['Please enter the reason why you changed the category']
-    //errors*.text() == ['Error:\nPlease enter the reason why you changed the category']
-    $('govuk-error-message').text()  == ['Please enter the reason why you changed the category']
+    errors == ['Please enter the reason why you changed the category']
   }
 
   def 'young offender redirects to open conditions flow'() {

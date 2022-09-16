@@ -206,8 +206,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'there is a validation error'
     errorSummaries*.text() == ['Please enter a message for the categorisor']
-    //this doesn't exist on page according to test
-    // errors*.text() == ['Error:\nPlease enter a message']
+    errors == ['Please enter a message']
 
 
     when: 'the supervisor confirms to return to categoriser'

@@ -202,7 +202,6 @@ class DecisionSpecification extends AbstractSpecification {
     then: 'I stay on the page with validation errors'
     at DecisionPage
     errorSummaries*.text() == ['Please select a security condition']
-    //This doesn't exist according to the tool
-    //errors*.text() == ['Error:\nPlease select a security condition']
+    errors == ['Please select a security condition']
   }
 }
