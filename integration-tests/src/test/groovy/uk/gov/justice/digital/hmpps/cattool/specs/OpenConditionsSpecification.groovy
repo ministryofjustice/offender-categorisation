@@ -71,7 +71,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      $('.govuk-error-message').text() == ['Errors:\nPlease select yes or no']
+      ($('.govuk-error-message').text().toString() == "Errors:\nPlease select yes or no")
     }
 
 

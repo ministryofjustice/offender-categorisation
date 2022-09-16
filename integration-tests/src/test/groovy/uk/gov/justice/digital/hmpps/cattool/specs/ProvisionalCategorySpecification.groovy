@@ -110,7 +110,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     errorSummaries*.text() == ['Please select yes or no']
-    errors == ['Please select yes or no']
+    errors.text().toString().equals("Error:\nPlease select yes or no")
 
 
     when: 'I just select appropriate "No"'

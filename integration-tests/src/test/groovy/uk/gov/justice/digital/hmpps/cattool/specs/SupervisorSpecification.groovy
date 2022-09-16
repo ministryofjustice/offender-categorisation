@@ -206,7 +206,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'there is a validation error'
     errorSummaries*.text() == ['Please enter a message for the categorisor']
-    errors == ['Please enter a message']
+    $('.govuk-error-message').text().toString() == "Error:\nPlease enter a message"
 
 
     when: 'the supervisor confirms to return to categoriser'
