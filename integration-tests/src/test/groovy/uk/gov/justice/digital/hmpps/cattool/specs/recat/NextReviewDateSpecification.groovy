@@ -94,10 +94,9 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDatePage
 
     then: "Error is displayed"
-    waitFor(10) {
-      errorSummaries*.text() == ['Enter a valid date that is after today']
-      errors*.text() == ['Error:\nEnter a valid date that is after today']
-    }
+    errorSummaries*.text() == ['Enter a valid date that is after today']
+    //errors*.text() == ['Error:\nEnter a valid date that is after today']
+
   }
 
   def "The nextReviewDate Standalone page saves details correctly - in PG"() {

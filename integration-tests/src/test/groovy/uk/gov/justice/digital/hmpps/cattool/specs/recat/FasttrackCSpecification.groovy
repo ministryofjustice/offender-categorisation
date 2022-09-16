@@ -66,10 +66,9 @@ class FasttrackCSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'presented with validation message'
-    waitFor(10) {
-      errorSummaries*.text() == ['Please enter details']
-      errors*.text() == ['Error:\nPlease enter details']
-    }
+    errorSummaries*.text() == ['Please enter details']
+    //errors*.text() == ['Error:\nPlease enter details']
+
 
     when: 'form is submitted complete'
 

@@ -71,7 +71,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     errorSummaries*.text() == ['Please select yes or no']
     //errors*.text() == ['Error:\nPlease select yes or no']
-    errors.text() == ['Error:\nPlease select yes or no']
+    $('.govuk-error-message').text()  == ['Please select yes or no']
 
 
     when: 'I submit the page with just threeOrMoreYears=Yes'

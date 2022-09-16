@@ -133,7 +133,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     then: 'I stay on the page with validation errors'
     at new ProvisionalCategoryPage(bookingId: '12')
     errorSummaries*.text() == ['Please enter the reason why you changed the category']
-    errors*.text() == ['Error:\nPlease enter the reason why you changed the category']
+    //errors*.text() == ['Error:\nPlease enter the reason why you changed the category']
+    $('govuk-error-message').text()  == ['Please enter the reason why you changed the category']
   }
 
   def 'young offender redirects to open conditions flow'() {

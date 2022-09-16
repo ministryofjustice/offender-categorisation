@@ -75,7 +75,7 @@ class ExtremismSpecification extends AbstractSpecification {
     at ExtremismPage
     errorSummaries*.text() == ['Please select yes or no']
     //errors*.text() == ['Error:\nPlease select yes or no']
-    $('span.govuk-error-message').text() == ['Error:\nPlease select yes or no']
+    $('.govuk-error-message').text() == ['Error:\nPlease select yes or no']
 
     when: 'I click yes but fail to add details'
     previousTerrorismOffencesYes.click()
