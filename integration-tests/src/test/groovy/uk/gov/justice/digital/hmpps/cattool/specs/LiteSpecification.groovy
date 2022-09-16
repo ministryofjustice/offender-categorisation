@@ -47,7 +47,7 @@ class LiteSpecification extends AbstractSpecification {
     then: 'A validation error occurs but other fields are preserved'
     at LiteCategoriesPage
     errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors == ['Enter a valid date that is after today']
+    $(".govuk-error-message").text() == ['Enter a valid date that is after today']
 
     form.category == 'T'
     form.authority == 'GOV'
