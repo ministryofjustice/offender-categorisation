@@ -249,7 +249,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the supervisor message is flagged as read'
     at TasklistPage
-    supervisorMessageButton.text().contains('View-') == 1
+    supervisorMessageButton.text().contains('View') == 1
   }
 
   def "Overriding to an Open conditions category returns the record to the categoriser"() {
