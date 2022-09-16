@@ -206,7 +206,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'there is a validation error'
     errorSummaries*.text() == ['Please enter a message for the categorisor']
-    $('.govuk-error-message').text().toString() == "Error:\nPlease enter a message"
+    errors.text().toString() == "Error:\nPlease enter a message"
 
 
     when: 'the supervisor confirms to return to categoriser'
@@ -249,7 +249,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the supervisor message is flagged as read'
     at TasklistPage
-    supervisorMessageButton.text() == 'View'
+    supervisorMessageButton.text().contains('View-') == 1
   }
 
   def "Overriding to an Open conditions category returns the record to the categoriser"() {

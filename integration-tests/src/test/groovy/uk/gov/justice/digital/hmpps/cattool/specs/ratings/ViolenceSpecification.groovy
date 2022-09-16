@@ -87,7 +87,7 @@ class ViolenceSpecification extends AbstractSpecification {
 
     errorSummaries*.text() == ['Please enter high risk of violence details',
                                'Please enter serious threat details']
-    errors.text() == ['Error:\nPlease enter details', 'Error:\nPlease enter details']
+    errors*.text() == ['Error:\nPlease enter details', 'Error:\nPlease enter details']
 
   }
 }

@@ -110,7 +110,7 @@ class EscapeSpecification extends AbstractSpecification {
 
     then:
     errorSummaries*.text() == ['Please select yes or no', 'Please select yes or no']
-    errors == ['Please select yes or no', 'Please select yes or no']
+    errors*.text() == ['Error:\nPlease select yes or no', 'Error:\nPlease select yes or no']
 
 
 
@@ -122,7 +122,7 @@ class EscapeSpecification extends AbstractSpecification {
     then:
     waitFor {
       errorSummaries*.text() == ['Please enter details explaining cat B', 'Please enter details of escape risk evidence']
-      errors == ['Please enter details explaining your answer', 'Please provide details']
+      errors*.text() == ['Error:\nPlease enter details explaining your answer', 'Error:\nPlease provide details']
     }
   }
 
@@ -143,7 +143,7 @@ class EscapeSpecification extends AbstractSpecification {
 
     then: 'radio errors are shown'
     errorSummaries*.text() == ['Please select yes or no']
-    errors == ['Please select yes or no']
+    errors.text().toString() == "Error:\nPlease select yes or no"
 
     when: 'the escape page is submitted with no reason text'
     escapeOtherEvidenceRadio = 'Yes'

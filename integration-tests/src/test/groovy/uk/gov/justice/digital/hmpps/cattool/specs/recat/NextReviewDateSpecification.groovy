@@ -125,7 +125,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'there are 2 validation errors'
     errorSummaries*.text() == ['Enter a valid date that is after today', 'Please enter a reason for the change']
-    errors.text() == ['Error:\nEnter a valid date that is after today', 'Error:\nPlease enter details']
+    errors*.text() == ['Error:\nEnter a valid date that is after today', 'Error:\nPlease enter details']
 
 
     when: 'reason entered'
@@ -135,7 +135,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     then: 'there is 1 validation error'
     waitFor {
       errorSummaries*.text() == ['Enter a valid date that is after today']
-      errors == ['Error:\nEnter a valid date that is after today']
+      errors.text() == ['Error:\nEnter a valid date that is after today']
     }
 
     when: 'date is modified'
