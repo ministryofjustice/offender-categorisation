@@ -81,9 +81,8 @@ class ExtremismSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with textarea validation errors'
-    waitfor {
-      errorSummaries*.text() == ['Please enter the previous offences']
-      errors.text().toString() == ["Error:\nPlease enter details"]
-    }
+    errorSummaries*.text() == ['Please enter the previous offences']
+    errors.text().toString() == "Error:\nPlease enter details"
+
   }
 }

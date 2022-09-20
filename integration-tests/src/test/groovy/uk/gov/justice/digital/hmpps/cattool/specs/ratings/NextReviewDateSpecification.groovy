@@ -137,7 +137,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'there is 1 validation error'
     errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors.text().toString() == ["Error:\nEnter a valid date that is after today"]
+    errors.text().toString() == "Error:\nEnter a valid date that is after today"
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
