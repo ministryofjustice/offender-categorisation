@@ -59,7 +59,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
     waitFor(10) {
-      justifyYes.displayed
+      justifyYes.isDisplayed()
     }
     justifyYes.click()
     justifyText << 'details text'
