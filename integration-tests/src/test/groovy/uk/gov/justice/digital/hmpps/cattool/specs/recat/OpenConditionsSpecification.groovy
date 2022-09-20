@@ -44,16 +44,15 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'the tasklist recat page is displayed with open conditions section added'
     at TasklistRecatPage
-    openConditionsButton.displayed
+    waitFor(10) {
+      openConditionsButton.displayed
+    }
 
     when: 'open conditions task is selected'
     openConditionsButton.click()
 
-
     then: 'the Earliest Release page is displayed'
-    waitFor(10) {
-      at EarliestReleasePage
-    }
+    at EarliestReleasePage
 
     when: 'I submit the page'
     threeOrMoreYearsYes.click()

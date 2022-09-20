@@ -54,13 +54,11 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '12'))
 
     when: 'open conditions task is selected'
-    //This doesn't exist according to the page
-    //openConditionsButton.click()
+    openConditionsButton.click()
 
     then: 'the Earliest Release page is displayed'
-    waitFor(10) {
-      at EarliestReleasePage
-    }
+    at EarliestReleasePage
+
 
     when: 'I submit a blank page'
     waitFor(5) {
