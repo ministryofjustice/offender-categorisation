@@ -58,7 +58,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     //openConditionsButton.click()
 
     then: 'the Earliest Release page is displayed'
-    at EarliestReleasePage
+    waitFor(10) {
+      at EarliestReleasePage
+    }
 
     when: 'I submit a blank page'
     waitFor(5) {
