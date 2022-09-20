@@ -54,11 +54,11 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'the Earliest Release page is displayed'
     at EarliestReleasePage
 
-    when: 'I submit the page'
+    when: 'I submit the page with just threeOrMoreYears=Yes'
     threeOrMoreYearsYes.click()
-    waitFor(10) {
-      justifyYes.click()
-    }
+
+    then: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
+    justifyYes.click()
     justifyText << 'details text'
     submitButton.click()
 ///////////////////////////////////////////////////////////////////////////////

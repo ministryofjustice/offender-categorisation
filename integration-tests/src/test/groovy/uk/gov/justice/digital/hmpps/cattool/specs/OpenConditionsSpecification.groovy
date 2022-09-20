@@ -609,7 +609,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     openConditionsButton.isDisplayed()
-    continueButton.click()
+    waitFor(10) {
+      continueButton.click()
+    }
 
     then: 'the review page is displayed'
     at ReviewPage
