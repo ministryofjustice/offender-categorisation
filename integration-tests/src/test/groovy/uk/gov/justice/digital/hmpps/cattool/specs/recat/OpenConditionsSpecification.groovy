@@ -58,9 +58,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     threeOrMoreYearsYes.click()
 
     then: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
-    waitFor(10) {
-      justifyYes.isEnabled()
-    }
+    justifyYes.isEnabled()
     justifyYes.click()
     justifyText << 'details text'
     submitButton.click()
