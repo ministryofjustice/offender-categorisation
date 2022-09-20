@@ -249,10 +249,10 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the supervisor message is flagged as read'
     at TasklistPage
-    supervisorMessageButton.text().contains('View') == 1
+    supervisorMessageButton.text().contains('View')
   }
 
-  def "Overriding to an Open conditions category returns the record to the categoriser"() {
+  def "Overriding to an Open conditions category returns the srecord to the categoriser"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,

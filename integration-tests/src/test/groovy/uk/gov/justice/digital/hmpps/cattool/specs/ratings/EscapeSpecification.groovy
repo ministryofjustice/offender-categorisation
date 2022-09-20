@@ -152,7 +152,7 @@ class EscapeSpecification extends AbstractSpecification {
     then: 'textarea errors are shown'
     waitFor {
       errorSummaries*.text() == ['Please enter details of escape risk evidence']
-      errors.text().toString() == "[Error:\nPlease provide details]"
+      errors.text().toString() == ["Error:\nPlease provide details"]
     }
 
     when: 'the escape page is submitted with reason text'

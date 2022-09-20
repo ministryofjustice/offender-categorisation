@@ -49,8 +49,11 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'open conditions task is selected'
     openConditionsButton.click()
 
+
     then: 'the Earliest Release page is displayed'
-    at EarliestReleasePage
+    waitFor(10) {
+      at EarliestReleasePage
+    }
 
     when: 'I submit the page'
     threeOrMoreYearsYes.click()
