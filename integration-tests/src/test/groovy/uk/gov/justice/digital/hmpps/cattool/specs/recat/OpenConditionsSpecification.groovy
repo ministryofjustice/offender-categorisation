@@ -59,6 +59,15 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
     justifyYes.click()
+    submitButton.click()
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Please enter details']
+      errors.text().toString() == "Error:\nPlease enter details"
+    }
+
+    when: 'the Earliest Release page is completed'
     justifyText << 'details text'
     submitButton.click()
 ///////////////////////////////////////////////////////////////////////////////
