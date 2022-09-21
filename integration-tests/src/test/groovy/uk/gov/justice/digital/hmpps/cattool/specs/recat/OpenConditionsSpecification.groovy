@@ -56,7 +56,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     when: 'I submit the page'
     threeOrMoreYearsYes.click()
-    def radios = $(name: "justify").module(RadioButtons)
+    def radios = $(name: "justify").module('.govuk-radios__input')
     radios.checked = "Yes"
     justifyText << 'details text'
     submitButton.click()
