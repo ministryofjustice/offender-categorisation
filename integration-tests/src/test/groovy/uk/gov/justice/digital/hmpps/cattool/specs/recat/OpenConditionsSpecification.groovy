@@ -54,20 +54,11 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'the Earliest Release page is displayed'
     at EarliestReleasePage
 
-    when: 'I submit the page with just threeOrMoreYears=Yes'
+    when: 'I submit the page'
     threeOrMoreYearsYes.click()
-
-    then: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
-    justifyYes.click()
-    submitButton.click()
-
-    then: 'there is a validation error'
-    waitFor {
-      errorSummaries*.text() == ['Please enter details']
-      errors.text().toString() == "Error:\nPlease enter details"
+    waitFor(10) {
+      ${'.govuk-radios__input'}.justify == "Yes"
     }
-
-    when: 'the Earliest Release page is completed'
     justifyText << 'details text'
     submitButton.click()
 ///////////////////////////////////////////////////////////////////////////////
