@@ -46,7 +46,7 @@ function createSchemaFromConfig(pageConfig) {
     requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi.valid(['Yes', 'No']).required(),
+        then: joi.string().valid('Yes', 'No').required(),
         otherwise: joi.any().optional(),
       }),
     requiredStringIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
