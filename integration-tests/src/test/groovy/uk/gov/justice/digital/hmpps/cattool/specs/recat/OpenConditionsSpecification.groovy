@@ -57,8 +57,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'I submit the page'
     threeOrMoreYearsYes.click()
 
-    ${'.govuk-radios__input'}.css('justify').displayed
-    ${'.govuk-radios__input'}.css('justify').click
+    assert ${'.govuk-radios__input'}.css('justify')
+    justifyYes.click()
     justifyText << 'details text'
     submitButton.click()
 ///////////////////////////////////////////////////////////////////////////////
