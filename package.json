@@ -50,7 +50,7 @@
     "govuk-frontend": "^3.14.0",
     "helmet": "^4.6.0",
     "http-errors": "~1.8.1",
-    "joi": "^17.6.0x",
+    "joi": "^17.6.0",
     "@joi/date": "^2.1.0",
     "jwt-decode": "^2.2.0",
     "knex": "^0.95.15",
