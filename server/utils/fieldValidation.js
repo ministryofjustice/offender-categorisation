@@ -1,5 +1,5 @@
 const baseJoi = require('joi')
-const dateExtend = require('joi-date-extensions')
+const dateExtend = require('@joi/date')
 const moment = require('moment')
 const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('./functionalHelpers')
 
@@ -23,7 +23,7 @@ function mapJoiErrors(joiErrors, fieldsConfig) {
 module.exports = {
   validate(formResponse, pageConfig) {
     const formSchema = createSchemaFromConfig(pageConfig)
-    const joiErrors = joi.validate(formResponse, formSchema, { stripUnknown: false, abortEarly: false })
+    const joiErrors = formSchema.validate(formResponse, { stripUnknown: false, abortEarly: false })
     const fieldsConfig = getIn(['fields'], pageConfig)
 
     return mapJoiErrors(joiErrors, fieldsConfig)
