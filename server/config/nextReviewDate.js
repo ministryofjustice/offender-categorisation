@@ -16,9 +16,15 @@ module.exports = {
   nextReviewDate: {
     fields: [
       {
+        indeterminate: {
+          responseType: 'requiredString',
+          validationMessage: '',
+        },
+      },
+      {
         date: {
-          responseType: 'futureDate',
-          validationMessage: 'Enter a valid date that is after today',
+          responseType: 'indeterminateCheck_indeterminate_true',
+          validationMessage: '',
         },
       },
     ],
