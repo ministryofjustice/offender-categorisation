@@ -56,10 +56,11 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     when: 'I submit the page'
     threeOrMoreYearsYes.click()
-    waitFor(60) {
-      justifyYes.click()
+
+    justifyYes.click()
+    waitFor() {
+      justifyText << 'details text'
     }
-    justifyText << 'details text'
     submitButton.click()
 ///////////////////////////////////////////////////////////////////////////////
     then: 'the Foreign National page is displayed'
