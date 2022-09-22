@@ -58,18 +58,20 @@ function createSchemaFromConfig(pageConfig) {
         then: joi.string().required(),
         otherwise: joi.any().optional(),
       }),
-    //The below check is for Next review date validation. CAT-907.
+    //  The below check is for Next review date validation. CAT-907.
     indeterminateCheck: (requiredItem = 'indeterminate', requiredAnswer = 'true') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi.date().format('D/M/YYYY').min(today).max(threeYears).required()
-          .messages({'date.format': 'The review date must be a real date',
-            'date.max': 'The date that they are reviewed by must be within 3 years',
-            'date.min': 'The review date must be today or in the future'}),
-        otherwise: joi.date().format('D/M/YYYY').min(today).max(oneYear).required()
-          .messages({'date.format': 'The review date must be a real date',
-            'date.max': 'The date that they are reviewed must be within the next 12 months',
-            'date.min': 'The review date must be today or in the future'}),
+        then: joi.date().format('D/M/YYYY').min(today).max(threeYears).required().messages({
+          'date.format': 'The review date must be a real date',
+          'date.max': 'The date that they are reviewed by must be within 3 years',
+          'date.min': 'The review date must be today or in the future',
+        }),
+        otherwise: joi.date().format('D/M/YYYY').min(today).max(oneYear).required().messages({
+          'date.format': 'The review date must be a real date',
+          'date.max': 'The date that they are reviewed must be within the next 12 months',
+          'date.min': 'The review date must be today or in the future',
+        }),
       }),
   }
 
