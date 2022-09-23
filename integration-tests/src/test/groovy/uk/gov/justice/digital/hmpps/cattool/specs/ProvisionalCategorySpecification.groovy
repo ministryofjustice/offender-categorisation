@@ -110,7 +110,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    errors.text().toString().equals("Error:\nPlease select yes or no")
 
     when: 'I just select appropriate "No"'
     appropriateNo.click()
@@ -120,8 +120,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     at new ProvisionalCategoryPage(bookingId: '12')
     errorSummaries*.text() == ['Please enter the new category',
                                'Please enter the reason why you changed the category']
-    errors*.text() == ['Error:\nPlease select the new category',
-                       'Error:\nPlease enter the reason why you changed the category']
+    errors*.text() == ['Error:\nPlease select the new category', 'Error:\nPlease enter the reason why you changed the category']
 
     when: 'I submit the Provisional Category page with an empty text area'
     overriddenCategoryB.click()
@@ -130,7 +129,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     then: 'I stay on the page with validation errors'
     at new ProvisionalCategoryPage(bookingId: '12')
     errorSummaries*.text() == ['Please enter the reason why you changed the category']
-    errors*.text() == ['Error:\nPlease enter the reason why you changed the category']
+    errors.text().toString() == "Error:\nPlease enter the reason why you changed the category"
   }
 
   def 'young offender redirects to open conditions flow'() {
@@ -347,7 +346,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The tasklist is shown with open conditions task removed but form data retained in database'
     at TasklistPage
-    !openConditionsButton.displayed
+    assert openConditionsButton.displayed == false
+
 
     def data = db.getData(12)
     data.status == ["STARTED"]
