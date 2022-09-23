@@ -46,6 +46,8 @@ generic-service:
     global-protect: 35.176.93.186/32
     petty-france-wifi: 213.121.161.112/28
     mojvpn: 81.134.202.29/32
+    oakwood-01: 217.161.76.184/29
+    oakwood-02: 217.161.76.192/29
     oakwood-1: 217.161.76.187/32
     oakwood-2: 217.161.76.195/32
     oakwood-3: 217.161.76.186/32
