@@ -18,7 +18,7 @@ class ApprovedViewPage extends Page {
     commentLabel(required: false) { $('label', text:'Comments')}
     comments(required: false) { $('.forms-comments-text') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
-    errors(required: false) { $('span.govuk-error-message') }
+    errors(required: false) { $('.govuk-error-message') }
 
     dateAndPrison { $('dl.dateAndPrison > div > dd') }
 

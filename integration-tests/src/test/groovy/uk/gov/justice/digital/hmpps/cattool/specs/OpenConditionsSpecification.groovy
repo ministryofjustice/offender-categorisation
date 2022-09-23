@@ -60,7 +60,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at EarliestReleasePage
 
     when: 'I submit a blank page'
-    submitButton.click()
+    waitFor(5) {
+      submitButton.click()
+    }
 
     then: 'there is a validation error'
     waitFor {
@@ -75,7 +77,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
     }
 
     when: 'I submit the page with just threeOrMoreYears=Yes and justify=Yes'
@@ -85,7 +87,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please enter details']
-      errors*.text() == ['Error:\nPlease enter details']
+      errors.text().toString() == "Error:\nPlease enter details"
     }
 
     when: 'the Earliest Release page is completed'
@@ -101,7 +103,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
     }
 
     when: 'I submit page after isForeignNationalYes'
@@ -111,7 +113,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
     }
 
     when: 'I submit page after formCompletedYes'
@@ -121,7 +123,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
     }
 
     when: 'I submit page after dueDeportedYes'
@@ -131,7 +133,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
     }
 
     when: 'the Foreign National page is completed'
@@ -147,7 +149,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
     }
 
     when: 'I submit page after seriousHarmYes'
@@ -167,7 +169,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please enter details']
-      errors*.text() == ['Error:\nPlease enter details']
+      errors.text().toString() == "Error:\nPlease enter details"
     }
 
     when: 'the Risk of Serious Harm page is completed'
@@ -203,7 +205,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
     }
 
     when: 'I submit page after likelyToAbscondYes'
@@ -213,7 +215,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please enter details']
-      errors*.text() == ['Error:\nPlease enter details']
+      errors.text().toString() == "Error:\nPlease enter details"
     }
 
     when: 'the Risk Levels page is completed'
@@ -605,6 +607,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, false, false)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     openConditionsButton.isDisplayed()
+    waitFor(10) {
+      continueButton.isDisplayed()
+    }
     continueButton.click()
 
     then: 'the review page is displayed'
