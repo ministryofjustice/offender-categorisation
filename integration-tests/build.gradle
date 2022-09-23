@@ -5,9 +5,9 @@ plugins {
 ext {
     drivers = ['chrome', 'chromeHeadless']
     ext {
-      groovyVersion = '3.0.8'
-      gebVersion = '6.0'
-      seleniumVersion = '4.4.0'
+      groovyVersion = '2.5.18'
+      gebVersion = '4.1'
+      seleniumVersion = '3.141.59'
     }
 }
 
@@ -26,8 +26,7 @@ dependencies {
     testImplementation 'io.github.http-builder-ng:http-builder-ng-apache:1.0.4'
     testImplementation 'org.postgresql:postgresql:42.2.26'
 
-    testImplementation 'com.github.tomakehurst:wiremock-standalone:2.27.2'
-    testImplementation 'com.github.tomjankes:wiremock-groovy:0.2.0'
+    testImplementation 'com.github.tomakehurst:wiremock-jre8-standalone:2.34.0'
     testImplementation 'org.slf4j:slf4j-api:1.7.32'
     testImplementation 'ch.qos.logback:logback-classic:1.2.9'
     testImplementation 'com.auth0:java-jwt:3.18.1'
@@ -39,9 +38,10 @@ drivers.each { driver ->
         group JavaBasePlugin.VERIFICATION_GROUP
 
         outputs.upToDateWhen { false } // Always run tests
-
+        systemProperty 'webdriver.chrome.driver', 'src/test/chromedriver'
         systemProperty 'geb.build.reportsDir', reporting.file("geb/${name}")
         systemProperty 'geb.env', driver
+
     }
 }
 
