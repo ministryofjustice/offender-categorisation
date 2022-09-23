@@ -57,7 +57,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type == ['RECAT']
-    response.recat == [nextReviewDate: [date: SIX_MONTHS_AHEAD]]
+    response.recat == [nextReviewDate: [date: SIX_MONTHS_AHEAD, indeterminate: "false"]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
   }
