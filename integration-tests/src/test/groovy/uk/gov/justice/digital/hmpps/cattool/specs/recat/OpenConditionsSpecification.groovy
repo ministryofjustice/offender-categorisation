@@ -44,7 +44,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'the tasklist recat page is displayed with open conditions section added'
     at TasklistRecatPage
-    openConditionsButton.displayed
+    waitFor(10) {
+      openConditionsButton.displayed
+    }
 
     when: 'open conditions task is selected'
     openConditionsButton.click()
@@ -53,7 +55,12 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at EarliestReleasePage
 
     when: 'I submit the page'
+    threeOrMoreYearsYes.displayed
     threeOrMoreYearsYes.click()
+
+    waitFor(10) {
+      justifyYes.displayed
+    }
     justifyYes.click()
     justifyText << 'details text'
     submitButton.click()
@@ -86,7 +93,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'there is a validation error'
     waitFor {
       errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
+      errors.text() == ['Error:\nPlease select yes or no']
     }
 
     when: 'I submit the page'
