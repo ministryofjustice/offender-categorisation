@@ -38,7 +38,6 @@ drivers.each { driver ->
         group JavaBasePlugin.VERIFICATION_GROUP
 
         outputs.upToDateWhen { false } // Always run tests
-        systemProperty 'webdriver.chrome.driver', 'src/test/chromedriver'
         systemProperty 'geb.build.reportsDir', reporting.file("geb/${name}")
         systemProperty 'geb.env', driver
 
