@@ -94,8 +94,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDatePage
 
     then: "Error is displayed"
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors.text().toString() == "Error:\nEnter a valid date that is after today"
+    errorSummaries*.text() == ['The review date must be a real date']
+    errors.text().toString() == "Error:\nThe review date must be a real date"
 
   }
 
