@@ -1,5 +1,5 @@
 const baseJoi = require('joi')
-const dateExtend = require('joi-date-extensions')
+const dateExtend = require('@joi/date')
 const moment = require('moment')
 const { getFieldName, getFieldDetail, mergeWithRight, getIn, isNilOrEmpty } = require('./functionalHelpers')
 
@@ -23,7 +23,7 @@ function mapJoiErrors(joiErrors, fieldsConfig) {
 module.exports = {
   validate(formResponse, pageConfig) {
     const formSchema = createSchemaFromConfig(pageConfig)
-    const joiErrors = joi.validate(formResponse, formSchema, { stripUnknown: false, abortEarly: false })
+    const joiErrors = formSchema.validate(formResponse, { stripUnknown: false, abortEarly: false })
     const fieldsConfig = getIn(['fields'], pageConfig)
 
     return mapJoiErrors(joiErrors, fieldsConfig)
@@ -34,6 +34,9 @@ module.exports = {
 function createSchemaFromConfig(pageConfig) {
   const yesterday = moment().subtract(1, 'd').format('MM/DD/YYYY')
   const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
+  const threeYears = moment().add(3, 'y').format('MM/DD/YYYY')
+  const oneYear = moment().add(1, 'y').format('MM/DD/YYYY')
+  const today = moment().format('MM/DD/YYYY')
 
   const fieldOptions = {
     requiredString: joi.string().required(),
@@ -46,7 +49,7 @@ function createSchemaFromConfig(pageConfig) {
     requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi.valid(['Yes', 'No']).required(),
+        then: joi.string().valid('Yes', 'No').required(),
         otherwise: joi.any().optional(),
       }),
     requiredStringIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
@@ -54,6 +57,21 @@ function createSchemaFromConfig(pageConfig) {
         is: requiredAnswer,
         then: joi.string().required(),
         otherwise: joi.any().optional(),
+      }),
+    //  The below check is for Next review date validation. CAT-907.
+    indeterminateCheck: (requiredItem = 'indeterminate', requiredAnswer = 'true') =>
+      joi.when(requiredItem, {
+        is: requiredAnswer,
+        then: joi.date().format('D/M/YYYY').min(today).max(threeYears).required().messages({
+          'date.format': 'The review date must be a real date',
+          'date.max': 'The date that they are reviewed by must be within 3 years',
+          'date.min': 'The review date must be today or in the future',
+        }),
+        otherwise: joi.date().format('D/M/YYYY').min(today).max(oneYear).required().messages({
+          'date.format': 'The review date must be a real date',
+          'date.max': 'The date that they are reviewed must be within the next 12 months',
+          'date.min': 'The review date must be today or in the future',
+        }),
       }),
   }
 

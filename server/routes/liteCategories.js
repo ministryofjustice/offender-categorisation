@@ -2,7 +2,7 @@ const express = require('express')
 const moment = require('moment')
 const flash = require('connect-flash')
 const baseJoi = require('joi')
-const dateExtend = require('joi-date-extensions')
+const dateExtend = require('@joi/date')
 const { properCaseName, calculateNextReviewDate, sanitisePrisonName } = require('../utils/utils')
 const { handleCsrf } = require('../utils/routes')
 const validation = require('../utils/fieldValidation')
@@ -179,7 +179,9 @@ module.exports = function Index({ formService, offendersService, userService, au
         nextReviewDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
       }
 
-      const joiErrors = joi.validate(req.body, fieldOptions, { stripUnknown: true, abortEarly: false })
+      const schema = joi.object(fieldOptions)
+
+      const joiErrors = schema.validate(req.body, { stripUnknown: true, abortEarly: false })
       const errors = validation.mapJoiErrors(joiErrors, [
         {
           nextReviewDate: {
@@ -254,7 +256,8 @@ module.exports = function Index({ formService, offendersService, userService, au
         approvedDate: joi.date().format('D/M/YYYY').max(today).required(),
       }
 
-      const joiErrors = joi.validate(req.body, fieldOptions, { stripUnknown: true, abortEarly: false })
+      const schema = joi.object(fieldOptions)
+      const joiErrors = schema.validate(req.body, { stripUnknown: true, abortEarly: false })
       const errors = validation.mapJoiErrors(joiErrors, [
         {
           approvedDate: {

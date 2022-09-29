@@ -60,7 +60,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type == ['INITIAL']
-    response.ratings == [nextReviewDate: [date: SIX_MONTHS_AHEAD]]
+    response.ratings == [nextReviewDate: [date: SIX_MONTHS_AHEAD, indeterminate: "false"]]
     data.user_id == ['CATEGORISER_USER']
     data.assigned_user_id == ['CATEGORISER_USER']
   }
@@ -97,8 +97,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDatePage
 
     then: "Error is displayed"
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors.text().toString() == "Error:\nEnter a valid date that is after today"
+    errorSummaries*.text() == ['The review date must be a real date']
+    errors.text().toString() == "Error:\nThe review date must be a real date"
 
   }
 
