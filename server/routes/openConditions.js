@@ -94,8 +94,8 @@ module.exports = function Index({ formService, offendersService, userService, au
       } else if (result.data.openConditions.foreignNational.exhaustedAppeal === 'Yes') {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText:
-            'This person cannot be sent to open conditions because they are due to be deported and have exhausted' +
-            ' all appeal rights in the UK',
+            'This person cannot be sent to open conditions because they have a liability for deportation and have' +
+            ' exhausted all appeal rights in the UK',
           ...result,
         })
       } else {
