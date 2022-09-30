@@ -160,6 +160,7 @@ describe('recat', () => {
     ${'higherSecurityReview'}     | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
     ${'miniHigherSecurityReview'} | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
     ${'riskAssessment'}           | ${{ otherRelevant: 'No' }} | ${'/tasklistRecat/'}
+    ${'oasysInput'}               | ${{ dummy: 'No' }}         | ${'/tasklistRecat/'}
   `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12345,
@@ -610,5 +611,23 @@ describe('POST /form/recat/fasttrackProgress', () => {
           mockTransactionalClient
         )
       })
+  })
+})
+
+describe('GET /form/recat/oasysInput', () => {
+  test.each`
+    path                  | expectedContent
+    ${'oasysInput/12345'} | ${'Offender Assessment System (OASys)'}
+  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+    request(app)
+      .get(`/${path}`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(expectedContent)
+      })
+  )
+  test('Oasys Validation error redirect to page', () => {
+    request(app).post(`/oasysInput/866018`).expect(302).expect('Location', 'form/recat/oasysInput/866018')
   })
 })
