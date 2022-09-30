@@ -88,7 +88,7 @@ In config.js you can see all the required variables. These are set with defaults
 
 `npm run lint`
 
-### Run tests
+#### Run tests
 
 Run `docker-compose-test.yml`
 
@@ -104,5 +104,6 @@ Verification gradle tasks are provided to run the integration tests with or with
 
 - chromeTest
 - chromeHeadlessTest
+
 
 These can be run in debug mode for troubleshooting.
