@@ -22,23 +22,84 @@
 [![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=postgres&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=flat&logo=redis&logoColor=white)](https://redis.io/)
 
-# Dev Website
 
-https://dev.offender-categorisation.service.justice.gov.uk/
+## Requirements
 
-# Based on GOVUK startkit
+You will need the following tools installed:
 
-A simple starter kit to start writing node app with the gov uk front end toolkit.
+| Tool       | Version   | Reason                                                             |
+|------------|-----------|--------------------------------------------------------------------|
+| npm        | &ge; 7.11.x   | Node package manager for resolving/installing project dependencies |
+| node       | &ge;14.17.x | NodeJS interpreter                                                 |
+| docker     | &ge;18.x    | Installing/removing/managing containers & images                   |
+| docker-compose | &ge;1.25.x  | Convenience utility for grouped management of containers           |
+| jdk        | 11.x -17.x | For running the integration tests using groovy 2.5.18                    |
+
 
 ## Getting started
 
-The easiest way to get started is to use docker compose to download and run the three required containers.
+Offender-Categorisation is a nodeJS application which by default starts up and listens on URL http://localhost:3000
 
-`docker-compose pull`
+It has services on which it depends :
 
-`docker-compose up`
+|       Dependency       | Description                                            | Default                                                     | Override Env Var                                                                                                                          |
+|:----------------------:|:-------------------------------------------------------|:------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------|
+|       prison-api       | Nomis API providing prisons/offender information       | http://localhost:8080                                       | ELITE2API_ENDPOINT_URL                                                                                                                    |
+|       hmpps-auth       | OAuth2 API server for authenticating requests          | http://localhost:9090/auth                                  | NOMIS_AUTH_URL                                                                                                                            |
+|     risk-profiler      | Risk Profiler service                                  | http://localhost:8082/                                      | RISK_PROFILER_ENDPOINT_URL                                                                                                                |
+|   allocation-manager   | Allocation manager                                     | http://localhost:8083/                                      | ALLOCATION_MANAGER_ENDPOINT_URL                                                                                                           |
+|       postgres         | PostgreSQL database server for offender-categorisation | psql://localhost:5432                                       | None - required locally                                                                                                                   |                                                                                                            |
+|        postgres        | PostgreSQL database server for risk-profiler           | psql://localhost:5433                                       | Uses port forwarding                                                                                                                      |                                                                                                            |
+|         redis          | Redis cache for user 'session' data (roles)            | localhost:6379/tcp                                          | None - required locally                                                                                                                   |
+|     SQS (Offender)     | AWS SQS queue for offender events                      | http://localhost:4576<br>Name: nomis_queue<br>(localstack)  | SQS_OFFENDER_EVENTS_QUEUE_URL<br>SQS_OFFENDER_EVENTS_ACCESS_KEY_ID<br>SQS_OFFENDER_EVENTS_SECRET_ACCESS_KEY                               |
+|    SQS (Probation)     | AWS SQS queue for probation offender events            | http://localhost:4576<br>Name: delius_queue<br>(localstack) | SQS_PROBATION_OFFENDER_EVENTS_QUEUE_URL<br>SQS_PROBATION_OFFENDER_EVENTS_ACCESS_KEY_ID<br>SQS_PROBATION_OFFENDER_EVENTS_SECRET_ACCESS_KEY |
+|         AWS S3         | AWS S3 bucket for document uploads                     | http://localhost:4572<br>Name: testbucket<br>(minio)        | DOCUMENT_ENDPOINT<br>DOCUMENT_ACCESS_KEY_ID<br>DOCUMENT_SECRET_ACCESS_KEY                                                                 |
+|      dps home url      | Fallback to home url                                   | http://localhost:3001/                                      | DPS_HOME_URL                                                                                                                              |
 
-for detailed instructions see `https://dsdmoj.atlassian.net/wiki/spaces/NFS/overview`
+
+## Docker compose files
+| File                     | Purpose                                                                                                                                                     |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| docker-compose.yml       | Creates containers for all dependent services and all allows selective start, or override by env vars                                                       |
+| docker-compose-test.yml  | Sets up all containers for running locally                                                                                                |
+
+The offender-categorisation can be run in two ways.
+
+`Simplest way to run locally`
+- if you have a high-spec machine
+- if you are unable to connect to remote services
+
+Use docker compose to download and run the four required containers
+`docker-compose -f docker-compose-test.yml pull`
+
+`docker-compose -f docker-compose-test.yml up`
+
+Install dependencies using `npm install`
+
+Run `npm run start`
+
+
+`Alternative way`
+
+Run redis as a local docker container on the default port of 6379 when running the app locally with tls disabled (the default)
+
+`docker run -p6379:6379 redis`
+
+The other option is to run stunnel and port forward using the cloud platform guidance:
+`https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster`
+If running locally against elasticache with `TLS_ENABLED='true'` you will also need to provide the following env vars:
+
+```bash
+REDIS_AUTH_TOKEN=<from the namespace secret>
+NODE_TLS_REJECT_UNAUTHORIZED=0
+```
+
+Install dependencies using `npm install`
+
+Run `npm run start`
+
+
+### Notes:
 
 ### Transactions
 
@@ -55,28 +116,6 @@ The app authenticates using nomis `Nomis Oauth2 Server` and saves to a Postgres 
 
 The app uses redis (cloud platform elasticache when deployed to our environments) to store the user session.
 
-### Running the app for development
-
-#### Local Redis
-
-Run redis as a local docker container on the default port of 6379 when running the app locally with tls disabled (the default)
-
-`docker run -p6379:6379 redis`
-
-The other option is to run stunnel and port forward using the cloud platform guidance:
-`https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster`
-If running locally against elasticache with `TLS_ENABLED='true'` you will also need to provide the following env vars:
-
-```bash
-REDIS_AUTH_TOKEN=<from the namespace secret>
-NODE_TLS_REJECT_UNAUTHORIZED=0
-```
-
-#### Build assets
-
-`npm run build`
-
-Install dependencies using `npm install`.
 
 #### Env variables
 
@@ -105,4 +144,12 @@ Verification gradle tasks are provided to run the integration tests with or with
 - chromeTest
 - chromeHeadlessTest
 
-These can be run in debug mode for troubleshooting.
+The easiest way to run the integration tests on your local machine is to:
+
+Start the docker containers by running  `docker-compose-test.yml`
+
+Run the application `npm run start`
+
+Run `./gradlew chromeTest`  or `./gradlew chromeHeadlessTest`
+
+
