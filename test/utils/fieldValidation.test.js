@@ -8,6 +8,7 @@ const overOneYearsDate = moment().add(12, 'months').add(1, 'days').format('DD/MM
 const todaysDate = moment().format('DD/MM/YYYY')
 const pastDate = moment().subtract(1, 'days').format('DD/MM/YYYY')
 const invalidDate = '78/13/3043'
+const tomorrow = moment().add(1, 'days').format('DD/MM/YYYY')
 
 describe('Validating next review date for indeterminate', () => {
   it('Validation should return the correct error message for indeterminate over 3 years', () => {
@@ -77,4 +78,47 @@ describe('Validating next review date for determinate', () => {
   })
 })
 
+describe('Validating oasys review date for today and past date', () => {
+  const dateConfig = {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    fields: [
+      {
+        date: {
+          responseType: 'todayOrPastDate',
+          validationMessage: '',
+          errorMessagePrefix: 'OASys review date',
+        },
+      },
+    ],
+    validate: true,
+  }
+  it('Validation should return the correct error message for date in future', () => {
+    const formResponse = { date: tomorrow }
+    expect(fieldValidation.validate(formResponse, dateConfig)).toEqual([
+      { href: '#date', text: 'OASys review date must be today or in the past' },
+    ])
+  })
+  it('Validation should pass for valid todays date', () => {
+    const formResponse = { date: todaysDate }
+    expect(fieldValidation.validate(formResponse, dateConfig)).toEqual([])
+  })
+  it('Validation should pass for valid past date', () => {
+    const formResponse = { date: pastDate }
+    expect(fieldValidation.validate(formResponse, dateConfig)).toEqual([])
+  })
+  it('Validation should return the correct error message for invalid date', () => {
+    const formResponse = { date: invalidDate }
+    expect(fieldValidation.validate(formResponse, dateConfig)).toEqual([
+      { href: '#date', text: 'OASys review date must be a real date' },
+    ])
+  })
+  it('Validation should return the correct error message for blank date', () => {
+    const formResponse = { date: '' }
+    expect(fieldValidation.validate(formResponse, dateConfig)).toEqual([
+      { href: '#date', text: 'OASys review date must be a real date' },
+    ])
+  })
+})
 // TODO add tests to cover legacy functionality in fieldValidation.js
