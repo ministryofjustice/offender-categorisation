@@ -1,0 +1,106 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "details/macro.njk" import govukDetails %}
+{% from "input/macro.njk" import govukInput %}
+
+{% set pageTitle = "Offender Assessment System (OASys)" %}
+
+{% block navigation %}
+
+{% include "../../partials/breadCrumbTaskListRecat.html" %}
+
+{% endblock %}
+
+{% block formItems %}
+
+<h1 id="oasysInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
+<p>
+  You should check OASys for a recent review. If there is not a recent review you will need to create one. Refer to Offender Management in Custody (OMIC) guidelines for more information.
+</p>
+{% set oasysInputTextHtml %}
+
+  {{ govukCharacterCount({
+    name: "oasysInputNeededText",
+    type: "oasysInputText",
+    id: "oasysInputNeededText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Enter any relevant information"
+    },
+    value: data.recat.oasysInput.oasysInputNeededText,
+    errorMessage: {
+      text: (errors | findError('oasysInputNeededText')).text
+      } if (errors | findError('oasysInputNeededText'))
+    })
+  }}
+
+{% endset -%}
+
+{{ govukInput({
+  id: "reviewDate",
+  name: "date",
+  label: {
+    text: "Completion date of the latest review"
+  },
+  errorMessage: {
+    text: (errors | findError('date')).text
+  } if (errors | findError('date')),
+  hint: {
+    text: "For example, 2/11/2021"
+  },
+  classes: "dateInputWidth",
+  value: data.recat.oasysInput.date
+  })
+}}
+
+{% set oasysInputTextHtml %}
+
+  {{ govukCharacterCount({
+    name: "oasysInputNeededText",
+    type: "oasysInputText",
+    id: "oasysInputNeededText",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Enter any relevant information"
+    },
+    value: data.recat.oasysInput.oasysInputNeededText,
+    errorMessage: {
+      text: (errors | findError('oasysInputNeededText')).text
+    } if (errors | findError('oasysInputNeededText'))
+  }) }}
+
+{% endset -%}
+
+  {{ govukRadios({
+    name: "oasysInputNeeded",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Were there any risks highlighted in the review?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('oasysInputNeeded')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.recat.oasysInput.oasysInputNeeded === 'Yes',
+        conditional: {
+          html:oasysInputTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.recat.oasysInput.oasysInputNeeded === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endblock %}

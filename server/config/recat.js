@@ -206,4 +206,31 @@ module.exports = {
     },
     validate: true,
   },
+  oasysInput: {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    fields: [
+      {
+        date: {
+          responseType: 'todayOrPastDate',
+          validationMessage: '',
+          errorMessagePrefix: 'OASys review date',
+        },
+      },
+      {
+        oasysInputNeeded: {
+          responseType: 'requiredString',
+          validationMessage: 'Select yes if there were any risks highlighted in OASys',
+        },
+      },
+      {
+        oasysInputNeededText: {
+          responseType: 'requiredStringIf_oasysInputNeeded_Yes',
+          validationMessage: 'Enter any information relevant to their categorisation',
+        },
+      },
+    ],
+    validate: true,
+  },
 }
