@@ -84,7 +84,7 @@
       }
     },
     errorMessage: {
-      text: "Please select yes or no"
+      text: (errors | findError('oasysInputNeeded')).text
     } if (errors | findError('oasysInputNeeded')),
     items: [
       {
