@@ -219,14 +219,14 @@ module.exports = {
         },
       },
       {
-        oasysInputNeeded: {
+        oasysHighlightedRisks: {
           responseType: 'requiredString',
           validationMessage: 'Select yes if there were any risks highlighted in OASys',
         },
       },
       {
-        oasysInputNeededText: {
-          responseType: 'requiredStringIf_oasysInputNeeded_Yes',
+        oasysInputText: {
+          responseType: 'requiredStringIf_oasysHighlightedRisks_Yes',
           validationMessage: 'Enter any information relevant to their categorisation',
         },
       },

@@ -220,7 +220,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.recat == [
       decision          : [category: "D"],
-      oasysInput        : [date: "14/12/2019", oasysInputNeeded: "No"],
+      oasysInput        : [date: "14/12/2019", oasysHighlightedRisks: "No"],
       securityInput     : [securityInputNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
@@ -264,7 +264,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     afterSubmitData.status == ["AWAITING_APPROVAL"]
     afterSubmitResponse.recat == [
       decision          : [category: "D"],
-      oasysInput        : [date: "14/12/2019", oasysInputNeeded: "No"],
+      oasysInput        : [date: "14/12/2019", oasysHighlightedRisks: "No"],
       securityInput     : [securityInputNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
@@ -391,7 +391,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     data.status == ["APPROVED"]
     response.recat == [
       decision          : [category: "D"],
-      oasysInput        : [date: "14/12/2019", oasysInputNeeded: "No"],
+      oasysInput        : [date: "14/12/2019", oasysHighlightedRisks: "No"],
       securityInput     : [securityInputNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
@@ -544,7 +544,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     data.status == ["APPROVED"]
     response.recat == [
       decision          : [category: "D"],
-      oasysInput        : [date: "14/12/2019", oasysInputNeeded: "No"],
+      oasysInput        : [date: "14/12/2019", oasysHighlightedRisks: "No"],
       securityInput     : [securityInputNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],

@@ -15,7 +15,7 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
       recat   : [
         decision            : [category: "C"],
-        oasysInput        : [date: "14/12/2019", oasysInputNeeded: "No"],
+        oasysInput        : [date: "14/12/2019", oasysHighlightedRisks: "No"],
         higherSecurityReview: [steps: "step", transfer: "No", behaviour: "good", conditions: "conditions"],
         securityBack        : [:],
         securityInput       : [
@@ -96,7 +96,7 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
       recat: [
         decision          : [category: "C"],
-        oasysInput        : [date: "14/12/2019", oasysInputNeeded: "No"],
+        oasysInput        : [date: "14/12/2019", oasysHighlightedRisks: "No"],
         securityInput     : [securityInputNeeded: "No"],
         nextReviewDate    : [date: "14/12/2019"],
         prisonerBackground: [offenceDetails: "some text"],
@@ -132,7 +132,7 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
       recat   : [
         decision          : [category: "C"],
-        oasysInput        : [date: "14/12/2019", oasysInputNeeded: "No"],
+        oasysInput        : [date: "14/12/2019", oasysHighlightedRisks: "No"],
         securityBack      : [:],
         nextReviewDate    : [date: "14/12/2019"],
         prisonerBackground: [offenceDetails: "some text"],

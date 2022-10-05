@@ -47,7 +47,7 @@ class TestFixture {
 
   public static final defaultRecat = [
     decision          : [category: "C"],
-    oasysInput        : [date: "14/12/2019", oasysInputNeeded: "No"],
+    oasysInput        : [date: "14/12/2019", oasysHighlightedRisks: "No"],
     securityInput     : [securityInputNeeded: "No"],
     nextReviewDate    : [date: "14/12/2019"],
     prisonerBackground: [offenceDetails: "offence Details text"],
