@@ -1,7 +1,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "../macros/renderAlert.html" import renderAlert %}
-{% from "../macros/formatAnswer.html" import formatAnswer %}
+{% from "../macros/formatAnswer.html" import formatAnswer, formatAnswerNoDetails %}
 
 {% set catHistory %}
 {% if data.categorisations | length > 0 %}
@@ -139,6 +139,32 @@
   }) }}
 {% endif %}
 
+{{ govukSummaryList({
+  classes: 'govuk-!-margin-bottom-9 print-full-width oasysInputSummary',
+  rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Offender Assessment System (OASys) check" },
+        actions: { items: [{
+          value: { classes: 'no-print'},
+          href: '/form/recat/oasysInput/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else []
+      }
+      },
+      {
+        key: { text: "Completion date of the latest review that is in OASys" },
+        value: { text: data.recat.oasysInput.date },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Were there any risks highlighted in the review?" },
+        value: { html: formatAnswerNoDetails(data.recat.oasysInput.oasysHighlightedRisks, data.recat.oasysInput.oasysInputText) },
+        actions: { items: [] }
+      }
+    ]
+  })
+}}
 
   {% set wasReferred = data.security.review.securityReview %}
   {% set title = {

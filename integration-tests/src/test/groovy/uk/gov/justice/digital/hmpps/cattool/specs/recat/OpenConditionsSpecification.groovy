@@ -140,7 +140,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     at ReviewRecatPage
-    changeLinks.size() == 5
+    changeLinks.size() == 6
 
     securityInputSummary*.text() == ['', 'No', 'No', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
