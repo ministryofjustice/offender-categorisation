@@ -1,8 +1,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "../macros/renderAlert.html" import renderAlert %}
-{% from "../macros/formatAnswer.html" import formatAnswer %}
-{% from "../macros/formatAnswer.html" import formatAnswerNoDetails %}
+{% from "../macros/formatAnswer.html" import formatAnswer, formatAnswerNoDetails %}
 
 {% set catHistory %}
 {% if data.categorisations | length > 0 %}
@@ -146,10 +145,10 @@
       {
         key: { classes: 'summary-list-title', text: "Offender Assessment System (OASys) check" },
         actions: { items: [{
-        value: { classes: 'no-print'},
-        href: '/form/recat/oasysInput/' + data.details.bookingId,
-        text: "Change",
-        visuallyHiddenText: "Assessment"
+          value: { classes: 'no-print'},
+          href: '/form/recat/oasysInput/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
         }] if showChangeLinks else []
       }
       },
