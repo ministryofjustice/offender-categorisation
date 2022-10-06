@@ -241,8 +241,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'tasklist page is displayed without the open conditions section'
     at TasklistPage
-    !openConditionsButton.isDisplayed()
-
+    waitFor(10) {
+      !openConditionsButton.isDisplayed()
+    }
 
     when: 'the continue button is clicked'
     elite2Api.stubAssessments('B2345YZ')
@@ -468,8 +469,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
-
-    openConditionsButton.isDisplayed()
+    waitFor(10) {
+      openConditionsButton.isDisplayed()
+    }
     continueButton.click()
 
     then: 'the review page is displayed and Data is stored correctly'
