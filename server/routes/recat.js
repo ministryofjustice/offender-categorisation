@@ -208,8 +208,8 @@ module.exports = function Index({
     if (body.transfer === 'Yes') {
       delete updated.transferText
     }
-    if (body.oasysInputNeeded === 'No') {
-      delete updated.oasysInputNeededText
+    if (body.oasysHighlightedRisks === 'No') {
+      delete updated.oasysInputText
     }
     return updated
   }

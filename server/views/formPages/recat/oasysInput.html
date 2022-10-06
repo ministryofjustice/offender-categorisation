@@ -21,18 +21,18 @@
 {% set oasysInputTextHtml %}
 
   {{ govukCharacterCount({
-    name: "oasysInputNeededText",
+    name: "oasysInputText",
     type: "oasysInputText",
-    id: "oasysInputNeededText",
+    id: "oasysInputText",
     maxlength: 50000,
     threshold: 50,
     label: {
       text: "Enter any relevant information"
     },
-    value: data.recat.oasysInput.oasysInputNeededText,
+    value: data.recat.oasysInput.oasysInputText,
     errorMessage: {
-      text: (errors | findError('oasysInputNeededText')).text
-      } if (errors | findError('oasysInputNeededText'))
+      text: (errors | findError('oasysInputText')).text
+      } if (errors | findError('oasysInputText'))
     })
   }}
 
@@ -58,24 +58,24 @@
 {% set oasysInputTextHtml %}
 
   {{ govukCharacterCount({
-    name: "oasysInputNeededText",
+    name: "oasysInputText",
     type: "oasysInputText",
-    id: "oasysInputNeededText",
+    id: "oasysInputText",
     maxlength: 50000,
     threshold: 50,
     label: {
       text: "Enter any relevant information"
     },
-    value: data.recat.oasysInput.oasysInputNeededText,
+    value: data.recat.oasysInput.oasysInputText,
     errorMessage: {
-      text: (errors | findError('oasysInputNeededText')).text
-    } if (errors | findError('oasysInputNeededText'))
+      text: (errors | findError('oasysInputText')).text
+    } if (errors | findError('oasysInputText'))
   }) }}
 
 {% endset -%}
 
   {{ govukRadios({
-    name: "oasysInputNeeded",
+    name: "oasysHighlightedRisks",
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
@@ -84,20 +84,20 @@
       }
     },
     errorMessage: {
-      text: "Please select yes or no"
-    } if (errors | findError('oasysInputNeeded')),
+      text: (errors | findError('oasysHighlightedRisks')).text
+    } if (errors | findError('oasysHighlightedRisks')),
     items: [
       {
         value: "Yes",
         text: "Yes",
-        checked: data.recat.oasysInput.oasysInputNeeded === 'Yes',
+        checked: data.recat.oasysInput.oasysHighlightedRisks === 'Yes',
         conditional: {
           html:oasysInputTextHtml
         }
       },
       {
         value: "No",
-        checked: data.recat.oasysInput.oasysInputNeeded === 'No',
+        checked: data.recat.oasysInput.oasysHighlightedRisks === 'No',
         text: "No"
       }
     ]
