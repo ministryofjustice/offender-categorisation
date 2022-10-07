@@ -1,0 +1,98 @@
+{% extends "../formTemplate.html" %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% set pageTitle = "Previous sentences" %}
+
+{% block navigation %}
+
+  {% if catType == 'RECAT' %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
+  {% else %}
+    {% include "../../partials/breadCrumbTaskList.html" %}
+  {% endif %}
+
+{% endblock %}
+
+{% set sevenOrMoreYearsTextHtml %}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "releasedLastFiveYears",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Were they released from this sentence in the last 5 years?"
+      }
+    },
+    errorMessage: {
+      text: "Select yes if they were released from this sentence in the last 5 years"
+    } if (errors | findError('releasedLastFiveYears')),
+    items: [
+      {
+        value: "Yes",
+        checked: data.openConditions.previousSentences.releasedLastFiveYears === 'Yes',
+        text: "Yes"
+      },
+      {
+        value: "No",
+        checked: data.openConditions.previousSentences.releasedLastFiveYears === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+  {{ govukRadios({
+    name: "sevenOrMoreYears",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Do they have a previous sentence of 7 years or more?"
+      }
+    },
+    errorMessage: {
+      text: "Select yes if they have a previous sentence of 7 years or more"
+    } if (errors | findError('sevenOrMoreYears')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.previousSentences.sevenOrMoreYears === 'Yes',
+        conditional: {
+          html: sevenOrMoreYearsTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.previousSentences.sevenOrMoreYears === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidancePreviousSentences %}
+<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You should check:</div>
+<ul class="govuk-list govuk-list--bullet">
+  <li>check the police national computer (PNC)</li>
+</ul>
+<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
+<ul class="govuk-list govuk-list--bullet">
+  <li>previous convictions and their corresponding release dates</li>
+</ul>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I consider?",
+    html: guidancePreviousSentences
+  }) }}
+
+{% endblock %}
