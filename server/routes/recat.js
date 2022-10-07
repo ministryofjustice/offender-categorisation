@@ -208,7 +208,7 @@ module.exports = function Index({
     if (body.transfer === 'Yes') {
       delete updated.transferText
     }
-    if (body.oasysHighlightedRisks === 'No') {
+    if (body.oasysRelevantInfo === 'No') {
       delete updated.oasysInputText
     }
     return updated
