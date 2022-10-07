@@ -215,13 +215,14 @@ module.exports = {
         date: {
           responseType: 'todayOrPastDate',
           validationMessage: '',
-          errorMessagePrefix: 'OASys review date',
+          errorMessagePrefix: 'Completion date of the latest full review',
         },
       },
       {
         oasysRelevantInfo: {
           responseType: 'requiredString',
-          validationMessage: 'Select yes if there were any risks highlighted in OASys',
+          validationMessage:
+            'Select yes if there was any information in the review that is relevant to the recategorisation',
         },
       },
       {
