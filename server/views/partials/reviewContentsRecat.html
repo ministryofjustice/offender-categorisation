@@ -153,13 +153,13 @@
       }
       },
       {
-        key: { text: "Completion date of the latest review that is in OASys" },
+        key: { text: "Completion date of the latest full review that is in OASys" },
         value: { text: data.recat.oasysInput.date },
         actions: { items: [] }
       },
       {
-        key: { text: "Were there any risks highlighted in the review?" },
-        value: { html: formatAnswerNoDetails(data.recat.oasysInput.oasysHighlightedRisks, data.recat.oasysInput.oasysInputText) },
+        key: { text: "Was there any information in the review that is relevant to the recategorisation?" },
+        value: { html: formatAnswerNoDetails(data.recat.oasysInput.oasysRelevantInfo, data.recat.oasysInput.oasysInputText) },
         actions: { items: [] }
       }
     ]
