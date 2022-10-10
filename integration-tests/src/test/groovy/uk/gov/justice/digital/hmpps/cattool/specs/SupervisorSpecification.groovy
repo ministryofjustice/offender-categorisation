@@ -619,6 +619,7 @@ class SupervisorSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     // decision is removed when open conditions introduced by supervisor
     response.recat == [
+      oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
       securityInput : [securityInputNeeded: "No"],
       nextReviewDate: [date: "14/12/2019"],
       prisonerBackground: [offenceDetails:"offence Details text"],

@@ -31,6 +31,7 @@
 
   {% set supervisorMessageCompleted = data.supervisor.confirmBack.messageText and data.supervisor.confirmBack.isRead %}
   {% set prisonerBackgroundCompleted = data.recat.prisonerBackground.offenceDetails %}
+  {% set oasysInputCompleted = data.recat.oasysInput.date %}
   {% set securityInputCompleted = data.recat.securityInput.securityInputNeeded === 'No' or data.recat.securityBack %}
   {% set riskAssessmentCompleted = data.recat.riskAssessment.otherRelevant %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
@@ -39,7 +40,7 @@
   {% set openConditionsRequested = data.openConditionsRequested %}
   {% set decisionCompleted = data.recat.decision.category %}
   {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
-     and prisonerBackgroundCompleted and securityInputCompleted and not locked
+     and prisonerBackgroundCompleted and oasysInputCompleted and securityInputCompleted and not locked
      and decisionCompleted and riskAssessmentCompleted
      and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
@@ -73,6 +74,19 @@
               }) }}
               <div class="govuk-heading-m">Prisoner background</div>
               <div class="govuk-!-margin-top-2">{% if prisonerBackgroundCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+            </li>
+
+            <li class="app-task-list__item">
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if oasysInputCompleted else buttonClassesDefault %}
+              {{ govukButton({
+              text: "Edit" if oasysInputCompleted else "Start",
+              href: "/form/recat/oasysInput/" + data.details.bookingId,
+              classes: buttonClasses,
+              attributes:
+              { 'id': 'oasysInputButton' }
+              }) }}
+              <div class="govuk-heading-m">Offender Assessment System (OASys)</div>
+              <div class="govuk-!-margin-top-2">{% if oasysInputCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
 
             {% if data.eligibleForFasttrack and not data.fasttrackCancelled %}
