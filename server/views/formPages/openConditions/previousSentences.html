@@ -1,5 +1,4 @@
 {% extends "../formTemplate.html" %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "details/macro.njk" import govukDetails %}
 
@@ -9,11 +8,7 @@
 
 {% block navigation %}
 
-  {% if catType == 'RECAT' %}
-    {% include "../../partials/breadCrumbTaskListRecat.html" %}
-  {% else %}
-    {% include "../../partials/breadCrumbTaskList.html" %}
-  {% endif %}
+{% include "../../partials/breadCrumbTaskList.html" %}
 
 {% endblock %}
 
