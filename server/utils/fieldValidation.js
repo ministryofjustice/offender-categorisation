@@ -11,10 +11,11 @@ function mapJoiErrors(joiErrors, fieldsConfig) {
   }
   return joiErrors.error.details.map(error => {
     const fieldConfig = fieldsConfig.find(field => getFieldName(field) === error.path[0])
+    const prefix = getIn([...error.path, 'errorMessagePrefix'], fieldConfig)
     const errorMessage = getIn([...error.path, 'validationMessage'], fieldConfig) || error.message
 
     return {
-      text: errorMessage,
+      text: prefix ? prefix.concat(' ', errorMessage) : errorMessage,
       href: `#${getFieldName(fieldConfig)}`,
     }
   })
@@ -73,6 +74,10 @@ function createSchemaFromConfig(pageConfig) {
           'date.min': 'The review date must be today or in the future',
         }),
       }),
+    todayOrPastDate: joi.date().format('D/M/YYYY').max(today).required().messages({
+      'date.format': 'must be a real date',
+      'date.max': 'must be today or in the past',
+    }),
   }
 
   const formSchema = pageConfig.fields.reduce((schema, field) => {

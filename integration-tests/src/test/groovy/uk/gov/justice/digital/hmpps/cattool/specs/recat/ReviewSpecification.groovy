@@ -15,6 +15,7 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
       recat   : [
         decision            : [category: "C"],
+        oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
         higherSecurityReview: [steps: "step", transfer: "No", behaviour: "good", conditions: "conditions"],
         securityBack        : [:],
         securityInput       : [
@@ -56,7 +57,7 @@ class ReviewSpecification extends AbstractSpecification {
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage
     headerValue*.text() == fixture.FULL_HEADER
-    changeLinks.size() == 5
+    changeLinks.size() == 6
 
     prisonerBackgroundSummary*.text() == [
       '',
@@ -95,6 +96,7 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
       recat: [
         decision          : [category: "C"],
+        oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
         securityInput     : [securityInputNeeded: "No"],
         nextReviewDate    : [date: "14/12/2019"],
         prisonerBackground: [offenceDetails: "some text"],
@@ -120,7 +122,7 @@ class ReviewSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewRecatPage
-    changeLinks.size() == 5
+    changeLinks.size() == 6
     changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
     securityInputSummary*.text() == ['', 'No', 'No', 'No']
   }
@@ -130,6 +132,7 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
       recat   : [
         decision          : [category: "C"],
+        oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
         securityBack      : [:],
         nextReviewDate    : [date: "14/12/2019"],
         prisonerBackground: [offenceDetails: "some text"],
@@ -156,7 +159,7 @@ class ReviewSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed with security flagged showing as "yes"'
     at ReviewRecatPage
-    changeLinks.size() == 4
+    changeLinks.size() == 5
     securityInputSummary*.text() == ['', 'No', 'No', 'Yes', 'security info']
   }
 }
