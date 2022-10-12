@@ -12,7 +12,7 @@
 
 {% endblock %}
 
-{% set sevenOrMoreYearsTextHtml %}
+{% set releasedLastFiveYearsTextHtml %}
 
   {{ govukRadios({
     formGroup: { classes: 'govuk-!-margin-bottom-6' },
@@ -63,7 +63,7 @@
         text: "Yes",
         checked: data.openConditions.previousSentences.sevenOrMoreYears === 'Yes',
         conditional: {
-          html: sevenOrMoreYearsTextHtml
+          html: releasedLastFiveYearsTextHtml
         }
       },
       {

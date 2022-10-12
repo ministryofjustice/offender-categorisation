@@ -96,7 +96,6 @@ class OpenConditionsSpecification extends AbstractSpecification {
     justifyText << 'details text'
     submitButton.click()
 
-///////////////////////////////////////////////////////////////////////////////
     then: 'the Previous Sentences page is displayed'
     at PreviousSentencesPage
 
