@@ -17,6 +17,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
   static final allNoAnswersWithFurtherCharges = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
     previousSentences  : [sevenOrMoreYears: 'No'],
+    sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
     furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
@@ -26,6 +27,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
   static final allNoAnswers = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
     previousSentences  : [sevenOrMoreYears: 'No'],
+    sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
     riskLevels         : [likelyToAbscond: 'No'],
@@ -102,7 +104,14 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'I submit page after No'
     sevenOrMoreYearsNo.click()
     submitButton.click()
-///////////////////////////////////////////////////////////////////////////////
+
+    then: 'the Sexual Offences page is displayed'
+    at SexualOffencesPage
+
+    when: 'I submit page after No'
+    haveTheyBeenEverConvictedNo.click()
+    submitButton.click()
+
     then: 'the Foreign National page is displayed'
     at ForeignNationalPage
 
@@ -287,6 +296,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.openConditions == [
       earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
       previousSentences  : [sevenOrMoreYears:'No'],
+      sexualOffences     : [haveTheyBeenEverConvicted:'No'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
       furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: 'some charges,furtherChargesText details'],
@@ -701,6 +711,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
     at PreviousSentencesPage
     sevenOrMoreYearsNo.click()
+    submitButton.click()
+    at SexualOffencesPage
+    haveTheyBeenEverConvictedNo.click()
     submitButton.click()
     at ForeignNationalPage
     isForeignNationalNo.click()

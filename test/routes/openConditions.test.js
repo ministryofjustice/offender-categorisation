@@ -181,7 +181,7 @@ describe('open conditions', () => {
     formName                 | userInput                                                                                     | updateInfo                                        | nextPath
     ${'earliestReleaseDate'} | ${{ catType: 'RECAT', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}          | ${{ catType: 'RECAT', threeOrMoreYears: 'No' }}   | ${'/form/openConditions/foreignNational/'}
     ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}        | ${{ catType: 'INITIAL', threeOrMoreYears: 'No' }} | ${'/form/openConditions/previousSentences/'}
-    ${'previousSentences'}   | ${{ catType: 'INITIAL', sevenOrMoreYears: 'No', releasedLastFiveYears: 'No' }}                | ${{ catType: 'INITIAL', sevenOrMoreYears: 'No' }} | ${'/form/openConditions/foreignNational/'}
+    ${'previousSentences'}   | ${{ catType: 'INITIAL', sevenOrMoreYears: 'No', releasedLastFiveYears: 'No' }}                | ${{ catType: 'INITIAL', sevenOrMoreYears: 'No' }} | ${'/form/openConditions/sexualOffences/'}
     ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                    | ${'/form/openConditions/riskOfHarm/'}
     ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                          | ${'/form/openConditions/furtherCharges/'}
     ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                             | ${'/form/openConditions/riskLevels/'}

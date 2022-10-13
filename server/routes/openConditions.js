@@ -159,6 +159,13 @@ module.exports = function Index({ formService, offendersService, userService, au
     if (body.sevenOrMoreYears === 'No') {
       delete updated.releasedLastFiveYears
     }
+    if (body.canTheRiskBeManaged === 'No') {
+      delete updated.howTheRiskCanBeManaged
+    }
+    if (body.haveTheyBeenEverConvicted === 'No') {
+      delete updated.canTheRiskBeManaged
+      delete updated.howTheRiskCanBeManaged
+    }
     if (body.isForeignNational === 'No') {
       delete updated.formCompleted
       delete updated.dueDeported
