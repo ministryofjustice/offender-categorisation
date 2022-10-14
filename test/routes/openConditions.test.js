@@ -241,10 +241,11 @@ describe('open conditions', () => {
   })
 
   test.each`
-    data                                                                | expectedContent
-    ${{ openConditions: { riskOfHarm: { harmManaged: 'No' } } }}        | ${'They pose a risk of serious harm to the public which cannot be safely managed in open conditions'}
-    ${{ openConditions: { furtherCharges: { increasedRisk: 'Yes' } } }} | ${'They have further charges which pose an increased risk in open conditions'}
-    ${{ openConditions: { riskLevels: { likelyToAbscond: 'Yes' } } }}   | ${'They are likely to abscond or otherwise abuse the lower security of open conditions'}
+    data                                                                                                       | expectedContent
+    ${{ openConditions: { riskOfHarm: { harmManaged: 'No' } } }}                                               | ${'They pose a risk of serious harm to the public which cannot be safely managed in open conditions'}
+    ${{ openConditions: { furtherCharges: { increasedRisk: 'Yes' } } }}                                        | ${'They have further charges which pose an increased risk in open conditions'}
+    ${{ openConditions: { riskLevels: { likelyToAbscond: 'Yes' } } }}                                          | ${'They are likely to abscond or otherwise abuse the lower security of open conditions'}
+    ${{ openConditions: { sexualOffences: { haveTheyBeenEverConvicted: 'Yes', canTheRiskBeManaged: 'No' } } }} | ${'They have been convicted of a sexual offence and pose a risk to the public which can not be safely managed in open conditions'}
   `('should render notRecommended page', ({ data, expectedContent }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
