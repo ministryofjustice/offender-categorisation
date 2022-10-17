@@ -226,7 +226,10 @@ module.exports = function Index({ formService, offendersService, userService, au
       const oc = data.openConditions
       if (
         oc &&
-        ((oc.riskOfHarm && oc.riskOfHarm.harmManaged === 'No') ||
+        ((oc.sexualOffences &&
+          oc.sexualOffences.haveTheyBeenEverConvicted === 'Yes' &&
+          oc.sexualOffences.canTheRiskBeManaged === 'No') ||
+          (oc.riskOfHarm && oc.riskOfHarm.harmManaged === 'No') ||
           (oc.furtherCharges && oc.furtherCharges.increasedRisk === 'Yes') ||
           (oc.riskLevels && oc.riskLevels.likelyToAbscond === 'Yes'))
       ) {
