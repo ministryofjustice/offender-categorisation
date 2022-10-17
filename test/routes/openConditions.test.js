@@ -260,27 +260,6 @@ describe('open conditions', () => {
       })
   })
 
-  test.each`
-    data                                                                                                        | notRecommendedContent
-    ${{ openConditions: { riskOfHarm: { harmManaged: 'Yes' } } }}                                               | ${'They pose a risk of serious harm to the public which cannot be safely managed in open conditions'}
-    ${{ openConditions: { furtherCharges: { increasedRisk: 'No' } } }}                                          | ${'They have further charges which pose an increased risk in open conditions'}
-    ${{ openConditions: { riskLevels: { likelyToAbscond: 'No' } } }}                                            | ${'They are likely to abscond or otherwise abuse the lower security of open conditions'}
-    ${{ openConditions: { sexualOffences: { haveTheyBeenEverConvicted: 'Yes', canTheRiskBeManaged: 'Yes' } } }} | ${'They have been convicted of a sexual offence and pose a risk to the public which cannot be safely managed in open conditions'}
-    ${{ openConditions: { sexualOffences: { haveTheyBeenEverConvicted: 'No' } } }}                              | ${'They have been convicted of a sexual offence and pose a risk to the public which cannot be safely managed in open'}
-  `('notRecommended page should not contain content: $notRecommendedContent', ({ data, notRecommendedContent }) => {
-    formService.getCategorisationRecord.mockResolvedValue({
-      bookingId: 12345,
-      formObject: data,
-    })
-    return request(app)
-      .get(`/notRecommended/12345`)
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).not.toContain(notRecommendedContent)
-      })
-  })
-
   test('should redirect from notRecommended page to provisionalCategory', () =>
     request(app)
       .post(`/notRecommended/12345`)
