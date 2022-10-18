@@ -2856,3 +2856,28 @@ describe('getOffenderDetailsWithNextReviewDate', () => {
     })
   })
 })
+
+describe('hasCatAInTheLast5years', () => {
+  const overTenYearsBack = moment().subtract(10, 'years').format('YYYY-MM-DD')
+  const overFiveYearsBack = moment().subtract(5, 'years').subtract(1, 'days').format('YYYY-MM-DD')
+  const lessThanFiveYearsBack = moment().subtract(5, 'years').format('YYYY-MM-DD')
+  const today = moment().format('YYYY-MM-DD')
+  test('should have CatA in the last 5 years if startDate overFiveYearsBack and endDate lessThanFiveYearsBack', async () => {
+    expect(service.hasCatAInTheLast5years(overFiveYearsBack, lessThanFiveYearsBack)).toBe(true)
+  })
+  test('should have CatA in the last 5 years if startDate overFiveYearsBack and endDate null', async () => {
+    expect(service.hasCatAInTheLast5years(overFiveYearsBack, null)).toBe(true)
+  })
+  test('should have CatA in the last 5 years if startDate lessThanFiveYearsBack and endDate today', async () => {
+    expect(service.hasCatAInTheLast5years(lessThanFiveYearsBack, today)).toBe(true)
+  })
+  test('should have CatA in the last 5 years if startDate lessThanFiveYearsBack and endDate null', async () => {
+    expect(service.hasCatAInTheLast5years(lessThanFiveYearsBack, null)).toBe(true)
+  })
+  test('should not have CatA in the last 5 years if startDate null and endDate null', async () => {
+    expect(service.hasCatAInTheLast5years(null, null)).toBe(false)
+  })
+  test('should not have CatA in the last 5 years if startDate is overTenYearsBack and endDate is overFiveYearsBack is ', async () => {
+    expect(service.hasCatAInTheLast5years(overTenYearsBack, overFiveYearsBack)).toBe(false)
+  })
+})

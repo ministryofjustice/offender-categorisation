@@ -1079,14 +1079,18 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
       let catAEndYear = null
       let releaseYear = null
       let finalCat = null
+      let catAStartDate = null
+      let catAEndDate = null
       if (mostRecentCatA) {
         const categoriesForBooking = sortedCategories.filter(c => c.bookingId === mostRecentCatA.bookingId)
 
         catAType = mostRecentCatA.classificationCode
         catAStartYear = getYear(mostRecentCatA.approvalDate)
+        catAStartDate = mostRecentCatA.approvalDate
         const catAIndex = categoriesForBooking.findIndex(isCatA)
         if (catAIndex < categoriesForBooking.length - 1) {
           catAEndYear = getYear(categoriesForBooking[catAIndex + 1].approvalDate)
+          catAEndDate = categoriesForBooking[catAIndex + 1].approvalDate
         }
         finalCat = categoriesForBooking[categoriesForBooking.length - 1].classification
         // Populate release date if was not for current booking
@@ -1100,15 +1104,26 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
               logger.warn(`Found sentence which ends as Cat A, bookingId=${mostRecentCatA.bookingId}`)
             }
             releaseYear = getYear(catASentence.sentenceDetail.releaseDate)
+            catAEndDate = catASentence.sentenceDetail.releaseDate
           }
         }
       }
 
-      return { catAType, catAStartYear, catAEndYear, releaseYear, finalCat }
+      return { catAType, catAStartYear, catAEndYear, releaseYear, finalCat, catAStartDate, catAEndDate }
     } catch (error) {
       logger.error(error, 'Error during getCatAInformation')
       throw error
     }
+  }
+
+  function hasCatAInTheLast5years(startDate, endDate) {
+    const catAStartDate = startDate == null ? null : moment(startDate, 'YYYY-MM-DD')
+    const catAEndDate = endDate == null ? null : moment(endDate, 'YYYY-MM-DD')
+    const fiveYearsBack = moment().subtract(5, 'years')
+    if (catAStartDate && (catAEndDate == null || !catAEndDate.isBefore(fiveYearsBack))) {
+      return true
+    }
+    return false
   }
 
   async function getPrisonerBackground(context, offenderNo, approvalDate = null) {
@@ -1608,5 +1623,6 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
     mergeU21ResultWithNomisCategorisationData,
     mergeOffenderLists: mergeOffenderListsRemovingNulls,
     getOffenderDetailsWithNextReviewDate,
+    hasCatAInTheLast5years,
   }
 }
