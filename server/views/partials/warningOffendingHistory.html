@@ -1,6 +1,5 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "inset-text/macro.njk" import govukInsetText %}
-
 {% set warningText %}
   This prisoner was categorised as a
   {% if data.history.catAType === 'A' %}
@@ -16,12 +15,24 @@
     for a previous sentence and released as a {{ data.history.finalCat }} in {{ data.history.releaseYear }}
   {% endif %}
 {% endset %}
+{% set warningTextIn5Years %}
+  {% if data.hasCatAInTheLast5years %}
+  Has CAT A in the past 5 years
+  {% endif %}
+{% endset %}
 {% if data.history.catAType %}
 <div>
   {{ govukWarningText({
     text: warningText,
     iconFallbackText: "Warning",
     classes: "forms-warning-text warning-overrides"
+  }) }}
+</div>
+<div>
+  {{ govukWarningText({
+  text: warningTextIn5Years,
+  iconFallbackText: "Warning",
+  classes: "forms-warning-text warning-overrides"
   }) }}
 </div>
 {% else %}

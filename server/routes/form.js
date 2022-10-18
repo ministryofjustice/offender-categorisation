@@ -50,8 +50,9 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
       const history = await offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId)
+      const hasCatAInTheLast5years = offendersService.hasCatAInTheLast5years(history.catAStartDate, history.catAEndDate)
       const offences = await offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo)
-      const data = { ...result.data, history, offences }
+      const data = { ...result.data, history, offences, hasCatAInTheLast5years }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     })
   )
