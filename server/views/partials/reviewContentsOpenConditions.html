@@ -51,6 +51,32 @@
         }
      ]
    }) }}
+
+   {{ govukSummaryList({
+      classes: 'govuk-!-margin-bottom-9 sexualOffencesSummary',
+      rows: [
+        {
+          key: { classes: 'summary-list-title', text: "Sexual offences" },
+          actions: { items: [{
+                href: '/form/openConditions/sexualOffences/' + data.details.bookingId,
+                text: "Change",
+                visuallyHiddenText: "sexual offences"
+              }] if showOpenConditionChangeLinks else []
+          }
+        },
+        {
+          key: { text: "Have they ever been convicted of a sexual offence?" },
+          value: { text: data.openConditions.sexualOffences.haveTheyBeenEverConvicted },
+          actions: { items: [] }
+        },
+        {
+          key: { text: "Can the risk to the public be managed in open conditions?" },
+          value: { html: formatAnswerWithNA(data.openConditions.sexualOffences.canTheRiskBeManaged) },
+          value: { html: formatAnswerWithNA(data.openConditions.sexualOffences.canTheRiskBeManaged, data.openConditions.sexualOffences.howTheRiskCanBeManaged) },
+          actions: { items: [] }
+        }
+     ]
+   }) }}
  {% endif %}
 
  {{ govukSummaryList({
