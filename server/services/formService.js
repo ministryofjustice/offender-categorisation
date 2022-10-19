@@ -528,7 +528,6 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-
   async function referToSecurityIfRequested(bookingId, userId, updatedFormObject, transactionalClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
     const section =
@@ -541,8 +540,6 @@ module.exports = function createFormService(formClient) {
     }
     return {}
   }
-
-
 
   async function backToCategoriser(bookingId, transactionalClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)

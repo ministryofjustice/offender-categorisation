@@ -3,7 +3,7 @@ const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
-const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
+const { inProgress } = require('../utils/functionalHelpers')
 const { get10BusinessDays } = require('../utils/utils')
 
 function add10BusinessDays(isoDate) {
@@ -12,17 +12,10 @@ function add10BusinessDays(isoDate) {
   return sentenceDateMoment.add(numberOfDays, 'day').format('YYYY-MM-DD')
 }
 
-module.exports = function Index({
-  formService,
-  offendersService,
-  userService,
-  authenticationMiddleware,
-  riskProfilerService,
-}) {
+module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()
 
   router.use(authenticationMiddleware())
-
   router.get(
     '/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
@@ -81,7 +74,6 @@ module.exports = function Index({
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
-
 
       const data = {
         details,

@@ -40,9 +40,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId, transactionalDbClient)
 
-      if (
-        result.status === Status.SECURITY_MANUAL.name
-      ) {
+      if (result.status === Status.SECURITY_MANUAL.name) {
         res.redirect(`/tasklistRecat/${bookingId}`)
       } else {
         res.render('formPages/recat/securityInput', result)

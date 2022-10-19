@@ -18,7 +18,6 @@ module.exports = {
   isFirstVisit,
   inProgress,
   extractNextReviewDate,
-  //addSocProfile,
 }
 
 function isNilOrEmpty(item) {
@@ -77,40 +76,3 @@ function extractNextReviewDate(details) {
   const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
   return catRecord && catRecord.nextReviewDate
 }
-
-/*async function addSocProfile({
-  res,
-  riskProfilerService,
-  details,
-  formService,
-  bookingId,
-  transactionalDbClient,
-  req,
-  categorisationRecord,
-}) {
-  let { status } = categorisationRecord
-  // only load the soc profile once - then it is saved against the record
-  if (isFirstVisit(res)) {
-    const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals)
-    const extremismProfile = await riskProfilerService.getExtremismProfile(
-      details.offenderNo,
-      res.locals,
-      false // don't yet have the answer to this question - will be populated correctly in the review route
-    )
-
-    await formService.mergeRiskProfileData(bookingId, { socProfile, extremismProfile }, transactionalDbClient)
-
-    status = await formService.referToSecurityIfRiskAssessed(
-      bookingId,
-      req.user.username,
-      socProfile,
-      extremismProfile,
-      status,/!**!/
-      transactionalDbClient
-    )
-  }
-
-  await formService.referToSecurityIfFlagged(bookingId, details.offenderNo, status, transactionalDbClient)
-
-  return formService.getCategorisationRecord(bookingId, transactionalDbClient)
-}*/
