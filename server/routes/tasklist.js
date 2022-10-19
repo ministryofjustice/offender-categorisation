@@ -82,16 +82,6 @@ module.exports = function Index({
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
 
-      categorisationRecord = await addSocProfile({
-        res,
-        req,
-        riskProfilerService,
-        details,
-        formService,
-        bookingId,
-        transactionalDbClient,
-        categorisationRecord,
-      })
 
       const data = {
         details,

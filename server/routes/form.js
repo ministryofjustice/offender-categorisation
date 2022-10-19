@@ -63,9 +63,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId, transactionalDbClient)
 
       if (
-        result.status === Status.SECURITY_MANUAL.name ||
-        result.status === Status.SECURITY_AUTO.name ||
-        result.status === Status.SECURITY_FLAGGED.name
+        result.status === Status.SECURITY_MANUAL.name
       ) {
         res.redirect(`/tasklist/${bookingId}`)
       } else {

@@ -166,12 +166,6 @@
 
   {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB %}
   <h2 class="govuk-heading-m{{ ' no-print' if not wasReferred }}">Security information</h2>
-  {% set auto = {
-      classes: 'no-print',
-      key: { text: "Automatic referral to security team" },
-      value: { text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
-      actions: { items: [] }
-    } %}
   {% set manual = {
       classes: 'no-print',
       key: { text: "Manual referral to security team" },
@@ -183,12 +177,6 @@
           visuallyHiddenText: "Manual referral to security team"
         }] if showChangeLinks and not wasReferred else []
       }
-    } %}
-  {% set flagged = {
-      classes: 'no-print',
-      key: { text: "Flagged by security team" },
-      value: { text: 'Yes' if data.ratings.securityBack.catB and not data.ratings.securityInput.securityInputNeeded else 'No' },
-      actions: { items: [] }
     } %}
   {% set comments = {
       key: { text: "Security comments" },

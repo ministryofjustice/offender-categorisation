@@ -179,24 +179,12 @@
         }] if showChangeLinks and not wasReferred else []
     }
   } %}
-  {% set auto = {
-      classes: 'no-print',
-      key: { text: "Automatic referral to security team" },
-      value: { text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
-      actions: { items: [] }
-    } %}
   {% set manual = {
       classes: 'no-print',
       key: { text: "Manual referral to security team" },
       value: { text: data.recat.securityInput.securityInputNeeded or 'No' },
       actions: { items: []
       }
-    } %}
-  {% set flagged = {
-      classes: 'no-print',
-      key: { text: "Flagged by security team" },
-      value: { text: 'Yes' if data.security.review.securityReview and not data.socProfile.transferToSecurity and not data.recat.securityInput.securityInputNeeded else 'No' },
-      actions: { items: [] }
     } %}
   {% set comments = {
       key: { text: "Security comments" },

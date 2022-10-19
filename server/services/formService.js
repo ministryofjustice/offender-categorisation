@@ -528,25 +528,6 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function referToSecurityIfRiskAssessed(
-    bookingId,
-    userId,
-    socProfile,
-    extremismProfile,
-    currentStatus,
-    transactionalClient
-  ) {
-    if (
-      (socProfile.transferToSecurity || extremismProfile.notifyRegionalCTLead) &&
-      currentStatus !== Status.SECURITY_BACK.name
-    ) {
-      if (validateStatusIfProvided(currentStatus, Status.SECURITY_AUTO.name)) {
-        await formClient.referToSecurity(bookingId, null, Status.SECURITY_AUTO.name, transactionalClient)
-        return Status.SECURITY_AUTO.name
-      }
-    }
-    return currentStatus
-  }
 
   async function referToSecurityIfRequested(bookingId, userId, updatedFormObject, transactionalClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
@@ -561,23 +542,7 @@ module.exports = function createFormService(formClient) {
     return {}
   }
 
-  /**
-   * Refer to security if a new entry is present in the SECURITY_REFERRAL table
-   */
-  async function referToSecurityIfFlagged(bookingId, offenderNo, currentStatus, transactionalClient) {
-    const securityReferral = await getSecurityReferral(offenderNo, transactionalClient)
-    if (securityReferral && securityReferral.status === 'NEW') {
-      if (validateStatusIfProvided(currentStatus, Status.SECURITY_FLAGGED.name)) {
-        await formClient.referToSecurity(
-          bookingId,
-          securityReferral.userId,
-          Status.SECURITY_FLAGGED.name,
-          transactionalClient
-        )
-        await formClient.setSecurityReferralProcessed(offenderNo, transactionalClient)
-      }
-    }
-  }
+
 
   async function backToCategoriser(bookingId, transactionalClient) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
@@ -865,9 +830,7 @@ module.exports = function createFormService(formClient) {
     cancel,
     mergeRiskProfileData,
     computeSuggestedCat,
-    referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,
-    referToSecurityIfFlagged,
     securityReviewed,
     validateStatusIfProvided,
     createOrRetrieveCategorisationRecord,

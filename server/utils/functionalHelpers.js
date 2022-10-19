@@ -18,7 +18,7 @@ module.exports = {
   isFirstVisit,
   inProgress,
   extractNextReviewDate,
-  addSocProfile,
+  //addSocProfile,
 }
 
 function isNilOrEmpty(item) {
@@ -78,7 +78,7 @@ function extractNextReviewDate(details) {
   return catRecord && catRecord.nextReviewDate
 }
 
-async function addSocProfile({
+/*async function addSocProfile({
   res,
   riskProfilerService,
   details,
@@ -105,7 +105,7 @@ async function addSocProfile({
       req.user.username,
       socProfile,
       extremismProfile,
-      status,
+      status,/!**!/
       transactionalDbClient
     )
   }
@@ -113,4 +113,4 @@ async function addSocProfile({
   await formService.referToSecurityIfFlagged(bookingId, details.offenderNo, status, transactionalDbClient)
 
   return formService.getCategorisationRecord(bookingId, transactionalDbClient)
-}
+}*/
