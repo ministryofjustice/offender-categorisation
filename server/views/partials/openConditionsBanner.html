@@ -1,0 +1,23 @@
+{% from "notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% if data.openConditions and
+(data.openConditions.sexualOffences and data.openConditions.sexualOffences.haveTheyBeenEverConvicted === 'Yes' and data.openConditions.sexualOffences.canTheRiskBeManaged === 'No') or
+(data.openConditions.riskOfHarm and data.openConditions.riskOfHarm.harmManaged === 'No') or
+(data.openConditions.furtherCharges and data.openConditions.furtherCharges.increasedRisk === 'Yes') or
+(data.openConditions.riskLevels and data.openConditions.riskLevels.likelyToAbscond === 'Yes')
+%}
+
+  {% set notRecommendedBannerHtml %}
+  <p class="govuk-notification-banner__heading">
+    Open conditions not recommended because:
+    <strong>
+    {% include "./notRecommendedList.html" %}
+    </strong>
+  </p>
+  {% endset %}
+
+  {{ govukNotificationBanner({
+  html: notRecommendedBannerHtml
+  }) }}
+
+{% endif %}
