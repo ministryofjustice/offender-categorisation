@@ -24,6 +24,8 @@
 
     <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
 
+    {% include "../../partials/openConditionsBanner.html" %}
+
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
     {% set currentCat = overriddenCat if overriddenCat else cat %}
