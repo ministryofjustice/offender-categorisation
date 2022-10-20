@@ -60,7 +60,7 @@ module.exports = {
       {
         contactedVLO: {
           responseType: 'requiredStringIf_vcsOptedFor_Yes',
-          validationMessage: 'Select Yes if you have contacted the Victim Liaison Officer (VLO',
+          validationMessage: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)',
         },
       },
       {
