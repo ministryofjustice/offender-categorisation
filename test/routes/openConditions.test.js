@@ -86,6 +86,7 @@ describe('open conditions', () => {
     path                     | expectedContent
     ${'earliestReleaseDate'} | ${'Earliest release date'}
     ${'previousSentences'}   | ${'Previous sentences'}
+    ${'victimContactScheme'} | ${'Victim Contact Scheme'}
     ${'foreignNational'}     | ${'Foreign national'}
     ${'riskOfHarm'}          | ${'Risk of Serious Harm'}
     ${'riskLevels'}          | ${'Risk levels'}
@@ -178,16 +179,17 @@ describe('open conditions', () => {
   })
 
   test.each`
-    formName                 | userInput                                                                                     | updateInfo                                             | nextPath
-    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}          | ${{ catType: 'RECAT', threeOrMoreYears: 'No' }}        | ${'/form/openConditions/foreignNational/'}
-    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}        | ${{ catType: 'INITIAL', threeOrMoreYears: 'No' }}      | ${'/form/openConditions/previousSentences/'}
-    ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No' }} | ${'/form/openConditions/sexualOffences/'}
-    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                         | ${'/form/openConditions/riskOfHarm/'}
-    ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                               | ${'/form/openConditions/furtherCharges/'}
-    ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                                  | ${'/form/openConditions/riskLevels/'}
-    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                              | ${'/tasklist/'}
-    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                                | ${'/tasklistRecat/'}
-    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                                | ${'/tasklistRecat/'}
+    formName                 | userInput                                                                                     | updateInfo                                        | nextPath
+    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}          | ${{ catType: 'RECAT', threeOrMoreYears: 'No' }}   | ${'/form/openConditions/victimContactScheme/'}
+    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}        | ${{ catType: 'INITIAL', threeOrMoreYears: 'No' }} | ${'/form/openConditions/previousSentences/'}
+    ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                                                    | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}        | ${'/form/openConditions/foreignNational/'}
+    ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', sevenOrMoreYears: 'No' }} | ${'/form/openConditions/victimContactScheme/'}
+    ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                                                  | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}      | ${'/form/openConditions/sexualOffences/'}
+    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                    | ${'/form/openConditions/riskOfHarm/'}
+    ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                          | ${'/form/openConditions/furtherCharges/'}
+    ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                             | ${'/form/openConditions/riskLevels/'}
+    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                         | ${'/tasklist/'}
+    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                           | ${'/tasklistRecat/'}
   `('Post $formName should go to $nextPath', ({ formName, userInput, updateInfo, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
