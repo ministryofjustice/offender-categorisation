@@ -86,6 +86,13 @@ module.exports = function Index({ formService, offendersService, userService, au
             ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
           ...result,
         })
+      } else if (result.data.openConditions.previousSentences.releasedLastFiveYears === 'Yes') {
+        res.render('formPages/openConditions/openConditionsNotSuitable', {
+          warningText:
+            'This person cannot be sent to open conditions because they have a previous sentence of 7 years or more' +
+            ' that they were released from in the last 5 years.',
+          ...result,
+        })
       } else if (result.data.openConditions.foreignNational.formCompleted === 'No') {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText: 'This person cannot be sent to open conditions without a CCD3 form',
@@ -148,6 +155,9 @@ module.exports = function Index({ formService, offendersService, userService, au
     if (body.threeOrMoreYears === 'No') {
       delete updated.justify
       delete updated.justifyText
+    }
+    if (body.sevenOrMoreYears === 'No') {
+      delete updated.releasedLastFiveYears
     }
     if (body.isForeignNational === 'No') {
       delete updated.formCompleted
@@ -338,7 +348,12 @@ module.exports = function Index({ formService, offendersService, userService, au
         transactionalClient: transactionalDbClient,
       })
 
-      if (userInput.justify === 'No' || userInput.formCompleted === 'No' || userInput.exhaustedAppeal === 'Yes') {
+      if (
+        userInput.justify === 'No' ||
+        userInput.formCompleted === 'No' ||
+        userInput.exhaustedAppeal === 'Yes' ||
+        userInput.releasedLastFiveYears === 'Yes'
+      ) {
         await formService.cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
         res.redirect(`/form/openConditions/openConditionsNotSuitable/${bookingId}`)
       } else {

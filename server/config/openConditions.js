@@ -21,6 +21,30 @@ module.exports = {
       },
     ],
     nextPath: {
+      decisions: {
+        discriminator: 'catType',
+        INITIAL: '/form/openConditions/previousSentences/',
+        RECAT: '/form/openConditions/foreignNational/',
+      },
+    },
+    validate: true,
+  },
+  previousSentences: {
+    fields: [
+      {
+        sevenOrMoreYears: {
+          responseType: 'requiredString',
+          validationMessage: 'Select yes if they have a previous sentence of 7 years or more',
+        },
+      },
+      {
+        releasedLastFiveYears: {
+          responseType: 'requiredStringIf_sevenOrMoreYears_Yes',
+          validationMessage: 'Select yes if they were released from this sentence in the last 5 years',
+        },
+      },
+    ],
+    nextPath: {
       path: '/form/openConditions/foreignNational/',
     },
     validate: true,
