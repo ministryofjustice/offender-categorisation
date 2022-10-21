@@ -63,7 +63,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     justifyYes.click()
     justifyText << 'details text'
     submitButton.click()
-///////////////////////////////////////////////////////////////////////////////
+
     then: 'the Victim Contact Scheme page is displayed'
     at VictimContactSchemePage
 
@@ -72,7 +72,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     contactedVLOYes.click()
     vloResponseText << 'text'
     submitButton.click()
-///////////////////////////////////////////////////////////////////////////////
+
     then: 'the Foreign National page is displayed'
     at ForeignNationalPage
 
