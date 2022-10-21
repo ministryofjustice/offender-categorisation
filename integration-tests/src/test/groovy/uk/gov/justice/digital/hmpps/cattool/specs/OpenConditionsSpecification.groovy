@@ -17,6 +17,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
   static final allNoAnswersWithFurtherCharges = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
     previousSentences  : [sevenOrMoreYears: 'No'],
+    victimContactScheme: [vcsOptedFor: 'No'],
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
@@ -27,6 +28,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
   static final allNoAnswers = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
     previousSentences  : [sevenOrMoreYears: 'No'],
+    victimContactScheme: [vcsOptedFor: 'No'],
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
@@ -103,6 +105,44 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     when: 'I submit page after No'
     sevenOrMoreYearsNo.click()
+    submitButton.click()
+
+    then: 'the Victim Contact Scheme page is displayed'
+    at VictimContactSchemePage
+
+    when: 'I submit a blank page'
+    waitFor(5) {
+      submitButton.click()
+    }
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme']
+      errors*.text() == ['Error:\nSelect Yes if any victims of the crime have opted-in to the Victim Contact Scheme']
+    }
+
+    when: 'I submit the page with just vcsOptedFor=Yes'
+    vcsOptedForYes.click()
+    submitButton.click()
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Select Yes if you have contacted the Victim Liaison Officer (VLO)']
+      errors.text().toString() == "Error:\nSelect Yes if you have contacted the Victim Liaison Officer (VLO)"
+    }
+
+    when: 'I submit the page with just vcsOptedFor=Yes and contactedVLO=Yes'
+    contactedVLOYes.click()
+    submitButton.click()
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Enter the response from the Victim Liaison Officer (VLO)']
+      errors.text().toString() == "Error:\nEnter the response from the Victim Liaison Officer (VLO)"
+    }
+
+    when: 'the Victim Contact Scheme is completed'
+    vloResponseText << 'details text'
     submitButton.click()
 
     then: 'the Sexual Offences page is displayed'
@@ -296,6 +336,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.openConditions == [
       earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
       previousSentences  : [sevenOrMoreYears:'No'],
+      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'details text'],
       sexualOffences     : [haveTheyBeenEverConvicted:'No'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
@@ -712,6 +753,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
     at PreviousSentencesPage
     sevenOrMoreYearsNo.click()
+    submitButton.click()
+    at VictimContactSchemePage
+    vcsOptedForNo.click()
     submitButton.click()
     at SexualOffencesPage
     haveTheyBeenEverConvictedNo.click()

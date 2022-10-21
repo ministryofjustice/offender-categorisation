@@ -32,7 +32,7 @@ describe('Validating Previous Sentences page', () => {
 })
 
 describe('Validating sexual offences page', () => {
-  it('Validation should return the correct error message for blank input to "Have they ever been convicted of a sexual offence??"', () => {
+  it('Validation should return the correct error message for blank input to "Have they ever been convicted of a sexual offence?"', () => {
     const formResponse = { haveTheyBeenEverConvicted: '' }
     expect(fieldValidation.validate(formResponse, openConditions.sexualOffences)).toEqual([
       {
@@ -74,5 +74,47 @@ describe('Validating sexual offences page', () => {
   it('Validation should return no error messages with both radio buttons No selected', () => {
     const formResponse = { haveTheyBeenEverConvicted: 'No', canTheRiskBeManaged: 'No' }
     expect(fieldValidation.validate(formResponse, openConditions.sexualOffences)).toEqual([])
+  })
+})
+
+describe('Validating victim contact scheme page', () => {
+  it('Validation should return the correct error message for blank input to "Have any victims of the crime opted-in to the Victim Contact Scheme?"', () => {
+    const formResponse = { vcsOptedFor: '' }
+    expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([
+      {
+        href: '#vcsOptedFor',
+        text: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme',
+      },
+    ])
+  })
+  it('Validation should return the correct error message for blank input to "Have you contacted the Victim Liaison Officer (VLO)?"', () => {
+    const formResponse = { vcsOptedFor: 'Yes', contactedVLO: '' }
+    expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([
+      {
+        href: '#contactedVLO',
+        text: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)',
+      },
+    ])
+  })
+  it('Validation should return the correct error message for blank input to "Enter the response from the Victim Liaison Officer (VLO)"', () => {
+    const formResponse = { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: '' }
+    expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([
+      {
+        href: '#vloResponseText',
+        text: 'Enter the response from the Victim Liaison Officer (VLO)',
+      },
+    ])
+  })
+  it('Validation should return no error messages with every detail filled in', () => {
+    const formResponse = { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'text detail' }
+    expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([])
+  })
+  it('Validation should return no error messages with Yes and No selected', () => {
+    const formResponse = { vcsOptedFor: 'Yes', contactedVLO: 'No' }
+    expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([])
+  })
+  it('Validation should return no error messages with No selected', () => {
+    const formResponse = { vcsOptedFor: 'No' }
+    expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([])
   })
 })
