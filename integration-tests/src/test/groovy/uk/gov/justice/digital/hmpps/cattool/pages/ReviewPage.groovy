@@ -34,5 +34,6 @@ class ReviewPage extends Page {
     riskOfHarm { $('.riskOfHarmSummary .govuk-summary-list__value') }
     foreignNational { $('.foreignNationalSummary .govuk-summary-list__value') }
     earliestReleaseDate(required: false) { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
+    previousSentences(required: false) { $('.previousSentencesSummary .govuk-summary-list__value') }
   }
 }
