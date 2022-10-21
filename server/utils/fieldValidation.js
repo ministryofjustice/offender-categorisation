@@ -56,7 +56,7 @@ function createSchemaFromConfig(pageConfig) {
     requiredStringIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi.string().required(),
+        then: joi.string().trim().required(),
         otherwise: joi.any().optional(),
       }),
     //  The below check is for Next review date validation. CAT-907.
