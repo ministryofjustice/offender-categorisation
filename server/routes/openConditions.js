@@ -100,13 +100,6 @@ module.exports = function Index({ formService, offendersService, userService, au
             ' that they were released from in the last 5 years.',
           ...result,
         })
-      } else if (result.data.openConditions.victimContactScheme.contactedVLO === 'No') {
-        res.render('formPages/openConditions/openConditionsNotSuitable', {
-          warningText:
-            'This person cannot be sent to open conditions because a victim of the crime has opted-in' +
-            ' to the Victim Contact Scheme and the VLO has not been contacted.',
-          ...result,
-        })
       } else if (result.data.openConditions.foreignNational.formCompleted === 'No') {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText: 'This person cannot be sent to open conditions without a CCD3 form',
@@ -247,12 +240,9 @@ module.exports = function Index({ formService, offendersService, userService, au
       const oc = data.openConditions
       if (
         oc &&
-        ((oc.victimContactScheme &&
-          oc.victimContactScheme.vcsOptedFor === 'Yes' &&
-          oc.victimContactScheme.contactedVLO === 'No') ||
-          (oc.sexualOffences &&
-            oc.sexualOffences.haveTheyBeenEverConvicted === 'Yes' &&
-            oc.sexualOffences.canTheRiskBeManaged === 'No') ||
+        ((oc.sexualOffences &&
+          oc.sexualOffences.haveTheyBeenEverConvicted === 'Yes' &&
+          oc.sexualOffences.canTheRiskBeManaged === 'No') ||
           (oc.riskOfHarm && oc.riskOfHarm.harmManaged === 'No') ||
           (oc.furtherCharges && oc.furtherCharges.increasedRisk === 'Yes') ||
           (oc.riskLevels && oc.riskLevels.likelyToAbscond === 'Yes'))

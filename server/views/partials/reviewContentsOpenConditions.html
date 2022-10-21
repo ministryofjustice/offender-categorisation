@@ -1,6 +1,36 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "../macros/formatAnswer.html" import formatAnswerWithNA %}
 
+{% set victimContactSchemeSummary %}
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 victimContactSchemeSummary',
+      rows: [
+        {
+          key: { classes: 'summary-list-title', text: "Victim Contact Scheme (VCS)" },
+          actions: { items: [{
+          href: '/form/openConditions/victimContactScheme/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "victim contact scheme"
+          }] if showOpenConditionChangeLinks else []
+        }
+        },
+        {
+          key: { text: "Have any victims of the crime opted-in to the Victim Contact Scheme?" },
+          value: { html: formatAnswerWithNA(data.openConditions.victimContactScheme.vcsOptedFor) },
+          actions: { items: [] }
+        },
+        {
+          key: { text: "Have you contacted the Victim Liaison Officer (VLO)?" },
+          value: { html: formatAnswerWithNA(data.openConditions.victimContactScheme.contactedVLO, data.openConditions.victimContactScheme.vloResponseText) },
+          actions: { items: [] }
+        }
+      ]
+   })
+  }}
+{% endset %}
+
+
+
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 earliestReleaseDateSummary',
     rows: [
@@ -25,6 +55,11 @@
       }
     ]
   }) }}
+
+  {% if catType != 'INITIAL' %}
+    {{ victimContactSchemeSummary | safe}}
+  {% endif %}
+
 
  {% if catType == 'INITIAL' %}
    {{ govukSummaryList({
@@ -51,6 +86,8 @@
         }
      ]
    }) }}
+
+   {{ victimContactSchemeSummary | safe}}
 
    {{ govukSummaryList({
       classes: 'govuk-!-margin-bottom-9 sexualOffencesSummary',
