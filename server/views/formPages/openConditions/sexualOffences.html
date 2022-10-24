@@ -1,0 +1,123 @@
+{% extends "../formTemplate.html" %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% set pageTitle = "Sexual offence" %}
+
+{% block navigation %}
+
+{% include "../../partials/breadCrumbTaskList.html" %}
+
+{% endblock %}
+
+{% set howTheRiskCanBeManagedHtml %}
+
+  {{ govukCharacterCount({
+    name: "howTheRiskCanBeManaged",
+    type: "howTheRiskCanBeManaged",
+    id: "howTheRiskCanBeManaged",
+    maxlength: 50000,
+    threshold: 50,
+    label: {
+      text: "Give details of how the risk can be managed"
+    },
+    value: data.openConditions.sexualOffences.howTheRiskCanBeManaged,
+    errorMessage: {
+      text: "Enter details of how the risk can be managed"
+    } if (errors | findError('howTheRiskCanBeManaged'))
+  }) }}
+
+{% endset %}
+
+{% set canTheRiskBeManagedHtml %}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "canTheRiskBeManaged",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Can the risk to the public be managed in open conditions?"
+      }
+    },
+    errorMessage: {
+      text: "Select yes if the risk to the public can be managed in open conditions"
+    } if (errors | findError('canTheRiskBeManaged')),
+    items: [
+      {
+        value: "Yes",
+        checked: data.openConditions.sexualOffences.canTheRiskBeManaged === 'Yes',
+        text: "Yes",
+        conditional: {
+          html: howTheRiskCanBeManagedHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.sexualOffences.canTheRiskBeManaged === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+  {{ govukRadios({
+    name: "haveTheyBeenEverConvicted",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Have they ever been convicted of a sexual offence?"
+      }
+    },
+    errorMessage: {
+      text: "Select yes if they have ever been convicted of a sexual offence"
+    } if (errors | findError('haveTheyBeenEverConvicted')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.sexualOffences.haveTheyBeenEverConvicted === 'Yes',
+        conditional: {
+          html: canTheRiskBeManagedHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.sexualOffences.haveTheyBeenEverConvicted === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceSexualOffences %}
+<div>If they have ever been convicted of a sexual offence you will need to provide a reason to justify sending them to open conditions now.</div>
+<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You should check:</div>
+<ul class="govuk-list govuk-list--bullet">
+  <li>nDelius</li>
+  <li>OASys</li>
+  <li>NOMIS</li>
+</ul>
+<br />
+<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
+<ul class="govuk-list govuk-list--bullet">
+  <li>if there are any restrictions needed for victims of the crime who have opted-in to VCS</li>
+  <li>if there is a need to keep them away from specific groups/people</li>
+  <li>if they have tried to contact the victim</li>
+  <li>what steps have been taken to reduce the risk e.g. courses or treatment programs</li>
+</ul>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What information should I consider?",
+    html: guidanceSexualOffences
+  }) }}
+
+{% endblock %}

@@ -111,7 +111,7 @@ class SupervisorSpecification extends AbstractSpecification {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
-      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"], previousSentences: [sevenOrMoreYears: "No"]],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"], previousSentences: [sevenOrMoreYears: "No"], sexualOffences: [haveTheyBeenEverConvicted: "No"]],
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
     db.createNomisSeqNo(12,5)
 
@@ -124,6 +124,7 @@ class SupervisorSpecification extends AbstractSpecification {
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     previousSentences*.text() == ['','No','Not applicable']
+    sexualOffences*.text() == ['','No','Not applicable']
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
     riskLevel*.text() == ['', 'No']
 
@@ -131,7 +132,7 @@ class SupervisorSpecification extends AbstractSpecification {
     db.clearDb()
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
-      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"], previousSentences: [sevenOrMoreYears: "No"]],
+      openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"], previousSentences: [sevenOrMoreYears: "No"], sexualOffences: [haveTheyBeenEverConvicted: "No"]],
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
     db.createNomisSeqNo(12,5)
 
