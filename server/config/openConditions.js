@@ -45,6 +45,32 @@ module.exports = {
       },
     ],
     nextPath: {
+      path: '/form/openConditions/sexualOffences/',
+    },
+    validate: true,
+  },
+  sexualOffences: {
+    fields: [
+      {
+        haveTheyBeenEverConvicted: {
+          responseType: 'requiredString',
+          validationMessage: 'Select yes if they have ever been convicted of a sexual offence',
+        },
+      },
+      {
+        canTheRiskBeManaged: {
+          responseType: 'requiredStringIf_haveTheyBeenEverConvicted_Yes',
+          validationMessage: 'Select yes if the risk to the public can be managed in open conditions',
+        },
+      },
+      {
+        howTheRiskCanBeManaged: {
+          responseType: 'requiredStringIf_canTheRiskBeManaged_Yes',
+          validationMessage: 'Enter details of how the risk can be managed',
+        },
+      },
+    ],
+    nextPath: {
       path: '/form/openConditions/foreignNational/',
     },
     validate: true,
