@@ -123,7 +123,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
-    previousSentences*.text() == ['', 'No','']
+    previousSentences*.text() == ['', 'No','Not applicable']
     sexualOffences*.text() == ['','No','Not applicable']
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
     riskLevel*.text() == ['', 'No']

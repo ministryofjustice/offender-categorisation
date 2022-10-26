@@ -355,7 +355,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     securityInputSummary*.text() == ['No', 'No', 'No']
 
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
-    previousSentences*.text() == ['','No','']
+    previousSentences*.text() == ['','No','Not applicable']
     sexualOffences*.text() == ['','No','Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
