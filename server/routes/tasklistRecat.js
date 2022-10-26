@@ -3,7 +3,7 @@ const express = require('express')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
-const { addSocProfile, getIn, inProgress } = require('../utils/functionalHelpers')
+const { getIn, inProgress } = require('../utils/functionalHelpers')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
 
@@ -37,7 +37,6 @@ module.exports = function Index({
   offendersService,
   userService,
   authenticationMiddleware,
-  riskProfilerService,
 }) {
   const router = express.Router()
 
@@ -99,16 +98,6 @@ module.exports = function Index({
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
 
-      categorisationRecord = await addSocProfile({
-        res,
-        req,
-        riskProfilerService,
-        details,
-        formService,
-        bookingId,
-        transactionalDbClient,
-        categorisationRecord,
-      })
 
       await formService.updateStatusForOutstandingRiskChange({
         offenderNo: details.offenderNo,
