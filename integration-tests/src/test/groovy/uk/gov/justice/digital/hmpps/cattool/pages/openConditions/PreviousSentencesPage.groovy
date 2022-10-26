@@ -12,10 +12,10 @@ class PreviousSentencesPage extends Page  {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     form { $('form') }
-    sevenOrMoreYearsYes { $('#sevenOrMoreYears') }
-    sevenOrMoreYearsNo { $('#sevenOrMoreYears-2') }
-    releasedLastFiveYearsYes(required: false) { $('#releasedLastFiveYears') }
-    releasedLastFiveYearsNo(required: false) { $('#releasedLastFiveYears-2') }
+    releasedLastFiveYearsYes { $('#releasedLastFiveYears') }
+    releasedLastFiveYearsNo { $('#releasedLastFiveYears-2') }
+    sevenOrMoreYearsYes(required: false)  { $('#sevenOrMoreYears') }
+    sevenOrMoreYearsNo(required: false)  { $('#sevenOrMoreYears-2') }
 
     submitButton { $('button', type: 'submit') }
     backLink { $('a.govuk-back-link') }
