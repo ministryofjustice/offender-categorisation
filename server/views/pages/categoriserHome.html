@@ -71,6 +71,10 @@
           {{ govukTag({
             html: 'Rejected by<br/>supervisor'
           }) }}
+        {% elif  row.displayStatus == 'Automatically referred to Security'%}
+           Started ({{user.firstName}} {{user.lastName}})
+        {% elif  row.displayStatus == 'Flagged to be referred to Security'%}
+           Started ({{user.firstName}} {{user.lastName}})
         {% else %}
           {{ row.displayStatus }}
         {% endif %}
