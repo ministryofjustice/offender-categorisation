@@ -16,7 +16,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   static final allNoAnswersWithFurtherCharges = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
-    previousSentences  : [sevenOrMoreYears: 'No'],
+    previousSentences  : [releasedLastFiveYears: 'No'],
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
@@ -26,7 +26,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   static final allNoAnswers = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
-    previousSentences  : [sevenOrMoreYears: 'No'],
+    previousSentences  : [releasedLastFiveYears: 'No'],
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
@@ -102,7 +102,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at PreviousSentencesPage
 
     when: 'I submit page after No'
-    sevenOrMoreYearsNo.click()
+    releasedLastFiveYearsNo.click()
     submitButton.click()
 
     then: 'the Sexual Offences page is displayed'
@@ -295,7 +295,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.supervisor == null
     response.openConditions == [
       earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
-      previousSentences  : [sevenOrMoreYears:'No'],
+      previousSentences  : [releasedLastFiveYears:'No'],
       sexualOffences     : [haveTheyBeenEverConvicted:'No'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
@@ -711,7 +711,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     threeOrMoreYearsNo.click()
     submitButton.click()
     at PreviousSentencesPage
-    sevenOrMoreYearsNo.click()
+    releasedLastFiveYearsNo.click()
     submitButton.click()
     at SexualOffencesPage
     haveTheyBeenEverConvictedNo.click()
