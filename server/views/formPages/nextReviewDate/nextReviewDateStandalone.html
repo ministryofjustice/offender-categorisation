@@ -49,7 +49,7 @@
     attributes: {  'maxLength': 1000 },
     threshold: 50,
     label: { text: "Reason for date change", classes: "govuk-!-font-weight-bold" },
-    errorMessage: { text: "Please enter details" } if (errors | findError('reason'))
+    errorMessage: { text: "Enter reason for date change" } if (errors | findError('reason'))
   }) }}
 
   {% set guidance %}
