@@ -50,7 +50,7 @@ module.exports = {
       {
         reason: {
           responseType: 'requiredString',
-          validationMessage: 'Please enter a reason for the change',
+          validationMessage: 'Enter reason for date change',
         },
       },
     ],
