@@ -171,7 +171,7 @@ describe('GET /categoriserHome', () => {
       .expect(res => {
         expect(res.text).toContain('Start')
         expect(res.text).not.toContain('locked')
-        expect(res.text).toMatch(/Home.+Categorisation home/s)
+        expect(res.text).toMatch(/Digital Prison Services/s)
         expect(offendersService.getUncategorisedOffenders).toBeCalledTimes(1)
       })
   })
@@ -313,7 +313,7 @@ describe('Recategoriser home', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home/s)
+        expect(res.text).toMatch(/Digital Prison Services/s)
         expect(res.text).toMatch(/Potential reviews.*4<\/span.*/)
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
       })
@@ -385,7 +385,7 @@ describe('security home', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home/s)
+        expect(res.text).toMatch(/Digital Prison Services/s)
         expect(res.text).toMatch(/G9964UP.+G0581UW/s)
         expect(offendersService.getReferredOffenders).toBeCalledTimes(1)
       })
@@ -443,7 +443,7 @@ describe('security upcoming', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home/s)
+        expect(res.text).toMatch(/Digital Prison Services/s)
         expect(res.text).toMatch(/.+G9084UJ.+G0242GG.+G2996UX/s)
         expect(offendersService.getUpcomingReferredOffenders).toBeCalledTimes(1)
       })
@@ -474,7 +474,7 @@ describe('Security Landing page', () => {
         expect(res.text).toContain('Dexter Spaniel')
         expect(res.text).toContain('securityButton')
         expect(res.text).toMatch(/<a href="http.+\/prisoner\/B2345XY" class="govuk-back-link">Back<\/a>/)
-        expect(res.text).toMatch(/Home.+Categorisation home.+Manage categorisations/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(userService.getUserByUserId).toBeCalledTimes(0)
         expect(offendersService.requiredCatType).toBeCalledTimes(1)
@@ -771,7 +771,6 @@ describe('Security Landing page', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Security cancellation confirmed')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(formService.cancelSecurityReferral).toBeCalledWith('B2345XY', mockTransactionalClient)
       })

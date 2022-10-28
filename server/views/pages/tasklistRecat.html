@@ -1,14 +1,11 @@
 {% extends "../partials/layout.html" %}
 {% from "button/macro.njk" import govukButton %}
 
-{% set pageTitle = "Category review task list" %}
+{% set pageTitle = "Category task list" %}
 
 {% block beforeContent %}
 
   {% include "../partials/breadCrumb.html" %}
-  {% if reason !== 'RISK_CHANGE' %}
-    <a href="javascript:window.history.back()" class="govuk-back-link">Back</a>
-  {% endif %}
 
 {% endblock %}
 

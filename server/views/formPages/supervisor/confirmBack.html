@@ -9,7 +9,7 @@
 
 {% block navigation %}
 
-{% set breadCrumbList = [ {href: '/', title: 'Categorisation home'}, {href: '/form/supervisor/review/'+ data.details.bookingId, title: 'Approve category'} ] %}
+{% set breadCrumbList = [ {href: '/', title: 'Categorisation dashboard'}, {href: '/form/supervisor/review/'+ data.details.bookingId, title: 'Approve category'} ] %}
 {{ breadCrumb(pageTitle, breadCrumbList) }}
 
 {% endblock %}
