@@ -16,12 +16,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   static final allNoAnswersWithFurtherCharges = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
-<<<<<<< HEAD
-    previousSentences  : [sevenOrMoreYears: 'No'],
-    victimContactScheme: [vcsOptedFor: 'No'],
-=======
     previousSentences  : [releasedLastFiveYears: 'No'],
->>>>>>> main
+    victimContactScheme: [vcsOptedFor: 'No'],
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
@@ -31,12 +27,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   static final allNoAnswers = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
-<<<<<<< HEAD
-    previousSentences  : [sevenOrMoreYears: 'No'],
-    victimContactScheme: [vcsOptedFor: 'No'],
-=======
     previousSentences  : [releasedLastFiveYears: 'No'],
->>>>>>> main
+    victimContactScheme: [vcsOptedFor: 'No'],
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
