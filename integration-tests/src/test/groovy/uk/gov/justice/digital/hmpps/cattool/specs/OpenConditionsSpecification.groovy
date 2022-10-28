@@ -16,8 +16,12 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   static final allNoAnswersWithFurtherCharges = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
+<<<<<<< HEAD
     previousSentences  : [sevenOrMoreYears: 'No'],
     victimContactScheme: [vcsOptedFor: 'No'],
+=======
+    previousSentences  : [releasedLastFiveYears: 'No'],
+>>>>>>> main
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
@@ -27,8 +31,12 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   static final allNoAnswers = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
+<<<<<<< HEAD
     previousSentences  : [sevenOrMoreYears: 'No'],
     victimContactScheme: [vcsOptedFor: 'No'],
+=======
+    previousSentences  : [releasedLastFiveYears: 'No'],
+>>>>>>> main
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
@@ -104,7 +112,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at PreviousSentencesPage
 
     when: 'I submit page after No'
-    sevenOrMoreYearsNo.click()
+    releasedLastFiveYearsNo.click()
     submitButton.click()
 
     then: 'the Victim Contact Scheme page is displayed'
@@ -335,7 +343,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.supervisor == null
     response.openConditions == [
       earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
-      previousSentences  : [sevenOrMoreYears:'No'],
+      previousSentences  : [releasedLastFiveYears:'No'],
       victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'details text'],
       sexualOffences     : [haveTheyBeenEverConvicted:'No'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
@@ -753,7 +761,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     threeOrMoreYearsNo.click()
     submitButton.click()
     at PreviousSentencesPage
-    sevenOrMoreYearsNo.click()
+    releasedLastFiveYearsNo.click()
     submitButton.click()
     at VictimContactSchemePage
     vcsOptedForNo.click()

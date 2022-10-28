@@ -179,6 +179,7 @@ describe('open conditions', () => {
   })
 
   test.each`
+<<<<<<< HEAD
     formName                 | userInput                                                                                     | updateInfo                                        | nextPath
     ${'earliestReleaseDate'} | ${{ catType: 'RECAT', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}          | ${{ catType: 'RECAT', threeOrMoreYears: 'No' }}   | ${'/form/openConditions/victimContactScheme/'}
     ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}        | ${{ catType: 'INITIAL', threeOrMoreYears: 'No' }} | ${'/form/openConditions/previousSentences/'}
@@ -190,6 +191,18 @@ describe('open conditions', () => {
     ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                             | ${'/form/openConditions/riskLevels/'}
     ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                         | ${'/tasklist/'}
     ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                           | ${'/tasklistRecat/'}
+=======
+    formName                 | userInput                                                                                     | updateInfo                                             | nextPath
+    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}          | ${{ catType: 'RECAT', threeOrMoreYears: 'No' }}        | ${'/form/openConditions/foreignNational/'}
+    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}        | ${{ catType: 'INITIAL', threeOrMoreYears: 'No' }}      | ${'/form/openConditions/previousSentences/'}
+    ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No' }} | ${'/form/openConditions/sexualOffences/'}
+    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                         | ${'/form/openConditions/riskOfHarm/'}
+    ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                               | ${'/form/openConditions/furtherCharges/'}
+    ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                                  | ${'/form/openConditions/riskLevels/'}
+    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                              | ${'/tasklist/'}
+    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                                | ${'/tasklistRecat/'}
+    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                                | ${'/tasklistRecat/'}
+>>>>>>> main
   `('Post $formName should go to $nextPath', ({ formName, userInput, updateInfo, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
@@ -216,7 +229,7 @@ describe('open conditions', () => {
   test.each`
     formName                 | userInput
     ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }}
-    ${'previousSentences'}   | ${{ sevenOrMoreYears: 'Yes', releasedLastFiveYears: 'Yes' }}
+    ${'previousSentences'}   | ${{ releasedLastFiveYears: 'Yes', sevenOrMoreYears: 'Yes' }}
     ${'foreignNational'}     | ${{ formCompleted: 'No' }}
     ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}
   `('should render openConditionsNotSuitable page for $formName', ({ formName, userInput }) => {

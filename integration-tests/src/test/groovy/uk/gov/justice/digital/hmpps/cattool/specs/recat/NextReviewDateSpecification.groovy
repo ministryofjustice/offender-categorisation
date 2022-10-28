@@ -124,8 +124,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'there are 2 validation errors'
-    errorSummaries*.text() == ['Enter a valid date that is after today', 'Please enter a reason for the change']
-    errors*.text() == ['Error:\nEnter a valid date that is after today', 'Error:\nPlease enter details']
+    errorSummaries*.text() == ['The review date must be a real date', 'Enter reason for date change']
+    errors*.text() == ['Error:\nThe review date must be a real date', 'Error:\nEnter reason for date change']
 
     when: 'reason entered'
     reason = 'A test reason'
@@ -133,8 +133,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'there is 1 validation error'
     waitFor {
-      errorSummaries*.text() == ['Enter a valid date that is after today']
-      errors.text() == 'Error:\nEnter a valid date that is after today'
+      errorSummaries*.text() == ['The review date must be a real date']
+      errors.text() == 'Error:\nThe review date must be a real date'
     }
 
     when: 'date is modified'

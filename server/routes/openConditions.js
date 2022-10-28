@@ -163,8 +163,8 @@ module.exports = function Index({ formService, offendersService, userService, au
       delete updated.justify
       delete updated.justifyText
     }
-    if (body.sevenOrMoreYears === 'No') {
-      delete updated.releasedLastFiveYears
+    if (body.releasedLastFiveYears === 'No') {
+      delete updated.sevenOrMoreYears
     }
     if (body.canTheRiskBeManaged === 'No') {
       delete updated.howTheRiskCanBeManaged
@@ -377,7 +377,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         userInput.contactedVLO === 'No' ||
         userInput.formCompleted === 'No' ||
         userInput.exhaustedAppeal === 'Yes' ||
-        userInput.releasedLastFiveYears === 'Yes'
+        userInput.sevenOrMoreYears === 'Yes'
       ) {
         await formService.cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
         res.redirect(`/form/openConditions/openConditionsNotSuitable/${bookingId}`)
