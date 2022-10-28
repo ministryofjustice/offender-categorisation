@@ -183,7 +183,7 @@ describe('open conditions', () => {
     ${'earliestReleaseDate'} | ${{ catType: 'RECAT', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}          | ${{ catType: 'RECAT', threeOrMoreYears: 'No' }}   | ${'/form/openConditions/victimContactScheme/'}
     ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}        | ${{ catType: 'INITIAL', threeOrMoreYears: 'No' }} | ${'/form/openConditions/previousSentences/'}
     ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                                                    | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}        | ${'/form/openConditions/foreignNational/'}
-    ${'previousSentences'}   | ${{ catType: 'INITIAL', sevenOrMoreYears: 'No', releasedLastFiveYears: 'No' }}                | ${{ catType: 'INITIAL', sevenOrMoreYears: 'No' }} | ${'/form/openConditions/victimContactScheme/'}
+    ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', sevenOrMoreYears: 'No' }} | ${'/form/openConditions/victimContactScheme/'}
     ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                                                  | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}      | ${'/form/openConditions/sexualOffences/'}
     ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                    | ${'/form/openConditions/riskOfHarm/'}
     ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                          | ${'/form/openConditions/furtherCharges/'}
@@ -216,7 +216,7 @@ describe('open conditions', () => {
   test.each`
     formName                 | userInput
     ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }}
-    ${'previousSentences'}   | ${{ sevenOrMoreYears: 'Yes', releasedLastFiveYears: 'Yes' }}
+    ${'previousSentences'}   | ${{ releasedLastFiveYears: 'Yes', sevenOrMoreYears: 'Yes' }}
     ${'foreignNational'}     | ${{ formCompleted: 'No' }}
     ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}
   `('should render openConditionsNotSuitable page for $formName', ({ formName, userInput }) => {

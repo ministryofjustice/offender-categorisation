@@ -12,29 +12,29 @@
 
 {% endblock %}
 
-{% set releasedLastFiveYearsTextHtml %}
+{% set sevenYearsOrMoreTextHtml %}
 
   {{ govukRadios({
     formGroup: { classes: 'govuk-!-margin-bottom-6' },
-    name: "releasedLastFiveYears",
+    name: "sevenOrMoreYears",
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Were they released from this sentence in the last 5 years?"
+        text: "Was that previous sentence for 7 years or more?"
       }
     },
     errorMessage: {
-      text: "Select yes if they were released from this sentence in the last 5 years"
-    } if (errors | findError('releasedLastFiveYears')),
+      text: "Select yes if they have a previous sentence of 7 years or more"
+    } if (errors | findError('sevenOrMoreYears')),
     items: [
       {
         value: "Yes",
-        checked: data.openConditions.previousSentences.releasedLastFiveYears === 'Yes',
+        checked: data.openConditions.previousSentences.sevenOrMoreYears === 'Yes',
         text: "Yes"
       },
       {
         value: "No",
-        checked: data.openConditions.previousSentences.releasedLastFiveYears === 'No',
+        checked: data.openConditions.previousSentences.sevenOrMoreYears === 'No',
         text: "No"
       }
     ]
@@ -47,28 +47,28 @@
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   {{ govukRadios({
-    name: "sevenOrMoreYears",
+    name: "releasedLastFiveYears",
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Do they have a previous sentence of 7 years or more?"
+        text: "Have they been released from a previous sentence in the last 5 years?"
       }
     },
     errorMessage: {
-      text: "Select yes if they have a previous sentence of 7 years or more"
-    } if (errors | findError('sevenOrMoreYears')),
+      text: "Select yes if they were released from this previous sentence in the last 5 years"
+    } if (errors | findError('releasedLastFiveYears')),
     items: [
       {
         value: "Yes",
         text: "Yes",
-        checked: data.openConditions.previousSentences.sevenOrMoreYears === 'Yes',
+        checked: data.openConditions.previousSentences.releasedLastFiveYears === 'Yes',
         conditional: {
-          html: releasedLastFiveYearsTextHtml
+          html: sevenYearsOrMoreTextHtml
         }
       },
       {
         value: "No",
-        checked: data.openConditions.previousSentences.sevenOrMoreYears === 'No',
+        checked: data.openConditions.previousSentences.releasedLastFiveYears === 'No',
         text: "No"
       }
     ]

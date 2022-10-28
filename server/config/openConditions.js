@@ -32,15 +32,15 @@ module.exports = {
   previousSentences: {
     fields: [
       {
-        sevenOrMoreYears: {
+        releasedLastFiveYears: {
           responseType: 'requiredString',
-          validationMessage: 'Select yes if they have a previous sentence of 7 years or more',
+          validationMessage: 'Select yes if they were released from this sentence in the last 5 years',
         },
       },
       {
-        releasedLastFiveYears: {
-          responseType: 'requiredStringIf_sevenOrMoreYears_Yes',
-          validationMessage: 'Select yes if they were released from this sentence in the last 5 years',
+        sevenOrMoreYears: {
+          responseType: 'requiredStringIf_releasedLastFiveYears_Yes',
+          validationMessage: 'Select yes if they have a previous sentence of 7 years or more',
         },
       },
     ],
