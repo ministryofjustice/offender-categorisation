@@ -106,14 +106,14 @@ module.exports = {
   getRiskChangeByStatus(agencyId, status, transactionalClient) {
     logger.debug(`getRiskChangeByStatus called with status ${status} and agencyId ${agencyId}`)
     const query = {
-      text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2`,
+      text: `select offender_no as "offenderNo", user_id as "userId", status, max(raised_date) as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2 and user_id is not null group by offender_no, user_id, status`,
       values: [agencyId, status],
     }
     return transactionalClient.query(query)
   },
 
   getNewRiskChangeByOffender(offenderNo, transactionalClient) {
-    logger.debug(`getRiskChangeByStatus called with offenderNo ${offenderNo}`)
+    logger.debug(`getRiskChangeByOffender called with offenderNo ${offenderNo}`)
     const query = {
       text: `select old_profile as "oldProfile", new_profile as "newProfile", status, raised_date as "raisedDate" from risk_change r where r.offender_no= $1 and r.status = 'NEW'`,
       values: [offenderNo],

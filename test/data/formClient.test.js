@@ -175,8 +175,7 @@ describe('getRiskChangeByStatus', () => {
     formClient.getRiskChangeByStatus('LEI', RiskChangeStatus.NEW.name, mockTransactionalClient)
 
     expect(mockTransactionalClient.query).toBeCalledWith({
-      text: 'select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2',
-
+      text: `select offender_no as "offenderNo", user_id as "userId", status, max(raised_date) as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2 and user_id is not null group by offender_no, user_id, status`,
       values: ['LEI', 'NEW'],
     })
   })
