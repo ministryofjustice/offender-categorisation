@@ -1,19 +1,12 @@
 {% extends "../partials/layout.html" %}
 {% from "button/macro.njk" import govukButton %}
-{% from "back-link/macro.njk" import govukBackLink %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 
 {% set pageTitle = "Manage categorisations" %}
 
 {% block beforeContent %}
-  {% set offenderBack = offenderLink %}
 
   {% include "../partials/breadCrumb.html" %}
-
-  {{ govukBackLink({
-    text: "Back",
-    href: data.details.offenderNo | offenderLink
-  }) }}
 
   {% include "../partials/offenderBanner.html" %}
 

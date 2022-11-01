@@ -473,7 +473,6 @@ describe('Security Landing page', () => {
       .expect(res => {
         expect(res.text).toContain('Dexter Spaniel')
         expect(res.text).toContain('securityButton')
-        expect(res.text).toMatch(/<a href="http.+\/prisoner\/B2345XY" class="govuk-back-link">Back<\/a>/)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(userService.getUserByUserId).toBeCalledTimes(0)

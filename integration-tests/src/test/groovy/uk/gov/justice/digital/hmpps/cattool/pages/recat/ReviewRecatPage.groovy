@@ -18,7 +18,6 @@ class ReviewRecatPage extends Page {
     form { $('form') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
     changeLinks { $('a.govuk-link', text: startsWith('Change')) }
 
     prisonerBackgroundSummary { $('.prisonerBackgroundSummary .govuk-summary-list__value') }

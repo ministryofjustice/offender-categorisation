@@ -21,7 +21,6 @@ class NextReviewDateQuestionPage extends Page {
     specificOption { $('#nextDateChoice-3') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
     errorSummaries { $('ul.govuk-error-summary__list li') }
     errors { $('.govuk-error-message') }
   }
