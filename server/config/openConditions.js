@@ -34,7 +34,7 @@ module.exports = {
       {
         releasedLastFiveYears: {
           responseType: 'requiredString',
-          validationMessage: 'Select yes if they were released from this sentence in the last 5 years',
+          validationMessage: 'Select yes if they have been released from a previous sentence in the last 5 years',
         },
       },
       {
