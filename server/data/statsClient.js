@@ -34,7 +34,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  /** For now the startDate is ignored. The latest category before the end date is considered along with its predecessor */
+  /** The latest category before the end date is considered along with its predecessor */
   getRecatFromTo(startDate, endDate, prisonId, transactionalClient) {
     const query = {
       text: `
@@ -47,7 +47,8 @@ module.exports = {
           from form
           where status = 'APPROVED'
             and cat_type = 'RECAT'
-            and ($1::date is null or approval_date <= $1::date)
+            and ($1::date is null or $1::date <= approval_date)
+            and ($2::date is null or approval_date <= $2::date)
         ),
              arrays_table as (
                select array_agg(array [prison_id,cat] order by sequence_no desc) as data
@@ -56,9 +57,9 @@ module.exports = {
              )
         select count(*), data[2][2] as previous, data[1][2] as current
         from arrays_table
-        where ($2::varchar is null or $2::varchar = data[1][1])
+        where ($3::varchar is null or $3::varchar = data[1][1])
         group by previous, current`,
-      values: [endDate, prisonId],
+      values: [startDate, endDate, prisonId],
     }
     return transactionalClient.query(query)
   },
