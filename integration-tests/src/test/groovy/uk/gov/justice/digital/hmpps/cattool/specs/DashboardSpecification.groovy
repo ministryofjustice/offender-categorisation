@@ -310,7 +310,7 @@ class DashboardSpecification extends AbstractSpecification {
     reviewNumbersTableRows[5].find('td')*.text() == ['Total', '2', '10', '4', '3', '2', '21']
 
     when: 'the user filters by a date range'
-    form.startDate = '14/08/2019'
+    form.startDate = '14/02/2017'
     form.endDate = '14/08/2019'
     submitButton.click()
 
