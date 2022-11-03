@@ -56,7 +56,7 @@ module.exports = {
         from arrays_table
         where ($4::varchar is null or $4::varchar = data[1][1])
         group by previous, current`,
-      values: ['RECAT',startDate, endDate, prisonId],
+      values: ['RECAT', startDate, endDate, prisonId],
     }
     return transactionalClient.query(query)
   },
