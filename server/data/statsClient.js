@@ -45,10 +45,7 @@ module.exports = {
                  coalesce(form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory',
                           form_response -> 'recat' -> 'decision' ->> 'category') as cat
           from form
-          where status = 'APPROVED'
-            and cat_type = 'RECAT'
-            and ($1::date is null or $1::date <= approval_date)
-            and ($2::date is null or approval_date <= $2::date)
+          where ${whereClause}
         ),
              arrays_table as (
                select array_agg(array [prison_id,cat] order by sequence_no desc) as data
@@ -57,9 +54,9 @@ module.exports = {
              )
         select count(*), data[2][2] as previous, data[1][2] as current
         from arrays_table
-        where ($3::varchar is null or $3::varchar = data[1][1])
+        where ($4::varchar is null or $4::varchar = data[1][1])
         group by previous, current`,
-      values: [startDate, endDate, prisonId],
+      values: ['RECAT',startDate, endDate, prisonId],
     }
     return transactionalClient.query(query)
   },
