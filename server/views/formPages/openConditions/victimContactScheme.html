@@ -29,7 +29,7 @@
       text: "Enter the response from the Victim Liaison Officer (VLO)"
     },
     hint: {
-      text: "Your comments will be disclosed to the prisoner"
+      text: "Do not include any personal information that could identify the victims."
     },
     value: data.openConditions.victimContactScheme.vloResponseText,
     errorMessage: {
@@ -51,7 +51,7 @@
       }
     },
     hint: {
-      text: "You should tell them you are considering Category D/Open."
+      text: "You should tell them you are considering open conditions."
     },
     errorMessage: {
       text: "Select Yes if you have contacted the Victim Liaison Officer (VLO)"
@@ -108,10 +108,12 @@
   }) }}
 
 {% set guidanceVictimContactScheme %}
-  <p>Victims who opt-in to the VCS should be provided with information at key stages of the offender’s sentence and/or at annual intervals.</p>
+  <p>Victims who opt-in to the VCS should be provided with information at key stages of the offender’s sentence and at annual intervals.</p>
   <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You should check:</div>
   <ul class="govuk-list govuk-list--bullet">
     <li>nDelius</li>
+    <li>Digital Prisons Service (DPS)</li>
+    <li>with your Victim Liaison Unit</li>
   </ul>
   <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
   <ul class="govuk-list govuk-list--bullet">

@@ -7,7 +7,7 @@ describe('Validating Previous Sentences page', () => {
     expect(fieldValidation.validate(formResponse, openConditions.previousSentences)).toEqual([
       {
         href: '#releasedLastFiveYears',
-        text: 'Select yes if they were released from this sentence in the last 5 years',
+        text: 'Select yes if they have been released from a previous sentence in the last 5 years',
       },
     ])
   })
