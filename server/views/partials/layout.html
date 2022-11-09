@@ -33,20 +33,40 @@
 {% endblock %}
 
 {% block footer %}
-  <div class="feedback-banner govuk-!-display-none-print" data-test="feedback-banner">
-    <a id="surveyLink"
-       href=""
-       class="govuk-link govuk-link--inverse govuk-!-font-size-16"
-       target="_blank"
-       rel="noopener noreferrer"
-    >Give feedback on Digital Prison Services (opens in a new tab)</a>
+<div class="govuk-!-display-none-print">
+  <div class="govuk-width-container">
+    <div class="feedback-banner govuk-!-display-none-print govuk-width-container" data-test="feedback-banner">
+      <a id="surveyLink"
+         href=""
+         class="govuk-link govuk-link--inverse govuk-!-font-size-16"
+         target="_blank"
+         rel="noopener noreferrer"
+      >Give feedback on Digital Prison Services (opens in a new tab)</a>
+    </div>
   </div>
+</div>
+<div class="govuk-!-display-none-print">
   {{ govukFooter({
     meta: {
-      title: 'Support',
-      items: [{ text:'Support', href:'https://support.hmpps.service.justice.gov.uk/feedback-and-support' }]
-    }
+      html: '
+        <ul class="govuk-footer__inline-list">
+
+          <li class="govuk-footer__inline-list-item">
+            <a class="govuk-footer__link" href="https://support.hmpps.service.justice.gov.uk/feedback-and-support">
+              Get help
+            </a>
+          </li>
+
+          <li class="govuk-footer__inline-list-item">
+            <a id = "terms" class="govuk-footer__link" href="">
+              Terms and conditions
+            </a>
+          </li>
+
+        </ul>'
+}
   }) }}
+</div>
 {% endblock %}
 
 {% block bodyEnd %}
@@ -54,4 +74,5 @@
 <script src="/assets/all.js"></script>
 <script>window.GOVUKFrontend.initAll();</script>
 <script>document.getElementById('surveyLink').setAttribute("href", "https://eu.surveymonkey.com/r/GYB8Y9Q?source=" + window.location.hostname + window.location.pathname);</script>
+<script>document.getElementById('terms').setAttribute("href", "{{ dpsHome }}content/terms-conditions");</script>
 {% endblock %}
