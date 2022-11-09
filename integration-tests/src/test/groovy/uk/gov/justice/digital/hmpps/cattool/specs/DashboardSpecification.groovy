@@ -53,8 +53,8 @@ class DashboardSpecification extends AbstractSpecification {
       prisonId, "B00${bookingId}XY", startDate, null, securityReviewedDate, approvalDate, assessmentDate, dueByDate)
   }
 
-  int dbCatRow(bookingId, seq, approvedDate, prisonId, suggested, supervisor = null) {
-    return db.doCreateCompleteRow(-bookingId * seq, bookingId, rc(suggested, supervisor).build(), 'RECATEGORISER_USER', 'APPROVED', 'RECAT', null, null, null, seq, '{}',
+  int dbCatRow(bookingId, seq, approvedDate, prisonId, suggested, supervisor = null, catType = 'RECAT') {
+    return db.doCreateCompleteRow(-bookingId * seq, bookingId, rc(suggested, supervisor).build(), 'RECATEGORISER_USER', 'APPROVED', catType, null, null, null, seq, '{}',
       prisonId, "B00${bookingId}XY", "'2019-07-01T00:00Z'", null, null, approvedDate, '2019-07-22', '2019-08-03')
   }
 
@@ -285,13 +285,16 @@ class DashboardSpecification extends AbstractSpecification {
     dbCatRow(116, 1, '2019-02-15', 'LEI', 'I'); dbCatRow(116, 2, '2019-08-15', 'LEI', 'I')
     dbCatRow(117, 1, '2019-02-15', 'LEI', 'I'); dbCatRow(117, 2, '2019-08-15', 'LEI', 'I')
     dbCatRow(118, 1, '2019-02-15', 'LEI', 'I'); dbCatRow(118, 2, '2019-08-15', 'LEI', 'I')
-    dbCatRow(119, 1, '2019-02-15', 'LEI', 'D') // <- ignored
+    dbCatRow(119, 1, '2019-02-15', 'LEI', 'D') // <- NOT ignored are previous category
     dbCatRow(119, 2, '2019-05-15', 'LEI', 'B'); dbCatRow(119, 3, '2019-08-15', 'LEI', 'C')
-    // ignored when filtered:
     dbCatRow(120, 1, '2017-02-15', 'LEI', 'B'); dbCatRow(120, 2, '2017-08-15', 'LEI', 'D')
+    // ignored when filtered:
     dbCatRow(121, 1, '2017-08-15', 'BXI', 'C'); dbCatRow(121, 2, '2019-08-15', 'BXI', 'C')
     // no previous:
     dbCatRow(122, 5, '2019-05-15', 'LEI', 'B')
+
+    // INITIAL B -> RECAT D
+    dbCatRow(123, 1, '2016-02-15', 'LEI', 'B', null,'INITIAL'); dbCatRow(123, 2, '2016-08-15', 'LEI', 'D', null, 'RECAT')
 
     given: 'a supervisor is logged in'
     elite2Api.stubUncategorisedAwaitingApproval()
@@ -302,21 +305,38 @@ class DashboardSpecification extends AbstractSpecification {
     to DashboardRecatPage
 
     then: 'The stats displayed are as follows'
-    reviewNumbersTableRows[0].find('td')*.text() == ['B', '1', '6', '1', '', '', '8']
+    reviewNumbersTableRows[0].find('td')*.text() == ['B', '1', '6', '2', '', '', '9']
     reviewNumbersTableRows[1].find('td')*.text() == ['C', '1', '4', '3', '', '', '8']
-    reviewNumbersTableRows[2].find('td')*.text() == ['D', '', '', '', '', '', '0']
+    reviewNumbersTableRows[2].find('td')*.text() == ['D', '1', '', '', '', '', '1']
     reviewNumbersTableRows[3].find('td')*.text() == ['YOI closed', '', '', '', '3', '2', '5']
     reviewNumbersTableRows[4].find('td')*.text() == ['YOI open', '', '', '', '', '', '0']
-    reviewNumbersTableRows[5].find('td')*.text() == ['Total', '2', '10', '4', '3', '2', '21']
+    reviewNumbersTableRows[5].find('td')*.text() == ['Total', '3', '10', '5', '3', '2', '23']
 
-    when: 'the user filters by a date range'
-    form.startDate = '14/02/2017'
+    when: 'the user filters to an end date'
+    form.startDate = ''
     form.endDate = '14/08/2019'
     submitButton.click()
 
     then: 'the results totals are now reduced'
     at DashboardRecatPage
-    // TODO atm the start date is ignored
-    reviewNumbersTableRows[5].find('td')*.text() == ['Total', '3', '0', '1', '0', '0', '4']
+    reviewNumbersTableRows[5].find('td')*.text() == ['Total', '3', '0', '2', '0', '0', '5']
+
+    when: 'the user filters from a start date to an end date'
+    form.startDate = '16/08/2017'
+    form.endDate = '14/08/2019'
+    submitButton.click()
+
+    then: 'the results totals are now reduced'
+    at DashboardRecatPage
+    reviewNumbersTableRows[5].find('td')*.text() == ['Total', '3', '0', '0', '0', '0', '3']
+
+    when: 'the user filters a period when initial B was recategorised as D'
+    form.startDate = '15/08/2016'
+    form.endDate = '15/08/2016'
+    submitButton.click()
+
+    then: 'the B to D transition is shown'
+    at DashboardRecatPage
+    reviewNumbersTableRows[5].find('td')*.text() == ['Total', '0', '0', '1', '0', '0', '1']
   }
 }
