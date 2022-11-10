@@ -82,7 +82,7 @@ describe('GET /tasklist/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Categorisation task list')
         expect(res.text).toContain('Offending history')
         expect(res.text).toContain('Not yet checked')

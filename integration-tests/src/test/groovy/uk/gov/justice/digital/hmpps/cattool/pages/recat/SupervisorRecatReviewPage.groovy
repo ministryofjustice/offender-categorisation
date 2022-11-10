@@ -49,6 +49,5 @@ class SupervisorRecatReviewPage extends Page {
     warnings { $('div.govuk-warning-text') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
   }
 }

@@ -13,7 +13,6 @@ class SecurityInputPage extends HeaderPage {
   }
 
   static content = {
-    backLink { $('a.govuk-back-link') }
     warningTextDiv { $('div.govuk-warning-text')}
     saveButton { $('button.govuk-button') }
     securityRadio { $('input', name: 'securityInputNeeded') }
