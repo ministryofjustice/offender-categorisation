@@ -88,7 +88,7 @@ describe('GET /tasklistRecat/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Category review task list')
         expect(res.text).toContain('Security information')
         expect(res.text).toContain('Not yet checked')

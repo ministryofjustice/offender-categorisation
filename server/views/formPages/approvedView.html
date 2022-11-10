@@ -1,17 +1,16 @@
 {% extends "./formTemplate.html" %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
-{% block pageTitle %}{{data.details.offenderNo}} {{data.details.displayName}}{% endblock %}
+{% block pageTitle %}
+  {{data.details.offenderNo}} {{data.details.displayName}}
+{% endblock %}
+
 {% set pageTitle = "Categorisation outcome" %}
 
 {% block beforeContent %}
 
   {% include "../partials/breadCrumb.html" %}
 
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  }) }}
 {% endblock %}
 
 {% block content %}
