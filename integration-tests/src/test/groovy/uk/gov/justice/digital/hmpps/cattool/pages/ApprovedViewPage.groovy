@@ -27,6 +27,5 @@ class ApprovedViewPage extends Page {
     otherInformationSummary { $('.otherInformationSummary .govuk-summary-list__value') }
 
     submitButton { $('a', role:'button') }
-    backLink { $('a.govuk-back-link') }
   }
 }

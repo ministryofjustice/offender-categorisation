@@ -10,7 +10,7 @@
 {% block navigation %}
 
   {% set breadCrumbList = [ {href: '/' + data.details.bookingId, title: 'Manage categorisations'} ] %}
-  {{ breadCrumb(pageTitle, breadCrumbList) }}
+  {{ breadCrumb(breadCrumbList) }}
 
 {% endblock %}
 

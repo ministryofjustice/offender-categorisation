@@ -20,7 +20,7 @@ class EarliestReleasePage extends Page {
     justifyText(required: false) { $('textarea', name: 'justifyText') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
+
     errorSummaries { $('ul.govuk-error-summary__list li') }
     errors { $('.govuk-error-message') }
   }
