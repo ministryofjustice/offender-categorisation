@@ -87,10 +87,8 @@ describe('recat', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list.+Next review date/s)
-        expect(res.text).toContain(
-          '<a class="govuk-breadcrumbs__link" href="/tasklistRecat/12">Category review task list</a>'
-        )
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Category task list/s)
+        expect(res.text).toContain('<a class="govuk-breadcrumbs__link" href="/tasklistRecat/12">Category task list</a>')
       })
   })
 
@@ -110,7 +108,7 @@ describe('recat', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list.+Next review date/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
       })
   })
 

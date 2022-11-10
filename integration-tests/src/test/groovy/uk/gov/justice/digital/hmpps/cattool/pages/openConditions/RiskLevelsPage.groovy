@@ -18,7 +18,7 @@ class RiskLevelsPage extends Page {
     likelyToAbscondText(required: false) { $('textarea', name: 'likelyToAbscondText') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
+
     errorSummaries { $('ul.govuk-error-summary__list li') }
     errors { $('.govuk-error-message') }
   }

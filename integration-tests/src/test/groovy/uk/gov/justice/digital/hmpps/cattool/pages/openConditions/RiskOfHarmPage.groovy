@@ -20,7 +20,7 @@ class RiskOfHarmPage extends Page {
     harmManagedText(required: false) { $('textarea', name: 'harmManagedText') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
+
     errorSummaries { $('ul.govuk-error-summary__list li') }
     errors { $('.govuk-error-message') }
   }
