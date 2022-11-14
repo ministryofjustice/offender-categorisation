@@ -175,7 +175,7 @@ describe('GET /security/review', () => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(res.text).toContain('Claire Dent')
-        expect(res.text).toMatch(/Home.+Categorisation home.+Security review/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
       })
   )
 
@@ -439,7 +439,7 @@ describe('GET /awaitingApprovalView', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Open Conditions')
-        expect(res.text).toMatch(/Home.+Categorisation home.+Provisional categorisation/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')
       })
   })
@@ -461,7 +461,7 @@ describe('GET /supervisor/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Approve category/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('Prisoner background')
       })
   })
@@ -501,7 +501,7 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Open Conditions')
-        expect(res.text).toMatch(/Home.+Categorisation home.+Approve category/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
       })
   })
 
@@ -607,7 +607,7 @@ describe('GET /supervisor/confirmBack', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Approve category.+Confirm status change/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Approve category/s)
       })
   })
 })
@@ -624,7 +624,7 @@ describe('GET /ratings/violence', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(riskProfilerService.getViolenceProfile).toBeCalledTimes(1)
-        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list.+Safety and good order/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
         expect(res.text).toContain(
           'This person has not been reported as the perpetrator in any assaults in custody before.'
         )
@@ -648,7 +648,7 @@ describe('GET /ratings/violence', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Safety and good order/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toMatch(
           /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 3 non-serious assaults in the past 12 months./
         )
@@ -668,7 +668,7 @@ describe('GET /ratings/extremism', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list.+Extremism/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
         expect(riskProfilerService.getExtremismProfile).toBeCalledTimes(1)
       })
   )
@@ -730,7 +730,7 @@ describe('GET /categoriser/review', () => {
           mockTransactionalClient
         )
         expect(formService.updateFormData).not.toBeCalled()
-        expect(res.text).toMatch(/Home.+Categorisation home.+Categorisation task list.+Check your answers/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
       })
   })
 

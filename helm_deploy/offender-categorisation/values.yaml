@@ -12,6 +12,7 @@ generic-service:
     enabled: true
     modsecurity_enabled: true
     v1_2_enabled: true
+    v0_47_enabled: false
     annotations:
     modsecurity_snippet: |
         SecRuleEngine On

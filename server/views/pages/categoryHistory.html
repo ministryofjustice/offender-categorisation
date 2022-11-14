@@ -6,7 +6,7 @@
 {% block beforeContent %}
 
   {% set breadCrumbList = [ {href: '/' + data.details.bookingId, title: 'Manage categorisations'} ] %}
-  {{ breadCrumb(pageTitle, breadCrumbList) }}
+  {{ breadCrumb(breadCrumbList) }}
 
 {% include "../partials/offenderBanner.html" %}
 
