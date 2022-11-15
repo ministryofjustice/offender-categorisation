@@ -490,7 +490,7 @@ class SupervisorSpecification extends AbstractSpecification {
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14',
       'This person is at risk of engaging in, or vulnerable to, extremism.', 'offence Details text']
-    securityInputSummary*.text() == ['', 'No', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
@@ -622,7 +622,7 @@ class SupervisorSpecification extends AbstractSpecification {
     // decision is removed when open conditions introduced by supervisor
     response.recat == [
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput : [securityInputNeeded: "No"],
+      securityInput : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate: [date: "14/12/2019"],
       prisonerBackground: [offenceDetails:"offence Details text"],
       riskAssessment: [
