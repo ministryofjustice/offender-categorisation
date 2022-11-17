@@ -20,7 +20,7 @@ class ReviewSpecification extends AbstractSpecification {
         securityBack        : [:],
         securityInput       : [
           securityInputNeeded    : "Yes",
-          SecurityNoteNeeded: "Yes",
+          securityNoteNeeded: "Yes",
           securityInputNeededText: "reasons"
         ],
         prisonerBackground  : [offenceDetails: "some text"],
