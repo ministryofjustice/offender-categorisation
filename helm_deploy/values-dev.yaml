@@ -10,7 +10,7 @@ generic-service:
     port: 3000
 
   ingress:
-    host: dev.offender-categorisation.service.justice.gov.uk
+    hosts: [dev.offender-categorisation.service.justice.gov.uk]
 
   env:
     INGRESS_URL: https://dev.offender-categorisation.service.justice.gov.uk
