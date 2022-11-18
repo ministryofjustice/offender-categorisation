@@ -5,6 +5,7 @@
 {% from "details/macro.njk" import govukDetails %}
 
 {% set pageTitle = "Security information" %}
+{% set greenButtonText = "Refer to security" %}
 
 {% block navigation %}
 
@@ -70,10 +71,10 @@
     ]
   }) }}
 
-{% set guidance %}<div class="govuk-!-font-weight-bold">You should refer to the security team when:</div>
+{% set guidance %}<div class="govuk-!-font-weight-bold">You can ask for specific information. For example, when:</div>
 <ul class="govuk-list govuk-list--bullet">
 <li>information indicates a heightened risk and security may have access to more information to support your decision</li>
-<li>NOMIS flags are not clear or updated, for example an escape marker is not updated and security can confirm if they are on the escape list </li>
+<li>NOMIS flags are not clear or up to date, for example an escape marker is not updated and security can confirm if they are on the escape list </li>
 <li>information indicates a potential risk but you cannot confirm the risk without further details</li>
 </ul>
 {% endset %}
