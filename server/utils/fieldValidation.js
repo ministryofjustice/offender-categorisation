@@ -40,7 +40,7 @@ function createSchemaFromConfig(pageConfig) {
   const today = moment().format('MM/DD/YYYY')
 
   const fieldOptions = {
-    requiredString: joi.string().required(),
+    requiredString: joi.string().trim().required(),
     optionalString: joi.string().allow('').optional(),
     requiredDay: joi.date().format('DD').required(),
     requiredMonth: joi.date().format('MM').required(),
