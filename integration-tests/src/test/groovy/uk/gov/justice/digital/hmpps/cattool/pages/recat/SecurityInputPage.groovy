@@ -15,7 +15,8 @@ class SecurityInputPage extends HeaderPage {
   static content = {
     warningTextDiv { $('div.govuk-warning-text')}
     saveButton { $('button.govuk-button') }
-    securityRadio { $('input', name: 'securityInputNeeded') }
+    securityRadio { $('input', name: 'securityNoteNeeded') }
     securityText{ $('textarea', name: 'securityInputNeededText') }
+    securityNeeded { $('input', name: 'securityInputNeeded') }
   }
 }

@@ -5,6 +5,7 @@
 {% from "details/macro.njk" import govukDetails %}
 
 {% set pageTitle = "Security information" %}
+{% set greenButtonText = "Refer to security" %}
 
 {% block navigation %}
 
@@ -15,6 +16,12 @@
 {% block formItems %}
 
 <h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
+<input type="hidden" name="securityInputNeeded" value="Yes"/>
+
+{{ govukWarningText({
+  text: "All recategorisations must have a security review.",
+  iconFallbackText: "Warning"
+}) }}
 
 {% set securityInputTextHtml %}
 
@@ -25,49 +32,49 @@
     maxlength: 50000,
     threshold: 50,
     label: {
-      text: "Provide specific reasons for your referral"
+      text: "Enter note"
     },
     value: data.recat.securityInput.securityInputNeededText,
     errorMessage: {
-      text: "Please enter details"
+      text: "Enter a note"
     } if (errors | findError('securityInputNeededText'))
   }) }}
 
 {% endset -%}
 
   {{ govukRadios({
-    name: "securityInputNeeded",
+    name: "securityNoteNeeded",
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "Do you want to request additional information from the security team?",
+        text: "Do you want to include a note to security?",
         isPageHeading: false
       }
     },
     errorMessage: {
-      text: "Please select yes or no"
-    } if (errors | findError('securityInputNeeded')),
+      text: "Select yes if you want to include a note to security"
+    } if (errors | findError('securityNoteNeeded')),
     items: [
       {
         value: "Yes",
         text: "Yes",
-        checked: data.recat.securityInput.securityInputNeeded === 'Yes',
+        checked: data.recat.securityInput.securityNoteNeeded === 'Yes',
         conditional: {
           html:securityInputTextHtml
         }
       },
       {
         value: "No",
-        checked: data.recat.securityInput.securityInputNeeded === 'No',
+        checked: data.recat.securityInput.securityNoteNeeded === 'No',
         text: "No"
       }
     ]
   }) }}
 
-{% set guidance %}<div class="govuk-!-font-weight-bold">You should refer to the security team when:</div>
+{% set guidance %}<div class="govuk-!-font-weight-bold">You can ask for specific information. For example, when:</div>
 <ul class="govuk-list govuk-list--bullet">
 <li>information indicates a heightened risk and security may have access to more information to support your decision</li>
-<li>NOMIS flags are not clear or updated, for example an escape marker is not updated and security can confirm if they are on the escape list </li>
+<li>NOMIS flags are not clear or up to date, for example an escape marker is not updated and security can confirm if they are on the escape list </li>
 <li>information indicates a potential risk but you cannot confirm the risk without further details</li>
 </ul>
 {% endset %}
