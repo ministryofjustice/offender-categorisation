@@ -1,5 +1,5 @@
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: db-refresh-job
@@ -10,6 +10,7 @@ spec:
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 345600
       backoffLimit: 0
       activeDeadlineSeconds: 1200
       template:
@@ -22,7 +23,7 @@ spec:
             command:
             - /bin/entrypoint.sh
             volumeMounts:
-            - name: db-refresh-script 
+            - name: db-refresh-script
               mountPath: /bin/entrypoint.sh
               readOnly: true
               subPath: entrypoint.sh
