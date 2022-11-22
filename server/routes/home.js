@@ -230,7 +230,7 @@ module.exports = function Index({
 
       const errors = formService.isValidForGet(dashboard.dashboard, req, res, req.query)
       if (errors.length) {
-        res.render('pages/dashboardInitial', { errors, ...req.query })
+        res.render('pages/dashboardRecat', { errors, ...req.query })
       } else {
         const { start, end, prisonId } = await getParams(req, res)
         const table = await statsService.getRecatFromTo(start, end, prisonId, transactionalDbClient)
