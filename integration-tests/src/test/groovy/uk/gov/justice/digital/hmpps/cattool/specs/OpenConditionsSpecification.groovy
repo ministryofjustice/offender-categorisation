@@ -30,6 +30,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
+    furtherCharges     : [increasedRisk: 'No', furtherCharges: 'Yes', furtherChargesText: ",furtherChargesText details"],
     riskLevels         : [likelyToAbscond: 'No'],
   ]
 
@@ -619,7 +620,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'open conditions forms are completed'
     submitButton.click()
     at TasklistPage
-    completeOpenConditionsWorkflow(false)
+    completeOpenConditionsWorkflow(true)
 
     then: 'tasklist page is displayed with the open conditions section'
     at TasklistPage
