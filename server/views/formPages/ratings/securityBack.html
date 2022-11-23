@@ -15,14 +15,18 @@
 
 <h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
 
-  {% set warningText %}
-    This prisoner was referred to the security team
-  {% endset %}
-  {{ govukWarningText({
-    text: warningText,
-    iconFallbackText: "Warning",
-    classes: "forms-warning-text warning-overrides"
-  }) }}
+  {% if (not data.socProfile.transferToSecurity) and (not data.extremismProfile.notifyRegionalCTLead) %}
+  <h3 class="govuk-heading-s">Note from categoriser:</h3>
+    {% if data.ratings.securityInput.securityInputNeededText %}
+      {{ govukInsetText({
+        text: data.ratings.securityInput.securityInputNeededText
+      }) }}
+    {% else %}
+      {{ govukInsetText({
+        text: "A note was not added"
+      }) }}
+    {% endif %}
+  {% endif %}
 
   <h3 class="govuk-heading-s">Note from security:</h3>
   {{ govukInsetText({
