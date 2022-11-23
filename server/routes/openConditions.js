@@ -29,7 +29,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
 
       // Copy offending history charges or skip ?
-      const openConditionsExists =
+      const openConditionsFCTextExists =
         result.data.openConditions &&
         result.data.openConditions.furtherCharges &&
         result.data.openConditions.furtherCharges.furtherChargesText
@@ -39,7 +39,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         result.data.ratings.furtherCharges &&
         result.data.ratings.furtherCharges.furtherCharges === 'Yes'
 
-      if (furtherChargesExists && !openConditionsExists) {
+      if (furtherChargesExists && !openConditionsFCTextExists) {
         const newResult = R.assocPath(
           ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
           result.data.ratings.furtherCharges.furtherChargesText,
