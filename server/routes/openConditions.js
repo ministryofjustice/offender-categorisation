@@ -81,6 +81,13 @@ module.exports = function Index({ formService, offendersService, userService, au
             ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
           ...result,
         })
+      } else if (result.data.openConditions.victimContactScheme.contactedVLO === 'No') {
+        res.render('formPages/openConditions/openConditionsNotSuitable', {
+          warningText:
+            'This person cannot be sent to open conditions because a victim of the crime has opted-in' +
+            ' to the Victim Contact Scheme and the VLO has not been contacted.',
+          ...result,
+        })
       } else if (result.data.openConditions.previousSentences.releasedLastFiveYears === 'Yes') {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText:
@@ -188,6 +195,13 @@ module.exports = function Index({ formService, offendersService, userService, au
     if (body.categoryAppropriate === 'Yes') {
       delete updated.overriddenCategory
       delete updated.overriddenCategoryText
+    }
+    if (body.vcsOptedFor === 'No') {
+      delete updated.contactedVLO
+      delete updated.vloResponseText
+    }
+    if (body.contactedVLO === 'No') {
+      delete updated.vloResponseText
     }
     return updated
   }
@@ -355,6 +369,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       if (
         userInput.justify === 'No' ||
+        userInput.contactedVLO === 'No' ||
         userInput.formCompleted === 'No' ||
         userInput.exhaustedAppeal === 'Yes' ||
         userInput.sevenOrMoreYears === 'Yes'
