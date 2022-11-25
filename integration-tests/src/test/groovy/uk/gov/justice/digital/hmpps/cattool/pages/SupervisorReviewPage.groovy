@@ -49,6 +49,7 @@ class SupervisorReviewPage extends Page {
     earliestReleaseDate { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
     previousSentences(required: false) { $('.previousSentencesSummary .govuk-summary-list__value') }
     sexualOffences(required: false) { $('.sexualOffencesSummary .govuk-summary-list__value') }
+    victimContactScheme(required: false) { $('.victimContactSchemeSummary .govuk-summary-list__value') }
     warnings { $('div.govuk-warning-text') }
 
     submitButton { $('button', type: 'submit') }
