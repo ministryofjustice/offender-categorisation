@@ -130,5 +130,10 @@ module.exports = {
   googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', ' ', true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 6, true)}`,
   recatMarginMonths: `${get('RECAT_MARGIN_MONTHS', 2, true)}`,
+  femalePrisonIds: `${get(
+    'FEMALE_PRISON_IDS',
+    ['AGI', 'DWI', 'DHI', 'ESI', 'EWI', 'BZI', 'FHI', 'LNI', 'SDI', 'STI', 'NHI', 'PFI'],
+    true
+  )}`,
   https: production,
 }
