@@ -49,5 +49,4 @@ describe('female flag check', () => {
     expect(result.activeCaseLoads).toEqual(expected)
     expect(result.activeCaseLoad).toEqual(expected[1])
   })
-
 })
