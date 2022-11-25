@@ -40,7 +40,7 @@ function createSchemaFromConfig(pageConfig) {
   const today = moment().format('MM/DD/YYYY')
 
   const fieldOptions = {
-    requiredString: joi.string().required(),
+    requiredString: joi.string().trim().required(),
     optionalString: joi.string().allow('').optional(),
     requiredDay: joi.date().format('DD').required(),
     requiredMonth: joi.date().format('MM').required(),
@@ -56,7 +56,7 @@ function createSchemaFromConfig(pageConfig) {
     requiredStringIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi.string().required(),
+        then: joi.string().trim().required(),
         otherwise: joi.any().optional(),
       }),
     //  The below check is for Next review date validation. CAT-907.
