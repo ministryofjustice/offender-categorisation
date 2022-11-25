@@ -158,7 +158,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     exhaustedAppealNo.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk of Serious Harm page is displayed'
+    then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
     when: 'I submit a blank page'
@@ -190,7 +190,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       errors.text().toString() == "Error:\nPlease enter details"
     }
 
-    when: 'the Risk of Serious Harm page is completed'
+    when: 'the Risk of serious harm page is completed'
     harmManagedText << 'harmManagedText details'
 
     submitButton.click()
@@ -214,7 +214,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk Levels page is displayed'
+    then: 'the Risk of escaping or absconding page is displayed'
     at RiskLevelsPage
 
     when: 'I submit a blank page'
@@ -236,7 +236,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       errors.text().toString() == "Error:\nPlease enter details"
     }
 
-    when: 'the Risk Levels page is completed'
+    when: 'the Risk of escaping or absconding page is completed'
     likelyToAbscondText << 'likelyToAbscondText details'
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////

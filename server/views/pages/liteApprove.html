@@ -4,7 +4,6 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "input/macro.njk" import govukInput %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 
@@ -190,7 +189,7 @@
     </div>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-      {{ govukCharacterCount({
+      {{ govukTextarea({
         id: 'approvedComment',
         name: 'approvedComment',
         rows: 1,

@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %}
 
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "../../macros/listOffences.html" import listOffences %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "details/macro.njk" import govukDetails %}
@@ -19,15 +19,15 @@
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
 {% set furtherChargesHtml %}
-  {{ govukCharacterCount({
+<p>rating further chargeds</p>
+  {{ govukTextarea({
     name: "furtherChargesText",
     type: "furtherChargesText",
     id: "furtherChargesText",
-    maxlength: 50000,
-    threshold: 50,
     label: {
       text: "Give details of these charges"
     },
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     value: data.ratings.furtherCharges.furtherChargesText,
     errorMessage: {
       text: "Please enter details"
@@ -60,7 +60,7 @@
     ]
   }) }}
 
-  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold govuk-!-margin-top-2">You are looking for:</div>
+  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold govuk-!-margin-top-2">Category B might be appropriate if this person has:</div>
   <ul class="govuk-list govuk-list--bullet">
     <li>convictions similar to the current offence which indicate a prolific or escalating offence pattern</li>
     <li>convictions that indicate ongoing criminality in custody</li>
@@ -88,7 +88,7 @@
       text: "Please select yes or no"
     } if (errors | findError('furtherCharges')),
     hint: {
-      text: "Please check the PNC and NOMIS"
+      text: "You should include all further charges, including minor offences."
     },
     items: [
       {

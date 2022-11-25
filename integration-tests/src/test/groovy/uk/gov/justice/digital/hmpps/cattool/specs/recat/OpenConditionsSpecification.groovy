@@ -73,7 +73,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     exhaustedAppealNo.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk of Serious Harm page is displayed'
+    then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
     when: 'I submit page'
@@ -99,7 +99,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     increasedRiskYes.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk Levels page is displayed'
+    then: 'the Risk of escaping or absconding page is displayed'
     at RiskLevelsPage
 
     when: 'I submit page'

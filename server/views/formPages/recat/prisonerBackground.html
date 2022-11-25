@@ -1,6 +1,6 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "details/macro.njk" import govukDetails %}
@@ -144,12 +144,11 @@
 
 <h1 class="govuk-heading-m govuk-!-padding-top-3">Offence details for active sentences</h1>
 
-{{ govukCharacterCount({
+{{ govukTextarea({
     name: "offenceDetails",
     type: "offenceDetails",
     id: "offenceDetails",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     label: {
       text: "Summarise the context and background of their main offence(s), including any licence breaches."
     },

@@ -7,7 +7,7 @@ class RiskOfHarmPage extends Page {
   static url = '/form/openConditions/riskOfHarm'
 
   static at = {
-    headingText == 'Risk of Serious Harm'
+    headingText == 'Risk of serious harm'
   }
 
   static content = {

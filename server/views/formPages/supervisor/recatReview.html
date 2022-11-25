@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 {% from "radios/macro.njk" import govukRadios %}
 
@@ -111,12 +111,11 @@
         } if (errors | findError('supervisorOverriddenCategory'))
       }) }}
 
-      {{ govukCharacterCount({
+      {{ govukTextarea({
         name: "supervisorOverriddenCategoryText",
         type: "myTextWhatsThisFor",
         id: "supervisorOverriddenCategoryText",
-        maxlength: 50000,
-        threshold: 50,
+        attributes: { 'minlength': 13, 'maxlength': 50000 },
         label: { text: "Explain why" },
         hint: { text: "Your comments will be disclosed to the prisoner" },
         errorMessage: {
@@ -154,12 +153,11 @@
       ]
     }) }}
 
-    {{ govukCharacterCount({
+    {{ govukTextarea({
       name: "otherInformationText",
       type: "otherInformationText",
       id: "otherInformationText",
-      maxlength: 50000,
-      threshold: 50,
+      attributes: { 'minlength': 13, 'maxlength': 50000 },
       label: { text: "Is there any other relevant information that you want to record?" },
       hint: { text: "If you do not think this individual is suitable for category D, explain why. Your comments will be disclosed to the prisoner" },
       value: data.supervisor.review.otherInformationText

@@ -1,6 +1,6 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "details/macro.njk" import govukDetails %}
@@ -14,12 +14,11 @@
 {% endblock %}
 
 {% set highRiskOfViolenceTextHtml %}
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "highRiskOfViolenceText",
     type: "highRiskOfViolenceText",
     id: "highRiskOfViolenceText",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     label: {
       text: "Provide details about this information"
     },
@@ -31,12 +30,11 @@
 {% endset %}
 
 {% set seriousThreatTextHtml %}
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "seriousThreatText",
     type: "seriousThreatText",
     id: "seriousThreatText",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     label: {
       text: "Provide details about this information"
     },

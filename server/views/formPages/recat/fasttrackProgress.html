@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "details/macro.njk" import govukDetails %}
 
 {% set pageTitle = "Category C preliminary review questions" %}
@@ -18,12 +18,11 @@
 
 <p>This could be positive behaviours they should keep up or negative behaviours they should avoid.</p>
 
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "progressText",
     type: "progressText",
     id: "progressText",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     label: {
       text: "Enter details of this"
     },

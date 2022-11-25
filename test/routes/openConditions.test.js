@@ -87,8 +87,8 @@ describe('open conditions', () => {
     ${'earliestReleaseDate'} | ${'Earliest release date'}
     ${'previousSentences'}   | ${'Previous sentences'}
     ${'foreignNational'}     | ${'Foreign national'}
-    ${'riskOfHarm'}          | ${'Risk of Serious Harm'}
-    ${'riskLevels'}          | ${'Risk levels'}
+    ${'riskOfHarm'}          | ${'Risk of serious harm'}
+    ${'riskLevels'}          | ${'Risk of escaping or absconding'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}/12345`)

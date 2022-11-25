@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "inset-text/macro.njk" import govukInsetText %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
 
 {% set pageTitle = "Extremism" %}
@@ -13,12 +13,11 @@
 {% endblock %}
 
 {% set previousTerrorismOffencesTextHtml %}
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "previousTerrorismOffencesText",
     type: "previousTerrorismOffencesText",
     id: "previousTerrorismOffencesText",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     label: {
       text: "Give details of these offences"
     },

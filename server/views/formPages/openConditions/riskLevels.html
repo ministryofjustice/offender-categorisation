@@ -1,10 +1,10 @@
 {% extends "../formTemplate.html" %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "details/macro.njk" import govukDetails %}
 
 {% set greenButtonText = "Continue" %}
-{% set pageTitle = "Risk levels" %}
+{% set pageTitle = "Risk of escaping or absconding" %}
 
 {% block navigation %}
 
@@ -18,14 +18,13 @@
 
 {% set likelyToAbscondHtml %}
 
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "likelyToAbscondText",
     type: "likelyToAbscondText",
-    maxlength: 50000,
-    threshold: 50,
     label: {
       text: "Give details of this information"
     },
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     value: data.openConditions.riskLevels.likelyToAbscondText,
     errorMessage: {
       text: "Please enter details"
@@ -45,9 +44,6 @@
       legend: {
         text: "Is there any information suggesting they are likely to abscond or take advantage of lower security?"
       }
-    },
-    hint: {
-      text: "Do they have a significant confiscation order or face other ongoing proceedings?"
     },
     errorMessage: {
       text: "Please select yes or no"
@@ -72,14 +68,17 @@
 {% set guidanceLikelyToAbscond %}
 <div class="govuk-!-font-weight-bold">You should check:</div>
 <ul class="govuk-list govuk-list--bullet">
-  <li>any confiscation, serious crime prevention and/or restraining orders that are in force</li>
+  <li>any confiscation, serious crime prevention or restraining orders that are in force</li>
+  <li>public protection or child restrictions</li>
   <li>any ongoing proceedings</li>
-  <li>escape history</li>
-  <li>responses to court orders or requirements</li>
+  <li>if they have a history of any arson offences</li>
 </ul>
 <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
 <ul class="govuk-list govuk-list--bullet">
   <li>if they owe money</li>
+  <li>the amount owed in any confiscation orders</li>
+  <li>the value in any Schedules of Assets, if a court order is not yet imposed</li>
+  <li>if the liquidity of their assets poses a risk</li>
   <li>if they have time to serve in lieu</li>
   <li>if they have escaped or absconded in the past</li>
 </ul>

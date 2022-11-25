@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %}
 
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "../../macros/listOffences.html" import listOffences %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "details/macro.njk" import govukDetails %}
@@ -30,12 +30,11 @@
   {% endif %}
 
 {% set previousConvictionsHtml %}
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "previousConvictionsText",
     type: "previousConvictionsText",
     id: "previousConvictionsText",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     label: {
       text: "Enter details about other relevant convictions",
       classes: "govuk-!-font-weight-bold"

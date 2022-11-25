@@ -4,7 +4,7 @@
 
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "radios/macro.njk" import govukRadios %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 {% from "details/macro.njk" import govukDetails %}
 
@@ -75,12 +75,11 @@
     <input type="hidden" name="overriddenCategory" value="J" />
   {% endif %}
 
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "overriddenCategoryText",
     type: "myTextWhatsThisFor",
     id: "overriddenCategoryText",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     label: {
       text: "Explain why"
     },
@@ -137,17 +136,16 @@
   ]
 }) }}
 
-{{ govukCharacterCount({
+{{ govukTextarea({
   name: "otherInformationText",
   type: "otherInformationText",
   id: "otherInformationText",
-  maxlength: 50000,
-  threshold: 50,
+  attributes: { 'minlength': 13, 'maxlength': 50000 },
   label: {
-  text: "Is there any other relevant information that you want to record?"
+    text: "Is there any other relevant information that you want to record?"
   },
   hint: {
-  text: "If you do not think this individual is suitable for category D, explain why. Your comments will be disclosed to the prisoner"
+    text: "If you do not think this individual is suitable for category D, explain why. Your comments will be disclosed to the prisoner"
   },
   value: data.categoriser.provisionalCategory.otherInformationText
 }) }}
