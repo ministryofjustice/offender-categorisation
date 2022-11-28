@@ -47,7 +47,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     overriddenCategoryD.@type == 'radio'
 
     overriddenCategoryC.click()
-    overriddenCategoryText << "Some Text"
+    overriddenCategoryText << "over ridden category text"
     otherInformationText << "other info  Text"
     submitButton.click()
     at CategoriserSubmittedPage
@@ -57,7 +57,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     form.categoryAppropriate == "No"
     form.overriddenCategory == "C"
     form.otherInformationText == "other info  Text"
-    form.overriddenCategoryText == "Some Text"
+    form.overriddenCategoryText == "over ridden category text"
 
     def data = db.getData(12)
     data.status == ["AWAITING_APPROVAL"]
@@ -69,7 +69,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == null
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'C',
-                                                   categoryAppropriate: 'No', otherInformationText: 'other info  Text', overriddenCategoryText: 'Some Text']]
+                                                   categoryAppropriate: 'No', otherInformationText: 'other info  Text', overriddenCategoryText: 'over ridden category text']]
     response.openConditionsRequested == null
   }
 
@@ -154,7 +154,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     newCatMessage.text() == 'Changing to YOI Open'
 
     when: 'Changing to Cat J'
-    overriddenCategoryText << "Some Text"
+    overriddenCategoryText << "over ridden category text"
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
@@ -171,7 +171,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == null
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'I', overriddenCategory: 'J',
-                                                   categoryAppropriate: 'No', overriddenCategoryText: 'Some Text']]
+                                                   categoryAppropriate: 'No', overriddenCategoryText: 'over ridden category text']]
     response.openConditionsRequested
   }
 
@@ -192,7 +192,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     !newCatMessage.displayed
     appropriateNo.click()
-    overriddenCategoryText << "Some Text"
+    overriddenCategoryText << "over ridden category text"
     otherInformationText << TRICKY_TEXT
     overriddenCategoryD.click()
     elite2Api.stubGetOffenderDetails(12)
@@ -211,7 +211,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == null
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                   categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'Some Text']]
+                                                   categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'over ridden category text']]
     response.openConditionsRequested
   }
 
@@ -272,7 +272,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings                : TestFixture.defaultRatingsC,
       categoriser            : [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                      categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'Some Text']],
+                                                      categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'over ridden category text']],
       openConditionsRequested: true,
       openConditions         : TestFixture.defaultOpenConditions,
     ]))
@@ -309,7 +309,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.ratings == TestFixture.defaultRatingsC
     response.supervisor == null
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                   categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'Some Text']]
+                                                   categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'over ridden category text']]
     response.openConditionsRequested
     response.openConditions == TestFixture.defaultOpenConditions
   }
@@ -320,7 +320,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings                : TestFixture.defaultRatingsC,
       categoriser            : [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                      categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'Some Text']],
+                                                      categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'over ridden category text']],
       openConditionsRequested: true,
       openConditions         : TestFixture.defaultOpenConditions,
     ]))

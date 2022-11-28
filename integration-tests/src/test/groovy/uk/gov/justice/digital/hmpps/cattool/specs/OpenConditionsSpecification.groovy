@@ -97,7 +97,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     }
 
     when: 'the Earliest Release page is completed'
-    justifyText << 'details text'
+    justifyText << 'justify details text'
     submitButton.click()
 
     then: 'the Previous Sentences page is displayed'
@@ -142,7 +142,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     }
 
     when: 'the Victim Contact Scheme is completed'
-    vloResponseText << 'details text'
+    vloResponseText << 'vlo response details text'
     submitButton.click()
 
     then: 'the Sexual Offences page is displayed'
@@ -334,9 +334,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.categoriser == [:] // data cleared
     response.supervisor == null
     response.openConditions == [
-      earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
+      earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
       previousSentences  : [releasedLastFiveYears:'No'],
-      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'details text'],
+      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response details text'],
       sexualOffences     : [haveTheyBeenEverConvicted:'No'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
@@ -511,7 +511,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     appropriateNo.click()
     overriddenCategoryD.click()
-    overriddenCategoryText << 'categoriser override to D comment'
+    overriddenCategoryText << 'categoriser over``ride to D comment'
     otherInformationText << 'categoriser relevant info 1'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()

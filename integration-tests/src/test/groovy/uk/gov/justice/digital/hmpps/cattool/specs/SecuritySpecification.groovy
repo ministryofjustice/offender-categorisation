@@ -23,7 +23,7 @@ class SecuritySpecification extends AbstractSpecification {
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]],
       security: [review: [securityReview: "this is the text from the security team for a recat"]]]),SECURITY_USER.username, "'2019-01-28'", 'RECAT')
 
     db.createRiskProfileDataForExistingRow(13, JsonOutput.toJson([socProfile: [nomsId: "G1110GX", riskType: "SOC", transferToSecurity: true, provisionalCategorisation: "C"]]))
@@ -36,7 +36,7 @@ class SecuritySpecification extends AbstractSpecification {
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]
       ],
       security: [review: [securityReview: "this is the text from the security team"]]]),SECURITY_USER.username, "'2019-01-31'")
 

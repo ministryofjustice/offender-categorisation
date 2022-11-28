@@ -61,7 +61,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     justifyYes.displayed
 
     justifyYes.click()
-    justifyText << 'details text'
+    justifyText << 'justify details text'
     submitButton.click()
 
     then: 'the Victim Contact Scheme page is displayed'
@@ -165,7 +165,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == TestFixture.defaultRecat
     response.supervisor == null
     response.openConditions == [
-      earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
+      earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
       victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'text' ],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
