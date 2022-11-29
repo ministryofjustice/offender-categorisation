@@ -21,7 +21,8 @@ class LandingPage extends Page {
     securityButton(required: false) { $('#securityButton') }
     securityCancelLink(required: false) { $('a#securityCancelLink') }
     paragraphs { $('p') }
-    liteCategoriesButton(required: false) { $('#liteCategoriesButton') }
+    //liteCategoriesButton(required: false) { $('#liteCategoriesButton') }
+    liteCategoriesButton(required: false) { $('#initialButton') }
     nextReviewDate(required: false) { $('.data-qa-nextReviewDate') }
     nextReviewDateHistory(required: false) { $('#nextReviewDateTable > tbody > tr') }
   }
