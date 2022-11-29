@@ -511,7 +511,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     appropriateNo.click()
     overriddenCategoryD.click()
-    overriddenCategoryText << 'categoriser over``ride to D comment'
+    overriddenCategoryText << 'categoriser override to D comment'
     otherInformationText << 'categoriser relevant info 1'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
