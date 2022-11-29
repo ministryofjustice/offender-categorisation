@@ -5,6 +5,8 @@ const {
   calculateNextReviewDate,
   getLongDateFormat,
   getVerboseDateFormat,
+  isFemalePrisonId,
+  setFemaleCaseLoads,
 } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
@@ -74,4 +76,44 @@ describe('getVerboseDateFormat', () => {
     const actualDate = getVerboseDateFormat(nextDateChoice)
     expect(actualDate).toEqual(expectedValue)
   })
+})
+
+describe('setFemalePrisonId should return expected value', () => {
+  test.each`
+    prisonId     | expectedValue
+    ${undefined} | ${false}
+    ${null}      | ${false}
+    ${''}        | ${false}
+    ${'PFI'}     | ${true}
+    ${'PFI1'}    | ${false}
+    ${'PKI'}     | ${false}
+  `('returns "$expectedValue" for "prisonId"', async ({ prisonId, expectedValue }) => {
+    const result = isFemalePrisonId(prisonId)
+    expect(result).toEqual(expectedValue)
+  })
+})
+
+describe('setFemaleCaseLoads should return expected caseload object containing female flag', () => {
+  test.each`
+    prisonId     | expectedValue
+    ${undefined} | ${false}
+    ${null}      | ${false}
+    ${''}        | ${false}
+    ${'PFI'}     | ${true}
+    ${'PFI1'}    | ${false}
+    ${'PKI'}     | ${false}
+  `('returns "$expectedValue" for "prisonId"', async ({ prisonId, expectedValue }) => {
+    const result = setFemaleCaseLoads([{ caseLoadId: prisonId }])
+    const expectedObject = [{ caseLoadId: prisonId, female: expectedValue }]
+    expect(result).toEqual(expectedObject)
+  })
+})
+
+describe('setFemaleCaseLoads called with multiple caseloads should return expected array', () => {
+  const result = setFemaleCaseLoads([{ caseLoadId: 'PKI' }, { caseLoadId: 'PFI' }])
+  const expectedObject = [
+    { caseLoadId: 'PKI', female: false },
+    { caseLoadId: 'PFI', female: true },
+  ]
+  expect(result).toEqual(expectedObject)
 })
