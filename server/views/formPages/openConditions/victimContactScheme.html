@@ -1,5 +1,5 @@
 {% extends "../formTemplate.html" %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "details/macro.njk" import govukDetails %}
 
@@ -19,12 +19,11 @@
 
 {% set vloResponseTextHtml %}
 
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "vloResponseText",
     type: "vloResponseText",
     id: "vloResponseText",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'minlength': 13, 'maxlength': 50000 },
     label: {
       text: "Enter the response from the Victim Liaison Officer (VLO)"
     },

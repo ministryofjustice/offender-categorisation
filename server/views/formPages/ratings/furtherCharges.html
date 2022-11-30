@@ -19,7 +19,6 @@
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
 {% set furtherChargesHtml %}
-<p>rating further chargeds</p>
   {{ govukTextarea({
     name: "furtherChargesText",
     type: "furtherChargesText",
@@ -107,15 +106,15 @@
     ]
   }) }}
 
-  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
+  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You should check:</div>
   <ul class="govuk-list govuk-list--bullet">
-    <li>charges likely to result in a long additional sentence</li>
-    <li>charges indicating a risk of violence</li>
+    <li>NOMIS</li>
+    <li>the Police National Computer (PNC)</li>
   </ul>
   {% endset %}
 
   {{ govukDetails({
-    summaryText: "What should I look for:",
+    summaryText: "Where should I look?:",
     html: guidancePrevious
   }) }}
 
