@@ -95,7 +95,8 @@ class SecurityInputSpecification extends AbstractSpecification {
     $('#securitySection').text().contains("Completed Security ($today)")
     securityButton.click()
     at new CategoriserSecurityBackPage(bookingId: '12')
-    noteFromSecurity*.text() == 'security info'
+    noteFromSecurity*.text()[0] == 'Some text'
+    noteFromSecurity*.text()[1] == 'security info'
     catBRadio = 'No'
     saveButton.click()
 
