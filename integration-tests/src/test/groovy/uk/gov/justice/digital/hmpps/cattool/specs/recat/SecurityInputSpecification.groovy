@@ -24,11 +24,17 @@ class SecurityInputSpecification extends AbstractSpecification {
     elite2Api.stubAssessments(['B2345YZ'])
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
-
-    when: 'No note is selected on the security page'
     securityButton.click()
 
+    when: 'I submit a blank page'
     at(new SecurityInputPage(bookingId: '12'))
+    saveButton.click()
+
+    then: 'there is a validation error'
+    errorSummaries*.text() == ['Select yes if you want to include a note to security']
+    errors*.text() == ['Error:\nSelect yes if you want to include a note to security']
+
+    when: 'No note is selected on the security page'
     securityRadio = 'No'
     saveButton.click()
 
@@ -164,4 +170,31 @@ class SecurityInputSpecification extends AbstractSpecification {
     at new SecurityBackPage(bookingId: '12')
     noteFromSecurity*.text()[0] == 'A note was not added'
   }
+
+  def "A note is not visible if auto/flagged" () {
+    given: 'The recategoriser selected no note needed'
+    db.createDataWithIdAndStatusAndCatType(-1, 12, 'SECURITY_BACK', JsonOutput.toJson([
+      decision          : [category: "C"],
+      oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+      nextReviewDate    : [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails: "offence Details text"],
+      riskAssessment    : [
+        lowerCategory    : "lower security category text",
+        otherRelevant    : "Yes",
+        higherCategory   : "higher security category text",
+        otherRelevantText: "other relevant information"
+      ]
+    ]), 'RECAT')
+
+    fixture.gotoTasklistRecat()
+    at TasklistRecatPage
+
+    when: 'No note is selected on the security page'
+    securityButton.click()
+
+    then: 'The task is displayed with the correct manually referred information'
+    at new SecurityBackPage(bookingId: '12')
+    noteFromSecurity*.text()[0] != 'A note was not added'
+  }
+
 }
