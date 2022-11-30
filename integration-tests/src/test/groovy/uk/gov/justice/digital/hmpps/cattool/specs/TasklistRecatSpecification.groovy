@@ -83,7 +83,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
 
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-   // db.getSecurityData('B2345YZ')[0].status.value == 'PROCESSED'
+    db.getSecurityData('B2345YZ')[0].status.value == 'PROCESSED'
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI') // existing assessments

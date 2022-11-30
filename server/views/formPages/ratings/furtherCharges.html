@@ -59,7 +59,8 @@
     ]
   }) }}
 
-  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold govuk-!-margin-top-2">Category B might be appropriate if this person has:</div>
+  {% set guidancePrevious %}
+  <div class="govuk-!-font-weight-bold">Category B might be appropriate if this person has:</div>
   <ul class="govuk-list govuk-list--bullet">
     <li>convictions similar to the current offence which indicate a prolific or escalating offence pattern</li>
     <li>convictions that indicate ongoing criminality in custody</li>
@@ -106,7 +107,8 @@
     ]
   }) }}
 
-  {% set guidancePrevious %}<div class="govuk-!-font-weight-bold">You should check:</div>
+  {% set guidancePrevious %}
+  <div class="govuk-!-font-weight-bold">You should check:</div>
   <ul class="govuk-list govuk-list--bullet">
     <li>NOMIS</li>
     <li>the Police National Computer (PNC)</li>
@@ -114,7 +116,7 @@
   {% endset %}
 
   {{ govukDetails({
-    summaryText: "Where should I look?:",
+    summaryText: "Where should I look?",
     html: guidancePrevious
   }) }}
 
