@@ -70,7 +70,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'I submit page'
     vcsOptedForYes.click()
     contactedVLOYes.click()
-    vloResponseText << 'text'
+    vloResponseText << 'vlo response text'
     submitButton.click()
 
     then: 'the Foreign National page is displayed'
@@ -166,7 +166,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.supervisor == null
     response.openConditions == [
       earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
-      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'text' ],
+      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' ],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
       furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: ',furtherChargesText details'],
