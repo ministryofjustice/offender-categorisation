@@ -117,11 +117,16 @@ module.exports = function Index({
         status: RiskChange.REVIEWED_FIRST.name,
       })
 
-      const { eligibleForFasttrack, fasttrackCancelled } = calculateFasttrackFlags(
-        details,
-        categorisationRecord,
-        bookingId
-      )
+      //  <<-------disabling Fast track as part of CAT-1340------>>
+
+      // const { eligibleForFasttrack, fasttrackCancelled } = calculateFasttrackFlags(
+      //   details,
+      //   categorisationRecord,
+      //   bookingId
+      // )
+
+      const { eligibleForFasttrack, fasttrackCancelled } = false
+
       const data = {
         details,
         ...res.locals.formObject,
