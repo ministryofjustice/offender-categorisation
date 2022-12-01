@@ -18,5 +18,7 @@ class SecurityInputPage extends HeaderPage {
     securityRadio { $('input', name: 'securityNoteNeeded') }
     securityText{ $('textarea', name: 'securityInputNeededText') }
     securityNeeded { $('input', name: 'securityInputNeeded') }
+    errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
+    errors(required: false) { $('.govuk-error-message') }
   }
 }
