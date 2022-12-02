@@ -67,6 +67,17 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'the Victim Contact Scheme page is displayed'
     at VictimContactSchemePage
 
+    when: 'I submit a blank page'
+    waitFor(5) {
+      submitButton.click()
+    }
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme']
+      errors*.text() == ['Error:\nSelect Yes if any victims of the crime have opted-in to the Victim Contact Scheme']
+    }
+
     when: 'I submit page'
     vcsOptedForYes.click()
     contactedVLOYes.click()
@@ -218,6 +229,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at ReviewRecatPage
 
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
+    victimContactSchemeDl.displayed
     victimContactScheme*.text() == ['','No','Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
