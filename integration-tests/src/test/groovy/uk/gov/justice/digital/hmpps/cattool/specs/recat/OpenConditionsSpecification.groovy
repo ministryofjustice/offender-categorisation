@@ -61,7 +61,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     justifyYes.displayed
 
     justifyYes.click()
-    justifyText << 'details text'
+    justifyText << 'justify details text'
     submitButton.click()
 
     then: 'the Victim Contact Scheme page is displayed'
@@ -81,7 +81,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'I submit page'
     vcsOptedForYes.click()
     contactedVLOYes.click()
-    vloResponseText << 'text'
+    vloResponseText << 'vlo response text'
     submitButton.click()
 
     then: 'the Foreign National page is displayed'
@@ -94,7 +94,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     exhaustedAppealNo.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk of Serious Harm page is displayed'
+    then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
     when: 'I submit page'
@@ -120,7 +120,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     increasedRiskYes.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk Levels page is displayed'
+    then: 'the Risk of escaping or absconding page is displayed'
     at RiskLevelsPage
 
     when: 'I submit page'
@@ -176,8 +176,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == TestFixture.defaultRecat
     response.supervisor == null
     response.openConditions == [
-      earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
-      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'text' ],
+      earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
+      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' ],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
       furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: ',furtherChargesText details'],

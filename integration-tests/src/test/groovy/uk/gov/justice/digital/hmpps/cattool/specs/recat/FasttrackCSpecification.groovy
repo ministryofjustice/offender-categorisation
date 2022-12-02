@@ -70,7 +70,7 @@ class FasttrackCSpecification extends AbstractSpecification {
 
     when: 'form is submitted complete'
 
-    progressText = 'something'
+    progressText = 'progress text'
 
     submitButton.click()
 
@@ -98,7 +98,7 @@ class FasttrackCSpecification extends AbstractSpecification {
       higherCategory:'They pose no additional risks. There’s no reason to consider them for higher security conditions.'],
       fasttrackRemain:[remainCatC:'Yes'],
       fasttrackEligibility:[earlyCatD:'No', increaseCategory:'No'],
-      fasttrackProgress:[progressText:'something'],
+      fasttrackProgress:[progressText:'progress text'],
       securityInput: [securityInputNeeded:'No']]
   }
 

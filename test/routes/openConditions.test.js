@@ -88,8 +88,8 @@ describe('open conditions', () => {
     ${'previousSentences'}   | ${'Previous sentences'}
     ${'victimContactScheme'} | ${'Victim Contact Scheme'}
     ${'foreignNational'}     | ${'Foreign national'}
-    ${'riskOfHarm'}          | ${'Risk of Serious Harm'}
-    ${'riskLevels'}          | ${'Risk levels'}
+    ${'riskOfHarm'}          | ${'Risk of serious harm'}
+    ${'riskLevels'}          | ${'Risk of escaping or absconding'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}/12345`)

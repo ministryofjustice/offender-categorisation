@@ -7,7 +7,7 @@ class RiskLevelsPage extends Page {
   static url = '/form/openConditions/riskLevels'
 
   static at = {
-    headingText == 'Risk levels'
+    headingText == 'Risk of escaping or absconding'
   }
 
   static content = {
