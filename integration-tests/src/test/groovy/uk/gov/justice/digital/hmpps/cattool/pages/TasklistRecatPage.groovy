@@ -30,7 +30,7 @@ class TasklistRecatPage extends Page {
     continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }
     categorisationHomeLink { $('a', text: 'Categorisation dashboard') }
     summarySection(required: true) { $('#review div') }
-
+    oasysInputButton(required: true) { $('#oasysInputButton') }
     cancelLink { $('a#cancelLink') }
   }
 }
