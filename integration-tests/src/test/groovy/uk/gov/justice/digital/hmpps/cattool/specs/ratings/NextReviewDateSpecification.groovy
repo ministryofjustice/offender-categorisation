@@ -132,7 +132,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     errors*.text() == ['Error:\nThe review date must be a real date','Error:\nEnter reason for date change']
 
     when: 'reason entered'
-    reason = 'test reason'
+    reason = 'test reason text'
     submitButton.click()
 
     then: 'there is 1 validation error'
@@ -148,14 +148,14 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at LandingPage
     elite2Api.verifyUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO) == null
     nextReviewDateHistory[0].find('td')[0].text() == THREE_MONTHS_AHEAD_LONG
-    nextReviewDateHistory[0].find('td')[1].text() == 'test reason'
+    nextReviewDateHistory[0].find('td')[1].text() == 'test reason text'
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings.nextReviewDate == [date: '14/12/2019'] // left unchanged
 
     def nextReviewData = db.getNextReviewData('B2345YZ')
-    nextReviewData[0].reason == 'test reason'
+    nextReviewData[0].reason == 'test reason text'
     nextReviewData[0].next_review_date.toString() == THREE_MONTHS_AHEAD_ISO
     nextReviewData[0].changed_by == 'CATEGORISER_USER'
     nextReviewData.size() == 1

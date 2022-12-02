@@ -58,7 +58,7 @@ class SecurityInputSpecification extends AbstractSpecification {
 
     at(new SecurityInputPage(bookingId: '12'))
     securityRadio = 'Yes'
-    securityText << 'Some text'
+    securityText << 'some security text'
     saveButton.click()
 
     then: 'The task is displayed with the correct manually referred information'
@@ -78,7 +78,7 @@ class SecurityInputSpecification extends AbstractSpecification {
     securityButton.click()
     at(new SecurityInputPage(bookingId: '12'))
     securityRadio = 'Yes'
-    securityText << 'Some text'
+    securityText << 'some security text'
     saveButton.click()
     at TasklistRecatPage
     securityButton.tag() == 'button'
@@ -105,8 +105,8 @@ class SecurityInputSpecification extends AbstractSpecification {
     when: 'the security user enters data'
     startButtons[0].click()
     at new SecurityReviewPage(bookingId: '12')
-    categoriserText == 'Some text'
-    securityText << 'security info'
+    categoriserText == 'some categoriser text'
+    securityText << 'security info text'
     submitButton.click()
 
     then: 'the prisoner status is back from security'
@@ -122,7 +122,7 @@ class SecurityInputSpecification extends AbstractSpecification {
     securityButton.click()
     at new SecurityBackPage(bookingId: '12')
     warning.text() contains 'This person was referred to the security team'
-    noteFromSecurity.text() == 'security info'
+    noteFromSecurity.text() == 'security info text'
     saveButton.click()
 
     then: 'the security recat section is complete and database is correct'
@@ -138,7 +138,7 @@ class SecurityInputSpecification extends AbstractSpecification {
     data.security_reviewed_by == ["SECURITY_USER"]
     fixture.sameDate(LocalDate.now(), data.security_reviewed_date)
     data.cat_type == ["RECAT"]
-    response.recat == [securityBack: [:], securityInput: [securityInputNeeded: "Yes", securityInputNeededText: "Some text"]]
-    response.security.review == [securityReview: "security info"]
+    response.recat == [securityBack: [:], securityInput: [securityInputNeeded: "Yes", securityInputNeededText: "some security text"]]
+    response.security.review == [securityReview: "security info text"]
   }
 }
