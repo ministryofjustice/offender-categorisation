@@ -36,5 +36,6 @@ class ReviewPage extends Page {
     previousSentences(required: false) { $('.previousSentencesSummary .govuk-summary-list__value') }
     sexualOffences(required: false) { $('.sexualOffencesSummary .govuk-summary-list__value') }
     victimContactScheme(required: false) { $('.victimContactSchemeSummary .govuk-summary-list__value') }
+    victimContactSchemeDl(required: false) { $('.victimContactSchemeSummary.no-print') }
   }
 }

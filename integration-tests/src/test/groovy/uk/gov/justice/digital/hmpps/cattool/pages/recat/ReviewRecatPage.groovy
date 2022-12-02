@@ -33,5 +33,6 @@ class ReviewRecatPage extends Page {
     foreignNational { $('.foreignNationalSummary .govuk-summary-list__value') }
     earliestReleaseDate(required: false) { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
     victimContactScheme(required: false) { $('.victimContactSchemeSummary .govuk-summary-list__value') }
+    victimContactSchemeDl(required: false) { $('.victimContactSchemeSummary.no-print') }
   }
 }
