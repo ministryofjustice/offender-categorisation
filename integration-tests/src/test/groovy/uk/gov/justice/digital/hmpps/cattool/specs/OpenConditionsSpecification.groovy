@@ -397,6 +397,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
     previousSentences*.text() == ['','No','Not applicable']
+    victimContactSchemeDl.displayed
     victimContactScheme*.text() == ['','No','Not applicable']
     sexualOffences*.text() == ['','No','Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
