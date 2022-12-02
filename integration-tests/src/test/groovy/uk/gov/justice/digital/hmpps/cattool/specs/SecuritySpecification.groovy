@@ -46,7 +46,7 @@ class SecuritySpecification extends AbstractSpecification {
 
     // 14 days after sentenceStartDate
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     elite2Api.stubUncategorised()
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
 
@@ -98,7 +98,7 @@ class SecuritySpecification extends AbstractSpecification {
     def sentenceStartDate13 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate14 = LocalDate.of(2019, 1, 31)
 
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [13, 14], [sentenceStartDate13.toString(), sentenceStartDate14.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [13, 14], [sentenceStartDate13.toString(), sentenceStartDate14.toString()])
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
 
     fixture.loginAs(SECURITY_USER)

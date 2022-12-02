@@ -48,16 +48,6 @@ module.exports = context => {
       const path = `${apiUrl}api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS&date=${cutoff}`
       return nomisUserGet({ path })
     },
-    getPrisonersAtLocation(agencyId, fromDob, toDob) {
-      const path = `${apiUrl}api/locations/description/${agencyId}/inmates?fromDob=${fromDob}&toDob=${toDob}&returnCategory=true`
-      const headers = { 'Page-Limit': 5000 }
-      return nomisUserGet({ path, headers })
-    },
-    getSentenceDatesForOffenders(bookingIds) {
-      if (bookingIds.length === 0) return []
-      const path = `${apiUrl}api/offender-sentences/bookings`
-      return nomisPost({ path, body: bookingIds })
-    },
     getSentenceHistory(offenderNo) {
       const path = `${apiUrl}api/offender-sentences?offenderNo=${offenderNo}`
       return nomisUserGet({ path })
@@ -102,10 +92,10 @@ module.exports = context => {
       const path = `${apiUrl}api/bookings/${bookingId}/mainOffence`
       return nomisClientGet({ path })
     },
-    getMainOffences(bookingIds) {
-      const path = `${apiUrl}api/bookings/mainOffence`
-      return nomisClientPost({ path, body: bookingIds })
-    },
+    // getMainOffences(bookingIds) {
+    //   const path = `${apiUrl}api/bookings/mainOffence`
+    //   return nomisClientPost({ path, body: bookingIds })
+    // },
     getOffenceHistory(offenderNo) {
       const path = `${apiUrl}api/bookings/offenderNo/${offenderNo}/offenceHistory`
       return nomisUserGet({ path })

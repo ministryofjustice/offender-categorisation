@@ -63,7 +63,7 @@ class SecurityInputSpecification extends AbstractSpecification {
     elite2Api.stubGetStaffDetailsByUsernameList()
     fixture.logout()
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
-    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     fixture.loginAs(SECURITY_USER)
 
     then: 'this prisoner is present'

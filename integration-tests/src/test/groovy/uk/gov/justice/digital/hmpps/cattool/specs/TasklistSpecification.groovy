@@ -95,7 +95,7 @@ class TasklistSpecification extends AbstractSpecification {
     summarySection[1].text() == 'Tasks not yet complete'
 
     when: 'a security user views their homepage'
-    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     logoutLink.click()
     elite2Api.stubGetStaffDetailsByUsernameList()
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
