@@ -1,6 +1,6 @@
 const moment = require('moment')
 const R = require('ramda')
-const { dpsUrl } = require('../config')
+const { dpsUrl, femalePrisonIds } = require('../config')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
@@ -155,6 +155,17 @@ const getNamesFromString = string =>
     .map(name => properCaseName(name))
     .join(' ')
 
+const isFemalePrisonId = prisonId => {
+  const females = femalePrisonIds ? femalePrisonIds.split(',') : []
+  return females.includes(prisonId)
+}
+
+const setFemaleCaseLoads = caseLoads => {
+  return caseLoads.map(c => {
+    return { ...c, female: isFemalePrisonId(c.caseLoadId) }
+  })
+}
+
 module.exports = {
   dateConverter,
   dateConverterToISO,
@@ -179,4 +190,6 @@ module.exports = {
   offenderAdjudicationLink,
   sanitisePrisonName,
   getNamesFromString,
+  isFemalePrisonId,
+  setFemaleCaseLoads,
 }
