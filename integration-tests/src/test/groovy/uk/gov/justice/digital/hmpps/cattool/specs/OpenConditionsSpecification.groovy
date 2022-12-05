@@ -98,7 +98,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     }
 
     when: 'the Earliest Release page is completed'
-    justifyText << 'details text'
+    justifyText << 'justify details text'
     submitButton.click()
 
     then: 'the Previous Sentences page is displayed'
@@ -143,7 +143,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     }
 
     when: 'the Victim Contact Scheme is completed'
-    vloResponseText << 'details text'
+    vloResponseText << 'vlo response details text'
     submitButton.click()
 
     then: 'the Sexual Offences page is displayed'
@@ -199,7 +199,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     exhaustedAppealNo.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk of Serious Harm page is displayed'
+    then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
     when: 'I submit a blank page'
@@ -231,7 +231,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       errors.text().toString() == "Error:\nPlease enter details"
     }
 
-    when: 'the Risk of Serious Harm page is completed'
+    when: 'the Risk of serious harm page is completed'
     harmManagedText << 'harmManagedText details'
 
     submitButton.click()
@@ -255,7 +255,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk Levels page is displayed'
+    then: 'the Risk of escaping or absconding page is displayed'
     at RiskLevelsPage
 
     when: 'I submit a blank page'
@@ -277,7 +277,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       errors.text().toString() == "Error:\nPlease enter details"
     }
 
-    when: 'the Risk Levels page is completed'
+    when: 'the Risk of escaping or absconding page is completed'
     likelyToAbscondText << 'likelyToAbscondText details'
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
@@ -335,9 +335,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.categoriser == [:] // data cleared
     response.supervisor == null
     response.openConditions == [
-      earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
+      earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
       previousSentences  : [releasedLastFiveYears:'No'],
-      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'details text'],
+      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response details text'],
       sexualOffences     : [haveTheyBeenEverConvicted:'No'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
@@ -398,6 +398,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
     previousSentences*.text() == ['','No','Not applicable']
+    victimContactSchemeDl.displayed
     victimContactScheme*.text() == ['','No','Not applicable']
     sexualOffences*.text() == ['','No','Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
