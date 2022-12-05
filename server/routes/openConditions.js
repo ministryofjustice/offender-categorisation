@@ -6,7 +6,6 @@ const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
-const CatType = require('../utils/catTypeEnum')
 const log = require('../../log')
 
 const formConfig = {
@@ -30,7 +29,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
 
       // Copy offending history charges or skip ?
-      const textExists =
+      const openConditionsFCTextExists =
         result.data.openConditions &&
         result.data.openConditions.furtherCharges &&
         result.data.openConditions.furtherCharges.furtherChargesText
@@ -40,11 +39,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         result.data.ratings.furtherCharges &&
         result.data.ratings.furtherCharges.furtherCharges === 'Yes'
 
-      if (!furtherChargesExists && !textExists && result.catType === CatType.INITIAL.name) {
-        const formPageConfig = formConfig.openConditions[form]
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-        res.redirect(`${nextPath}${bookingId}`)
-      } else if (furtherChargesExists && !textExists) {
+      if (furtherChargesExists && !openConditionsFCTextExists) {
         const newResult = R.assocPath(
           ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
           result.data.ratings.furtherCharges.furtherChargesText,
