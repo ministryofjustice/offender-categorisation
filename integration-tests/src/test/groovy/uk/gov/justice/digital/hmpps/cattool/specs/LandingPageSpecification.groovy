@@ -289,7 +289,7 @@ class LandingPageSpecification extends AbstractSpecification {
     driver.pageSource.contains('This individual was identified as needing a security review, as part of their categorisation, by Another User of LEEDS (HMP) on ' +  LocalDate.now().format('dd/MM/yyyy'))
 
     when: 'the security review page is only saved'
-    securityText << 'security info'
+    securityText << 'security info text'
     saveOnlyButton.click()
 
     then: 'the button has changed and the form database table is updated correctly'
@@ -297,7 +297,7 @@ class LandingPageSpecification extends AbstractSpecification {
     startButtons[0].text() == 'Edit'
     def data = db.getData(12)[0]
     def response = new JsonSlurper().parseText(data.form_response.toString())
-    response.security.review.securityReview == 'security info'
+    response.security.review.securityReview == 'security info text'
     data.status == 'SECURITY_FLAGGED'
     data.cat_type == 'RECAT'
     data.referred_by == 'SECURITY_USER'
@@ -314,7 +314,7 @@ class LandingPageSpecification extends AbstractSpecification {
     bodyRows.size() == 0
     def data2 = db.getData(12)[0]
     def response2 = new JsonSlurper().parseText(data2.form_response.toString())
-    response2.security.review.securityReview == 'security info, more security info'
+    response2.security.review.securityReview == 'security info text, more security info'
     data2.status == 'SECURITY_BACK'
     data2.security_reviewed_by == 'SECURITY_USER'
   }

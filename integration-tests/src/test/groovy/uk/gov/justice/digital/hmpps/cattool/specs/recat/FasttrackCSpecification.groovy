@@ -10,6 +10,7 @@ import java.time.LocalDate
 
 class FasttrackCSpecification extends AbstractSpecification {
 
+
 //  def "Happy path with validation"() {
 //    when: ''
 //    fixture.gotoTasklistRecat(false)

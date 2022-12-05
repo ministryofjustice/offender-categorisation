@@ -42,7 +42,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     appropriateNo.click()
     overriddenCategoryB.click()
-    overriddenCategoryText << "Im not sure"
+    overriddenCategoryText << "Im not sure about this"
     appropriateYes.click()
     submitButton.click()
 
@@ -88,7 +88,7 @@ class SupervisorSpecification extends AbstractSpecification {
     when: 'The supervisor continues'
     overriddenCategoryJ.click()
     assert !indeterminateWarning.displayed
-    overriddenCategoryText << "reason text"
+    overriddenCategoryText << "over ridden category text"
     elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
@@ -100,8 +100,7 @@ class SupervisorSpecification extends AbstractSpecification {
     data.status == ["SUPERVISOR_BACK"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
-    response.supervisor == [review     : [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'reason text'],
-                            confirmBack: [messageText: 'reason text', supervisorName: 'Test User']]
+    response.supervisor == [review:[proposedCategory:'I', supervisorOverriddenCategory:'J', supervisorCategoryAppropriate:'No', supervisorOverriddenCategoryText:'over ridden category text'], confirmBack:[messageText:'over ridden category text', supervisorName:'Test User']]
     response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
@@ -112,7 +111,7 @@ class SupervisorSpecification extends AbstractSpecification {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"], previousSentences: [releasedLastFiveYears: "No"], sexualOffences: [haveTheyBeenEverConvicted: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes", otherInformationText: "other information text"]]]))
     db.createNomisSeqNo(12,5)
 
     when: 'The supervisor views the review page for an adult'
@@ -133,7 +132,7 @@ class SupervisorSpecification extends AbstractSpecification {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"], previousSentences: [releasedLastFiveYears: "No"], sexualOffences: [haveTheyBeenEverConvicted: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes", otherInformationText: "cat info"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes", otherInformationText: "other information text"]]]))
     db.createNomisSeqNo(12,5)
 
     to SupervisorHomePage
@@ -150,7 +149,7 @@ class SupervisorSpecification extends AbstractSpecification {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings    : TestFixture.defaultRatingsB,
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]]]))
     db.createNomisSeqNo(12,5)
 
     when: 'The supervisor views the review page for an overridden category B'
@@ -329,7 +328,7 @@ class SupervisorSpecification extends AbstractSpecification {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
-      categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "other information text"]]]))
     db.createNomisSeqNo(12,5)
 
     navigateToReview()
@@ -381,7 +380,7 @@ class SupervisorSpecification extends AbstractSpecification {
     data.approval_date != null
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
-    response.categoriser == [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "Some Text"]]
+    response.categoriser == [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "other information text"]]
     response.supervisor ==  [review: [proposedCategory: 'D', supervisorOverriddenCategory: 'B', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'A good reason']]
     response.openConditionsRequested == null
   }
@@ -421,11 +420,11 @@ class SupervisorSpecification extends AbstractSpecification {
 
     db.createDataWithStatus(-2, 12, 'APPROVED', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]]]))
 
     db.createDataWithStatus(-1,11, 'APPROVED', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsB,
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]]))
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]]]))
 
     db.createNomisSeqNo(11, 7)
     db.createNomisSeqNo(12, 8)
@@ -502,7 +501,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     appropriateNo.click()
     overriddenCategoryB.click()
-    overriddenCategoryText << "Im not sure"
+    overriddenCategoryText << "Im not sure about this"
     appropriateYes.click()
     submitButton.click()
 

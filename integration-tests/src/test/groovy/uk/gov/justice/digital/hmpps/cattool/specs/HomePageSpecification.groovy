@@ -218,7 +218,7 @@ class HomePageSpecification extends AbstractSpecification {
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"],
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]]
     ]))
 
     when: 'A user starts a categorisation'
