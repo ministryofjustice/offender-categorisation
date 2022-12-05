@@ -23,7 +23,7 @@ class ReviewSpecification extends AbstractSpecification {
           securityNoteNeeded: "Yes",
           securityInputNeededText: "reasons"
         ],
-        prisonerBackground  : [offenceDetails: "some text"],
+        prisonerBackground  : [offenceDetails: "offence Details text"],
         nextReviewDate      : [date: "14/12/2019"],
         riskAssessment      : [
           lowerCategory    : "lower security category text",
@@ -67,7 +67,7 @@ class ReviewSpecification extends AbstractSpecification {
       'This person has not been reported as the perpetrator in any assaults in custody before',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
       'This person is at risk of engaging in, or vulnerable to, extremism.',
-      'some text']
+      'offence Details text']
     securityInputSummary*.text() == ['', 'No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
@@ -100,7 +100,7 @@ class ReviewSpecification extends AbstractSpecification {
         oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
         securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
         nextReviewDate    : [date: "14/12/2019"],
-        prisonerBackground: [offenceDetails: "some text"],
+        prisonerBackground: [offenceDetails: "offence Details text"],
         riskAssessment    : [
           lowerCategory    : "lower security category text",
           otherRelevant    : "Yes",
@@ -136,7 +136,7 @@ class ReviewSpecification extends AbstractSpecification {
         oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
         securityBack      : [:],
         nextReviewDate    : [date: "14/12/2019"],
-        prisonerBackground: [offenceDetails: "some text"],
+        prisonerBackground: [offenceDetails: "offence Details text"],
         riskAssessment    : [
           lowerCategory    : "lower security category text",
           otherRelevant    : "Yes",
@@ -144,7 +144,7 @@ class ReviewSpecification extends AbstractSpecification {
           otherRelevantText: "other relevant information"
         ]
       ],
-      security: [review: [securityReview: "security info"]]
+      security: [review: [securityReview: "security info text"]]
     ]), 'RECAT')
     when: 'The review page is displayed for a fully completed set of pages'
     fixture.gotoTasklistRecat()
@@ -161,6 +161,6 @@ class ReviewSpecification extends AbstractSpecification {
     then: 'the review page is displayed with security flagged showing as "yes"'
     at ReviewRecatPage
     changeLinks.size() == 5
-    securityInputSummary*.text() == ['', 'No', 'No', 'Yes', 'security info']
+    securityInputSummary*.text() == ['', 'No', 'No', 'Yes', 'security info text']
   }
 }

@@ -46,7 +46,7 @@ class EscapeSpecification extends AbstractSpecification {
     then: 'The page is displayed with alert info and extra question'
     at(new CategoriserEscapePage(bookingId: '12'))
 
-    info.text(). contains 'This person is not on the E-List and does not have an Escape Risk Alert'
+    info.text(). contains 'This person is not on the E-List and does not have an escape risk alert.'
     !warningTextDiv.displayed
   }
 
@@ -65,7 +65,7 @@ class EscapeSpecification extends AbstractSpecification {
     at(new CategoriserEscapePage(bookingId: '12'))
     escapeOtherEvidenceRadio = 'No'
     escapeCatBRadio = 'Yes'
-    escapeCatBTextarea << 'Explanation'
+    escapeCatBTextarea << 'escape cat b explanation'
     saveButton.click()
 
     at(new TasklistPage(bookingId: '12'))
@@ -80,7 +80,7 @@ class EscapeSpecification extends AbstractSpecification {
 
     escapeOtherEvidenceRadio == 'No'
     escapeCatBRadio == 'Yes'
-    escapeCatBTextarea.text() == 'Explanation'
+    escapeCatBTextarea.text() == 'escape cat b explanation'
 
     and: "The page is saved"
     saveButton.click()
@@ -154,7 +154,7 @@ class EscapeSpecification extends AbstractSpecification {
     }
 
     when: 'the escape page is submitted with reason text'
-    escapeOtherEvidenceTextarea << 'Details'
+    escapeOtherEvidenceTextarea << 'escape other evidence details'
     saveButton.click()
 
     then: 'submit succeeds'

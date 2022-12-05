@@ -51,7 +51,7 @@ class SecurityInputSpecification extends AbstractSpecification {
     securityButton.click()
     at(new CategoriserSecurityInputPage(bookingId: '12'))
     securityRadio = 'Yes'
-    securityText << 'Some text'
+    securityText << 'Some security text'
     saveButton.click()
     at(new TasklistPage(bookingId: '12'))
     securityButton.tag() == 'button'
@@ -74,8 +74,8 @@ class SecurityInputSpecification extends AbstractSpecification {
     when: 'the security user enters data'
     startButtons[0].click()
     at new SecurityReviewPage(bookingId: '12')
-    categoriserText == 'Some text'
-    securityText << 'security info'
+    categoriserText == 'Some categoriser text'
+    securityText << 'security info text'
     submitButton.click()
 
     then: 'the prisoner status is back from security'
@@ -95,8 +95,10 @@ class SecurityInputSpecification extends AbstractSpecification {
     $('#securitySection').text().contains("Completed Security ($today)")
     securityButton.click()
     at new CategoriserSecurityBackPage(bookingId: '12')
+
     noteFromSecurity*.text()[0] == 'Some text'
     noteFromSecurity*.text()[1] == 'security info'
+
     catBRadio = 'No'
     saveButton.click()
 
@@ -113,8 +115,8 @@ class SecurityInputSpecification extends AbstractSpecification {
     data.security_reviewed_by == ["SECURITY_USER"]
     fixture.sameDate(LocalDate.now(), data.security_reviewed_date)
     data.cat_type == ["INITIAL"]
-    response.ratings == [securityBack: [catB: "No"], securityInput: [securityInputNeeded: "Yes", securityInputNeededText: "Some text"]]
-    response.security.review == [securityReview: "security info"]
+    response.ratings == [securityBack: [catB: "No"], securityInput: [securityInputNeeded: "Yes", securityInputNeededText: "Some security text"]]
+    response.security.review == [securityReview: "security info text"]
 
     when: 'the categoriser reviews the security page'
     securityButton.click()
