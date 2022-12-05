@@ -137,7 +137,7 @@ class TestFixture {
 
   def gotoTasklistRecatForCatI(transferToSecurity = false) {
     elite2Api.stubRecategoriseWithCatI()
-    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners(['1998-07-24', '1998-08-15'])
     prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     loginAs(RECATEGORISER_USER)
@@ -149,7 +149,7 @@ class TestFixture {
 
   def gotoTasklistRecatForCatIIndeterminate(transferToSecurity = false) {
     elite2Api.stubRecategoriseWithCatI()
-    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners(['1998-07-24', '1998-08-15'])
     prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     loginAs(RECATEGORISER_USER)

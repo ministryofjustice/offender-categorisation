@@ -102,7 +102,7 @@ class PrisonerSearchApi extends WireMockRule {
       ]
   ])
 
-  void stubGetPrisonerSearchPrisoners() {
+  void stubGetPrisonerSearchPrisoners(List dateOfBirths = []) {
     final agencyId = 'LEI'
     final today = LocalDate.now()
     final fromDob = today.minusYears(22)
@@ -117,7 +117,7 @@ class PrisonerSearchApi extends WireMockRule {
                             prisonerNumber: 'C0001AA', // offenderNo
                             firstName     : 'TINY',
                             lastName      : 'TIM',
-                            dateOfBirth   : today.minusDays(3).minusYears(21).format('yyyy-MM-dd'),
+                            dateOfBirth   : dateOfBirths[0] ?: today.minusDays(3).minusYears(21).format('yyyy-MM-dd'),
                             // age         : 20,
                             category      : 'I', // categoryCode
                         ],
@@ -127,7 +127,7 @@ class PrisonerSearchApi extends WireMockRule {
                             firstName     : 'ADRIAN',
                             lastName      : 'MOLE',
                             // beware leap-years, when today + 17 days - 21 years DIFFERS from today - 21 years + 17 days (by one day!)
-                            dateOfBirth   : today.plusDays(17).minusYears(21).format('yyyy-MM-dd'),
+                            dateOfBirth   : dateOfBirths[1] ?: today.plusDays(17).minusYears(21).format('yyyy-MM-dd'),
                             //age         : 20,
                             category      : 'I',
                         ],]
@@ -135,23 +135,12 @@ class PrisonerSearchApi extends WireMockRule {
                     .withHeader('Content-Type', 'application/json')
                     .withStatus(200))
     )
-
-
-//    this.stubFor(
-//        get("/prison/${agencyId}/prisoners?fromDob=${fromDob}&toDob=${toDob}")
-//            .willReturn(
-//                aResponse()
-//                    .withStatus(200)
-//                    .withHeader('Content-Type', 'application/json')
-//                    .withBody(elasticSearchData)
-//            )
-//    )
   }
 
   void stubGetPrisonerSearchBookingIds(ArrayList<Integer> bookingIds) {
     this.stubFor(
         post("/prisoner-search/booking-ids")
-            .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, true))
+            .withRequestBody(equalToJson(JsonOutput.toJson([bookingIds: bookingIds]), true, true))
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -160,9 +149,6 @@ class PrisonerSearchApi extends WireMockRule {
             )
     )
   }
-  // getSentenceDatesForOffenders(bookingIds) {
-  //      const path = `${apiUrl}prisoner-search/booking-ids`
-  //      return apiPost({ path, body: { bookingIds } })
 
   def stubSentenceData(List offenderNumbers, List bookingIds, List startDate, Boolean emptyResponse = false) {
     def index = 0
@@ -173,14 +159,11 @@ class PrisonerSearchApi extends WireMockRule {
           bookingId         : bookingIds[index],
           sentenceStartDate : startDate[index],
           releaseDate       : LocalDate.now().toString(),
-//          sentenceDetail: [bookingId        : bookingIds[index],
-//                           sentenceStartDate: startDate[index],
-//                           releaseDate      : LocalDate.now().toString()],
           firstName         : "firstName-${index}",
           lastName          : "lastName-${index++}",
           offenceCode       : "OFF${no}",
           statuteCode       : "ST${no}",
-          mostSeriousOffence: 'stuff'
+          mostSeriousOffence: 'Robbery'
       ]
     })
 
