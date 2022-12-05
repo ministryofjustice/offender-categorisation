@@ -34,7 +34,7 @@ const nomisClient = {
 
 const prisonerSearchClient = {
   getPrisonersAtLocation: jest.fn(),
-  getSentenceDatesForOffenders: jest.fn(),
+  getPrisonersByBookingIds: jest.fn(),
 }
 
 const allocationClient = {
@@ -79,7 +79,7 @@ beforeEach(() => {
 
 afterEach(() => {
   nomisClient.getUncategorisedOffenders.mockReset()
-  prisonerSearchClient.getSentenceDatesForOffenders.mockReset()
+  prisonerSearchClient.getPrisonersByBookingIds.mockReset()
   nomisClient.getUserByUserId.mockReset()
   nomisClient.getOffenderDetails.mockReset()
   nomisClient.getOffenderDetailList.mockReset()
@@ -123,7 +123,7 @@ describe('getRecategoriseOffenders', () => {
       { bookingId: 122, releaseDate: '2020-11-30' },
       { bookingId: 121, releaseDate: '2019-04-18' },
     ]
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
   })
 
   test('it should return a list of offenders and sentence information', async () => {
@@ -604,7 +604,7 @@ describe('getUnapprovedOffenders', () => {
       { bookingId: 1, sentenceStartDate: mockTodaySubtract(30) }, // 2019-05-01
       { bookingId: 6, sentenceStartDate: mockTodaySubtract(18) }, // 2019-05-13
     ]
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
 
     const expected = [
       {
@@ -669,7 +669,7 @@ describe('getUnapprovedOffenders', () => {
     expect(nomisClient.getUncategorisedOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(formService.getCategorisationRecord).toBeCalledTimes(9)
     expect(formService.getCategorisationRecord).nthCalledWith(1, 1, mockTransactionalClient)
-    expect(prisonerSearchClient.getSentenceDatesForOffenders).toBeCalledWith([1, 6])
+    expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledWith([1, 6])
     expect(result).toMatchObject(expected)
   })
 
@@ -755,13 +755,13 @@ describe('getUncategorisedOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
     formService.getCategorisationRecords.mockResolvedValue([])
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue({})
 
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
-    expect(prisonerSearchClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
 
@@ -837,7 +837,7 @@ describe('getUncategorisedOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
     formService.getCategorisationRecords.mockResolvedValue([])
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue({})
 
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
@@ -871,7 +871,7 @@ describe('getUncategorisedOffenders', () => {
     const sentenceDates = [{ bookingId: 123, sentenceStartDate: mockTodaySubtract(4) }]
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
     formService.getCategorisationRecords.mockResolvedValue([])
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue(dbRecord)
 
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
@@ -905,7 +905,7 @@ describe('getUncategorisedOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
     formService.getCategorisationRecords.mockResolvedValue([])
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
 
     const results = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
     expect(results).toHaveLength(1)
@@ -955,7 +955,7 @@ describe('getUncategorisedOffenders', () => {
     formService.getCategorisationRecords.mockResolvedValue([
       { bookingId: 111, offenderNo: 'G55345', status: Status.STARTED.name },
     ])
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue({})
     nomisClient.getBasicOffenderDetails.mockResolvedValue({
       bookingId: 111,
@@ -967,7 +967,7 @@ describe('getUncategorisedOffenders', () => {
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
-    expect(prisonerSearchClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
 
@@ -1045,7 +1045,7 @@ describe('getUncategorisedOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
     formService.getCategorisationRecords.mockResolvedValue([])
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue({})
     formService.getSecurityReferrals.mockResolvedValue([
       { offenderNo: 'G12345', status: 'NEW' },
@@ -1055,7 +1055,7 @@ describe('getUncategorisedOffenders', () => {
     const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
-    expect(prisonerSearchClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
 
@@ -1085,7 +1085,7 @@ describe('getUncategorisedOffenders', () => {
       const sentenceDates = [{ bookingId: 123, sentenceStartDate: mockTodaySubtract(4) }]
       nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
       formService.getCategorisationRecords.mockResolvedValue([])
-      prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+      prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
       formService.getCategorisationRecord.mockResolvedValue(dbRecord)
       const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
       expect(result[0].pnomis).toBe(pnomis)
@@ -1489,7 +1489,7 @@ describe('getReferredOffenders', () => {
       { bookingId: 137, nextReviewDate: '2020-09-30' },
       { bookingId: -99, nextReviewDate: '2011-09-30' },
     ])
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getSecurityReferredOffenders.mockResolvedValue(securityReferredOffenders)
 
     const expected = [
@@ -1536,7 +1536,7 @@ describe('getReferredOffenders', () => {
     const result = await service.getReferredOffenders(context, mockTransactionalClient)
 
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
-    expect(prisonerSearchClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
     expect(nomisClient.getLatestCategorisationForOffenders).toBeCalledWith(['A1000AA', 'A1000AB'])
     expect(result).toMatchObject(expected)
   })
@@ -1549,7 +1549,7 @@ describe('getReferredOffenders', () => {
 
     nomisClient.getOffenderDetailList.mockResolvedValue(offenderDetailList)
     nomisClient.getUserDetailList.mockResolvedValue(userDetailsList)
-    prisonerSearchClient.getSentenceDatesForOffenders.mockResolvedValue(sentenceDates)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
 
     formService.getSecurityReferredOffenders.mockResolvedValue([
       {
@@ -1599,7 +1599,7 @@ describe('getReferredOffenders', () => {
     const result = await service.getReferredOffenders(context, mockTransactionalClient)
 
     expect(formService.getSecurityReferredOffenders).toBeCalledTimes(1)
-    expect(prisonerSearchClient.getSentenceDatesForOffenders).toBeCalledTimes(1)
+    expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })
 

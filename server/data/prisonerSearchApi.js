@@ -30,7 +30,7 @@ module.exports = context => {
       return apiGet({ path, query })
     },
 
-    async getSentenceDatesForOffenders(bookingIds) {
+    async getPrisonersByBookingIds(bookingIds) {
       if (bookingIds.length === 0) return []
       const path = `${apiUrl}prisoner-search/booking-ids`
       return apiPost({ path, body: { bookingIds } })

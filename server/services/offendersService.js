@@ -37,10 +37,10 @@ async function getSentenceMap(offenderList, prisonerSearchClient) {
     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
     .map(o => o.bookingId)
 
-  const sentenceDates = await prisonerSearchClient.getSentenceDatesForOffenders(bookingIds)
+  const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
 
   return new Map(
-    sentenceDates
+    prisoners
       .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
       .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
   )
@@ -51,14 +51,12 @@ async function getReleaseDateMap(offenderList, prisonerSearchClient) {
     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.RECAT.name)
     .map(o => o.bookingId)
 
-  const sentenceDates = await prisonerSearchClient.getSentenceDatesForOffenders(bookingIds)
+  const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
 
   return new Map(
-    sentenceDates
+    prisoners
       .filter(s => s.releaseDate) // the endpoint returns records for offenders without sentences
-      .map(s => {
-        return [s.bookingId, s.releaseDate]
-      })
+      .map(s => [s.bookingId, s.releaseDate])
   )
 }
 
@@ -138,40 +136,29 @@ module.exports = function createOffendersService(
 
       const combined = [...uncategorisedResult, ...dbManualInProgress]
 
-      // async function getOffenceMap(offenderList, prisonerSearchClient) {
-      //   const bookingIds = offenderList
-      //     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
-      //     .map(o => o.bookingId)
-      //
-      //   const offences = await prisonerSearchClient.getSentenceDatesForOffenders(bookingIds)
-      //   // There can (rarely) be > 1 main offence per booking id, but not in the IS91 case
-      //   return new Map(offences.map(offence => [offence.bookingId, offence]))
-      // }
-
       const bookingIds = combined
         .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
         .map(o => o.bookingId)
 
-      const [offences, pomMap, securityReferredOffenders] = await Promise.all([
-        prisonerSearchClient.getSentenceDatesForOffenders(bookingIds),
+      const [prisoners, pomMap, securityReferredOffenders] = await Promise.all([
+        prisonerSearchClient.getPrisonersByBookingIds(bookingIds),
         getPomMap(combined, allocationClient),
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
-      const offenceMap = new Map(offences.map(offence => [offence.bookingId, offence]))
+      const prisonerMap = new Map(prisoners.map(prisoner => [prisoner.bookingId, prisoner]))
 
       const sentenceMap = new Map(
-        offences
+        prisoners
           .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
           .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
       )
 
       const filterIS91s = o => {
-        const offence = offenceMap.get(o.bookingId)
+        const offence = prisonerMap.get(o.bookingId)
         if (!offence) {
           return true
         }
-        // if (offence.offenceCode === 'IA99000-001N' && offence.statuteCode === 'ZZ') {
         if (offence.mostSeriousOffence === 'ILLEGAL IMMIGRANT/DETAINEE') {
           logger.info(`Filtered out IS91 prisoner: bookingId = ${offence.bookingId}`)
           return false
@@ -393,12 +380,12 @@ module.exports = function createOffendersService(
           nomisClient.getOffenderDetailList(newSecurityReferred.map(c => c.offenderNo)),
           nomisClient.getUserDetailList(newSecurityReferred.map(c => c.userId)),
         ])
-        const sentenceDates = await prisonerSearchClient.getSentenceDatesForOffenders(
+        const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(
           offenderDetailsFromNomis.map(o => o.bookingId)
         )
 
         const sentenceMap = new Map(
-          sentenceDates
+          prisoners
             .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
             .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
         )

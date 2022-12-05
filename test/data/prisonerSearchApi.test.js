@@ -32,11 +32,11 @@ describe('prisonerSearchApi Client', () => {
     })
   })
 
-  describe('getSentenceDatesForOffenders', () => {
+  describe('getPrisonersByBookingIds', () => {
     it('should return data from api', async () => {
       fakeApi.post(`/prisoner-search/booking-ids`, { bookingIds: [123, 321] }).reply(200, response)
 
-      const output = await client.getSentenceDatesForOffenders([123, 321])
+      const output = await client.getPrisonersByBookingIds([123, 321])
       return expect(output).toEqual(response)
     })
   })
