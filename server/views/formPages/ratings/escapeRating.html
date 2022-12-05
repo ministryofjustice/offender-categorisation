@@ -3,7 +3,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "warning-text/macro.njk" import govukWarningText %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "details/macro.njk" import govukDetails %}
 {% from "../../macros/renderAlert.html" import renderAlert %}
 
@@ -37,12 +37,11 @@
   </div>
 
   {% set escapeCatBTextHtml %}
-    {{ govukCharacterCount({
+    {{ govukTextarea({
       name: "escapeCatBText",
       type: "escapeCatBText",
       id: "escapeCatBText",
-      maxlength: 50000,
-      threshold: 50,
+      attributes: { 'maxlength': 50000 },
       label: {
         text: "Please explain your answer"
       },
@@ -84,20 +83,19 @@
 {% else %}
   <input type="hidden" name="escapeCatB" value="No" />
   {{ govukInsetText({
-    text: "This person is not on the E-List and does not have an Escape Risk Alert."
+    text: "This person is not on the E-List and does not have an escape risk alert."
   }) }}
 {% endif %}
 
 {% set escapeOtherEvidenceTextHtml %}
 
-{{ govukCharacterCount({
+{{ govukTextarea({
   name: "escapeOtherEvidenceText",
   type: "escapeOtherEvidenceText",
   id: "escapeOtherEvidenceText",
-  maxlength: 50000,
-  threshold: 50,
+  attributes: { 'maxlength': 50000 },
   label: {
-    text: "Provide details about this information"
+    text: "Give details about their escape risk"
   },
   value: data.ratings.escapeRating.escapeOtherEvidenceText,
   errorMessage: {
@@ -112,11 +110,11 @@
   classes: "govuk-radios--inline",
   fieldset: {
     legend: {
-      text: "Is there other information to suggest they pose a risk of escape?"
+      text: "Is there any other information to suggest they pose a risk of escape?"
     }
   },
   hint: {
-        text: "Check NOMIS case notes and alerts and the prisoner escort records (PER)"
+        text: "You should check NOMIS case notes and alerts, and their prisoner escort records (PER)."
     },
   errorMessage: {
     text: "Please select yes or no"
@@ -140,7 +138,7 @@
 
   {% set guidance %}<div class="govuk-!-font-weight-bold">You are looking for:</div>
   <ul class="govuk-list govuk-list--bullet">
-    <li>previous escape attempts from custody</li>
+    <li>previous attempts to abscond or escape from custody</li>
     <li>means and motivation to attempt an escape</li>
   </ul>
   {% endset %}

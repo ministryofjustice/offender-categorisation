@@ -19,26 +19,26 @@ class RiskAssessmentSpecification extends AbstractSpecification {
     headerValue*.text() == fixture.MINI_HEADER
 
     when: 'Details are entered, saved and accessed'
-    lowerCategory << 'lower text'
-    higherCategory << 'higher text'
+    lowerCategory << 'lower category text'
+    higherCategory << 'higher category text'
     otherRelevantYes.click()
-    otherRelevantText << 'extra info'
+    otherRelevantText << 'other relevant text'
     submitButton.click()
     at TasklistRecatPage
     riskAssessmentButton.click()
     at RiskAssessmentPage
 
     then: "data is correctly retrieved"
-    lowerCategory == 'lower text'
-    higherCategory == 'higher text'
+    lowerCategory == 'lower category text'
+    higherCategory == 'higher category text'
     form.otherRelevant == "Yes"
-    otherRelevantText == 'extra info'
+    otherRelevantText == 'other relevant text'
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type == ['RECAT']
-    response.recat == [riskAssessment: [lowerCategory: 'lower text', higherCategory: 'higher text', otherRelevant: 'Yes', otherRelevantText: 'extra info']]
+    response.recat == [riskAssessment: [lowerCategory: 'lower category text', higherCategory: 'higher category text', otherRelevant: 'Yes', otherRelevantText: 'other relevant text']]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
   }

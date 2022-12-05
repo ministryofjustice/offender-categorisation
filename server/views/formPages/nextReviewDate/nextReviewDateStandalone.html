@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "input/macro.njk" import govukInput %}
 {% from "details/macro.njk" import govukDetails %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Next review date" %}
@@ -41,13 +41,11 @@
     classes: "dateInputWidth"
   }) }}
 
- {{ govukCharacterCount({
+ {{ govukTextarea({
     id: 'reason',
     name: 'reason',
     value: data.nextReviewDate.nextReviewDateStandalone.reason,
-    maxlength: 1000,
-    attributes: {  'maxLength': 1000 },
-    threshold: 50,
+    attributes: { 'maxlength': 1000 },
     label: { text: "Reason for date change", classes: "govuk-!-font-weight-bold" },
     errorMessage: { text: "Enter reason for date change" } if (errors | findError('reason'))
   }) }}
@@ -62,8 +60,8 @@
   {% endset %}
 
 {{ govukDetails({
-summaryText: "How to choose a date for a prisoner",
-html: guidance
+  summaryText: "How to choose a date for a prisoner",
+  html: guidance
 }) }}
 
 {% endblock %}
