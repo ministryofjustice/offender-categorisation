@@ -4,15 +4,28 @@ const whereClause = `status = 'APPROVED' and
   ($3::date is null or approval_date <= $3::date) and
   ($4::varchar is null or $4::varchar = prison_id)`
 
+const whereClauseStart = `status = 'APPROVED' and
+ cat_type = $1::cat_type_enum and
+ ($2::date is null or $2::date <= approval_date) and
+ ($3::date is null or approval_date <= $3::date) and `
+
+const femaleInClause = `($4::varchar is null and prison_id in ('AGI', 'DWI', 'DHI', 'ESI', 'EWI', 'BZI', 'FHI', 'LNI', 'SDI', 'STI', 'NHI', 'PFI'))`
+
+const femaleNotInClause = `($4::varchar is null and prison_id not in ('AGI', 'DWI', 'DHI', 'ESI', 'EWI', 'BZI', 'FHI', 'LNI', 'SDI', 'STI', 'NHI', 'PFI'))`
+
+const prisonIdPresent = `($4::varchar = prison_id)`
+
+function addToQueryString(prisonId, isFemale)  {
+  let endPart = prisonId ? prisonIdPresent : (isFemale) ? femaleInClause : femaleNotInClause
+  return whereClauseStart + endPart
+}
+
 module.exports = {
-  getInitialCategoryOutcomes(startDate, endDate, prisonId, transactionalClient) {
+  getInitialCategoryOutcomes(startDate, endDate, prisonId, isFemale, transactionalClient) {
     const query = {
-      text: `select count(*),
-               form_response -> 'categoriser'->'provisionalCategory' ->>'suggestedCategory' as "initialCat",
-               form_response -> 'categoriser'->'provisionalCategory' ->>'overriddenCategory' as "initialOverride",
-               form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory' as "superOverride"
+      text: `select count(*), form_response -> 'categoriser'->'provisionalCategory' ->>'suggestedCategory' as "initialCat", form_response -> 'categoriser'->'provisionalCategory' ->>'overriddenCategory' as "initialOverride", form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory' as "superOverride"
              from form
-             where ${whereClause}
+             where ${addToQueryString(prisonId, isFemale)}
              group by "initialCat", "initialOverride",  "superOverride"
              order by "initialCat",  "initialOverride" NULLS FIRST, "superOverride" NULLS FIRST`,
       values: ['INITIAL', startDate, endDate, prisonId],

@@ -6,7 +6,7 @@ const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { dateConverterToISO } = require('../utils/utils')
+const { dateConverterToISO, isFemalePrisonId} = require('../utils/utils')
 const securityConfig = require('../config/security')
 
 const formConfig = {
@@ -192,8 +192,9 @@ module.exports = function Index({
     const { startDate, endDate, scope } = req.query
     const start = startDate ? dateConverterToISO(startDate) : null
     const end = endDate ? dateConverterToISO(endDate) : null
+    const isFemale = isFemalePrisonId(res.locals.user.activeCaseLoadId)
     const prisonId = scope === 'all' ? null : res.locals.user.activeCaseLoadId
-    return { start, end, prisonId }
+    return { start, end, prisonId, isFemale }
   }
 
   function getTotal(results) {
@@ -210,11 +211,11 @@ module.exports = function Index({
       if (errors.length) {
         res.render('pages/dashboardInitial', { errors, ...req.query })
       } else {
-        const { start, end, prisonId } = await getParams(req, res)
-        const initial = await statsService.getInitialCategoryOutcomes(start, end, prisonId, transactionalDbClient)
-        const security = await statsService.getSecurityReferrals(INIT, start, end, prisonId, transactionalDbClient)
-        const timeliness = await statsService.getTimeliness(INIT, start, end, prisonId, transactionalDbClient)
-        const onTime = await statsService.getOnTime(INIT, start, end, prisonId, transactionalDbClient)
+        const { start, end, prisonId, isFemale } = await getParams(req, res)
+        const initial = await statsService.getInitialCategoryOutcomes(start, end, prisonId, isFemale, transactionalDbClient)
+        const security = await statsService.getSecurityReferrals(INIT, start, end, prisonId, isFemale, transactionalDbClient)
+        const timeliness = await statsService.getTimeliness(INIT, start, end, prisonId, isFemale, transactionalDbClient)
+        const onTime = await statsService.getOnTime(INIT, start, end, prisonId, isFemale, transactionalDbClient)
         const total = getTotal(initial)
 
         res.render('pages/dashboardInitial', { initial, security, timeliness, onTime, total, errors, ...req.query })
