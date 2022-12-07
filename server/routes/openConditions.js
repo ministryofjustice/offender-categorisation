@@ -26,7 +26,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'furtherCharges'
-      const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
+      let result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
 
       // Copy offending history charges or skip ?
       const openConditionsFCTextExists =
@@ -34,21 +34,20 @@ module.exports = function Index({ formService, offendersService, userService, au
         result.data.openConditions.furtherCharges &&
         result.data.openConditions.furtherCharges.furtherChargesText
 
-      const furtherChargesExists =
+      const furtherChargesMainJourneyExists =
         result.data.ratings &&
         result.data.ratings.furtherCharges &&
         result.data.ratings.furtherCharges.furtherCharges === 'Yes'
 
-      if (furtherChargesExists && !openConditionsFCTextExists) {
-        const newResult = R.assocPath(
+      if (furtherChargesMainJourneyExists && !openConditionsFCTextExists) {
+        result = R.assocPath(
           ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
           result.data.ratings.furtherCharges.furtherChargesText,
           result
         )
-        res.render(`formPages/openConditions/${form}`, newResult)
-      } else {
-        res.render(`formPages/openConditions/${form}`, result)
       }
+
+      res.render(`formPages/openConditions/${form}`, result)
     })
   )
 
