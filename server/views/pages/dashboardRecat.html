@@ -25,17 +25,21 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header" scope="col">From/To</th>
+        {% if not isFemale %}
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">B</th>
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">C</th>
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">D</th>
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">YOI&nbsp;closed</th>
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">YOI&nbsp;open</th>
+        {% else %}
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">Female closed</th>
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">Female open</th>
+        {% endif %}
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">Total</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
+    {%if not isFemale %}
       <tr class="govuk-table__row">
         <td class="govuk-table__cell govuk-!-font-weight-bold">B</td>
         <td class="govuk-table__cell table-diagonal-cell">{{ table[0][0] }}</td>
@@ -81,13 +85,32 @@
         <td class="govuk-table__cell table-diagonal-cell">{{ table[4][4] }}</td>
         <td class="govuk-table__cell">{{ table[4][7] }}</td>
       </tr>
+     {% else %}
+     <tr class="govuk-table__row">
+       <td class="govuk-table__cell govuk-!-font-weight-bold">Female closed</td>
+       <td class="govuk-table__cell table-diagonal-cell">{{ table[4][5] }}</td>
+       <td class="govuk-table__cell">{{ table[4][6] }}</td>
+       <td class="govuk-table__cell">{{ table[4][7] }}</td>
+     </tr>
+     <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-font-weight-bold">Female open</td>
+      <td class="govuk-table__cell">{{ table[4][5] }}</td>
+      <td class="govuk-table__cell table-diagonal-cell">{{ table[4][6] }}</td>
+      <td class="govuk-table__cell">{{ table[4][7] }}</td>
+     </tr>
+     {% endif %}
       <tr class="govuk-table__row">
         <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
+        {%if not isFemale %}
         <td class="govuk-table__cell">{{ table[7][0] }}</td>
         <td class="govuk-table__cell">{{ table[7][1] }}</td>
         <td class="govuk-table__cell">{{ table[7][2] }}</td>
         <td class="govuk-table__cell">{{ table[7][3] }}</td>
         <td class="govuk-table__cell">{{ table[7][4] }}</td>
+        {% else %}
+        <td class="govuk-table__cell">{{ table[7][5] }}</td>
+        <td class="govuk-table__cell">{{ table[7][6] }}</td>
+        {% endif %}
         <td class="govuk-table__cell">{{ table[7][7] }}</td>
       </tr>
     </tbody>
