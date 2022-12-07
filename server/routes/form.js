@@ -651,7 +651,8 @@ module.exports = function Index({
         await offendersService.createSupervisorApproval(res.locals, bookingId, userInput)
 
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-        res.redirect(`${nextPath}${bookingId}`)
+        const catTypeArgument = userInput.catType ? `?catType=${userInput.catType}` : ''
+        res.redirect(`${nextPath}${bookingId}${catTypeArgument}`)
       } else {
         // persist the open conditions override and return to categoriser to complete the open conditions route.
         log.info(`Supervisor overriding to Category ${userInput.supervisorOverriddenCategory}`)

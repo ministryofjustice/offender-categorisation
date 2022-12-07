@@ -431,6 +431,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'the category is submitted'
     at CategoriserSubmittedPage
+    dcsSurveyLink.displayed
 
     when: 'The record is viewed by the categoriser'
     data = db.getData(12)
