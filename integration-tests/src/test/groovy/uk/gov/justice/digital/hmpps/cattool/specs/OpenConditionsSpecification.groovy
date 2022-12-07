@@ -403,7 +403,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     sexualOffences*.text() == ['','No','Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
-    furtherCharges*.text() == ['', 'some charges,furtherChargesText details', 'No']
+    furtherCharges*.text() == ['', 'Not applicable', 'some charges,furtherChargesText details', 'No']
     riskLevel*.text() == ['', 'No']
 
     def data = db.getData(12)
@@ -772,6 +772,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
     if (furtherChargesExist) {
       at FurtherChargesPage
+      if(furtherChargesYes){
+        furtherChargesYes.click()
+      }
       furtherChargesText << ',furtherChargesText details'
       increasedRiskNo.click()
       submitButton.click()
