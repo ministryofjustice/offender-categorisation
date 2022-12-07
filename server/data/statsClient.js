@@ -33,13 +33,13 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getRecatCategoryOutcomes(startDate, endDate, prisonId, transactionalClient) {
+  getRecatCategoryOutcomes(startDate, endDate, prisonId, isFemale, transactionalClient) {
     const query = {
       text: `select count(*),
                     form_response -> 'recat' -> 'decision' ->>'category' as recat,
                     form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory' as "superOverride"
              from form
-             where ${whereClause}
+             where ${addToQueryString(prisonId, isFemale)}
              group by recat, "superOverride"
              order by recat, "superOverride" NULLS FIRST`,
       values: ['RECAT', startDate, endDate, prisonId],
@@ -48,7 +48,7 @@ module.exports = {
   },
 
   /** The latest category before the end date is considered along with its predecessor */
-  getRecatFromTo(startDate, endDate, prisonId, transactionalClient) {
+  getRecatFromTo(startDate, endDate, prisonId, isFemale, transactionalClient) {
     const query = {
       text: `
         with cat_table as (
@@ -71,7 +71,7 @@ module.exports = {
                  coalesce(f.form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory',
                           f.form_response -> 'recat' -> 'decision' ->> 'category') as cat
           from form as f
-          where ${whereClause}
+          where ${addToQueryString(prisonId, isFemale)}
         ),
              arrays_table as (
                select array_agg(array [prison_id,previous_cat,cat] order by sequence_no desc) as data
@@ -86,7 +86,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getSecurityReferrals(catType, startDate, endDate, prisonId, transactionalClient) {
+  getSecurityReferrals(catType, startDate, endDate, prisonId, isFemale, transactionalClient) {
     const query = {
       text: `select count(*),
                CASE WHEN
@@ -98,14 +98,14 @@ module.exports = {
                ELSE 'flagged'
                END as "security"
              from form
-             where referred_date is not null and ${whereClause}
+             where referred_date is not null and ${addToQueryString(prisonId, isFemale)}
              group by "security"`,
       values: [catType, startDate, endDate, prisonId],
     }
     return transactionalClient.query(query)
   },
 
-  getTimeliness(catType, startDate, endDate, prisonId, transactionalClient) {
+  getTimeliness(catType, startDate, endDate, prisonId, isFemale, transactionalClient) {
     const query = {
       text: `select avg(extract(day from (due_by_date - date_trunc('day', approval_date))))  as "approvalTimelinessDays",
                     avg(extract(epoch from (referred_date - start_date))/86400)               as "securityReferralTimelinessDays",
@@ -113,18 +113,18 @@ module.exports = {
                     avg(extract(day from (assessment_date - date_trunc('day', start_date)))) as "startToAssessmentDays",
                     avg(approval_date - assessment_date)                                     as "assessmentToApprovalDays"
              from form
-             where ${whereClause}`,
+             where ${addToQueryString(prisonId, isFemale)}`,
       values: [catType, startDate, endDate, prisonId],
     }
     return transactionalClient.query(query)
   },
 
-  getOnTime(catType, startDate, endDate, prisonId, transactionalClient) {
+  getOnTime(catType, startDate, endDate, prisonId, isFemale, transactionalClient) {
     const query = {
       text: `select count(*),
                     extract(day from (coalesce(due_by_date, approval_date) - date_trunc('day', approval_date))) >= 0 as "onTime"
              from form
-             where ${whereClause}
+             where ${addToQueryString(prisonId, isFemale)}
              group by "onTime"`,
       values: [catType, startDate, endDate, prisonId],
     }

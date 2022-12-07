@@ -15,13 +15,13 @@ module.exports = function createstatsService(statsClient) {
     },
 
     async getRecatCategoryOutcomes(startDate, endDate, prisonId, isFemale, transactionalClient) {
-      const stats = await statsClient.getRecatCategoryOutcomes(startDate, endDate, prisonId, transactionalClient)
+      const stats = await statsClient.getRecatCategoryOutcomes(startDate, endDate, prisonId, isFemale,transactionalClient)
 
       return stats.rows
     },
 
-    async getRecatFromTo(startDate, endDate, prisonId, transactionalClient) {
-      const stats = await statsClient.getRecatFromTo(startDate, endDate, prisonId, transactionalClient)
+    async getRecatFromTo(startDate, endDate, prisonId, isFemale, transactionalClient) {
+      const stats = await statsClient.getRecatFromTo(startDate, endDate, prisonId, isFemale, transactionalClient)
       // fill a 7x7 array
       const table = Array(8)
         .fill()
@@ -52,7 +52,7 @@ module.exports = function createstatsService(statsClient) {
     },
 
     async getSecurityReferrals(catType, startDate, endDate, prisonId, isFemale, transactionalClient) {
-      const stats = await statsClient.getSecurityReferrals(catType, startDate, endDate, prisonId, transactionalClient)
+      const stats = await statsClient.getSecurityReferrals(catType, startDate, endDate, prisonId, isFemale, transactionalClient)
 
       const { rows } = stats
       return {
@@ -63,12 +63,12 @@ module.exports = function createstatsService(statsClient) {
     },
 
     async getTimeliness(catType, startDate, endDate, prisonId, isFemale, transactionalClient) {
-      const stats = await statsClient.getTimeliness(catType, startDate, endDate, prisonId, transactionalClient)
+      const stats = await statsClient.getTimeliness(catType, startDate, endDate, prisonId, isFemale, transactionalClient)
       return stats.rows[0]
     },
 
     async getOnTime(catType, startDate, endDate, prisonId, isFemale, transactionalClient) {
-      const stats = await statsClient.getOnTime(catType, startDate, endDate, prisonId, transactionalClient)
+      const stats = await statsClient.getOnTime(catType, startDate, endDate, prisonId, isFemale, transactionalClient)
       const { rows } = stats
       return {
         onTime: getCount(rows, 'onTime', true),

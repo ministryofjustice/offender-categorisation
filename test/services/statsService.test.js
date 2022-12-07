@@ -51,14 +51,17 @@ describe('getRecatFromTo', () => {
         },
       ],
     })
-    const table = await service.getRecatFromTo('dummy', 'dummy', prisonId, mockTransactionalClient)
+    const isFemale = false
+    const table = await service.getRecatFromTo('dummy', 'dummy', prisonId, isFemale, mockTransactionalClient)
     expect(table).toEqual([
-      [undefined, 6, undefined, undefined, undefined, 6],
-      [undefined, 7, undefined, undefined, undefined, 7],
-      [undefined, undefined, undefined, undefined, undefined, 0],
-      [undefined, undefined, undefined, 5, 2, 7],
-      [undefined, undefined, undefined, undefined, undefined, 0],
-      [0, 13, 0, 5, 2, 20],
+      [undefined, 6, undefined, undefined, undefined, undefined, undefined, 6],
+      [undefined, 7, undefined, undefined, undefined, undefined, undefined, 7],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0],
+      [undefined, undefined, undefined, 5, 2, undefined, undefined, 7],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0],
+      [undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0],
+      [0, 13, 0, 5, 2, 0, 0, 20],
     ])
   })
 })

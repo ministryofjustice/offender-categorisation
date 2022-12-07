@@ -233,12 +233,12 @@ module.exports = function Index({
       if (errors.length) {
         res.render('pages/dashboardRecat', { errors, ...req.query })
       } else {
-        const { start, end, prisonId } = await getParams(req, res)
-        const table = await statsService.getRecatFromTo(start, end, prisonId, transactionalDbClient)
-        const recat = await statsService.getRecatCategoryOutcomes(start, end, prisonId, transactionalDbClient)
-        const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, transactionalDbClient)
-        const timeliness = await statsService.getTimeliness(RECAT, start, end, prisonId, transactionalDbClient)
-        const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, transactionalDbClient)
+        const { start, end, prisonId, isFemale } = await getParams(req, res)
+        const table = await statsService.getRecatFromTo(start, end, prisonId, isFemale,transactionalDbClient)
+        const recat = await statsService.getRecatCategoryOutcomes(start, end, prisonId, isFemale, transactionalDbClient)
+        const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, isFemale, transactionalDbClient)
+        const timeliness = await statsService.getTimeliness(RECAT, start, end, prisonId, isFemale, transactionalDbClient)
+        const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, isFemale, transactionalDbClient)
         const total = getTotal(recat)
 
         res.render('pages/dashboardRecat', { table, recat, security, timeliness, onTime, total, errors, ...req.query })
