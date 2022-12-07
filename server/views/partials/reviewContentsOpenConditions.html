@@ -1,5 +1,5 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
-{% from "../macros/formatAnswer.html" import formatAnswerWithNA %}
+{% from "../macros/formatAnswer.html" import formatAnswerWithNA, formatDetailsWithNA %}
 
 {% set victimContactSchemeSummary %}
   {{ govukSummaryList({
@@ -187,6 +187,11 @@
               visuallyHiddenText: "Further charges"
             }] if showOpenConditionChangeLinks else []
         }
+      },
+      {
+        key: { text: "Are they facing any further charges?" },
+        value: { html: formatDetailsWithNA( not (catType == 'INITIAL' and data.ratings.furtherCharges.furtherCharges == 'Yes'), data.openConditions.furtherCharges.furtherCharges) },
+        actions: { items: [] }
       },
       {
         key: { text: "Further charges details" },
