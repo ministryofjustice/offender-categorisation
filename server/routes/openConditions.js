@@ -6,7 +6,6 @@ const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
-const CatType = require('../utils/catTypeEnum')
 const log = require('../../log')
 
 const formConfig = {
@@ -27,33 +26,28 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'furtherCharges'
-      const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
+      let result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
 
       // Copy offending history charges or skip ?
-      const textExists =
+      const openConditionsFCTextExists =
         result.data.openConditions &&
         result.data.openConditions.furtherCharges &&
         result.data.openConditions.furtherCharges.furtherChargesText
 
-      const furtherChargesExists =
+      const furtherChargesMainJourneyExists =
         result.data.ratings &&
         result.data.ratings.furtherCharges &&
         result.data.ratings.furtherCharges.furtherCharges === 'Yes'
 
-      if (!furtherChargesExists && !textExists && result.catType === CatType.INITIAL.name) {
-        const formPageConfig = formConfig.openConditions[form]
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-        res.redirect(`${nextPath}${bookingId}`)
-      } else if (furtherChargesExists && !textExists) {
-        const newResult = R.assocPath(
+      if (furtherChargesMainJourneyExists && !openConditionsFCTextExists) {
+        result = R.assocPath(
           ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
           result.data.ratings.furtherCharges.furtherChargesText,
           result
         )
-        res.render(`formPages/openConditions/${form}`, newResult)
-      } else {
-        res.render(`formPages/openConditions/${form}`, result)
       }
+
+      res.render(`formPages/openConditions/${form}`, result)
     })
   )
 

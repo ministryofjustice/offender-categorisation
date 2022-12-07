@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% set furtherChargesHtml %}
-  {% if catType == 'INITIAL' %}
+  {% if catType == 'INITIAL'  and data.ratings.furtherCharges.furtherCharges == 'Yes' %}
     <p>You should include all further charges, including minor offences.</p>
   {% endif %}
 
@@ -63,7 +63,7 @@
 
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
-  {% if catType === 'RECAT' %}
+  {% if data.ratings.furtherCharges.furtherCharges === 'No' or catType === 'RECAT' %}
     {{ govukRadios({
       name: "furtherCharges",
       classes: "govuk-radios--inline",

@@ -32,6 +32,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
+    furtherCharges     : [increasedRisk: 'No', furtherCharges: 'Yes', furtherChargesText: ",furtherChargesText details"],
     riskLevels         : [likelyToAbscond: 'No'],
   ]
 
@@ -402,7 +403,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     sexualOffences*.text() == ['','No','Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
-    furtherCharges*.text() == ['', 'some charges,furtherChargesText details', 'No']
+    furtherCharges*.text() == ['', 'Not applicable', 'some charges,furtherChargesText details', 'No']
     riskLevel*.text() == ['', 'No']
 
     def data = db.getData(12)
@@ -662,7 +663,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'open conditions forms are completed'
     submitButton.click()
     at TasklistPage
-    completeOpenConditionsWorkflow(false)
+    completeOpenConditionsWorkflow(true)
 
     then: 'tasklist page is displayed with the open conditions section'
     at TasklistPage
@@ -770,6 +771,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
     if (furtherChargesExist) {
       at FurtherChargesPage
+      if(furtherChargesYes){
+        furtherChargesYes.click()
+      }
       furtherChargesText << ',furtherChargesText details'
       increasedRiskNo.click()
       submitButton.click()

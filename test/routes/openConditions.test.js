@@ -151,16 +151,22 @@ describe('open conditions', () => {
       })
   })
 
-  test('furtherCharges neither exists, INITIAL', () => {
+  test('furtherCharges is no then open conditions should be displayed, INITIAL', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      formObject: {},
+      formObject: {
+        ratings: { furtherCharges: { furtherCharges: 'No' } },
+      },
       catType: 'INITIAL',
     })
     return request(app)
       .get('/furtherCharges/12345')
-      .expect(302)
-      .expect('Location', `/form/openConditions/riskLevels/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Further charges')
+        expect(res.text).toContain('></textarea>') // textarea is empty
+      })
   })
 
   test('furtherCharges neither exists, RECAT', () => {
