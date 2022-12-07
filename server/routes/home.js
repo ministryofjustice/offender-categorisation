@@ -6,7 +6,7 @@ const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { dateConverterToISO, isFemalePrisonId} = require('../utils/utils')
+const { dateConverterToISO, isFemalePrisonId } = require('../utils/utils')
 const securityConfig = require('../config/security')
 
 const formConfig = {
@@ -212,8 +212,21 @@ module.exports = function Index({
         res.render('pages/dashboardInitial', { errors, ...req.query })
       } else {
         const { start, end, prisonId, isFemale } = await getParams(req, res)
-        const initial = await statsService.getInitialCategoryOutcomes(start, end, prisonId, isFemale, transactionalDbClient)
-        const security = await statsService.getSecurityReferrals(INIT, start, end, prisonId, isFemale, transactionalDbClient)
+        const initial = await statsService.getInitialCategoryOutcomes(
+          start,
+          end,
+          prisonId,
+          isFemale,
+          transactionalDbClient
+        )
+        const security = await statsService.getSecurityReferrals(
+          INIT,
+          start,
+          end,
+          prisonId,
+          isFemale,
+          transactionalDbClient
+        )
         const timeliness = await statsService.getTimeliness(INIT, start, end, prisonId, isFemale, transactionalDbClient)
         const onTime = await statsService.getOnTime(INIT, start, end, prisonId, isFemale, transactionalDbClient)
         const total = getTotal(initial)
@@ -234,10 +247,24 @@ module.exports = function Index({
         res.render('pages/dashboardRecat', { errors, ...req.query })
       } else {
         const { start, end, prisonId, isFemale } = await getParams(req, res)
-        const table = await statsService.getRecatFromTo(start, end, prisonId, isFemale,transactionalDbClient)
+        const table = await statsService.getRecatFromTo(start, end, prisonId, isFemale, transactionalDbClient)
         const recat = await statsService.getRecatCategoryOutcomes(start, end, prisonId, isFemale, transactionalDbClient)
-        const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, isFemale, transactionalDbClient)
-        const timeliness = await statsService.getTimeliness(RECAT, start, end, prisonId, isFemale, transactionalDbClient)
+        const security = await statsService.getSecurityReferrals(
+          RECAT,
+          start,
+          end,
+          prisonId,
+          isFemale,
+          transactionalDbClient
+        )
+        const timeliness = await statsService.getTimeliness(
+          RECAT,
+          start,
+          end,
+          prisonId,
+          isFemale,
+          transactionalDbClient
+        )
         const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, isFemale, transactionalDbClient)
         const total = getTotal(recat)
 

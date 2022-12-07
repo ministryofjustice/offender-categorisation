@@ -1,9 +1,3 @@
-const whereClause = `status = 'APPROVED' and
-  cat_type = $1::cat_type_enum and
-  ($2::date is null or $2::date <= approval_date) and
-  ($3::date is null or approval_date <= $3::date) and
-  ($4::varchar is null or $4::varchar = prison_id)`
-
 const whereClauseStart = `status = 'APPROVED' and
  cat_type = $1::cat_type_enum and
  ($2::date is null or $2::date <= approval_date) and
@@ -15,8 +9,13 @@ const femaleNotInClause = `($4::varchar is null and prison_id not in ('AGI', 'DW
 
 const prisonIdPresent = `($4::varchar = prison_id)`
 
-function addToQueryString(prisonId, isFemale)  {
-  let endPart = prisonId ? prisonIdPresent : (isFemale) ? femaleInClause : femaleNotInClause
+function addToQueryString(prisonId, isFemale) {
+  let endPart
+  if (prisonId != null) {
+    endPart = prisonIdPresent
+  } else {
+    endPart = isFemale ? femaleInClause : femaleNotInClause
+  }
   return whereClauseStart + endPart
 }
 

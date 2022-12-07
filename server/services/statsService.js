@@ -3,19 +3,31 @@ function getCount(rows, field, tag) {
   return find ? find.count : 0
 }
 
-//Fem closed = R, Fem open = T
+// Fem closed = R, Fem open = T
 const map = { B: 0, C: 1, D: 2, I: 3, J: 4, R: 5, T: 6 }
 
 module.exports = function createstatsService(statsClient) {
   return {
     async getInitialCategoryOutcomes(startDate, endDate, prisonId, isFemale, transactionalClient) {
-      const stats = await statsClient.getInitialCategoryOutcomes(startDate, endDate, prisonId, isFemale, transactionalClient)
+      const stats = await statsClient.getInitialCategoryOutcomes(
+        startDate,
+        endDate,
+        prisonId,
+        isFemale,
+        transactionalClient
+      )
 
       return stats.rows
     },
 
     async getRecatCategoryOutcomes(startDate, endDate, prisonId, isFemale, transactionalClient) {
-      const stats = await statsClient.getRecatCategoryOutcomes(startDate, endDate, prisonId, isFemale,transactionalClient)
+      const stats = await statsClient.getRecatCategoryOutcomes(
+        startDate,
+        endDate,
+        prisonId,
+        isFemale,
+        transactionalClient
+      )
 
       return stats.rows
     },
@@ -52,7 +64,14 @@ module.exports = function createstatsService(statsClient) {
     },
 
     async getSecurityReferrals(catType, startDate, endDate, prisonId, isFemale, transactionalClient) {
-      const stats = await statsClient.getSecurityReferrals(catType, startDate, endDate, prisonId, isFemale, transactionalClient)
+      const stats = await statsClient.getSecurityReferrals(
+        catType,
+        startDate,
+        endDate,
+        prisonId,
+        isFemale,
+        transactionalClient
+      )
 
       const { rows } = stats
       return {
@@ -63,7 +82,14 @@ module.exports = function createstatsService(statsClient) {
     },
 
     async getTimeliness(catType, startDate, endDate, prisonId, isFemale, transactionalClient) {
-      const stats = await statsClient.getTimeliness(catType, startDate, endDate, prisonId, isFemale, transactionalClient)
+      const stats = await statsClient.getTimeliness(
+        catType,
+        startDate,
+        endDate,
+        prisonId,
+        isFemale,
+        transactionalClient
+      )
       return stats.rows[0]
     },
 
