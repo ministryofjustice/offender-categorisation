@@ -12,7 +12,9 @@
 {% endblock %}
 
 {% block content %}
-
+{% set maleCatCodes = [ { name: 'B', value: 0 }, { name: 'C', value: 1 },{ name: 'D', value: 2}
+   ,{ name: 'YOI closed', value: 3 },{ name: 'YOI open', value: 4 }] %}
+{% set femaleCatCodes = [ { name: 'Female open', value: 5 }, { name: 'Female closed', value: 6 } ] %}
 <div >
   <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
@@ -23,96 +25,42 @@
   <h3>Categorisation review numbers</h3>
   <table class="govuk-table" id="reviewNumbersTable">
     <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">From/To</th>
-        {% if not isFemale %}
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">B</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">C</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">D</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">YOI&nbsp;closed</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">YOI&nbsp;open</th>
-        {% else %}
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">Female closed</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">Female open</th>
-        {% endif %}
+    <tr class="govuk-table__row">
+
+      {# -- dynamic stuff start ---#}
+      <th class="govuk-table__header" scope="col">From/To</th>
+      {%if not isFemale %}
+        {% for item in maleCatCodes %}
+          <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">{{ item.name}}</th>
+        {% endfor %}
+
         <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold" scope="col">Total</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-    {%if not isFemale %}
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">B</td>
-        <td class="govuk-table__cell table-diagonal-cell">{{ table[0][0] }}</td>
-        <td class="govuk-table__cell">{{ table[0][1] }}</td>
-        <td class="govuk-table__cell">{{ table[0][2] }}</td>
-        <td class="govuk-table__cell">{{ table[0][3] }}</td>
-        <td class="govuk-table__cell">{{ table[0][4] }}</td>
-        <td class="govuk-table__cell">{{ table[0][7] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">C</td>
-        <td class="govuk-table__cell">{{ table[1][0] }}</td>
-        <td class="govuk-table__cell table-diagonal-cell">{{ table[1][1] }}</td>
-        <td class="govuk-table__cell">{{ table[1][2] }}</td>
-        <td class="govuk-table__cell">{{ table[1][3] }}</td>
-        <td class="govuk-table__cell">{{ table[1][4] }}</td>
-        <td class="govuk-table__cell">{{ table[1][7] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">D</td>
-        <td class="govuk-table__cell">{{ table[2][0] }}</td>
-        <td class="govuk-table__cell">{{ table[2][1] }}</td>
-        <td class="govuk-table__cell table-diagonal-cell">{{ table[2][2] }}</td>
-        <td class="govuk-table__cell">{{ table[2][3] }}</td>
-        <td class="govuk-table__cell">{{ table[2][4] }}</td>
-        <td class="govuk-table__cell">{{ table[2][7] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">YOI&nbsp;closed</td>
-        <td class="govuk-table__cell">{{ table[3][0] }}</td>
-        <td class="govuk-table__cell">{{ table[3][1] }}</td>
-        <td class="govuk-table__cell">{{ table[3][2] }}</td>
-        <td class="govuk-table__cell table-diagonal-cell">{{ table[3][3] }}</td>
-        <td class="govuk-table__cell">{{ table[3][4] }}</td>
-        <td class="govuk-table__cell">{{ table[3][7] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">YOI&nbsp;open</td>
-        <td class="govuk-table__cell">{{ table[4][0] }}</td>
-        <td class="govuk-table__cell">{{ table[4][1] }}</td>
-        <td class="govuk-table__cell">{{ table[4][2] }}</td>
-        <td class="govuk-table__cell">{{ table[4][3] }}</td>
-        <td class="govuk-table__cell table-diagonal-cell">{{ table[4][4] }}</td>
-        <td class="govuk-table__cell">{{ table[4][7] }}</td>
-      </tr>
-     {% else %}
-     <tr class="govuk-table__row">
-       <td class="govuk-table__cell govuk-!-font-weight-bold">Female closed</td>
-       <td class="govuk-table__cell table-diagonal-cell">{{ table[4][5] }}</td>
-       <td class="govuk-table__cell">{{ table[4][6] }}</td>
-       <td class="govuk-table__cell">{{ table[4][7] }}</td>
-     </tr>
-     <tr class="govuk-table__row">
-      <td class="govuk-table__cell govuk-!-font-weight-bold">Female open</td>
-      <td class="govuk-table__cell">{{ table[4][5] }}</td>
-      <td class="govuk-table__cell table-diagonal-cell">{{ table[4][6] }}</td>
-      <td class="govuk-table__cell">{{ table[4][7] }}</td>
-     </tr>
-     {% endif %}
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
-        {%if not isFemale %}
-        <td class="govuk-table__cell">{{ table[7][0] }}</td>
-        <td class="govuk-table__cell">{{ table[7][1] }}</td>
-        <td class="govuk-table__cell">{{ table[7][2] }}</td>
-        <td class="govuk-table__cell">{{ table[7][3] }}</td>
-        <td class="govuk-table__cell">{{ table[7][4] }}</td>
-        {% else %}
-        <td class="govuk-table__cell">{{ table[7][5] }}</td>
-        <td class="govuk-table__cell">{{ table[7][6] }}</td>
-        {% endif %}
-        <td class="govuk-table__cell">{{ table[7][7] }}</td>
-      </tr>
+        </tr>
+        </thead>
+       <tbody class="govuk-table__body">
+          {% for item in maleCatCodes %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell govuk-!-font-weight-bold">{{ item.name}}</td>
+              {% for i in range(0, maleCatCodes.length) %}
+                {% if item.value == i %}
+                  <td class="govuk-table__cell table-diagonal-cell">{{ table[item.value][i]}}</td>
+                {% else %}
+                  <td class="govuk-table__cell">{{ table[item.value][i]}} </td>
+                {% endif %}
+                {% if i == (maleCatCodes.length - 1) %}
+                  <td class="govuk-table__cell">{{ table[item.value][7]}}</td>
+                {% endif %}
+              {% endfor %}
+          </tr> {# -- end govuk-table__row ---#}
+        {% endfor %}
+    <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
+    {% for item in maleCatCodes %}
+      <td class="govuk-table__cell">{{ table[item.value][7]}}</td>
+    {% endfor %}
+      <td class="govuk-table__cell">{{ table[7][7]}}</td>
+    {% endif %}
+    </tr>
+    {# -- dynamic stuff end ---#}
     </tbody>
   </table>
   <div class="govuk-!-width-two-thirds">
