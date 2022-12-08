@@ -174,7 +174,9 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      res.render('pages/recategoriserSubmitted')
+      res.render('pages/recategoriserSubmitted', {
+        data: { surveyParameters: `recat=true&host=${req.hostname}` },
+      })
     })
   )
 
