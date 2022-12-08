@@ -842,21 +842,25 @@ describe('POST /section/form', () => {
 
 describe('POST /supervisor/review', () => {
   test.each`
-    sectionName     | formName    | userInput        | nextPath
-    ${'supervisor'} | ${'review'} | ${{ day: '12' }} | ${'/tasklist/supervisor/outcome/'}
-  `('should render $expectedContent for supervisor/review', ({ sectionName, formName, userInput, nextPath }) =>
-    request(app)
-      .post(`/${sectionName}/${formName}/12345`)
-      .send(userInput)
-      .expect(302)
-      .expect('Location', `${nextPath}12345`)
-      .expect(() => {
-        expect(formService.supervisorApproval).toBeCalledTimes(1)
-        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-        expect(offendersService.createSupervisorApproval).toBeCalledWith(context, '12345', userInput)
-        const updateArg = formService.supervisorApproval.mock.calls[0][0]
-        expect(updateArg.bookingId).toBe(12345)
-      })
+    sectionName     | formName    | userInput                            | nextPath
+    ${'supervisor'} | ${'review'} | ${{ day: '12' }}                     | ${'/tasklist/supervisor/outcome/12345'}
+    ${'supervisor'} | ${'review'} | ${{ day: '12', catType: 'INITIAL' }} | ${'/tasklist/supervisor/outcome/12345?catType=INITIAL'}
+    ${'supervisor'} | ${'review'} | ${{ day: '12', catType: 'RECAT' }}   | ${'/tasklist/supervisor/outcome/12345?catType=RECAT'}
+  `(
+    'should render $expectedContent with $nextPath for supervisor/review',
+    ({ sectionName, formName, userInput, nextPath }) =>
+      request(app)
+        .post(`/${sectionName}/${formName}/12345`)
+        .send(userInput)
+        .expect(302)
+        .expect('Location', `${nextPath}`)
+        .expect(() => {
+          expect(formService.supervisorApproval).toBeCalledTimes(1)
+          expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+          expect(offendersService.createSupervisorApproval).toBeCalledWith(context, '12345', userInput)
+          const updateArg = formService.supervisorApproval.mock.calls[0][0]
+          expect(updateArg.bookingId).toBe(12345)
+        })
   )
   test('Should delete recat decision if overriding to open conditions', () => {
     const userInput = {
