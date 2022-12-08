@@ -17,6 +17,8 @@ const calculateAge21Date = details => {
   return dob.add(21, 'years').format('YYYY-MM-DD')
 }
 
+//  <<-------disabling Fast track as part of CAT-1340------>>
+
 // const over3YearsLeftOnSentence = details => {
 //   const confirmedReleaseDate = details.sentence && details.sentence.confirmedReleaseDate
 //   if (confirmedReleaseDate) {
@@ -140,6 +142,8 @@ module.exports = function Index({
       return res.render('pages/tasklistRecat', { data, backLink, reason })
     })
   )
+
+  //  <<-------disabling Fast track as part of CAT-1340------>>
 
   // const calculateFasttrackFlags = (details, categorisationRecord, bookingId) => {
   //   const { formObject } = categorisationRecord

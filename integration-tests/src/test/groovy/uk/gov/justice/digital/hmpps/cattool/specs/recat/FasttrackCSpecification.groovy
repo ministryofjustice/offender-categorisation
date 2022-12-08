@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 import java.time.LocalDate
 
 class FasttrackCSpecification extends AbstractSpecification {
-
+//  <<-------disabling Fast track as part of CAT-1340------>>
 
 //  def "Happy path with validation"() {
 //    when: ''
