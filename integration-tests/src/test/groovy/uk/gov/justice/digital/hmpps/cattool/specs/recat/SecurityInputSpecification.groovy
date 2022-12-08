@@ -154,8 +154,8 @@ class SecurityInputSpecification extends AbstractSpecification {
     fixture.sameDate(LocalDate.now(), data.security_reviewed_date)
     data.cat_type == ["RECAT"]
 
-    response.recat == [securityBack: [:], securityInput: [securityInputNeeded: "Yes", securityNoteNeeded: "Yes", securityInputNeededText: "Some text"]]
-    response.security.review == [securityReview: "security info"]
+    response.recat == [securityBack: [:], securityInput: [securityInputNeeded: "Yes", securityNoteNeeded: "Yes", securityInputNeededText: "some security text"]]
+    response.security.review == [securityReview: "security info text"]
 
   }
 
