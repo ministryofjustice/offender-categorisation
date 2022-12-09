@@ -74,8 +74,11 @@ class SecurityInputSpecification extends AbstractSpecification {
     when: 'the security user enters data'
     startButtons[0].click()
     at new SecurityReviewPage(bookingId: '12')
-    categoriserText == 'Some categoriser text'
     securityText << 'security info text'
+    headerInitialNote.displayed
+    pInitialManual.displayed
+    pInitialNote.displayed
+
     submitButton.click()
 
     then: 'the prisoner status is back from security'

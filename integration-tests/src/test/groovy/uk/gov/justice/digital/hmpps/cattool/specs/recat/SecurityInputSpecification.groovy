@@ -118,7 +118,19 @@ class SecurityInputSpecification extends AbstractSpecification {
     when: 'the security user enters data'
     startButtons[0].click()
     at new SecurityReviewPage(bookingId: '12')
-    categoriserText == 'some categoriser text'
+    securityText << ''
+    headerRecatNote.displayed
+    pRecatNote.displayed
+    recatWarning.displayed
+    submitButton.click()
+
+    then: "error messages should be displayed"
+    and: 'I stay on the page with validation errors'
+
+    at SecurityReviewPage
+    errorSummaries[0].text() == 'Enter security information'
+    errors[0].text().contains('Enter security information')
+
     securityText << 'security info text'
     submitButton.click()
 
@@ -201,4 +213,43 @@ class SecurityInputSpecification extends AbstractSpecification {
     noteFromSecurity*.text()[0] != 'A note was not added'
   }
 
+  def "A note is not added for security"() {
+    given: 'the security input page has been completed'
+
+    fixture.gotoTasklistRecat()
+    at TasklistRecatPage
+    elite2Api.stubAssessments(['B2345YZ'])
+    elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
+    securityButton.click()
+    at(new SecurityInputPage(bookingId: '12'))
+    securityRadio = 'No'
+    saveButton.click()
+    at TasklistRecatPage
+    securityButton.tag() == 'button'
+    securityButton.@disabled
+    def today = LocalDate.now().format('dd/MM/yyyy')
+    $('#securitySection').text().contains("Manually referred to Security ($today)")
+
+    when: 'a security user views their homepage'
+    elite2Api.stubGetStaffDetailsByUsernameList()
+    fixture.logout()
+    elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
+    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    elite2Api.stubGetLatestCategorisationForOffenders()
+    fixture.loginAs(SECURITY_USER)
+
+    then: 'this prisoner is present'
+    at SecurityHomePage
+    prisonNos[0] == 'B2345YZ'
+    referredBy[0] == 'Firstname_recategoriser_user Lastname_recategoriser_user'
+    days[0] == '' // sentence irrelevant
+    dates[0] == '25/07/2019' // nextReviewDate
+    catTypes[0] == 'Recat'
+
+    when: 'the security user reads the page'
+    startButtons[0].click()
+    then: 'No note added text is displayed'
+    at new SecurityReviewPage(bookingId: '12')
+    pRecatNoNote.displayed
+  }
 }
