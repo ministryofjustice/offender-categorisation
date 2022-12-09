@@ -324,7 +324,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes\nevidence details', 'Yes\ncat b details']
     extremismRatingSummary*.text() == ['Yes', 'Yes']
     securityInputSummary*.text() == ['No', 'No', 'No']
-    nextReviewDateSummary*.text() == ['Saturday 14 December 2019']
+    nextReviewDateSummary*.text() == ['14/12/2019']
 
     riskOfHarm*.text() == ['', 'Yes', 'Yes\nharmManagedText details']
 

@@ -166,7 +166,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     securityInputSummary*.text() == ['', 'No', 'No', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
-    nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
+    nextReviewDateSummary*.text() == ['', '14/12/2019']
 
     riskOfHarm*.text() == ['', 'Yes', 'Yes\nharmManagedText details']
 

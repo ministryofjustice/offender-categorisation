@@ -219,7 +219,7 @@
       rows: [
         {
           key: { text: "What date should they be reviewed by?" },
-          value: { text: getLongDateFormat(data.ratings.nextReviewDate.date) },
+          value: { text: data.ratings.nextReviewDate.date },
           actions: { items: [{
                 href: '/form/nextReviewDate/nextReviewDate/' + data.details.bookingId,
                 text: "Change",

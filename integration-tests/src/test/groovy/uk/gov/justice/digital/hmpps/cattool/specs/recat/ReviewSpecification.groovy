@@ -71,7 +71,7 @@ class ReviewSpecification extends AbstractSpecification {
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     higherSecurityReviewSummary*.text() == ['', 'good', 'step', 'No', 'conditions']
-    nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
+    nextReviewDateSummary*.text() == ['', '14/12/2019']
 
     !changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
     when: 'The page is submitted'

@@ -332,7 +332,7 @@ describe('GET /approvedView', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Next category review date')
-        expect(res.text).toContain('Monday 25 November 2024')
+        expect(res.text).toContain('25/11/2024')
       })
   })
 

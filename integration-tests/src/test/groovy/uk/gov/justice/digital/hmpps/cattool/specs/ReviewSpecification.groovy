@@ -70,7 +70,7 @@ class ReviewSpecification extends AbstractSpecification {
     escapeRatingSummary*.text() == ['Yes', 'Yes', 'Yes\nEscape Other Evidence Text', 'Yes\nReason why Cat B']
     extremismRatingSummary*.text() == ['Yes', 'Yes\nPrevious Terrorism Offences Text']
     securityInputSummary*.text() == ['No', 'Yes', 'No', 'Here is the Security information held on this prisoner', 'Yes']
-    nextReviewDateSummary*.text() == ['Saturday 14 December 2019']
+    nextReviewDateSummary*.text() == ['14/12/2019']
 
     changeLinks.filter(href: contains('/form/ratings/securityBack/')).displayed
     !changeLinks.filter(href: contains('/form/ratings/securityInput/')).displayed
