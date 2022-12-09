@@ -269,7 +269,7 @@ describe('GET /tasklistRecat/ Fast track C item', () => {
       })
   })
 
-  test('should display fast track task for eligible offender', () => {
+  test('should not display fast track task for eligible offender', () => {
     formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
       id: 1111,
       formObject: { sample: 'string' },
@@ -288,7 +288,7 @@ describe('GET /tasklistRecat/ Fast track C item', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Category C preliminary review questions')
+        expect(res.text).not.toContain('Category C preliminary review questions')
       })
   })
 
