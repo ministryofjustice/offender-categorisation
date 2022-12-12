@@ -286,7 +286,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     then: 'the security review page displays the referral details'
     at new SecurityReviewPage(bookingId: '12')
-    driver.pageSource.contains('This individual was identified as needing a security review, as part of their categorisation, by Another User of LEEDS (HMP) on ' +  LocalDate.now().format('dd/MM/yyyy'))
+    pFlagged.displayed
+    headerSecInfo.displayed
 
     when: 'the security review page is only saved'
     securityText << 'security info text'
@@ -307,6 +308,8 @@ class LandingPageSpecification extends AbstractSpecification {
     startButtons[0].click()
     at SecurityReviewPage
     securityText << ', more security info'
+    pFlagged.displayed
+    headerSecInfo.displayed
     submitButton.click()
 
     then: 'the prisoner is no longer on the list and the form database table is updated correctly'
