@@ -4,7 +4,7 @@ const asyncMiddleware = require('../middleware/asyncMiddleware')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
-const { get10BusinessDays } = require('../utils/utils')
+const { get10BusinessDays, isFemalePrisonId } = require('../utils/utils')
 
 function add10BusinessDays(isoDate) {
   const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
@@ -81,6 +81,7 @@ module.exports = function Index({
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
+      const isFemale = isFemalePrisonId(details.agencyId)
 
       categorisationRecord = await addSocProfile({
         res,
@@ -101,6 +102,7 @@ module.exports = function Index({
         securityReferredDate:
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
+        isFemale,
       }
       return res.render('pages/tasklist', { data, backLink })
     })

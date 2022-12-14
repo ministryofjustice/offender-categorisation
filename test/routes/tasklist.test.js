@@ -76,7 +76,11 @@ afterEach(() => {
 })
 
 describe('GET /tasklist/', () => {
-  test('should render tasklist', () =>
+  test('should render a tasklist for male prison', () => {
+    offendersService.getOffenderDetails.mockResolvedValue({ agencyId: 'MDI' })
+    const data = {
+      isFemale: false,
+    }
     request(app)
       .get('/12345')
       .expect(200)
@@ -85,10 +89,34 @@ describe('GET /tasklist/', () => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Categorisation task list')
         expect(res.text).toContain('Offending history')
+        expect(res.text).toContain('Further charges')
         expect(res.text).toContain('Not yet checked')
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
-      }))
+        expect(data.isFemale).toContain(false)
+      })
+  })
+
+  test('should render a tasklist for a female prison', () => {
+    offendersService.getOffenderDetails.mockResolvedValue({ agencyId: 'PFI' })
+    const data = {
+      isFemale: true,
+    }
+    request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
+        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Offending history')
+        expect(res.text).not.toContain('Further charges')
+        expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Conditional Release Date')
+        expect(res.text).toContain('04/04/2020')
+        expect(data.isFemale).toContain(true)
+      })
+  })
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
     const today = moment().format('DD/MM/YYYY')
