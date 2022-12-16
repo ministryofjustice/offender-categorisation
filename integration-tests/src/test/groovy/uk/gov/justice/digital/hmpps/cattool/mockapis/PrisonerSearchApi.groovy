@@ -20,7 +20,7 @@ class PrisonerSearchApi extends WireMockRule {
           pncNumberCanonicalShort           : "12/394773H",
           pncNumberCanonicalLong            : "2012/394773H",
           croNumber                         : "29906/12J",
-          bookingId                         : 1200924,
+          bookingId                         : '1200924',
           bookNumber                        : "38412A",
           firstName                         : "Robert",
           middleNames                       : "John James",
@@ -108,29 +108,29 @@ class PrisonerSearchApi extends WireMockRule {
     final fromDob = today.minusYears(22)
     final toDob = today.minusYears(21).plusMonths(2)
     this.stubFor(
-        get("/prison/${agencyId}/prisoners?fromDob=$fromDob&toDob=$toDob")
+        get("/prison/${agencyId}/prisoners?size=1000000&fromDob=$fromDob&toDob=$toDob")
             .willReturn(
                 aResponse()
-                    .withBody(JsonOutput.toJson([
+                    .withBody(JsonOutput.toJson([content: [
                         [
-                            bookingId     : 21,
-                            prisonerNumber: 'C0001AA', // offenderNo
+                            bookingId     : '21',
+                            prisonerNumber: 'C0001AA',
                             firstName     : 'TINY',
                             lastName      : 'TIM',
                             dateOfBirth   : dateOfBirths[0] ?: today.minusDays(3).minusYears(21).format('yyyy-MM-dd'),
-                            // age         : 20,
-                            category      : 'I', // categoryCode
+                            category      : 'I',
                         ],
                         [
-                            bookingId     : 22,
+                            bookingId     : '22',
                             prisonerNumber: 'C0002AA',
                             firstName     : 'ADRIAN',
                             lastName      : 'MOLE',
                             // beware leap-years, when today + 17 days - 21 years DIFFERS from today - 21 years + 17 days (by one day!)
                             dateOfBirth   : dateOfBirths[1] ?: today.plusDays(17).minusYears(21).format('yyyy-MM-dd'),
-                            //age         : 20,
                             category      : 'I',
-                        ],]
+                        ]
+                    ]
+                    ]
                     ))
                     .withHeader('Content-Type', 'application/json')
                     .withStatus(200))
@@ -156,7 +156,7 @@ class PrisonerSearchApi extends WireMockRule {
     def response = emptyResponse ? [] : offenderNumbers.collect({ no ->
       [
           prisonerNumber    : no, // offenderNo
-          bookingId         : bookingIds[index],
+          bookingId         : bookingIds[index].toString(),
           sentenceStartDate : startDate[index],
           releaseDate       : LocalDate.now().toString(),
           firstName         : "firstName-${index}",
@@ -176,8 +176,6 @@ class PrisonerSearchApi extends WireMockRule {
                     .withHeader('Content-Type', 'application/json')
                     .withStatus(200))
     )
-
-
   }
 
   def stubSentenceDataError() {
@@ -189,7 +187,6 @@ class PrisonerSearchApi extends WireMockRule {
                     .withStatus(500))
     )
   }
-
 
   void stubHealth() {
     this.stubFor(

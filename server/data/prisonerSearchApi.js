@@ -26,14 +26,38 @@ module.exports = context => {
   return {
     async getPrisonersAtLocation(agencyId, fromDob, toDob) {
       const path = `${apiUrl}prison/${agencyId}/prisoners`
-      const query = `fromDob=${fromDob}&toDob=${toDob}`
-      return apiGet({ path, query })
+      // use size to effectively turn off paging
+      const query = `size=1000000&fromDob=${fromDob}&toDob=${toDob}`
+      const response = await apiGet({ path, query })
+      return response.content.map(r => ({
+        ...r,
+        bookingId: Number(r.bookingId),
+        releaseDate: r.releaseDate,
+        sentenceStartDate: r.sentenceStartDate,
+      }))
     },
 
     async getPrisonersByBookingIds(bookingIds) {
       if (bookingIds.length === 0) return []
       const path = `${apiUrl}prisoner-search/booking-ids`
-      return apiPost({ path, body: { bookingIds } })
+      // Unfortunately prisoner search currently restricts requests to a maximum of 1000 records
+      const BATCH_SIZE = 1000
+      const responses = []
+      for (let range = 0; range < bookingIds.length; range += BATCH_SIZE) {
+        // eslint-disable-next-line no-await-in-loop
+        const response = await apiPost({
+          path,
+          body: { bookingIds: bookingIds.slice(range, range + BATCH_SIZE) },
+        })
+        response.forEach(r =>
+          responses.push({
+            bookingId: Number(r.bookingId),
+            releaseDate: r.releaseDate,
+            sentenceStartDate: r.sentenceStartDate,
+          })
+        )
+      }
+      return responses
     },
   }
 }
