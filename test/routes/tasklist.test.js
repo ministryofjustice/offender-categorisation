@@ -44,6 +44,12 @@ const tasklistRoute = createRouter({
   riskProfilerService,
 })
 
+const context = {
+  user: { username: 'CA_USER_TEST', activeCaseLoad: { caseLoadId: 'MDI' } },
+  activeCaseLoad: 'MDI',
+  female: false,
+}
+
 let app
 
 beforeEach(() => {
@@ -53,6 +59,7 @@ beforeEach(() => {
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.getLiteCategorisation.mockResolvedValue({})
   offendersService.getOffenderDetails.mockResolvedValue({
+    offenderNo: 'GN123',
     sentence: {
       bookingId: 12345,
       releaseDate: '2019-01-01',
@@ -73,15 +80,13 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks()
+  jest.setTimeout(100)
 })
 
 describe('GET /tasklist/', () => {
   test('should render a tasklist for male prison', () => {
-    offendersService.getOffenderDetails.mockResolvedValue({ agencyId: 'MDI' })
-    const data = {
-      isFemale: false,
-    }
-    request(app)
+    userService.getUser.mockResolvedValue(context)
+    return request(app)
       .get('/12345')
       .expect(200)
       .expect('Content-Type', /html/)
@@ -93,16 +98,16 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain('Not yet checked')
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
-        expect(data.isFemale).toContain(false)
       })
   })
 
-  test('should render a tasklist for a female prison', () => {
-    offendersService.getOffenderDetails.mockResolvedValue({ agencyId: 'PFI' })
-    const data = {
-      isFemale: true,
-    }
-    request(app)
+  test('should render a tasklist for female prison', () => {
+    userService.getUser.mockResolvedValue({
+      user: { username: 'CA_USER_TEST', activeCaseLoad: { caseLoadId: 'PFI' } },
+      activeCaseLoad: 'MDI',
+      female: true,
+    })
+    return request(app)
       .get('/12345')
       .expect(200)
       .expect('Content-Type', /html/)
@@ -114,14 +119,18 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain('Not yet checked')
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
-        expect(data.isFemale).toContain(true)
       })
   })
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
+    userService.getUser.mockResolvedValue(context)
     const today = moment().format('DD/MM/YYYY')
     const todayISO = moment().format('YYYY-MM-DD')
-    offendersService.getOffenderDetails.mockResolvedValue({ bookingId: 12345, displayName: 'Claire Dent' })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      bookingId: 12345,
+      displayName: 'Claire Dent',
+      agencyId: 'MDI',
+    })
     formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
       id: 1111,
       formObject: { sample: 'string' },
@@ -178,7 +187,7 @@ describe('GET /tasklist/', () => {
 
   test('should not display referred to security for other status', () => {
     formService.referToSecurityIfRiskAssessed.mockResolvedValue('STARTED')
-
+    userService.getUser.mockResolvedValue(context)
     return request(app)
       .get('/12345')
       .expect(200)
