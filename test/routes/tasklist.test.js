@@ -44,11 +44,9 @@ const tasklistRoute = createRouter({
   riskProfilerService,
 })
 
-const context = {
-  user: { username: 'CA_USER_TEST', activeCaseLoad: { caseLoadId: 'MDI' } },
-  activeCaseLoad: 'MDI',
-  female: false,
-}
+/*const context = {
+  user: { activeCaseLoad: { caseLoadId: 'MDI',  female: false } },
+}*/
 
 let app
 
@@ -85,7 +83,16 @@ afterEach(() => {
 
 describe('GET /tasklist/', () => {
   test('should render a tasklist for male prison', () => {
-    userService.getUser.mockResolvedValue(context)
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: "MDI",
+        description: "Moorland (HMP & YOI)",
+        type: "INST",
+        caseloadFunction: "GENERAL",
+        currentlyActive: true,
+        female: false
+      }
+    })
     return request(app)
       .get('/12345')
       .expect(200)
@@ -103,9 +110,13 @@ describe('GET /tasklist/', () => {
 
   test('should render a tasklist for female prison', () => {
     userService.getUser.mockResolvedValue({
-      user: { username: 'CA_USER_TEST', activeCaseLoad: { caseLoadId: 'PFI' } },
-      activeCaseLoad: 'MDI',
-      female: true,
+      activeCaseLoad: {
+        caseLoadId: "PBI",
+        type: "INST",
+        caseloadFunction: "GENERAL",
+        currentlyActive: true,
+        female: true
+      }
     })
     return request(app)
       .get('/12345')
@@ -123,7 +134,16 @@ describe('GET /tasklist/', () => {
   })
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
-    userService.getUser.mockResolvedValue(context)
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: "MDI",
+        description: "Moorland (HMP & YOI)",
+        type: "INST",
+        caseloadFunction: "GENERAL",
+        currentlyActive: true,
+        female: false
+      }
+    })
     const today = moment().format('DD/MM/YYYY')
     const todayISO = moment().format('YYYY-MM-DD')
     offendersService.getOffenderDetails.mockResolvedValue({
@@ -133,7 +153,7 @@ describe('GET /tasklist/', () => {
     })
     formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
       id: 1111,
-      formObject: { sample: 'string' },
+      formObject: {sample: 'string'},
       status: 'STARTED',
     })
     formService.getCategorisationRecord.mockResolvedValue({
@@ -152,7 +172,7 @@ describe('GET /tasklist/', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
       securityReferredDate: `${todayISO}`,
-      formObject: { sample: 'string', socProfile: sampleSocProfile },
+      formObject: {sample: 'string', socProfile: sampleSocProfile},
       status: 'SECURITY_AUTO',
     })
 
@@ -186,8 +206,17 @@ describe('GET /tasklist/', () => {
   })
 
   test('should not display referred to security for other status', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: "MDI",
+        description: "Moorland (HMP & YOI)",
+        type: "INST",
+        caseloadFunction: "GENERAL",
+        currentlyActive: true,
+        female: false
+      }
+    })
     formService.referToSecurityIfRiskAssessed.mockResolvedValue('STARTED')
-    userService.getUser.mockResolvedValue(context)
     return request(app)
       .get('/12345')
       .expect(200)
@@ -198,13 +227,15 @@ describe('GET /tasklist/', () => {
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
       })
   })
+})
 
-  test('should render categoriserSubmitted page', () =>
+describe('GET tasklist/categoriserSubmitted/', () => {
+  test('should render categoriserSubmitted page', () => {
     request(app)
       .get('/categoriserSubmitted/12345')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Submitted for approval')
-      }))
+      })})
 })

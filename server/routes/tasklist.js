@@ -81,7 +81,7 @@ module.exports = function Index({
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
-      const isFemale = res.locals.user.female
+      const isFemale = user.activeCaseLoad.female
 
       categorisationRecord = await addSocProfile({
         res,
