@@ -81,7 +81,6 @@ module.exports = function Index({
       res.locals.formObject = categorisationRecord.formObject || {}
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
-      const isFemale = user.activeCaseLoad.female
 
       categorisationRecord = await addSocProfile({
         res,
@@ -102,7 +101,6 @@ module.exports = function Index({
         securityReferredDate:
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
-        isFemale,
       }
       return res.render('pages/tasklist', { data, backLink })
     })

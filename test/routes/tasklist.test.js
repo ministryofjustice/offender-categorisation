@@ -77,17 +77,7 @@ afterEach(() => {
 })
 
 describe('GET /tasklist/', () => {
-  test('should render categoriserSubmitted page', () => {
-    const user = userService.getUser()
-    request(app)
-      .get('/tasklist/categoriserSubmitted/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Submitted for approval')
-      })})
-
-  test('should render a tasklist for male prison', () => {
+ test('should render a tasklist for male prison', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
         caseLoadId: "MDI",
@@ -233,5 +223,23 @@ describe('GET /tasklist/', () => {
       })
   })
 
+  test('should render categoriserSubmitted page', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: "MDI",
+        description: "Moorland (HMP & YOI)",
+        type: "INST",
+        caseloadFunction: "GENERAL",
+        currentlyActive: true,
+        female: false
+      }
+    })
+    request(app)
+      .get('/categoriserSubmitted/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Submitted for approval')
+      })})
 
 })

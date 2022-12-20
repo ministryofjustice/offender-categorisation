@@ -32,7 +32,7 @@
       }
     ]
   }) }}
-{% if not data.ratings.isFemale %}
+{% if not user.activeCaseLoad.female %}
 <h2 class="govuk-heading-m">Further charges</h2>
   {% set further = {
       key: { text: "Further serious charges" },
