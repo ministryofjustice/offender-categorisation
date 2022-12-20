@@ -77,16 +77,16 @@ afterEach(() => {
 })
 
 describe('GET /tasklist/', () => {
- test('should render a tasklist for male prison', () => {
+  test('should render a tasklist for male prison', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
-        caseLoadId: "MDI",
-        description: "Moorland (HMP & YOI)",
-        type: "INST",
-        caseloadFunction: "GENERAL",
+        caseLoadId: 'MDI',
+        description: 'Moorland (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
         currentlyActive: true,
-        female: false
-      }
+        female: false,
+      },
     })
     return request(app)
       .get('/12345')
@@ -106,12 +106,13 @@ describe('GET /tasklist/', () => {
   test('should render a tasklist for female prison', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
-        caseLoadId: "PBI",
-        type: "INST",
-        caseloadFunction: "GENERAL",
+        caseLoadId: 'PBI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
         currentlyActive: true,
-        female: true
-      }
+        female: true,
+      },
     })
     return request(app)
       .get('/12345')
@@ -131,13 +132,13 @@ describe('GET /tasklist/', () => {
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
-        caseLoadId: "MDI",
-        description: "Moorland (HMP & YOI)",
-        type: "INST",
-        caseloadFunction: "GENERAL",
+        caseLoadId: 'MDI',
+        description: 'Moorland (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
         currentlyActive: true,
-        female: false
-      }
+        female: false,
+      },
     })
     const today = moment().format('DD/MM/YYYY')
     const todayISO = moment().format('YYYY-MM-DD')
@@ -148,7 +149,7 @@ describe('GET /tasklist/', () => {
     })
     formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
       id: 1111,
-      formObject: {sample: 'string'},
+      formObject: { sample: 'string' },
       status: 'STARTED',
     })
     formService.getCategorisationRecord.mockResolvedValue({
@@ -167,7 +168,7 @@ describe('GET /tasklist/', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
       securityReferredDate: `${todayISO}`,
-      formObject: {sample: 'string', socProfile: sampleSocProfile},
+      formObject: { sample: 'string', socProfile: sampleSocProfile },
       status: 'SECURITY_AUTO',
     })
 
@@ -203,13 +204,13 @@ describe('GET /tasklist/', () => {
   test('should not display referred to security for other status', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
-        caseLoadId: "MDI",
-        description: "Moorland (HMP & YOI)",
-        type: "INST",
-        caseloadFunction: "GENERAL",
+        caseLoadId: 'MDI',
+        description: 'Moorland (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
         currentlyActive: true,
-        female: false
-      }
+        female: false,
+      },
     })
     formService.referToSecurityIfRiskAssessed.mockResolvedValue('STARTED')
     return request(app)
@@ -226,13 +227,13 @@ describe('GET /tasklist/', () => {
   test('should render categoriserSubmitted page', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
-        caseLoadId: "MDI",
-        description: "Moorland (HMP & YOI)",
-        type: "INST",
-        caseloadFunction: "GENERAL",
+        caseLoadId: 'MDI',
+        description: 'Moorland (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
         currentlyActive: true,
-        female: false
-      }
+        female: false,
+      },
     })
     request(app)
       .get('/categoriserSubmitted/12345')
@@ -240,6 +241,6 @@ describe('GET /tasklist/', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Submitted for approval')
-      })})
-
+      })
+  })
 })
