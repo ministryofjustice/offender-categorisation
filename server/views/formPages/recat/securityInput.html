@@ -33,6 +33,7 @@
     label: {
       text: "Enter note"
     },
+    hint: { text: "Your comments will be disclosed to the prisoner" },
     value: data.recat.securityInput.securityInputNeededText,
     errorMessage: {
       text: "Enter a note"
@@ -79,7 +80,7 @@
 {% endset %}
 
   {{ govukDetails({
-    summaryText: "When should I refer to the Security team?",
+    summaryText: "What should I put in my note to the security team?",
     html: guidance
   }) }}
 
