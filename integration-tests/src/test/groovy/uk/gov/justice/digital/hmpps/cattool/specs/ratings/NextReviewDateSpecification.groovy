@@ -111,7 +111,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     when: 'I go to the Next Review Date Standalone page'
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
@@ -164,7 +164,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
   def "The nextReviewDate Standalone page saves details correctly - not in PG"() {
     when: 'I go to the Next Review Date Standalone page'
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
@@ -201,7 +201,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     when: 'I go to the landing page'
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
@@ -228,7 +228,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     when: 'a supervisor goes to the Next Review Date Standalone page'
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')

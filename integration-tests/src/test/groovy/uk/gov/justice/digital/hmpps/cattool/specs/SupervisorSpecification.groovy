@@ -90,7 +90,7 @@ class SupervisorSpecification extends AbstractSpecification {
     overriddenCategoryJ.click()
     assert !indeterminateWarning.displayed
     overriddenCategoryText << "over ridden category text"
-    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
@@ -214,7 +214,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     when: 'the supervisor confirms to return to categoriser'
     messageText << "a message for categoriser"
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
@@ -234,7 +234,7 @@ class SupervisorSpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
@@ -273,7 +273,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a D"
-    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
@@ -308,7 +308,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a J"
-    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], [LocalDate.of(2019, 1, 28).toString()])
     elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
@@ -391,10 +391,10 @@ class SupervisorSpecification extends AbstractSpecification {
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     if (initial) {
       def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-      elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+      prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     } else {
       // Recat does not request sentence data
-      elite2Api.stubSentenceData(['B2345XY'], [11], [sentenceStartDate11.toString()])
+      prisonerSearchApi.stubSentenceData(['B2345XY'], [11], [sentenceStartDate11.toString()])
     }
     elite2Api.stubUncategorisedAwaitingApproval()
 
@@ -435,7 +435,7 @@ class SupervisorSpecification extends AbstractSpecification {
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
 
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
@@ -561,7 +561,7 @@ class SupervisorSpecification extends AbstractSpecification {
     when: 'the supervisor confirms to return to recategoriser'
     answerYes.click()
     messageText << "a message for re-categoriser"
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     elite2Api.stubSupervisorReject('12', 5, LocalDate.now().toString())
     submitButton.click()
 
