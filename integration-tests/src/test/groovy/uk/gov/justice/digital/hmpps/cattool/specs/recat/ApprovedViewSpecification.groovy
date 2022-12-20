@@ -9,6 +9,8 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
+import java.time.LocalDate
+
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
@@ -92,6 +94,8 @@ class ApprovedViewSpecification extends AbstractSpecification {
 
     when: 'the re-categoriser goes to the approved view page'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubCategorised([12])

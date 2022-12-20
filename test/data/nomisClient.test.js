@@ -13,7 +13,6 @@ describe('nomisClient', () => {
   let nomisClient
 
   const uncatResponse = [{}]
-  const sentenceResponse = [{}]
   const emptyListResponse = [{}]
 
   beforeEach(() => {
@@ -50,15 +49,6 @@ describe('nomisClient', () => {
 
       const output = await nomisClient.getAgencyDetail('LEI')
       return expect(output).toEqual(agencyResponse)
-    })
-  })
-
-  describe('getSentenceDatesForOffenders', () => {
-    it('should return data from api', async () => {
-      fakeElite2Api.post(`/api/offender-sentences/bookings`).reply(200, sentenceResponse)
-
-      const output = await nomisClient.getSentenceDatesForOffenders([123, 321])
-      return expect(output).toEqual(sentenceResponse)
     })
   })
 
