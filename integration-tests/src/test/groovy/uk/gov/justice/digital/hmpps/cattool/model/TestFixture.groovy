@@ -4,6 +4,7 @@ import geb.Browser
 import uk.gov.justice.digital.hmpps.cattool.mockapis.AllocationApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.PrisonerSearchApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
@@ -21,6 +22,7 @@ class TestFixture {
   Elite2Api elite2Api
   RiskProfilerApi riskProfilerApi
   AllocationApi allocationApi
+  PrisonerSearchApi prisonerSearchApi
   OauthApi oauthApi
 
   UserAccount currentUser
@@ -82,11 +84,12 @@ class TestFixture {
   '6 years, 3 months (Std sentence)']
   public static final MINI_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
 
-  TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1, AllocationApi allocationApi1) {
+  TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1, AllocationApi allocationApi1, PrisonerSearchApi prisonerSearchApi) {
     this.browser = browser
     this.elite2Api = elite2Api
     this.riskProfilerApi = riskProfilerApi1
     this.allocationApi = allocationApi1
+    this.prisonerSearchApi = prisonerSearchApi
     this.oauthApi = oauthApi
   }
 
@@ -111,7 +114,7 @@ class TestFixture {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
 
     loginAs(CATEGORISER_USER)
     browser.at CategoriserHomePage
@@ -122,6 +125,8 @@ class TestFixture {
 
   def gotoTasklistRecat(transferToSecurity = false, indeterminateSentence = false) {
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
@@ -132,16 +137,20 @@ class TestFixture {
 
   def gotoTasklistRecatForCatI(transferToSecurity = false) {
     elite2Api.stubRecategoriseWithCatI()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners(['1998-07-24', '1998-08-15'])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, false, 'I')
     riskProfilerApi.stubForTasklists('C0001AA', 'I', transferToSecurity)
-    browser.selectFirstPrisoner()
+    browser.selectFirstPrisoner() // should be Tim, Tiny, booking 21
   }
 
   def gotoTasklistRecatForCatIIndeterminate(transferToSecurity = false) {
     elite2Api.stubRecategoriseWithCatI()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners(['1998-07-24', '1998-08-15'])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage

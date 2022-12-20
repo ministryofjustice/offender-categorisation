@@ -97,7 +97,7 @@ class DashboardSpecification extends AbstractSpecification {
 
     given: 'a supervisor is logged in'
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B0012XY'], [12], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B0012XY'], [12], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
 
     when: 'the user goes to the dashboard with no search criteria'
@@ -194,7 +194,7 @@ class DashboardSpecification extends AbstractSpecification {
 
     given: 'a supervisor is logged in'
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B0012XY'], [12], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B0012XY'], [12], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
 
     when: 'the user goes to the dashboard with no search criteria'
@@ -298,7 +298,7 @@ class DashboardSpecification extends AbstractSpecification {
 
     given: 'a supervisor is logged in'
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B0012XY'], [12], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B0012XY'], [12], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
 
     when: 'the user goes to the dashboard with no search criteria'

@@ -20,6 +20,7 @@ generic-service:
     ELITE2API_ENDPOINT_URL: https://api-preprod.prison.service.justice.gov.uk/
     RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
     ALLOCATION_MANAGER_ENDPOINT_URL: https://allocation-manager-preprod.apps.live.cloud-platform.service.justice.gov.uk/
+    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search-preprod.prison.service.justice.gov.uk/
     DPS_URL: https://digital-preprod.prison.service.justice.gov.uk/
 
   allowlist:
