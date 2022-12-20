@@ -44,10 +44,6 @@ const tasklistRoute = createRouter({
   riskProfilerService,
 })
 
-/*const context = {
-  user: { activeCaseLoad: { caseLoadId: 'MDI',  female: false } },
-}*/
-
 let app
 
 beforeEach(() => {
@@ -78,10 +74,19 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks()
-  jest.setTimeout(100)
 })
 
 describe('GET /tasklist/', () => {
+  test('should render categoriserSubmitted page', () => {
+    const user = userService.getUser()
+    request(app)
+      .get('/tasklist/categoriserSubmitted/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Submitted for approval')
+      })})
+
   test('should render a tasklist for male prison', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
@@ -227,15 +232,6 @@ describe('GET /tasklist/', () => {
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
       })
   })
-})
 
-describe('GET tasklist/categoriserSubmitted/', () => {
-  test('should render categoriserSubmitted page', () => {
-    request(app)
-      .get('/categoriserSubmitted/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Submitted for approval')
-      })})
+
 })
