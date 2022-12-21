@@ -208,7 +208,7 @@ describe('GET /tasklist/', () => {
   test('should render categoriserSubmitted page', () => {
     request(app)
       .get('/categoriserSubmitted/12345')
-      .expect(500)
+      .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Submitted for approval')
