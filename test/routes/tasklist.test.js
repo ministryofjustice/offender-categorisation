@@ -68,26 +68,27 @@ beforeEach(() => {
       sentenceExpiryDate: '2020-06-17',
     },
   })
+  userService.getUser.mockResolvedValue({
+    activeCaseLoad: {
+      caseLoadId: 'MDI',
+      description: 'Moorland (HMP & YOI)',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: true,
+      female: false,
+    },
+  })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
 
 afterEach(() => {
   jest.resetAllMocks()
+  userService.getUser.mockReset()
 })
 
 describe('GET /tasklist/', () => {
   test('should render a tasklist for male prison', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'MDI',
-        description: 'Moorland (HMP & YOI)',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
     return request(app)
       .get('/12345')
       .expect(200)
@@ -130,16 +131,6 @@ describe('GET /tasklist/', () => {
   })
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'MDI',
-        description: 'Moorland (HMP & YOI)',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
     const today = moment().format('DD/MM/YYYY')
     const todayISO = moment().format('YYYY-MM-DD')
     offendersService.getOffenderDetails.mockResolvedValue({
@@ -202,16 +193,6 @@ describe('GET /tasklist/', () => {
   })
 
   test('should not display referred to security for other status', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'MDI',
-        description: 'Moorland (HMP & YOI)',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
     formService.referToSecurityIfRiskAssessed.mockResolvedValue('STARTED')
     return request(app)
       .get('/12345')
@@ -225,19 +206,9 @@ describe('GET /tasklist/', () => {
   })
 
   test('should render categoriserSubmitted page', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'MDI',
-        description: 'Moorland (HMP & YOI)',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
     request(app)
       .get('/categoriserSubmitted/12345')
-      .expect(200)
+      .expect(500)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Submitted for approval')
