@@ -26,7 +26,7 @@
 
   {% set supervisorMessageCompleted = data.supervisor.confirmBack.messageText and data.supervisor.confirmBack.isRead %}
   {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
-  {% set furtherChargesCompleted = data.ratings.furtherCharges.furtherCharges %}
+  {% set furtherChargesCompleted = user.activeCaseLoad.female or data.ratings.furtherCharges.furtherCharges %}
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name or data.status === Status.SECURITY_FLAGGED.name %}
   {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No') or data.ratings.securityBack.catB %}
   {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
@@ -70,6 +70,7 @@
                 <div class="govuk-heading-m">Offending history</div>
                 <div class="govuk-!-margin-top-2">{% if offendingHistoryCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
+            {% if not user.activeCaseLoad.female %}
             <li class="app-task-list__item">
               {% set buttonTextFC = "Edit" if furtherChargesCompleted else "Start" %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if furtherChargesCompleted else buttonClassesDefault %}
@@ -82,6 +83,7 @@
               <div class="govuk-heading-m">Further charges</div>
               <div class="govuk-!-margin-top-2">{% if furtherChargesCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
+            {% endif %}
             <li class="app-task-list__item">
               {% set buttonTextV = "Edit" if violenceRatingCompleted else "Start" %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if violenceRatingCompleted else buttonClassesDefault %}

@@ -32,7 +32,7 @@
       }
     ]
   }) }}
-
+{% if not user.activeCaseLoad.female %}
 <h2 class="govuk-heading-m">Further charges</h2>
   {% set further = {
       key: { text: "Further serious charges" },
@@ -60,7 +60,7 @@
     classes: 'govuk-!-margin-bottom-9 furtherChargesSummary',
     rows: [ further, warrantF ] if data.ratings.furtherCharges.furtherCharges == 'Yes' else [ further ]
   }) }}
-
+{% endif %}
 <h2 class="govuk-heading-m">Safety and good order</h2>
 
 {#  Not in scope until we are using ViSor:

@@ -53,6 +53,7 @@ beforeEach(() => {
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.getLiteCategorisation.mockResolvedValue({})
   offendersService.getOffenderDetails.mockResolvedValue({
+    offenderNo: 'GN123',
     sentence: {
       bookingId: 12345,
       releaseDate: '2019-01-01',
@@ -67,17 +68,28 @@ beforeEach(() => {
       sentenceExpiryDate: '2020-06-17',
     },
   })
+  userService.getUser.mockResolvedValue({
+    activeCaseLoad: {
+      caseLoadId: 'MDI',
+      description: 'Moorland (HMP & YOI)',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: true,
+      female: false,
+    },
+  })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
 
 afterEach(() => {
   jest.resetAllMocks()
+  userService.getUser.mockReset()
 })
 
 describe('GET /tasklist/', () => {
-  test('should render tasklist', () =>
-    request(app)
+  test('should render a tasklist for male prison', () => {
+    return request(app)
       .get('/12345')
       .expect(200)
       .expect('Content-Type', /html/)
@@ -85,15 +97,47 @@ describe('GET /tasklist/', () => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Categorisation task list')
         expect(res.text).toContain('Offending history')
+        expect(res.text).toContain('Further charges')
         expect(res.text).toContain('Not yet checked')
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
-      }))
+      })
+  })
+
+  test('should render a tasklist for female prison', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    return request(app)
+      .get('/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
+        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Offending history')
+        expect(res.text).not.toContain('Further charges')
+        expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Conditional Release Date')
+        expect(res.text).toContain('04/04/2020')
+      })
+  })
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
     const today = moment().format('DD/MM/YYYY')
     const todayISO = moment().format('YYYY-MM-DD')
-    offendersService.getOffenderDetails.mockResolvedValue({ bookingId: 12345, displayName: 'Claire Dent' })
+    offendersService.getOffenderDetails.mockResolvedValue({
+      bookingId: 12345,
+      displayName: 'Claire Dent',
+      agencyId: 'MDI',
+    })
     formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
       id: 1111,
       formObject: { sample: 'string' },
@@ -150,7 +194,6 @@ describe('GET /tasklist/', () => {
 
   test('should not display referred to security for other status', () => {
     formService.referToSecurityIfRiskAssessed.mockResolvedValue('STARTED')
-
     return request(app)
       .get('/12345')
       .expect(200)
