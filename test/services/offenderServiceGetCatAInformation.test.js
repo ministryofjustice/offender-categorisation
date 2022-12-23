@@ -494,5 +494,3 @@ describe('getCatAInformation for female prison', () => {
     })
   })
 })
-
-
