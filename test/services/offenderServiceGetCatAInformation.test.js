@@ -354,3 +354,145 @@ describe('getCatAInformation', () => {
     })
   })
 })
+
+describe('getCatAInformation for female prison', () => {
+  test('it should return previous Restricted and sentence information', async () => {
+    const categories = [
+      {
+        bookingId: 45,
+        offenderNo,
+        classificationCode: 'Q',
+        classification: 'Restricted',
+        assessmentDate: '2012-04-04',
+        approvalDate: '2012-04-04',
+        assessmentSeq: 2,
+      },
+      {
+        bookingId: 45,
+        offenderNo,
+        classificationCode: 'R',
+        classification: 'Fem Closed',
+        assessmentDate: '2013-03-24',
+        approvalDate: '2013-03-24',
+        assessmentSeq: 3,
+      },
+      {
+        bookingId: 45,
+        offenderNo,
+        classificationCode: 'T',
+        classification: 'Fem Open',
+        assessmentDate: '2014-03-24',
+        approvalDate: '2014-03-24',
+        assessmentSeq: 4,
+      },
+    ]
+
+    const sentences = [
+      {
+        offenderNo,
+        firstName: 'firstName',
+        lastName: 'lastName',
+        sentenceDetail: { bookingId: 45, releaseDate: '2014-12-03' },
+      },
+      {
+        offenderNo,
+        firstName: 'firstName',
+        lastName: 'lastName',
+        sentenceDetail: { bookingId: 55, releaseDate: '2015-12-03' },
+      },
+    ]
+    nomisClient.getCategoryHistory.mockReturnValue(categories)
+    nomisClient.getSentenceHistory.mockReturnValue(sentences)
+
+    const result = await service.getCatAInformation('token', offenderNo, '56')
+    expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
+    expect(nomisClient.getSentenceHistory).toBeCalledTimes(1)
+    expect(result).toEqual({
+      catAType: 'Q',
+      catAStartYear: '2012',
+      catAEndYear: '2013',
+      releaseYear: '2014',
+      finalCat: 'Fem Open',
+    })
+  })
+
+  test('it should handle restricted as not the first cat', async () => {
+    const categories = [
+      {
+        bookingId: 45,
+        offenderNo,
+        classificationCode: 'R',
+        classification: 'Fem Closed',
+        approvalDate: '2015-03-24',
+        assessmentSeq: 2,
+      },
+      {
+        bookingId: 45,
+        offenderNo,
+        classificationCode: 'Q',
+        classification: 'Restricted',
+        approvalDate: '2016-04-04',
+        assessmentSeq: 3,
+      },
+    ]
+
+    nomisClient.getCategoryHistory.mockReturnValue(categories)
+
+    const result = await service.getCatAInformation('token', offenderNo, '45')
+    expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
+    expect(nomisClient.getSentenceHistory).not.toBeCalled()
+    expect(result).toEqual({
+      catAType: 'Q',
+      catAStartYear: '2016',
+      catAEndYear: null,
+      releaseYear: null,
+      finalCat: 'Restricted',
+    })
+  })
+
+  test('it should omit release when Restricted is in current sentence', async () => {
+    const categories = [
+      {
+        bookingId: 35,
+        offenderNo,
+        classificationCode: 'Q',
+        classification: 'Restricted',
+        approvalDate: '2011-04-04',
+        assessmentSeq: 3,
+      },
+      {
+        bookingId: 35,
+        offenderNo,
+        classificationCode: 'R',
+        classification: 'Fem Closed',
+        approvalDate: '2012-03-24',
+        assessmentSeq: 6,
+      },
+    ]
+
+    const sentences = [
+      {
+        offenderNo,
+        firstName: 'firstName',
+        lastName: 'lastName',
+        sentenceDetail: { bookingId: 35, releaseDate: '2012-02-03' },
+      },
+    ]
+
+    nomisClient.getCategoryHistory.mockReturnValue(categories)
+    nomisClient.getSentenceHistory.mockReturnValue(sentences)
+
+    const result = await service.getCatAInformation('token', offenderNo, '35')
+    expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
+    expect(nomisClient.getSentenceHistory).not.toBeCalled()
+    expect(result).toEqual({
+      catAType: 'Q',
+      catAStartYear: '2011',
+      catAEndYear: '2012',
+      releaseYear: null,
+      finalCat: 'Fem Closed',
+    })
+  })
+})
+
+
