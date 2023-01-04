@@ -23,6 +23,7 @@ class HealthSpecification extends AbstractSpecification {
     elite2Api.stubHealth()
     oauthApi.stubHealth()
     allocationApi.stubHealth()
+    prisonerSearchApi.stubHealth()
 
     when:
     def response = this.http.get()
@@ -30,7 +31,7 @@ class HealthSpecification extends AbstractSpecification {
     response.uptime > 0.0
     response.name == "offender-categorisation"
     !response.version.isEmpty()
-    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: 'UP', allocation: 'UP']
+    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: 'UP', allocation: 'UP', prisonerSearch: 'UP']
   }
 
   def "Health page reports API down"() {
@@ -40,6 +41,7 @@ class HealthSpecification extends AbstractSpecification {
     elite2Api.stubHealth()
     oauthApi.stubHealth()
     allocationApi.stubHealth()
+    prisonerSearchApi.stubHealth()
 
     when:
     def response
@@ -52,6 +54,6 @@ class HealthSpecification extends AbstractSpecification {
     then:
     response.name == "offender-categorisation"
     !response.version.isEmpty()
-    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: [timeout: 1000, code: 'ECONNABORTED', errno: 'ETIMEDOUT', retries: 2], allocation: 'UP']
+    response.api == [auth: 'UP', elite2: 'UP', riskProfiler: [timeout: 1000, code: 'ECONNABORTED', errno: 'ETIMEDOUT', retries: 2], allocation: 'UP', prisonerSearch: 'UP']
   }
 }

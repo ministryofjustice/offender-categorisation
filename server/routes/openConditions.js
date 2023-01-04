@@ -87,7 +87,10 @@ module.exports = function Index({ formService, offendersService, userService, au
             ' to the Victim Contact Scheme and the VLO has not been contacted.',
           ...result,
         })
-      } else if (result.data.openConditions.previousSentences.releasedLastFiveYears === 'Yes') {
+      } else if (
+        result.data.openConditions.previousSentences &&
+        result.data.openConditions.previousSentences.releasedLastFiveYears === 'Yes'
+      ) {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because they have a previous sentence of 7 years or more' +

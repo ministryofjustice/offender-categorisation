@@ -169,9 +169,12 @@ npm run test
 
 ### Integration Tests
 
-To run the integration tests you need to download *chromedriver.exe* from <https://chromedriver.chromium.org/downloads>
+To run the integration tests you need to install *chromedriver* :
 
-Put *chromedriver.exe* on your path. (On a Mac this is likely to be /usr/local/bin )
+`brew install --cask chromedriver`
+(If there are permission problems, you can show in finder then 'open' it and allow it to run.)
+
+Or for non-macs, download from <https://chromedriver.chromium.org/downloads> and put *chromedriver.exe* on your path.
 
 The integration tests uses wiremock stubs to log into the application so the default configuration listed above should be used
 

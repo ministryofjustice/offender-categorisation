@@ -26,7 +26,7 @@ class CategoriserDoneSpecification extends AbstractSpecification {
     db.createNomisSeqNo(12, 8)
 
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     fixture.loginAs(CATEGORISER_USER)
 
@@ -53,7 +53,7 @@ class CategoriserDoneSpecification extends AbstractSpecification {
     when: 'I go to the home page as categoriser'
 
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     fixture.loginAs(CATEGORISER_USER)
 

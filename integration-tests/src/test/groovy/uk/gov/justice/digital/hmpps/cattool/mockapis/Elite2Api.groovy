@@ -237,37 +237,6 @@ class Elite2Api extends WireMockRule {
             .withStatus(200))
     )
 
-    final fromDob = today.minusYears(22)
-    final toDob = today.minusYears(21).plusMonths(2)
-    this.stubFor(
-      get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob&returnCategory=true")
-        .willReturn(
-          aResponse()
-            .withBody(JsonOutput.toJson([
-              [
-                bookingId   : 21,
-                offenderNo  : 'C0001AA',
-                firstName   : 'TINY',
-                lastName    : 'TIM',
-                dateOfBirth : today.minusDays(3).minusYears(21).format('yyyy-MM-dd'),
-                age         : 20,
-                categoryCode: 'I',
-              ],
-              [
-                bookingId   : 22,
-                offenderNo  : 'C0002AA',
-                firstName   : 'ADRIAN',
-                lastName    : 'MOLE',
-                // beware leap-years, when today + 17 days - 21 years DIFFERS from today - 21 years + 17 days (by one day!)
-                dateOfBirth : today.plusDays(17).minusYears(21).format('yyyy-MM-dd'),
-                age         : 20,
-                categoryCode: 'I',
-              ],]
-            ))
-            .withHeader('Content-Type', 'application/json')
-            .withStatus(200))
-    )
-
     this.stubFor(
       post("/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false")
         .willReturn(
@@ -292,7 +261,6 @@ class Elite2Api extends WireMockRule {
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )
-    stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [today.toString(), today.toString()])
   }
 
   void stubRecategoriseWithCatI() {
@@ -323,35 +291,6 @@ class Elite2Api extends WireMockRule {
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )
-    final fromDob = LocalDate.now().minusYears(22)
-    final toDob = LocalDate.now().minusYears(21).plusMonths(2)
-    this.stubFor(
-      get("/api/locations/description/LEI/inmates?fromDob=$fromDob&toDob=$toDob&returnCategory=true")
-        .willReturn(
-          aResponse()
-            .withBody(JsonOutput.toJson([
-              [
-                bookingId   : 21,
-                offenderNo  : 'C0001AA',
-                firstName   : 'TINY',
-                lastName    : 'TIM',
-                dateOfBirth : '1998-07-24',
-                age         : 20,
-                categoryCode: 'I',
-              ],
-              [
-                bookingId   : 22,
-                offenderNo  : 'C0002AA',
-                firstName   : 'ADRIAN',
-                lastName    : 'MOLE',
-                dateOfBirth : '1998-08-15',
-                age         : 20,
-                categoryCode: 'I',
-              ],]
-            ))
-            .withHeader('Content-Type', 'application/json')
-            .withStatus(200))
-    )
 
     this.stubFor(
       post("/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false")
@@ -377,7 +316,6 @@ class Elite2Api extends WireMockRule {
           .withHeader('Content-Type', 'application/json')
           .withStatus(200))
     )
-    stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
   }
 
   void stubGetLatestCategorisationForOffenders(){
@@ -699,59 +637,6 @@ class Elite2Api extends WireMockRule {
     )
   }
 
-  def stubSentenceData(List offenderNumbers, List bookingIds, List startDate, Boolean emptyResponse = false) {
-    def index = 0
-
-    def response = emptyResponse ? [] : offenderNumbers.collect({ no ->
-      [
-        offenderNo    : no,
-        sentenceDetail: [bookingId        : bookingIds[index],
-                         sentenceStartDate: startDate[index],
-                         releaseDate      : LocalDate.now().toString()],
-        firstName     : "firstName-${index}",
-        lastName      : "lastName-${index++}"
-      ]
-    })
-
-    this.stubFor(
-      post("/api/offender-sentences/bookings")
-        .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, false))
-        .willReturn(
-          aResponse()
-            .withBody(JsonOutput.toJson(response))
-            .withHeader('Content-Type', 'application/json')
-            .withStatus(200))
-    )
-
-    def offences = emptyResponse ? [] : bookingIds.collect({ no ->
-      [
-        bookingId  : no,
-        offenceCode: "OFF${no}",
-        statuteCode: "ST${no}"
-      ]
-    })
-
-    this.stubFor(
-      post("/api/bookings/mainOffence")
-        .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, false))
-        .willReturn(
-          aResponse()
-            .withBody(JsonOutput.toJson(offences))
-            .withHeader('Content-Type', 'application/json')
-            .withStatus(200))
-    )
-  }
-
-  def stubSentenceDataError() {
-    this.stubFor(
-      post("/api/offender-sentences/bookings")
-        .willReturn(
-          aResponse()
-            .withStatusMessage('A test error')
-            .withStatus(500))
-    )
-  }
-
   def stubSentenceDataGetSingle(String offenderNo, String formattedReleaseDate) {
     def response = [
       [
@@ -786,7 +671,6 @@ class Elite2Api extends WireMockRule {
             .withStatus(200))
     )
   }
-
 
   def stubGetOffenderDetailsByOffenderNoList(List offenderNumbers) {
     this.stubFor(
