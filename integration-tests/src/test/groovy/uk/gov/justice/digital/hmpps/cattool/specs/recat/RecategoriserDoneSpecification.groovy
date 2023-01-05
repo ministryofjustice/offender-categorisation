@@ -6,6 +6,8 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
+import java.time.LocalDate
+
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 
 class RecategoriserDoneSpecification extends AbstractSpecification {
@@ -29,6 +31,8 @@ class RecategoriserDoneSpecification extends AbstractSpecification {
     db.createNomisSeqNo(12, 8)
 
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
     elite2Api.stubCategorisedMultiple([12,10])
@@ -51,6 +55,8 @@ class RecategoriserDoneSpecification extends AbstractSpecification {
     when: 'I go to the home page as recategoriser'
 
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
     elite2Api.stubCategorised([])

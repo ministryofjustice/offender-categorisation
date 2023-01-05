@@ -37,48 +37,32 @@ function isOverdue(dbDate) {
   return date.isBefore(moment(0, 'HH'))
 }
 
-async function getSentenceMap(offenderList, nomisClient) {
+async function getSentenceMap(offenderList, prisonerSearchClient) {
   const bookingIds = offenderList
     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
     .map(o => o.bookingId)
 
-  const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
+  const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
 
   return new Map(
-    sentenceDates
-      .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
-      .map(s => {
-        const { sentenceDetail } = s
-        return [sentenceDetail.bookingId, { sentenceDate: sentenceDetail.sentenceStartDate }]
-      })
+    prisoners
+      .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
+      .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
   )
 }
 
-async function getReleaseDateMap(offenderList, nomisClient) {
+async function getReleaseDateMap(offenderList, prisonerSearchClient) {
   const bookingIds = offenderList
     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.RECAT.name)
     .map(o => o.bookingId)
 
-  const sentenceDates = await nomisClient.getSentenceDatesForOffenders(bookingIds)
+  const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
 
   return new Map(
-    sentenceDates
-      .filter(s => s.sentenceDetail.releaseDate) // the endpoint returns records for offenders without sentences
-      .map(s => {
-        const { sentenceDetail } = s
-        return [sentenceDetail.bookingId, sentenceDetail.releaseDate]
-      })
+    prisoners
+      .filter(s => s.releaseDate) // the endpoint returns records for offenders without sentences
+      .map(s => [s.bookingId, s.releaseDate])
   )
-}
-
-async function getOffenceMap(offenderList, nomisClient) {
-  const bookingIds = offenderList
-    .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
-    .map(o => o.bookingId)
-
-  const offences = await nomisClient.getMainOffences(bookingIds)
-  // There can (rarely) be > 1 main offence per booking id, but not in the IS91 case
-  return new Map(offences.map(offence => [offence.bookingId, offence]))
 }
 
 async function getPomMap(offenderList, allocationClient) {
@@ -89,8 +73,9 @@ async function getPomMap(offenderList, allocationClient) {
     // eslint-disable-next-line no-await-in-loop
     await Promise.all(
       offenderBatch.map(async offender => {
-        const pomData = await allocationClient.getPomByOffenderNo(offender.offenderNo)
-        result.set(offender.offenderNo, pomData)
+        const no = offender.offenderNo || offender.prisonerNumber
+        const pomData = await allocationClient.getPomByOffenderNo(no)
+        result.set(no, pomData)
       })
     )
   }
@@ -120,12 +105,18 @@ function isNewSecurityReferred(offenderNo, securityReferredOffenders) {
   return securityReferredOffenders.filter(s => s.offenderNo === offenderNo).some(s => s.status === 'NEW')
 }
 
-module.exports = function createOffendersService(nomisClientBuilder, allocationClientBuilder, formService) {
+module.exports = function createOffendersService(
+  nomisClientBuilder,
+  allocationClientBuilder,
+  formService,
+  prisonerSearchClientBuilder
+) {
   async function getUncategorisedOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
       const allocationClient = allocationClientBuilder(context)
+      const prisonerSearchClient = prisonerSearchClientBuilder(context)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
 
       const dbManualInProgress = await formService.getCategorisationRecords(
@@ -149,19 +140,31 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
       }
 
       const combined = [...uncategorisedResult, ...dbManualInProgress]
-      const [sentenceMap, offenceMap, pomMap, securityReferredOffenders] = await Promise.all([
-        getSentenceMap(combined, nomisClient),
-        getOffenceMap(combined, nomisClient),
+
+      const bookingIds = combined
+        .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
+        .map(o => o.bookingId)
+
+      const [prisoners, pomMap, securityReferredOffenders] = await Promise.all([
+        prisonerSearchClient.getPrisonersByBookingIds(bookingIds),
         getPomMap(combined, allocationClient),
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
+      const prisonerMap = new Map(prisoners.map(prisoner => [prisoner.bookingId, prisoner]))
+
+      const sentenceMap = new Map(
+        prisoners
+          .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
+          .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
+      )
+
       const filterIS91s = o => {
-        const offence = offenceMap.get(o.bookingId)
+        const offence = prisonerMap.get(o.bookingId)
         if (!offence) {
           return true
         }
-        if (offence.offenceCode === 'IA99000-001N' && offence.statuteCode === 'ZZ') {
+        if (offence.mostSeriousOffence === 'ILLEGAL IMMIGRANT/DETAINEE') {
           logger.info(`Filtered out IS91 prisoner: bookingId = ${offence.bookingId}`)
           return false
         }
@@ -309,11 +312,12 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const prisonerSearchClient = prisonerSearchClientBuilder(context)
 
       const securityReferredFromDB = await formService.getSecurityReferredOffenders(agencyId, transactionalDbClient)
 
       if (!isNilOrEmpty(securityReferredFromDB)) {
-        const sentenceMap = await getSentenceMap(securityReferredFromDB, nomisClient)
+        const sentenceMap = await getSentenceMap(securityReferredFromDB, prisonerSearchClient)
 
         const [offenderDetailsFromNomis, userDetailFromElite, nomisCatData] = await Promise.all([
           nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
@@ -371,6 +375,7 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const prisonerSearchClient = prisonerSearchClientBuilder(context)
 
       const securityReferred = await formService.getSecurityReferrals(agencyId, transactionalDbClient)
       const newSecurityReferred = securityReferred.filter(s => s.status === 'NEW')
@@ -380,17 +385,14 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
           nomisClient.getOffenderDetailList(newSecurityReferred.map(c => c.offenderNo)),
           nomisClient.getUserDetailList(newSecurityReferred.map(c => c.userId)),
         ])
-        const sentenceDates = await nomisClient.getSentenceDatesForOffenders(
+        const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(
           offenderDetailsFromNomis.map(o => o.bookingId)
         )
 
         const sentenceMap = new Map(
-          sentenceDates
-            .filter(s => s.sentenceDetail.sentenceStartDate) // the endpoint returns records for offenders without sentences
-            .map(s => {
-              const { sentenceDetail } = s
-              return [sentenceDetail.bookingId, { sentenceDate: sentenceDetail.sentenceStartDate }]
-            })
+          prisoners
+            .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
+            .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
         )
 
         const decoratedResults = newSecurityReferred.map(o => {
@@ -517,6 +519,7 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const prisonerSearchClient = prisonerSearchClientBuilder(context)
 
       const [allUncategorised, allUnapprovedLite] = await Promise.all([
         nomisClient.getUncategorisedOffenders(agencyId),
@@ -551,7 +554,7 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
         return []
       }
 
-      const sentenceMap = await getSentenceMap(unapprovedOffenders, nomisClient)
+      const sentenceMap = await getSentenceMap(unapprovedOffenders, prisonerSearchClient)
 
       const decoratedResults = unapprovedOffenders.map(o => {
         const sentencedOffender = sentenceMap.get(o.bookingId)
@@ -647,7 +650,14 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
     return nextReviewDate && releaseDate && moment(nextReviewDate).isAfter(moment(releaseDate))
   }
 
-  async function getDueRecats(agencyId, user, nomisClient, allocationClient, transactionalDbClient) {
+  async function getDueRecats(
+    agencyId,
+    user,
+    nomisClient,
+    allocationClient,
+    prisonerSearchClient,
+    transactionalDbClient
+  ) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
     const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
@@ -671,7 +681,7 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [releaseDateMap, pomMap] = await Promise.all([
-      getReleaseDateMap(allOffenders, nomisClient),
+      getReleaseDateMap(allOffenders, prisonerSearchClient),
       getPomMap(allOffenders, allocationClient),
     ])
 
@@ -799,22 +809,29 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
     }
   }
 
-  async function getU21Recats(agencyId, user, nomisClient, allocationClient, transactionalDbClient) {
+  async function getU21Recats(
+    agencyId,
+    user,
+    nomisClient,
+    allocationClient,
+    prisonerSearchClient,
+    transactionalDbClient
+  ) {
     const u21From = moment()
       .subtract(22, 'years') // allow up to a year overdue
       .format('YYYY-MM-DD')
     const u21To = moment().subtract(21, 'years').add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
-    const resultsU21 = await nomisClient.getPrisonersAtLocation(agencyId, u21From, u21To)
+    const resultsU21 = await prisonerSearchClient.getPrisonersAtLocation(agencyId, u21From, u21To)
 
-    const resultsU21IJ = resultsU21.filter(o => /[IJ]/.test(o.categoryCode))
+    const resultsU21IJ = resultsU21.filter(o => /[IJ]/.test(o.category))
 
     if (!resultsU21IJ.length) {
       return resultsU21IJ
     }
 
     const [eliteCategorisationResultsU21, pomMap] = await Promise.all([
-      // we meed the categorisation records for all the U21 offenders identified
+      // we need the categorisation records for all the U21 offenders identified
       mergeU21ResultWithNomisCategorisationData(nomisClient, agencyId, resultsU21IJ),
       getPomMap(resultsU21IJ, allocationClient),
     ])
@@ -881,10 +898,11 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
     try {
       const nomisClient = nomisClientBuilder(context)
       const allocationClient = allocationClientBuilder(context)
+      const prisonerSearchClient = prisonerSearchClientBuilder(context)
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
-        getDueRecats(agencyId, user, nomisClient, allocationClient, transactionalDbClient),
-        getU21Recats(agencyId, user, nomisClient, allocationClient, transactionalDbClient),
+        getDueRecats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
+        getU21Recats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
@@ -911,7 +929,9 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
   }
 
   async function mergeU21ResultWithNomisCategorisationData(nomisClient, agencyId, resultsU21IJ) {
-    const eliteResultsRaw = await nomisClient.getLatestCategorisationForOffenders(resultsU21IJ.map(c => c.offenderNo))
+    const eliteResultsRaw = await nomisClient.getLatestCategorisationForOffenders(
+      resultsU21IJ.map(c => c.prisonerNumber)
+    )
 
     // results can include inactive - need to remove
     const eliteResultsFiltered = eliteResultsRaw.filter(c => c.assessmentStatus !== 'I')
@@ -921,11 +941,15 @@ module.exports = function createOffendersService(nomisClientBuilder, allocationC
       if (categorisation) {
         return {
           assessStatus: categorisation.assessmentStatus,
-          ...u21,
+          offenderNo: u21.prisonerNumber,
+          bookingId: u21.bookingId,
+          firstName: u21.firstName,
+          lastName: u21.lastName,
+          dateOfBirth: u21.dateOfBirth,
         }
       }
       // todo investigate how this can happen
-      logger.error(`No latest categorisation found for u21 offender ${u21.offenderNo} booking id: ${u21.bookingId}`)
+      logger.error(`No latest categorisation found for u21 offender ${u21.prisonerNumber} booking id: ${u21.bookingId}`)
       return u21
     })
   }

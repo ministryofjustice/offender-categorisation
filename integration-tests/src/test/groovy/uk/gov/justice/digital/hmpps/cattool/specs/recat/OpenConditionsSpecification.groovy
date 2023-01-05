@@ -269,6 +269,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'The record is viewed by the recategoriser'
 
     elite2Api.stubRecategorise(['P', 'A', 'A', 'A'])
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     to RecategoriserHomePage
     startButtons[0].click()
@@ -306,7 +308,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     elite2Api.stubAssessments('dummy')
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
@@ -395,7 +397,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the supervisor reviews and overrides to cat C'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -476,7 +478,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the supervisor overrides to cat D'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     elite2Api.stubAgencyDetails('LPI')
@@ -539,6 +541,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     when: 'The record is viewed by the recategoriser'
     elite2Api.stubRecategorise(['P', 'A', 'A', 'A'])
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
+
     to RecategoriserHomePage
     startButtons[0].click()
 
@@ -549,7 +554,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -629,7 +634,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()

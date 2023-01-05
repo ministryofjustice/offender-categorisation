@@ -124,6 +124,18 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
     },
+    prisonerSearch: {
+      url: get('PRISONER_SEARCH_ENDPOINT_URL', 'http://localhost:8084/', true),
+      timeout: {
+        response: get('PRISONER_SEARCH_TIMEOUT_RESPONSE', 30000, true),
+        deadline: get('PRISONER_SEARCH_TIMEOUT_DEADLINE', 35000, true),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
   dpsUrl: `${get('DPS_URL', 'http://localhost:3000/', true)}`,

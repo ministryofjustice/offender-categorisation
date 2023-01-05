@@ -312,4 +312,26 @@ describe('open conditions', () => {
       .expect(302)
       .expect('Location', `/tasklistRecat/12345`)
   })
+
+  test('open conditions not suitable should show when previous senteces page was skipped', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: {
+        ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
+        openConditions: {
+          earliestReleaseDate: { justify: 'Yes' },
+          victimContactScheme: { contactedVLO: 'Yes' },
+          foreignNational: { exhaustedAppeal: 'Yes' },
+        },
+      },
+      catType: 'INITIAL',
+    })
+    return request(app)
+      .get('/openConditionsNotSuitable/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('This person cannot be sent to open conditions')
+      })
+  })
 })

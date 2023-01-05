@@ -21,6 +21,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -50,6 +52,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -67,6 +71,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -85,6 +91,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -104,6 +112,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -133,6 +143,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -153,6 +165,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -171,6 +185,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessmentsEmpty()
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -187,7 +203,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A security user is logged in'
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
-    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     elite2Api.stubUncategorised()
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
     elite2Api.stubGetStaffDetailsByUsernameList()
@@ -259,6 +275,8 @@ class LandingPageSpecification extends AbstractSpecification {
     and: 'A re-categoriser starts a recat'
     fixture.logout()
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     go '/12'
     at LandingPage
@@ -323,7 +341,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     given: 'A security user logs in'
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
-    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     elite2Api.stubUncategorised()
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
@@ -340,6 +358,8 @@ class LandingPageSpecification extends AbstractSpecification {
     when: 'A re-categoriser starts a recat which is automatically referred'
     fixture.logout()
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
     fixture.loginAs(RECATEGORISER_USER)
     go '/12'
@@ -417,7 +437,7 @@ class LandingPageSpecification extends AbstractSpecification {
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
     elite2Api.stubAssessmentsEmpty()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page'
@@ -450,7 +470,7 @@ class LandingPageSpecification extends AbstractSpecification {
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
     elite2Api.stubAssessmentsEmpty()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page and a cat already exists'
@@ -484,7 +504,7 @@ class LandingPageSpecification extends AbstractSpecification {
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
     elite2Api.stubAssessmentsEmpty()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
@@ -514,7 +534,7 @@ class LandingPageSpecification extends AbstractSpecification {
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
     elite2Api.stubAssessmentsEmpty()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
@@ -535,7 +555,7 @@ class LandingPageSpecification extends AbstractSpecification {
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
     elite2Api.stubAssessmentsEmpty()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
@@ -554,7 +574,7 @@ class LandingPageSpecification extends AbstractSpecification {
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
     elite2Api.stubAssessments('B2345YZ')
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'The user arrives at the landing page'
@@ -571,7 +591,7 @@ class LandingPageSpecification extends AbstractSpecification {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubAssessmentsEmpty()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C', false, null)
     go '/12'
@@ -588,7 +608,7 @@ class LandingPageSpecification extends AbstractSpecification {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubAssessmentsEmpty()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C', false, null)
     go '/12'
@@ -604,7 +624,7 @@ class LandingPageSpecification extends AbstractSpecification {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubAssessmentsEmpty()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', false, null)
     go '/12'
@@ -620,7 +640,7 @@ class LandingPageSpecification extends AbstractSpecification {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubAssessments('B2345YZ')
-    elite2Api.stubSentenceData(['B2345XY'], [11], [LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], [LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
     go '/12'
@@ -636,7 +656,7 @@ class LandingPageSpecification extends AbstractSpecification {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubAssessments('B2345YZ')
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
     go '/12'
@@ -653,7 +673,7 @@ class LandingPageSpecification extends AbstractSpecification {
     when: 'The supervisor visits the landing page'
     elite2Api.stubUncategorisedAwaitingApproval()
     elite2Api.stubAssessments('B2345YZ')
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'C')
     go '/12'
