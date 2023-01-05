@@ -57,7 +57,7 @@ class OffendingHistorySpecification extends AbstractSpecification {
 
     then: 'a non Cat A info message is displayed'
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    catAInfo.text() endsWith 'This person has not been categorised as a Cat A or a provisional Cat A before.'
+    catAInfo.text() endsWith 'This person has not been categorised as a Cat A, Restricted or a provisional Cat A before.'
     !catAWarning.displayed
   }
 
