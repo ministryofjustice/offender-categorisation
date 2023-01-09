@@ -44,6 +44,7 @@
           }] if showChangeLinks else []
       }
     } %}
+{% if not user.activeCaseLoad.female %}
   {% set warrantF = {
       key: { classes: 'no-print', text: "Warrant category B?" },
       value: { classes: 'no-print', text: data.ratings.furtherCharges.furtherChargesCatB },
@@ -56,6 +57,7 @@
         }] if showChangeLinks else []
       }
     } %}
+{% endif %}
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 furtherChargesSummary',
     rows: [ further, warrantF ] if data.ratings.furtherCharges.furtherCharges == 'Yes' else [ further ]
@@ -195,6 +197,7 @@
       value: { text: data.security.review.securityReview },
       actions: { items: [] }
     } %}
+{% if not user.activeCaseLoad.female %}
   {% set warrantS = {
       classes: 'no-print',
       key: { text: "Warrant category B?" },
@@ -207,6 +210,7 @@
         }] if showChangeLinks and wasReferred else []
       }
     } %}
+{% endif %}
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary' + ('' if wasReferred else ' no-print'),
     rows: [ auto, manual, flagged, comments, warrantS ] if wasReferred else [ auto, manual, flagged ]

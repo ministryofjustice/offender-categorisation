@@ -28,7 +28,7 @@
   {{ govukInsetText({
     text: data.security.review.securityReview
   }) }}
-
+{% if not user.activeCaseLoad.female %}
   {{ govukRadios({
     name: "catB",
     classes: "govuk-radios--inline",
@@ -54,4 +54,5 @@
       }
     ]
   }) }}
+{% endif %}
 {% endblock %}
