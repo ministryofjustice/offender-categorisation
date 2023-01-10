@@ -189,8 +189,8 @@
   {% set flagged = {
       classes: 'no-print',
       key: { text: "Flagged by security team" },
-      value: { text: 'Yes' if data.ratings.securityBack.catB
-                      or (user.activeCaseLoad.female and data.ratings.securityBack)
+      value: { text: 'Yes' if ((not user.activeCaseLoad.female and data.ratings.securityBack.catB)
+                      or (user.activeCaseLoad.female and data.ratings.securityBack))
                       and not data.ratings.securityInput.securityInputNeeded else 'No' },
       actions: { items: [] }
     } %}
