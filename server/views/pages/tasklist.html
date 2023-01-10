@@ -28,7 +28,9 @@
   {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
   {% set furtherChargesCompleted = user.activeCaseLoad.female or data.ratings.furtherCharges.furtherCharges %}
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name or data.status === Status.SECURITY_FLAGGED.name %}
-  {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No') or data.ratings.securityBack.catB %}
+  {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No')
+     or (user.activeCaseLoad.female and data.ratings.securityBack)
+     or data.ratings.securityBack.catB %}
   {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
   {% set escapeRatingCompleted = data.ratings.escapeRating.escapeOtherEvidence %}
   {% set extremismRatingCompleted = data.ratings.extremismRating.previousTerrorismOffences %}

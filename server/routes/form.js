@@ -449,9 +449,16 @@ module.exports = function Index({
       const form = 'securityBack'
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
+
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
       const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
+      if (
+        !isFemale &&
+        !formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
+      ) {
         return
       }
 

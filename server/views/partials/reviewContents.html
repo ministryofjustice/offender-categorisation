@@ -44,6 +44,7 @@
           }] if showChangeLinks else []
       }
     } %}
+{% if not user.activeCaseLoad.female %}
   {% set warrantF = {
       key: { classes: 'no-print', text: "Warrant category B?" },
       value: { classes: 'no-print', text: data.ratings.furtherCharges.furtherChargesCatB },
@@ -56,6 +57,7 @@
         }] if showChangeLinks else []
       }
     } %}
+{% endif %}
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 furtherChargesSummary',
     rows: [ further, warrantF ] if data.ratings.furtherCharges.furtherCharges == 'Yes' else [ further ]
@@ -164,7 +166,7 @@
     ]
   }) }}
 
-  {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB %}
+  {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB or (user.activeCaseLoad.female and data.ratings.securityBack)%}
   <h2 class="govuk-heading-m{{ ' no-print' if not wasReferred }}">Security information</h2>
   {% set auto = {
       classes: 'no-print',
@@ -187,7 +189,9 @@
   {% set flagged = {
       classes: 'no-print',
       key: { text: "Flagged by security team" },
-      value: { text: 'Yes' if data.ratings.securityBack.catB and not data.ratings.securityInput.securityInputNeeded else 'No' },
+      value: { text: 'Yes' if ((not user.activeCaseLoad.female and data.ratings.securityBack.catB)
+                      or (user.activeCaseLoad.female and data.ratings.securityBack))
+                      and not data.ratings.securityInput.securityInputNeeded else 'No' },
       actions: { items: [] }
     } %}
   {% set comments = {
@@ -195,6 +199,7 @@
       value: { text: data.security.review.securityReview },
       actions: { items: [] }
     } %}
+{% if not user.activeCaseLoad.female %}
   {% set warrantS = {
       classes: 'no-print',
       key: { text: "Warrant category B?" },
@@ -207,6 +212,7 @@
         }] if showChangeLinks and wasReferred else []
       }
     } %}
+{% endif %}
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary' + ('' if wasReferred else ' no-print'),
     rows: [ auto, manual, flagged, comments, warrantS ] if wasReferred else [ auto, manual, flagged ]
