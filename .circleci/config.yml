@@ -75,9 +75,9 @@ jobs:
           DEFAULT_REGION: eu-west-2
     steps:
       - hmpps/install_aws_cli
+      - checkout
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
-      - checkout
       - attach_workspace:
           at: ~/app
       - hmpps/wait_till_ready # Wait for localstack to start before creating resources
