@@ -975,7 +975,7 @@ describe('Submit provisionalCategory page', () => {
     })
     return request(app)
       .post('/categoriser/provisionalCategory/12345')
-      .send({suggestedCategory: 'C', overriddenCategory: 'D', overriddenCategoryText: 'text'})
+      .send({ suggestedCategory: 'C', overriddenCategory: 'D', overriddenCategoryText: 'text' })
       .expect(302)
       .expect('Location', '/openConditionsAdded/12345?catType=INITIAL')
       .expect(() => {
@@ -996,7 +996,7 @@ describe('Submit provisionalCategory page', () => {
     })
     return request(app)
       .post('/categoriser/provisionalCategory/12345')
-      .send({suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH'})
+      .send({ suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH' })
       .expect(302)
       .expect('Location', '/tasklist/categoriserSubmitted/12345')
       .expect(() => {
@@ -1006,26 +1006,26 @@ describe('Submit provisionalCategory page', () => {
         expect(updateArg.userId).toBe('CA_USER_TEST')
         expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
           bookingId: 12345,
-          context:{
-            user:{
-              activeCaseLoad:{
-              caseLoadId: 'PBI',
-              caseloadFunction: 'GENERAL',
-              currentlyActive: true,
-              description: 'Peterborough HMP',
-              female: false,
-              type: 'INST',
+          context: {
+            user: {
+              activeCaseLoad: {
+                caseLoadId: 'PBI',
+                caseloadFunction: 'GENERAL',
+                currentlyActive: true,
+                description: 'Peterborough HMP',
+                female: false,
+                type: 'INST',
+              },
+              token: 'ABCDEF',
+              username: 'me',
             },
-            token: 'ABCDEF',
-            username: 'me'
           },
-        },
-        nextReviewDate: undefined,
-        nomisSeq: undefined,
-        overriddenCategory: 'F',
-        overriddenCategoryText: 'HHH',
-        suggestedCategory: 'B',
-        transactionalDbClient: mockTransactionalClient
+          nextReviewDate: undefined,
+          nomisSeq: undefined,
+          overriddenCategory: 'F',
+          overriddenCategoryText: 'HHH',
+          suggestedCategory: 'B',
+          transactionalDbClient: mockTransactionalClient,
         })
       })
   })

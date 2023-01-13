@@ -520,13 +520,13 @@ module.exports = function createFormService(formClient) {
     const isClosedDueToViolence =
       (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) || // Visor: not MVP
       (data.violenceProfile && data.violenceProfile.provisionalCategorisation === 'R') // note: Qs on page ignored (info only)
-    //TODO this needs to be modified to remove CAT-B
+    // TODO this needs to be modified to remove CAT-B
     const isClosedDueToEscape =
       data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes'
     const isClosedDueToExtremism =
       (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'R') ||
       (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
-    //TODO this needs to be modified to remove CAT-B
+    // TODO this needs to be modified to remove CAT-B
     const isClosedDueToSeriousFurtherCharges =
       data.ratings && data.ratings.furtherCharges && data.ratings.furtherCharges.furtherChargesCatB === 'Yes'
     const isClosedDueToLife = data.lifeProfile && data.lifeProfile.provisionalCategorisation === 'R'
@@ -541,11 +541,9 @@ module.exports = function createFormService(formClient) {
     ) {
       return 'R'
     }
-    //TODO at the moment the default is to always return closed
+    // TODO at the moment the default is to always return closed
     return 'R'
   }
-
-
 
   function getFieldInfo(field, userInput) {
     const fieldName = Object.keys(field)[0]
@@ -736,7 +734,6 @@ module.exports = function createFormService(formClient) {
   }
 
   function isValid(formPageConfig, req, res, formUrl, userInput) {
-
     if (formPageConfig.validate && formPageConfig.fields) {
       const inputForExpectedFields = getInputForExpectedFields(formPageConfig, userInput)
       const errors = validate(inputForExpectedFields, formPageConfig)
