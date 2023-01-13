@@ -119,6 +119,8 @@ const filterJsonObjectForLogging = json => {
 const catDisplay = cat => {
   if (cat === 'I') return 'YOI Closed'
   if (cat === 'J') return 'YOI Open'
+  if (cat === 'R') return 'Closed'
+  if (cat === 'T') return 'Open'
   return cat
 }
 

@@ -102,20 +102,47 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('GET /section/form', () => {
-  test.each`
-    path                                       | expectedContent
-    ${'categoriser/provisionalCategory/12345'} | ${'Provisional category'}
-  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
-    request(app)
-      .get(`/${path}`)
+describe('GET provisionalCategory page', () => {
+  test('GET mens provisional category page', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
+    return request(app)
+      .get('/categoriser/provisionalCategory/12345')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(expectedContent)
+        expect(res.text).toContain('Provisional category')
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
       })
-  )
+  })
+  test('GET womens provisional category page', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    return request(app)
+      .get('/categoriser/womensProvisionalCategory/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Provisional category')
+        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+      })
+  })
 })
 
 describe('GET /ratings/offendingHistory', () => {
@@ -934,34 +961,72 @@ describe('POST /supervisor/confirmBack', () => {
       }))
 })
 
-describe('POST /categoriser/provisionalCategory', () => {
-  test.each`
-    userInput                                                                              | nextPath                                        | isOpen
-    ${{ suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH' }}  | ${'/tasklist/categoriserSubmitted/12345'}       | ${false}
-    ${{ suggestedCategory: 'C', overriddenCategory: 'D', overriddenCategoryText: 'text' }} | ${'/openConditionsAdded/12345?catType=INITIAL'} | ${true}
-  `('should redirect to $nextPath for /categoriser/provisionalCategory', ({ userInput, nextPath, isOpen }) =>
-    request(app)
-      .post(`/categoriser/provisionalCategory/12345`)
-      .send(userInput)
+describe('Submit provisionalCategory page', () => {
+  test('Submit mens provisional category page for CAT-D', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
+    return request(app)
+      .post('/categoriser/provisionalCategory/12345')
+      .send({suggestedCategory: 'C', overriddenCategory: 'D', overriddenCategoryText: 'text'})
       .expect(302)
-      .expect('Location', `${nextPath}`)
+      .expect('Location', '/openConditionsAdded/12345?catType=INITIAL')
       .expect(() => {
-        if (isOpen) {
-          expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(0)
-        } else {
-          expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
-          const updateArg = formService.categoriserDecisionWithFormResponse.mock.calls[0][0]
-          expect(updateArg.bookingId).toBe(12345)
-          expect(updateArg.userId).toBe('CA_USER_TEST')
-          expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
-            context,
-            bookingId: 12345,
-            overriddenCategory: 'F',
-            overriddenCategoryText: 'HHH',
-            suggestedCategory: 'B',
-            transactionalDbClient: mockTransactionalClient,
-          })
-        }
+        expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(0)
       })
-  )
+  })
+
+  test('Submit mens provisional category page for non-existent category', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
+    return request(app)
+      .post('/categoriser/provisionalCategory/12345')
+      .send({suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH'})
+      .expect(302)
+      .expect('Location', '/tasklist/categoriserSubmitted/12345')
+      .expect(() => {
+        expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
+        const updateArg = formService.categoriserDecisionWithFormResponse.mock.calls[0][0]
+        expect(updateArg.bookingId).toBe(12345)
+        expect(updateArg.userId).toBe('CA_USER_TEST')
+        expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
+          bookingId: 12345,
+          context:{
+            user:{
+              activeCaseLoad:{
+              caseLoadId: 'PBI',
+              caseloadFunction: 'GENERAL',
+              currentlyActive: true,
+              description: 'Peterborough HMP',
+              female: false,
+              type: 'INST',
+            },
+            token: 'ABCDEF',
+            username: 'me'
+          },
+        },
+        nextReviewDate: undefined,
+        nomisSeq: undefined,
+        overriddenCategory: 'F',
+        overriddenCategoryText: 'HHH',
+        suggestedCategory: 'B',
+        transactionalDbClient: mockTransactionalClient
+        })
+      })
+  })
 })
