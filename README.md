@@ -190,4 +190,3 @@ The tests can be run in debug mode for troubleshooting.
 
 More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>
 
-
