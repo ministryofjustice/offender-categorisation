@@ -287,6 +287,8 @@ module.exports = function Index({
   router.post(
     '/decision/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const section = 'recat'
       const form = 'decision'
