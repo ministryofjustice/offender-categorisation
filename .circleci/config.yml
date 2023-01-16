@@ -61,7 +61,7 @@ jobs:
     working_directory: ~/app
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
-      - image: cimg/postgres:14.0
+      - image: cimg/postgres:14.3
         environment:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder
