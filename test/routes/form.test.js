@@ -141,6 +141,7 @@ describe('GET provisionalCategory page', () => {
       .expect(res => {
         expect(res.text).toContain('Provisional category')
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+        expect(res.req.path).toContain('womensProvisionalCategory')
       })
   })
 })

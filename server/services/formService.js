@@ -514,37 +514,6 @@ module.exports = function createFormService(formClient) {
     return 'C'
   }
 
-  function computeFemaleSuggestedCat(data) {
-    const isClosedDueToPreviousCatQ = data.history && data.history.catQType
-    const isClosedDueToSecurity = data.ratings && data.ratings.securityBack && data.ratings.securityBack
-    const isClosedDueToViolence =
-      (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) || // Visor: not MVP
-      (data.violenceProfile && data.violenceProfile.provisionalCategorisation === 'R') // note: Qs on page ignored (info only)
-    // TODO this needs to be modified to remove CAT-B
-    const isClosedDueToEscape =
-      data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes'
-    const isClosedDueToExtremism =
-      (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'R') ||
-      (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
-    // TODO this needs to be modified to remove CAT-B
-    const isClosedDueToSeriousFurtherCharges =
-      data.ratings && data.ratings.furtherCharges && data.ratings.furtherCharges.furtherChargesCatB === 'Yes'
-    const isClosedDueToLife = data.lifeProfile && data.lifeProfile.provisionalCategorisation === 'R'
-    if (
-      isClosedDueToPreviousCatQ ||
-      isClosedDueToSecurity ||
-      isClosedDueToViolence ||
-      isClosedDueToEscape ||
-      isClosedDueToExtremism ||
-      isClosedDueToSeriousFurtherCharges ||
-      isClosedDueToLife
-    ) {
-      return 'R'
-    }
-    // TODO at the moment the default is to always return closed
-    return 'R'
-  }
-
   function getFieldInfo(field, userInput) {
     const fieldName = Object.keys(field)[0]
     const fieldConfig = field[fieldName]
@@ -896,7 +865,6 @@ module.exports = function createFormService(formClient) {
     cancel,
     mergeRiskProfileData,
     computeSuggestedCat,
-    computeFemaleSuggestedCat,
     referToSecurityIfRiskAssessed,
     referToSecurityIfRequested,
     referToSecurityIfFlagged,

@@ -17,17 +17,6 @@
 {% set cat = data.suggestedCat %}
 {% set greenButtonText = "Submit" %}
 
-{% set warningCategoryOpenConditions %}
-  {% set categoryOpenConditionsText = "Making this category change means that the categoriser will have to provide more information." %}
-  {% include "../../partials/warningIndeterminate.html" %}
-  {{ govukWarningText({
-    text: categoryOpenConditionsText,
-    iconFallbackText: "Warning",
-    id: "openConditionsInfoMessage",
-    classes: "forms-warning-text warning-overrides background-white"
-   }) }}
-
-{% endset %}
 
 {% set overriddenCategoryTextHtml %}
   {{ govukTextarea({
@@ -103,16 +92,5 @@
   },
   value: data.categoriser.provisionalCategory.otherInformationText
 }) }}
-
-{% set guidance %}<div class="govuk-!-font-weight-bold">What to consider:</div>
-  <div>The provisional category is based on the information we provide to you and your answers to the yes or no questions. It does not take into account any information you entered in the text boxes.</div>
-  <div>You should decide if this is the most appropriate category based on all the information you have available.</div>
-{% endset %}
-
-{{ govukDetails({
-  summaryText: "How do I answer this question?",
-  html: guidance
-}) }}
-
 
 {% endblock %}

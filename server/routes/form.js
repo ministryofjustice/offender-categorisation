@@ -131,7 +131,7 @@ module.exports = function Index({
       if (result.data.openConditionsRequested) {
         res.redirect(`/form/openConditions/provisionalCategory/${bookingId}`)
       } else if (isFemale) {
-        const suggestedCat = formService.computeFemaleSuggestedCat(result.data)
+        const suggestedCat = 'R'
         const data = { ...result.data, suggestedCat }
         res.render(`formPages/${section}/${form}`, { ...result, data })
       } else {
