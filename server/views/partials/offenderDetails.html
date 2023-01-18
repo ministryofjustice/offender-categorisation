@@ -30,6 +30,10 @@
       {% if data.details.categoryCode == 'U' or data.details.categoryCode == 'X' or data.details.categoryCode == 'Z' %}
         {% set codeDetails %}{{ data.details.categoryCode }} ({{ data.details.category }}){% endset %}
         {{ headerValue(codeDetails) }}
+      {% elif data.details.categoryCode == 'I' or data.details.categoryCode == 'J'
+           or data.details.categoryCode == 'R' or data.details.categoryCode == 'T' %}
+         {% set codeDetails %} {{ data.details.category }} {% endset %}
+        {{ headerValue(codeDetails) }}
       {% else %}
         {{ headerValue(data.details.categoryCode) }}
       {% endif %}
