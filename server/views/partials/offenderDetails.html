@@ -32,7 +32,7 @@
         {{ headerValue(codeDetails) }}
       {% elif data.details.categoryCode == 'I' or data.details.categoryCode == 'J' or
            data.details.categoryCode == 'R' or data.details.categoryCode == 'T' %}
-        {% set codeDetails %} {{ data.details.category }} {% endset %}
+        {% set codeDetails %} {{ catDisplay(data.details.categoryCode) }} {% endset %}
         {{ headerValue(codeDetails) }}
       {% else %}
         {{ headerValue(data.details.categoryCode) }}

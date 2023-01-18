@@ -60,7 +60,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     at TasklistRecatPage
     headerValue[0].text() == 'C0001AA'
     headerValue[1].text() == '01/01/2018'
-    headerValue[2].text() == 'Cat I'
+    headerValue[2].text() == 'YOI Closed'
 
     and: 'data is stored correctly'
     def data = db.getData(21)
