@@ -35,7 +35,7 @@
   {% endif %}
   <strong class="govuk-warning-text__text">
     <span class="govuk-warning-text__assistive">Warning</span>
-    {% if cat == 'D' %}
+    {% if cat == 'D' or cat == 'T' or cat == 'J' %}
       The provisional category is open
     {% else %}
       The provisional category is {{ catDisplay(cat) }}
