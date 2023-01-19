@@ -25,14 +25,23 @@
 
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
+{% set isFemale = user.activeCaseLoad.female %}
+
 <div class="govuk-warning-text forms-info-text warning-overrides">
-  <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+  {% if (not isFemale and cat == 'D') or isFemale %}
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+  {% else %}
+    <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+  {% endif %}
   <strong class="govuk-warning-text__text">
     <span class="govuk-warning-text__assistive">Warning</span>
-    Based on the information provided, the provisional category is {{ catDisplay(cat) }}
+    {% if cat == 'D' %}
+      The provisional category is open
+    {% else %}
+      The provisional category is {{ catDisplay(cat) }}
+    {% endif %}
   </strong>
 </div>
-
 <input type="hidden" name="suggestedCategory" value="{{ suggestedCat }}" />
 <input type="hidden" name="categoryAppropriate" value="{{ data.categoriser.provisionalCategory.categoryAppropriate }}" />
 <input type="hidden" name="overriddenCategoryText" value="{{ data.categoriser.provisionalCategory.overriddenCategoryText }}"/>
@@ -65,16 +74,5 @@
     }
   ]
 }) }}
-
-  {% set guidance %}<div class="govuk-!-font-weight-bold">What to consider:</div>
-    <div>The provisional category is based on the information we provide to you and your answers to the yes or no questions. It does not take into account any information you entered in the text boxes.</div>
-    <div>You should decide if this is the most appropriate category based on all the information you have available.</div>
-  {% endset %}
-
-  {{ govukDetails({
-    summaryText: "How do I answer this question?",
-    html: guidance
-  }) }}
-
 
 {% endblock %}
