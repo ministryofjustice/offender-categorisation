@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name: db-refresh-job
 spec:
-  schedule: "30 10 * * 0"
+  schedule: "31 10 * * 0"
   concurrencyPolicy: "Forbid"
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 3
@@ -19,7 +19,7 @@ spec:
             runAsUser: 999
           containers:
           - name: dbrefresh
-            image: "postgres:11.4"
+            image: "postgres:14.3"
             command:
             - /bin/entrypoint.sh
             volumeMounts:
