@@ -312,7 +312,7 @@ module.exports = function Index({
         transactionalClient: transactionalDbClient,
       })
 
-      if (userInput.category === 'D' || userInput.category === 'J') {
+      if (userInput.category === 'D' || userInput.category === 'J' || userInput.category === 'T') {
         await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
       } else {
         await formService.cancelOpenConditions(bookingIdInt, req.user.username, transactionalDbClient)
@@ -335,7 +335,7 @@ module.exports = function Index({
           formName: 'miniHigherSecurityReview',
           transactionalClient: transactionalDbClient,
         })
-        if (userInput.category === 'D' || userInput.category === 'J') {
+        if (userInput.category === 'D' || userInput.category === 'J' || userInput.category === 'T') {
           // redirect to tasklist for open conditions, via 'added' page
           res.redirect(`/openConditionsAdded/${bookingId}?catType=RECAT`)
         } else {

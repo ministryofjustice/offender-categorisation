@@ -240,7 +240,8 @@
     ]
   }) }}
 
- {{ govukSummaryList({
+{% if data.recat.decision.category == 'I' or data.recat.decision.category == 'J' or data.recat.decision.category == 'R' or data.recat.decision.category == 'T' %}
+  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
     rows: [
       {
@@ -254,11 +255,32 @@
       },
       {
         key: { text: "What security category is most suitable for this person?" },
-        value: { text: data.recat.decision.category and 'Category ' + data.recat.decision.category },
+        value: { text: data.recat.decision.category and catDisplay(data.recat.decision.category) },
         actions: { items: [] }
       }
     ]
   }) }}
+{% else %}
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Category decision" },
+        actions: { items: [{
+            href: '/form/recat/decision/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Assessment"
+          }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "What security category is most suitable for this person?" },
+        value: { text: data.recat.decision.category and 'Category ' + data.recat.decision.category },
+        actions: { items: [] }
+       }
+    ]
+  }) }}
+{% endif %}
 
   {% set miniTitle = {
     key: { classes: 'summary-list-title', text: "Higher Security Review" },
