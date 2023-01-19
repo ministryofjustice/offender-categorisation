@@ -1051,5 +1051,4 @@ describe('Submit provisionalCategory page', () => {
         expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(0)
       })
   })
-
 })
