@@ -109,8 +109,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
-    errorSummaries*.text() == ['Please select yes or no']
-    errors.text().toString().equals("Error:\nPlease select yes or no")
+    errorSummaries*.text() == ['Select yes if you think this category is appropriate']
+    errors.text().toString().equals("Error:\nSelect yes if you think this category is appropriate")
 
     when: 'I just select appropriate "No"'
     appropriateNo.click()
@@ -119,8 +119,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     then: 'I stay on the page with validation errors'
     at new ProvisionalCategoryPage(bookingId: '12')
     errorSummaries*.text() == ['Please enter the new category',
-                               'Please enter the reason why you changed the category']
-    errors*.text() == ['Error:\nPlease select the new category', 'Error:\nPlease enter the reason why you changed the category']
+                               'Enter the reason why you changed the category']
+    errors*.text() == ['Error:\nPlease enter the new category', 'Error:\nEnter the reason why you changed the category']
 
     when: 'I submit the Provisional Category page with an empty text area'
     overriddenCategoryB.click()
@@ -128,8 +128,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     at new ProvisionalCategoryPage(bookingId: '12')
-    errorSummaries*.text() == ['Please enter the reason why you changed the category']
-    errors.text().toString() == "Error:\nPlease enter the reason why you changed the category"
+    errorSummaries*.text() == ['Enter the reason why you changed the category']
+    errors.text().toString() == "Error:\nEnter the reason why you changed the category"
   }
 
   def 'young offender redirects to open conditions flow'() {

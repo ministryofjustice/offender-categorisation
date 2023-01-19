@@ -111,7 +111,7 @@ module.exports = {
       {
         category: {
           responseType: 'requiredString',
-          validationMessage: 'Please select a security condition',
+          validationMessage: 'Select what category is most suitable for this person',
         },
       },
     ],

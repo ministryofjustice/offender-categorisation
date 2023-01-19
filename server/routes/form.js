@@ -121,12 +121,19 @@ module.exports = function Index({
     '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const section = 'categoriser'
-      const form = 'provisionalCategory'
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
+      const form = isFemale ? 'womensProvisionalCategory' : 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
 
       if (result.data.openConditionsRequested) {
         res.redirect(`/form/openConditions/provisionalCategory/${bookingId}`)
+      } else if (isFemale) {
+        const suggestedCat = 'R'
+        const data = { ...result.data, suggestedCat }
+        res.render(`formPages/${section}/${form}`, { ...result, data })
       } else {
         const suggestedCat = formService.computeSuggestedCat(result.data)
         const data = { ...result.data, suggestedCat }
@@ -561,6 +568,19 @@ module.exports = function Index({
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
       const userInput = clearConditionalFields(req.body)
+
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
+      if (isFemale) {
+        if (userInput.overriddenCategory === 'Yes') {
+          userInput.overriddenCategory = 'T'
+        }
+        if (userInput.overriddenCategory === 'No') {
+          userInput.overriddenCategory = 'R'
+        }
+        userInput.overriddenCategory = userInput.suggestedCategory
+      }
 
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return

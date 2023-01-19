@@ -119,6 +119,8 @@ const filterJsonObjectForLogging = json => {
 const catDisplay = cat => {
   if (cat === 'I') return 'YOI Closed'
   if (cat === 'J') return 'YOI Open'
+  if (cat === 'R') return 'Closed'
+  if (cat === 'T') return 'Open'
   return cat
 }
 
@@ -129,7 +131,7 @@ const calculateNextReviewDate = R.cond([
   [R.T, R.always('')],
 ])
 
-const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB'])
+const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB', 'TR'])
 const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
 const offenderLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}`

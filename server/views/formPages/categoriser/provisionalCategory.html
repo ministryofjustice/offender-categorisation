@@ -67,7 +67,7 @@
       },
       items: radios | rejectattr(cat),
       errorMessage: {
-        text: "Please select the new category"
+        text: "Please enter the new category"
       } if (errors | findError('overriddenCategory'))
     }) }}
   {% else %}
@@ -88,7 +88,7 @@
     },
     value: data.categoriser.provisionalCategory.overriddenCategoryText,
     errorMessage: {
-      text: "Please enter the reason why you changed the category"
+      text: "Enter the reason why you changed the category"
     } if (errors | findError('overriddenCategoryText'))
   }) }}
 {% endset %}
@@ -117,7 +117,7 @@
     }
   },
   errorMessage: {
-    text: "Please select yes or no"
+    text: "Select yes if you think this category is appropriate"
   } if (errors | findError('categoryAppropriate')),
   items: [
     {
