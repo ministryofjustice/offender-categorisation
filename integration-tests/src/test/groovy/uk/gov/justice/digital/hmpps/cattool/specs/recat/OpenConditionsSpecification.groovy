@@ -341,7 +341,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewRecatPage
-    categories*.text() == ['D\nWarning\nCategory D',
+    categories*.text() == ['!\nWarning\nCategory D',
                            'D\nWarning\nThe categoriser recommends category D',
                            'D\nWarning\nThe supervisor also recommends category D']
     !comments.displayed
@@ -605,7 +605,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewRecatPage
-    categories*.text() == ['D\nWarning\nCategory D',
+    categories*.text() == ['!\nWarning\nCategory D',
                            'D\nWarning\nThe categoriser recommends category D',
                            'D\nWarning\nThe supervisor also recommends category D']
     comments*.text() == ['super overriding C to D reason text', 'super other info 1 + 2']
