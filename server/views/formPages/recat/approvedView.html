@@ -43,11 +43,15 @@
     {% set currentCat = superCat or categoriserCat %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
-      <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
-        Category {{ catDisplay(currentCat) }}
-      </strong>
+      {% if currentCat === 'D' or currentCat === 'I' or currentCat === 'J' or currentCat === 'R' or currentCat === 'T' %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      {% else %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
+      {% endif %}
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+            Category {{ catDisplay(currentCat) }}
+        </strong>
     </div>
 
     <h2 class="govuk-heading-s no-print">Categoriser decision</h2>

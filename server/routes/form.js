@@ -564,22 +564,21 @@ module.exports = function Index({
     '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
       const userInput = clearConditionalFields(req.body)
 
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      const isFemale = res.locals.user.activeCaseLoad.female
       if (isFemale) {
-        if (userInput.overriddenCategory === 'Yes') {
-          userInput.overriddenCategory = 'T'
-        }
-        if (userInput.overriddenCategory === 'No') {
+        if (userInput.categoryAppropriate === 'Yes') {
           userInput.overriddenCategory = 'R'
         }
-        userInput.overriddenCategory = userInput.suggestedCategory
+        if (userInput.categoryAppropriate === 'No') {
+          userInput.overriddenCategory = 'T'
+        }
       }
 
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
@@ -588,7 +587,11 @@ module.exports = function Index({
 
       const bookingInt = parseInt(bookingId, 10)
 
-      if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
+      if (
+        userInput.overriddenCategory !== 'D' &&
+        userInput.overriddenCategory !== 'J' &&
+        userInput.overriddenCategory !== 'T'
+      ) {
         const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
         log.info(`Categoriser creating initial categorisation record for ${formData.offenderNo}:`)

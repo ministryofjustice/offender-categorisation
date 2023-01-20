@@ -421,7 +421,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'I am at the provision category page'
     at new ProvisionalCategoryOpenPage(bookingId: '12')
-    warning.text() contains 'Based on the information provided, the provisional category is D'
+    warning.text() contains 'The provisional category is open'
     !indeterminateWarning.displayed
 
     when: 'I confirm the cat D category'
@@ -549,7 +549,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'I am at the provision category page'
     at new ProvisionalCategoryOpenPage(bookingId: '12')
-    warning.text() contains 'Based on the information provided, the provisional category is D'
+    warning.text() contains 'The provisional category is open'
 
     when: 'I confirm the cat D category'
     elite2Api.stubCategorise('D', '2019-12-14', 12, 5)
@@ -689,7 +689,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'I am at the provision category page for open conditions'
     at new ProvisionalCategoryOpenPage(bookingId: '12')
-    warning.text() contains 'Based on the information provided, the provisional category is D'
+    warning.text() contains 'The provisional category is open'
 
     when: 'I confirm the cat D category'
     elite2Api.stubCategoriseUpdate('D', '2019-12-14', 12, 5)

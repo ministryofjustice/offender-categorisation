@@ -1030,4 +1030,25 @@ describe('Submit provisionalCategory page', () => {
         })
       })
   })
+
+  test('Submit womens provisional category page for open', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    return request(app)
+      .post('/categoriser/provisionalCategory/12345')
+      .send({ suggestedCategory: 'R', overriddenCategory: 'T', overriddenCategoryText: 'text' })
+      .expect(302)
+      .expect('Location', '/openConditionsAdded/12345?catType=INITIAL')
+      .expect(() => {
+        expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(0)
+      })
+  })
 })
