@@ -41,9 +41,7 @@ const getCatList = current => [
   { value: 'P', text: 'Prov A', selected: current === 'P' },
   { value: 'V', text: 'YOI Restricted', selected: current === 'V' },
   { value: 'B', text: 'Downgrade A to B', selected: current === 'B' },
-  { value: 'D', text: 'Indeterminate Cat D', selected: current === 'D' },
-  { value: 'R', text: 'Fem Closed', selected: current === 'R' },
-  { value: 'T', text: 'Fem Open', selected: current === 'T' },
+  { value: 'Q', text: 'Female Restricted', selected: current === 'Q' },
 ]
 
 const assessmentHasBeenApprovedInNomisManually = error => {

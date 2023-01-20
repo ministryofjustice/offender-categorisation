@@ -38,7 +38,7 @@ class LiteSpecification extends AbstractSpecification {
 
     when: 'Re-assessment is omitted'
     form.nextReviewDate = ''
-    form.category = 'T'
+    form.category = 'Q'
     form.authority = 'GOV'
     form.placement = 'BXI'
     form.comment = 'comment text'
@@ -48,7 +48,7 @@ class LiteSpecification extends AbstractSpecification {
     at LiteCategoriesPage
     errorSummaries*.text() == ['Enter a valid date that is after today']
     errors*.text() == ['Error:\nEnter a valid date that is after today']
-    form.category == 'T'
+    form.category == 'Q'
     form.authority == 'GOV'
     form.placement == 'BXI'
     form.comment == 'comment text'
@@ -187,14 +187,14 @@ class LiteSpecification extends AbstractSpecification {
 
     when: 'details are entered'
     form.approvedDate = '29/04/2020'
-    form.supervisorCategory = 'T'
+    form.supervisorCategory = 'Q'
     form.approvedCategoryComment = 'approvedCategoryComment'
     form.approvedCommittee = 'GOV'
     form.approvedPlacement = 'SYI'
     form.approvedPlacementComment = 'approvedPlacementComment'
     form.nextReviewDate = now.plusMonths(12).format('dd/MM/yyyy')
     form.approvedComment = 'approvedComment'
-    elite2Api.stubSupervisorApprove([category                 : 'T',
+    elite2Api.stubSupervisorApprove([category                 : 'Q',
                                      "approvedCategoryComment": "approvedCategoryComment",
                                      bookingId                : 12,
                                      "assessmentSeq"          : 1,
@@ -210,7 +210,7 @@ class LiteSpecification extends AbstractSpecification {
     then: 'The confirmed page is shown and details are in the database'
     at LiteCategoriesConfirmedPage
     def data2 = db.getLiteData(12)[0]
-    data2.supervisor_category == 'T'
+    data2.supervisor_category == 'Q'
     data2.approved_date.toLocalDate().equals(LocalDate.of(2020, 4, 29))
     data2.approved_by == 'SUPERVISOR_USER'
     data2.approved_committee == 'GOV'
