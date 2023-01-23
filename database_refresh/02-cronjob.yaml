@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name: db-refresh-job
 spec:
-  schedule: "31 10 * * 0"
+  schedule: "30 10 * * 0"
   concurrencyPolicy: "Forbid"
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 3
