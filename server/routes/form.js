@@ -573,9 +573,6 @@ module.exports = function Index({
       const userInput = clearConditionalFields(req.body)
 
       if (isFemale) {
-        if (userInput.categoryAppropriate === 'Yes') {
-          userInput.overriddenCategory = 'R'
-        }
         if (userInput.categoryAppropriate === 'No') {
           userInput.overriddenCategory = 'T'
         }
@@ -654,7 +651,11 @@ module.exports = function Index({
         return
       }
 
-      if (userInput.supervisorOverriddenCategory !== 'D' && userInput.supervisorOverriddenCategory !== 'J') {
+      if (
+        userInput.supervisorOverriddenCategory !== 'D' &&
+        userInput.supervisorOverriddenCategory !== 'J' &&
+        userInput.supervisorOverriddenCategory !== 'T'
+      ) {
         await formService.supervisorApproval({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,
