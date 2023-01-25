@@ -22,7 +22,7 @@ For this job to work the preprod database credentials need to be available produ
 
 The refresh job performs a `pg_dump` using the existing production credentials, already setup in in the production namespace of the application.  The job then uses the preprod credentials (see prerequisite) for the `pg_restore`.
 
-In sync with the main oracle database refreshes this cronjob runs every other Sunday (odd weeks).  Slight caveat is that is it difficult to define a cron schedule that runs every other week.  So this cron is scheduled for every week however the executed script checks if the week is an odd or even number and only executes the refresh on odd numbered weeks.
+In sync with the main oracle database refreshes this cronjob runs every other Sunday (even weeks).  Slight caveat is that is it difficult to define a cron schedule that runs every other week.  So this cron is scheduled for every week however the executed script checks if the week is an odd or even number and only executes the refresh on even numbered weeks.
 
 ### Installation of cronjob
 
