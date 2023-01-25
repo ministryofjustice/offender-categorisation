@@ -126,7 +126,7 @@ module.exports = function Index({
       const isFemale = res.locals.user.activeCaseLoad.female
       const form = isFemale ? 'womensProvisionalCategory' : 'provisionalCategory'
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
+      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient, null, user)
 
       if (result.data.openConditionsRequested) {
         res.redirect(`/form/openConditions/provisionalCategory/${bookingId}`)
@@ -320,8 +320,8 @@ module.exports = function Index({
     })
   )
 
-  const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient, sequenceNo) => {
-    const user = await userService.getUser(res.locals)
+  const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient, sequenceNo, userDetails) => {
+    const user = userDetails || (await userService.getUser(res.locals))
     res.locals.user = { ...user, ...res.locals.user }
 
     if (sequenceNo && Number.isNaN(parseInt(sequenceNo, 10))) {
