@@ -100,12 +100,22 @@ describe('open conditions', () => {
       })
   )
 
-  test('furtherCharges both exist', () => {
+  test('INITIAL categorisation in a mens prison where further charges and open conditions further charges exist', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
         ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
-        openConditions: { furtherCharges: { furtherChargesText: 'new stuff' } },
+        openConditions: { furtherCharges: { furtherChargesText: 'new stuff', increasedRisk: 'No' } },
       },
       catType: 'INITIAL',
     })
@@ -114,15 +124,30 @@ describe('open conditions', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('name="catType" value="INITIAL"')
+        expect(res.text).toContain('name="furtherCharges" value="Yes"')
+        expect(res.text).not.toContain('name="furtherCharges" type="radio" value="Yes"')
         expect(res.text).toContain('new stuff')
+        expect(res.text).toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
       })
   })
 
-  test('furtherCharges previous Charges exist', () => {
+  test('INITIAL categorisation in a mens prison where furtherCharges previous charges exist', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
         ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
+        openConditions: { furtherCharges: {} },
       },
       catType: 'INITIAL',
     })
@@ -131,27 +156,59 @@ describe('open conditions', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('name="catType" value="INITIAL"')
+        expect(res.text).toContain('name="furtherCharges" value="Yes"')
+        expect(res.text).not.toContain('name="furtherCharges" type="radio" value="Yes"')
         expect(res.text).toContain('old stuff')
+        expect(res.text).not.toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
       })
   })
 
-  test('furtherCharges furtherChargesText exist', () => {
+  test('INITIAL categorisation in a mens prison where no further charges and but open conditions furtherChargesText exist', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
-        openConditions: { furtherCharges: { furtherChargesText: 'new stuff' } },
+        ratings: { furtherCharges: { furtherCharges: 'No' } },
+        openConditions: {
+          furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'new stuff', increasedRisk: 'No' },
+        },
       },
+      catType: 'INITIAL',
     })
     return request(app)
       .get('/furtherCharges/12345')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('name="catType" value="INITIAL"')
+        expect(res.text).not.toContain('name="furtherCharges" value="Yes"')
+        expect(res.text).toContain('name="furtherCharges" type="radio" value="Yes" checked')
         expect(res.text).toContain('new stuff')
+        expect(res.text).toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
       })
   })
 
-  test('furtherCharges is no then open conditions should be displayed, INITIAL', () => {
+  test('INITIAL categorisation in a mens prison where furtherCharges is no then open conditions should be displayed', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
@@ -169,18 +226,160 @@ describe('open conditions', () => {
       })
   })
 
-  test('furtherCharges neither exists, RECAT', () => {
+  test('INITIAL categorisation in a womens prison where only open conditions further charges exist', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
-      formObject: {},
+      formObject: {
+        openConditions: {
+          furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'new stuff', increasedRisk: 'No' },
+        },
+      },
+      catType: 'INITIAL',
     })
     return request(app)
       .get('/furtherCharges/12345')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Further charges')
-        expect(res.text).toContain('></textarea>') // textarea is empty
+        expect(res.text).toContain('name="catType" value="INITIAL"')
+        expect(res.text).not.toContain('name="furtherCharges" value="Yes"')
+        expect(res.text).toContain('name="furtherCharges" type="radio" value="Yes" checked')
+        expect(res.text).toContain('new stuff')
+        expect(res.text).toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
+      })
+  })
+
+  test('INITIAL categorisation in a womens prison where no open conditions furtherChargesText exist', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: {
+        openConditions: { furtherCharges: { furtherCharges: 'No' } },
+      },
+      catType: 'INITIAL',
+    })
+    return request(app)
+      .get('/furtherCharges/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('name="catType" value="INITIAL"')
+        expect(res.text).not.toContain('name="furtherCharges" value="Yes"')
+        expect(res.text).toContain('name="furtherCharges" type="radio" value="No" checked')
+      })
+  })
+
+  test('RECAT categorisation in a mens prison where open conditions further charges is yes', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: {
+        openConditions: {
+          furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'some stuff', increasedRisk: 'No' },
+        },
+      },
+      catType: 'RECAT',
+    })
+    return request(app)
+      .get('/furtherCharges/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('name="catType" value="RECAT"')
+        expect(res.text).not.toContain('name="furtherCharges" value="Yes"')
+        expect(res.text).toContain('name="furtherCharges" type="radio" value="Yes" checked')
+        expect(res.text).toContain('some stuff')
+        expect(res.text).toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
+      })
+  })
+
+  test('RECAT categorisation in a womens prison where no open conditions further charges', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: {
+        openConditions: { furtherCharges: { furtherCharges: 'No' } },
+      },
+      catType: 'RECAT',
+    })
+    return request(app)
+      .get('/furtherCharges/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('name="catType" value="RECAT"')
+        expect(res.text).not.toContain('name="furtherCharges" value="Yes"')
+        expect(res.text).toContain('name="furtherCharges" type="radio" value="No" checked')
+      })
+  })
+
+  test('RECAT categorisation in a womens prison where open conditions further charges is yes', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: {
+        openConditions: {
+          furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'some stuff', increasedRisk: 'No' },
+        },
+      },
+      catType: 'RECAT',
+    })
+    return request(app)
+      .get('/furtherCharges/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('name="catType" value="RECAT"')
+        expect(res.text).not.toContain('name="furtherCharges" value="Yes"')
+        expect(res.text).toContain('name="furtherCharges" type="radio" value="Yes" checked')
+        expect(res.text).toContain('some stuff')
+        expect(res.text).toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
       })
   })
 
@@ -313,7 +512,7 @@ describe('open conditions', () => {
       .expect('Location', `/tasklistRecat/12345`)
   })
 
-  test('open conditions not suitable should show when previous senteces page was skipped', () => {
+  test('open conditions not suitable should show when previous sentences page was skipped', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
