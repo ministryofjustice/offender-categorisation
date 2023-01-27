@@ -403,7 +403,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     sexualOffences*.text() == ['','No','Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
-    furtherCharges*.text() == ['', 'Not applicable', 'some charges,furtherChargesText details', 'No']
+    furtherCharges*.text() == ['', 'Yes', 'some charges,furtherChargesText details', 'No']
     riskLevel*.text() == ['', 'No']
 
     def data = db.getData(12)

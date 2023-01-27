@@ -2,7 +2,7 @@
 {% from "inset-text/macro.njk" import govukInsetText %}
 
 {% set warningText %}
-  This prisoner was categorised as a
+  This prisoner was categorised as
   {% if data.history.catAType === 'A' %}
     Cat A
   {% elif data.history.catAType === 'P' %}
@@ -10,7 +10,7 @@
   {% elif data.history.catAType === 'H' %}
     Cat A High
   {% elif data.history.catAType === 'Q' %}
-    Restricted
+    restricted
   {% endif %}
   in {{ data.history.catAStartYear }} until {{ data.history.catAEndYear }}
 
@@ -28,6 +28,6 @@
 </div>
 {% else %}
   {{ govukInsetText({
-    text: "This person has not been categorised as a Cat A, Restricted or a provisional Cat A before."
+    text: "This person has not been categorised as Cat A, restricted or a provisional Cat A before."
   }) }}
 {% endif %}

@@ -970,14 +970,29 @@ describe('GET /categoriser/review', () => {
       })
   })
 
-  test('Open conditions entry is displayed after chosen, with change links - INITIAL', () => {
+  test('INITIAL Categorisation for mens prison with open conditions entry', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'STARTED',
-      catType: 'INITAL',
+      catType: 'INITIAL',
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
-      formObject: { openConditions: { field: 'value' }, openConditionsRequested: true },
+      formObject: {
+        ratings: { furtherCharges: { furtherCharges: 'No' } },
+        openConditions: {
+          furtherCharges: { furtherCharges: 'No', furtherChargesText: 'new stuff', increasedRisk: 'No' },
+        },
+      },
     })
 
     return request(app)
@@ -985,37 +1000,186 @@ describe('GET /categoriser/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('Check your answers before you continue')
+        expect(res.text).toContain('Further serious charges')
         expect(res.text).toContain('Open Conditions')
-        expect(res.text).toContain('/form/openConditions/foreignNational/')
+        expect(res.text).toContain('Are they facing any further charges?')
+      })
+  })
+
+  test('INITIAL Categorisation for mens prison without open conditions entry', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'INITAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        ratings: { furtherCharges: { furtherCharges: 'No' } },
+      },
+    })
+
+    return request(app)
+      .get(`/categoriser/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Check your answers before you continue')
+        expect(res.text).toContain('Further serious charges')
+        expect(res.text).not.toContain('Open Conditions')
+        expect(res.text).not.toContain('Are they facing any further charges?')
+      })
+  })
+
+  test('INITIAL Categorisation for womens prison with open conditions entry', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          furtherCharges: { furtherCharges: 'No', furtherChargesText: 'new stuff', increasedRisk: 'No' },
+        },
+      },
+    })
+    return request(app)
+      .get(`/categoriser/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Check your answers before you continue')
+        expect(res.text).not.toContain('Further serious charges')
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('Are they facing any further charges?')
       })
   })
 })
 
-describe('POST /section/form', () => {
-  test.each`
-    sectionName  | formName              | userInput               | nextPath
-    ${'ratings'} | ${'securityInput'}    | ${{ fullName: 'Name' }} | ${'/tasklist/'}
-    ${'ratings'} | ${'violenceRating'}   | ${{ day: '12' }}        | ${'/tasklist/'}
-    ${'ratings'} | ${'escapeRating'}     | ${{ day: '12' }}        | ${'/tasklist/'}
-    ${'ratings'} | ${'extremismRating'}  | ${{ day: '12' }}        | ${'/tasklist/'}
-    ${'ratings'} | ${'offendingHistory'} | ${{ day: '12' }}        | ${'/tasklist/'}
-    ${'ratings'} | ${'furtherCharges'}   | ${{}}                   | ${'/tasklist/'}
-  `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
-    request(app)
-      .post(`/${sectionName}/${formName}/12345`)
-      .send(userInput)
-      .expect(302)
-      .expect('Location', `${nextPath}12345`)
-      .expect(() => {
-        expect(formService.update).toBeCalledTimes(1)
-        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-        const updateArg = formService.update.mock.calls[0][0]
-        expect(updateArg.bookingId).toBe(12345)
-        expect(updateArg.config).toBe(formConfig[sectionName][formName])
-      })
-  )
-})
+describe('GET /recat/review', () => {
+  test('RECAT Categorisation for mens prison with open conditions entry', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          furtherCharges: {
+            furtherCharges: 'No',
+            furtherChargesText: 'new stuff',
+            increasedRisk: 'No',
+          },
+        },
+      },
+    })
 
+    return request(app)
+      .get(`/recat/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Check your answers before submitting')
+        expect(res.text).toContain('Prisoner background')
+        expect(res.text).not.toContain('Further serious charges')
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('Are they facing any further charges?')
+      })
+  })
+
+  test('RECAT Categorisation for womens prison with open conditions entry', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'STARTED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          furtherCharges: { furtherCharges: 'No', furtherChargesText: 'new stuff', increasedRisk: 'No' },
+        },
+      },
+    })
+    return request(app)
+      .get(`/recat/review/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Check your answers before submitting')
+        expect(res.text).toContain('Prisoner background')
+        expect(res.text).not.toContain('Further serious charges')
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('Are they facing any further charges?')
+      })
+  })
+
+  describe('POST /section/form', () => {
+    test.each`
+      sectionName  | formName              | userInput               | nextPath
+      ${'ratings'} | ${'securityInput'}    | ${{ fullName: 'Name' }} | ${'/tasklist/'}
+      ${'ratings'} | ${'violenceRating'}   | ${{ day: '12' }}        | ${'/tasklist/'}
+      ${'ratings'} | ${'escapeRating'}     | ${{ day: '12' }}        | ${'/tasklist/'}
+      ${'ratings'} | ${'extremismRating'}  | ${{ day: '12' }}        | ${'/tasklist/'}
+      ${'ratings'} | ${'offendingHistory'} | ${{ day: '12' }}        | ${'/tasklist/'}
+      ${'ratings'} | ${'furtherCharges'}   | ${{}}                   | ${'/tasklist/'}
+    `('should render $expectedContent for $sectionName/$formName', ({ sectionName, formName, userInput, nextPath }) =>
+      request(app)
+        .post(`/${sectionName}/${formName}/12345`)
+        .send(userInput)
+        .expect(302)
+        .expect('Location', `${nextPath}12345`)
+        .expect(() => {
+          expect(formService.update).toBeCalledTimes(1)
+          expect(offendersService.getCatAInformation).toBeCalledTimes(0)
+          const updateArg = formService.update.mock.calls[0][0]
+          expect(updateArg.bookingId).toBe(12345)
+          expect(updateArg.config).toBe(formConfig[sectionName][formName])
+        })
+    )
+  })
+})
 describe('POST /supervisor/review', () => {
   test.each`
     sectionName     | formName    | userInput                            | nextPath
