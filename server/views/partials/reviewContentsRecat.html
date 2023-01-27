@@ -168,8 +168,8 @@
 
   {% set wasReferred = data.security.review.securityReview %}
   {% set title = {
-    key: { classes: 'summary-list-title' if wasReferred else 'summary-list-title no-print',
-      text: "Security information" },
+    key: { classes: 'summary-list-title no-print',
+    text: "Security information" },
     value: { classes: 'no-print'},
     actions: { classes: 'no-print',
         items: [{
@@ -199,13 +199,14 @@
       actions: { items: [] }
     } %}
   {% set comments = {
+      classes: 'no-print',
       key: { text: "Security comments" },
       value: { text: data.security.review.securityReview },
       actions: { items: [] }
     } %}
 
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary' + ('' if wasReferred else ' no-print'),
+    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary no-print',
     rows: [ title, auto, manual, flagged, comments ] if wasReferred else [ title, auto, manual, flagged ]
   }) }}
 

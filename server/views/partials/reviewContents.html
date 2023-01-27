@@ -167,7 +167,7 @@
   }) }}
 
   {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB or (user.activeCaseLoad.female and data.ratings.securityBack)%}
-  <h2 class="govuk-heading-m{{ ' no-print' if not wasReferred }}">Security information</h2>
+  <h2 class="govuk-heading-m no-print">Security information</h2>
   {% set auto = {
       classes: 'no-print',
       key: { text: "Automatic referral to security team" },
@@ -195,6 +195,7 @@
       actions: { items: [] }
     } %}
   {% set comments = {
+      classes: 'no-print',
       key: { text: "Security comments" },
       value: { text: data.security.review.securityReview },
       actions: { items: [] }
@@ -214,7 +215,7 @@
     } %}
 {% endif %}
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary' + ('' if wasReferred else ' no-print'),
+    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary no-print',
     rows: [ auto, manual, flagged, comments, warrantS ] if wasReferred else [ auto, manual, flagged ]
   }) }}
 
