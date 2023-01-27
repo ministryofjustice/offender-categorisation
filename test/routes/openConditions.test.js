@@ -100,7 +100,7 @@ describe('open conditions', () => {
       })
   )
 
-  test('INITIAL categorisation in a mens prison where further charges and open conditions further charges exist', () => {
+  test('INITIAL categorisation in a mens prison where further charges and open conditions further charges are both yes', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
         caseLoadId: 'PBI',
@@ -115,7 +115,9 @@ describe('open conditions', () => {
       bookingId: 12,
       formObject: {
         ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
-        openConditions: { furtherCharges: { furtherChargesText: 'new stuff', increasedRisk: 'No' } },
+        openConditions: {
+          furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'new stuff', increasedRisk: 'No' },
+        },
       },
       catType: 'INITIAL',
     })
@@ -132,7 +134,7 @@ describe('open conditions', () => {
       })
   })
 
-  test('INITIAL categorisation in a mens prison where furtherCharges previous charges exist', () => {
+  test('INITIAL categorisation in a mens prison where further charges is yes and open conditions further charges is no', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
         caseLoadId: 'PBI',
@@ -147,7 +149,7 @@ describe('open conditions', () => {
       bookingId: 12,
       formObject: {
         ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
-        openConditions: { furtherCharges: {} },
+        openConditions: { furtherCharges: { furtherCharges: 'No', increasedRisk: 'No' } },
       },
       catType: 'INITIAL',
     })
@@ -158,9 +160,9 @@ describe('open conditions', () => {
       .expect(res => {
         expect(res.text).toContain('name="catType" value="INITIAL"')
         expect(res.text).toContain('name="furtherCharges" value="Yes"')
-        expect(res.text).not.toContain('name="furtherCharges" type="radio" value="Yes"')
+        expect(res.text).not.toContain('name="furtherCharges" type="radio" value="No"')
         expect(res.text).toContain('old stuff')
-        expect(res.text).not.toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
+        expect(res.text).toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
       })
   })
 
@@ -198,7 +200,7 @@ describe('open conditions', () => {
       })
   })
 
-  test('INITIAL categorisation in a mens prison where furtherCharges is no then open conditions should be displayed', () => {
+  test('INITIAL categorisation in a mens prison where furtherCharges is no and open conditions further charges is no', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
         caseLoadId: 'PBI',
@@ -213,6 +215,9 @@ describe('open conditions', () => {
       bookingId: 12,
       formObject: {
         ratings: { furtherCharges: { furtherCharges: 'No' } },
+        openConditions: {
+          furtherCharges: { furtherCharges: 'No', furtherChargesText: 'new stuff', increasedRisk: 'No' },
+        },
       },
       catType: 'INITIAL',
     })
@@ -221,8 +226,11 @@ describe('open conditions', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Further charges')
-        expect(res.text).toContain('></textarea>') // textarea is empty
+        expect(res.text).toContain('name="catType" value="INITIAL"')
+        expect(res.text).not.toContain('name="furtherCharges" value="No"')
+        expect(res.text).toContain('name="furtherCharges" type="radio" value="No" checked')
+        expect(res.text).toContain('new stuff')
+        expect(res.text).toContain('id="increasedRisk-2" name="increasedRisk" type="radio" value="No" checked')
       })
   })
 
