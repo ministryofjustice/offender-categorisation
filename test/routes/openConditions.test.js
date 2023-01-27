@@ -29,6 +29,7 @@ const formService = {
   getCategorisationRecord: jest.fn(),
   referToSecurityIfRiskAssessed: jest.fn(),
   referToSecurityIfRequested: jest.fn(),
+  isYoungOffender: jest.fn(),
   update: jest.fn(),
   getValidationErrors: jest.fn().mockReturnValue([]),
   computeSuggestedCat: jest.fn().mockReturnValue('B'),
@@ -69,10 +70,20 @@ beforeEach(() => {
   formService.referToSecurityIfRiskAssessed.mockResolvedValue({})
   formService.referToSecurityIfRequested.mockResolvedValue({})
   formService.isValid.mockResolvedValue(true)
+  formService.isYoungOffender.mockReturnValue(false)
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
-  userService.getUser.mockResolvedValue({})
+  userService.getUser.mockResolvedValue({
+    activeCaseLoad: {
+      caseLoadId: 'MDI',
+      description: 'Moorland (HMP & YOI)',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: true,
+      female: false,
+    },
+  })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
@@ -332,6 +343,37 @@ describe('open conditions', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('This person cannot be sent to open conditions')
+      })
+  })
+
+  test('Should have D for openConditionsSuggestedCategory for male prison', () => {
+    return request(app)
+      .get('/provisionalCategory/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(`<input type="hidden" name="openConditionsSuggestedCategory" value="D"/>`)
+      })
+  })
+
+  test('Should have T for openConditionsSuggestedCategory value if female', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+
+    return request(app)
+      .get('/provisionalCategory/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(`<input type="hidden" name="openConditionsSuggestedCategory" value="T"/>`)
       })
   })
 })
