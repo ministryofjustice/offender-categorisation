@@ -277,9 +277,7 @@ describe('GET /security/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(
-          'This individual was identified as needing a security review, as part of their categorisation, by James Brown of Another (HMP)'
-        )
+        expect(res.text).toContain('Flagged for review')
         expect(res.text).not.toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledWith(expect.anything(), 'ANI')
@@ -334,9 +332,7 @@ describe('GET /security/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain(
-          'This individual was identified as needing a security review, as part of their categorisation, by James Brown'
-        )
+        expect(res.text).toContain('Flagged for review')
         expect(res.text).not.toContain('securityButton')
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(offendersService.getOptionalAssessmentAgencyDescription).toBeCalledTimes(0)

@@ -38,7 +38,7 @@ module.exports = function Index({
     '/securityInput/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId, transactionalDbClient)
+      const result = await buildFormData(res, req, 'recat', 'securityInput', bookingId, transactionalDbClient)
 
       if (
         result.status === Status.SECURITY_MANUAL.name ||
@@ -202,7 +202,7 @@ module.exports = function Index({
 
   const clearConditionalFields = body => {
     const updated = { ...body }
-    if (body.securityInputNeeded === 'No') {
+    if (body.securityNoteNeeded === 'No') {
       delete updated.securityInputNeededText
     }
     if (body.transfer === 'Yes') {
