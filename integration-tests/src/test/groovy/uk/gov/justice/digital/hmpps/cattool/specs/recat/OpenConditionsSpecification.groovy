@@ -163,7 +163,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at ReviewRecatPage
     changeLinks.size() == 6
 
-    securityInputSummary*.text() == ['', 'No', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
@@ -245,7 +245,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == [
       decision          : [category: "D"],
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput     : [securityInputNeeded: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -291,7 +291,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     afterSubmitResponse.recat == [
       decision          : [category: "D"],
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput     : [securityInputNeeded: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -418,7 +418,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == [
       decision          : [category: "D"],
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput     : [securityInputNeeded: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -574,7 +574,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == [
       decision          : [category: "D"],
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput     : [securityInputNeeded: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
