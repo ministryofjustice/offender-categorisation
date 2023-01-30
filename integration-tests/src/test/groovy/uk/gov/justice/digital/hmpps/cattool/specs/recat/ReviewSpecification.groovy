@@ -20,6 +20,7 @@ class ReviewSpecification extends AbstractSpecification {
         securityBack        : [:],
         securityInput       : [
           securityInputNeeded    : "Yes",
+          securityNoteNeeded: "Yes",
           securityInputNeededText: "reasons"
         ],
         prisonerBackground  : [offenceDetails: "offence Details text"],
@@ -97,7 +98,7 @@ class ReviewSpecification extends AbstractSpecification {
       recat: [
         decision          : [category: "C"],
         oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-        securityInput     : [securityInputNeeded: "No"],
+        securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
         nextReviewDate    : [date: "14/12/2019"],
         prisonerBackground: [offenceDetails: "offence Details text"],
         riskAssessment    : [
@@ -124,7 +125,7 @@ class ReviewSpecification extends AbstractSpecification {
     at ReviewRecatPage
     changeLinks.size() == 6
     changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
-    securityInputSummary*.text() == ['', 'No', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
   }
 
   def "The recat review page security flagged section"() {
