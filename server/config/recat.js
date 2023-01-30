@@ -91,13 +91,19 @@ module.exports = {
       {
         securityInputNeeded: {
           responseType: 'requiredString',
-          validationMessage: 'Please select yes or no',
+          validationMessage: '',
+        },
+      },
+      {
+        securityNoteNeeded: {
+          responseType: 'requiredString',
+          validationMessage: 'Select yes if you want to include a note to security',
         },
       },
       {
         securityInputNeededText: {
-          responseType: 'requiredStringIf_securityInputNeeded_Yes',
-          validationMessage: 'Please enter the reason why referral is needed',
+          responseType: 'requiredStringIf_securityNoteNeeded_Yes',
+          validationMessage: 'Enter a note',
         },
       },
     ],

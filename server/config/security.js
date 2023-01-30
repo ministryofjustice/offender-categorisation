@@ -5,7 +5,7 @@ module.exports = {
       {
         securityReview: {
           responseType: 'requiredString',
-          validationMessage: 'Please enter details',
+          validationMessage: 'Enter security information',
         },
       },
     ],

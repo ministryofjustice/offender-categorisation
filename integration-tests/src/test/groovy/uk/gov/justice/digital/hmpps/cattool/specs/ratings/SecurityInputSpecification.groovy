@@ -74,8 +74,11 @@ class SecurityInputSpecification extends AbstractSpecification {
     when: 'the security user enters data'
     startButtons[0].click()
     at new SecurityReviewPage(bookingId: '12')
-    categoriserText == 'Some categoriser text'
     securityText << 'security info text'
+    headerInitialNote.displayed
+    pInitialManual.displayed
+    pInitialNote.displayed
+
     submitButton.click()
 
     then: 'the prisoner status is back from security'
@@ -95,8 +98,10 @@ class SecurityInputSpecification extends AbstractSpecification {
     $('#securitySection').text().contains("Completed Security ($today)")
     securityButton.click()
     at new CategoriserSecurityBackPage(bookingId: '12')
-    warning.text() contains 'This person was referred to the security team'
-    noteFromSecurity.text() == 'security info text'
+
+    noteFromSecurity*.text()[0] == 'Some text'
+    noteFromSecurity*.text()[1] == 'security info'
+
     catBRadio = 'No'
     saveButton.click()
 
