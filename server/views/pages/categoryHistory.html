@@ -34,7 +34,11 @@
         {% for row in data.history %}
           <tr class="govuk-table__row ">
             <td class="govuk-table__cell"> {{ row.approvalDateDisplay }}</td>
-            <td class="govuk-table__cell">{{ row.classificationCode }}</td>
+            {% if user.activeCaseLoad.female %}
+              <td class="govuk-table__cell">{{ femaleCatMappings(row.classificationCode) }}</td>
+            {% else %}
+              <td class="govuk-table__cell">{{ row.classificationCode }}</td>
+            {% endif %}
             <td class="govuk-table__cell">{{ row.prisonDescription }}</td>
             <td class="govuk-table__cell">
               {% if row.recordExists %}

@@ -34,9 +34,15 @@
       <tbody class="govuk-table__body">
         {% for row in initial %}
           <tr class="govuk-table__row ">
-            <td class="govuk-table__cell">{{ catDisplay(row.initialCat) }}</td>
-            <td class="govuk-table__cell">{{ catDisplay(row.initialOverride) }}</td>
-            <td class="govuk-table__cell">{{ catDisplay(row.superOverride) }}</td>
+            {% if user.activeCaseLoad.female %}
+              <td class="govuk-table__cell">{{ femaleCatMappings(row.initialCat) }}</td>
+              <td class="govuk-table__cell">{{ femaleCatMappings(row.initialOverride) }}</td>
+              <td class="govuk-table__cell">{{ femaleCatMappings(row.superOverride) }}</td>
+            {% else %}
+              <td class="govuk-table__cell">{{ catDisplay(row.initialCat) }}</td>
+              <td class="govuk-table__cell">{{ catDisplay(row.initialOverride) }}</td>
+              <td class="govuk-table__cell">{{ catDisplay(row.superOverride) }}</td>
+            {% endif %}
             <td class="govuk-table__cell">{{ row.count }}</td>
           </tr>
         {% endfor %}

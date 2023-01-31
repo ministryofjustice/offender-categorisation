@@ -7,6 +7,7 @@ const {
   getLongDateFormat,
   getVerboseDateFormat,
   catDisplay,
+  femaleCatMappings,
   choosingHigherCategory,
   offenderLink,
   dpsUrl,
@@ -50,6 +51,7 @@ module.exports = (app, path) => {
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
     .addGlobal('catDisplay', catDisplay)
+    .addGlobal('femaleCatMappings', femaleCatMappings)
     .addGlobal('choosingHigherCategory', choosingHigherCategory)
     .addGlobal('inProgress', inProgress)
     .addGlobal('extractNextReviewDate', extractNextReviewDate)

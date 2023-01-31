@@ -11,6 +11,7 @@
 
 {% endblock %}
 {% block content %}
+{% set isFemale = user.activeCaseLoad.female %}
 
   <div class="govuk-grid-row">
     {% include "../../partials/offenderDetails.html" %}
@@ -50,7 +51,11 @@
       {% endif %}
         <strong class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
+          {% if isFemale %}
+            Category {{ femaleCatMappings(currentCat) }}
+          {% else %}
             Category {{ catDisplay(currentCat) }}
+          {% endif %}
         </strong>
     </div>
 
@@ -59,7 +64,11 @@
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
       <div class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The categoriser recommends category {{ catDisplay(categoriserCat) }}
+        {% if isFemale %}
+          The categoriser recommends category {{ femaleCatMappings(categoriserCat) }}
+        {% else %}
+          The categoriser recommends category {{ catDisplay(categoriserCat) }}
+        {% endif %}
       </div>
     </div>
 
@@ -71,7 +80,11 @@
         <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
         <div class="govuk-warning-text__text override-icon-text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          The recommended category was changed from a {{ catDisplay(categoriserCat) }} to a {{ catDisplay(superCat) }}
+          {% if isFemale %}
+            The recommended category was changed from a {{ femaleCatMappings(categoriserCat) }} to a {{ femaleCatMappings(superCat) }}
+          {% else %}
+            The recommended category was changed from a {{ catDisplay(categoriserCat) }} to a {{ catDisplay(superCat) }}
+          {% endif %}
         </div>
       </div>
     {% else %}
@@ -79,7 +92,11 @@
         <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
         <div class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          The supervisor also recommends category {{ catDisplay(categoriserCat) }}
+          {% if isFemale %}
+            The supervisor also recommends category {{ femaleCatMappings(categoriserCat) }}
+          {% else %}
+            The supervisor also recommends category {{ catDisplay(categoriserCat) }}
+          {% endif %}
         </div>
       </div>
     {% endif %}

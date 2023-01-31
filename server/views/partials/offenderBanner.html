@@ -29,7 +29,7 @@
         {{ data.details.categoryCode }} ({{ data.details.category }})
       {% elif data.details.categoryCode == 'I' or data.details.categoryCode == 'J' or
            data.details.categoryCode == 'R' or data.details.categoryCode == 'T' %}
-        {{ catDisplay(data.details.categoryCode) }}
+        {{ femaleCatMappings(data.details.categoryCode) }}
       {% else %}
         {{ data.details.categoryCode }}
       {% endif %}

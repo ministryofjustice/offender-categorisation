@@ -24,7 +24,11 @@
       {% endif %}
         <strong class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
+          {% if user.activeCaseLoad.female %}
+            Category for approval is {{ femaleCatMappings(currentCat) }}
+          {% else %}
             Category for approval is {{ catDisplay(currentCat) }}
+          {% endif %}
         </strong>
     </div>
 

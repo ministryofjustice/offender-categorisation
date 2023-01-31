@@ -7,6 +7,7 @@
 
 {% set greenButtonText = "Submit" %}
 {% set pageTitle = "Approve category" %}
+{% set isFemale = user.activeCaseLoad.female %}
 
 {% block beforeContent %}
   {% include "../../partials/breadCrumb.html" %}
@@ -29,7 +30,11 @@
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The categoriser recommends category {{ catDisplay(currentCat) }}
+        {% if isFemale %}
+          The categoriser recommends category {{ femaleCatMappings(currentCat) }}
+        {% else %}
+          The categoriser recommends category {{ catDisplay(currentCat) }}
+        {% endif %}
       </strong>
     </div>
 
@@ -111,7 +116,6 @@
     {% if not data.details.youngOffender%}
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
-    {% set isFemale = user.activeCaseLoad.female %}
     {% if isFemale %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
       {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}

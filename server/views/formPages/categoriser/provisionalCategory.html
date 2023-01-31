@@ -101,7 +101,11 @@
   <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
   <strong class="govuk-warning-text__text">
     <span class="govuk-warning-text__assistive">Warning</span>
-    Based on the information provided, the provisional category is {{ catDisplay(cat) }}
+    {% if user.activeCaseLoad.female %}
+      Based on the information provided, the provisional category is {{ femaleCatMappings(cat) }}
+    {% else %}
+      Based on the information provided, the provisional category is {{ catDisplay(cat) }}
+    {% endif %}
   </strong>
 </div>
 

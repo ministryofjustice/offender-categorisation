@@ -117,11 +117,35 @@ const filterJsonObjectForLogging = json => {
 }
 
 const catDisplay = cat => {
-  if (cat === 'I') return 'YOI Closed'
-  if (cat === 'J') return 'YOI Open'
-  if (cat === 'R') return 'Closed'
-  if (cat === 'T') return 'Open'
-  return cat
+  switch(cat){
+    case 'I':
+      return 'YOI Closed'
+    case 'J':
+      return 'YOI Open'
+    default:
+      return cat
+  }
+}
+
+const femaleCatMappings = cat => {
+  switch (cat) {
+    case 'D':
+      return 'Open'
+    case 'I':
+      return 'YOI closed'
+    case 'J':
+      return 'YOI open'
+    case 'Q':
+      return 'Restricted'
+    case 'R':
+      return 'Closed'
+    case 'T':
+      return 'Open'
+    case 'U':
+      return 'Unsentenced'
+    default:
+      return cat
+  }
 }
 
 // R.cond is like a switch statement
@@ -183,6 +207,7 @@ module.exports = {
   linkOnClick,
   filterJsonObjectForLogging,
   catDisplay,
+  femaleCatMappings,
   calculateNextReviewDate,
   choosingHigherCategory,
   offenderLink,

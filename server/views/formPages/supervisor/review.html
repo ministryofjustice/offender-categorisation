@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block formItems %}
-
+{% set isFemale = user.activeCaseLoad.female %}
 <div class="govuk-body-s">
 
     <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
@@ -37,7 +37,11 @@
       <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
       <strong class="govuk-warning-text__text override-icon-text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The category was originally {{ catDisplay(cat) }} and is now {{ catDisplay(overriddenCat) }}
+        {% if isFemale %}
+          The category was originally {{ femaleCatMappings(cat) }} and is now {{ femaleCatMappings(overriddenCat) }}
+        {% else %}
+          The category was originally {{ catDisplay(cat) }} and is now {{ catDisplay(overriddenCat) }}
+        {% endif %}
       </strong>
     </div>
     <div class="govuk-!-margin-bottom-8">
@@ -50,7 +54,11 @@
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        Based on the information provided, the provisional category is {{ catDisplay(cat) }}
+        {% if  isFemale %}
+          Based on the information provided, the provisional category is {{ femaleCatMappings(cat) }}
+        {% else %}
+          Based on the information provided, the provisional category is {{ catDisplay(cat) }}
+        {% endif %}
       </strong>
     </div>
     {% endif %}
@@ -72,11 +80,11 @@
     {{ govukSummaryList({
       classes: 'govuk-!-margin-bottom-9',
       rows: [
-      {
-      key: { text: "Other relevant information" },
-      value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
-      actions: { items: [] }
-      }
+       {
+         key: { text: "Other relevant information" },
+         value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
+         actions: { items: [] }
+        }
       ]
     }) }}
 
@@ -145,7 +153,6 @@
     {% if not data.details.youngOffender%}
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
-    {% set isFemale = user.activeCaseLoad.female %}
     {% if isFemale %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
       {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
