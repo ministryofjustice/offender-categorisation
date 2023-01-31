@@ -117,7 +117,7 @@ const filterJsonObjectForLogging = json => {
 }
 
 const catDisplay = cat => {
-  switch(cat){
+  switch (cat) {
     case 'I':
       return 'YOI Closed'
     case 'J':
