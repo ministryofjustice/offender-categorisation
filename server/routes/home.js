@@ -8,6 +8,7 @@ const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { dateConverterToISO } = require('../utils/utils')
 const securityConfig = require('../config/security')
+const StatsType = require('../utils/statsTypeEnum')
 
 const formConfig = {
   security: securityConfig,
@@ -192,7 +193,14 @@ module.exports = function Index({
     const { startDate, endDate, scope } = req.query
     const start = startDate ? dateConverterToISO(startDate) : null
     const end = endDate ? dateConverterToISO(endDate) : null
-    const prisonId = scope === 'all' ? null : res.locals.user.activeCaseLoadId
+    let prisonId
+    if (scope === 'all' && res.locals.user.activeCaseLoad.female) {
+      prisonId = StatsType.FEMALE
+    } else if (scope === 'all' && !res.locals.user.activeCaseLoad.female) {
+      prisonId = StatsType.MALE
+    } else {
+      prisonId = res.locals.user.activeCaseLoadId
+    }
     return { start, end, prisonId }
   }
 
