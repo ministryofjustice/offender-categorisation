@@ -3,7 +3,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "input/macro.njk" import govukInput %}
 {% from "../macros/breadCrumb.html" import breadCrumb %}
-{% set pageTitle = "Dashboard - Initial categorisations" %}
+{% set pageTitle = "Initial categorisations statistics" %}
 
 {% block beforeContent %}
 
@@ -16,8 +16,8 @@
 <div >
   <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
-
 <div>
+  <p>The statistics on this page are for approved initial categorisations.</p>
   {% include "../partials/dashboardForm.html" %}
   <hr/>
   <div class="govuk-!-width-two-thirds">

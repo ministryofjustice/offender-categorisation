@@ -224,8 +224,21 @@ module.exports = function Index({
         const timeliness = await statsService.getTimeliness(INIT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(INIT, start, end, prisonId, transactionalDbClient)
         const total = getTotal(initial)
+        const scopeValues = [
+          user.activeCaseLoad.description,
+          user.activeCaseLoad.female ? StatsType.FEMALE.value : StatsType.MALE.value,
+        ]
 
-        res.render('pages/dashboardInitial', { initial, security, timeliness, onTime, total, errors, ...req.query })
+        res.render('pages/dashboardInitial', {
+          scopeValues,
+          initial,
+          security,
+          timeliness,
+          onTime,
+          total,
+          errors,
+          ...req.query,
+        })
       }
     })
   )
@@ -247,8 +260,22 @@ module.exports = function Index({
         const timeliness = await statsService.getTimeliness(RECAT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, transactionalDbClient)
         const total = getTotal(recat)
+        const scopeValues = [
+          user.activeCaseLoad.description,
+          user.activeCaseLoad.female ? StatsType.FEMALE.value : StatsType.MALE.value,
+        ]
 
-        res.render('pages/dashboardRecat', { table, recat, security, timeliness, onTime, total, errors, ...req.query })
+        res.render('pages/dashboardRecat', {
+          scopeValues,
+          table,
+          recat,
+          security,
+          timeliness,
+          onTime,
+          total,
+          errors,
+          ...req.query,
+        })
       }
     })
   )

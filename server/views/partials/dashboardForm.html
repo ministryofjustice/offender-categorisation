@@ -30,8 +30,8 @@
 
       <div class="govuk-grid-column-one-quarter">
         <select class="govuk-select govuk-!-margin-left-1 govuk-!-max-width-256px govuk-!-margin-top-5" id="scope" name="scope">
-          <option value="within" {{ "selected" if scope === 'within' }}>within this prison</option>
-          <option value="all" {{ "selected" if scope === 'all' }}>in whole estate</option>
+          <option value="within" {{ "selected" if scope === 'within' }}>{{ scopeValues[0] }}</option>
+          <option value="all" {{ "selected" if scope === 'all' }}>{{ scopeValues[1] }}</option>
         </select>
       </div>
 
