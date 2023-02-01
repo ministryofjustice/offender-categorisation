@@ -21,14 +21,15 @@
   {% include "../partials/dashboardForm.html" %}
   <hr/>
   <div class="govuk-!-width-two-thirds">
-    <h3>Categorisation numbers</h3>
+    <h3>Initial categorisation decisions</h3>
     <table class="govuk-table" id="initialTable">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="col">Suggested category</th>
           <th class="govuk-table__header" scope="col">Categoriser override</th>
           <th class="govuk-table__header" scope="col">Supervisor override</th>
-          <th class="govuk-table__header" scope="col">numbers</th>
+          <th class="govuk-table__header" scope="col">Numbers</th>
+          <th class="govuk-table__header" scope="col">Percentage</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -37,9 +38,17 @@
             <td class="govuk-table__cell">{{ catDisplay(row.initialCat) }}</td>
             <td class="govuk-table__cell">{{ catDisplay(row.initialOverride) }}</td>
             <td class="govuk-table__cell">{{ catDisplay(row.superOverride) }}</td>
-            <td class="govuk-table__cell">{{ row.count }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ row.count }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ (row.count / total * 100) | fixed }}%</td>
           </tr>
         {% endfor %}
+        <tr class="govuk-table__row ">
+          <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
+          <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
+          <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
+          <td class="govuk-table__cell govuk-!-font-weight-bold govuk-table__cell--numeric">{{ total }}</td>
+          <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
+        </tr>
       </tbody>
     </table>
     {% if (not errors | length) %}

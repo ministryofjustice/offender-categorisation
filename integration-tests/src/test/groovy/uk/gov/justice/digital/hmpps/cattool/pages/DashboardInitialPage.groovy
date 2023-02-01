@@ -5,7 +5,7 @@ class DashboardInitialPage extends DashboardPage {
   static url = '/dashboardInitial'
 
   static at = {
-    headingText == 'Dashboard - Initial categorisations'
+    headingText == 'Initial categorisations statistics'
   }
 
   static content = {
