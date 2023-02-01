@@ -60,7 +60,11 @@
       <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
-      <td class="govuk-table__cell">{{ row.category }}</td>
+      {% if user.activeCaseLoad.female %}
+        <td class="govuk-table__cell">{{ femaleCatMappings(row.category) }}</td>
+      {% else %}
+        <td class="govuk-table__cell">{{ row.category }}</td>
+      {% endif %}
       <td class="govuk-table__cell">
         {% if row.statusTextDisplay != '' %}
         {% set locked = regExp.test(row.displayStatus) %}
