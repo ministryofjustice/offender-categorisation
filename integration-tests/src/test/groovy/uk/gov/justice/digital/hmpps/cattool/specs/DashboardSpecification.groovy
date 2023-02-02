@@ -226,7 +226,8 @@ class DashboardSpecification extends AbstractSpecification {
 
     completionTableRows*.text() == [
       'Before due date 60% 3',
-      'Late 2']
+      'Late 40% 2',
+      'Total 5']
 
     total.text() == 'Total: 5'
 
@@ -254,7 +255,8 @@ class DashboardSpecification extends AbstractSpecification {
 
     completionTableRows*.text() == [
       'Before due date 44.44% 4',
-      'Late 5']
+      'Late 55.56% 5',
+      'Total 9']
 
     total.text() == 'Total: 9'
 

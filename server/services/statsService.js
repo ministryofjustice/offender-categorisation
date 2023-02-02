@@ -73,9 +73,12 @@ module.exports = function createstatsService(statsClient) {
     async getOnTime(catType, startDate, endDate, prisonId, transactionalClient) {
       const stats = await statsClient.getOnTime(catType, startDate, endDate, prisonId, transactionalClient)
       const { rows } = stats
+      const onTime = getCount(rows, 'onTime', true)
+      const notOnTime = getCount(rows, 'onTime', false)
       return {
-        onTime: getCount(rows, 'onTime', true),
-        notOnTime: getCount(rows, 'onTime', false),
+        onTime,
+        notOnTime,
+        total: onTime + notOnTime
       }
     },
   }

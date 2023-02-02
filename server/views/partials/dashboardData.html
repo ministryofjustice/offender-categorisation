@@ -51,20 +51,25 @@
     <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Completion</th>
-      <th class="govuk-table__header" scope="col">Percentage completed on time</th>
-      <th class="govuk-table__header" scope="col">Total</th>
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">Percentage</th>
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">Total</th>
     </tr>
     </thead>
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">Before due date</td>
-      <td class="govuk-table__cell">{{ (100 * onTime.onTime / (onTime.onTime + onTime.notOnTime)) | round(2) + '%' if onTime.onTime + onTime.notOnTime > 0 }}</td>
-      <td class="govuk-table__cell">{{ onTime.onTime }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ (100 * onTime.onTime / onTime.total) | round(2) + '%' if onTime.total > 0 }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ onTime.onTime }}</td>
     </tr>
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">Late</td>
-      <td class="govuk-table__cell"></td>
-      <td class="govuk-table__cell">{{ onTime.notOnTime }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ (100 * onTime.notOnTime / onTime.total) | round(2) + '%' if onTime.total > 0 }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ onTime.notOnTime }}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+      <td class="govuk-table__cell govuk-!-font-weight-bold govuk-table__cell--numeric">{{ onTime.total }}</td>
     </tr>
     </tbody>
   </table>
