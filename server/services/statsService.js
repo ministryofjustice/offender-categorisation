@@ -78,7 +78,7 @@ module.exports = function createstatsService(statsClient) {
       return {
         onTime,
         notOnTime,
-        total: onTime + notOnTime
+        total: onTime + notOnTime,
       }
     },
   }
