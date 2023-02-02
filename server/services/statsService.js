@@ -54,10 +54,14 @@ module.exports = function createstatsService(statsClient) {
       const stats = await statsClient.getSecurityReferrals(catType, startDate, endDate, prisonId, transactionalClient)
 
       const { rows } = stats
+      const manual = getCount(rows, 'security', 'manual')
+      const auto = getCount(rows, 'security', 'auto')
+      const flagged = getCount(rows, 'security', 'flagged')
       return {
-        manual: getCount(rows, 'security', 'manual'),
-        auto: getCount(rows, 'security', 'auto'),
-        flagged: getCount(rows, 'security', 'flagged'),
+        manual,
+        auto,
+        flagged,
+        total: manual + auto + flagged,
       }
     },
 

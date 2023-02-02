@@ -3,15 +3,19 @@
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Manual</td>
-      <td class="govuk-table__cell">{{ security.manual }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ security.manual }}</td>
     </tr>
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Automatic</td>
-      <td class="govuk-table__cell">{{ security.auto }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ security.auto }}</td>
     </tr>
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Flagged</td>
-      <td class="govuk-table__cell">{{ security.flagged }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ security.flagged }}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
+      <td class="govuk-table__cell govuk-!-font-weight-bold govuk-table__cell--numeric">{{ security.total }}</td>
     </tr>
     </tbody>
   </table>

@@ -10,5 +10,6 @@ class DashboardInitialPage extends DashboardPage {
 
   static content = {
     numbersTableRows { $('#initialTable > tbody > tr') }
+    statsTypeOptions { $('#scope option') }
   }
 }

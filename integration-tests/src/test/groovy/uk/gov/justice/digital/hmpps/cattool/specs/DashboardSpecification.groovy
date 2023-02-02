@@ -104,6 +104,10 @@ class DashboardSpecification extends AbstractSpecification {
     when: 'the user goes to the dashboard with no search criteria'
     to DashboardInitialPage
 
+    then: 'all male prisons option is displayed'
+    at DashboardInitialPage
+    statsTypeOptions*.text().contains('all male prisons')
+
     then: 'The stats displayed are as follows'
     numbersTableRows[0].find('td')*.text() == ['C', '', '', '2', '50.0%']
     numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '1', '25.0%']
@@ -112,6 +116,7 @@ class DashboardSpecification extends AbstractSpecification {
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
     securityTableRows[2].find('td')*.text() == ['Flagged', '0']
+    securityTableRows[3].find('td')*.text() == ['Total', '2']
 
     timelinessTableRows*.text() == [
       'Number of days before due date that approval occurred 1.75',
@@ -141,6 +146,7 @@ class DashboardSpecification extends AbstractSpecification {
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '3']
     securityTableRows[2].find('td')*.text() == ['Flagged', '0']
+    securityTableRows[3].find('td')*.text() == ['Total', '5']
 
     timelinessTableRows*.text() == [
       'Number of days before due date that approval occurred 3.56',
@@ -209,6 +215,7 @@ class DashboardSpecification extends AbstractSpecification {
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
     securityTableRows[2].find('td')*.text() == ['Flagged', '1']
+    securityTableRows[3].find('td')*.text() == ['Total', '3']
 
     timelinessTableRows*.text() == [
       'Number of days before due date that approval occurred 2.2',
@@ -236,6 +243,7 @@ class DashboardSpecification extends AbstractSpecification {
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '2']
     securityTableRows[2].find('td')*.text() == ['Flagged', '1']
+    securityTableRows[3].find('td')*.text() == ['Total', '5']
 
     timelinessTableRows*.text() == [
       'Number of days before due date that approval occurred -1.56',
