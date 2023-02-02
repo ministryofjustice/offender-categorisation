@@ -94,6 +94,7 @@ class DashboardSpecification extends AbstractSpecification {
     // BXI initial referred to security
     dbRow(26, 'BXI', 'INITIAL', "'2019-07-01T00:00Z'", "'2019-07-20T00:00Z'", "'2019-07-29T00:00Z'", '2019-07-22', '2019-07-29', '2019-08-03', ic('C').build(), SECURITY_AUTO)
     dbRow(27, 'BXI', 'INITIAL', "'2019-07-01T00:00Z'", "'2019-07-20T00:00Z'", "'2019-07-29T00:00Z'", '2019-07-22', '2019-07-29', '2019-08-03', ic('I').securityType(SecurityType.MANUAL).build())
+    dbRow(28, 'BXI', 'INITIAL', "'2019-07-01T00:00Z'", "'2019-07-20T00:00Z'", "'2019-07-29T00:00Z'", '2019-07-22', '2019-07-29', '2019-08-03', ic('C').build(), SECURITY_AUTO)
 
     given: 'a supervisor is logged in'
     elite2Api.stubUncategorisedAwaitingApproval()
@@ -104,9 +105,9 @@ class DashboardSpecification extends AbstractSpecification {
     to DashboardInitialPage
 
     then: 'The stats displayed are as follows'
-    numbersTableRows[0].find('td')*.text() == ['C', '', '', '2']
-    numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '1']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'D', '1']
+    numbersTableRows[0].find('td')*.text() == ['C', '', '', '2', '50.0%']
+    numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '1', '25.0%']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'D', '1', '25.0%']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
@@ -131,28 +132,28 @@ class DashboardSpecification extends AbstractSpecification {
 
     then: 'the stats are as follows'
     at DashboardInitialPage
-    numbersTableRows[0].find('td')*.text() == ['C', '', '', '3']
-    numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '2']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'C', '1']
-    numbersTableRows[3].find('td')*.text() == ['C', 'B', 'D', '1']
-    numbersTableRows[4].find('td')*.text() == ['YOI Closed', '', '', '1']
+    numbersTableRows[0].find('td')*.text() == ['C', '', '', '4', '44.4%']
+    numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '2', '22.2%']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'C', '1', '11.1%']
+    numbersTableRows[3].find('td')*.text() == ['C', 'B', 'D', '1', '11.1%']
+    numbersTableRows[4].find('td')*.text() == ['YOI Closed', '', '', '1', '11.1%']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
-    securityTableRows[1].find('td')*.text() == ['Automatic', '2']
+    securityTableRows[1].find('td')*.text() == ['Automatic', '3']
     securityTableRows[2].find('td')*.text() == ['Flagged', '0']
 
     timelinessTableRows*.text() == [
-      'Number of days before due date that approval occurred 3.38',
-      'Security referral timeliness (Days from start to referral) 13.93',
-      'Days in security 4.79',
-      'Start to assessment completion (days) 20.75',
-      'Assessment to approval (days) 8']
+      'Number of days before due date that approval occurred 3.56',
+      'Security referral timeliness (Days from start to referral) 14.95',
+      'Days in security 5.63',
+      'Start to assessment completion (days) 20.78',
+      'Assessment to approval (days) 7.89']
 
     completionTableRows*.text() == [
-      'Before due date 87.5% 7',
+      'Before due date 88.89% 8',
       'Late 1']
 
-    total.text() == 'Total: 8'
+    total.text() == 'Total: 9'
 
     when: 'the user filters by a date range'
     form.startDate = '30/07/2019'
