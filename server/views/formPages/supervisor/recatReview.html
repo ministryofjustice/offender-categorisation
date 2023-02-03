@@ -27,11 +27,19 @@
 
     {% set currentCat = data.recat.decision.category %}
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
+      {% if currentCat === 'D' or currentCat === 'I' or currentCat === 'J' or currentCat === 'R' or currentCat === 'T' %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      {% else %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
+      {% endif %}
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        {% if isFemale %}
-          The categoriser recommends category {{ femaleCatMappings(currentCat) }}
+        {% if currentCat === 'D' or currentCat === 'T'%}
+          The categoriser recommends open
+        {% elseif currentCat === 'R' %}
+          The categoriser recommends closed
+        {% elseif currentCat === 'I' or currentCat === 'J' %}
+           The categoriser recommends category {{ femaleCatMappings(currentCat)}}
         {% else %}
           The categoriser recommends category {{ catDisplay(currentCat) }}
         {% endif %}

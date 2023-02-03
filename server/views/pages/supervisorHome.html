@@ -74,7 +74,7 @@
       {% if user.activeCaseLoad.female %}
         <td class="govuk-table__cell">{{ femaleCatMappings(row.category) }}</td>
       {% else %}
-        <td class="govuk-table__cell">{{ row.category }}</td>
+        <td class="govuk-table__cell">{{ catDisplay(row.category) }}</td>
       {% endif %}
       <td class="govuk-table__cell">{{ row.catType }}</td>
       <td class="govuk-table__cell">

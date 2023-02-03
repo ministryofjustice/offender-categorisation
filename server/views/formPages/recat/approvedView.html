@@ -61,13 +61,21 @@
 
     <h2 class="govuk-heading-s no-print">Categoriser decision</h2>
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+      {% if currentCat === 'D' or currentCat === 'I' or currentCat === 'J' or currentCat === 'R' or currentCat === 'T' %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      {% else %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+      {% endif %}
       <div class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        {% if isFemale %}
-          The categoriser recommends category {{ femaleCatMappings(categoriserCat) }}
+        {% if categoriserCat === 'D' or categoriserCat === 'T' %}
+          The categoriser recommends open
+        {% elseif categoriserCat === 'R' %}
+          The categoriser recommends closed
+        {% elseif categoriserCat === 'I' or categoriserCat === 'J' %}
+          The categoriser recommends category {{ femaleCat(categoriserCat) }}
         {% else %}
-          The categoriser recommends category {{ catDisplay(categoriserCat) }}
+          The categoriser recommends category {{ categoriserCat }}
         {% endif %}
       </div>
     </div>
@@ -75,7 +83,11 @@
     <h2 class="govuk-heading-s no-print">Supervisor decision</h2>
     {% if superCat %}
       <div class="govuk-warning-text forms-supervisor-info-text warning-overrides no-print">
-        <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ categoriserCat }}</span>
+        {% if currentCat === 'D' or currentCat === 'I' or currentCat === 'J' or currentCat === 'R' or currentCat === 'T' %}
+          <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">!</span>
+        {% else %}
+          <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ categoriserCat }}</span>
+        {% endif %}
         <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
         <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
         <div class="govuk-warning-text__text override-icon-text">
@@ -89,13 +101,21 @@
       </div>
     {% else %}
       <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
-        <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+        {% if currentCat === 'D' or currentCat === 'I' or currentCat === 'J' or currentCat === 'R' or currentCat === 'T' %}
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        {% else %}
+          <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+        {% endif %}
         <div class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          {% if isFemale %}
-            The supervisor also recommends category {{ femaleCatMappings(categoriserCat) }}
+          {% if categoriserCat === 'D' or categoriserCat === 'T' %}
+            The supervisor also recommends open
+          {% elseif categoriserCat === 'R' %}
+            The supervisor also recommends closed
+          {% elseif categoriserCat === 'I' or categoriserCat === 'J' %}
+            The supervisor also recommends category {{ femaleCat(categoriserCat) }}
           {% else %}
-            The supervisor also recommends category {{ catDisplay(categoriserCat) }}
+            The supervisor also recommends category {{ categoriserCat }}
           {% endif %}
         </div>
       </div>

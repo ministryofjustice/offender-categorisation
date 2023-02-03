@@ -118,10 +118,14 @@ const filterJsonObjectForLogging = json => {
 
 const catDisplay = cat => {
   switch (cat) {
+    case 'D':
+      return 'Open'
     case 'I':
       return 'YOI Closed'
     case 'J':
       return 'YOI Open'
+    case 'U':
+      return 'Unsentenced'
     default:
       return cat
   }
@@ -129,8 +133,6 @@ const catDisplay = cat => {
 
 const femaleCatMappings = cat => {
   switch (cat) {
-    case 'D':
-      return 'Open'
     case 'I':
       return 'YOI closed'
     case 'J':
