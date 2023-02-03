@@ -221,7 +221,7 @@ module.exports = function Index({
         const { start, end, prisonId } = await getParams(req, res)
         const initial = await statsService.getInitialCategoryOutcomes(start, end, prisonId, transactionalDbClient)
         const security = await statsService.getSecurityReferrals(INIT, start, end, prisonId, transactionalDbClient)
-        const timeliness = await statsService.getTimeliness(INIT, start, end, prisonId, transactionalDbClient)
+        const timeline = await statsService.getTimeline(INIT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(INIT, start, end, prisonId, transactionalDbClient)
         const total = getTotal(initial)
         const scopeValues = [
@@ -233,11 +233,12 @@ module.exports = function Index({
           scopeValues,
           initial,
           security,
-          timeliness,
+          timeline,
           onTime,
           total,
           errors,
           ...req.query,
+          catType: CatType.INITIAL.name,
         })
       }
     })
@@ -257,7 +258,7 @@ module.exports = function Index({
         const table = await statsService.getRecatFromTo(start, end, prisonId, transactionalDbClient)
         const recat = await statsService.getRecatCategoryOutcomes(start, end, prisonId, transactionalDbClient)
         const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, transactionalDbClient)
-        const timeliness = await statsService.getTimeliness(RECAT, start, end, prisonId, transactionalDbClient)
+        const timeline = await statsService.getTimeline(RECAT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, transactionalDbClient)
         const total = getTotal(recat)
         const scopeValues = [
@@ -270,11 +271,12 @@ module.exports = function Index({
           table,
           recat,
           security,
-          timeliness,
+          timeline,
           onTime,
           total,
           errors,
           ...req.query,
+          catType: CatType.RECAT.name,
         })
       }
     })

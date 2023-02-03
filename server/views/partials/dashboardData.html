@@ -21,6 +21,9 @@
   </table>
 
   <h3>Average durations</h3>
+  {% if catType == 'INITIAL'%}
+    <p>Not all initial categorisations get sent to security.</p>
+  {% endif %}
   <table class="govuk-table" id="timeline">
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row ">
