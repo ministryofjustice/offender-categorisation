@@ -20,6 +20,7 @@
   <p>The statistics on this page are for approved initial categorisations.</p>
   {% include "../partials/dashboardForm.html" %}
   <hr/>
+  <br />
   <div class="govuk-!-width-two-thirds">
     <h3>Initial categorisation decisions</h3>
     <table class="govuk-table" id="initialTable">
@@ -28,8 +29,8 @@
           <th class="govuk-table__header" scope="col">Suggested category</th>
           <th class="govuk-table__header" scope="col">Categoriser override</th>
           <th class="govuk-table__header" scope="col">Supervisor override</th>
-          <th class="govuk-table__header" scope="col">Numbers</th>
           <th class="govuk-table__header" scope="col">Percentage</th>
+          <th class="govuk-table__header" scope="col">Numbers</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -38,16 +39,16 @@
             <td class="govuk-table__cell">{{ catDisplay(row.initialCat) }}</td>
             <td class="govuk-table__cell">{{ catDisplay(row.initialOverride) }}</td>
             <td class="govuk-table__cell">{{ catDisplay(row.superOverride) }}</td>
-            <td class="govuk-table__cell govuk-table__cell--numeric">{{ row.count }}</td>
             <td class="govuk-table__cell govuk-table__cell--numeric">{{ (row.count / total * 100) | fixed }}%</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ row.count }}</td>
           </tr>
         {% endfor %}
         <tr class="govuk-table__row ">
           <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
           <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
           <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
-          <td class="govuk-table__cell govuk-!-font-weight-bold govuk-table__cell--numeric">{{ total }}</td>
           <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
+          <td class="govuk-table__cell govuk-!-font-weight-bold govuk-table__cell--numeric">{{ total }}</td>
         </tr>
       </tbody>
     </table>

@@ -65,8 +65,8 @@ module.exports = function createstatsService(statsClient) {
       }
     },
 
-    async getTimeliness(catType, startDate, endDate, prisonId, transactionalClient) {
-      const stats = await statsClient.getTimeliness(catType, startDate, endDate, prisonId, transactionalClient)
+    async getTimeline(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getTimeline(catType, startDate, endDate, prisonId, transactionalClient)
       return stats.rows[0]
     },
 

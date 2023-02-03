@@ -20,28 +20,24 @@
     </tbody>
   </table>
 
-  <h3>Timeliness Averages</h3>
-  <table class="govuk-table" id="timeliness">
+  <h3>Average durations</h3>
+  <table class="govuk-table" id="timeline">
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Number of days before due date that approval occurred</td>
-      <td class="govuk-table__cell"> {{ timeliness.approvalTimelinessDays | round(2)}}</td>
+      <td class="govuk-table__cell">Assessment started to sent to security</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"> {{ timeline.fromStartToReferred | round(2)}} days</td>
     </tr>
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Security referral timeliness (Days from start to referral)</td>
-      <td class="govuk-table__cell"> {{ timeliness.securityReferralTimelinessDays | round(2)}}</td>
+      <td class="govuk-table__cell">Sent to security to security review complete</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"> {{ timeline.fromReferredToSecurityReviewed | round(2)}} days</td>
     </tr>
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Days in security</td>
-      <td class="govuk-table__cell"> {{ timeliness.inSecurityDays | round(2)}}</td>
+      <td class="govuk-table__cell">Security review complete to approval complete</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"> {{ timeline.fromSecurityReviewedToApproval | round(2)}} days</td>
     </tr>
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Start to assessment completion (days)</td>
-      <td class="govuk-table__cell"> {{ timeliness.startToAssessmentDays | round(2)}}</td>
-    </tr>
-    <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Assessment to approval (days)</td>
-      <td class="govuk-table__cell"> {{ timeliness.assessmentToApprovalDays | round(2) }}</td>
+      <td class="govuk-table__cell">Assessment started to approval complete</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"> {{ timeline.fromStartToApproval | round(2)}} days</td>
     </tr>
     </tbody>
   </table>
@@ -73,5 +69,3 @@
     </tr>
     </tbody>
   </table>
-
-  <p id="total">Total: {{ total }}</p>
