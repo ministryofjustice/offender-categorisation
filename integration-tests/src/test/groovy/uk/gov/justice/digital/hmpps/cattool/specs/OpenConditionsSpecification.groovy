@@ -447,7 +447,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'The correct category is retrieved, data is correct and open conditions section is displayed'
     at CategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is D'
+    categoryDiv.text() contains 'Category for approval is Open'
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
 
     data.status == ["AWAITING_APPROVAL"]
@@ -496,7 +496,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewPage
-    categories*.text() == ['D\nWarning\nCategory D', 'B\nD\nWarning\nThe recommended category was changed from a B to a D', 'D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['!\nWarning\nOpen category', 'B\nD\nWarning\nThe recommended category was changed from a B to open', '!\nWarning\nThe supervisor also recommends open']
     comments*.text() == ['categoriser override to D comment']
     otherInformationSummary.text() == 'categoriser relevant info 1'
     commentLabel.size() == 1
@@ -602,8 +602,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'details are correct'
     at ApprovedViewPage
     categories*.text() == ['C\nWarning\nCategory C',
-                           'B\nD\nWarning\nThe recommended category was changed from a B to a D',
-                           'D\nC\nWarning\nThe recommended category was changed from a D to a C']
+                           'B\nD\nWarning\nThe recommended category was changed from a B to open',
+                           'D\nC\nWarning\nThe recommended category was changed from open to a C']
     comments*.text() == ['categoriser override to D comment', 'super changed D to C', 'super other info']
     otherInformationSummary.text() == 'categoriser relevant info 1'
     commentLabel.size() == 2
@@ -706,7 +706,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'The correct category is retrieved'
     at CategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is D'
+    categoryDiv.text() contains 'Category for approval is Open'
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
@@ -744,7 +744,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewPage
-    categories*.text() == ['D\nWarning\nCategory D', 'D\nWarning\nThe categoriser recommends category D', 'D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['!\nWarning\nOpen category', 'D\nWarning\nThe categoriser recommends open', '!\nWarning\nThe supervisor also recommends open']
     comments*.text() == ['super overriding C to D reason text', 'super other info 1']
     otherInformationSummary.text() == 'categoriser relevant info for accept'
     commentLabel.size() == 1
