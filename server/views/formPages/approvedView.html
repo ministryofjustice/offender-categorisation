@@ -57,7 +57,9 @@
       {% endif %}
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        {% if isFemale %}
+        {% if isFemale and (currentCat === 'R' or currentCat === 'T') %}
+          {{ femaleCatMappings(currentCat) }} category
+        {% elseif isFemale %}
           Category {{ femaleCatMappings(currentCat) }}
         {% elseif currentCat === 'D' %}
            {{ catDisplay(currentCat) }} category
@@ -81,6 +83,8 @@
             The recommended category was changed from open to a {{ catDisplay(overriddenCat) }}
           {% elseif overriddenCat === 'D' %}
             The recommended category was changed from a {{ catDisplay(cat) }} to open
+          {% elseif cat === 'D' %}
+            The recommended category was changed from open to a {{ catDisplay(overiddenCat) }}
           {% else %}
             The recommended category was changed from a {{ catDisplay(cat) }} to a {{ catDisplay(overriddenCat) }}
           {% endif %}
@@ -114,13 +118,21 @@
     <h2 class="govuk-heading-s no-print">Supervisor decision</h2>
     {% if superCat %}
       <div class="govuk-warning-text forms-supervisor-info-text warning-overrides no-print">
-        <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ categoriserCat }}</span>
+        {% if isFemale %}
+          <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">!</span>
+        {% else %}
+          <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ categoriserCat }}</span>
+        {% endif %}}
         <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
-        <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
+        {% if isFemale %}
+          <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">!</span>
+        {% else %}
+          <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
+        {% endif %}
         <div class="govuk-warning-text__text override-icon-text">
           <span class="govuk-warning-text__assistive">Warning</span>
           {% if isFemale %}
-           The recommended category was changed from {{ femaleCatMappings(categoriserCat) }} to  {{ femaleCatMappings(superCat) }}
+           The recommended category was changed from {{ femaleCatMappings(categoriserCat) }} to {{ femaleCatMappings(superCat) }}
           {% elseif categoriserCat === 'D' %}
             The recommended category was changed from open to a {{ catDisplay(superCat) }}
           {% elseif superCat === 'D' %}
