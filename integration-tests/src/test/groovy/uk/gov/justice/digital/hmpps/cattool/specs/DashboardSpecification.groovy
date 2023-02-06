@@ -125,8 +125,8 @@ class DashboardSpecification extends AbstractSpecification {
       'Assessment started to approval complete 29.5 days']
 
     completionTableRows*.text() == [
-      'Before due date 75% 3',
-      'Late 25% 1',
+      'Before due date 75.0% 3',
+      'Late 25.0% 1',
       'Total 4']
 
     when: 'the user selects the whole estate'
@@ -153,8 +153,8 @@ class DashboardSpecification extends AbstractSpecification {
       'Assessment started to approval complete 28.67 days']
 
     completionTableRows*.text() == [
-      'Before due date 88.89% 8',
-      'Late 11.11% 1',
+      'Before due date 88.9% 8',
+      'Late 11.1% 1',
       'Total 9']
   }
 
@@ -211,8 +211,8 @@ class DashboardSpecification extends AbstractSpecification {
       'Assessment started to approval complete 30.8 days']
 
     completionTableRows*.text() == [
-      'Before due date 60% 3',
-      'Late 40% 2',
+      'Before due date 60.0% 3',
+      'Late 40.0% 2',
       'Total 5']
 
     when: 'the user selects the whole estate'
@@ -237,8 +237,8 @@ class DashboardSpecification extends AbstractSpecification {
       'Assessment started to approval complete 34.56 days']
 
     completionTableRows*.text() == [
-      'Before due date 44.44% 4',
-      'Late 55.56% 5',
+      'Before due date 44.4% 4',
+      'Late 55.6% 5',
       'Total 9']
   }
 

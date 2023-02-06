@@ -57,12 +57,12 @@
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">Before due date</td>
-      <td class="govuk-table__cell govuk-table__cell--numeric">{{ (100 * onTime.onTime / onTime.total) | round(2) + '%' if onTime.total > 0 }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ (100 * onTime.onTime / onTime.total) | fixed + '%' if onTime.total > 0 }}</td>
       <td class="govuk-table__cell govuk-table__cell--numeric">{{ onTime.onTime }}</td>
     </tr>
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">Late</td>
-      <td class="govuk-table__cell govuk-table__cell--numeric">{{ (100 * onTime.notOnTime / onTime.total) | round(2) + '%' if onTime.total > 0 }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ (100 * onTime.notOnTime / onTime.total) | fixed + '%' if onTime.total > 0 }}</td>
       <td class="govuk-table__cell govuk-table__cell--numeric">{{ onTime.notOnTime }}</td>
     </tr>
     <tr class="govuk-table__row">
