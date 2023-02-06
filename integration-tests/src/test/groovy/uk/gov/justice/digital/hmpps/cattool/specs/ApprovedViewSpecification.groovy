@@ -49,9 +49,9 @@ class ApprovedViewSpecification extends AbstractSpecification {
 
 
     then: 'the cat details are correct'
-    categories*.text() == ['D\nWarning\nCategory D',
+    categories*.text() == ['!\nWarning\nOpen category',
                            'B\nC\nWarning\nThe recommended category was changed from a B to a C',
-                           'C\nD\nWarning\nThe recommended category was changed from a C to a D']
+                           'C\nD\nWarning\nThe recommended category was changed from a C to open']
     comments*.text() == ['Here are the categoriser\'s comments on why the category was changed',
                          'Here are the supervisor\'s comments on why the category was changed']
 

@@ -75,9 +75,9 @@ class ApprovedViewSpecification extends AbstractSpecification {
     navigateToView()
 
     then: 'the cat details are correct'
-    categories*.text() == ['!\nWarning\nCategory D',
+    categories*.text() == ['!\nWarning\nOpen category',
                            'C\nWarning\nThe categoriser recommends category C',
-                           'C\nD\nWarning\nThe recommended category was changed from a C to a D']
+                           'C\nD\nWarning\nThe recommended category was changed from a C to open']
     comments.text() == 'Here are the supervisor\'s comments on why the category was changed'
     openConditionsHeader.isDisplayed()
 

@@ -50,11 +50,17 @@
     {% set currentCat = superCat or overriddenCat or cat %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
+      {% if currentCat === 'D' or currentCat === 'I' or currentCat === 'J' or currentCat === 'R' or currentCat === 'T' %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      {% else %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
+      {% endif %}
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
         {% if isFemale %}
           Category {{ femaleCatMappings(currentCat) }}
+        {% elseif currentCat === 'D' %}
+           {{ catDisplay(currentCat) }} category
         {% else %}
           Category {{ catDisplay(currentCat) }}
         {% endif %}
@@ -70,7 +76,11 @@
         <div class="govuk-warning-text__text override-icon-text">
           <span class="govuk-warning-text__assistive">Warning</span>
           {% if isFemale %}
-            The recommended category was changed from a {{ femaleCatMappings(cat) }} to a {{ femaleCatMappings(overriddenCat) }}
+            The recommended category was changed from {{ femaleCatMappings(cat) }} to {{ femaleCatMappings(overriddenCat) }}
+          {% elseif cat === 'D' %}
+            The recommended category was changed from open to a {{ catDisplay(overriddenCat) }}
+          {% elseif overriddenCat === 'D' %}
+            The recommended category was changed from a {{ catDisplay(cat) }} to open
           {% else %}
             The recommended category was changed from a {{ catDisplay(cat) }} to a {{ catDisplay(overriddenCat) }}
           {% endif %}
@@ -88,7 +98,11 @@
         <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
         <div class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          {% if isFemale %}
+          {% if cat === 'D' or cat === 'T' %}
+            The categoriser recommends open
+          {% elseif categoriserCat === 'R' %}
+            The categoriser recommends closed
+          {% elseif cat === 'I' or cat === 'J' %}
             The categoriser recommends category {{ femaleCatMappings(cat) }}
           {% else %}
             The categoriser recommends category {{ catDisplay(cat) }}
@@ -106,7 +120,11 @@
         <div class="govuk-warning-text__text override-icon-text">
           <span class="govuk-warning-text__assistive">Warning</span>
           {% if isFemale %}
-           The recommended category was changed from a {{ femaleCatMappings(categoriserCat) }} to a {{ femaleCatMappings(superCat) }}
+           The recommended category was changed from {{ femaleCatMappings(categoriserCat) }} to  {{ femaleCatMappings(superCat) }}
+          {% elseif categoriserCat === 'D' %}
+            The recommended category was changed from open to a {{ catDisplay(superCat) }}
+          {% elseif superCat === 'D' %}
+            The recommended category was changed from a {{ catDisplay(categoriserCat) }} to open
           {% else %}
             The recommended category was changed from a {{ catDisplay(categoriserCat) }} to a {{ catDisplay(superCat) }}
           {% endif %}
@@ -114,13 +132,21 @@
       </div>
     {% else %}
       <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
-        <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+        {% if categoriserCat === 'D' or categoriserCat === 'I' or categoriserCat === 'J' or categoriserCat === 'R' or categoriserCat === 'T' %}
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        {% else %}
+          <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+        {% endif %}
         <div class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          {% if isFemale %}
-            The supervisor also recommends category {{ femaleCatMappings(categoriserCat) }}
+          {% if categoriserCat === 'D' or categoriserCat === 'T' %}
+            The supervisor also recommends open
+          {% elseif categoriserCat === 'R' %}
+            The supervisor also recommends closed
+          {% elseif categoriserCat === 'I' or categoriserCat === 'J' %}
+            The supervisor also recommends category {{ femaleCat(categoriserCat) }}
           {% else %}
-            The supervisor also recommends category {{ catDisplay(categoriserCat) }}
+            The supervisor also recommends category {{ categoriserCat }}
           {% endif %}
         </div>
       </div>
