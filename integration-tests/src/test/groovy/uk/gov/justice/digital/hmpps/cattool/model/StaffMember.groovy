@@ -16,7 +16,8 @@ enum StaffMember {
     SM_7(-7, BXI, BXI, 'Officer2', 'Wing', null, true),
     SM_8(-8, WAI, WAI, 'Officer3', 'Wing', null, true),
     SM_9(-9, SYI, SYI, 'Officer4', 'Wing', null, true),
-    SM_10(-10, LEI, LEI, 'Officer', 'Ex', null, false)
+    SM_10(-10, LEI, LEI, 'Officer', 'Ex', null, false),
+    SM_11(-11, PFI, PFI, 'Officer5', 'Ex11', null, true)
 
     Integer id
     Caseload assginedCaseload

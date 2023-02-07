@@ -25,7 +25,7 @@ class Elite2Api extends WireMockRule {
   }
 
   void stubGetMyDetails(UserAccount user) {
-    stubGetMyDetails(user, Caseload.LEI.id)
+    stubGetMyDetails(user, user.workingCaseload.id)
   }
 
   void stubGetMyDetails(UserAccount user, String caseloadId) {
@@ -637,6 +637,27 @@ class Elite2Api extends WireMockRule {
     )
   }
 
+
+  void stubUncategorisedNoStatus(bookingId, location) {
+    this.stubFor(
+      get("/api/offender-assessments/category/${location}?type=UNCATEGORISED")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([
+              [
+                bookingId : bookingId,
+                offenderNo: "ON${bookingId}",
+                firstName : 'WILLIAM',
+                lastName  : 'BONNET',
+                status    : 'UNCATEGORISED',
+              ],
+            ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
   def stubSentenceDataGetSingle(String offenderNo, String formattedReleaseDate) {
     def response = [
       [
@@ -806,6 +827,7 @@ class Elite2Api extends WireMockRule {
             .withHeader('Content-Type', 'application/json')
             .withStatus(200))
     )
+
 
     def sentenceDetail = [
       bookingId                         : bookingId,

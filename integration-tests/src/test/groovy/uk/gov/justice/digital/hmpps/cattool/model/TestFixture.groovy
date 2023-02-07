@@ -15,6 +15,7 @@ import java.time.temporal.ChronoField
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_USER
 
 class TestFixture {
 
@@ -84,6 +85,22 @@ class TestFixture {
   '6 years, 3 months (Std sentence)']
   public static final MINI_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
 
+  public static final FULL_HEADER1 = ['B2345YZ', '17/02/1970', 'T',
+                                     'C-04-02', 'Coventry',
+                                     'Latvian',
+                                     'A Felony', 'Another Felony',
+                                     '10/06/2020',
+                                     '11/06/2020',
+                                     '02/02/2020',
+                                     '13/06/2020',
+                                     '14/06/2020',
+                                     '15/06/2020',
+                                     '16/06/2020',
+                                     '17/06/2020',
+                                     '6 years, 3 months (Std sentence)']
+
+
+
   TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1, AllocationApi allocationApi1, PrisonerSearchApi prisonerSearchApi) {
     this.browser = browser
     this.elite2Api = elite2Api
@@ -122,6 +139,9 @@ class TestFixture {
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
     browser.selectSecondPrisoner()
   }
+
+
+
 
   def gotoTasklistRecat(transferToSecurity = false, indeterminateSentence = false) {
     elite2Api.stubRecategorise()
@@ -168,7 +188,7 @@ class TestFixture {
     def stateParam = requests[-1].request.queryParams['state']
     def state = stateParam ? stateParam.values[0] : requests[-2].request.queryParams['state'].values[0]
     // Simulate auth server calling the callback, which then gets a token (from wiremock) and goes to homepage
-    browser.go "/login/callback?code=codexxxx&state=$state"
+    browser.go "/sign-in/callback?code=codexxxx&state=$state"
   }
 
   def logout() {

@@ -92,6 +92,11 @@ class DatabaseUtils {
     doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
 
+  def createRiskProfileDataWomen(bookingId, json) {
+    doCreateCompleteRow(-1, bookingId, null, 'FEMALE_USER', 'STARTED', 'INITIAL', null, null, null, 1, json, 'PFI', 'dummy', 'current_timestamp(2)', null, null)
+  }
+
+
   def createRiskProfileDataForExistingRow(bookingId, json) {
     sql.executeUpdate("update form set risk_profile = ?::JSON where booking_id = $bookingId", json)
   }
