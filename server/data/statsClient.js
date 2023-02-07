@@ -1,10 +1,34 @@
-const whereClause = `status = 'APPROVED' and
+const { femalePrisonIds } = require('../config')
+const StatsType = require('../utils/statsTypeEnum')
+
+const whereClauseStart = `status = 'APPROVED' and
   cat_type = $1::cat_type_enum and
   ($2::date is null or $2::date <= approval_date) and
-  ($3::date is null or approval_date <= $3::date) and
-  ($4::varchar is null or $4::varchar = prison_id)`
+  ($3::date is null or approval_date <= $3::date)`
+
+const femalePrisonIdCsv = femalePrisonIds.split(',').join(`','`)
+const femaleInClause = ` and prison_id in ('${femalePrisonIdCsv}')`
+const femaleNotInClause = ` and prison_id not in ('${femalePrisonIdCsv}')`
+
+function createWhereClause(prisonId) {
+  let endPart
+  if (prisonId === StatsType.MALE) {
+    endPart = femaleNotInClause
+  } else if (prisonId === StatsType.FEMALE) {
+    endPart = femaleInClause
+  } else if (prisonId === null || prisonId === undefined) {
+    endPart = femaleNotInClause // fallback
+  } else {
+    endPart = ` and prison_id = '${prisonId}'`
+  }
+  return whereClauseStart + endPart
+}
 
 module.exports = {
+  getWhereClause(prisonId) {
+    return createWhereClause(prisonId)
+  },
+
   getInitialCategoryOutcomes(startDate, endDate, prisonId, transactionalClient) {
     const query = {
       text: `select count(*),
@@ -12,10 +36,10 @@ module.exports = {
                form_response -> 'categoriser'->'provisionalCategory' ->>'overriddenCategory' as "initialOverride",
                form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory' as "superOverride"
              from form
-             where ${whereClause}
+             where ${createWhereClause(prisonId)}
              group by "initialCat", "initialOverride",  "superOverride"
              order by "initialCat",  "initialOverride" NULLS FIRST, "superOverride" NULLS FIRST`,
-      values: ['INITIAL', startDate, endDate, prisonId],
+      values: ['INITIAL', startDate, endDate],
     }
     return transactionalClient.query(query)
   },
@@ -26,10 +50,10 @@ module.exports = {
                     form_response -> 'recat' -> 'decision' ->>'category' as recat,
                     form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory' as "superOverride"
              from form
-             where ${whereClause}
+             where ${createWhereClause(prisonId)}
              group by recat, "superOverride"
              order by recat, "superOverride" NULLS FIRST`,
-      values: ['RECAT', startDate, endDate, prisonId],
+      values: ['RECAT', startDate, endDate],
     }
     return transactionalClient.query(query)
   },
@@ -58,7 +82,7 @@ module.exports = {
                  coalesce(f.form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory',
                           f.form_response -> 'recat' -> 'decision' ->> 'category') as cat
           from form as f
-          where ${whereClause}
+          where ${createWhereClause(prisonId)}
         ),
              arrays_table as (
                select array_agg(array [prison_id,previous_cat,cat] order by sequence_no desc) as data
@@ -68,7 +92,7 @@ module.exports = {
         select count(*), data[1][2] as previous, data[1][3] as current
         from arrays_table
         group by previous, current`,
-      values: ['RECAT', startDate, endDate, prisonId],
+      values: ['RECAT', startDate, endDate],
     }
     return transactionalClient.query(query)
   },
@@ -85,23 +109,22 @@ module.exports = {
                ELSE 'flagged'
                END as "security"
              from form
-             where referred_date is not null and ${whereClause}
+             where referred_date is not null and ${createWhereClause(prisonId)}
              group by "security"`,
-      values: [catType, startDate, endDate, prisonId],
+      values: [catType, startDate, endDate],
     }
     return transactionalClient.query(query)
   },
 
-  getTimeliness(catType, startDate, endDate, prisonId, transactionalClient) {
+  getTimeline(catType, startDate, endDate, prisonId, transactionalClient) {
     const query = {
-      text: `select avg(extract(day from (due_by_date - date_trunc('day', approval_date))))  as "approvalTimelinessDays",
-                    avg(extract(epoch from (referred_date - start_date))/86400)               as "securityReferralTimelinessDays",
-                    avg(extract(epoch from (security_reviewed_date - referred_date))/86400)   as "inSecurityDays",
-                    avg(extract(day from (assessment_date - date_trunc('day', start_date)))) as "startToAssessmentDays",
-                    avg(approval_date - assessment_date)                                     as "assessmentToApprovalDays"
+      text: `select avg(extract(day from (date_trunc('day', referred_date) - date_trunc('day', start_date))))              as "fromStartToReferred",
+                    avg(extract(day from (date_trunc('day', security_reviewed_date) - date_trunc('day', referred_date))))  as "fromReferredToSecurityReviewed",
+                    avg(extract(day from (approval_date - date_trunc('day', security_reviewed_date))))  as "fromSecurityReviewedToApproval",
+                    avg(extract(day from (approval_date - date_trunc('day', start_date))))  as "fromStartToApproval"
              from form
-             where ${whereClause}`,
-      values: [catType, startDate, endDate, prisonId],
+             where ${createWhereClause(prisonId)}`,
+      values: [catType, startDate, endDate],
     }
     return transactionalClient.query(query)
   },
@@ -111,9 +134,9 @@ module.exports = {
       text: `select count(*),
                     extract(day from (coalesce(due_by_date, approval_date) - date_trunc('day', approval_date))) >= 0 as "onTime"
              from form
-             where ${whereClause}
+             where ${createWhereClause(prisonId)}
              group by "onTime"`,
-      values: [catType, startDate, endDate, prisonId],
+      values: [catType, startDate, endDate],
     }
     return transactionalClient.query(query)
   },

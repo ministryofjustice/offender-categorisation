@@ -5,6 +5,8 @@ const prisonId = 'LEI'
 
 const statsClient = {
   getRecatFromTo: jest.fn(),
+  getSecurityReferrals: jest.fn(),
+  getOnTime: jest.fn(),
 }
 
 let service
@@ -60,5 +62,56 @@ describe('getRecatFromTo', () => {
       [undefined, undefined, undefined, undefined, undefined, 0],
       [0, 13, 0, 5, 2, 20],
     ])
+  })
+})
+
+describe('getSecurityReferrals', () => {
+  test('should get security referrals', async () => {
+    statsClient.getSecurityReferrals.mockReturnValue({
+      rows: [
+        {
+          count: 1,
+          security: 'manual',
+        },
+        {
+          count: 1,
+          security: 'auto',
+        },
+        {
+          count: 1,
+          security: 'flagged',
+        },
+      ],
+    })
+    const actual = await service.getSecurityReferrals('INITIAL', 'dummy', 'dummy', prisonId, mockTransactionalClient)
+    expect(actual).toEqual({
+      manual: 1,
+      auto: 1,
+      flagged: 1,
+      total: 3,
+    })
+  })
+})
+
+describe('getOnTime', () => {
+  test('should get completion details', async () => {
+    statsClient.getOnTime.mockReturnValue({
+      rows: [
+        {
+          count: 1,
+          onTime: true,
+        },
+        {
+          count: 2,
+          onTime: false,
+        },
+      ],
+    })
+    const actual = await service.getOnTime('INITIAL', 'dummy', 'dummy', prisonId, mockTransactionalClient)
+    expect(actual).toEqual({
+      onTime: 1,
+      notOnTime: 2,
+      total: 3,
+    })
   })
 })

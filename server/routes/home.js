@@ -8,6 +8,7 @@ const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { dateConverterToISO } = require('../utils/utils')
 const securityConfig = require('../config/security')
+const StatsType = require('../utils/statsTypeEnum')
 
 const formConfig = {
   security: securityConfig,
@@ -192,7 +193,14 @@ module.exports = function Index({
     const { startDate, endDate, scope } = req.query
     const start = startDate ? dateConverterToISO(startDate) : null
     const end = endDate ? dateConverterToISO(endDate) : null
-    const prisonId = scope === 'all' ? null : res.locals.user.activeCaseLoadId
+    let prisonId
+    if (scope === 'all' && res.locals.user.activeCaseLoad.female) {
+      prisonId = StatsType.FEMALE
+    } else if (scope === 'all' && !res.locals.user.activeCaseLoad.female) {
+      prisonId = StatsType.MALE
+    } else {
+      prisonId = res.locals.user.activeCaseLoadId
+    }
     return { start, end, prisonId }
   }
 
@@ -213,11 +221,25 @@ module.exports = function Index({
         const { start, end, prisonId } = await getParams(req, res)
         const initial = await statsService.getInitialCategoryOutcomes(start, end, prisonId, transactionalDbClient)
         const security = await statsService.getSecurityReferrals(INIT, start, end, prisonId, transactionalDbClient)
-        const timeliness = await statsService.getTimeliness(INIT, start, end, prisonId, transactionalDbClient)
+        const timeline = await statsService.getTimeline(INIT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(INIT, start, end, prisonId, transactionalDbClient)
         const total = getTotal(initial)
+        const scopeValues = [
+          user.activeCaseLoad.description,
+          user.activeCaseLoad.female ? StatsType.FEMALE.value : StatsType.MALE.value,
+        ]
 
-        res.render('pages/dashboardInitial', { initial, security, timeliness, onTime, total, errors, ...req.query })
+        res.render('pages/dashboardInitial', {
+          scopeValues,
+          initial,
+          security,
+          timeline,
+          onTime,
+          total,
+          errors,
+          ...req.query,
+          catType: CatType.INITIAL.name,
+        })
       }
     })
   )
@@ -236,11 +258,26 @@ module.exports = function Index({
         const table = await statsService.getRecatFromTo(start, end, prisonId, transactionalDbClient)
         const recat = await statsService.getRecatCategoryOutcomes(start, end, prisonId, transactionalDbClient)
         const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, transactionalDbClient)
-        const timeliness = await statsService.getTimeliness(RECAT, start, end, prisonId, transactionalDbClient)
+        const timeline = await statsService.getTimeline(RECAT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, transactionalDbClient)
         const total = getTotal(recat)
+        const scopeValues = [
+          user.activeCaseLoad.description,
+          user.activeCaseLoad.female ? StatsType.FEMALE.value : StatsType.MALE.value,
+        ]
 
-        res.render('pages/dashboardRecat', { table, recat, security, timeliness, onTime, total, errors, ...req.query })
+        res.render('pages/dashboardRecat', {
+          scopeValues,
+          table,
+          recat,
+          security,
+          timeline,
+          onTime,
+          total,
+          errors,
+          ...req.query,
+          catType: CatType.RECAT.name,
+        })
       }
     })
   )

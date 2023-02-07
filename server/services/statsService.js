@@ -54,24 +54,31 @@ module.exports = function createstatsService(statsClient) {
       const stats = await statsClient.getSecurityReferrals(catType, startDate, endDate, prisonId, transactionalClient)
 
       const { rows } = stats
+      const manual = getCount(rows, 'security', 'manual')
+      const auto = getCount(rows, 'security', 'auto')
+      const flagged = getCount(rows, 'security', 'flagged')
       return {
-        manual: getCount(rows, 'security', 'manual'),
-        auto: getCount(rows, 'security', 'auto'),
-        flagged: getCount(rows, 'security', 'flagged'),
+        manual,
+        auto,
+        flagged,
+        total: manual + auto + flagged,
       }
     },
 
-    async getTimeliness(catType, startDate, endDate, prisonId, transactionalClient) {
-      const stats = await statsClient.getTimeliness(catType, startDate, endDate, prisonId, transactionalClient)
+    async getTimeline(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getTimeline(catType, startDate, endDate, prisonId, transactionalClient)
       return stats.rows[0]
     },
 
     async getOnTime(catType, startDate, endDate, prisonId, transactionalClient) {
       const stats = await statsClient.getOnTime(catType, startDate, endDate, prisonId, transactionalClient)
       const { rows } = stats
+      const onTime = getCount(rows, 'onTime', true)
+      const notOnTime = getCount(rows, 'onTime', false)
       return {
-        onTime: getCount(rows, 'onTime', true),
-        notOnTime: getCount(rows, 'onTime', false),
+        onTime,
+        notOnTime,
+        total: onTime + notOnTime,
       }
     },
   }
