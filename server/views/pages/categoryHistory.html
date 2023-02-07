@@ -34,8 +34,10 @@
         {% for row in data.history %}
           <tr class="govuk-table__row ">
             <td class="govuk-table__cell"> {{ row.approvalDateDisplay }}</td>
+            <!-- womens shows as a word -->
+            <!-- mens shows as a letter unless YOI Open/YOI Closed -->
             {% if user.activeCaseLoad.female %}
-              <td class="govuk-table__cell">{{ femaleCatMappings(row.classificationCode) }}</td>
+              <td class="govuk-table__cell">{{ catHistoryMappings(row.classificationCode) }}</td>
             {% else %}
               <td class="govuk-table__cell">{{ catDisplay(row.classificationCode) }}</td>
             {% endif %}

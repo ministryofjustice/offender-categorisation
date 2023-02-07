@@ -418,7 +418,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     then: 'The previous category reviews page is displayed correctly'
     at CategoryHistoryPage
-    rows[0].find('td')*.text() == ['18/06/2019', 'Unsentenced', 'LPI prison', 'View (opens in new tab)']
+    rows[0].find('td')*.text() == ['18/06/2019', 'U', 'LPI prison', 'View (opens in new tab)']
     rows[1].find('td')*.text() == ['08/06/2018', 'P', 'LPI prison', 'View (opens in new tab)']
     rows[2].find('td')*.text() == ['24/03/2013', 'B', 'LPI prison', ''] // no local record means no view link provided
     rows[3].find('td')*.text() == ['08/06/2012', 'A', 'LPI prison', '']

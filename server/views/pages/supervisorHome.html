@@ -71,8 +71,10 @@
       <td class="govuk-table__cell">{{ row.dateRequired }}</td>
       <td class="govuk-table__cell">{{ row.nextReviewDate }}</td>
       <td class="govuk-table__cell">{{ row.categoriserDisplayName }}</td>
+      <!-- female must show as open/closed/unsentenced/YOI open/YOI close -->
+      <!-- mens must show as letter and YOI Open/YOI Closed -->
       {% if user.activeCaseLoad.female %}
-        <td class="govuk-table__cell">{{ femaleCatMappings(row.category) }}</td>
+        <td class="govuk-table__cell">{{ catHistoryMappings(row.category) }}</td>
       {% else %}
         <td class="govuk-table__cell">{{ row.category }}</td>
       {% endif %}

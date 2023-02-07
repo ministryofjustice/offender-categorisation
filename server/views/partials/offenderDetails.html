@@ -32,8 +32,8 @@
         {{ headerValue(codeDetails) }}
       {% elif user.activeCaseLoad.female and (data.details.categoryCode == 'I' or data.details.categoryCode == 'J' or
            data.details.categoryCode == 'R' or data.details.categoryCode == 'T') %}
-        {% set codeDetails %} {{ femaleCatMappings(data.details.categoryCode) }} {% endset %}
-        {% set codeDetails %} {{ femaleCatMappings(data.details.categoryCode) }} {% endset %}
+        {% set codeDetails %} {{ catHistoryMappings(data.details.categoryCode) }} {% endset %}
+        {% set codeDetails %} {{ catHistoryMappings(data.details.categoryCode) }} {% endset %}
         {{ headerValue(codeDetails) }}
       {% elif not user.activeCaseLoad.female and (data.details.categoryCode == 'I' or data.details.categoryCode == 'J') %}
         {% set codeDetails %} {{ catDisplay(data.details.categoryCode) }} {% endset %}

@@ -35,10 +35,13 @@
   {% endif %}
   <strong class="govuk-warning-text__text">
     <span class="govuk-warning-text__assistive">Warning</span>
-    {% if cat == 'D' or cat == 'T' or cat == 'J' %}
+    <!-- cat D/T must say open -->
+    <!-- womens must say a word -->
+    <!-- mens must stay be a letter -->
+    {% if cat == 'D' or cat == 'T' %}
       The provisional category is open
     {% elseif user.activeCaseLoad.female %}
-      The provisional category is {{ femaleCatMappings(cat) }}
+      The provisional category is {{ catHistoryMappings(cat) }}
     {% else %}
       The provisional category is {{ catDisplay(cat) }}
     {% endif %}

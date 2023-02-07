@@ -60,8 +60,10 @@
       <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
+      <!-- female must show as open/closed/restricted/YOI open/YOI closed -->
+      <!-- mens must show as the category letter unless YOI Open/YOI Closed -->
       {% if user.activeCaseLoad.female %}
-        <td class="govuk-table__cell">{{ femaleCatMappings(row.category) }}</td>
+        <td class="govuk-table__cell">{{ catHistoryMappings(row.category) }}</td>
       {% else %}
         <td class="govuk-table__cell">{{ row.category }}</td>
       {% endif %}

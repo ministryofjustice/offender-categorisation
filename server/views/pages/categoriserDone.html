@@ -55,8 +55,9 @@
       <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
+      <!--- Mens cat D must show as D --->
       {% if user.activeCaseLoad.female %}
-        <td class="govuk-table__cell">{{ femaleCatMappings(row.category) }}</td>
+        <td class="govuk-table__cell">{{ catHistoryMappings(row.category) }}</td>
       {% else %}
         <td class="govuk-table__cell">{{ row.category }}</td>
       {% endif %}

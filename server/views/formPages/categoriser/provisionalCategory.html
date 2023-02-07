@@ -101,8 +101,10 @@
   <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
   <strong class="govuk-warning-text__text">
     <span class="govuk-warning-text__assistive">Warning</span>
+    <!-- womens shows a word -->
+    <!-- mens shows a letter or YOI Open/YOI closed -->
     {% if user.activeCaseLoad.female %}
-      Based on the information provided, the provisional category is {{ femaleCatMappings(cat) }}
+      Based on the information provided, the provisional category is {{ catHistoryMappings(cat) }}
     {% else %}
       Based on the information provided, the provisional category is {{ catDisplay(cat) }}
     {% endif %}

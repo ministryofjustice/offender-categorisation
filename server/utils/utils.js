@@ -117,22 +117,16 @@ const filterJsonObjectForLogging = json => {
 }
 
 const catDisplay = cat => {
+  if (cat === 'D') return 'Open'
+  if (cat === 'I') return 'YOI Closed'
+  if (cat === 'J') return 'YOI Open'
+  return cat
+}
+
+const catHistoryMappings = cat => {
   switch (cat) {
     case 'D':
       return 'Open'
-    case 'I':
-      return 'YOI Closed'
-    case 'J':
-      return 'YOI Open'
-    case 'U':
-      return 'Unsentenced'
-    default:
-      return cat
-  }
-}
-
-const femaleCatMappings = cat => {
-  switch (cat) {
     case 'I':
       return 'YOI closed'
     case 'J':
@@ -209,7 +203,7 @@ module.exports = {
   linkOnClick,
   filterJsonObjectForLogging,
   catDisplay,
-  femaleCatMappings,
+  catHistoryMappings,
   calculateNextReviewDate,
   choosingHigherCategory,
   offenderLink,

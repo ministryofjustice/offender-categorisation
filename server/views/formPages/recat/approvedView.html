@@ -51,10 +51,14 @@
       {% endif %}
         <strong class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
+          <!-- if women and open or closed must say open category or closed category-->
+          <!-- if womens must say category Unsentenced/Category YOI open/Category YOI closed -->
+          <!-- if mens cat D must say open category -->
+          <!-- otherwise must say Category B, Category C, Category YOI Open, Category YOI Closed -->
           {% if isFemale and (currentCat === 'R' or currentCat === 'T') %}
-            {{ femaleCatMappings(currentCat) }} category
+            {{ catHistoryMappings(currentCat) }} category
           {% elseif isFemale %}
-            Category {{ femaleCatMappings(currentCat) }}
+            Category {{ catHistoryMappings(currentCat) }}
           {% elseif currentCat === 'D' %}
             {{ catDisplay(currentCat) }} category
           {% else %}
@@ -77,7 +81,7 @@
         {% elseif categoriserCat === 'R' %}
           The categoriser recommends closed
         {% elseif categoriserCat === 'I' or categoriserCat === 'J' %}
-          The categoriser recommends category {{ femaleCatMappings(categoriserCat) }}
+          The categoriser recommends category {{ catHistoryMappings(categoriserCat) }}
         {% else %}
           The categoriser recommends category {{ categoriserCat }}
         {% endif %}
@@ -101,7 +105,7 @@
         <div class="govuk-warning-text__text override-icon-text">
           <span class="govuk-warning-text__assistive">Warning</span>
           {% if isFemale %}
-            The recommended category was changed from {{ femaleCatMappings(categoriserCat) }} to {{ femaleCatMappings(superCat) }}
+            The recommended category was changed from {{ catHistoryMappings(categoriserCat) }} to {{ catHistoryMappings(superCat) }}
           {% elseif categoriserCat === 'D' %}
             The recommended category was changed from open to a {{ catDisplay(superCat) }}
           {% elseif superCat === 'D' %}
@@ -125,7 +129,7 @@
           {% elseif categoriserCat === 'R' %}
             The supervisor also recommends closed
           {% elseif categoriserCat === 'I' or categoriserCat === 'J' %}
-            The supervisor also recommends category {{ femaleCat(categoriserCat) }}
+            The supervisor also recommends category {{ catHistoryMappings(categoriserCat) }}
           {% else %}
             The supervisor also recommends category {{ categoriserCat }}
           {% endif %}

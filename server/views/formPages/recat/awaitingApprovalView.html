@@ -21,8 +21,10 @@
       {% endif %}
         <strong class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
+          <!-- womens must be a word -->
+          <!-- mens must be a letter unless YOI Open/YOI Closed -->
           {% if user.activeCaseLoad.female %}
-            Category for approval is {{ femaleCatMappings(cat) }}
+            Category for approval is {{ catHistoryMappings(cat) }}
           {% else %}
             Category for approval is {{ catDisplay(cat) }}
           {% endif %}

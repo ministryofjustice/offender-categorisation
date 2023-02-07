@@ -34,10 +34,12 @@
       <tbody class="govuk-table__body">
         {% for row in initial %}
           <tr class="govuk-table__row ">
+            <!-- mens cat D can show as Open -->
+            <!-- womens shows a word -->
             {% if user.activeCaseLoad.female %}
-              <td class="govuk-table__cell">{{ femaleCatMappings(row.initialCat) }}</td>
-              <td class="govuk-table__cell">{{ femaleCatMappings(row.initialOverride) }}</td>
-              <td class="govuk-table__cell">{{ femaleCatMappings(row.superOverride) }}</td>
+              <td class="govuk-table__cell">{{ catHistoryMappings(row.initialCat) }}</td>
+              <td class="govuk-table__cell">{{ catHistoryMappings(row.initialOverride) }}</td>
+              <td class="govuk-table__cell">{{ catHistoryMappings(row.superOverride) }}</td>
             {% else %}
               <td class="govuk-table__cell">{{ catDisplay(row.initialCat) }}</td>
               <td class="govuk-table__cell">{{ catDisplay(row.initialOverride) }}</td>

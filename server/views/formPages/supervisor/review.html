@@ -38,7 +38,7 @@
       <strong class="govuk-warning-text__text override-icon-text">
         <span class="govuk-warning-text__assistive">Warning</span>
         {% if isFemale %}
-          The category was originally {{ femaleCatMappings(cat) }} and is now {{ femaleCatMappings(overriddenCat) }}
+          The category was originally {{ catHistoryMappings(cat) }} and is now {{ catHistoryMappings(overriddenCat) }}
         {% else %}
           The category was originally {{ catDisplay(cat) }} and is now {{ catDisplay(overriddenCat) }}
         {% endif %}
@@ -55,7 +55,7 @@
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
         {% if  isFemale %}
-          Based on the information provided, the provisional category is {{ femaleCatMappings(cat) }}
+          Based on the information provided, the provisional category is {{ catHistoryMappings(cat) }}
         {% else %}
           Based on the information provided, the provisional category is {{ catDisplay(cat) }}
         {% endif %}
