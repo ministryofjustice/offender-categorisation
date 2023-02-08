@@ -79,11 +79,11 @@
           {% if isFemale %}
             The recommended category was changed from {{ catHistoryMappings(cat, isFemale) }} to {{ catHistoryMappings(overriddenCat, isFemale) }}
           {% elseif cat === 'D' %}
-            The recommended category was changed from open to a {{ catDisplay(overriddenCat, false) }}
+            The recommended category was changed from open to a {{ catDisplay(overriddenCat) }}
           {% elseif overriddenCat === 'D' %}
-            The recommended category was changed from a {{ catDisplay(cat, false) }} to open
+            The recommended category was changed from a {{ catDisplay(cat) }} to open
           {% elseif cat === 'D' %}
-            The recommended category was changed from open to a {{ catDisplay(overiddenCat, false) }}
+            The recommended category was changed from open to a {{ catDisplay(overiddenCat) }}
           {% else %}
             The recommended category was changed from a {{ catDisplay(cat) }} to a {{ catDisplay(overriddenCat) }}
           {% endif %}
