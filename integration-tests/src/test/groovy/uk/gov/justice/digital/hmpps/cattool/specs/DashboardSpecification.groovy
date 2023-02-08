@@ -106,7 +106,7 @@ class DashboardSpecification extends AbstractSpecification {
     then: 'The stats displayed are as follows'
     numbersTableRows[0].find('td')*.text() == ['C', '', '', '2']
     numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '1']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'D', '1']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'Open', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
@@ -134,8 +134,8 @@ class DashboardSpecification extends AbstractSpecification {
     numbersTableRows[0].find('td')*.text() == ['C', '', '', '3']
     numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '2']
     numbersTableRows[2].find('td')*.text() == ['C', 'B', 'C', '1']
-    numbersTableRows[3].find('td')*.text() == ['C', 'B', 'D', '1']
-    numbersTableRows[4].find('td')*.text() == ['YOI Closed', '', '', '1']
+    numbersTableRows[3].find('td')*.text() == ['C', 'B', 'Open', '1']
+    numbersTableRows[4].find('td')*.text() == ['YOI closed', '', '', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '2']
@@ -307,7 +307,7 @@ class DashboardSpecification extends AbstractSpecification {
     then: 'The stats displayed are as follows'
     reviewNumbersTableRows[0].find('td')*.text() == ['B', '1', '6', '2', '', '', '9']
     reviewNumbersTableRows[1].find('td')*.text() == ['C', '1', '4', '3', '', '', '8']
-    reviewNumbersTableRows[2].find('td')*.text() == ['D', '1', '', '', '', '', '1']
+    reviewNumbersTableRows[2].find('td')*.text() == ['Open', '1', '', '', '', '', '1']
     reviewNumbersTableRows[3].find('td')*.text() == ['YOI closed', '', '', '', '3', '2', '5']
     reviewNumbersTableRows[4].find('td')*.text() == ['YOI open', '', '', '', '', '', '0']
     reviewNumbersTableRows[5].find('td')*.text() == ['Total', '3', '10', '5', '3', '2', '23']
