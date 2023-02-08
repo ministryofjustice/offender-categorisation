@@ -124,9 +124,10 @@ const catDisplay = cat => {
 }
 
 const catHistoryMappings = (cat, isFemale, ignoreD) => {
-  if(cat === 'D' && ignoreD){
+  if (cat === 'D' && ignoreD) {
     return cat
-  } else if(isFemale) {
+  }
+  if (isFemale) {
     switch (cat) {
       case 'I':
         return 'YOI closed'
