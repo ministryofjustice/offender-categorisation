@@ -101,10 +101,8 @@
         <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
         <div class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          {% if cat === 'D' or cat === 'T' %}
-            The categoriser recommends open
-          {% elseif categoriserCat === 'R' %}
-            The categoriser recommends closed
+          {% if cat === 'D' or cat === 'T' or categoriserCat === 'R' %}
+            The categoriser recommends {{ catHistoryMappings(cat, isFemale) | lower }}
           {% else %}
             The categoriser recommends category {{ catDisplay(cat) }}
           {% endif %}
