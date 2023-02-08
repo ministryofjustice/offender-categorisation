@@ -1,12 +1,18 @@
 package uk.gov.justice.digital.hmpps.cattool.specs
 
 import groovy.json.JsonOutput
+import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
+import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDatePage
 import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDateQuestionPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserEscapePage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.ExtremismPage
@@ -14,9 +20,8 @@ import uk.gov.justice.digital.hmpps.cattool.pages.ratings.ViolencePage
 
 import java.time.LocalDate
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_USER
-
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.WOMEN_SUPERVISOR_USER
 
 class WomenEstateSpecification extends AbstractSpecification {
 
@@ -27,12 +32,11 @@ class WomenEstateSpecification extends AbstractSpecification {
     prisonerSearchApi.stubSentenceData(['ON700'], [700], [TODAY.plusDays(-3).toString()])
     fixture.loginAs(FEMALE_USER)
     at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(700, "ON700")
-    riskProfilerApi.stubForTasklists('ON700', 'T', false)
+    elite2Api.stubGetOffenderDetails1(700, "ON700")
+    riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
     startButtons[0].click()
     at(new TasklistPage(bookingId: '700'))
     headerValue*.text() == fixture.FULL_HEADER1
-//    headerValue*.text() == ['ON700', '17/02/1970', 'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']
     elite2Api.stubAssessments(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     elite2Api.stubOffenceHistory('ON700')
@@ -43,7 +47,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     at TasklistPage
 
     when: 'I go to the violence page'
-    riskProfilerApi.stubGetViolenceProfile('ON700', 'T', false, false, false)
+    riskProfilerApi.stubGetViolenceProfile('ON700', 'U(Unsentenced)', false, false, false)
     violenceButton.click()
     at ViolencePage
     !warning.displayed
@@ -55,17 +59,15 @@ class WomenEstateSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '700'))
     elite2Api.stubAssessments(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
-    riskProfilerApi.stubGetEscapeProfile('ON700', 'T', true, false)
+    riskProfilerApi.stubGetEscapeProfile1('ON700', 'U(Unsentenced)', false, false)
     escapeButton.click()
     at(new CategoriserEscapePage(bookingId: '700'))
     escapeOtherEvidenceRadio = 'No'
-    escapeCatBRadio = 'Yes'
-    escapeCatBTextarea << 'escape cat b explanation'
     saveButton.click()
 
     and: 'I go to the extremism page'
     at(new TasklistPage(bookingId: '700'))
-    riskProfilerApi.stubGetExtremismProfile('ON700', 'T', true, false)
+    riskProfilerApi.stubGetExtremismProfile('ON700', 'U(Unsentenced)', true, false, true)
     extremismButton.click()
     at ExtremismPage
     previousTerrorismOffencesYes.click()
@@ -77,7 +79,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '700'))
     elite2Api.stubAssessments(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
-    riskProfilerApi.stubForTasklists('ON700', 'T', false)
+    riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
     securityButton.click()
     at(new CategoriserSecurityInputPage(bookingId: '700'))
     securityRadio = 'No'
@@ -90,31 +92,92 @@ class WomenEstateSpecification extends AbstractSpecification {
     sixMonthsOption.click()
     submitButton.click()
     at NextReviewDatePage
+    reviewDate.value() == SIX_MONTHS_AHEAD
     submitButton.click()
     at TasklistPage
 
-//    elite2Api.stubAssessments('ON700')
-//    elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
-//    elite2Api.stubOffenceHistory('ON700')
-//    riskProfilerApi.stubGetEscapeProfile('ON700', 'T', true, false)
-//    riskProfilerApi.stubGetViolenceProfile('ON700', 'T', false, false, false)
-//    riskProfilerApi.stubGetExtremismProfile('ON700', 'T', true, false)
-//    riskProfilerApi.stubGetLifeProfile('ON700', 'T')
+    elite2Api.stubAssessments('ON700')
+    elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
+    elite2Api.stubOffenceHistory('ON700')
+    riskProfilerApi.stubGetEscapeProfile1('ON700', 'U(Unsentenced)', false, false)
+    riskProfilerApi.stubGetViolenceProfile('ON700', 'U(Unsentenced)', false, false, false)
+    riskProfilerApi.stubGetExtremismProfile('ON700', 'U(Unsentenced)', true, false, true)
+    riskProfilerApi.stubGetLifeProfile('ON700', 'T')
     summarySection[0].text() == 'Review and categorisation'
     summarySection[1].text() == 'All tasks completed'
-
     continueButton.click()
 
-    then: 'verify details on review page'
+    and: 'verify details on review page'
     at ReviewPage
     headerValue*.text() == fixture.FULL_HEADER1
-    changeLinks.size() == 10
-    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'Yes\nsome convictions']
+    changeLinks.size() == 8
+    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
     violenceRatingSummary*.text() == ['5', '2', 'No', 'No']
-    escapeRatingSummary*.text() == ['No', 'No', 'Yes\nescape cat b explanation']
-    extremismRatingSummary*.text() == ['No', 'No']
-    securityInputSummary*.text() == ['No', 'Yes', 'No']
-    nextReviewDateSummary*.text() == ['Sunday 30 July 2023']
+    escapeRatingSummary*.text() == ['No', 'No', 'No', 'No']
+    extremismRatingSummary*.text() == ['Yes', 'Yes\nSome risk text']
+    securityInputSummary*.text() == ['No', 'No', 'No']
+    nextReviewDateSummary*.text() == [SIX_MONTHS_AHEAD_ISO_DAY]
+    submitButton.click()
+
+    then: 'I am at provisional category page'
+    via ProvisionalCategoryPage, '700'
+    warning[0].text() == '!\nWarning\nThe provisional category is closed'
+    elite2Api.stubCategorise1('R', SIX_MONTHS_AHEAD_ISO)
+    elite2Api.stubUncategorisedNoStatus(700, 'PFI')
+    elite2Api.stubGetOffenderDetails(700, "ON700")
+    appropriateYes.click()
+    submitButton.click()
+    at CategoriserSubmittedPage
+    finishButton.click()
+
   }
+
+  def "The supervisor review page can be confirmed for Women Estate"() {
+    given: 'supervisor is viewing the review page for ON700'
+    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      ratings    : TestFixture.defaultRatingsU,
+      categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+    db.createNomisSeqNo(700, 5)
+    db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([
+      history : [catAType: 'A', finalCat: 'Cat R', catAEndYear: '2013', releaseYear: '2014', catAStartYear: '2012'],
+      offences: [[bookingId: 700, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
+                 [bookingId: 700, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
+                 [bookingId: 700, offenceDescription: 'Undated offence']]
+    ]))
+
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    prisonerSearchApi.stubSentenceData(['ON700'], [700], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedAwaitingApproval('PFI')
+    navigateToReview()
+    headerValue*.text() == fixture.FULL_HEADER1
+    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
+
+    when: 'the supervisor selects yes (after changing their mind)'
+    elite2Api.stubSupervisorApprove("R")
+    appropriateYes.click()
+    submitButton.click()
+
+    then: 'the review outcome page is displayed and review choices persisted'
+    at SupervisorReviewOutcomePage
+    dcsSurveyLink.displayed
+  }
+
+    private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true) {
+      def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+      def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+      prisonerSearchApi.stubSentenceData(['ON700'], [700], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+      elite2Api.stubUncategorisedAwaitingApproval('PFI')
+
+      fixture.loginAs(WOMEN_SUPERVISOR_USER)
+      at SupervisorHomePage
+      elite2Api.stubGetOffenderDetails1(700, "ON700")
+      elite2Api.stubAssessments(['ON700'])
+      elite2Api.stubAgencyDetails('PFI')
+      elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
+      startButton.click()
+      at SupervisorReviewPage
+    }
+
 
 }

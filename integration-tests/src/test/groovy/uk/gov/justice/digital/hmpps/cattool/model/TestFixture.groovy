@@ -48,6 +48,15 @@ class TestFixture {
     nextReviewDate  : [date: "14/12/2019"]
   ]
 
+  public static final defaultRatingsU = [
+    offendingHistory: [previousConvictions: "No"],
+    securityInput   : [securityInputNeeded: "No"],
+    violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
+    escapeRating    : [escapeOtherEvidence: "No"],
+    extremismRating : [previousTerrorismOffences: "Yes"],
+    nextReviewDate  : [date: "14/12/2019"]
+  ]
+
   public static final defaultRecat = [
     decision          : [category: "C"],
     oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
@@ -85,7 +94,7 @@ class TestFixture {
   '6 years, 3 months (Std sentence)']
   public static final MINI_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
 
-  public static final FULL_HEADER1 = ['B2345YZ', '17/02/1970', 'T',
+  public static final FULL_HEADER1 = ['ON700', '17/02/1970', 'U(Unsentenced)',
                                      'C-04-02', 'Coventry',
                                      'Latvian',
                                      'A Felony', 'Another Felony',
@@ -188,7 +197,7 @@ class TestFixture {
     def stateParam = requests[-1].request.queryParams['state']
     def state = stateParam ? stateParam.values[0] : requests[-2].request.queryParams['state'].values[0]
     // Simulate auth server calling the callback, which then gets a token (from wiremock) and goes to homepage
-    browser.go "/sign-in/callback?code=codexxxx&state=$state"
+    browser.go "/login/callback?code=codexxxx&state=$state"
   }
 
   def logout() {

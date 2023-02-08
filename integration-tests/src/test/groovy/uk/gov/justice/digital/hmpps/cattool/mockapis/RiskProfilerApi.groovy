@@ -100,6 +100,24 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
             ]))))
   }
 
+  void stubGetEscapeProfile1(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
+    this.stubFor(
+      get("/risk-profile/escape/${offenderno}")
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withHeader('Content-Type', 'application/json')
+            .withBody(JsonOutput.toJson([
+              nomsId                   : offenderno,
+              riskType                 : 'ESCAPE',
+              provisionalCategorisation: category,
+              activeEscapeList         : onEscapeList,
+              activeEscapeRisk         : activeOnEscapeList,
+              ],
+            ))))
+  }
+
+
   void stubGetExtremismProfile(String offenderno, String category, boolean increasedRisk, boolean notifyRegionalCTLead, boolean previousOffences = false) {
     this.stubFor(
       get("/risk-profile/extremism/$offenderno?previousOffences=$previousOffences")

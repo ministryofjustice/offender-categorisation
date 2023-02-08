@@ -31,7 +31,7 @@ function init(signInService) {
       tokenURL: `${config.apis.oauth2.url}/oauth/token`,
       clientID: config.apis.oauth2.apiClientId,
       clientSecret: config.apis.oauth2.apiClientSecret,
-      callbackURL: `${config.domain}/sign-in/callback`,
+      callbackURL: `${config.domain}/login/callback`,
       state: true,
       customHeaders: { Authorization: generateOauthClientToken() },
     },

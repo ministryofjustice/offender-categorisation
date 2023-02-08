@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
 
-class ProvisionalCategorySpecification extends AbstractSpecification {
+class   ProvisionalCategorySpecification extends AbstractSpecification {
 
   public static final TRICKY_TEXT = '!"£$%^&*()_+-={}[]:@~;\'#<>?,./|\\'
 
