@@ -43,8 +43,8 @@ class ApprovedViewSpecification extends AbstractSpecification {
     then: 'the cat details are correct and full prisoner background data is shown'
     headerValue*.text() == fixture.FULL_HEADER
     categories*.text() == ['C\nWarning\nCategory C',
-                           'C\nWarning\nThe categoriser recommends category C',
-                           'C\nWarning\nThe supervisor also recommends category C']
+                           'C\nWarning\nThe categoriser recommends Category C',
+                           'C\nWarning\nThe supervisor also recommends Category C']
     !comments.displayed
     comments.size() == 0
     !openConditionsHeader.isDisplayed()
@@ -76,8 +76,8 @@ class ApprovedViewSpecification extends AbstractSpecification {
 
     then: 'the cat details are correct'
     categories*.text() == ['!\nWarning\nOpen category',
-                           'C\nWarning\nThe categoriser recommends category C',
-                           'C\nD\nWarning\nThe recommended category was changed from a C to open']
+                           'C\nWarning\nThe categoriser recommends Category C',
+                           'C\n!\nWarning\nThe recommended category was changed from Category C to open category']
     comments.text() == 'Here are the supervisor\'s comments on why the category was changed'
     openConditionsHeader.isDisplayed()
 

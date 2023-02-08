@@ -35,7 +35,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
 
     then: 'The page is displayed correctly'
-    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
+    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is Category B'
 
     when: 'I enter some data, save and return to the page'
     elite2Api.stubCategorise('C', '2019-12-14')
@@ -91,7 +91,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
 
     then: 'The provisional category is B'
-    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
+    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is Category B'
   }
 
   def 'Validation test'() {
@@ -150,7 +150,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat J'
-    warning.text().contains 'the provisional category is YOI Closed'
+    warning.text().contains 'the provisional category is YOI closed'
     newCatMessage.text() == 'Changing to YOI Open'
 
     when: 'Changing to Cat J'
@@ -233,7 +233,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The page is displayed correctly'
     !indeterminateWarning.displayed
-    warning[0].text() == 'C\nWarning\nBased on the information provided, the provisional category is C'
+    warning[0].text() == 'C\nWarning\nBased on the information provided, the provisional category is Category C'
     overriddenCategoryD.click()
     indeterminateWarning.displayed
   }
@@ -289,7 +289,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The page redirects to the open conditions version and shows cat D'
     at new ProvisionalCategoryOpenPage(bookingId: '12')
-    warning[0].text() == '!\nWarning\nThe provisional category is open'
+    warning[0].text() == '!\nWarning\nThe provisional category is open category'
 
     when: 'I confirm Cat D'
     elite2Api.stubCategorise('D', '2019-12-14')
@@ -337,7 +337,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The page redirects to the open conditions version and shows cat D'
     at new ProvisionalCategoryOpenPage(bookingId: '12')
-    warning[0].text() == '!\nWarning\nThe provisional category is open'
+    warning[0].text() == '!\nWarning\nThe provisional category is open category'
 
     when: 'I reject Cat D'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
