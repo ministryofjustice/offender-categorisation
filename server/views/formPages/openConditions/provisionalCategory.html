@@ -40,10 +40,8 @@
     <!-- mens must stay be a letter -->
     {% if cat == 'D' or cat == 'T' %}
       The provisional category is open
-    {% elseif user.activeCaseLoad.female %}
-      The provisional category is {{ catHistoryMappings(cat) }}
     {% else %}
-      The provisional category is {{ catDisplay(cat) }}
+      The provisional category is {{ catHistoryMappings(cat, user.activeCaseLoad.female) }}
     {% endif %}
   </strong>
 </div>

@@ -39,7 +39,7 @@
         {% elseif currentCat === 'R' %}
           The categoriser recommends closed
         {% elseif currentCat === 'I' or currentCat === 'J' %}
-           The categoriser recommends category {{ catHistoryMappings(currentCat)}}
+           The categoriser recommends category {{ catHistoryMappings(currentCat, user.activeCaseLoad.female)}}
         {% else %}
           The categoriser recommends category {{ catDisplay(currentCat) }}
         {% endif %}

@@ -37,11 +37,7 @@
       <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
       <strong class="govuk-warning-text__text override-icon-text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        {% if isFemale %}
-          The category was originally {{ catHistoryMappings(cat) }} and is now {{ catHistoryMappings(overriddenCat) }}
-        {% else %}
-          The category was originally {{ catDisplay(cat) }} and is now {{ catDisplay(overriddenCat) }}
-        {% endif %}
+        The category was originally {{ catHistoryMappings(cat, user.activeCaseLoad.female) }} and is now {{ catHistoryMappings(overriddenCat, user.activeCaseLoad.female) }}
       </strong>
     </div>
     <div class="govuk-!-margin-bottom-8">
@@ -54,11 +50,7 @@
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        {% if  isFemale %}
-          Based on the information provided, the provisional category is {{ catHistoryMappings(cat) }}
-        {% else %}
-          Based on the information provided, the provisional category is {{ catDisplay(cat) }}
-        {% endif %}
+        Based on the information provided, the provisional category is {{ catHistoryMappings(cat, isFemale) }}
       </strong>
     </div>
     {% endif %}

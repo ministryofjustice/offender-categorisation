@@ -70,11 +70,7 @@
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
       <!-- mens must be a letter -->
       <!-- womens must be mapped -->
-      {% if user.activeCaseLoad.female %}
-        <td class="govuk-table__cell">{{ catHistoryMappings(row.category) }}</td>
-      {% else %}
-        <td class="govuk-table__cell">{{ row.category }}</td>
-      {% endif %}
+      <td class="govuk-table__cell">{{ catHistoryMappings(row.category, user.activeCaseLoad.female, true) }}</td>
       <td class="govuk-table__cell">{{ row.catTypeDisplay }}</td>
       <td class="govuk-table__cell">
         {{ govukButton({

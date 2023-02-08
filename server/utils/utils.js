@@ -123,24 +123,37 @@ const catDisplay = cat => {
   return cat
 }
 
-const catHistoryMappings = cat => {
-  switch (cat) {
-    case 'D':
-      return 'Open'
-    case 'I':
-      return 'YOI closed'
-    case 'J':
-      return 'YOI open'
-    case 'Q':
-      return 'Restricted'
-    case 'R':
-      return 'Closed'
-    case 'T':
-      return 'Open'
-    case 'U':
-      return 'Unsentenced'
-    default:
-      return cat
+const catHistoryMappings = (cat, isFemale, ignoreD) => {
+  if(cat === 'D' && ignoreD){
+    return cat
+  } else if(isFemale) {
+    switch (cat) {
+      case 'I':
+        return 'YOI closed'
+      case 'J':
+        return 'YOI open'
+      case 'Q':
+        return 'Restricted'
+      case 'R':
+        return 'Closed'
+      case 'T':
+        return 'Open'
+      case 'U':
+        return 'Unsentenced'
+      default:
+        return cat
+    }
+  } else {
+    switch (cat) {
+      case 'D':
+        return 'Open'
+      case 'I':
+        return 'YOI Closed'
+      case 'J':
+        return 'YOI Open'
+      default:
+        return cat
+    }
   }
 }
 

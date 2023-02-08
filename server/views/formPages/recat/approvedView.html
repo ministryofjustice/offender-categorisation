@@ -56,9 +56,9 @@
           <!-- if mens cat D must say open category -->
           <!-- otherwise must say Category B, Category C, Category YOI Open, Category YOI Closed -->
           {% if isFemale and (currentCat === 'R' or currentCat === 'T') %}
-            {{ catHistoryMappings(currentCat) }} category
+            {{ catHistoryMappings(currentCat, isFemale) }} category
           {% elseif isFemale %}
-            Category {{ catHistoryMappings(currentCat) }}
+            Category {{ catHistoryMappings(currentCat, isFemale) }}
           {% elseif currentCat === 'D' %}
             {{ catDisplay(currentCat) }} category
           {% else %}
@@ -81,7 +81,7 @@
         {% elseif categoriserCat === 'R' %}
           The categoriser recommends closed
         {% elseif categoriserCat === 'I' or categoriserCat === 'J' %}
-          The categoriser recommends category {{ catHistoryMappings(categoriserCat) }}
+          The categoriser recommends category {{ catHistoryMappings(categoriserCat, user.activeCaseLoad.female) }}
         {% else %}
           The categoriser recommends category {{ categoriserCat }}
         {% endif %}
@@ -105,7 +105,7 @@
         <div class="govuk-warning-text__text override-icon-text">
           <span class="govuk-warning-text__assistive">Warning</span>
           {% if isFemale %}
-            The recommended category was changed from {{ catHistoryMappings(categoriserCat) }} to {{ catHistoryMappings(superCat) }}
+            The recommended category was changed from {{ catHistoryMappings(categoriserCat, isFemale) }} to {{ catHistoryMappings(superCat, isFemale) }}
           {% elseif categoriserCat === 'D' %}
             The recommended category was changed from open to a {{ catDisplay(superCat) }}
           {% elseif superCat === 'D' %}
@@ -129,7 +129,7 @@
           {% elseif categoriserCat === 'R' %}
             The supervisor also recommends closed
           {% elseif categoriserCat === 'I' or categoriserCat === 'J' %}
-            The supervisor also recommends category {{ catHistoryMappings(categoriserCat) }}
+            The supervisor also recommends category {{ catHistoryMappings(categoriserCat, user.activeCaseLoad.female) }}
           {% else %}
             The supervisor also recommends category {{ categoriserCat }}
           {% endif %}

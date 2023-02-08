@@ -18,12 +18,7 @@
   {% for row in data.categorisations %}
   <tr class="govuk-table__row ">
     <td class="govuk-table__cell">{{ row.approvalDateDisplay }}</td>
-    {% if user.activeCaseLoad.female %}
-      <td class="govuk-table__cell">{{ catHistoryMappings(row.classificationCode) }}</td>
-    {% else %}
-      <td class="govuk-table__cell">{{ catDisplay(row.classificationCode) }}</td>
-    {% endif %}
-
+    <td class="govuk-table__cell">{{ catHistoryMappings(row.classificationCode, user.activeCaseLoad.female) }}</td>
     <td class="govuk-table__cell">{{ row.agencyDescription }}</td>
   </tr>
   {% endfor %}
@@ -261,7 +256,7 @@
       },
       {
         key: { text: "What security category is most suitable for this person?" },
-        value: { text: data.recat.decision.category and catHistoryMappings(data.recat.decision.category) },
+        value: { text: data.recat.decision.category and catHistoryMappings(data.recat.decision.category, user.activeCaseLoad.female) },
         actions: { items: [] }
       }
     ]

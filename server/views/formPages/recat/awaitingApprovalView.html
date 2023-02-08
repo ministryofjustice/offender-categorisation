@@ -24,7 +24,7 @@
           <!-- womens must be a word -->
           <!-- mens must be a letter unless YOI Open/YOI Closed -->
           {% if user.activeCaseLoad.female %}
-            Category for approval is {{ catHistoryMappings(cat) }}
+            Category for approval is {{ catHistoryMappings(cat, user.activeCaseLoad.female) }}
           {% else %}
             Category for approval is {{ catDisplay(cat) }}
           {% endif %}

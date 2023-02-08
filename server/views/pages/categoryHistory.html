@@ -36,11 +36,7 @@
             <td class="govuk-table__cell"> {{ row.approvalDateDisplay }}</td>
             <!-- womens shows as a word -->
             <!-- mens shows as a letter unless YOI Open/YOI Closed -->
-            {% if user.activeCaseLoad.female %}
-              <td class="govuk-table__cell">{{ catHistoryMappings(row.classificationCode) }}</td>
-            {% else %}
-              <td class="govuk-table__cell">{{ catDisplay(row.classificationCode) }}</td>
-            {% endif %}
+            <td class="govuk-table__cell">{{ catHistoryMappings(row.classificationCode, user.activeCaseLoad.female, true) }}</td>
             <td class="govuk-table__cell">{{ row.prisonDescription }}</td>
             <td class="govuk-table__cell">
               {% if row.recordExists %}

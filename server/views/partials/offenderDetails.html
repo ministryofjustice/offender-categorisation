@@ -30,16 +30,9 @@
       {% if data.details.categoryCode == 'U' or data.details.categoryCode == 'X' or data.details.categoryCode == 'Z' %}
         {% set codeDetails %}{{ data.details.categoryCode }} ({{ data.details.category }}){% endset %}
         {{ headerValue(codeDetails) }}
-      {% elif user.activeCaseLoad.female and (data.details.categoryCode == 'I' or data.details.categoryCode == 'J' or
-           data.details.categoryCode == 'R' or data.details.categoryCode == 'T') %}
-        {% set codeDetails %} {{ catHistoryMappings(data.details.categoryCode) }} {% endset %}
-        {% set codeDetails %} {{ catHistoryMappings(data.details.categoryCode) }} {% endset %}
-        {{ headerValue(codeDetails) }}
-      {% elif not user.activeCaseLoad.female and (data.details.categoryCode == 'I' or data.details.categoryCode == 'J') %}
-        {% set codeDetails %} {{ catDisplay(data.details.categoryCode) }} {% endset %}
-        {{ headerValue(codeDetails) }}
       {% else %}
-        {{ headerValue(data.details.categoryCode) }}
+        {% set codeDetails %} {{ catHistoryMappings(data.details.categoryCode, user.activeCaseLoad.female, true) }} {% endset %}
+        {{ headerValue(codeDetails) }}
       {% endif %}
     {% endif %}
   </div>

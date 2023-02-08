@@ -104,7 +104,7 @@
     <!-- womens shows a word -->
     <!-- mens shows a letter or YOI Open/YOI closed -->
     {% if user.activeCaseLoad.female %}
-      Based on the information provided, the provisional category is {{ catHistoryMappings(cat) }}
+      Based on the information provided, the provisional category is {{ catHistoryMappings(cat, use.activeCaseLoad.female) }}
     {% else %}
       Based on the information provided, the provisional category is {{ catDisplay(cat) }}
     {% endif %}

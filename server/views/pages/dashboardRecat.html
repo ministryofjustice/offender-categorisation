@@ -105,13 +105,8 @@
           <tr class="govuk-table__row">
             <!-- womens shows a word -->
             <!-- mens shows a letter unless YOI Open/YOI Closed -->
-            {% if user.activeCaseLoad.female %}
-              <td class="govuk-table__cell">{{ catHistoryMappings(row.recat) }}</td>
-              <td class="govuk-table__cell">{{ catHistoryMappings(row.superOverride) }}</td>
-            {% else %}
-              <td class="govuk-table__cell">{{ catDisplay(row.recat) }}</td>
-              <td class="govuk-table__cell">{{ catDisplay(row.superOverride) }}</td>
-            {% endif %}
+            <td class="govuk-table__cell">{{ catHistoryMappings(row.recat, user.activeCaseLoad.female, true) }}</td>
+            <td class="govuk-table__cell">{{ catHistoryMappings(row.superOverride, user.activeCaseLoad.female, true) }}</td>
             <td class="govuk-table__cell">{{ row.count }}</td>
           </tr>
         {% endfor %}
