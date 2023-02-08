@@ -122,39 +122,29 @@ const catDisplay = cat => {
   if (cat === 'J') return 'YOI Open'
   return cat
 }
+const catLabel = cat => {
+  if (cat === 'B' || cat === 'C') return `Category ${catMappings(cat)}`
+  return `${catMappings(cat)} category`
+}
 
-const catHistoryMappings = (cat, isFemale, ignoreD) => {
-  if (cat === 'D' && ignoreD) {
-    return cat
-  }
-  if (isFemale) {
-    switch (cat) {
-      case 'I':
-        return 'YOI closed'
-      case 'J':
-        return 'YOI open'
-      case 'Q':
-        return 'Restricted'
-      case 'R':
-        return 'Closed'
-      case 'T':
-        return 'Open'
-      case 'U':
-        return 'Unsentenced'
-      default:
-        return cat
-    }
-  } else {
-    switch (cat) {
-      case 'D':
-        return 'Open'
-      case 'I':
-        return 'YOI Closed'
-      case 'J':
-        return 'YOI Open'
-      default:
-        return cat
-    }
+const catMappings = cat => {
+  switch (cat) {
+    case 'D':
+      return 'Open'
+    case 'I':
+      return 'YOI closed'
+    case 'J':
+      return 'YOI open'
+    case 'Q':
+      return 'Restricted'
+    case 'R':
+      return 'Closed'
+    case 'T':
+      return 'Open'
+    case 'U':
+      return 'Unsentenced'
+    default:
+      return cat
   }
 }
 
@@ -217,7 +207,8 @@ module.exports = {
   linkOnClick,
   filterJsonObjectForLogging,
   catDisplay,
-  catHistoryMappings,
+  catMappings,
+  catLabel,
   calculateNextReviewDate,
   choosingHigherCategory,
   offenderLink,
