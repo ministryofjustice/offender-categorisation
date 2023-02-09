@@ -116,15 +116,14 @@ const filterJsonObjectForLogging = json => {
   return dup
 }
 
-const catDisplay = cat => {
-  if (cat === 'D') return 'Open'
-  if (cat === 'I') return 'YOI Closed'
-  if (cat === 'J') return 'YOI Open'
-  return cat
-}
 const catLabel = cat => {
   if (cat === 'B' || cat === 'C') return `Category ${catMappings(cat)}`
   return `${catMappings(cat)} category`
+}
+
+const replaceCatLabel = cat => {
+  if (catLabel(cat).startsWith('Open') || catLabel(cat).startsWith('Closed')) return catLabel(cat).toLowerCase()
+  return catLabel(cat)
 }
 
 const catMappings = cat => {
@@ -146,6 +145,11 @@ const catMappings = cat => {
     default:
       return cat
   }
+}
+
+const displayIcon = cat => {
+  if (cat === 'B' || cat === 'C') return cat
+  return '!'
 }
 
 // R.cond is like a switch statement
@@ -206,9 +210,10 @@ module.exports = {
   stripAgencyPrefix,
   linkOnClick,
   filterJsonObjectForLogging,
-  catDisplay,
   catMappings,
   catLabel,
+  displayIcon,
+  replaceCatLabel,
   calculateNextReviewDate,
   choosingHigherCategory,
   offenderLink,

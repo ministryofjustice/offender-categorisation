@@ -17,16 +17,10 @@
     {% set currentCat = overriddenCat if overriddenCat else cat %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
-      {% if currentCat === 'D' or currentCat === 'I' or currentCat === 'J' or currentCat === 'R' or currentCat === 'T' %}
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      {% else %}
-        <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
-      {% endif %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(currentCat) }}</span>
         <strong class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          <!-- womens must be a word -->
-          <!-- mens must be a letter unless YOI Open/YOI Closed -->
-          Category for approval is {{ catHistoryMappings(currentCat, user.activeCaseLoad.female) }}
+          Category for approval is {{ replaceCatLabel(currentCat) }}
         </strong>
     </div>
 

@@ -68,9 +68,7 @@
       <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
-      <!-- mens must be a letter -->
-      <!-- womens must be mapped -->
-      <td class="govuk-table__cell">{{ catHistoryMappings(row.category, user.activeCaseLoad.female, true) }}</td>
+      <td class="govuk-table__cell">{{ catMappings(row.category) }}</td>
       <td class="govuk-table__cell">{{ row.catTypeDisplay }}</td>
       <td class="govuk-table__cell">
         {{ govukButton({

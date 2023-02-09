@@ -51,7 +51,7 @@ class ApprovedViewSpecification extends AbstractSpecification {
     then: 'the cat details are correct'
     categories*.text() == ['!\nWarning\nOpen category',
                            'B\nC\nWarning\nThe recommended category was changed from Category B to Category C',
-                           'C\nD\nWarning\nThe recommended category was changed from Category C to open category']
+                           'C\n!\nWarning\nThe recommended category was changed from Category C to open category']
     comments*.text() == ['Here are the categoriser\'s comments on why the category was changed',
                          'Here are the supervisor\'s comments on why the category was changed']
 
@@ -86,8 +86,8 @@ class ApprovedViewSpecification extends AbstractSpecification {
 
     then: 'the latest cat details are correct'
     categories*.text() == ['C\nWarning\nCategory C',
-                           'C\nWarning\nThe categoriser recommends category C',
-                           'C\nWarning\nThe supervisor also recommends category C']
+                           'C\nWarning\nThe categoriser recommends Category C',
+                           'C\nWarning\nThe supervisor also recommends Category C']
 
     when: "I look at the old categorisation"
     elite2Api.stubAgencyDetails('BXI')
@@ -96,8 +96,8 @@ class ApprovedViewSpecification extends AbstractSpecification {
 
     then: 'the old cat details are shown correctly'
     categories*.text() == ['B\nWarning\nCategory B',
-                           'B\nWarning\nThe categoriser recommends category B',
-                           'B\nWarning\nThe supervisor also recommends category B']
+                           'B\nWarning\nThe categoriser recommends Category B',
+                           'B\nWarning\nThe supervisor also recommends Category B']
   }
 
   private navigateToView() {

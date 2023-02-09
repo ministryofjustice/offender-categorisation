@@ -30,7 +30,7 @@
       {% if data.details.categoryCode == 'U' or data.details.categoryCode == 'X' or data.details.categoryCode == 'Z' %}
         {{ data.details.categoryCode }} ({{ data.details.category }})
       {% else %}
-        {{ catHistoryMappings(data.details.categoryCode, user.activeCaseLoad.female, true) }}
+        {{ catMappings(data.details.categoryCode) }}
       {% endif %}
     {% endif %}
   </div>

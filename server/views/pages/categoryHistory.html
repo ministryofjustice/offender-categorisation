@@ -34,9 +34,7 @@
         {% for row in data.history %}
           <tr class="govuk-table__row ">
             <td class="govuk-table__cell"> {{ row.approvalDateDisplay }}</td>
-            <!-- womens shows as a word -->
-            <!-- mens shows as a letter unless YOI Open/YOI Closed -->
-            <td class="govuk-table__cell">{{ catHistoryMappings(row.classificationCode, user.activeCaseLoad.female, true) }}</td>
+            <td class="govuk-table__cell">{{ catMappings(row.classificationCode) }}</td>
             <td class="govuk-table__cell">{{ row.prisonDescription }}</td>
             <td class="govuk-table__cell">
               {% if row.recordExists %}

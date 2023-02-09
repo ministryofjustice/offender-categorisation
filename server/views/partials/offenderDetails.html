@@ -31,7 +31,7 @@
         {% set codeDetails %}{{ data.details.categoryCode }} ({{ data.details.category }}){% endset %}
         {{ headerValue(codeDetails) }}
       {% else %}
-        {% set codeDetails %} {{ catHistoryMappings(data.details.categoryCode, user.activeCaseLoad.female, true) }} {% endset %}
+        {% set codeDetails %} {{ catMappings(data.details.categoryCode) }} {% endset %}
         {{ headerValue(codeDetails) }}
       {% endif %}
     {% endif %}

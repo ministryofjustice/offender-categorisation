@@ -38,7 +38,7 @@
     {% for row in data.categorisations %}
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">{{ row.approvalDateDisplay }}</td>
-      <td class="govuk-table__cell">{{ catHistoryMappings(row.classificationCode, user.activeCaseLoad.female) }}</td>
+      <td class="govuk-table__cell">{{ catMappings(row.classificationCode) }}</td>
       <td class="govuk-table__cell">{{ row.agencyDescription }}</td>
     </tr>
    {% endfor %}
