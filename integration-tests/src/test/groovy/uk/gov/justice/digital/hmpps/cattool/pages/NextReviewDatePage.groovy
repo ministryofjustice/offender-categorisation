@@ -18,7 +18,6 @@ class NextReviewDatePage extends Page {
     form { $('form') }
     reviewDate { $('#reviewDate') }
 
-
     submitButton { $('button', type: 'submit') }
     errorSummaries { $('ul.govuk-error-summary__list li') }
     errors { $('.govuk-error-message') }

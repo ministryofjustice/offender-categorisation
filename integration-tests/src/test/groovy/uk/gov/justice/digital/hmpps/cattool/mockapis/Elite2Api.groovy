@@ -873,7 +873,7 @@ class Elite2Api extends WireMockRule {
                                                            approvalDate         : '2012-06-08',
                                                            assessmentAgencyId   : "PFI",
                                                            assessmentStatus     : 'No CAT A, Restricted'],
-        ]))
+                                                          ]))
         .withHeader('Content-Type', 'application/json')
         .withStatus(200)))
   }
