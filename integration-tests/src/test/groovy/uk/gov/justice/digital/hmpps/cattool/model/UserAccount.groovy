@@ -19,9 +19,6 @@ enum UserAccount {
     MULTIROLE_USER('MULTIROLE_USER', SM_5, GENERAL, LEI, [LEI], ['ROLE_APPROVE_CATEGORISATION', 'ROLE_CREATE_CATEGORISATION']),
     FEMALE_USER('FEMALE_USER', SM_11, GENERAL, PFI, [PFI, LNI, AGI], ['ROLE_CREATE_CATEGORISATION'])
 
-
-
-
     String username
     StaffMember staffMember
     UserType type

@@ -2,17 +2,7 @@ package uk.gov.justice.digital.hmpps.cattool.specs
 
 import groovy.json.JsonOutput
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSecurityInputPage
-import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserSubmittedPage
-import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDatePage
-import uk.gov.justice.digital.hmpps.cattool.pages.NextReviewDateQuestionPage
-import uk.gov.justice.digital.hmpps.cattool.pages.ReviewPage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewOutcomePage
-import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorReviewPage
-import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
-import uk.gov.justice.digital.hmpps.cattool.pages.ProvisionalCategoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserEscapePage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.ExtremismPage
@@ -32,7 +22,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     prisonerSearchApi.stubSentenceData(['ON700'], [700], [TODAY.plusDays(-3).toString()])
     fixture.loginAs(FEMALE_USER)
     at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails1(700, "ON700")
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
     riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
     startButtons[0].click()
     at(new TasklistPage(bookingId: '700'))
@@ -59,7 +49,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '700'))
     elite2Api.stubAssessments(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
-    riskProfilerApi.stubGetEscapeProfile1('ON700', 'U(Unsentenced)', false, false)
+    riskProfilerApi.stubGetEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
     escapeButton.click()
     at(new CategoriserEscapePage(bookingId: '700'))
     escapeOtherEvidenceRadio = 'No'
@@ -99,7 +89,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     elite2Api.stubAssessments('ON700')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     elite2Api.stubOffenceHistory('ON700')
-    riskProfilerApi.stubGetEscapeProfile1('ON700', 'U(Unsentenced)', false, false)
+    riskProfilerApi.stubGetEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
     riskProfilerApi.stubGetViolenceProfile('ON700', 'U(Unsentenced)', false, false, false)
     riskProfilerApi.stubGetExtremismProfile('ON700', 'U(Unsentenced)', true, false, true)
     riskProfilerApi.stubGetLifeProfile('ON700', 'T')
@@ -122,7 +112,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     then: 'I am at provisional category page'
     via ProvisionalCategoryPage, '700'
     warning[0].text() == '!\nWarning\nThe provisional category is closed'
-    elite2Api.stubCategorise1('R', SIX_MONTHS_AHEAD_ISO)
+    elite2Api.stubCategoriseWomen('R', SIX_MONTHS_AHEAD_ISO)
     elite2Api.stubUncategorisedNoStatus(700, 'PFI')
     elite2Api.stubGetOffenderDetails(700, "ON700")
     appropriateYes.click()
@@ -134,16 +124,13 @@ class WomenEstateSpecification extends AbstractSpecification {
 
   def "The supervisor review page can be confirmed for Women Estate"() {
     given: 'supervisor is viewing the review page for ON700'
-    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings    : TestFixture.defaultRatingsU,
-      categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsU,
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
     db.createNomisSeqNo(700, 5)
-    db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([
-      history : [catAType: 'A', finalCat: 'Cat R', catAEndYear: '2013', releaseYear: '2014', catAStartYear: '2012'],
-      offences: [[bookingId: 700, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
-                 [bookingId: 700, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
-                 [bookingId: 700, offenceDescription: 'Undated offence']]
-    ]))
+    db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([history : [catAType: 'A', finalCat: 'Cat R', catAEndYear: '2013', releaseYear: '2014', catAStartYear: '2012'],
+                                                                   offences: [[bookingId: 700, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
+                                                                              [bookingId: 700, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
+                                                                              [bookingId: 700, offenceDescription: 'Undated offence']]]))
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
@@ -163,21 +150,19 @@ class WomenEstateSpecification extends AbstractSpecification {
     dcsSurveyLink.displayed
   }
 
-    private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true) {
-      def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
-      def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
-      prisonerSearchApi.stubSentenceData(['ON700'], [700], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
-      elite2Api.stubUncategorisedAwaitingApproval('PFI')
+  private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true) {
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    prisonerSearchApi.stubSentenceData(['ON700'], [700], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedAwaitingApproval('PFI')
 
-      fixture.loginAs(WOMEN_SUPERVISOR_USER)
-      at SupervisorHomePage
-      elite2Api.stubGetOffenderDetails1(700, "ON700")
-      elite2Api.stubAssessments(['ON700'])
-      elite2Api.stubAgencyDetails('PFI')
-      elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
-      startButton.click()
-      at SupervisorReviewPage
-    }
-
-
+    fixture.loginAs(WOMEN_SUPERVISOR_USER)
+    at SupervisorHomePage
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
+    elite2Api.stubAssessments(['ON700'])
+    elite2Api.stubAgencyDetails('PFI')
+    elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
+    startButton.click()
+    at SupervisorReviewPage
+  }
 }

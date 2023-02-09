@@ -35,8 +35,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
     response == [socProfile      : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
-                 extremismProfile: [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'C']
-    ]
+                 extremismProfile: [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'C']]
     def row = data[0]
     row.booking_id == 12L
     row.user_id == "RECATEGORISER_USER"
@@ -66,8 +65,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     def data = db.getData(21)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
     response == [socProfile      : [nomsId: 'C0001AA', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'I'],
-                 extremismProfile: [nomsId: 'C0001AA', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'I']
-    ]
+                 extremismProfile: [nomsId: 'C0001AA', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'I']]
     def row = data[0]
     row.booking_id == 21L
     row.offender_no == "C0001AA"
@@ -124,8 +122,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
 
   def "The recat tasklist correctly creates a subsequent database sequence when init record present"() {
     when: 'I go to the recat tasklist page'
-    db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsC]), 'INITIAL')
+    db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([ratings: TestFixture.defaultRatingsC]), 'INITIAL')
 
     elite2Api.stubRecategorise()
     prisonerSearchApi.stubGetPrisonerSearchPrisoners()

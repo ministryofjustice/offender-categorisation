@@ -5,11 +5,10 @@ import groovy.sql.Sql
 import java.sql.Date
 
 class DatabaseUtils {
-  private static final Map dbConnParams = [
-    url     : 'jdbc:postgresql://localhost:5432/form-builder',
-    user    : 'form-builder',
-    password: 'form-builder',
-    driver  : 'org.postgresql.Driver']
+  private static final Map dbConnParams = [url     : 'jdbc:postgresql://localhost:5432/form-builder',
+                                           user    : 'form-builder',
+                                           password: 'form-builder',
+                                           driver  : 'org.postgresql.Driver']
 
   private static sql = Sql.newInstance(dbConnParams)
 
@@ -98,7 +97,6 @@ class DatabaseUtils {
   }
 
 
-
   def createRiskProfileDataForExistingRow(bookingId, json) {
     sql.executeUpdate("update form set risk_profile = ?::JSON where booking_id = $bookingId", json)
   }
@@ -122,7 +120,6 @@ class DatabaseUtils {
   def createDataWithStatus(id, bookingId, status, json) {
     doCreateData(id, bookingId, status, json)
   }
-
 
 
   def createSecurityReviewedData(id, bookingId, offenderNo, status, json, reviewedBy, reviewDate, catType = 'INITIAL') {

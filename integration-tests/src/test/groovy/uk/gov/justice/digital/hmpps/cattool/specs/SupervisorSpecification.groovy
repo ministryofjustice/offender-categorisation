@@ -17,9 +17,9 @@ class SupervisorSpecification extends AbstractSpecification {
   def "The supervisor review page can be confirmed"() {
     when: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
     db.createRiskProfileDataForExistingRow(12, JsonOutput.toJson([
       history : [catAType: 'A', finalCat: 'Cat B', catAEndYear: '2013', releaseYear: '2014', catAStartYear: '2012'],
       offences: [[bookingId: 12, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
@@ -68,9 +68,9 @@ class SupervisorSpecification extends AbstractSpecification {
   def "The supervisor review page can be confirmed - youth offender"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     navigateToReview(true, false)
     !openConditionsHeader.isDisplayed()
@@ -101,7 +101,7 @@ class SupervisorSpecification extends AbstractSpecification {
     data.status == ["SUPERVISOR_BACK"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
-    response.supervisor == [review:[proposedCategory:'I', supervisorOverriddenCategory:'J', supervisorCategoryAppropriate:'No', supervisorOverriddenCategoryText:'over ridden category text'], confirmBack:[messageText:'over ridden category text', supervisorName:'Test User']]
+    response.supervisor == [review: [proposedCategory: 'I', supervisorOverriddenCategory: 'J', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'over ridden category text'], confirmBack: [messageText: 'over ridden category text', supervisorName: 'Test User']]
     response.categoriser == [provisionalCategory: [suggestedCategory: 'J', categoryAppropriate: 'Yes']]
     response.openConditionsRequested
   }
@@ -110,10 +110,10 @@ class SupervisorSpecification extends AbstractSpecification {
 
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings       : TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"], previousSentences: [releasedLastFiveYears: "No"], sexualOffences: [haveTheyBeenEverConvicted: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes", otherInformationText: "other information text"]]]))
-    db.createNomisSeqNo(12,5)
+      categoriser   : [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes", otherInformationText: "other information text"]]]))
+    db.createNomisSeqNo(12, 5)
 
     when: 'The supervisor views the review page for an adult'
     navigateToReview(false, true)
@@ -123,18 +123,18 @@ class SupervisorSpecification extends AbstractSpecification {
 
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
-    previousSentences*.text() == ['', 'No','Not applicable']
-    sexualOffences*.text() == ['','No','Not applicable']
+    previousSentences*.text() == ['', 'No', 'Not applicable']
+    sexualOffences*.text() == ['', 'No', 'Not applicable']
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
     riskLevel*.text() == ['', 'No']
 
     when: 'The supervisor views the review page for a juvenile'
     db.clearDb()
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings       : TestFixture.defaultRatingsB,
       openConditions: [riskLevels: [likelyToAbscond: "No"], riskOfHarm: [seriousHarm: "No"], foreignNational: [isForeignNational: "No"], earliestReleaseDate: [threeOrMoreYears: "No"], previousSentences: [releasedLastFiveYears: "No"], sexualOffences: [haveTheyBeenEverConvicted: "No"]],
-      categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes", otherInformationText: "other information text"]]]))
-    db.createNomisSeqNo(12,5)
+      categoriser   : [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes", otherInformationText: "other information text"]]]))
+    db.createNomisSeqNo(12, 5)
 
     to SupervisorHomePage
 
@@ -151,7 +151,7 @@ class SupervisorSpecification extends AbstractSpecification {
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]]]))
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     when: 'The supervisor views the review page for an overridden category B'
     navigateToReview(false, false)
@@ -165,9 +165,9 @@ class SupervisorSpecification extends AbstractSpecification {
   def "The supervisor review page can be confirmed - indeterminate sentence"() {
     when: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     navigateToReview(false, true)
     appropriateNo.click()
@@ -181,9 +181,9 @@ class SupervisorSpecification extends AbstractSpecification {
   def "The supervisor can send the case back to the categoriser"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", categoryAppropriate: "Yes"]]]))
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     navigateToReview(false, false)
 
@@ -237,7 +237,7 @@ class SupervisorSpecification extends AbstractSpecification {
     prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', false)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     selectFirstPrisoner() // has been sorted to top of list!
     at TasklistPage
@@ -245,7 +245,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the message is displayed'
     at SupervisorMessagePage
-    messageValues*.text() == ['Test User','a message for categoriser']
+    messageValues*.text() == ['Test User', 'a message for categoriser']
 
     when: 'the message is dismissed'
     submitButton.click()
@@ -258,9 +258,9 @@ class SupervisorSpecification extends AbstractSpecification {
   def "Overriding to an Open conditions category returns the record to the categoriser"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "B", categoryAppropriate: "Yes"]]]))
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     navigateToReview(false, false)
 
@@ -293,9 +293,9 @@ class SupervisorSpecification extends AbstractSpecification {
   def "Overriding to an Open conditions category returns the record to the categoriser (youth offender)"() {
     given: 'supervisor is viewing the review page for a youth offender'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     navigateToReview(true, false)
 
@@ -328,9 +328,9 @@ class SupervisorSpecification extends AbstractSpecification {
   def "The supervisor review page validates input, suggested category B overridden with D"() {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatus(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "other information text"]]]))
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     navigateToReview()
 
@@ -382,7 +382,7 @@ class SupervisorSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.categoriser == [provisionalCategory: [suggestedCategory: "D", categoryAppropriate: "Yes", otherInformationText: "other information text"]]
-    response.supervisor ==  [review: [proposedCategory: 'D', supervisorOverriddenCategory: 'B', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'A good reason']]
+    response.supervisor == [review: [proposedCategory: 'D', supervisorOverriddenCategory: 'B', supervisorCategoryAppropriate: 'No', supervisorOverriddenCategoryText: 'A good reason']]
     response.openConditionsRequested == null
   }
 
@@ -420,11 +420,11 @@ class SupervisorSpecification extends AbstractSpecification {
     when: 'I go to the home page as supervisor and select the done tab'
 
     db.createDataWithStatus(-2, 12, 'APPROVED', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]]]))
 
-    db.createDataWithStatus(-1,11, 'APPROVED', JsonOutput.toJson([
-      ratings: TestFixture.defaultRatingsB,
+    db.createDataWithStatus(-1, 11, 'APPROVED', JsonOutput.toJson([
+      ratings    : TestFixture.defaultRatingsB,
       categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]]]))
 
     db.createNomisSeqNo(11, 7)
@@ -462,7 +462,7 @@ class SupervisorSpecification extends AbstractSpecification {
     when: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecat]), 'RECAT', 'B2345YZ')
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
     db.createRiskProfileDataForExistingRow(12, '''{
       "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
       "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
@@ -497,7 +497,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
 
     when: 'the supervisor selects yes (after changing their mind)'
-    elite2Api.stubSupervisorApprove("C" )
+    elite2Api.stubSupervisorApprove("C")
     elite2Api.stubAssessments('B2345YZ')
 
     appropriateNo.click()
@@ -514,7 +514,7 @@ class SupervisorSpecification extends AbstractSpecification {
     def riskResponse = new JsonSlurper().parseText(data.risk_profile[0].toString())
     response.recat == TestFixture.defaultRecat
     response.supervisor == [review: [proposedCategory: 'C', supervisorCategoryAppropriate: 'Yes']]
-    riskResponse.catHistory == [["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2013-03-24", "assessmentCode": "CATEGORY", "assessmentDate":"2013-03-24", "classification": "Cat B", "nextReviewDate": "2013-09-17", "assessmentStatus": "I", "agencyDescription": "LPI prison", "assessmentAgencyId": "LPI", "classificationCode": "B", "approvalDateDisplay": "24/03/2013", "cellSharingAlertFlag": false, "assessmentDescription": "Categorisation"], ["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2012-04-04", "classification": "Cat A", "nextReviewDate": "2012-06-07", "assessmentStatus": "A", "agencyDescription": "LPI prison", "assessmentAgencyId": "LPI", "classificationCode": "A", "approvalDateDisplay":"08/06/2012", "cellSharingAlertFlag": false, "approvalDateDisplay": "08/06/2012", "assessmentDescription": "Categorisation"]]
+    riskResponse.catHistory == [["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2013-03-24", "assessmentCode": "CATEGORY", "assessmentDate": "2013-03-24", "classification": "Cat B", "nextReviewDate": "2013-09-17", "assessmentStatus": "I", "agencyDescription": "LPI prison", "assessmentAgencyId": "LPI", "classificationCode": "B", "approvalDateDisplay": "24/03/2013", "cellSharingAlertFlag": false, "assessmentDescription": "Categorisation"], ["bookingId": -45, "offenderNo": "B2345YZ", "approvalDate": "2012-06-08", "assessmentCode": "CATEGORY", "assessmentDate": "2012-04-04", "classification": "Cat A", "nextReviewDate": "2012-06-07", "assessmentStatus": "A", "agencyDescription": "LPI prison", "assessmentAgencyId": "LPI", "classificationCode": "A", "approvalDateDisplay": "08/06/2012", "cellSharingAlertFlag": false, "approvalDateDisplay": "08/06/2012", "assessmentDescription": "Categorisation"]]
 
     response.openConditionsRequested == null
     data.status == ["APPROVED"]
@@ -548,7 +548,7 @@ class SupervisorSpecification extends AbstractSpecification {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecat]), 'RECAT')
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     navigateToReview(false, false, false)
 
@@ -583,7 +583,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the message is displayed'
     at SupervisorMessagePage
-    messageValues*.text() == ['Test User','a message for re-categoriser']
+    messageValues*.text() == ['Test User', 'a message for re-categoriser']
 
     when: 'the message is dismissed'
     submitButton.click()
@@ -597,7 +597,7 @@ class SupervisorSpecification extends AbstractSpecification {
     given: 'supervisor is viewing the review page for B2345YZ'
     db.createDataWithStatusAndCatType(12, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecat]), 'RECAT')
-    db.createNomisSeqNo(12,5)
+    db.createNomisSeqNo(12, 5)
 
     navigateToReview(false, false, false)
 
@@ -622,10 +622,10 @@ class SupervisorSpecification extends AbstractSpecification {
     // decision is removed when open conditions introduced by supervisor
     response.recat == [
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
-      nextReviewDate: [date: "14/12/2019"],
-      prisonerBackground: [offenceDetails:"offence Details text"],
-      riskAssessment: [
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
+      nextReviewDate    : [date: "14/12/2019"],
+      prisonerBackground: [offenceDetails: "offence Details text"],
+      riskAssessment    : [
         lowerCategory    : "lower security category text",
         otherRelevant    : "Yes",
         higherCategory   : "higher security category text",
