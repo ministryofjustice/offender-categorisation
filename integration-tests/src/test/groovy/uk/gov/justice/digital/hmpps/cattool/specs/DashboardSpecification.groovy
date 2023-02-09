@@ -195,13 +195,13 @@ class DashboardSpecification extends AbstractSpecification {
     to DashboardRecatPage
 
     then: 'all male prisons option is displayed'
-    at DashboardInitialPage
+    at DashboardRecatPage
     statsTypeOptions*.text().contains('all male prisons')
 
     then: 'The stats displayed are as follows'
-    numbersTableRows[0].find('td')*.text() == ['B', '', '1']
-    numbersTableRows[1].find('td')*.text() == ['C', '', '2']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', '2']
+    numbersTableRows[0].find('td')*.text() == ['B', '', '20.0%', '1']
+    numbersTableRows[1].find('td')*.text() == ['C', '', '40.0%', '2']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', '40.0%',  '2']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
@@ -225,9 +225,9 @@ class DashboardSpecification extends AbstractSpecification {
 
     then: 'the stats are as follows'
     at DashboardRecatPage
-    numbersTableRows[0].find('td')*.text() == ['B', '', '2']
-    numbersTableRows[1].find('td')*.text() == ['C', '', '4']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', '3']
+    numbersTableRows[0].find('td')*.text() == ['B', '', '22.2%', '2']
+    numbersTableRows[1].find('td')*.text() == ['C', '', '44.4%', '4']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', '33.3%', '3']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '2']
