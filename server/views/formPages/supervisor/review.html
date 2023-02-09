@@ -145,6 +145,7 @@
     {% if not data.details.youngOffender%}
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
+
     {% if isFemale %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
       {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}

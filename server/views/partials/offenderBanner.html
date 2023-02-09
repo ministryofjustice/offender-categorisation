@@ -24,8 +24,6 @@
     dateConverter(data.details.dateOfBirth) }}
   </div>
   <div id="category" class="govuk-grid-column-one-quarter govuk-!-font-weight-bold">
-    <!-- I/J/R/T must show as YOI closed/YOI open/open/closed the men's categories must show as B, C, D -->
-    <!-- U/X/Z must show as the category and a word -->
     {% if data.details.categoryCode %}
       {% if data.details.categoryCode == 'U' or data.details.categoryCode == 'X' or data.details.categoryCode == 'Z' %}
         {{ data.details.categoryCode }} ({{ data.details.category }})
