@@ -194,6 +194,10 @@ class DashboardSpecification extends AbstractSpecification {
     when: 'the user goes to the dashboard with no search criteria'
     to DashboardRecatPage
 
+    then: 'all male prisons option is displayed'
+    at DashboardInitialPage
+    statsTypeOptions*.text().contains('all male prisons')
+
     then: 'The stats displayed are as follows'
     numbersTableRows[0].find('td')*.text() == ['B', '', '1']
     numbersTableRows[1].find('td')*.text() == ['C', '', '2']
