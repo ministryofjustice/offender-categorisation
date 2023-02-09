@@ -859,6 +859,25 @@ class Elite2Api extends WireMockRule {
         .withStatus(200)))
   }
 
+  def stubAssessmentsWomen(String offenderNo, Boolean emptyResponse = false, bookingId = -45) {
+    this.stubFor(get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson(emptyResponse ? [] : [[bookingId            : bookingId,
+                                                           offenderNo           : offenderNo,
+                                                           classification       : 'No Cat A',
+                                                           assessmentCode       : 'CATEGORY',
+                                                           assessmentDescription: 'Categorisation',
+                                                           cellSharingAlertFlag : false,
+                                                           assessmentDate       : '2012-04-04',
+                                                           nextReviewDate       : '2012-06-07',
+                                                           approvalDate         : '2012-06-08',
+                                                           assessmentAgencyId   : "PFI",
+                                                           assessmentStatus     : 'No CAT A, Restricted'],
+        ]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+  }
+
 
   def stubAssessmentsWithCurrent(String offenderNo) {
     this.stubFor(get("/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false")

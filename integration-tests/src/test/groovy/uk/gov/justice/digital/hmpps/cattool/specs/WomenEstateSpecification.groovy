@@ -27,7 +27,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     startButtons[0].click()
     at(new TasklistPage(bookingId: '700'))
     headerValue*.text() == fixture.FULL_HEADER1
-    elite2Api.stubAssessments(['ON700'])
+    elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     elite2Api.stubOffenceHistory('ON700')
     offendingHistoryButton.click()
@@ -47,7 +47,7 @@ class WomenEstateSpecification extends AbstractSpecification {
 
     and: 'I go to risk escape page'
     at(new TasklistPage(bookingId: '700'))
-    elite2Api.stubAssessments(['ON700'])
+    elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     riskProfilerApi.stubGetEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
     escapeButton.click()
@@ -67,7 +67,7 @@ class WomenEstateSpecification extends AbstractSpecification {
 
     and: 'I go to security page'
     at(new TasklistPage(bookingId: '700'))
-    elite2Api.stubAssessments(['ON700'])
+    elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
     securityButton.click()
@@ -86,7 +86,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     submitButton.click()
     at TasklistPage
 
-    elite2Api.stubAssessments('ON700')
+    elite2Api.stubAssessmentsWomen('ON700')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     elite2Api.stubOffenceHistory('ON700')
     riskProfilerApi.stubGetEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
@@ -101,7 +101,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     at ReviewPage
     headerValue*.text() == fixture.FULL_HEADER1
     changeLinks.size() == 8
-    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
+    offendingHistorySummary*.text() == ['No Cat A, Restricted', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
     violenceRatingSummary*.text() == ['5', '2', 'No', 'No']
     escapeRatingSummary*.text() == ['No', 'No', 'No', 'No']
     extremismRatingSummary*.text() == ['Yes', 'Yes\nSome risk text']
@@ -127,7 +127,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsU,
                                                                                   categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
     db.createNomisSeqNo(700, 5)
-    db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([history : [catAType: 'A', finalCat: 'Cat R', catAEndYear: '2013', releaseYear: '2014', catAStartYear: '2012'],
+    db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([history : [catType: 'No CatA', finalCat: 'Cat R'],
                                                                    offences: [[bookingId: 700, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
                                                                               [bookingId: 700, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
                                                                               [bookingId: 700, offenceDescription: 'Undated offence']]]))
@@ -138,7 +138,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     elite2Api.stubUncategorisedAwaitingApproval('PFI')
     navigateToReview()
     headerValue*.text() == fixture.FULL_HEADER1
-    offendingHistorySummary*.text() == ['Cat A (2012)', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
+    offendingHistorySummary*.text() == ['No CAT A, Restricted', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
 
     when: 'the supervisor selects yes (after changing their mind)'
     elite2Api.stubSupervisorApprove("R")
@@ -159,7 +159,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     fixture.loginAs(WOMEN_SUPERVISOR_USER)
     at SupervisorHomePage
     elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
-    elite2Api.stubAssessments(['ON700'])
+    elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     startButton.click()
