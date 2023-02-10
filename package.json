@@ -52,9 +52,9 @@
     "govuk-frontend": "^3.14.0",
     "helmet": "^4.6.0",
     "http-errors": "~1.8.1",
-    "joi": "^17.7.0",
+    "joi": "^17.7.1",
     "jwt-decode": "^2.2.0",
-    "knex": "^2.4.0",
+    "knex": "^2.4.2",
     "lru-cache": "^6.0.0",
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
@@ -73,7 +73,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "eslint": "^8.31.0",
+    "eslint": "^8.33.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.26.0",
