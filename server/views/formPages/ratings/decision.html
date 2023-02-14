@@ -1,0 +1,139 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% from "details/macro.njk" import govukDetails %}
+{% from "inset-text/macro.njk" import govukInsetText %}
+
+{% set pageTitle = "Category decision" %}
+
+{% block navigation %}
+
+{% include "../../partials/breadCrumbTaskList.html" %}
+
+{% endblock %}
+
+--
+{% macro hintText(proposedCategory) %}
+  <span class="govuk-!-font-size-16" >
+    {% if choosingHigherCategory(data.details.categoryCode, proposedCategory)
+         or (data.details.categoryCode === 'I' and proposedCategory === 'B') %}
+      You will need to complete a higher security review for this person, after choosing this category.
+    {% else %}
+      Choosing this category requires no additional reviews or assessments.
+    {% endif %}
+  </span>
+{% endmacro %}
+
+{% macro hintTextOpen(proposedCategoryText) %}
+  <span class="govuk-!-font-size-16" >
+    You will need to complete an open conditions assessment for this person, to check they are suitable for {{ proposedCategoryText }} conditions.
+  </span>
+{% endmacro %}
+
+{% block formItems %}
+
+<h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
+
+  <input type="hidden" name="currentCategory" value="{{data.details.categoryCode}}"/>
+
+{% set warningIndeterminate %}
+  {% include "../../partials/warningIndeterminate.html" %}
+{% endset %}
+
+{% if not user.activeCaseLoad.female %}
+  {% set optionB =  {
+    value: "B",
+    id: "catBOption",
+    checked: data.rating.decision.category == 'B',
+    hint: { html: hintText('B') },
+    text: "Category B",
+    label: { classes: "govuk-!-font-weight-bold" }
+  } %}
+  {% set optionC =  {
+    value: "C",
+    id: "catCOption",
+    checked: data.rating.decision.category == 'C',
+    hint: { html: hintText('C') },
+    text: "Category C",
+    label: { classes: "govuk-!-font-weight-bold" }
+  } %}
+  {% set optionD =  {
+    value: "D",
+    id: "catDOption",
+    checked: data.rating.decision.category == 'D',
+    hint: { html: warningIndeterminate + hintTextOpen('Category D') },
+    text: "Consider them for Category D",
+    label: { classes: "govuk-!-font-weight-bold" }
+  } %}
+  {% set optionI =  {
+    value: "I",
+    id: "catIOption",
+    checked: data.rating.decision.category == 'I',
+    hint: { html: hintText('I') },
+    text: "YOI (closed)",
+    label: { classes: "govuk-!-font-weight-bold" }
+  } %}
+  {% set optionJ =  {
+    value: "J",
+    id: "catJOption",
+    checked: data.rating.decision.category == 'J',
+    hint: { html: hintTextOpen('YOI open') },
+    text: "Consider them for YOI (open)",
+    label: { classes: "govuk-!-font-weight-bold" }
+  } %}
+
+  {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
+{% endif %}
+
+{% if user.activeCaseLoad.female %}
+  {{ govukRadios({
+    name: "category",
+    classes: "govuk-radios",
+    fieldset: {
+      legend: {
+        text: "Which category is most suitable for this person?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Select what category is most suitable for this person"
+    } if (errors | findError('category')),
+    items: [
+      {
+        value: "R",
+        id: "closedOption",
+        checked: data.rating.decision.category == 'R',
+        hint: {
+          html: hintText('closed')
+        },
+        text: "Closed",
+        label: { classes: "govuk-!-font-weight-bold" }
+      },
+      {
+        value: "T",
+        id: "openOption",
+        checked: data.rating.decision.category == 'T',
+        hint: {
+          html: hintTextOpen('open')
+        },
+        text: "Consider them for open",
+        label: { classes: "govuk-!-font-weight-bold" }
+      }
+    ]
+  }) }}
+
+{% else %}
+
+  {{ govukRadios({
+    name: "category",
+    classes: "govuk-radios",
+    fieldset: { legend: { text: "What security category is most suitable for this person?" } },
+    errorMessage: {
+      text: "Select what category is most suitable for this person"
+    } if (errors | findError('category')),
+    items: itemList
+  }) }}
+
+{% endif %}
+
+{% endblock %}

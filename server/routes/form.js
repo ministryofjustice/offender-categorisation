@@ -770,6 +770,69 @@ module.exports = function Index({
   )
 
   router.post(
+    '/ratings/decision/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const { bookingId } = req.params
+      const section = 'ratings'
+      const form = 'decision'
+      const formPageConfig = formConfig[section][form]
+      const userInput = clearConditionalFields(req.body)
+
+      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
+      if (!valid) {
+        return
+      }
+
+      const bookingIdInt = parseInt(bookingId, 10)
+
+      await formService.update({
+        bookingId: bookingIdInt,
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput,
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
+
+      if (userInput.category === 'D' || userInput.category === 'J' || userInput.category === 'T') {
+        await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
+      } else {
+        await formService.cancelOpenConditions(bookingIdInt, req.user.username, transactionalDbClient)
+      }
+
+      // TODO remove:
+      // if (userInput.currentCategory === 'I' && userInput.category === 'B') {
+      //   res.redirect(`/form/recat/miniHigherSecurityReview/${bookingId}`)
+      // } else if (choosingHigherCategory(userInput.currentCategory, userInput.category)) {
+      //   res.redirect(`/form/recat/higherSecurityReview/${bookingId}`)
+      // } else {
+      //   await formService.deleteFormData({
+      //     bookingId: bookingIdInt,
+      //     formSection: 'recat',
+      //     formName: 'higherSecurityReview',
+      //     transactionalClient: transactionalDbClient,
+      //   })
+      //   await formService.deleteFormData({
+      //     bookingId: bookingIdInt,
+      //     formSection: 'recat',
+      //     formName: 'miniHigherSecurityReview',
+      //     transactionalClient: transactionalDbClient,
+      //   })
+        if (userInput.category === 'D' || userInput.category === 'J' || userInput.category === 'T') {
+          // redirect to tasklist for open conditions, via 'added' page
+          res.redirect(`/openConditionsAdded/${bookingId}?catType=INITIAL`)
+        } else {
+          const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+          res.redirect(`${nextPath}${bookingId}`)
+        }
+      // }
+    })
+  )
+
+  router.post(
     '/:section/:form/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { section, form, bookingId } = req.params
