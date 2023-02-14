@@ -184,7 +184,17 @@ describe('recat', () => {
       })
   })
 
-  test('Get category decision for offender 21 or over)', () => {
+  test('Get category decision for male offender 21 or over)', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.isYoungOffender.mockReturnValue(false)
     return request(app)
       .get(`/decision/12345`)
@@ -193,10 +203,21 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).toContain('Category decision')
         expect(res.text).not.toContain('catIOption')
+        expect(res.text).not.toContain('Consider them for open')
       })
   })
 
-  test('Get category decision for offender under 21)', () => {
+  test('Get category decision for male offender under 21)', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'MDI',
+        description: 'Moorland (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.isYoungOffender.mockReturnValue(true)
     return request(app)
       .get(`/decision/12345`)
@@ -206,6 +227,30 @@ describe('recat', () => {
         expect(res.text).toContain('Category decision')
         expect(res.text).toContain('catIOption')
         expect(res.text).not.toContain('Prisoner has an indeterminate sentence')
+        expect(res.text).not.toContain('Consider them for open')
+      })
+  })
+
+  test('Get category decision for female offender)', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.isYoungOffender.mockReturnValue(false)
+    return request(app)
+      .get(`/decision/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Category decision')
+        expect(res.text).toContain('Consider them for open')
+        expect(res.text).not.toContain('Category C')
       })
   })
 
@@ -501,6 +546,7 @@ describe('POST /form/recat/decision', () => {
           formName,
           transactionalClient: mockTransactionalClient,
         })
+        expect(userService.getUser).toBeCalledTimes(1)
       })
   })
 })

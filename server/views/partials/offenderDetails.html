@@ -31,7 +31,8 @@
         {% set codeDetails %}{{ data.details.categoryCode }} ({{ data.details.category }}){% endset %}
         {{ headerValue(codeDetails) }}
       {% else %}
-        {{ headerValue(data.details.categoryCode) }}
+        {% set codeDetails %} {{ catMappings(data.details.categoryCode) }} {% endset %}
+        {{ headerValue(codeDetails) }}
       {% endif %}
     {% endif %}
   </div>

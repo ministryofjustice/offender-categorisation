@@ -60,6 +60,14 @@ It has services on which it depends :
 |              ingress url              |                                                        | http://localhost:3000/                                              | INGRESS_URL                                    |
 |                dps url                |                                                        | http://localhost:3000/                                              | DPS_URL                                        |
 
+## Other configuration
+
+| Environment variable    | Default value                                                                        |
+|:------------------------|:-------------------------------------------------------------------------------------|
+| GOOGLE_ANALYTICS_ID     | (blank)                                                                              |
+| APPROVED_DISPLAY_MONTHS | 6                                                                                    |
+| RECAT_MARGIN_MONTHS     | 2                                                                                    |
+| FEMALE_PRISON_IDS       | ['AGI', 'DWI', 'DHI', 'ESI', 'EWI', 'BZI', 'FHI', 'LNI', 'SDI', 'STI', 'NHI', 'PFI'] |
 
 ## Docker compose files
 |            File            |                                                                    Purpose                                                                    |

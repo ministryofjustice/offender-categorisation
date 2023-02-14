@@ -20,7 +20,12 @@ const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const dirname = process.cwd()
 
 function isCatA(c) {
-  return c.classificationCode === 'A' || c.classificationCode === 'H' || c.classificationCode === 'P'
+  return (
+    c.classificationCode === 'A' ||
+    c.classificationCode === 'H' ||
+    c.classificationCode === 'P' ||
+    c.classificationCode === 'Q'
+  )
 }
 
 function getYear(isoDate) {

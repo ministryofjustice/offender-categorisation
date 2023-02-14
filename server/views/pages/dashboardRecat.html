@@ -103,8 +103,8 @@
       <tbody class="govuk-table__body">
         {% for row in recat %}
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ catDisplay(row.recat) }}</td>
-            <td class="govuk-table__cell">{{ catDisplay(row.superOverride) }}</td>
+            <td class="govuk-table__cell">{{ catMappings(row.recat) }}</td>
+            <td class="govuk-table__cell">{{ catMappings(row.superOverride) }}</td>
             <td class="govuk-table__cell">{{ row.count }}</td>
           </tr>
         {% endfor %}

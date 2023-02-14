@@ -22,6 +22,7 @@ class SupervisorHomePage extends Page {
     statuses { bodyRows*.$('td', 6)*.text()  }
     catTypes { bodyRows*.$('td', 7)*.text()  }
     startButtons { bodyRows*.$('td', 8)*.find('*')  }
+    startButton{$('#offenderTable > tbody > tr > td:nth-child(9) > a') }
     logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/supervisorDone')}
     liteCategoriesTab { $('a', href: '/liteCategories/approveList') }
