@@ -26,7 +26,7 @@
 
     {% include "../../partials/openConditionsBanner.html" %}
 
-    {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
+    {% set cat = data.categoriser.provisionalCategory.suggestedCategory or data.ratings.decision.category%}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
     {% set currentCat = overriddenCat if overriddenCat else cat %}
 
