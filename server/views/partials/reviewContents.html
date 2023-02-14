@@ -218,6 +218,28 @@
     classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary no-print',
     rows: [ auto, manual, flagged, comments, warrantS ] if wasReferred else [ auto, manual, flagged ]
   }) }}
+<!-- TODO: position of the section, content, catDisplay-->
+{% if user.activeCaseLoad.female %}
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
+    rows: [
+  {
+    key: { classes: 'summary-list-title', text: "Category decision" },
+    actions: { items: [{
+    href: '/form/ratings/decision/' + data.details.bookingId,
+    text: "Change",
+    visuallyHiddenText: "Assessment"
+  }] if showChangeLinks else []
+  }
+  },
+  {
+    key: { text: "What security category is most suitable for this person?" },
+    value: { text: data.ratings.decision.category and catDisplay(data.ratings.decision.category) },
+    actions: { items: [] }
+  }
+  ]
+  }) }}
+{% endif %}
 
   {% if data.ratings.nextReviewDate %}
     <h2 class="govuk-heading-m">Next category review date</h2>
