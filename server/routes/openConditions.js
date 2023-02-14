@@ -58,7 +58,12 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      let openConditionsSuggestedCat
+      if (res.locals.user.activeCaseLoad.female) {
+        openConditionsSuggestedCat = 'T'
+      } else {
+        openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      }
       const data = { ...result.data, openConditionsSuggestedCat }
 
       res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })

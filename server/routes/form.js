@@ -121,12 +121,19 @@ module.exports = function Index({
     '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const section = 'categoriser'
-      const form = 'provisionalCategory'
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
+      const form = isFemale ? 'womensProvisionalCategory' : 'provisionalCategory'
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
+      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient, null, user)
 
       if (result.data.openConditionsRequested) {
         res.redirect(`/form/openConditions/provisionalCategory/${bookingId}`)
+      } else if (isFemale) {
+        const suggestedCat = 'R'
+        const data = { ...result.data, suggestedCat }
+        res.render(`formPages/${section}/${form}`, { ...result, data })
       } else {
         const suggestedCat = formService.computeSuggestedCat(result.data)
         const data = { ...result.data, suggestedCat }
@@ -313,8 +320,8 @@ module.exports = function Index({
     })
   )
 
-  const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient, sequenceNo) => {
-    const user = await userService.getUser(res.locals)
+  const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient, sequenceNo, userDetails) => {
+    const user = userDetails || (await userService.getUser(res.locals))
     res.locals.user = { ...user, ...res.locals.user }
 
     if (sequenceNo && Number.isNaN(parseInt(sequenceNo, 10))) {
@@ -449,9 +456,16 @@ module.exports = function Index({
       const form = 'securityBack'
       const { bookingId } = req.params
       const formPageConfig = formConfig[section][form]
+
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
       const userInput = clearConditionalFields(req.body)
 
-      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
+      if (
+        !isFemale &&
+        !formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
+      ) {
         return
       }
 
@@ -550,10 +564,19 @@ module.exports = function Index({
     '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
       const userInput = clearConditionalFields(req.body)
+
+      if (isFemale) {
+        if (userInput.categoryAppropriate === 'No') {
+          userInput.overriddenCategory = 'T'
+        }
+      }
 
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
@@ -561,7 +584,11 @@ module.exports = function Index({
 
       const bookingInt = parseInt(bookingId, 10)
 
-      if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
+      if (
+        userInput.overriddenCategory !== 'D' &&
+        userInput.overriddenCategory !== 'J' &&
+        userInput.overriddenCategory !== 'T'
+      ) {
         const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
         log.info(`Categoriser creating initial categorisation record for ${formData.offenderNo}:`)
@@ -624,7 +651,11 @@ module.exports = function Index({
         return
       }
 
-      if (userInput.supervisorOverriddenCategory !== 'D' && userInput.supervisorOverriddenCategory !== 'J') {
+      if (
+        userInput.supervisorOverriddenCategory !== 'D' &&
+        userInput.supervisorOverriddenCategory !== 'J' &&
+        userInput.supervisorOverriddenCategory !== 'T'
+      ) {
         await formService.supervisorApproval({
           bookingId: parseInt(bookingId, 10),
           userId: req.user.username,

@@ -79,7 +79,7 @@ class SupervisorSpecification extends AbstractSpecification {
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
-    warnings[0].text().contains 'the provisional category is YOI Closed'
+    warnings[0].text().contains 'the provisional category is YOI closed'
     overriddenCategoryB.@type == 'radio'
     overriddenCategoryC.@type == 'radio'
     overriddenCategoryD.@type == 'radio'
@@ -158,7 +158,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the review page includes changed category and normal answers but not open conditions information'
     !openConditionsHeader.isDisplayed()
-    warning.text() == 'C\nB\nWarning\nThe category was originally C and is now B'
+    warning.text() == 'C\nB\nWarning\nThe category was originally Category C and is now Category B'
     offendingHistorySummary[2].text() == 'Yes\nsome convictions'
   }
 
@@ -354,7 +354,7 @@ class SupervisorSpecification extends AbstractSpecification {
     overriddenCategoryC.@type == 'radio'
     overriddenCategoryD.@type == null
 
-    errorSummaries*.text() == ['Please enter the new category', 'Please enter the reason why you changed the category']
+    errorSummaries*.text() == ['Please enter the new category', 'Enter the reason why this category is more appropriate']
 
     and: 'the supervisor selects a category and submits'
     appropriateNo.click()
@@ -364,7 +364,7 @@ class SupervisorSpecification extends AbstractSpecification {
     then: 'the review page is displayed with an error - reason not provided'
     at SupervisorReviewPage
 
-    errorSummaries*.text() == ['Please enter the reason why you changed the category']
+    errorSummaries*.text() == ['Enter the reason why this category is more appropriate']
 
     and: 'the supervisor selects a category, reason and submits'
     elite2Api.stubSupervisorApprove('B')

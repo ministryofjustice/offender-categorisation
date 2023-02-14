@@ -19,7 +19,7 @@ module.exports = {
       {
         supervisorOverriddenCategoryText: {
           responseType: 'requiredStringIf_supervisorCategoryAppropriate_No',
-          validationMessage: 'Please enter the reason why you changed the category',
+          validationMessage: 'Enter the reason why this category is more appropriate',
         },
       },
       {

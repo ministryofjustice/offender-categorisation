@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block formItems %}
-
+{% set isFemale = user.activeCaseLoad.female %}
 <div class="govuk-body-s">
 
     <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
@@ -32,12 +32,12 @@
 
     {% if overriddenCat %}
     <div class="govuk-warning-text forms-info-text warning-overrides">
-      <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ cat }}</span>
+      <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
       <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
-      <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ overriddenCat }}</span>
+      <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ displayIcon(overriddenCat) }}</span>
       <strong class="govuk-warning-text__text override-icon-text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The category was originally {{ catDisplay(cat) }} and is now {{ catDisplay(overriddenCat) }}
+        The category was originally {{ replaceCatLabel(cat) }} and is now {{ replaceCatLabel(overriddenCat) }}
       </strong>
     </div>
     <div class="govuk-!-margin-bottom-8">
@@ -47,10 +47,10 @@
     </div>
     {% else %}
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+      <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        Based on the information provided, the provisional category is {{ catDisplay(cat) }}
+        Based on the information provided, the provisional category is {{ replaceCatLabel(cat) }}
       </strong>
     </div>
     {% endif %}
@@ -72,19 +72,19 @@
     {{ govukSummaryList({
       classes: 'govuk-!-margin-bottom-9',
       rows: [
-      {
-      key: { text: "Other relevant information" },
-      value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
-      actions: { items: [] }
-      }
+       {
+         key: { text: "Other relevant information" },
+         value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
+         actions: { items: [] }
+        }
       ]
     }) }}
 
-  {% if currentCat == "D" or currentCat == "J" %}
-    {% include "../../partials/warningIndeterminate.html" %}
-  {% endif %}
+    {% if currentCat == "D" or currentCat == "J" %}
+      {% include "../../partials/warningIndeterminate.html" %}
+    {% endif %}
 
-  {% set radios = [
+    {% set radios = [
       {
         value: "B",
         id: "overriddenCategoryB",
@@ -110,6 +110,20 @@
         }
       },
       {
+        value: "R",
+        id: "overriddenCategoryR",
+        checked: true,
+        text: "Consider for closed",
+        R: true
+      },
+      {
+        value: "T",
+        id: "overriddenCategoryT",
+        checked: true,
+        text: "Consider for open",
+        T: true
+      },
+      {
         value: "J",
         id: "overriddenCategoryJ",
         checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
@@ -132,12 +146,28 @@
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
 
+    {% if isFemale %}
+      {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
+      {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
+      {% if (currentCat == "R") %}
+        {% set noLabel = "No, consider for open" %}
+      {% elif (currentCat == "T") %}
+        {% set noLabel = "No, closed is more appropriate" %}
+      {% endif %}
+    {% else %}
+      {% set radios = radios | rejectattr('R') | rejectattr('T')%}
+      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
+      {% set noLabel = 'No' %}
+    {% endif %}
+
     {% set overriddenCategoryTextHtml %}
       {{ govukRadios({
         name: "supervisorOverriddenCategory",
-        classes: "govuk-radios--inline",
+        classes: radioClasses,
         fieldset: {
-          legend: { text: "Which category is more appropriate?", isPageHeading: false }
+          legend: { text: "Which category is more appropriate?", isPageHeading: false, classes: radioLegendClasses }
         },
         items: radios | rejectattr(currentCat),
         errorMessage: {
@@ -150,10 +180,10 @@
         type: "myTextWhatsThisFor",
         id: "supervisorOverriddenCategoryText",
         attributes: { 'maxlength': 50000 },
-        label: { text: "Explain why" },
+        label: { text: "Enter the reason why this category is more appropriate" },
         hint: { text: "Your comments will be disclosed to the prisoner" },
         errorMessage: {
-          text: "Please enter the reason why you changed the category"
+          text: "Enter the reason why this category is more appropriate"
         } if (errors | findError('supervisorOverriddenCategoryText'))
         }) }}
     {% endset %}
@@ -179,7 +209,7 @@
         },
         {
           value: "No",
-          text: "No",
+          text: noLabel,
           conditional: {
             html:overriddenCategoryTextHtml
           }
