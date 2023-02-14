@@ -28,18 +28,10 @@
 {% set isFemale = user.activeCaseLoad.female %}
 
 <div class="govuk-warning-text forms-info-text warning-overrides">
-  {% if (not isFemale and cat == 'D') or isFemale %}
-    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-  {% else %}
-    <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
-  {% endif %}
+  <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
   <strong class="govuk-warning-text__text">
     <span class="govuk-warning-text__assistive">Warning</span>
-    {% if cat == 'D' or cat == 'T' or cat == 'J' %}
-      The provisional category is open
-    {% else %}
-      The provisional category is {{ catDisplay(cat) }}
-    {% endif %}
+    The provisional category is {{ replaceCatLabel(cat) }}
   </strong>
 </div>
 <input type="hidden" name="suggestedCategory" value="{{ suggestedCat }}" />

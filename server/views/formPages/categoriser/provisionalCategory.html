@@ -98,10 +98,10 @@
 <h1 class="govuk-heading-l">Provisional category</h1>
 
 <div class="govuk-warning-text forms-info-text warning-overrides">
-  <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+    <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
   <strong class="govuk-warning-text__text">
     <span class="govuk-warning-text__assistive">Warning</span>
-    Based on the information provided, the provisional category is {{ catDisplay(cat) }}
+    Based on the information provided, the provisional category is {{ replaceCatLabel(cat) }}
   </strong>
 </div>
 
