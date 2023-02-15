@@ -7,6 +7,7 @@
 
 {% set greenButtonText = "Submit" %}
 {% set pageTitle = "Approve category" %}
+{% set isFemale = user.activeCaseLoad.female %}
 
 {% block beforeContent %}
   {% include "../../partials/breadCrumb.html" %}
@@ -26,10 +27,10 @@
 
     {% set currentCat = data.recat.decision.category %}
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
+      <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(currentCat) }}</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The categoriser recommends category {{ catDisplay(currentCat) }}
+        The categoriser recommends {{ replaceCatLabel(currentCat) }}
       </strong>
     </div>
 
@@ -112,6 +113,22 @@
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
     {% set isFemale = user.activeCaseLoad.female %}
+    {% if isFemale %}
+      {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
+      {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
+      {% if (currentCat == "R") %}
+        {% set noLabel = "No, consider for open" %}
+      {% elif (currentCat == "T") %}
+        {% set noLabel = "No, closed is more appropriate" %}
+      {% endif %}
+    {% else %}
+      {% set radios = radios | rejectattr('R') | rejectattr('T')%}
+      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
+      {% set noLabel = 'No' %}
+    {% endif %}
+
     {% if isFemale %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
       {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}

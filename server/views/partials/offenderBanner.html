@@ -27,11 +27,8 @@
     {% if data.details.categoryCode %}
       {% if data.details.categoryCode == 'U' or data.details.categoryCode == 'X' or data.details.categoryCode == 'Z' %}
         {{ data.details.categoryCode }} ({{ data.details.category }})
-      {% elif data.details.categoryCode == 'I' or data.details.categoryCode == 'J' or
-           data.details.categoryCode == 'R' or data.details.categoryCode == 'T' %}
-        {{ catDisplay(data.details.categoryCode) }}
       {% else %}
-        {{ data.details.categoryCode }}
+        {{ catMappings(data.details.categoryCode) }}
       {% endif %}
     {% endif %}
   </div>

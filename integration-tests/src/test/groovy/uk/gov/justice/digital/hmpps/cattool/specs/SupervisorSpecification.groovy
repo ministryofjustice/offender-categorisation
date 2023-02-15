@@ -79,7 +79,7 @@ class SupervisorSpecification extends AbstractSpecification {
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
-    warnings[0].text().contains 'the provisional category is YOI Closed'
+    warnings[0].text().contains 'the provisional category is YOI closed'
     overriddenCategoryB.@type == 'radio'
     overriddenCategoryC.@type == 'radio'
     overriddenCategoryD.@type == 'radio'
@@ -158,7 +158,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the review page includes changed category and normal answers but not open conditions information'
     !openConditionsHeader.isDisplayed()
-    warning.text() == 'C\nB\nWarning\nThe category was originally C and is now B'
+    warning.text() == 'C\nB\nWarning\nThe category was originally Category C and is now Category B'
     offendingHistorySummary[2].text() == 'Yes\nsome convictions'
   }
 
