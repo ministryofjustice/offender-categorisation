@@ -1607,4 +1607,25 @@ describe('Submit provisionalCategory page', () => {
         expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(0)
       })
   })
+  test('Get womens category page should render a correct page', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    return request(app)
+      .get('/ratings/decision/12345')
+      .expect(200)
+      .expect(res => {
+        expect(userService.getUser).toBeCalledTimes(1)
+        expect(res.text).toContain('Category decision')
+        expect(res.text).toContain(`id="openOption"`)
+        expect(res.text).toContain(`id="closedOption"`)
+      })
+  })
 })
