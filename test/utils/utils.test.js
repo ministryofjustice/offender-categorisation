@@ -7,6 +7,8 @@ const {
   getVerboseDateFormat,
   isFemalePrisonId,
   setFemaleCaseLoads,
+  catMappings,
+  catLabel,
 } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
@@ -116,4 +118,17 @@ describe('setFemaleCaseLoads called with multiple caseloads should return expect
     { caseLoadId: 'PFI', female: true },
   ]
   expect(result).toEqual(expectedObject)
+})
+
+describe('catMappings called with different categories should return expected result', () => {
+  expect(catMappings('D')).toEqual('Open')
+  expect(catMappings('X')).toEqual('X')
+  expect(catMappings('I')).toEqual('YOI closed')
+})
+
+describe('catLabel called with different categories should return expect result', () => {
+  expect(catLabel('B')).toEqual('Category B')
+  expect(catLabel('J')).toEqual('YOI open category')
+  expect(catLabel('Q')).toEqual('Restricted category')
+  expect(catLabel('SS')).toEqual('SS category')
 })

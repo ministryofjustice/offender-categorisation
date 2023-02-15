@@ -116,12 +116,40 @@ const filterJsonObjectForLogging = json => {
   return dup
 }
 
-const catDisplay = cat => {
-  if (cat === 'I') return 'YOI Closed'
-  if (cat === 'J') return 'YOI Open'
-  if (cat === 'R') return 'Closed'
-  if (cat === 'T') return 'Open'
-  return cat
+const catLabel = cat => {
+  if (cat === 'B' || cat === 'C') return `Category ${catMappings(cat)}`
+  return `${catMappings(cat)} category`
+}
+
+const replaceCatLabel = cat => {
+  if (catLabel(cat).startsWith('Open') || catLabel(cat).startsWith('Closed')) return catLabel(cat).toLowerCase()
+  return catLabel(cat)
+}
+
+const catMappings = cat => {
+  switch (cat) {
+    case 'D':
+      return 'Open'
+    case 'I':
+      return 'YOI closed'
+    case 'J':
+      return 'YOI open'
+    case 'Q':
+      return 'Restricted'
+    case 'R':
+      return 'Closed'
+    case 'T':
+      return 'Open'
+    case 'U':
+      return 'Unsentenced'
+    default:
+      return cat
+  }
+}
+
+const displayIcon = cat => {
+  if (cat === 'B' || cat === 'C') return cat
+  return '!'
 }
 
 // R.cond is like a switch statement
@@ -182,7 +210,10 @@ module.exports = {
   stripAgencyPrefix,
   linkOnClick,
   filterJsonObjectForLogging,
-  catDisplay,
+  catMappings,
+  catLabel,
+  displayIcon,
+  replaceCatLabel,
   calculateNextReviewDate,
   choosingHigherCategory,
   offenderLink,

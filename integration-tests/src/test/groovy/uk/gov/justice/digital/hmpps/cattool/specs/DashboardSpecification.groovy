@@ -111,7 +111,7 @@ class DashboardSpecification extends AbstractSpecification {
     then: 'The stats displayed are as follows'
     numbersTableRows[0].find('td')*.text() == ['C', '', '', '50.0%', '2']
     numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '25.0%', '1']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'D', '25.0%', '1']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'Open', '25.0%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
@@ -138,7 +138,7 @@ class DashboardSpecification extends AbstractSpecification {
     numbersTableRows[0].find('td')*.text() == ['C', '', '', '44.4%', '4']
     numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '22.2%', '2']
     numbersTableRows[2].find('td')*.text() == ['C', 'B', 'C', '11.1%', '1']
-    numbersTableRows[3].find('td')*.text() == ['C', 'B', 'D', '11.1%', '1']
+    numbersTableRows[3].find('td')*.text() == ['C', 'B', 'Open', '11.1%', '1']
     numbersTableRows[4].find('td')*.text() == ['YOI Closed', '', '', '11.1%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']

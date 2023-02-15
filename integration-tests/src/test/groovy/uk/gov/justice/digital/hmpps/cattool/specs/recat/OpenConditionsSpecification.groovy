@@ -277,7 +277,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'The correct category is retrieved and data is correct'
     at RecategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is D'
+    categoryDiv.text() contains 'Category for approval is open category'
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
 
     def afterSubmitData = db.getData(12)
@@ -341,9 +341,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewRecatPage
-    categories*.text() == ['!\nWarning\nCategory D',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['!\nWarning\nOpen category',
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nWarning\nThe supervisor also recommends open category']
     !comments.displayed
     !commentLabel.displayed
   }
@@ -446,8 +446,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'details are correct'
     at ApprovedViewRecatPage
     categories*.text() == ['C\nWarning\nCategory C',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nC\nWarning\nThe recommended category was changed from a D to a C']
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nC\nWarning\nThe recommended category was changed from open category to Category C']
     comments*.text() == ['super changed D to C', 'super other info']
     commentLabel.size() == 1
   }
@@ -549,7 +549,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'The correct category is retrieved'
     at RecategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is D'
+    categoryDiv.text() contains 'Category for approval is open category'
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
@@ -605,9 +605,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewRecatPage
-    categories*.text() == ['!\nWarning\nCategory D',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['!\nWarning\nOpen category',
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nWarning\nThe supervisor also recommends open category']
     comments*.text() == ['super overriding C to D reason text', 'super other info 1 + 2']
     commentLabel.size() == 1
   }

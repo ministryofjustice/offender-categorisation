@@ -6,7 +6,10 @@ const {
   formatLength,
   getLongDateFormat,
   getVerboseDateFormat,
-  catDisplay,
+  catMappings,
+  catLabel,
+  displayIcon,
+  replaceCatLabel,
   choosingHigherCategory,
   offenderLink,
   dpsUrl,
@@ -49,7 +52,10 @@ module.exports = (app, path) => {
     .addGlobal('getVerboseDateFormat', getVerboseDateFormat)
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
-    .addGlobal('catDisplay', catDisplay)
+    .addGlobal('catMappings', catMappings)
+    .addGlobal('catLabel', catLabel)
+    .addGlobal('displayIcon', displayIcon)
+    .addGlobal('replaceCatLabel', replaceCatLabel)
     .addGlobal('choosingHigherCategory', choosingHigherCategory)
     .addGlobal('inProgress', inProgress)
     .addGlobal('extractNextReviewDate', extractNextReviewDate)

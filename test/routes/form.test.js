@@ -342,14 +342,18 @@ describe('GET /security/review', () => {
 })
 
 describe('GET /approvedView', () => {
-  test('Initial cat - Next review date section is shown if data exists', () => {
+  test('Initial categorisation - Next review date is shown with category C', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'APPROVED',
       catType: 'INITIAL',
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
-      formObject: { ratings: { nextReviewDate: { date: '25/11/2024' } } },
+      formObject: {
+        ratings: { nextReviewDate: { date: '25/11/2024' } },
+        categoriser: { provisionalCategory: { suggestedCategory: 'C' } },
+        supervisor: { review: { proposedCategory: 'C', supervisorCategoryAppropriate: 'Yes' } },
+      },
     })
 
     return request(app)
@@ -357,19 +361,31 @@ describe('GET /approvedView', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('The categoriser recommends Category C')
+        expect(res.text).toContain('The supervisor also recommends Category C')
         expect(res.text).toContain('Next category review date')
         expect(res.text).toContain('Monday 25 November 2024')
       })
   })
 
-  test('Initial cat - Next review date section is hidden, if no data exists (records recorded before functionality was added)', () => {
+  test('Initial categorisation - Next review date section is hidden, if no data exists (records recorded before functionality was added) with other ridden category', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'APPROVED',
       catType: 'INITIAL',
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
-      formObject: {},
+      formObject: {
+        categoriser: { provisionalCategory: { suggestedCategory: 'C' } },
+        supervisor: {
+          review: {
+            proposedCategory: 'C',
+            supervisorOverriddenCategory: 'B',
+            supervisorCategoryAppropriate: 'No',
+            supervisorOverriddenCategoryTest: 'some text',
+          },
+        },
+      },
     })
 
     return request(app)
@@ -377,11 +393,13 @@ describe('GET /approvedView', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('The categoriser recommends Category C')
+        expect(res.text).toContain('The recommended category was changed from Category C to Category B')
         expect(res.text).not.toContain('Next category review date')
       })
   })
 
-  test('Open conditions entry is displayed on done view (after being abandoned), with no change links - RECAT', () => {
+  test('Recat -Open conditions entry is displayed on done view (after being abandoned), with no change links', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'APPROVED',
       catType: 'RECAT',
@@ -390,7 +408,11 @@ describe('GET /approvedView', () => {
       displayStatus: 'Any other status',
       prisonId: 'MPI',
       approvalDate: moment('2019-08-13'),
-      formObject: { openConditions: { field: 'value' } },
+      formObject: {
+        openConditions: { field: 'value' },
+        recat: { decision: { category: 'D' } },
+        supervisor: { review: { proposedCateogry: 'D', supervisorCategoryAppriate: 'Yes' } },
+      },
     })
 
     offendersService.getOptionalAssessmentAgencyDescription.mockResolvedValue('HMP MyPrison')
@@ -400,6 +422,8 @@ describe('GET /approvedView', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('The categoriser recommends open category')
+        expect(res.text).toContain('The supervisor also recommends open category')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')
         expect(res.text).toContain('Tuesday 13 August 2019')
@@ -407,14 +431,18 @@ describe('GET /approvedView', () => {
       })
   })
 
-  test('Open conditions entry is displayed on done view (after being abandoned), with no change links - INITAL', () => {
+  test('Initial Categorisation -Open conditions entry is displayed on done view (after being abandoned), with no change links', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'APPROVED',
       catType: 'INITIAL',
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
-      formObject: { openConditions: { field: 'value' } },
+      formObject: {
+        openConditions: { field: 'value' },
+        recat: { decision: { category: 'X' } },
+        supervisor: { review: { proposedCateogry: 'X', supervisorCategoryAppriate: 'Yes' } },
+      },
     })
 
     return request(app)
@@ -422,19 +450,26 @@ describe('GET /approvedView', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('The categoriser recommends undefined category')
+        expect(res.text).toContain('The supervisor also recommends undefined category')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')
       })
   })
 
-  test('Open conditions entry is displayed on done view , with no change links - INITAL', () => {
+  test('Initial Categorisation -Open conditions entry is displayed on done view , with no change links', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'APPROVED',
       catType: 'INITIAL',
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
-      formObject: { openConditions: { field: 'value' }, openConditionsRequested: true },
+      formObject: {
+        openConditions: { field: 'value' },
+        openConditionsRequested: true,
+        recat: { decision: { category: 'X' } },
+        supervisor: { review: { proposedCateogry: 'X', supervisorCategoryAppriate: 'Yes' } },
+      },
     })
 
     return request(app)
@@ -442,21 +477,148 @@ describe('GET /approvedView', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('The categoriser recommends undefined category')
+        expect(res.text).toContain('The supervisor also recommends undefined category')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')
+      })
+  })
+
+  test('Initial Womens categorisation - Next review date is shown with category closed', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        ratings: { nextReviewDate: { date: '25/11/2024' } },
+        categoriser: { provisionalCategory: { suggestedCategory: 'R' } },
+        supervisor: { review: { proposedCategory: 'R', supervisorCategoryAppropriate: 'Yes' } },
+      },
+    })
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Closed category')
+        expect(res.text).toContain('The categoriser recommends closed category')
+        expect(res.text).toContain('The supervisor also recommends closed category')
+        expect(res.text).toContain('Next category review date')
+        expect(res.text).toContain('Monday 25 November 2024')
+      })
+  })
+
+  test('Recat Womens  - Open conditions entry is displayed on approved view', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      prisonId: 'PFI',
+      approvalDate: moment('2019-08-13'),
+      formObject: {
+        openConditions: { field: 'value' },
+        recat: { decision: { category: 'T' } },
+        supervisor: { review: { proposedCategory: 'T', supervisorCategoryAppropiate: 'Yes' } },
+      },
+    })
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('The categoriser recommends open category')
+        expect(res.text).toContain('The supervisor also recommends open category')
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('Tuesday 13 August 2019')
+      })
+  })
+
+  test('Recat YOI Womens  - Open conditions entry is displayed on approved view', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'AGI',
+        description: 'Askham Grange (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      prisonId: 'PFI',
+      approvalDate: moment('2019-08-13'),
+      formObject: {
+        openConditions: {
+          field: 'value',
+        },
+        recat: { decision: { category: 'J' } },
+        supervisor: {
+          review: {
+            proposedCategory: 'J',
+            supervisorOverriddenCategory: 'I',
+            supervisorCategoryAppropriate: 'No',
+            supervisorOverriddenCategoryTest: 'some text',
+          },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('The categoriser recommends YOI open category')
+        expect(res.text).toContain('The recommended category was changed from YOI open category to YOI closed category')
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('Tuesday 13 August 2019')
       })
   })
 })
 
 describe('GET /awaitingApprovalView', () => {
-  test('Open conditions entry is displayed on awaiting approval view (after being abandoned), with no change links - INITAL', () => {
+  test('Initial categorisation - Open conditions entry is displayed on awaiting approval view (after being abandoned), with no change links', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'APPROVED',
       catType: 'INITIAL',
       bookingId: 12,
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
-      formObject: { openConditions: { field: 'value' } },
+      formObject: {
+        openConditions: { field: 'value' },
+        categoriser: { provisionalCategory: { suggestedCategory: 'D' } },
+      },
     })
 
     return request(app)
@@ -464,6 +626,7 @@ describe('GET /awaitingApprovalView', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
+        expect(res.text).toContain('Category for approval is open category')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('/form/openConditions/foreignNational/')

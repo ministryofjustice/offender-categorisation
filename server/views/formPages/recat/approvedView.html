@@ -43,43 +43,39 @@
     {% set currentCat = superCat or categoriserCat %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
-      {% if currentCat === 'D' or currentCat === 'I' or currentCat === 'J' or currentCat === 'R' or currentCat === 'T' %}
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      {% else %}
-        <span class="govuk-warning-text__icon" aria-hidden="true">{{ currentCat }}</span>
-      {% endif %}
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(currentCat) }}</span>
         <strong class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-            Category {{ catDisplay(currentCat) }}
+            {{ catLabel(currentCat) }}
         </strong>
     </div>
 
     <h2 class="govuk-heading-s no-print">Categoriser decision</h2>
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+      <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(categoriserCat) }}</span>
       <div class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        The categoriser recommends category {{ catDisplay(categoriserCat) }}
+        The categoriser recommends {{ replaceCatLabel(categoriserCat) }}
       </div>
     </div>
 
     <h2 class="govuk-heading-s no-print">Supervisor decision</h2>
     {% if superCat %}
       <div class="govuk-warning-text forms-supervisor-info-text warning-overrides no-print">
-        <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ categoriserCat }}</span>
+        <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ displayIcon(categoriserCat) }}</span>
         <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
-        <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ superCat }}</span>
+        <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ displayIcon(superCat) }}</span>
         <div class="govuk-warning-text__text override-icon-text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          The recommended category was changed from a {{ catDisplay(categoriserCat) }} to a {{ catDisplay(superCat) }}
+          The recommended category was changed from {{ replaceCatLabel(categoriserCat) }} to {{ replaceCatLabel(superCat) }}
         </div>
       </div>
     {% else %}
       <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
-        <span class="govuk-warning-text__icon" aria-hidden="true">{{ categoriserCat }}</span>
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(categoriserCat) }}</span>
         <div class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          The supervisor also recommends category {{ catDisplay(categoriserCat) }}
+          The supervisor also recommends {{ replaceCatLabel(categoriserCat) }}
         </div>
       </div>
     {% endif %}
