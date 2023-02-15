@@ -139,7 +139,7 @@ class DashboardSpecification extends AbstractSpecification {
     numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '22.2%', '2']
     numbersTableRows[2].find('td')*.text() == ['C', 'B', 'C', '11.1%', '1']
     numbersTableRows[3].find('td')*.text() == ['C', 'B', 'Open', '11.1%', '1']
-    numbersTableRows[4].find('td')*.text() == ['YOI Closed', '', '', '11.1%', '1']
+    numbersTableRows[4].find('td')*.text() == ['YOI closed', '', '', '11.1%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '3']
