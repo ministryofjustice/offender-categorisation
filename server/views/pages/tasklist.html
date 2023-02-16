@@ -144,12 +144,12 @@
               {% set buttonTextEx = "Edit" if decisionCompleted else "Start" %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if decisionCompleted else buttonClassesDefault %}
               {{ govukButton({
-              text: buttonTextEx,
-              href: "/form/ratings/decision/" + data.details.bookingId,
-              classes: buttonClasses,
-              attributes:
-              {  'id': 'decisionButton' }
-              }) }}
+                text: buttonTextEx,
+                href: "/form/ratings/decision/" + data.details.bookingId,
+                classes: buttonClasses,
+                attributes: {  'id': 'decisionButton' }
+                })
+              }}
               <div class="govuk-heading-m">Category decision</div>
               <div class="govuk-!-margin-top-2">{% if decisionCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
