@@ -23,7 +23,8 @@ class DecisionSpecification extends AbstractSpecification {
     selectFirstPrisoner()
 
     when: 'I go to the decision page'
-    go "/form/ratings/decision/700" // TODO replace with categoryDecision.click()
+    at(new TasklistPage(bookingId: '700'))
+    decisionButton.click()
 
     then: 'a decision page is displayed'
     at DecisionPage
@@ -54,8 +55,10 @@ class DecisionSpecification extends AbstractSpecification {
     responseAfterOpen.ratings == [decision: [category: "T"]]
     responseAfterOpen.openConditionsRequested == true
 
-    when:
-    go "/form/ratings/decision/700" // TODO replace with categoryDecision.click()
+    when: "On tasklist page"
+    at(new TasklistPage(bookingId: '700'))
+    decisionButton.click()
+    // go "/form/ratings/decision/700" // TODO replace with categoryDecision.click()
 
     then: 'a decision page is displayed'
     at DecisionPage
