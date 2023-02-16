@@ -70,6 +70,16 @@ beforeEach(() => {
     },
     categoryCode: 'C',
   })
+  userService.getUser.mockResolvedValue({
+    activeCaseLoad: {
+      caseLoadId: 'MDI',
+      description: 'Moorland (HMP & YOI)',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: true,
+      female: false,
+    },
+  })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
 
@@ -82,7 +92,7 @@ afterEach(() => {
 })
 
 describe('GET /tasklistRecat/', () => {
-  test('should render Recat tasklist', () =>
+  test('should render Recat tasklist for male prison', () =>
     request(app)
       .get('/12345')
       .expect(200)
@@ -90,7 +100,13 @@ describe('GET /tasklistRecat/', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Category review task list')
+        expect(res.text).toContain('Prisoner background')
+        expect(res.text).toContain('Offender Assessment System (OASys)')
         expect(res.text).toContain('Security information')
+        expect(res.text).toContain('Risk assessment')
+        expect(res.text).toContain('Category decision')
+        expect(res.text).toContain('Set next category review date')
+        expect(res.text).toContain('Check and submit')
         expect(res.text).toContain('Not yet checked')
         expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
           offenderNo: 'GN123',
@@ -98,7 +114,43 @@ describe('GET /tasklistRecat/', () => {
           status: 'REVIEWED_FIRST',
           transactionalClient: mockTransactionalClient,
         })
-      }))
+      })
+  )
+
+  test('should render Recat tasklist for female prison', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    return request(app)
+        .get('/12345')
+        .expect(200)
+        .expect('Content-Type', /html/)
+        .expect(res => {
+          expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
+          expect(res.text).toContain('Category review task list')
+          expect(res.text).toContain('Prisoner background')
+          expect(res.text).toContain('Offender Assessment System (OASys)')
+          expect(res.text).toContain('Security information')
+          expect(res.text).toContain('Risk assessment')
+          expect(res.text).toContain('Category decision')
+          expect(res.text).toContain('Set next category review date')
+          expect(res.text).toContain('Check and submit')
+          expect(res.text).toContain('Not yet checked')
+          expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
+            offenderNo: 'GN123',
+            userId: 'CA_USER_TEST',
+            status: 'REVIEWED_FIRST',
+            transactionalClient: mockTransactionalClient,
+          })
+        })
+  })
 
   test('should display automatically referred to security for SECURITY_AUTO status', () => {
     const today = moment().format('DD/MM/YYYY')
@@ -176,7 +228,7 @@ describe('GET /tasklistRecat/', () => {
       }))
 })
 
-describe('GET /tasklistRecat/ Fast track C item', () => {
+describe('CAT-1340 Fasttrack disabled - GET /tasklistRecat/ Fast track C item', () => {
   const sampleSocProfile = {
     transferToSecurity: false,
     provisionalCategorisation: 'C',
