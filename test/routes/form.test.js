@@ -76,6 +76,19 @@ const formRoute = createRouter({
   authenticationMiddleware,
 })
 
+const mockFemalePrison = () => {
+  userService.getUser.mockResolvedValue({
+    activeCaseLoad: {
+      caseLoadId: 'PFI',
+      description: 'Peterborough Female HMP',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: true,
+      female: true,
+    },
+  })
+}
+
 let app
 
 beforeEach(() => {
@@ -102,19 +115,6 @@ beforeEach(() => {
 afterEach(() => {
   jest.resetAllMocks()
 })
-
-function mockFemalePrison() {
-  userService.getUser.mockResolvedValue({
-    activeCaseLoad: {
-      caseLoadId: 'PFI',
-      description: 'Peterborough Female HMP',
-      type: 'INST',
-      caseloadFunction: 'GENERAL',
-      currentlyActive: true,
-      female: true,
-    },
-  })
-}
 
 describe('GET provisionalCategory page', () => {
   test('GET mens provisional category page', () => {
