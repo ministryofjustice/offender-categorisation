@@ -58,7 +58,6 @@ class DecisionSpecification extends AbstractSpecification {
     when: "On tasklist page"
     at(new TasklistPage(bookingId: '700'))
     decisionButton.click()
-    // go "/form/ratings/decision/700" // TODO replace with categoryDecision.click()
 
     then: 'a decision page is displayed'
     at DecisionPage
