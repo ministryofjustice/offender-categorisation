@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserEscapePage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ratings.DecisionPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.ExtremismPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.ViolencePage
 
@@ -75,6 +76,14 @@ class WomenEstateSpecification extends AbstractSpecification {
     securityRadio = 'No'
     saveButton.click()
     at TasklistPage
+
+   and: 'I go to category decision page'
+   at(new TasklistPage(bookingId: '700'))
+   decisionButton.click()
+   at DecisionPage
+   closedOption.click()
+   submitButton.click()
+   at TasklistPage
 
     and: 'I go to the Next Review Date Question page'
     nextReviewDateButton.click()
