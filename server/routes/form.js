@@ -807,6 +807,51 @@ module.exports = function Index({
       }
     })
   )
+  router.post(
+    '/categoriser/review/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'categoriser'
+      const form = 'review'
+      const formPageConfig = formConfig[section][form]
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
+      if (!isFemale) {
+        // if male prison, redirect to provisional category page
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      } else {
+        // if female prison, save and submit data
+        const bookingInt = parseInt(bookingId, 10)
+        const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+        const suggestedCategory = R.path(['formObject', 'ratings', 'decision', 'category'], formData)
+        if (suggestedCategory) {
+          log.info(`Categoriser creating categorisation record:`)
+          await formService.categoriserDecision(bookingId, req.user.username, transactionalDbClient)
+
+          const nextReviewDate = R.path(['formObject', 'ratings', 'nextReviewDate', 'date'], formData)
+
+          await offendersService.createOrUpdateCategorisation({
+            context: res.locals,
+            bookingId: bookingInt,
+            suggestedCategory,
+            overriddenCategoryText: 'Cat-tool Initial',
+            nextReviewDate,
+            nomisSeq: formData.nomisSeq,
+            transactionalDbClient,
+          })
+          // skip provisional category page
+          const provisionalCategoryFormPageConfig = formConfig.categoriser.provisionalCategory
+          const nextPath = getPathFor({ data: req.body, config: provisionalCategoryFormPageConfig })
+          res.redirect(`${nextPath}${bookingId}`)
+        } else {
+          throw new Error('category has not been specified')
+        }
+      }
+    })
+  )
 
   router.post(
     '/:section/:form/:bookingId',
