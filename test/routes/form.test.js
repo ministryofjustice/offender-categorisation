@@ -1146,6 +1146,7 @@ describe('GET /categoriser/review', () => {
         expect(res.text).toContain('Further serious charges')
         expect(res.text).not.toContain('Open Conditions')
         expect(res.text).not.toContain('Are they facing any further charges?')
+        expect(res.text).not.toContain('categoryDecisionSummary')
       })
   })
 
@@ -1172,6 +1173,7 @@ describe('GET /categoriser/review', () => {
         expect(res.text).not.toContain('Further serious charges')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).toContain('Are they facing any further charges?')
+        expect(res.text).toContain('categoryDecisionSummary')
       })
   })
 })
