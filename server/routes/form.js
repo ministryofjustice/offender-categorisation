@@ -121,19 +121,12 @@ module.exports = function Index({
     '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const section = 'categoriser'
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      const isFemale = res.locals.user.activeCaseLoad.female
-      const form = isFemale ? 'womensProvisionalCategory' : 'provisionalCategory'
+      const form = 'provisionalCategory'
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient, null, user)
+      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient, null, null)
 
       if (result.data.openConditionsRequested) {
         res.redirect(`/form/openConditions/provisionalCategory/${bookingId}`)
-      } else if (isFemale) {
-        const suggestedCat = 'R'
-        const data = { ...result.data, suggestedCat }
-        res.render(`formPages/${section}/${form}`, { ...result, data })
       } else {
         const suggestedCat = formService.computeSuggestedCat(result.data)
         const data = { ...result.data, suggestedCat }
@@ -564,19 +557,10 @@ module.exports = function Index({
     '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      const isFemale = res.locals.user.activeCaseLoad.female
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
       const userInput = clearConditionalFields(req.body)
-
-      if (isFemale) {
-        if (userInput.categoryAppropriate === 'No') {
-          userInput.overriddenCategory = 'T'
-        }
-      }
 
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
@@ -584,11 +568,7 @@ module.exports = function Index({
 
       const bookingInt = parseInt(bookingId, 10)
 
-      if (
-        userInput.overriddenCategory !== 'D' &&
-        userInput.overriddenCategory !== 'J' &&
-        userInput.overriddenCategory !== 'T'
-      ) {
+      if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
         const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
         log.info(`Categoriser creating initial categorisation record for ${formData.offenderNo}:`)
