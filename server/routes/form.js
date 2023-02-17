@@ -818,7 +818,18 @@ module.exports = function Index({
       res.locals.user = { ...user, ...res.locals.user }
       const isFemale = res.locals.user.activeCaseLoad.female
       if (!isFemale) {
-        // if male prison, redirect to provisional category page
+        // if male prison, update data and redirect to provisional category page
+        const userInput = clearConditionalFields(req.body)
+        // validation is not needed
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput,
+          formSection: section,
+          formName: form,
+          transactionalClient: transactionalDbClient,
+        })
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       } else {
