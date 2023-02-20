@@ -138,7 +138,6 @@ describe('GET provisionalCategory page', () => {
         expect(userService.getUser).toBeCalledTimes(1)
       })
   })
-
 })
 
 describe('GET /ratings/offendingHistory', () => {
