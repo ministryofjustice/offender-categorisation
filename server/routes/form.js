@@ -123,7 +123,7 @@ module.exports = function Index({
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient, null, null)
+      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
 
       if (result.data.openConditionsRequested) {
         res.redirect(`/form/openConditions/provisionalCategory/${bookingId}`)
