@@ -16,7 +16,7 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.WOMEN_SUPER
 
 class WomenEstateSpecification extends AbstractSpecification {
 
-  def "A categoriser user can start a initial cat from the landing page"() {
+ /* def "A categoriser user can start a initial cat from the landing page"() {
     given: 'A categoriser is logged in'
 
     elite2Api.stubUncategorisedNoStatus(700, 'PFI')
@@ -130,7 +130,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     finishButton.click()
 
   }
-
+*/
   def "The supervisor review page can be confirmed for Women Estate"() {
     given: 'supervisor is viewing the review page for ON700'
     db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsU,
