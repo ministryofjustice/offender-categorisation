@@ -40,7 +40,7 @@
   {% set decisionCompleted = data.ratings.decision.category %}
   {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
      and offendingHistoryCompleted and furtherChargesCompleted and securityInputCompleted and not locked
-     and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted
+     and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted and decisionCompleted
      and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
   <div class="govuk-grid-row govuk-!-width-two-thirds">

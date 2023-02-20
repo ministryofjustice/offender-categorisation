@@ -690,6 +690,7 @@ module.exports = function Index({
 
         // Reset cat so it appears the categoriser originally chose open conditions!
         if (userInput.catType === CatType.INITIAL.name) {
+          const existingCatDecision = R.path(['ratings', 'decision'], formObjectWithMessageValues)
           const newData = R.assocPath(
             ['categoriser', 'provisionalCategory'],
             {
@@ -699,8 +700,10 @@ module.exports = function Index({
             },
             formObjectWithMessageValues
           )
-          // TODO reset ratings.decision to supervisorOverriddenCategory
-          // or delete ratings.decision?
+          // delete ratings.decision if present
+          if (existingCatDecision) {
+            delete newData.ratings.decision
+          }
           await formService.updateFormData(bookingId, newData, transactionalDbClient)
         } else {
           await formService.updateFormData(bookingId, formObjectWithMessageValues, transactionalDbClient)
