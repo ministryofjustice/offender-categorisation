@@ -699,6 +699,8 @@ module.exports = function Index({
             },
             formObjectWithMessageValues
           )
+          // TODO reset ratings.decision to supervisorOverriddenCategory
+          // or delete ratings.decision?
           await formService.updateFormData(bookingId, newData, transactionalDbClient)
         } else {
           await formService.updateFormData(bookingId, formObjectWithMessageValues, transactionalDbClient)
@@ -820,7 +822,20 @@ module.exports = function Index({
         const suggestedCategory = R.path(['formObject', 'ratings', 'decision', 'category'], formData)
         if (suggestedCategory) {
           log.info(`Categoriser creating categorisation record:`)
-          await formService.categoriserDecision(bookingId, req.user.username, transactionalDbClient)
+          const provisionalCategoryFormPageConfig = formConfig.categoriser.provisionalCategory
+          const provisionalCategoryUserInput = {
+            suggestedCategory,
+            categoryAppropriate: 'Yes',
+          }
+          await formService.categoriserDecisionWithFormResponse({
+            bookingId: bookingInt,
+            config: provisionalCategoryFormPageConfig,
+            userInput: provisionalCategoryUserInput,
+            formSection: 'categoriser',
+            formName: 'provisionalCategory',
+            userId: req.user.username,
+            transactionalClient: transactionalDbClient,
+          })
 
           const nextReviewDate = R.path(['formObject', 'ratings', 'nextReviewDate', 'date'], formData)
 
@@ -834,7 +849,6 @@ module.exports = function Index({
             transactionalDbClient,
           })
           // skip provisional category page
-          const provisionalCategoryFormPageConfig = formConfig.categoriser.provisionalCategory
           const nextPath = getPathFor({ data: req.body, config: provisionalCategoryFormPageConfig })
           res.redirect(`${nextPath}${bookingId}`)
         } else {

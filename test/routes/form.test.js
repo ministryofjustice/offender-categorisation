@@ -1509,11 +1509,8 @@ describe('Submit provisionalCategory page', () => {
       .expect('Location', '/tasklist/categoriserSubmitted/12345')
       .expect(() => {
         expect(formService.getCategorisationRecord).toBeCalledTimes(1)
-        expect(formService.categoriserDecision).toBeCalledTimes(1)
+        expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
         expect(offendersService.createOrUpdateCategorisation).toBeCalledTimes(1)
-        // const updateArg = formService.categoriserDecisionWithFormResponse.mock.calls[0][0]
-        // expect(updateArg.bookingId).toBe(12345)
-        // //expect(updateArg.userId).toBe('CA_USER_TEST')
         expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
           bookingId: 12345,
           context: {
