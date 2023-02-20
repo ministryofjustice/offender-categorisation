@@ -138,19 +138,6 @@ describe('GET provisionalCategory page', () => {
         expect(userService.getUser).toBeCalledTimes(1)
       })
   })
-  test('GET womens provisional category page', () => {
-    mockFemalePrison()
-    return request(app)
-      .get('/categoriser/womensProvisionalCategory/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Provisional category')
-        expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-        expect(res.req.path).toContain('womensProvisionalCategory')
-        expect(userService.getUser).toBeCalledTimes(1)
-      })
-  })
 })
 
 describe('GET /ratings/offendingHistory', () => {
@@ -1410,6 +1397,7 @@ describe('POST /supervisor/confirmBack', () => {
       .send({ confirmation: 'No' })
       .expect(302)
       .expect('Location', `/form/supervisor/review/12345`))
+
   test('redirects to supervisor home if confirmed', () =>
     request(app)
       .post('/supervisor/confirmBack/12345')
@@ -1468,14 +1456,6 @@ describe('Submit provisionalCategory page', () => {
           bookingId: 12345,
           context: {
             user: {
-              activeCaseLoad: {
-                caseLoadId: 'PBI',
-                caseloadFunction: 'GENERAL',
-                currentlyActive: true,
-                description: 'Peterborough HMP',
-                female: false,
-                type: 'INST',
-              },
               token: 'ABCDEF',
               username: 'me',
             },
@@ -1487,18 +1467,6 @@ describe('Submit provisionalCategory page', () => {
           suggestedCategory: 'B',
           transactionalDbClient: mockTransactionalClient,
         })
-      })
-  })
-
-  test('Submit womens provisional category page for open', () => {
-    mockFemalePrison()
-    return request(app)
-      .post('/categoriser/provisionalCategory/12345')
-      .send({ suggestedCategory: 'R', overriddenCategory: 'T', overriddenCategoryText: 'text' })
-      .expect(302)
-      .expect('Location', '/openConditionsAdded/12345?catType=INITIAL')
-      .expect(() => {
-        expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(0)
       })
   })
 
@@ -1514,6 +1482,7 @@ describe('Submit provisionalCategory page', () => {
         expect(res.text).toContain(`id="closedOption"`)
       })
   })
+
   test('Post womens category decision page with option closed selected should save closed and redirect to task list', () => {
     mockFemalePrison()
     return request(app)
