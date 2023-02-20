@@ -37,7 +37,7 @@
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
   {% set nextReviewDateCompleted = data.ratings.nextReviewDate.date %}
   {% set openConditionsRequested = data.openConditionsRequested %}
-  {% set decisionCompleted = data.ratings.decision.category %}
+  {% set decisionCompleted = not user.activeCaseLoad.female or data.ratings.decision.category %}
   {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
      and offendingHistoryCompleted and furtherChargesCompleted and securityInputCompleted and not locked
      and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted and decisionCompleted
