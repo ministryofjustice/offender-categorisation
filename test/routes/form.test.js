@@ -39,6 +39,7 @@ const formService = {
   categoriserDecisionWithFormResponse: jest.fn(),
   getSecurityReferral: jest.fn(),
   cancelOpenConditions: jest.fn(),
+  categoriserDecision: jest.fn(),
 }
 
 const riskProfilerService = {
@@ -88,7 +89,18 @@ const mockFemalePrison = () => {
     },
   })
 }
-
+const mockMalePrison = () => {
+  userService.getUser.mockResolvedValue({
+    activeCaseLoad: {
+      caseLoadId: 'PBI',
+      description: 'Peterborough HMP',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: true,
+      female: false,
+    },
+  })
+}
 let app
 
 beforeEach(() => {
@@ -118,16 +130,7 @@ afterEach(() => {
 
 describe('GET provisionalCategory page', () => {
   test('GET mens provisional category page', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PBI',
-        description: 'Peterborough HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
+    mockMalePrison()
     return request(app)
       .get('/categoriser/provisionalCategory/12345')
       .expect(200)
@@ -1066,16 +1069,7 @@ describe('GET /categoriser/review', () => {
   })
 
   test('INITIAL Categorisation for mens prison with open conditions entry', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PBI',
-        description: 'Peterborough HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
+    mockMalePrison()
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'STARTED',
       catType: 'INITIAL',
@@ -1103,16 +1097,7 @@ describe('GET /categoriser/review', () => {
   })
 
   test('INITIAL Categorisation for mens prison without open conditions entry', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PBI',
-        description: 'Peterborough HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
+    mockMalePrison()
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'STARTED',
       catType: 'INITAL',
@@ -1133,6 +1118,7 @@ describe('GET /categoriser/review', () => {
         expect(res.text).toContain('Further serious charges')
         expect(res.text).not.toContain('Open Conditions')
         expect(res.text).not.toContain('Are they facing any further charges?')
+        expect(res.text).not.toContain('categoryDecisionSummary')
       })
   })
 
@@ -1159,22 +1145,14 @@ describe('GET /categoriser/review', () => {
         expect(res.text).not.toContain('Further serious charges')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).toContain('Are they facing any further charges?')
+        expect(res.text).toContain('categoryDecisionSummary')
       })
   })
 })
 
 describe('GET /recat/review', () => {
   test('RECAT Categorisation for mens prison with open conditions entry', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PBI',
-        description: 'Peterborough HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
+    mockMalePrison()
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'STARTED',
       catType: 'RECAT',
@@ -1411,16 +1389,7 @@ describe('POST /supervisor/confirmBack', () => {
 
 describe('Submit provisionalCategory page', () => {
   test('Submit mens provisional category page for CAT-D', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PBI',
-        description: 'Peterborough HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
+    mockMalePrison()
     return request(app)
       .post('/categoriser/provisionalCategory/12345')
       .send({ suggestedCategory: 'C', overriddenCategory: 'D', overriddenCategoryText: 'text' })
@@ -1432,16 +1401,7 @@ describe('Submit provisionalCategory page', () => {
   })
 
   test('Submit mens provisional category page for non-existent category', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PBI',
-        description: 'Peterborough HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
+    mockMalePrison()
     return request(app)
       .post('/categoriser/provisionalCategory/12345')
       .send({ suggestedCategory: 'B', overriddenCategory: 'F', overriddenCategoryText: 'HHH' })
@@ -1513,6 +1473,66 @@ describe('Submit provisionalCategory page', () => {
         expect(updateArg.config).toBe(formConfig.ratings.decision)
         expect(formService.cancelOpenConditions).toBeCalledTimes(0)
         expect(formService.requiresOpenConditions).toBeCalledTimes(1)
+      })
+  })
+  test('Submit mens CYA page', () => {
+    mockMalePrison()
+    return request(app)
+      .post('/categoriser/review/12345')
+      .expect(302)
+      .expect('Location', '/form/categoriser/provisionalCategory/12345')
+      .expect(() => {
+        expect(formService.getCategorisationRecord).not.toBeCalled()
+        expect(formService.categoriserDecision).not.toBeCalled()
+        expect(offendersService.createOrUpdateCategorisation).not.toBeCalled()
+      })
+  })
+
+  test('Submit womens CYA page', () => {
+    mockFemalePrison()
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        ratings: { decision: { category: 'R' }, nextReviewDate: { date: '25/11/2024' } },
+        categoriser: { provisionalCategory: { suggestedCategory: 'R' } },
+        supervisor: { review: { proposedCategory: 'R', supervisorCategoryAppropriate: 'Yes' } },
+      },
+    })
+
+    return request(app)
+      .post('/categoriser/review/12345')
+      .expect(302)
+      .expect('Location', '/tasklist/categoriserSubmitted/12345')
+      .expect(() => {
+        expect(formService.getCategorisationRecord).toBeCalledTimes(1)
+        expect(formService.categoriserDecisionWithFormResponse).toBeCalledTimes(1)
+        expect(offendersService.createOrUpdateCategorisation).toBeCalledTimes(1)
+        expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
+          bookingId: 12345,
+          context: {
+            user: {
+              activeCaseLoad: {
+                caseLoadId: 'PFI',
+                caseloadFunction: 'GENERAL',
+                currentlyActive: true,
+                description: 'Peterborough Female HMP',
+                female: true,
+                type: 'INST',
+              },
+              token: 'ABCDEF',
+              username: 'me',
+            },
+          },
+          nextReviewDate: '25/11/2024',
+          nomisSeq: undefined,
+          overriddenCategoryText: 'Cat-tool Initial',
+          suggestedCategory: 'R',
+          transactionalDbClient: mockTransactionalClient,
+        })
       })
   })
 })
