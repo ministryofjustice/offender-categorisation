@@ -661,6 +661,7 @@ describe('GET /supervisor/review', () => {
         expect(res.text).toContain('overriddenCategoryT')
         expect(res.text).toContain('No, consider for open')
         expect(res.text).toContain(`id="femaleBanner"`)
+        expect(res.text).toContain(`id="openConditionsInfoMessage"`)
       })
   })
 
