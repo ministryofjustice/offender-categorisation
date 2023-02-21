@@ -1429,8 +1429,8 @@ module.exports = function createOffendersService(
     // Decide whether to do an INITIAL or RECAT (or neither).
     // To detect Cat A etc reliably we have to get cats from nomis.
     // If missing or all cats for this booking are UXZ it is INITIAL;
-    // if there is a B,C,D,I,J for this booking it is RECAT;
-    // otherwise we cant process it (cat A, or female etc).
+    // if there is a B,C,D,I,J,R,T for this booking it is RECAT;
+    // otherwise we cant process it (cat A, Q, S, etc).
     if (!classificationCodeFromNomis) {
       return CatType.INITIAL.name
     }
@@ -1440,7 +1440,7 @@ module.exports = function createOffendersService(
         .some(c => !/[UXZ]/.test(c.classificationCode))
       return catExistsForThisBooking ? CatType.RECAT.name : CatType.INITIAL.name
     }
-    if (/[BCDIJ]/.test(classificationCodeFromNomis)) {
+    if (/[BCDIJRT]/.test(classificationCodeFromNomis)) {
       return CatType.RECAT.name
     }
     return null
