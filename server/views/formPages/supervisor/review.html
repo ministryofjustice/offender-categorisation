@@ -30,7 +30,15 @@
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
     {% set currentCat = overriddenCat if overriddenCat else cat %}
 
-    {% if overriddenCat %}
+    {% if isFemale %}
+    <div id="femaleBanner" class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
+      <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(currentCat) }}</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        The categoriser recommends {{ replaceCatLabel(currentCat) }}
+      </strong>
+    </div>
+    {% elif overriddenCat %}
     <div class="govuk-warning-text forms-info-text warning-overrides">
       <span class="govuk-warning-text__icon override-old-cat-icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
       <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
