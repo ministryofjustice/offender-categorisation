@@ -49,6 +49,7 @@ class TestFixture {
   ]
 
   public static final defaultRatingsU = [
+    decision          : [category: "R"],
     offendingHistory: [previousConvictions: "No"],
     securityInput   : [securityInputNeeded: "No"],
     violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
