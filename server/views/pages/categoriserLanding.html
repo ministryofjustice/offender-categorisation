@@ -22,7 +22,7 @@
     {% if data.requiredCatType %}
       {% if data.requiredCatType == 'RECAT' %}
         {{ govukWarningText({
-          text: 'This prisoner is already ' + data.details.category,
+          text: 'This prisoner is ' + replaceCatLabel(data.details.categoryCode),
           iconFallbackText: "Warning",
           classes: "forms-warning-text warning-overrides"
         }) }}
@@ -63,7 +63,7 @@
       {% endif %}
     {% else %}
       {{ govukWarningText({
-        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here',
+        text: 'This prisoner is ' + replaceCatLabel(data.details.category) + '. They cannot be categorised here',
         iconFallbackText: "Warning",
         classes: "forms-warning-text warning-overrides"
       }) }}
