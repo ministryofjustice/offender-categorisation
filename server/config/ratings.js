@@ -163,4 +163,18 @@ module.exports = {
     ],
     validate: true,
   },
+  decision: {
+    nextPath: {
+      path: '/tasklist/',
+    },
+    fields: [
+      {
+        category: {
+          responseType: 'requiredString',
+          validationMessage: 'Select the category that is most suitable for this person',
+        },
+      },
+    ],
+    validate: true,
+  },
 }
