@@ -95,19 +95,26 @@ describe('GET /tasklist/', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
-        expect(res.text).toContain('Categorisation task list')
-        expect(res.text).toContain('Offending history')
-        expect(res.text).toContain('Further charges')
-        expect(res.text).toContain('Not yet checked')
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
+        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Offending history')
+        expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Further charges')
+        expect(res.text).toContain('Safety and good order')
+        expect(res.text).toContain('Risk of escape')
+        expect(res.text).toContain('Extremism')
+        expect(res.text).toContain('Security information')
+        expect(res.text).not.toContain('Category decision')
+        expect(res.text).toContain('Set next category review date')
+        expect(res.text).toContain('Review and categorisation')
       })
   })
 
   test('should render a tasklist for female prison', () => {
     userService.getUser.mockResolvedValue({
       activeCaseLoad: {
-        caseLoadId: 'PBI',
+        caseLoadId: 'PFI',
         description: 'Peterborough Female HMP',
         type: 'INST',
         caseloadFunction: 'GENERAL',
@@ -121,12 +128,19 @@ describe('GET /tasklist/', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
-        expect(res.text).toContain('Categorisation task list')
-        expect(res.text).toContain('Offending history')
-        expect(res.text).not.toContain('Further charges')
-        expect(res.text).toContain('Not yet checked')
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
+        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Offending history')
+        expect(res.text).toContain('Not yet checked')
+        expect(res.text).not.toContain('Further charges')
+        expect(res.text).toContain('Safety and good order')
+        expect(res.text).toContain('Risk of escape')
+        expect(res.text).toContain('Extremism')
+        expect(res.text).toContain('Security information')
+        expect(res.text).toContain('Category decision')
+        expect(res.text).toContain('Set next category review date')
+        expect(res.text).toContain('Review and categorisation')
       })
   })
 

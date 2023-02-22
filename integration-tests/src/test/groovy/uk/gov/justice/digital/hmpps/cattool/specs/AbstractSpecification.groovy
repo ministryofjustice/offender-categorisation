@@ -42,7 +42,7 @@ abstract class AbstractSpecification extends GebReportingSpec {
   static final TODAY = LocalDate.now()
   static final SIX_MONTHS_AHEAD = LocalDate.now().plusMonths(6).format('dd/MM/yyyy')
   static final SIX_MONTHS_AHEAD_ISO = LocalDate.now().plusMonths(6).format('yyyy-MM-dd')
-  static final SIX_MONTHS_AHEAD_ISO_DAY = LocalDate.now().plusMonths(6).format('E d MMMM yyyy')
+  static final SIX_MONTHS_AHEAD_ISO_DAY = LocalDate.now().plusMonths(6).format('EEEE d MMMM yyyy')
   private static final threeMonthsAhead = LocalDate.now().plusMonths(3)
   static final THREE_MONTHS_AHEAD = threeMonthsAhead.format('dd/MM/yyyy')
   static final THREE_MONTHS_AHEAD_ISO = threeMonthsAhead.format('yyyy-MM-dd')

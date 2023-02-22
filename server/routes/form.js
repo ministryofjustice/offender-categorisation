@@ -121,19 +121,12 @@ module.exports = function Index({
     '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const section = 'categoriser'
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      const isFemale = res.locals.user.activeCaseLoad.female
-      const form = isFemale ? 'womensProvisionalCategory' : 'provisionalCategory'
+      const form = 'provisionalCategory'
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient, null, user)
+      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
 
       if (result.data.openConditionsRequested) {
         res.redirect(`/form/openConditions/provisionalCategory/${bookingId}`)
-      } else if (isFemale) {
-        const suggestedCat = 'R'
-        const data = { ...result.data, suggestedCat }
-        res.render(`formPages/${section}/${form}`, { ...result, data })
       } else {
         const suggestedCat = formService.computeSuggestedCat(result.data)
         const data = { ...result.data, suggestedCat }
@@ -564,19 +557,10 @@ module.exports = function Index({
     '/categoriser/provisionalCategory/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      const isFemale = res.locals.user.activeCaseLoad.female
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const formPageConfig = formConfig[section][form]
       const userInput = clearConditionalFields(req.body)
-
-      if (isFemale) {
-        if (userInput.categoryAppropriate === 'No') {
-          userInput.overriddenCategory = 'T'
-        }
-      }
 
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
@@ -584,11 +568,7 @@ module.exports = function Index({
 
       const bookingInt = parseInt(bookingId, 10)
 
-      if (
-        userInput.overriddenCategory !== 'D' &&
-        userInput.overriddenCategory !== 'J' &&
-        userInput.overriddenCategory !== 'T'
-      ) {
+      if (userInput.overriddenCategory !== 'D' && userInput.overriddenCategory !== 'J') {
         const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
         log.info(`Categoriser creating initial categorisation record for ${formData.offenderNo}:`)
@@ -710,6 +690,7 @@ module.exports = function Index({
 
         // Reset cat so it appears the categoriser originally chose open conditions!
         if (userInput.catType === CatType.INITIAL.name) {
+          const existingCatDecision = R.path(['ratings', 'decision'], formObjectWithMessageValues)
           const newData = R.assocPath(
             ['categoriser', 'provisionalCategory'],
             {
@@ -719,6 +700,10 @@ module.exports = function Index({
             },
             formObjectWithMessageValues
           )
+          // delete ratings.decision if present
+          if (existingCatDecision) {
+            delete newData.ratings.decision
+          }
           await formService.updateFormData(bookingId, newData, transactionalDbClient)
         } else {
           await formService.updateFormData(bookingId, formObjectWithMessageValues, transactionalDbClient)
@@ -765,6 +750,113 @@ module.exports = function Index({
         res.redirect(`${nextPath}${bookingId}`)
       } else {
         res.redirect(userInput.referer || '/')
+      }
+    })
+  )
+
+  router.post(
+    '/ratings/decision/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const { bookingId } = req.params
+      const section = 'ratings'
+      const form = 'decision'
+      const formPageConfig = formConfig[section][form]
+      const userInput = clearConditionalFields(req.body)
+
+      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
+      if (!valid) {
+        return
+      }
+
+      const bookingIdInt = parseInt(bookingId, 10)
+
+      await formService.update({
+        bookingId: bookingIdInt,
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput,
+        formSection: section,
+        formName: form,
+        transactionalClient: transactionalDbClient,
+      })
+
+      if (userInput.category === 'T') {
+        await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
+        res.redirect(`/openConditionsAdded/${bookingId}?catType=INITIAL`)
+      } else {
+        await formService.cancelOpenConditions(bookingIdInt, req.user.username, transactionalDbClient)
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      }
+    })
+  )
+  router.post(
+    '/categoriser/review/:bookingId',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const section = 'categoriser'
+      const form = 'review'
+      const formPageConfig = formConfig[section][form]
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const isFemale = res.locals.user.activeCaseLoad.female
+      if (!isFemale) {
+        // if male prison, update data and redirect to provisional category page
+        const userInput = clearConditionalFields(req.body)
+        // validation is not needed
+        await formService.update({
+          bookingId: parseInt(bookingId, 10),
+          userId: req.user.username,
+          config: formPageConfig,
+          userInput,
+          formSection: section,
+          formName: form,
+          transactionalClient: transactionalDbClient,
+        })
+        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+        res.redirect(`${nextPath}${bookingId}`)
+      } else {
+        // if female prison, save and submit data
+        const bookingInt = parseInt(bookingId, 10)
+        const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+        const suggestedCategory = R.path(['formObject', 'ratings', 'decision', 'category'], formData)
+        if (suggestedCategory) {
+          log.info(`Categoriser creating categorisation record:`)
+          const provisionalCategoryFormPageConfig = formConfig.categoriser.provisionalCategory
+          const provisionalCategoryUserInput = {
+            suggestedCategory,
+            categoryAppropriate: 'Yes',
+          }
+          await formService.categoriserDecisionWithFormResponse({
+            bookingId: bookingInt,
+            config: provisionalCategoryFormPageConfig,
+            userInput: provisionalCategoryUserInput,
+            formSection: 'categoriser',
+            formName: 'provisionalCategory',
+            userId: req.user.username,
+            transactionalClient: transactionalDbClient,
+          })
+
+          const nextReviewDate = R.path(['formObject', 'ratings', 'nextReviewDate', 'date'], formData)
+
+          await offendersService.createOrUpdateCategorisation({
+            context: res.locals,
+            bookingId: bookingInt,
+            suggestedCategory,
+            overriddenCategoryText: 'Cat-tool Initial',
+            nextReviewDate,
+            nomisSeq: formData.nomisSeq,
+            transactionalDbClient,
+          })
+          // skip provisional category page
+          const nextPath = getPathFor({ data: req.body, config: provisionalCategoryFormPageConfig })
+          res.redirect(`${nextPath}${bookingId}`)
+        } else {
+          throw new Error('category has not been specified')
+        }
       }
     })
   )

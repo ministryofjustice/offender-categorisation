@@ -26,6 +26,7 @@ class ReviewPage extends Page {
     escapeRatingSummary { $('.escapeRatingSummary .govuk-summary-list__value') }
     extremismRatingSummary { $('.extremismRatingSummary .govuk-summary-list__value') }
     securityInputSummary { $('.securityInputSummary .govuk-summary-list__value') }
+    categoryDecisionSummary { $('.categoryDecisionSummary .govuk-summary-list__value')}
     nextReviewDateSummary { $('.nextReviewDateSummary .govuk-summary-list__value') }
 
     riskLevel { $('.riskLevelSummary .govuk-summary-list__value') }
