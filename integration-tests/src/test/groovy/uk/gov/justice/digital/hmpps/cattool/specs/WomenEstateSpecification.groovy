@@ -130,7 +130,7 @@ class WomenEstateSpecification extends AbstractSpecification {
 
   def "The supervisor review page can be confirmed for Women Estate"() {
     given: 'supervisor is viewing the review page for ON700'
-    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsU,
+    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsClosed,
                                                                                   categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
     db.createNomisSeqNo(700, 5)
     db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([history : [catType: 'No CatA', finalCat: 'Cat R'],

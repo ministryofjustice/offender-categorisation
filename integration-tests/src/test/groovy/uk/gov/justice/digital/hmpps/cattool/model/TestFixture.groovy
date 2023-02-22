@@ -48,7 +48,7 @@ class TestFixture {
     nextReviewDate  : [date: "14/12/2019"]
   ]
 
-  public static final defaultRatingsU = [
+  public static final defaultRatingsClosed = [
     decision          : [category: "R"],
     offendingHistory: [previousConvictions: "No"],
     securityInput   : [securityInputNeeded: "No"],
