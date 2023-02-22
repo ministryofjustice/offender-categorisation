@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserEscapePage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
+import uk.gov.justice.digital.hmpps.cattool.pages.ratings.DecisionPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.ExtremismPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.ViolencePage
 
@@ -76,6 +77,14 @@ class WomenEstateSpecification extends AbstractSpecification {
     saveButton.click()
     at TasklistPage
 
+    and: 'I go to category decision page'
+    at(new TasklistPage(bookingId: '700'))
+    decisionButton.click()
+    at DecisionPage
+    closedOption.click()
+    submitButton.click()
+    at TasklistPage
+
     and: 'I go to the Next Review Date Question page'
     nextReviewDateButton.click()
     at NextReviewDateQuestionPage
@@ -92,31 +101,28 @@ class WomenEstateSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
     riskProfilerApi.stubGetViolenceProfile('ON700', 'U(Unsentenced)', false, false, false)
     riskProfilerApi.stubGetExtremismProfile('ON700', 'U(Unsentenced)', true, false, true)
-    riskProfilerApi.stubGetLifeProfile('ON700', 'T')
+    riskProfilerApi.stubGetLifeProfile('ON700', 'R')
     summarySection[0].text() == 'Review and categorisation'
     summarySection[1].text() == 'All tasks completed'
     continueButton.click()
 
     and: 'verify details on review page'
     at ReviewPage
+    elite2Api.stubCategoriseWomen('R', SIX_MONTHS_AHEAD_ISO)
+    elite2Api.stubUncategorisedNoStatus(700, 'PFI')
+    elite2Api.stubGetOffenderDetails(700, "ON700")
     headerValue*.text() == fixture.FULL_HEADER1
-    changeLinks.size() == 8
+    changeLinks.size() == 9
     offendingHistorySummary*.text() == ['No Cat A, Restricted', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
     violenceRatingSummary*.text() == ['5', '2', 'No', 'No']
     escapeRatingSummary*.text() == ['No', 'No', 'No', 'No']
     extremismRatingSummary*.text() == ['Yes', 'Yes\nSome risk text']
     securityInputSummary*.text() == ['No', 'No', 'No']
+    categoryDecisionSummary*.text() == ['Closed']
     nextReviewDateSummary*.text() == [SIX_MONTHS_AHEAD_ISO_DAY]
     submitButton.click()
 
-    then: 'I am at provisional category page'
-    via ProvisionalCategoryPage, '700'
-    warning[0].text() == '!\nWarning\nThe provisional category is closed'
-    elite2Api.stubCategoriseWomen('R', SIX_MONTHS_AHEAD_ISO)
-    elite2Api.stubUncategorisedNoStatus(700, 'PFI')
-    elite2Api.stubGetOffenderDetails(700, "ON700")
-    appropriateYes.click()
-    submitButton.click()
+    then: 'I am at categoriser submit page'
     at CategoriserSubmittedPage
     finishButton.click()
 
@@ -124,7 +130,7 @@ class WomenEstateSpecification extends AbstractSpecification {
 
   def "The supervisor review page can be confirmed for Women Estate"() {
     given: 'supervisor is viewing the review page for ON700'
-    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsU,
+    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsClosed,
                                                                                   categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
     db.createNomisSeqNo(700, 5)
     db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([history : [catType: 'No CatA', finalCat: 'Cat R'],
