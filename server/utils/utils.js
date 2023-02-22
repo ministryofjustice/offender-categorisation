@@ -122,7 +122,8 @@ const catLabel = cat => {
 }
 
 const replaceCatLabel = cat => {
-  if (catLabel(cat).startsWith('Open') || catLabel(cat).startsWith('Closed')) return catLabel(cat).toLowerCase()
+  if (catLabel(cat).startsWith('Open') || catLabel(cat).startsWith('Closed') || catLabel(cat).startsWith('Unsentenced'))
+    return catLabel(cat).toLowerCase()
   return catLabel(cat)
 }
 
