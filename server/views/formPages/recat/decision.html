@@ -12,9 +12,8 @@
 
 {% endblock %}
 
---
 {% macro hintText(proposedCategory) %}
-  <span class="govuk-!-font-size-16" >
+  <span>
     {% if choosingHigherCategory(data.details.categoryCode, proposedCategory)
          or (data.details.categoryCode === 'I' and proposedCategory === 'B') %}
       You will need to complete a higher security review for this person, after choosing this category.
@@ -25,7 +24,7 @@
 {% endmacro %}
 
 {% macro hintTextOpen(proposedCategoryText) %}
-  <span class="govuk-!-font-size-16" >
+  <span>
     You will need to complete an open conditions assessment for this person, to check they are suitable for {{ proposedCategoryText }} conditions.
   </span>
 {% endmacro %}
