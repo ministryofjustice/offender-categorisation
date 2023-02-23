@@ -553,6 +553,27 @@ describe('open conditions', () => {
       })
   })
 
+  test('open conditions not suitable should show when VCS is not yet populated', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      bookingId: 12,
+      formObject: {
+        ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
+        openConditions: {
+          earliestReleaseDate: { justify: 'Yes' },
+          previousSentences: { releasedLastFiveYears: 'Yes', sevenOrMoreYears: 'Yes' },
+        },
+      },
+      catType: 'INITIAL',
+    })
+    return request(app)
+      .get('/openConditionsNotSuitable/12345')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('This person cannot be sent to open conditions')
+      })
+  })
+
   test('Should have D for openConditionsSuggestedCategory for male prison', () => {
     return request(app)
       .get('/provisionalCategory/12345')
