@@ -85,7 +85,10 @@ module.exports = function Index({ formService, offendersService, userService, au
             ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
           ...result,
         })
-      } else if (result.data.openConditions.victimContactScheme.contactedVLO === 'No') {
+      } else if (
+        result.data.openConditions.victimContactScheme &&
+        result.data.openConditions.victimContactScheme.contactedVLO === 'No'
+      ) {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because a victim of the crime has opted-in' +
