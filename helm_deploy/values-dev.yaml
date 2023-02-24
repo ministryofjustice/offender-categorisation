@@ -23,6 +23,7 @@ generic-service:
     DPS_URL: https://digital-dev.prison.service.justice.gov.uk/
 
   allowlist:
+    ark-nps-hmcts-ttp1: 195.59.75.0/24
     ark-nps-hmcts-ttp2: 194.33.192.0/25
     ark-nps-hmcts-ttp3: 194.33.193.0/25
     ark-nps-hmcts-ttp4: 194.33.196.0/25
