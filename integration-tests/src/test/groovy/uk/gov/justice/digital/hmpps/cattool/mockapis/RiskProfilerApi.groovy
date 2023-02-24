@@ -88,7 +88,41 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
                                      riskType                 : 'ESCAPE',
                                      provisionalCategorisation: category,
                                      activeEscapeList         : onEscapeList,
-                                     activeEscapeRisk         : activeOnEscapeList,],))))
+                                     activeEscapeRisk         : activeOnEscapeList,
+                                     escapeListAlerts         : [[alertCode           : "XEL",
+                                                                  alertCodeDescription: "Escape List",
+                                                                  comment             : "First xel comment",
+                                                                  dateCreated         : "2016-09-14",
+                                                                  expired             : false,
+                                                                  active              : true],
+                                                                 [alertCode           : "XEL",
+                                                                  alertCodeDescription: "Escape List",
+                                                                  comment             : '''
+Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text
+ comment with lengthy text comment with lengthy text comment with lengthy text
+  comment with lengthy text comment with lengthy text comment with lengthy text
+   comment with lengthy text comment with lengthy text comment with lengthy text
+''',
+                                                                  dateCreated         : "2016-09-15",
+                                                                  expired             : true,
+                                                                  active              : false]],
+                                     escapeRiskAlerts         : [[alertCode           : "XER",
+                                                                  alertCodeDescription: "Escape Risk",
+                                                                  comment             : "First xer comment",
+                                                                  dateCreated         : "2016-09-16",
+                                                                  expired             : false,
+                                                                  active              : true],]]))))
+  }
+  void stubGetNoEscapeProfileWomen(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
+    this.stubFor(get("/risk-profile/escape/${offenderno}")
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withHeader('Content-Type', 'application/json')
+        .withBody(JsonOutput.toJson([nomsId                   : offenderno,
+                                     riskType                 : 'ESCAPE',
+                                     provisionalCategorisation: category,
+                                     activeEscapeList         : onEscapeList,
+                                     activeEscapeRisk         : activeOnEscapeList,]))))
   }
 
 
