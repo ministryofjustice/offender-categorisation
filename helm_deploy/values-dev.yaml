@@ -34,4 +34,3 @@ generic-service:
     global-protect: 35.176.93.186/32
     mojvpn: 81.134.202.29/32
     office: 217.33.148.210/32
-
