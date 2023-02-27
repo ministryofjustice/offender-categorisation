@@ -50,7 +50,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '700'))
     elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
-    riskProfilerApi.stubGetNoEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
+    riskProfilerApi.stubGetProfileWomenEscapeAlert('ON700', 'U(Unsentenced)', false, false)
     escapeButton.click()
     at(new CategoriserEscapePage(bookingId: '700'))
     escapeOtherEvidenceRadio = 'No'
@@ -98,7 +98,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     elite2Api.stubAssessmentsWomen('ON700')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     elite2Api.stubOffenceHistory('ON700')
-    riskProfilerApi.stubGetNoEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
+    riskProfilerApi.stubGetProfileWomenEscapeAlert('ON700', 'U(Unsentenced)', false, false)
     riskProfilerApi.stubGetViolenceProfile('ON700', 'U(Unsentenced)', false, false, false)
     riskProfilerApi.stubGetExtremismProfile('ON700', 'U(Unsentenced)', true, false, true)
     riskProfilerApi.stubGetLifeProfile('ON700', 'R')

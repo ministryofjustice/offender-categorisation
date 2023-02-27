@@ -168,7 +168,7 @@ class EscapeSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '700'))
     elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
-    riskProfilerApi.stubGetEscapeProfileWomen('ON700', 'U(Unsentenced)', true, true)
+    riskProfilerApi.stubGetProfileWomenEscapeAlert('ON700', 'U(Unsentenced)', true, true)
     escapeButton.click()
 
     then: 'The page is displayed with alert info and no CATB question'

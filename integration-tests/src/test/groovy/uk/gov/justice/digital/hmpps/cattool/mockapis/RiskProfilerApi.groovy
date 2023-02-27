@@ -79,7 +79,7 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
                                                                   active              : true],]]))))
   }
 
-  void stubGetEscapeProfileWomen(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
+  void stubGetProfileWomenEscapeAlert(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
     this.stubFor(get("/risk-profile/escape/${offenderno}")
       .willReturn(aResponse()
         .withStatus(200)
@@ -112,17 +112,6 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
                                                                   dateCreated         : "2016-09-16",
                                                                   expired             : false,
                                                                   active              : true],]]))))
-  }
-  void stubGetNoEscapeProfileWomen(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
-    this.stubFor(get("/risk-profile/escape/${offenderno}")
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withHeader('Content-Type', 'application/json')
-        .withBody(JsonOutput.toJson([nomsId                   : offenderno,
-                                     riskType                 : 'ESCAPE',
-                                     provisionalCategorisation: category,
-                                     activeEscapeList         : onEscapeList,
-                                     activeEscapeRisk         : activeOnEscapeList,]))))
   }
 
 
