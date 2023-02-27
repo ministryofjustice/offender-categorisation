@@ -160,4 +160,27 @@ class EscapeSpecification extends AbstractSpecification {
     then: 'submit succeeds'
     at(new TasklistPage(bookingId: '12'))
   }
+
+  def "The escape page doesnt display CATB question on Womens Estate"() {
+    when: 'I go to the escape page'
+
+    fixture.gotoInitialWomenTasklist()
+    at(new TasklistPage(bookingId: '700'))
+    elite2Api.stubAssessmentsWomen(['ON700'])
+    elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
+    riskProfilerApi.stubGetProfileWomenEscapeAlert('ON700', 'U(Unsentenced)', true, true)
+    escapeButton.click()
+
+    then: 'The page is displayed with alert info and no CATB question'
+    at(new CategoriserEscapePage(bookingId: '700'))
+    warningTextDiv.text().contains('This person is considered an escape risk')
+    !info.displayed
+    alertInfo*.text() == [
+      'E-List: First xel comment 2016-09-14',
+      '''E-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
+      'Escape Risk Alert: First xer comment 2016-09-16']
+    !escapeCatBQuestion.displayed
+
+  }
+
 }
