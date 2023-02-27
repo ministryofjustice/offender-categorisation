@@ -133,7 +133,8 @@ module.exports = function createApp({
     config.apis.oauth2.url,
     config.apis.elite2.url,
     config.apis.riskProfiler.url,
-    config.apis.allocationManager.url
+    config.apis.allocationManager.url,
+    config.apis.prisonerSearch.url
   )
   app.get('/health', (req, res, next) => {
     health((err, result) => {

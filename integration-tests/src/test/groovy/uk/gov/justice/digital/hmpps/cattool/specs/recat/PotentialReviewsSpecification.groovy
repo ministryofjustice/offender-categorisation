@@ -18,6 +18,8 @@ class PotentialReviewsSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([
       ratings: TestFixture.defaultRatingsC]), 'INITIAL')
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
 
@@ -45,6 +47,8 @@ class PotentialReviewsSpecification extends AbstractSpecification {
       raisedDate)
 
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
 

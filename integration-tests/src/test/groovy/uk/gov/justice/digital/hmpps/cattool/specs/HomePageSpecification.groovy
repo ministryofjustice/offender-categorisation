@@ -43,7 +43,7 @@ class HomePageSpecification extends AbstractSpecification {
     def sentenceStartDate39 = TODAY.minusDays(1)
     def sentenceStartDate40 = TODAY.minusDays(70)
     elite2Api.stubUncategorisedFull()
-    elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA', 'B0040AA'],
+    prisonerSearchApi.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA', 'B0040AA'],
       [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
       [sentenceStartDate31.toString(), sentenceStartDate32.toString(), sentenceStartDate33.toString(), sentenceStartDate34.toString(),
        sentenceStartDate35.toString(), sentenceStartDate36.toString(), sentenceStartDate37.toString(), sentenceStartDate38.toString(),
@@ -90,7 +90,7 @@ class HomePageSpecification extends AbstractSpecification {
     def daysSinceSentence34 = String.valueOf(ChronoUnit.DAYS.between(sentenceStartDate34, TODAY))
     // 14 days after sentenceStartDate
     elite2Api.stubUncategorisedForSupervisorFull()
-    elite2Api.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA'], [31, 32, 33, 34],
+    prisonerSearchApi.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA'], [31, 32, 33, 34],
       [sentenceStartDate31.toString(), sentenceStartDate32.toString(), sentenceStartDate33.toString(), sentenceStartDate34.toString()])
 
     fixture.loginAs(SUPERVISOR_USER)
@@ -113,6 +113,8 @@ class HomePageSpecification extends AbstractSpecification {
     when: 'I go to the home page as recategoriser'
 
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     fixture.loginAs(RECATEGORISER_USER)
 
@@ -123,7 +125,7 @@ class HomePageSpecification extends AbstractSpecification {
     dates == ['OVERDUE', 'OVERDUE', 'OVERDUE', TODAY.plusDays(17).format('dd/MM/yyyy')]
     reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
-    poms[0] == 'Engelbert Humperdinck'
+    poms == ['Engelbert Humperdinck', 'Engelbert Humperdinck', 'Engelbert Humperdinck', 'Engelbert Humperdinck']
     startButtons[0].text() == 'Start'
     startButtons[0].@href.contains('/tasklistRecat/12?reason=DUE')
     checkTabLink.isDisplayed()
@@ -139,7 +141,7 @@ class HomePageSpecification extends AbstractSpecification {
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(MULTIROLE_USER)
 
@@ -158,7 +160,7 @@ class HomePageSpecification extends AbstractSpecification {
 
     when: 'I select supervisor from the Current role select box'
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     roleSwitchSelect = "supervisor"
 
     then: 'The new role - supervisor home page is displayed'
@@ -170,7 +172,7 @@ class HomePageSpecification extends AbstractSpecification {
     when: 'A user starts a categorisation'
 
     elite2Api.stubUncategorisedNoStatus(678)
-    elite2Api.stubSentenceData(['ON678'], [678], [TODAY.plusDays(-3).toString()])
+    prisonerSearchApi.stubSentenceData(['ON678'], [678], [TODAY.plusDays(-3).toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(678, "ON678")
@@ -218,7 +220,7 @@ class HomePageSpecification extends AbstractSpecification {
         escapeRating    : [escapeOtherEvidence: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"],
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]]
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "B", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]]
     ]))
 
     when: 'A user starts a categorisation'
@@ -228,7 +230,7 @@ class HomePageSpecification extends AbstractSpecification {
 
     // 14 days after sentenceStartDate
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
 
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
@@ -237,7 +239,7 @@ class HomePageSpecification extends AbstractSpecification {
     startButtons[0].click()
     then: 'The view page is displayed'
     at CategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'B\nWarning\nCategory for approval is B'
+    categoryDiv.text() contains 'B\nWarning\nCategory for approval is Category B'
 
     when: 'The categorisation is cancelled'
     cancelLink.click()
@@ -278,6 +280,8 @@ class HomePageSpecification extends AbstractSpecification {
     when: 'A recategorisation user logs in'
 
     elite2Api.stubRecategorise(['A','P','A','A'])
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345XY')
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
@@ -314,6 +318,8 @@ class HomePageSpecification extends AbstractSpecification {
 
     when: 'the user returns to the todo list'
     elite2Api.stubRecategorise(['A','A','A','A'])
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     finishButton.click()
 
     then: 'The cancelled record is available to recategorise'
@@ -343,6 +349,8 @@ class HomePageSpecification extends AbstractSpecification {
     when: 'A recategorisation user logs in'
 
     elite2Api.stubRecategorise(['A','P','A','A'])
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345XY')
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
@@ -362,6 +370,8 @@ class HomePageSpecification extends AbstractSpecification {
     submitButton.click()
     at CancelConfirmedPage
     elite2Api.stubRecategorise(['A','A','A','A'])
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     finishButton.click()
     at RecategoriserHomePage
 
@@ -378,7 +388,7 @@ class HomePageSpecification extends AbstractSpecification {
     given: "I have logged in"
     def sentenceStartDate = TODAY.plusDays(-3).toString()
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate.toString(), sentenceStartDate.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate.toString(), sentenceStartDate.toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
 

@@ -1,6 +1,6 @@
 {% extends "../partials/layout.html" %}
 {% from "button/macro.njk" import govukButton %}
-{% from "back-link/macro.njk" import govukBackLink %}
+
 
 {% set pageTitle = "Manage categorisations" %}
 
@@ -8,11 +8,6 @@
   {% set offenderBack = offenderLink %}
 
   {% include "../partials/breadCrumb.html" %}
-
-  {{ govukBackLink({
-    text: "Back",
-    href: data.details.offenderNo | offenderLink
-  }) }}
 
   {% include "../partials/offenderBanner.html" %}
 

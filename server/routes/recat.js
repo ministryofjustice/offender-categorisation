@@ -38,7 +38,7 @@ module.exports = function Index({
     '/securityInput/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId, transactionalDbClient)
+      const result = await buildFormData(res, req, 'recat', 'securityInput', bookingId, transactionalDbClient)
 
       if (
         result.status === Status.SECURITY_MANUAL.name ||
@@ -202,11 +202,14 @@ module.exports = function Index({
 
   const clearConditionalFields = body => {
     const updated = { ...body }
-    if (body.securityInputNeeded === 'No') {
+    if (body.securityNoteNeeded === 'No') {
       delete updated.securityInputNeededText
     }
     if (body.transfer === 'Yes') {
       delete updated.transferText
+    }
+    if (body.oasysRelevantInfo === 'No') {
+      delete updated.oasysInputText
     }
     return updated
   }
@@ -284,6 +287,8 @@ module.exports = function Index({
   router.post(
     '/decision/:bookingId',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
       const section = 'recat'
       const form = 'decision'
@@ -307,7 +312,7 @@ module.exports = function Index({
         transactionalClient: transactionalDbClient,
       })
 
-      if (userInput.category === 'D' || userInput.category === 'J') {
+      if (userInput.category === 'D' || userInput.category === 'J' || userInput.category === 'T') {
         await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
       } else {
         await formService.cancelOpenConditions(bookingIdInt, req.user.username, transactionalDbClient)
@@ -330,7 +335,7 @@ module.exports = function Index({
           formName: 'miniHigherSecurityReview',
           transactionalClient: transactionalDbClient,
         })
-        if (userInput.category === 'D' || userInput.category === 'J') {
+        if (userInput.category === 'D' || userInput.category === 'J' || userInput.category === 'T') {
           // redirect to tasklist for open conditions, via 'added' page
           res.redirect(`/openConditionsAdded/${bookingId}?catType=RECAT`)
         } else {

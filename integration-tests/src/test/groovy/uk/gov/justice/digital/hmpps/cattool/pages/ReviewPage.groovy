@@ -18,7 +18,6 @@ class ReviewPage extends Page {
     form { $('form') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
     changeLinks { $('a.govuk-link', text: startsWith('Change')) }
 
     offendingHistorySummary { $('.offendingHistorySummary .govuk-summary-list__value') }
@@ -27,6 +26,7 @@ class ReviewPage extends Page {
     escapeRatingSummary { $('.escapeRatingSummary .govuk-summary-list__value') }
     extremismRatingSummary { $('.extremismRatingSummary .govuk-summary-list__value') }
     securityInputSummary { $('.securityInputSummary .govuk-summary-list__value') }
+    categoryDecisionSummary { $('.categoryDecisionSummary .govuk-summary-list__value')}
     nextReviewDateSummary { $('.nextReviewDateSummary .govuk-summary-list__value') }
 
     riskLevel { $('.riskLevelSummary .govuk-summary-list__value') }
@@ -34,5 +34,9 @@ class ReviewPage extends Page {
     riskOfHarm { $('.riskOfHarmSummary .govuk-summary-list__value') }
     foreignNational { $('.foreignNationalSummary .govuk-summary-list__value') }
     earliestReleaseDate(required: false) { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
+    previousSentences(required: false) { $('.previousSentencesSummary .govuk-summary-list__value') }
+    sexualOffences(required: false) { $('.sexualOffencesSummary .govuk-summary-list__value') }
+    victimContactScheme(required: false) { $('.victimContactSchemeSummary .govuk-summary-list__value') }
+    victimContactSchemeDl(required: false) { $('.victimContactSchemeSummary.no-print') }
   }
 }

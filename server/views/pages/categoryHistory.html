@@ -6,7 +6,7 @@
 {% block beforeContent %}
 
   {% set breadCrumbList = [ {href: '/' + data.details.bookingId, title: 'Manage categorisations'} ] %}
-  {{ breadCrumb(pageTitle, breadCrumbList) }}
+  {{ breadCrumb(breadCrumbList) }}
 
 {% include "../partials/offenderBanner.html" %}
 
@@ -34,7 +34,7 @@
         {% for row in data.history %}
           <tr class="govuk-table__row ">
             <td class="govuk-table__cell"> {{ row.approvalDateDisplay }}</td>
-            <td class="govuk-table__cell">{{ row.classificationCode }}</td>
+            <td class="govuk-table__cell">{{ catMappings(row.classificationCode) }}</td>
             <td class="govuk-table__cell">{{ row.prisonDescription }}</td>
             <td class="govuk-table__cell">
               {% if row.recordExists %}

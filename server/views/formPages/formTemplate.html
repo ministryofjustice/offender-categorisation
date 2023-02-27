@@ -1,5 +1,4 @@
 {% extends "../partials/layout.html" %}
-{% from "back-link/macro.njk" import govukBackLink %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
@@ -8,11 +7,6 @@
   {% block navigation %}
 
     {% include "../partials/breadCrumb.html" %}
-
-    {{ govukBackLink({
-      text: "Back",
-      href: backLink or "/tasklist/" + data.details.bookingId
-  }) }}
 
   {% endblock %}
 

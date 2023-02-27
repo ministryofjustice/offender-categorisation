@@ -1,7 +1,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "../macros/renderAlert.html" import renderAlert %}
-{% from "../macros/formatAnswer.html" import formatAnswer %}
+{% from "../macros/formatAnswer.html" import formatAnswer, formatAnswerNoDetails %}
 
 {% set catHistory %}
 {% if data.categorisations | length > 0 %}
@@ -18,7 +18,7 @@
   {% for row in data.categorisations %}
   <tr class="govuk-table__row ">
     <td class="govuk-table__cell">{{ row.approvalDateDisplay }}</td>
-    <td class="govuk-table__cell">{{ row.classificationCode }}</td>
+    <td class="govuk-table__cell">{{ catMappings(row.classificationCode) }}</td>
     <td class="govuk-table__cell">{{ row.agencyDescription }}</td>
   </tr>
   {% endfor %}
@@ -139,11 +139,37 @@
   }) }}
 {% endif %}
 
+{{ govukSummaryList({
+  classes: 'govuk-!-margin-bottom-9 print-full-width oasysInputSummary',
+  rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Offender Assessment System (OASys) check" },
+        actions: { items: [{
+          value: { classes: 'no-print'},
+          href: '/form/recat/oasysInput/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else []
+      }
+      },
+      {
+        key: { text: "Completion date of the latest full review that is in OASys" },
+        value: { text: data.recat.oasysInput.date },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Was there any information in the review that is relevant to the recategorisation?" },
+        value: { html: formatAnswerNoDetails(data.recat.oasysInput.oasysRelevantInfo, data.recat.oasysInput.oasysInputText) },
+        actions: { items: [] }
+      }
+    ]
+  })
+}}
 
   {% set wasReferred = data.security.review.securityReview %}
   {% set title = {
-    key: { classes: 'summary-list-title' if wasReferred else 'summary-list-title no-print',
-      text: "Security information" },
+    key: { classes: 'summary-list-title no-print',
+    text: "Security information" },
     value: { classes: 'no-print'},
     actions: { classes: 'no-print',
         items: [{
@@ -173,13 +199,14 @@
       actions: { items: [] }
     } %}
   {% set comments = {
+      classes: 'no-print',
       key: { text: "Security comments" },
       value: { text: data.security.review.securityReview },
       actions: { items: [] }
     } %}
 
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary' + ('' if wasReferred else ' no-print'),
+    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary no-print',
     rows: [ title, auto, manual, flagged, comments ] if wasReferred else [ title, auto, manual, flagged ]
   }) }}
 
@@ -214,7 +241,8 @@
     ]
   }) }}
 
- {{ govukSummaryList({
+{% if data.recat.decision.category == 'I' or data.recat.decision.category == 'J' or data.recat.decision.category == 'R' or data.recat.decision.category == 'T' %}
+  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
     rows: [
       {
@@ -228,11 +256,32 @@
       },
       {
         key: { text: "What security category is most suitable for this person?" },
-        value: { text: data.recat.decision.category and 'Category ' + data.recat.decision.category },
+        value: { text: data.recat.decision.category and catMappings(data.recat.decision.category) },
         actions: { items: [] }
       }
     ]
   }) }}
+{% else %}
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Category decision" },
+        actions: { items: [{
+            href: '/form/recat/decision/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Assessment"
+          }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "What security category is most suitable for this person?" },
+        value: { text: data.recat.decision.category and 'Category ' + data.recat.decision.category },
+        actions: { items: [] }
+       }
+    ]
+  }) }}
+{% endif %}
 
   {% set miniTitle = {
     key: { classes: 'summary-list-title', text: "Higher Security Review" },

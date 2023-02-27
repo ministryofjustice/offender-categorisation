@@ -91,13 +91,19 @@ module.exports = {
       {
         securityInputNeeded: {
           responseType: 'requiredString',
-          validationMessage: 'Please select yes or no',
+          validationMessage: '',
+        },
+      },
+      {
+        securityNoteNeeded: {
+          responseType: 'requiredString',
+          validationMessage: 'Select yes if you want to include a note to security',
         },
       },
       {
         securityInputNeededText: {
-          responseType: 'requiredStringIf_securityInputNeeded_Yes',
-          validationMessage: 'Please enter the reason why referral is needed',
+          responseType: 'requiredStringIf_securityNoteNeeded_Yes',
+          validationMessage: 'Enter a note',
         },
       },
     ],
@@ -111,7 +117,7 @@ module.exports = {
       {
         category: {
           responseType: 'requiredString',
-          validationMessage: 'Please select a security condition',
+          validationMessage: 'Select what category is most suitable for this person',
         },
       },
     ],
@@ -204,6 +210,34 @@ module.exports = {
     nextPath: {
       path: '/form/recat/fasttrackConfirmation/',
     },
+    validate: true,
+  },
+  oasysInput: {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    fields: [
+      {
+        date: {
+          responseType: 'todayOrPastDate',
+          validationMessage: '',
+          errorMessagePrefix: 'Completion date of the latest full review',
+        },
+      },
+      {
+        oasysRelevantInfo: {
+          responseType: 'requiredString',
+          validationMessage:
+            'Select yes if there was any information in the review that is relevant to the recategorisation',
+        },
+      },
+      {
+        oasysInputText: {
+          responseType: 'requiredStringIf_oasysRelevantInfo_Yes',
+          validationMessage: 'Enter any information relevant to their categorisation',
+        },
+      },
+    ],
     validate: true,
   },
 }

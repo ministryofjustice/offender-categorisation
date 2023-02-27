@@ -15,13 +15,15 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
       recat   : [
         decision            : [category: "C"],
+        oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
         higherSecurityReview: [steps: "step", transfer: "No", behaviour: "good", conditions: "conditions"],
         securityBack        : [:],
         securityInput       : [
           securityInputNeeded    : "Yes",
+          securityNoteNeeded: "Yes",
           securityInputNeededText: "reasons"
         ],
-        prisonerBackground  : [offenceDetails: "some text"],
+        prisonerBackground  : [offenceDetails: "offence Details text"],
         nextReviewDate      : [date: "14/12/2019"],
         riskAssessment      : [
           lowerCategory    : "lower security category text",
@@ -56,7 +58,7 @@ class ReviewSpecification extends AbstractSpecification {
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage
     headerValue*.text() == fixture.FULL_HEADER
-    changeLinks.size() == 5
+    changeLinks.size() == 6
 
     prisonerBackgroundSummary*.text() == [
       '',
@@ -65,7 +67,7 @@ class ReviewSpecification extends AbstractSpecification {
       'This person has not been reported as the perpetrator in any assaults in custody before',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
       'This person is at risk of engaging in, or vulnerable to, extremism.',
-      'some text']
+      'offence Details text']
     securityInputSummary*.text() == ['', 'No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
@@ -95,9 +97,10 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([
       recat: [
         decision          : [category: "C"],
-        securityInput     : [securityInputNeeded: "No"],
+        oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+        securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
         nextReviewDate    : [date: "14/12/2019"],
-        prisonerBackground: [offenceDetails: "some text"],
+        prisonerBackground: [offenceDetails: "offence Details text"],
         riskAssessment    : [
           lowerCategory    : "lower security category text",
           otherRelevant    : "Yes",
@@ -120,9 +123,9 @@ class ReviewSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewRecatPage
-    changeLinks.size() == 5
+    changeLinks.size() == 6
     changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
-    securityInputSummary*.text() == ['', 'No', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
   }
 
   def "The recat review page security flagged section"() {
@@ -130,9 +133,10 @@ class ReviewSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', JsonOutput.toJson([
       recat   : [
         decision          : [category: "C"],
+        oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
         securityBack      : [:],
         nextReviewDate    : [date: "14/12/2019"],
-        prisonerBackground: [offenceDetails: "some text"],
+        prisonerBackground: [offenceDetails: "offence Details text"],
         riskAssessment    : [
           lowerCategory    : "lower security category text",
           otherRelevant    : "Yes",
@@ -140,7 +144,7 @@ class ReviewSpecification extends AbstractSpecification {
           otherRelevantText: "other relevant information"
         ]
       ],
-      security: [review: [securityReview: "security info"]]
+      security: [review: [securityReview: "security info text"]]
     ]), 'RECAT')
     when: 'The review page is displayed for a fully completed set of pages'
     fixture.gotoTasklistRecat()
@@ -156,7 +160,7 @@ class ReviewSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed with security flagged showing as "yes"'
     at ReviewRecatPage
-    changeLinks.size() == 4
-    securityInputSummary*.text() == ['', 'No', 'No', 'Yes', 'security info']
+    changeLinks.size() == 5
+    securityInputSummary*.text() == ['', 'No', 'No', 'Yes', 'security info text']
   }
 }

@@ -37,7 +37,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)

@@ -12,7 +12,7 @@ module.exports = {
       {
         categoryAppropriate: {
           responseType: 'requiredString',
-          validationMessage: 'Please select yes or no',
+          validationMessage: 'Select yes if you think this category is appropriate',
         },
       },
       {
@@ -24,7 +24,7 @@ module.exports = {
       {
         overriddenCategoryText: {
           responseType: 'requiredStringIf_categoryAppropriate_No',
-          validationMessage: 'Please enter the reason why you changed the category',
+          validationMessage: 'Enter the reason why you changed the category',
         },
       },
       {

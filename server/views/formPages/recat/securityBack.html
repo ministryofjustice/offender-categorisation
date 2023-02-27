@@ -14,14 +14,17 @@
 
 <h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
 
-  {% set warningText %}
-    This prisoner was referred to the security team
-  {% endset %}
-  {{ govukWarningText({
-    text: warningText,
-    iconFallbackText: "Warning",
-    classes: "forms-warning-text warning-overrides"
-  }) }}
+  {% if data.recat.securityInput.securityInputNeededText %}
+    <h3 class="govuk-heading-s">Note from categoriser:</h3>
+    {{ govukInsetText({
+      text: data.recat.securityInput.securityInputNeededText
+    }) }}
+    {% elif data.recat.securityInput.securityNoteNeeded === 'No'%}
+      <h3 class="govuk-heading-s">Note from categoriser:</h3>
+      {{ govukInsetText({
+        text: "A note was not added"
+      }) }}
+    {% endif %}
 
   <h3 class="govuk-heading-s">Note from security:</h3>
   {{ govukInsetText({

@@ -7,7 +7,7 @@ class RiskOfHarmPage extends Page {
   static url = '/form/openConditions/riskOfHarm'
 
   static at = {
-    headingText == 'Risk of Serious Harm'
+    headingText == 'Risk of serious harm'
   }
 
   static content = {
@@ -20,8 +20,8 @@ class RiskOfHarmPage extends Page {
     harmManagedText(required: false) { $('textarea', name: 'harmManagedText') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
+
     errorSummaries { $('ul.govuk-error-summary__list li') }
-    errors { $('span.govuk-error-message') }
+    errors { $('.govuk-error-message') }
   }
 }

@@ -17,6 +17,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   static final allNoAnswers = [
     earliestReleaseDate: [threeOrMoreYears: 'No'],
+    victimContactScheme: [vcsOptedFor: 'No'],
     foreignNational    : [isForeignNational: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
     furtherCharges     : [furtherCharges: 'No'],
@@ -53,11 +54,36 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at EarliestReleasePage
 
     when: 'I submit the page'
+    threeOrMoreYearsYes.displayed
     threeOrMoreYearsYes.click()
+
+
+    justifyYes.displayed
+
     justifyYes.click()
-    justifyText << 'details text'
+    justifyText << 'justify details text'
     submitButton.click()
-///////////////////////////////////////////////////////////////////////////////
+
+    then: 'the Victim Contact Scheme page is displayed'
+    at VictimContactSchemePage
+
+    when: 'I submit a blank page'
+    waitFor(5) {
+      submitButton.click()
+    }
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme']
+      errors*.text() == ['Error:\nSelect Yes if any victims of the crime have opted-in to the Victim Contact Scheme']
+    }
+
+    when: 'I submit page'
+    vcsOptedForYes.click()
+    contactedVLOYes.click()
+    vloResponseText << 'vlo response text'
+    submitButton.click()
+
     then: 'the Foreign National page is displayed'
     at ForeignNationalPage
 
@@ -68,7 +94,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     exhaustedAppealNo.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk of Serious Harm page is displayed'
+    then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
     when: 'I submit page'
@@ -84,10 +110,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'there is a validation error'
-    waitFor {
-      errorSummaries*.text() == ['Please select yes or no']
-      errors*.text() == ['Error:\nPlease select yes or no']
-    }
+
+    errorSummaries*.text() == ['Please select yes or no']
+    errors*.text() == ['Error:\nPlease select yes or no']
 
     when: 'I submit the page'
     furtherChargesYes.click()
@@ -95,7 +120,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     increasedRiskYes.click()
     submitButton.click()
 ////////////////////////////////////////////////////////////////////////////
-    then: 'the Risk Levels page is displayed'
+    then: 'the Risk of escaping or absconding page is displayed'
     at RiskLevelsPage
 
     when: 'I submit page'
@@ -136,9 +161,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     at ReviewRecatPage
-    changeLinks.size() == 5
+    changeLinks.size() == 6
 
-    securityInputSummary*.text() == ['', 'No', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
@@ -151,7 +176,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == TestFixture.defaultRecat
     response.supervisor == null
     response.openConditions == [
-      earliestReleaseDate: [justify: 'Yes', justifyText: 'details text', threeOrMoreYears: 'Yes'],
+      earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
+      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' ],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
       furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: ',furtherChargesText details'],
@@ -203,6 +229,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at ReviewRecatPage
 
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
+    victimContactSchemeDl.displayed
+    victimContactScheme*.text() == ['','No','Not applicable']
     foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
     riskOfHarm*.text() == ['', 'No', 'Not applicable']
     riskLevel*.text() == ['', 'No']
@@ -216,7 +244,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.recat == [
       decision          : [category: "D"],
-      securityInput     : [securityInputNeeded: "No"],
+      oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -240,13 +269,15 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'The record is viewed by the recategoriser'
 
     elite2Api.stubRecategorise(['P', 'A', 'A', 'A'])
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
 
     to RecategoriserHomePage
     startButtons[0].click()
 
     then: 'The correct category is retrieved and data is correct'
     at RecategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is D'
+    categoryDiv.text() contains 'Category for approval is open category'
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
 
     def afterSubmitData = db.getData(12)
@@ -259,7 +290,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     afterSubmitData.status == ["AWAITING_APPROVAL"]
     afterSubmitResponse.recat == [
       decision          : [category: "D"],
-      securityInput     : [securityInputNeeded: "No"],
+      oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -276,7 +308,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     elite2Api.stubAssessments('dummy')
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
@@ -309,9 +341,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewRecatPage
-    categories*.text() == ['D\nWarning\nCategory D',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['!\nWarning\nOpen category',
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nWarning\nThe supervisor also recommends open category']
     !comments.displayed
     !commentLabel.displayed
   }
@@ -365,7 +397,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the supervisor reviews and overrides to cat C'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -385,7 +417,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     data.status == ["APPROVED"]
     response.recat == [
       decision          : [category: "D"],
-      securityInput     : [securityInputNeeded: "No"],
+      oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -413,8 +446,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'details are correct'
     at ApprovedViewRecatPage
     categories*.text() == ['C\nWarning\nCategory C',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nC\nWarning\nThe recommended category was changed from a D to a C']
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nC\nWarning\nThe recommended category was changed from open category to Category C']
     comments*.text() == ['super changed D to C', 'super other info']
     commentLabel.size() == 1
   }
@@ -445,7 +478,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the supervisor overrides to cat D'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     elite2Api.stubAgencyDetails('LPI')
@@ -508,17 +541,20 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     when: 'The record is viewed by the recategoriser'
     elite2Api.stubRecategorise(['P', 'A', 'A', 'A'])
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
+
     to RecategoriserHomePage
     startButtons[0].click()
 
     then: 'The correct category is retrieved'
     at RecategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is D'
+    categoryDiv.text() contains 'Category for approval is open category'
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], ['28/01/2019'])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     startButtons[0].click()
@@ -537,7 +573,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     data.status == ["APPROVED"]
     response.recat == [
       decision          : [category: "D"],
-      securityInput     : [securityInputNeeded: "No"],
+      oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -568,9 +605,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewRecatPage
-    categories*.text() == ['D\nWarning\nCategory D',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['!\nWarning\nOpen category',
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nWarning\nThe supervisor also recommends open category']
     comments*.text() == ['super overriding C to D reason text', 'super other info 1 + 2']
     commentLabel.size() == 1
   }
@@ -579,6 +616,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     openConditionsButton.click()
     at EarliestReleasePage
     threeOrMoreYearsNo.click()
+    submitButton.click()
+    at VictimContactSchemePage
+    vcsOptedForNo.click()
     submitButton.click()
     at ForeignNationalPage
     isForeignNationalNo.click()
@@ -594,7 +634,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-4).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()

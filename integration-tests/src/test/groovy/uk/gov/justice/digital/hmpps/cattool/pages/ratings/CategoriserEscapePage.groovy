@@ -23,6 +23,6 @@ class CategoriserEscapePage extends HeaderPage {
     escapeOtherEvidenceRadio { $('input', name: 'escapeOtherEvidence') }
     escapeOtherEvidenceTextarea { $('#escapeOtherEvidenceText') }
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
-    errors(required: false) { $('span.govuk-error-message') }
+    errors(required: false) { $('.govuk-error-message') }
   }
 }

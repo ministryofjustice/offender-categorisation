@@ -21,7 +21,7 @@ class LiteSpecification extends AbstractSpecification {
     def now = LocalDate.now()
     def SIX_MONTHS_TIME = now.plus(6, ChronoUnit.MONTHS)
 
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [now.toString(), now.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [now.toString(), now.toString()])
     fixture.loginAs(CATEGORISER_USER)
 
     when: 'the user arrives at the landing page and clicks the link to check previous reviews'
@@ -113,6 +113,8 @@ class LiteSpecification extends AbstractSpecification {
     when: 'I go to the recat tasklist page'
     fixture.logout()
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     // not in to-do list so have to go directly
     go '/tasklistRecat/12'
@@ -141,7 +143,7 @@ class LiteSpecification extends AbstractSpecification {
     when: 'A supervisor views their lite todo page'
     fixture.logout()
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY'], [11], [now.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY'], [11], [now.toString()])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
@@ -220,7 +222,7 @@ class LiteSpecification extends AbstractSpecification {
 
   def "An assessment is removed if already approved on Nomis"() {
     def now = LocalDate.now()
-    elite2Api.stubSentenceData(['B2345YZ'], [11], [now.toString(), now.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [11], [now.toString(), now.toString()])
     elite2Api.stubGetUserDetails(CATEGORISER_USER, 'SYI')
     elite2Api.stubGetStaffDetailsByUsernameList()
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')

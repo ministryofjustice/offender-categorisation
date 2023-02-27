@@ -7,7 +7,7 @@ class RiskLevelsPage extends Page {
   static url = '/form/openConditions/riskLevels'
 
   static at = {
-    headingText == 'Risk levels'
+    headingText == 'Risk of escaping or absconding'
   }
 
   static content = {
@@ -18,8 +18,8 @@ class RiskLevelsPage extends Page {
     likelyToAbscondText(required: false) { $('textarea', name: 'likelyToAbscondText') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
+
     errorSummaries { $('ul.govuk-error-summary__list li') }
-    errors { $('span.govuk-error-message') }
+    errors { $('.govuk-error-message') }
   }
 }

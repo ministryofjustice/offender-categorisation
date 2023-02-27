@@ -1,11 +1,13 @@
 {% extends "../formTemplate.html" %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "details/macro.njk" import govukDetails %}
 
 {% set greenButtonText = "Continue" %}
 
 {% set pageTitle = "Further charges" %}
+
+{% set isFemale = user.activeCaseLoad.female %}
 
 {% block navigation %}
 
@@ -18,13 +20,17 @@
 {% endblock %}
 
 {% set furtherChargesHtml %}
+  {% if catType == 'INITIAL'  and data.ratings.furtherCharges.furtherCharges == 'Yes' %}
+    <p>You should include all further charges, including minor offences.</p>
+  {% endif %}
 
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "furtherChargesText",
     type: "furtherChargesText",
-    maxlength: 50000,
-    threshold: 50,
-    label: { text: "Details of further charges" },
+    attributes: { 'maxlength': 50000 },
+    label: {
+      text: "Details of further charges"
+    },
     value: data.openConditions.furtherCharges.furtherChargesText,
     errorMessage: {
       text: "Please enter details"
@@ -59,11 +65,14 @@
 
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
-  {% if catType === 'RECAT' %}
+  {% if (not isFemale and data.ratings.furtherCharges.furtherCharges === 'No') or (isFemale and catType === 'INITIAL') or catType === 'RECAT' %}
     {{ govukRadios({
       name: "furtherCharges",
       classes: "govuk-radios--inline",
-      fieldset: { legend: { text: "Do they have any further charges?" } },
+      fieldset: { legend: { text: "Are they facing any further charges?" } },
+      hint: {
+        text: "You should include all further charges, including minor offences."
+      },
       errorMessage: {
         text: "Please select yes or no"
       } if (errors | findError('furtherCharges')),

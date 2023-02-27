@@ -60,7 +60,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type == ['INITIAL']
-    response.ratings == [nextReviewDate: [date: SIX_MONTHS_AHEAD]]
+    response.ratings == [nextReviewDate: [date: SIX_MONTHS_AHEAD, indeterminate: "false"]]
     data.user_id == ['CATEGORISER_USER']
     data.assigned_user_id == ['CATEGORISER_USER']
   }
@@ -81,7 +81,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: "Error is displayed"
     errorSummaries*.text() == ['Please select a choice']
-    errors*.text() == ['Error:\nPlease select a choice']
+    errors.text().toString() == "Error:\nPlease select a choice"
+
 
     when: "specific date is selected"
     specificOption.click()
@@ -96,8 +97,9 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDatePage
 
     then: "Error is displayed"
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    errorSummaries*.text() == ['The review date must be a real date']
+    errors.text().toString() == "Error:\nThe review date must be a real date"
+
   }
 
   def "The nextReviewDate Standalone page saves details correctly - in PG"() {
@@ -109,7 +111,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     when: 'I go to the Next Review Date Standalone page'
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
@@ -126,16 +128,16 @@ class NextReviewDateSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'there are 2 validation errors'
-    errorSummaries*.text() == ['Enter a valid date that is after today','Please enter a reason for the change']
-    errors*.text() == ['Error:\nEnter a valid date that is after today','Error:\nPlease enter details']
+    errorSummaries*.text() == ['The review date must be a real date','Enter reason for date change']
+    errors*.text() == ['Error:\nThe review date must be a real date','Error:\nEnter reason for date change']
 
     when: 'reason entered'
-    reason = 'test reason'
+    reason = 'test reason text'
     submitButton.click()
 
     then: 'there is 1 validation error'
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    errorSummaries*.text() == ['The review date must be a real date']
+    errors*.text() == ['Error:\nThe review date must be a real date']
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
@@ -146,14 +148,14 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at LandingPage
     elite2Api.verifyUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO) == null
     nextReviewDateHistory[0].find('td')[0].text() == THREE_MONTHS_AHEAD_LONG
-    nextReviewDateHistory[0].find('td')[1].text() == 'test reason'
+    nextReviewDateHistory[0].find('td')[1].text() == 'test reason text'
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings.nextReviewDate == [date: '14/12/2019'] // left unchanged
 
     def nextReviewData = db.getNextReviewData('B2345YZ')
-    nextReviewData[0].reason == 'test reason'
+    nextReviewData[0].reason == 'test reason text'
     nextReviewData[0].next_review_date.toString() == THREE_MONTHS_AHEAD_ISO
     nextReviewData[0].changed_by == 'CATEGORISER_USER'
     nextReviewData.size() == 1
@@ -162,7 +164,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
   def "The nextReviewDate Standalone page saves details correctly - not in PG"() {
     when: 'I go to the Next Review Date Standalone page'
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
@@ -199,7 +201,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     when: 'I go to the landing page'
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
@@ -226,7 +228,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     when: 'a supervisor goes to the Next Review Date Standalone page'
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(SUPERVISOR_USER)
     at SupervisorHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')

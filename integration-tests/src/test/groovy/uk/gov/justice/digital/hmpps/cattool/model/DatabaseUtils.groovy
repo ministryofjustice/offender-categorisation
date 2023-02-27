@@ -5,11 +5,10 @@ import groovy.sql.Sql
 import java.sql.Date
 
 class DatabaseUtils {
-  private static final Map dbConnParams = [
-    url     : 'jdbc:postgresql://localhost:5432/form-builder',
-    user    : 'form-builder',
-    password: 'form-builder',
-    driver  : 'org.postgresql.Driver']
+  private static final Map dbConnParams = [url     : 'jdbc:postgresql://localhost:5432/form-builder',
+                                           user    : 'form-builder',
+                                           password: 'form-builder',
+                                           driver  : 'org.postgresql.Driver']
 
   private static sql = Sql.newInstance(dbConnParams)
 
@@ -69,9 +68,14 @@ class DatabaseUtils {
     doCreateData(-1, bookingId, status, json)
   }
 
+  def createDataWithStatusWomen(id, bookingId, status, json, userId, prisonId) {
+    doCreateCompleteRow(id, bookingId, json, 'FEMALE_USER', status, 'INITIAL', null, null, null, 1, null, 'PFI', 'dummy', 'current_timestamp(2)', null, null)
+  }
+
   def createDataWithStatusAndCatType(bookingId, status, json, catType, offenderNo = 'dummy') {
     createDataWithIdAndStatusAndCatType(-1, bookingId, status, json, catType, offenderNo)
   }
+
 
   def createDataWithIdAndStatusAndCatType(id, bookingId, status, json, catType, offenderNo = 'dummy') {
     def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
@@ -91,6 +95,7 @@ class DatabaseUtils {
   def createRiskProfileData(bookingId, json) {
     doCreateCompleteRow(-1, bookingId, null, 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null, 1, json, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
   }
+
 
   def createRiskProfileDataForExistingRow(bookingId, json) {
     sql.executeUpdate("update form set risk_profile = ?::JSON where booking_id = $bookingId", json)
@@ -116,12 +121,14 @@ class DatabaseUtils {
     doCreateData(id, bookingId, status, json)
   }
 
+
   def createSecurityReviewedData(id, bookingId, offenderNo, status, json, reviewedBy, reviewDate, catType = 'INITIAL') {
     doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, catType, null, null, null, 1, null, 'LEI', offenderNo, 'current_timestamp(2)', reviewedBy, reviewDate)
   }
 
   private doCreateData(id, bookingId, status, json) {
     doCreateCompleteRow(id, bookingId, json, 'CATEGORISER_USER', status, 'INITIAL', null, null, null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null)
+
   }
 
   def doCreateCompleteRow(id, bookingId, json, userId, status, catType, assignedUserId, referredDate, referredBy, seq, riskProfile, prisonId, offenderNo, startDate,

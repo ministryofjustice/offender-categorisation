@@ -45,10 +45,9 @@ class SupervisorRecatReviewPage extends Page {
     riskOfHarm(required: false)  { $('.riskOfHarmSummary .govuk-summary-list__value') }
     foreignNational(required: false)  { $('.foreignNationalSummary .govuk-summary-list__value') }
     earliestReleaseDate(required: false) { $('.earliestReleaseDateSummary .govuk-summary-list__value') }
-
+    victimContactScheme(required: false) { $('.victimContactSchemeSummary .govuk-summary-list__value') }
     warnings { $('div.govuk-warning-text') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
   }
 }

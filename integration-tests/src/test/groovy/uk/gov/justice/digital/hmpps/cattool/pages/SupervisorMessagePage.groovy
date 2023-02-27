@@ -12,6 +12,6 @@ class SupervisorMessagePage extends HeaderPage {
     messageValues { $('dd') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
+
   }
 }

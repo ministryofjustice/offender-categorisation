@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% macro hintText(proposedCategory) %}
-  <span class="govuk-!-font-size-16" >
+  <span>
     {% if choosingHigherCategory(data.details.categoryCode, proposedCategory)
          or (data.details.categoryCode === 'I' and proposedCategory === 'B') %}
       You will need to complete a higher security review for this person, after choosing this category.
@@ -24,7 +24,7 @@
 {% endmacro %}
 
 {% macro hintTextOpen(proposedCategoryText) %}
-  <span class="govuk-!-font-size-16" >
+  <span>
     You will need to complete an open conditions assessment for this person, to check they are suitable for {{ proposedCategoryText }} conditions.
   </span>
 {% endmacro %}
@@ -39,7 +39,8 @@
   {% include "../../partials/warningIndeterminate.html" %}
 {% endset %}
 
-{% set optionB =  {
+{% if not user.activeCaseLoad.female %}
+  {% set optionB =  {
     value: "B",
     id: "catBOption",
     checked: data.recat.decision.category == 'B',
@@ -47,7 +48,7 @@
     text: "Category B",
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
-{% set optionC =  {
+  {% set optionC =  {
     value: "C",
     id: "catCOption",
     checked: data.recat.decision.category == 'C',
@@ -55,7 +56,7 @@
     text: "Category C",
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
-{% set optionD =  {
+  {% set optionD =  {
     value: "D",
     id: "catDOption",
     checked: data.recat.decision.category == 'D',
@@ -63,7 +64,7 @@
     text: "Consider them for Category D",
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
-{% set optionI =  {
+  {% set optionI =  {
     value: "I",
     id: "catIOption",
     checked: data.recat.decision.category == 'I',
@@ -71,7 +72,7 @@
     text: "YOI (closed)",
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
-{% set optionJ =  {
+  {% set optionJ =  {
     value: "J",
     id: "catJOption",
     checked: data.recat.decision.category == 'J',
@@ -81,15 +82,57 @@
   } %}
 
   {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
+{% endif %}
+
+{% if user.activeCaseLoad.female %}
+  {{ govukRadios({
+    name: "category",
+    classes: "govuk-radios",
+    fieldset: {
+      legend: {
+        text: "Which category is most suitable for this person?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Select what category is most suitable for this person"
+    } if (errors | findError('category')),
+    items: [
+      {
+        value: "R",
+        id: "closedOption",
+        checked: data.recat.decision.category == 'R',
+        hint: {
+          html: hintText('closed')
+        },
+        text: "Closed",
+        label: { classes: "govuk-!-font-weight-bold" }
+      },
+      {
+        value: "T",
+        id: "openOption",
+        checked: data.recat.decision.category == 'T',
+        hint: {
+          html: hintTextOpen('open')
+        },
+        text: "Consider them for open",
+        label: { classes: "govuk-!-font-weight-bold" }
+      }
+    ]
+  }) }}
+
+{% else %}
 
   {{ govukRadios({
     name: "category",
     classes: "govuk-radios",
     fieldset: { legend: { text: "What security category is most suitable for this person?" } },
     errorMessage: {
-      text: "Please select a security condition"
+      text: "Select what category is most suitable for this person"
     } if (errors | findError('category')),
     items: itemList
   }) }}
+
+{% endif %}
 
 {% endblock %}

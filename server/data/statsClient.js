@@ -34,31 +34,41 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  /** For now the startDate is ignored. The latest category before the end date is considered along with its predecessor */
+  /** The latest category before the end date is considered along with its predecessor */
   getRecatFromTo(startDate, endDate, prisonId, transactionalClient) {
     const query = {
       text: `
         with cat_table as (
-          select booking_id,
-                 sequence_no,
-                 prison_id,
-                 coalesce(form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory',
-                          form_response -> 'recat' -> 'decision' ->> 'category') as cat
-          from form
-          where status = 'APPROVED'
-            and cat_type = 'RECAT'
-            and ($1::date is null or approval_date <= $1::date)
+          select f.booking_id,
+                 f.sequence_no,
+                 f.prison_id,
+                 (select
+                    coalesce(f1.form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory',
+                    f1.form_response -> 'recat' -> 'decision' ->> 'category',
+                    f1.form_response -> 'categoriser'->'provisionalCategory' ->>'overriddenCategory',
+                    f1.form_response -> 'categoriser'->'provisionalCategory' ->>'suggestedCategory'
+                    ) as previous_cat
+                  from form as f1
+                  where f1.booking_id = f.booking_id
+                    and f1.sequence_no < f.sequence_no
+                    and f1.status = 'APPROVED'
+                    and ($3::date is null or f1.approval_date <= $3::date)
+                  order by sequence_no desc
+                   LIMIT 1) as previous_cat,
+                 coalesce(f.form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory',
+                          f.form_response -> 'recat' -> 'decision' ->> 'category') as cat
+          from form as f
+          where ${whereClause}
         ),
              arrays_table as (
-               select array_agg(array [prison_id,cat] order by sequence_no desc) as data
+               select array_agg(array [prison_id,previous_cat,cat] order by sequence_no desc) as data
                from cat_table
-               group by booking_id
+               group by booking_id,sequence_no
              )
-        select count(*), data[2][2] as previous, data[1][2] as current
+        select count(*), data[1][2] as previous, data[1][3] as current
         from arrays_table
-        where ($2::varchar is null or $2::varchar = data[1][1])
         group by previous, current`,
-      values: [endDate, prisonId],
+      values: ['RECAT', startDate, endDate, prisonId],
     }
     return transactionalClient.query(query)
   },

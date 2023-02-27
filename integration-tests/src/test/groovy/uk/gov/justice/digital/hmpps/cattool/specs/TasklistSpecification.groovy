@@ -6,6 +6,7 @@ import groovy.json.JsonSlurper
 import uk.gov.justice.digital.hmpps.cattool.pages.CancelConfirmedPage
 import uk.gov.justice.digital.hmpps.cattool.pages.CancelPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SecurityHomePage
+import uk.gov.justice.digital.hmpps.cattool.pages.SecurityReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 
 import java.time.LocalDate
@@ -95,7 +96,7 @@ class TasklistSpecification extends AbstractSpecification {
     summarySection[1].text() == 'Tasks not yet complete'
 
     when: 'a security user views their homepage'
-    elite2Api.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])
     logoutLink.click()
     elite2Api.stubGetStaffDetailsByUsernameList()
     elite2Api.stubGetOffenderDetailsByOffenderNoList(12, 'B2345YZ')
@@ -105,6 +106,13 @@ class TasklistSpecification extends AbstractSpecification {
     at SecurityHomePage
     prisonNos[0] == 'B2345YZ'
     referredBy[0] == 'Automatic'
+
+    when: 'the security user reads the page'
+    startButtons[0].click()
+    then: 'No note added text is displayed'
+    at new SecurityReviewPage(bookingId: '12')
+    pAuto.displayed
+
   }
 
   def "The tasklist page correctly populates the database"() {

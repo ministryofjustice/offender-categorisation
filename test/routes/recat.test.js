@@ -160,6 +160,7 @@ describe('recat', () => {
     ${'higherSecurityReview'}     | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
     ${'miniHigherSecurityReview'} | ${{ transfer: 'No' }}      | ${'/tasklistRecat/'}
     ${'riskAssessment'}           | ${{ otherRelevant: 'No' }} | ${'/tasklistRecat/'}
+    ${'oasysInput'}               | ${{ dummy: 'No' }}         | ${'/tasklistRecat/'}
   `('Post $formName should go to $nextPath', ({ formName, userInput, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12345,
@@ -183,7 +184,17 @@ describe('recat', () => {
       })
   })
 
-  test('Get category decision for offender 21 or over)', () => {
+  test('Get category decision for male offender 21 or over)', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PBI',
+        description: 'Peterborough HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.isYoungOffender.mockReturnValue(false)
     return request(app)
       .get(`/decision/12345`)
@@ -192,10 +203,21 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).toContain('Category decision')
         expect(res.text).not.toContain('catIOption')
+        expect(res.text).not.toContain('Consider them for open')
       })
   })
 
-  test('Get category decision for offender under 21)', () => {
+  test('Get category decision for male offender under 21)', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'MDI',
+        description: 'Moorland (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: false,
+      },
+    })
     formService.isYoungOffender.mockReturnValue(true)
     return request(app)
       .get(`/decision/12345`)
@@ -205,6 +227,30 @@ describe('recat', () => {
         expect(res.text).toContain('Category decision')
         expect(res.text).toContain('catIOption')
         expect(res.text).not.toContain('Prisoner has an indeterminate sentence')
+        expect(res.text).not.toContain('Consider them for open')
+      })
+  })
+
+  test('Get category decision for female offender)', () => {
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female HMP',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+    })
+    formService.isYoungOffender.mockReturnValue(false)
+    return request(app)
+      .get(`/decision/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Category decision')
+        expect(res.text).toContain('Consider them for open')
+        expect(res.text).not.toContain('Category C')
       })
   })
 
@@ -233,7 +279,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('extremismInfo')
-        expect(res.text).toMatch(/Home.+Categorisation home.+Prisoner background/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('escapeInfo')
         expect(res.text).toContain('/prisoner/GH123/case-notes')
         expect(res.text).toContain('/prisoner/GH123/alerts')
@@ -260,7 +306,7 @@ describe('recat', () => {
         expect(res.text).toMatch(
           /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 4 non-serious assaults in the past 12 months./
         )
-        expect(res.text).toMatch(/Home.+Categorisation home.+Category review task list.+Check your answers/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Category task list/s)
       })
   })
 
@@ -318,7 +364,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).not.toContain('This person is at risk of engaging in, or vulnerable to, extremism.')
-        expect(res.text).toMatch(/Home.+Categorisation home.+Check your answers/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain(
           'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.'
         )
@@ -355,7 +401,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('/miniHigherSecurityReview/12345')
-        expect(res.text).toMatch(/Home.+Categorisation home.+Check your answers/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('/higherSecurityReview/12345')
       })
   })
@@ -383,7 +429,7 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toMatch(/Home.+Categorisation home.+Check change in risk status/s)
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain(
           'This person needs to be considered by security. Please start a review and refer this person to security.'
         )
@@ -500,6 +546,7 @@ describe('POST /form/recat/decision', () => {
           formName,
           transactionalClient: mockTransactionalClient,
         })
+        expect(userService.getUser).toBeCalledTimes(1)
       })
   })
 })
@@ -610,5 +657,23 @@ describe('POST /form/recat/fasttrackProgress', () => {
           mockTransactionalClient
         )
       })
+  })
+})
+
+describe('Testing oasys input page routing', () => {
+  test.each`
+    path                  | expectedContent
+    ${'oasysInput/12345'} | ${'Offender Assessment System (OASys)'}
+  `('should render $expectedContent for $path', ({ path, expectedContent }) =>
+    request(app)
+      .get(`/${path}`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain(expectedContent)
+      })
+  )
+  test('Oasys Validation error redirect to page', () => {
+    request(app).post(`/oasysInput/866018`).expect(302).expect('Location', 'form/recat/oasysInput/866018')
   })
 })

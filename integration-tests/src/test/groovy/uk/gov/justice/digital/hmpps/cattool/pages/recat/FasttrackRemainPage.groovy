@@ -16,8 +16,7 @@ class FasttrackRemainPage extends HeaderPage {
     remainNo { $('#remainCatC-2') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
     errorSummaries { $('ul.govuk-error-summary__list li') }
-    errors { $('span.govuk-error-message') }
+    errors { $('.govuk-error-message') }
   }
 }

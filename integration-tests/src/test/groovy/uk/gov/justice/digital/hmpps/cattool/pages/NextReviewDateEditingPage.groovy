@@ -19,8 +19,7 @@ class NextReviewDateEditingPage extends Page {
     changeLink { $('a#changeLink') }
 
     submitButton { $('button', type: 'submit') }
-    backLink { $('a.govuk-back-link') }
     errorSummaries { $('ul.govuk-error-summary__list li') }
-    errors { $('span.govuk-error-message') }
+    errors { $('.govuk-error-message') }
   }
 }

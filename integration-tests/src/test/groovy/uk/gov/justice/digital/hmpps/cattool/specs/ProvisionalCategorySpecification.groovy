@@ -28,14 +28,14 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
 
     then: 'The page is displayed correctly'
-    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
+    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is Category B'
 
     when: 'I enter some data, save and return to the page'
     elite2Api.stubCategorise('C', '2019-12-14')
@@ -47,7 +47,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     overriddenCategoryD.@type == 'radio'
 
     overriddenCategoryC.click()
-    overriddenCategoryText << "Some Text"
+    overriddenCategoryText << "over ridden category text"
     otherInformationText << "other info  Text"
     submitButton.click()
     at CategoriserSubmittedPage
@@ -57,7 +57,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     form.categoryAppropriate == "No"
     form.overriddenCategory == "C"
     form.otherInformationText == "other info  Text"
-    form.overriddenCategoryText == "Some Text"
+    form.overriddenCategoryText == "over ridden category text"
 
     def data = db.getData(12)
     data.status == ["AWAITING_APPROVAL"]
@@ -69,7 +69,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == null
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'C',
-                                                   categoryAppropriate: 'No', otherInformationText: 'other info  Text', overriddenCategoryText: 'Some Text']]
+                                                   categoryAppropriate: 'No', otherInformationText: 'other info  Text', overriddenCategoryText: 'over ridden category text']]
     response.openConditionsRequested == null
   }
 
@@ -84,14 +84,14 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     when: 'I go to the Provisional Category page'
     elite2Api.stubUncategorised()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().plusDays(-3).toString(), LocalDate.now().plusDays(-1).toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().plusDays(-3).toString(), LocalDate.now().plusDays(-1).toString()])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
 
     then: 'The provisional category is B'
-    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is B'
+    warning[0].text() == 'B\nWarning\nBased on the information provided, the provisional category is Category B'
   }
 
   def 'Validation test'() {
@@ -101,7 +101,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
@@ -109,8 +109,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
-    errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    errorSummaries*.text() == ['Select yes if you think this category is appropriate']
+    errors.text().toString().equals("Error:\nSelect yes if you think this category is appropriate")
 
     when: 'I just select appropriate "No"'
     appropriateNo.click()
@@ -119,9 +119,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     then: 'I stay on the page with validation errors'
     at new ProvisionalCategoryPage(bookingId: '12')
     errorSummaries*.text() == ['Please enter the new category',
-                               'Please enter the reason why you changed the category']
-    errors*.text() == ['Error:\nPlease select the new category',
-                       'Error:\nPlease enter the reason why you changed the category']
+                               'Enter the reason why you changed the category']
+    errors*.text() == ['Error:\nPlease enter the new category', 'Error:\nEnter the reason why you changed the category']
 
     when: 'I submit the Provisional Category page with an empty text area'
     overriddenCategoryB.click()
@@ -129,8 +128,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     at new ProvisionalCategoryPage(bookingId: '12')
-    errorSummaries*.text() == ['Please enter the reason why you changed the category']
-    errors*.text() == ['Error:\nPlease enter the reason why you changed the category']
+    errorSummaries*.text() == ['Enter the reason why you changed the category']
+    errors.text().toString() == "Error:\nEnter the reason why you changed the category"
   }
 
   def 'young offender redirects to open conditions flow'() {
@@ -143,7 +142,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', true)
@@ -151,11 +150,11 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat J'
-    warning.text().contains 'the provisional category is YOI Closed'
+    warning.text().contains 'the provisional category is YOI closed'
     newCatMessage.text() == 'Changing to YOI Open'
 
     when: 'Changing to Cat J'
-    overriddenCategoryText << "Some Text"
+    overriddenCategoryText << "over ridden category text"
     elite2Api.stubGetOffenderDetails(12)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
     submitButton.click()
@@ -172,7 +171,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == null
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'I', overriddenCategory: 'J',
-                                                   categoryAppropriate: 'No', overriddenCategoryText: 'Some Text']]
+                                                   categoryAppropriate: 'No', overriddenCategoryText: 'over ridden category text']]
     response.openConditionsRequested
   }
 
@@ -186,14 +185,14 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false)
     to new ProvisionalCategoryPage(bookingId: '12'), '12'
     !newCatMessage.displayed
     appropriateNo.click()
-    overriddenCategoryText << "Some Text"
+    overriddenCategoryText << "over ridden category text"
     otherInformationText << TRICKY_TEXT
     overriddenCategoryD.click()
     elite2Api.stubGetOffenderDetails(12)
@@ -212,7 +211,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.ratings == TestFixture.defaultRatingsB
     response.supervisor == null
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                   categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'Some Text']]
+                                                   categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'over ridden category text']]
     response.openConditionsRequested
   }
 
@@ -225,7 +224,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, true)
@@ -234,7 +233,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The page is displayed correctly'
     !indeterminateWarning.displayed
-    warning[0].text() == 'C\nWarning\nBased on the information provided, the provisional category is C'
+    warning[0].text() == 'C\nWarning\nBased on the information provided, the provisional category is Category C'
     overriddenCategoryD.click()
     indeterminateWarning.displayed
   }
@@ -247,7 +246,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
@@ -273,7 +272,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings                : TestFixture.defaultRatingsC,
       categoriser            : [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                      categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'Some Text']],
+                                                      categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'over ridden category text']],
       openConditionsRequested: true,
       openConditions         : TestFixture.defaultOpenConditions,
     ]))
@@ -282,7 +281,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
@@ -290,7 +289,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The page redirects to the open conditions version and shows cat D'
     at new ProvisionalCategoryOpenPage(bookingId: '12')
-    warning[0].text() == 'D\nWarning\nBased on the information provided, the provisional category is D'
+    warning[0].text() == '!\nWarning\nThe provisional category is open category'
 
     when: 'I confirm Cat D'
     elite2Api.stubCategorise('D', '2019-12-14')
@@ -310,7 +309,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.ratings == TestFixture.defaultRatingsC
     response.supervisor == null
     response.categoriser == [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                   categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'Some Text']]
+                                                   categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'over ridden category text']]
     response.openConditionsRequested
     response.openConditions == TestFixture.defaultOpenConditions
   }
@@ -321,7 +320,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     db.createDataWithStatus(12, 'STARTED', JsonOutput.toJson([
       ratings                : TestFixture.defaultRatingsC,
       categoriser            : [provisionalCategory: [suggestedCategory  : 'B', overriddenCategory: 'D',
-                                                      categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'Some Text']],
+                                                      categoryAppropriate: 'No', otherInformationText: TRICKY_TEXT, overriddenCategoryText: 'over ridden category text']],
       openConditionsRequested: true,
       openConditions         : TestFixture.defaultOpenConditions,
     ]))
@@ -330,7 +329,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11, date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
@@ -338,7 +337,7 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The page redirects to the open conditions version and shows cat D'
     at new ProvisionalCategoryOpenPage(bookingId: '12')
-    warning[0].text() == 'D\nWarning\nBased on the information provided, the provisional category is D'
+    warning[0].text() == '!\nWarning\nThe provisional category is open category'
 
     when: 'I reject Cat D'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
@@ -347,7 +346,8 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
 
     then: 'The tasklist is shown with open conditions task removed but form data retained in database'
     at TasklistPage
-    !openConditionsButton.displayed
+    assert openConditionsButton.displayed == false
+
 
     def data = db.getData(12)
     data.status == ["STARTED"]

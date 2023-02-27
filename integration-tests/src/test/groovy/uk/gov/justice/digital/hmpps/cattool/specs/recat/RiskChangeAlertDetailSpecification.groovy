@@ -87,6 +87,9 @@ class RiskChangeAlertDetailSpecification extends AbstractSpecification {
       raisedDate)
 
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
+
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
 

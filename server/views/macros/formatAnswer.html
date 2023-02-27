@@ -11,3 +11,20 @@
   <div>{{yesno}}</div>
   <div>{{details}}</div>
 {% endmacro %}
+
+{% macro formatAnswerNoDetails(yesno, details) %}
+  {% if yesno and not details %}
+    <div>{{yesno}}</div>
+  {% else %}
+    <div>{{yesno}}</div>
+    <div>{{details}}</div>
+  {% endif %}
+{% endmacro %}
+
+{% macro formatDetailsWithNA(yesno, details) %}
+  {% if yesno %}
+    <div>{{details}}</div>
+  {% else %}
+    Not applicable
+  {% endif %}
+{% endmacro %}

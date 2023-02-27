@@ -4,7 +4,7 @@
 
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "radios/macro.njk" import govukRadios %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 {% from "details/macro.njk" import govukDetails %}
 
@@ -67,7 +67,7 @@
       },
       items: radios | rejectattr(cat),
       errorMessage: {
-        text: "Please select the new category"
+        text: "Please enter the new category"
       } if (errors | findError('overriddenCategory'))
     }) }}
   {% else %}
@@ -75,12 +75,11 @@
     <input type="hidden" name="overriddenCategory" value="J" />
   {% endif %}
 
-  {{ govukCharacterCount({
+  {{ govukTextarea({
     name: "overriddenCategoryText",
     type: "myTextWhatsThisFor",
     id: "overriddenCategoryText",
-    maxlength: 50000,
-    threshold: 50,
+    attributes: { 'maxlength': 50000 },
     label: {
       text: "Explain why"
     },
@@ -89,7 +88,7 @@
     },
     value: data.categoriser.provisionalCategory.overriddenCategoryText,
     errorMessage: {
-      text: "Please enter the reason why you changed the category"
+      text: "Enter the reason why you changed the category"
     } if (errors | findError('overriddenCategoryText'))
   }) }}
 {% endset %}
@@ -99,10 +98,10 @@
 <h1 class="govuk-heading-l">Provisional category</h1>
 
 <div class="govuk-warning-text forms-info-text warning-overrides">
-  <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
+    <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
   <strong class="govuk-warning-text__text">
     <span class="govuk-warning-text__assistive">Warning</span>
-    Based on the information provided, the provisional category is {{ catDisplay(cat) }}
+    Based on the information provided, the provisional category is {{ replaceCatLabel(cat) }}
   </strong>
 </div>
 
@@ -118,7 +117,7 @@
     }
   },
   errorMessage: {
-    text: "Please select yes or no"
+    text: "Select yes if you think this category is appropriate"
   } if (errors | findError('categoryAppropriate')),
   items: [
     {
@@ -137,17 +136,16 @@
   ]
 }) }}
 
-{{ govukCharacterCount({
+{{ govukTextarea({
   name: "otherInformationText",
   type: "otherInformationText",
   id: "otherInformationText",
-  maxlength: 50000,
-  threshold: 50,
+  attributes: { 'maxlength': 50000 },
   label: {
-  text: "Is there any other relevant information that you want to record?"
+    text: "Is there any other relevant information that you want to record?"
   },
   hint: {
-  text: "If you do not think this individual is suitable for category D, explain why. Your comments will be disclosed to the prisoner"
+    text: "Your comments will be disclosed to the prisoner"
   },
   value: data.categoriser.provisionalCategory.otherInformationText
 }) }}

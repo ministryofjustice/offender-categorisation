@@ -9,6 +9,7 @@ const statsClient = require('./data/statsClient')
 const nomisClientBuilder = require('./data/nomisClientBuilder')
 const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
 const allocationClientBuilder = require('./data/allocationManagerApi')
+const prisonerSearchClientBuilder = require('./data/prisonerSearchApi')
 
 const createFormService = require('./services/formService')
 const createStatsService = require('./services/statsService')
@@ -21,7 +22,12 @@ const createSqsService = require('./services/sqsService')
 // pass in dependencies of service
 const formService = createFormService(formClient)
 const statsService = createStatsService(statsClient)
-const offendersService = createOffendersService(nomisClientBuilder, allocationClientBuilder, formService)
+const offendersService = createOffendersService(
+  nomisClientBuilder,
+  allocationClientBuilder,
+  formService,
+  prisonerSearchClientBuilder
+)
 const userService = createUserService(nomisClientBuilder)
 const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
 const sqsService = createSqsService(offendersService, formService)

@@ -1,5 +1,5 @@
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: rds-snapshot-job
@@ -10,6 +10,7 @@ spec:
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 345600
       backoffLimit: 0
       activeDeadlineSeconds: 1200
       template:
