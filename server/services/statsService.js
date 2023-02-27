@@ -4,6 +4,7 @@ function getCount(rows, field, tag) {
 }
 
 const map = { B: 0, C: 1, D: 2, I: 3, J: 4 }
+const femaleMap = { T: 0, R: 1, I: 2, J: 3 }
 
 module.exports = function createstatsService(statsClient) {
   return {
@@ -19,7 +20,7 @@ module.exports = function createstatsService(statsClient) {
       return stats.rows
     },
 
-    async getRecatFromTo(startDate, endDate, prisonId, transactionalClient) {
+    async getRecatFromTo(startDate, endDate, prisonId, transactionalClient, female) {
       const stats = await statsClient.getRecatFromTo(startDate, endDate, prisonId, transactionalClient)
       // fill a 5x5 array
       const table = Array(6)
@@ -27,7 +28,8 @@ module.exports = function createstatsService(statsClient) {
         .map(() => Array(5))
       stats.rows.forEach(row => {
         if (row.previous && row.current) {
-          table[map[row.previous]][map[row.current]] = row.count
+          if (female) table[femaleMap[row.previous]][femaleMap[row.current]] = row.count
+          else table[map[row.previous]][map[row.current]] = row.count
         }
       })
       // Add totals at the bottom

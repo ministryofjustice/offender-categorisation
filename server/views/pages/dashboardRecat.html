@@ -16,7 +16,11 @@
 <div >
   <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
-
+{% if user.activeCaseLoad.female %}
+  {% set categories = ['Open',	'Closed', 'YOI closed', 'YOI open', 'Total'] %}
+{% else %}
+  {% set categories = ['B',	'C', 'D', 'YOI closed', 'YOI open', 'Total'] %}
+{% endif %}
 <div>
   <p>The statistics on this page are for approved recategorisations.</p>
   {% include "../partials/dashboardForm.html" %}
@@ -26,69 +30,26 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th class="govuk-table__header" scope="col">From/To</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold govuk-table__header--numeric" scope="col">B</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold govuk-table__header--numeric" scope="col">C</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold govuk-table__header--numeric" scope="col">D</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold govuk-table__header--numeric" scope="col">YOI&nbsp;closed</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold govuk-table__header--numeric" scope="col">YOI&nbsp;open</th>
-        <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold govuk-table__header--numeric" scope="col">Total</th>
+        {% for category in categories %}
+          <th class="govuk-table__cell table-fixed-width govuk-!-font-weight-bold govuk-table__header--numeric" scope="col">{{ category }}</th>
+        {% endfor %}
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">B</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric table-diagonal-cell">{{ table[0][0] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[0][1] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[0][2] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[0][3] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[0][4] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[0][5] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">C</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[1][0] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric table-diagonal-cell">{{ table[1][1] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[1][2] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[1][3] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[1][4] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[1][5] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">D</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[2][0] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[2][1] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric table-diagonal-cell">{{ table[2][2] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[2][3] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[2][4] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[2][5] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">YOI&nbsp;closed</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[3][0] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[3][1] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[3][2] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric table-diagonal-cell">{{ table[3][3] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[3][4] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[3][5] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">YOI&nbsp;open</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[4][0] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[4][1] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[4][2] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[4][3] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric table-diagonal-cell">{{ table[4][4] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[4][5] }}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[5][0] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[5][1] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[5][2] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[5][3] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[5][4] }}</td>
-        <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[5][5] }}</td>
-      </tr>
+    {% for row in categories %}
+    <tr class="govuk-table__row">
+      {% set rowindex = loop.index - 1 %}
+      <td class="govuk-table__cell govuk-!-font-weight-bold">{{ row }}</td>
+      {% for column in categories %}
+          {% set colindex = loop.index - 1 %}
+          {% if rowindex == colindex and rowindex < categories.length - 1 %}
+            <td class="govuk-table__cell govuk-table__cell--numeric table-diagonal-cell">{{ table[rowindex][colindex] }}</td>
+          {% else %}
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ table[rowindex][colindex] }}</td>
+          {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
     </tbody>
   </table>
   <div class="govuk-!-width-two-thirds">
