@@ -9,6 +9,8 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
+import java.time.LocalDate
+
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 
@@ -41,8 +43,8 @@ class ApprovedViewSpecification extends AbstractSpecification {
     then: 'the cat details are correct and full prisoner background data is shown'
     headerValue*.text() == fixture.FULL_HEADER
     categories*.text() == ['C\nWarning\nCategory C',
-                           'C\nWarning\nThe categoriser recommends category C',
-                           'C\nWarning\nThe supervisor also recommends category C']
+                           'C\nWarning\nThe categoriser recommends Category C',
+                           'C\nWarning\nThe supervisor also recommends Category C']
     !comments.displayed
     comments.size() == 0
     !openConditionsHeader.isDisplayed()
@@ -73,9 +75,9 @@ class ApprovedViewSpecification extends AbstractSpecification {
     navigateToView()
 
     then: 'the cat details are correct'
-    categories*.text() == ['D\nWarning\nCategory D',
-                           'C\nWarning\nThe categoriser recommends category C',
-                           'C\nD\nWarning\nThe recommended category was changed from a C to a D']
+    categories*.text() == ['!\nWarning\nOpen category',
+                           'C\nWarning\nThe categoriser recommends Category C',
+                           'C\n!\nWarning\nThe recommended category was changed from Category C to open category']
     comments.text() == 'Here are the supervisor\'s comments on why the category was changed'
     openConditionsHeader.isDisplayed()
 
@@ -92,6 +94,8 @@ class ApprovedViewSpecification extends AbstractSpecification {
 
     when: 'the re-categoriser goes to the approved view page'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubCategorised([12])

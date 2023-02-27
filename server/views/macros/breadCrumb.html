@@ -1,9 +1,9 @@
 {% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
 
-{% macro breadCrumb(pageTitle, breadCrumbList) %}
+{% macro breadCrumb(breadCrumbList) %}
 
   {% set rows = [ {
-    text: "Home",
+    text: "Digital Prison Services",
     href: dpsHome
     } ]
   %}
@@ -17,15 +17,11 @@
     ), rows) %}
   {% endfor %}
 
-  {% set completedRows = (rows.push(
-    {
-      text: pageTitle
-    }
-  ), rows) %}
 
 {{ govukBreadcrumbs({
-  items: completedRows,
-  classes: "no-print"
+  collapseOnMobile: true,
+  items: rows,
+  classes: "govuk-!-display-none-print"
 }) }}
 
 {% endmacro %}

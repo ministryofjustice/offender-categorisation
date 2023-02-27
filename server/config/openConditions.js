@@ -21,6 +21,86 @@ module.exports = {
       },
     ],
     nextPath: {
+      decisions: {
+        discriminator: 'catType',
+        INITIAL: '/form/openConditions/previousSentences/',
+        RECAT: '/form/openConditions/victimContactScheme/',
+      },
+    },
+    validate: true,
+  },
+  previousSentences: {
+    fields: [
+      {
+        releasedLastFiveYears: {
+          responseType: 'requiredString',
+          validationMessage: 'Select yes if they have been released from a previous sentence in the last 5 years',
+        },
+      },
+      {
+        sevenOrMoreYears: {
+          responseType: 'requiredStringIf_releasedLastFiveYears_Yes',
+          validationMessage: 'Select yes if they have a previous sentence of 7 years or more',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/openConditions/victimContactScheme/',
+    },
+    validate: true,
+  },
+  victimContactScheme: {
+    fields: [
+      {
+        vcsOptedFor: {
+          responseType: 'requiredString',
+          validationMessage: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme',
+        },
+      },
+      {
+        contactedVLO: {
+          responseType: 'requiredStringIf_vcsOptedFor_Yes',
+          validationMessage: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)',
+        },
+      },
+      {
+        vloResponseText: {
+          responseType: 'requiredStringIf_contactedVLO_Yes',
+          validationMessage: 'Enter the response from the Victim Liaison Officer (VLO)',
+        },
+      },
+    ],
+    nextPath: {
+      decisions: {
+        discriminator: 'catType',
+        INITIAL: '/form/openConditions/sexualOffences/',
+        RECAT: '/form/openConditions/foreignNational/',
+      },
+    },
+    validate: true,
+  },
+  sexualOffences: {
+    fields: [
+      {
+        haveTheyBeenEverConvicted: {
+          responseType: 'requiredString',
+          validationMessage: 'Select yes if they have ever been convicted of a sexual offence',
+        },
+      },
+      {
+        canTheRiskBeManaged: {
+          responseType: 'requiredStringIf_haveTheyBeenEverConvicted_Yes',
+          validationMessage: 'Select yes if the risk to the public can be managed in open conditions',
+        },
+      },
+      {
+        howTheRiskCanBeManaged: {
+          responseType: 'requiredStringIf_canTheRiskBeManaged_Yes',
+          validationMessage: 'Enter details of how the risk can be managed',
+        },
+      },
+    ],
+    nextPath: {
       path: '/form/openConditions/foreignNational/',
     },
     validate: true,

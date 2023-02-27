@@ -23,6 +23,8 @@
 
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8 main-heading">Check your answers before submitting</h1>
 
+    {% include "../../partials/openConditionsBanner.html" %}
+
     {{ govukWarningText({
       text: "Your answers may be disclosed to the prisoner",
       iconFallbackText: "Warning",

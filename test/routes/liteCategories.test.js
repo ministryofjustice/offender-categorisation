@@ -62,7 +62,6 @@ describe('assessment', () => {
     formService.getCategorisationRecord.mockResolvedValue({})
     formService.getLiteCategorisation.mockResolvedValue({})
     const sixMonths = moment().add(6, 'months').format('DD/MM/YYYY')
-
     return request(app)
       .get(`/12`)
       .expect(200)
@@ -110,7 +109,7 @@ describe('assessment', () => {
       authority: 'RECP',
       nextReviewDate: futureDate,
       placement: 'SYI',
-      comment: 'some text',
+      comment: 'some text some text',
     }
     return request(app)
       .post(`/12345`)
@@ -139,7 +138,7 @@ describe('approve', () => {
       assessmentCommittee: 'GOV',
       displayCreatedDate: '01/01/2020',
       placementPrisonId: 'SYI',
-      assessmentComment: 'comment text',
+      assessmentComment: 'comment text comment text',
     })
     userService.getUserByUserId.mockResolvedValue({ firstName: 'FRED', lastName: 'PERRY' })
 

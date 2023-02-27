@@ -22,46 +22,87 @@
 [![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=postgres&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=flat&logo=redis&logoColor=white)](https://redis.io/)
 
-# Dev Website
 
+## Dev Website
 https://dev.offender-categorisation.service.justice.gov.uk/
+## Requirements
 
-# Based on GOVUK startkit
+You will need the following tools installed:
 
-A simple starter kit to start writing node app with the gov uk front end toolkit.
+|      Tool       |   Version   |                                Reason                                |
+|:---------------:|:-----------:|:--------------------------------------------------------------------:|
+|       npm       | &ge; 7.11.x |  Node package manager for resolving/installing project dependencies  |
+|      node       | &ge;14.17.x |                          NodeJS interpreter                          |
+|     docker      |  &ge;18.x   |           Installing/removing/managing containers & images           |
+| docker-compose  | &ge;1.25.x  |       Convenience utility for grouped management of containers       |
+|       jdk       |    17.x     |        For running the integration tests using groovy 2.5.18         |
+
 
 ## Getting started
 
-The easiest way to get started is to use docker compose to download and run the three required containers.
+Offender-Categorisation is a nodeJS application which by default starts up and listens on URL http://localhost:3000
 
-`docker-compose pull`
+It has services on which it depends :
 
-`docker-compose up`
+|              Dependency               | Description                                            | Default                                                             | Override Env Var                               |
+|:-------------------------------------:|:-------------------------------------------------------|:--------------------------------------------------------------------|:-----------------------------------------------|
+|              prison-api               | Nomis API providing prisons/offender information       | http://localhost:8080                                               | ELITE2API_ENDPOINT_URL                         |
+|              hmpps-auth               | OAuth2 API server for authenticating requests          | http://localhost:9090/auth                                          | NOMIS_AUTH_EXTERNAL_URL<br>NOMIS_AUTH_URL      |
+|             risk-profiler             | Risk Profiler service                                  | http://localhost:8082/                                              | RISK_PROFILER_ENDPOINT_URL                     |
+|          allocation-manager           | Allocation manager                                     | http://localhost:8083/                                              | ALLOCATION_MANAGER_ENDPOINT_URL                |
+|        postgres (form-builder)        | PostgreSQL database server for offender-categorisation | jdbc:postgresql://localhost:5432/form-builder                       | DB_USER<br>DB_PASS<br>DB_SERVER<br>DB_NAME     |
+|       postgres (risk profiler)        | PostgreSQL database server for risk-profiler           | jdbc:postgresql://localhost:5433/<DB_NAME>                          | Uses port forwarding<br>DB_NAME found in Lens  |
+|                 redis                 | Redis cache for user 'session' data (roles)            | localhost:6379/tcp                                                  |                                                |
+|              SQS (event)              | AWS SQS queue for events                               | http://localhost:4576<br>Name: event<br>(localstack)                | EVENT_QUEUE_URL                                |
+|          SQS (Risk Profiler)          | AWS SQS queue for risk profiler change events          | http://localhost:4576<br>Name: risk_profiler_change<br>(localstack) | RP_QUEUE_URL                                   |
+|        SQS (event dead letter)        | AWS SQS queue for events dead letter                   | http://localhost:4576<br>Name: event<br>(localstack)                | EVENT_DL_QUEUE_URL                             |
+| SQS (Risk Profiler dead letter queue) | AWS SQS queue for risk profiler dead letter            | http://localhost:4576<br>Name: events_dlq<br>(localstack)           | RP_DL_QUEUE_URL                                |
+|              ingress url              |                                                        | http://localhost:3000/                                              | INGRESS_URL                                    |
+|                dps url                |                                                        | http://localhost:3000/                                              | DPS_URL                                        |
 
-for detailed instructions see `https://dsdmoj.atlassian.net/wiki/spaces/NFS/overview`
+## Other configuration
 
-### Transactions
+| Environment variable    | Default value                                                                        |
+|:------------------------|:-------------------------------------------------------------------------------------|
+| GOOGLE_ANALYTICS_ID     | (blank)                                                                              |
+| APPROVED_DISPLAY_MONTHS | 6                                                                                    |
+| RECAT_MARGIN_MONTHS     | 2                                                                                    |
+| FEMALE_PRISON_IDS       | ['AGI', 'DWI', 'DHI', 'ESI', 'EWI', 'BZI', 'FHI', 'LNI', 'SDI', 'STI', 'NHI', 'PFI'] |
 
-This app is transactional for Postgres database operations but NOT elite2 calls. So it is vital that router endpoints do all db calls BEFORE elite2 (updating) calls.
-Otherwise when an error occurs, Nomis could get updated with the corresponding postgres changes being rolled back.
+## Docker compose files
+|            File            |                                                                    Purpose                                                                    |
+|:--------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------:|
+|     docker-compose.yml     |                     Creates containers for all dependent services and all allows selective start, or override by env vars                     |
+|  docker-compose-test.yml   |                                                  Sets up all containers for running locally                                                   |
 
-### Users
+## Running the application
+The offender-categorisation can be run in two ways.
 
-You can log in with users stored in the seeded nomis oauth db e.g. `CA_USER, password123456`
+`Simplest way to run locally`
+- if you have a high-spec machine
+- if you are unable to connect to remote services
 
-### Dependencies
+Set up port-forwarding by following the instructions here: <https://dsdmoj.atlassian.net/wiki/spaces/SED/pages/3930816517/Port+Forwarding+-+Developer+Instructions>
 
-The app authenticates using nomis `Nomis Oauth2 Server` and saves to a Postgres database.
+Use docker compose to download and run the four required containers
 
-The app uses redis (cloud platform elasticache when deployed to our environments) to store the user session.
+```docker-compose -f docker-compose-test.yml pull```
 
-### Running the app for development
+```docker-compose -f docker-compose-test.yml up```
 
-#### Local Redis
+
+Either set the environment variable ```SQS_ENABLED=false``` or make sure all the SQS queues have started up in the categorisation-localstack container and categorisation-localstack-setup container has exited
+
+Install dependencies using ```npm install```
+
+Run the application using  ```npm run start```
+
+
+`Alternative way`
 
 Run redis as a local docker container on the default port of 6379 when running the app locally with tls disabled (the default)
 
-`docker run -p6379:6379 redis`
+```docker run -p6379:6379 redis```
 
 The other option is to run stunnel and port forward using the cloud platform guidance:
 `https://github.com/ministryofjustice/cloud-platform-terraform-elasticache-cluster`
@@ -72,37 +113,79 @@ REDIS_AUTH_TOKEN=<from the namespace secret>
 NODE_TLS_REJECT_UNAUTHORIZED=0
 ```
 
-#### Build assets
+Install dependencies
+```bash
+npm install
+```
 
-`npm run build`
+Run the application
+```bash
+npm run start
+```
 
-Install dependencies using `npm install`.
+
+#### Notes:
+
+#### Transactions
+
+This app is transactional for Postgres database operations but NOT elite2 calls. So it is vital that router endpoints do all db calls BEFORE elite2 (updating) calls.
+Otherwise when an error occurs, Nomis could get updated with the corresponding postgres changes being rolled back.
+
+#### Users
+
+You can log in with users stored in the seeded nomis oauth db e.g. `CA_USER, password123456`
+
+#### Dependencies
+
+The app authenticates using nomis `Nomis Oauth2 Server` and saves to a Postgres database.
+
+The app uses redis (cloud platform elasticache when deployed to our environments) to store the user session.
+
 
 #### Env variables
 
 In config.js you can see all the required variables. These are set with defaults that will allow the application to run, but you will need to add a `.env` file at some point.
 
-`npm run start`
+#### Run the node application
+```bash
+npm run start
+```
 
-### Run linter
+#### Run linter
+To automate the checking of the source code for programmatic and stylistic errors run lint using:
 
-`npm run lint`
+```bash
+npm run lint
+```
 
-### Run tests
+## Running the tests
 
-Run `docker-compose-test.yml`
+### Unit Tests
+To run the jest unit tests:
 
-#### Unit Tests
+```bash
+npm run test
+```
 
-`npm run test`
+### Integration Tests
 
-#### Integration Tests
+To run the integration tests you need to install *chromedriver* :
 
-You will need *chromedriver.exe* on your path to run integration tests, see https://chromedriver.chromium.org/downloads.
+`brew install --cask chromedriver`
+(If there are permission problems, you can show in finder then 'open' it and allow it to run.)
 
-Verification gradle tasks are provided to run the integration tests with or without a visible browser:
+Or for non-macs, download from <https://chromedriver.chromium.org/downloads> and put *chromedriver.exe* on your path.
 
-- chromeTest
-- chromeHeadlessTest
+The integration tests uses wiremock stubs to log into the application so the default configuration listed above should be used
 
-These can be run in debug mode for troubleshooting.
+The easiest way to run the integration tests on your local machine is to:
+
+- Start the docker containers by running  ```docker-compose-test.yml```
+
+- Run the application ```npm run start``` using the default environment variables
+
+- Run ```./gradlew chromeTest``` to run with a visible browser  or `./gradlew chromeHeadlessTest` to run without a visible browser
+
+The tests can be run in debug mode for troubleshooting.
+
+More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>

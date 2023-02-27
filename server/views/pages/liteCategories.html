@@ -4,7 +4,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "input/macro.njk" import govukInput %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 
 {% set pageTitle = "Other categories" %}
@@ -12,7 +12,7 @@
 {% block beforeContent %}
 
   {% set breadCrumbList = [ {href: '/' + data.details.bookingId, title: 'Manage categorisations'} ] %}
-  {{ breadCrumb(pageTitle, breadCrumbList) }}
+  {{ breadCrumb(breadCrumbList) }}
 
   {% include "../partials/offenderBanner.html" %}
 
@@ -106,12 +106,11 @@
         value: placement
       }) }}
 
-      {{ govukCharacterCount({
+      {{ govukTextarea({
       id: 'comment',
         name: 'comment',
         rows: 2,
-        maxlength: 4000,
-        attributes: {  'maxLength': 4000 },
+        attributes: { 'maxlength': 4000 },
         label: { text: 'Comment' },
         errorMessage: {
           text: 'Please enter comment'
@@ -121,7 +120,7 @@
 
       {{ govukButton({
         text: 'Submit',
-        attributes: {  }
+        attributes: { 'id': 'initialButton','data-prevent-double-click': 'true' }
       }) }}
       </div>
     </div>

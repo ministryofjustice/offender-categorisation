@@ -1,6 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "input/macro.njk" import govukInput %}
-{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "details/macro.njk" import govukDetails %}
+{% from "textarea/macro.njk" import govukTextarea %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Next review date" %}
@@ -9,16 +10,20 @@
 {% block navigation %}
 
   {% set breadCrumbList = [ {href: '/' + data.details.bookingId, title: 'Manage categorisations'} ] %}
-  {{ breadCrumb(pageTitle, breadCrumbList) }}
+  {{ breadCrumb(breadCrumbList) }}
 
 {% endblock %}
 
 {% block formItems %}
 
+  <input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}" />
+
   <h1 class="govuk-heading-l">Change the review date</h1>
-  {% if data.details.sentence.conditionalReleaseDate %}
+  {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
     <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">Their conditional release date is:</p>
     <p>{{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}</p>
+  {% elif data.details.sentence.indeterminate %}
+    <p>They have an indeterminate prison sentence.</p>
   {% endif %}
   <p>You can alter the prisoner's next review date (Re-assessment date) without needing to create a new categorisation.</p>
 
@@ -31,21 +36,33 @@
     value: data.nextReviewDate.nextReviewDateStandalone.date,
     label: { text: "New date", classes: "govuk-!-font-weight-bold" },
     errorMessage: {
-      text: "Enter a valid date that is after today"
+      text: (errors | findError('date')).text
     } if (errors | findError('date')),
     classes: "dateInputWidth"
   }) }}
 
- {{ govukCharacterCount({
+ {{ govukTextarea({
     id: 'reason',
     name: 'reason',
     value: data.nextReviewDate.nextReviewDateStandalone.reason,
-    maxlength: 1000,
-    attributes: {  'maxLength': 1000 },
-    threshold: 50,
+    attributes: { 'maxlength': 1000 },
     label: { text: "Reason for date change", classes: "govuk-!-font-weight-bold" },
-    errorMessage: { text: "Please enter details" } if (errors | findError('reason'))
+    errorMessage: { text: "Enter reason for date change" } if (errors | findError('reason'))
   }) }}
+
+  {% set guidance %}
+    <div class="govuk-!-font-weight-bold">Determinate prison sentence with three or more years left in custody</div>
+    <div>They should be reviewed within the next 12 months</div>
+    <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Determinate prison sentence with less than three years left in custody</div>
+    <div>They should be reviewed within the next 6 months</div>
+    <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Indeterminate prison sentence</div>
+    <div>They should be reviewed within the next 3 years</div>
+  {% endset %}
+
+{{ govukDetails({
+  summaryText: "How to choose a date for a prisoner",
+  html: guidance
+}) }}
 
 {% endblock %}
 

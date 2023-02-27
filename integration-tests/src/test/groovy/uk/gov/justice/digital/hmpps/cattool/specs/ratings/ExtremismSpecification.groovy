@@ -63,7 +63,7 @@ class ExtremismSpecification extends AbstractSpecification {
     elite2Api.stubUncategorised()
     def date11 = LocalDate.now().plusDays(-3).toString()
     def date12 = LocalDate.now().plusDays(-1).toString()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [date11,date12])
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
@@ -74,7 +74,7 @@ class ExtremismSpecification extends AbstractSpecification {
     then: 'I stay on the page with radio button validation errors'
     at ExtremismPage
     errorSummaries*.text() == ['Please select yes or no']
-    errors*.text() == ['Error:\nPlease select yes or no']
+    errors.text().toString() == "Error:\nPlease select yes or no"
 
     when: 'I click yes but fail to add details'
     previousTerrorismOffencesYes.click()
@@ -82,6 +82,7 @@ class ExtremismSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with textarea validation errors'
     errorSummaries*.text() == ['Please enter the previous offences']
-    errors*.text() == ['Error:\nPlease enter details']
+    errors.text().toString() == "Error:\nPlease enter details"
+
   }
 }

@@ -12,5 +12,7 @@ class CategoriserSubmittedPage extends Page {
 
   static content = {
     headingText { $('h1.govuk-panel__title').text() }
+    dcsSurveyLink { $('a#dcsSurveyLink') }
+    finishButton{ $('#main-content > a') }
   }
 }

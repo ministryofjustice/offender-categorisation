@@ -1,0 +1,15 @@
+{% if data.openConditions.sexualOffences.haveTheyBeenEverConvicted === 'Yes' and data.openConditions.sexualOffences.canTheRiskBeManaged === 'No' %}
+  <li>They have been convicted of a sexual offence and pose a risk to the public which cannot be safely managed in open conditions</li>
+{% endif %}
+{% if data.openConditions.riskOfHarm.harmManaged === 'No' %}
+  <li>They pose a risk of serious harm to the public which cannot be safely managed in open conditions</li>
+{% endif %}
+{% if data.openConditions.furtherCharges.increasedRisk === 'Yes' %}
+  <li>They have further charges which pose an increased risk in open conditions</li>
+{% endif %}
+{% if data.openConditions.riskLevels.likelyToAbscond === 'Yes' %}
+  <li>They are likely to abscond or otherwise abuse the lower security of open conditions</li>
+{% endif %}
+{% if data.openConditions.victimContactScheme.contactedVLO === 'No' %}
+  <li>This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.</li>
+{% endif %}

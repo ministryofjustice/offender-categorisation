@@ -1,0 +1,130 @@
+{% extends "../formTemplate.html" %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+
+{% set pageTitle = "Victim Contact Scheme (VCS)" %}
+
+{% block navigation %}
+
+  {% if catType == 'RECAT' %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
+  {% else %}
+    {% include "../../partials/breadCrumbTaskList.html" %}
+  {% endif %}
+
+{% endblock %}
+
+{% set vloResponseTextHtml %}
+
+  {{ govukTextarea({
+    name: "vloResponseText",
+    type: "vloResponseText",
+    id: "vloResponseText",
+    attributes: { 'maxlength': 50000 },
+    label: {
+      text: "Enter the response from the Victim Liaison Officer (VLO)"
+    },
+    hint: {
+      text: "Do not include any personal information that could identify the victims."
+    },
+    value: data.openConditions.victimContactScheme.vloResponseText,
+    errorMessage: {
+      text: "Enter the response from the Victim Liaison Officer (VLO)"
+    } if (errors | findError('vloResponseText'))
+    })
+  }}
+{% endset %}
+
+{% set contactedVLOTextHtml %}
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "contactedVLO",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Have you contacted the Victim Liaison Officer (VLO)?"
+      }
+    },
+    hint: {
+      text: "You should tell them you are considering open conditions."
+    },
+    errorMessage: {
+      text: "Select Yes if you have contacted the Victim Liaison Officer (VLO)"
+    } if (errors | findError('contactedVLO')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.victimContactScheme.contactedVLO === 'Yes',
+        conditional: {
+          html: vloResponseTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.victimContactScheme.contactedVLO === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endset %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+  {{ govukRadios({
+    name: "vcsOptedFor",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "Have any victims of the crime opted-in to the Victim Contact Scheme?"
+      }
+    },
+    errorMessage: {
+      text: "Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme"
+    } if (errors | findError('vcsOptedFor')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.victimContactScheme.vcsOptedFor === 'Yes',
+        conditional: {
+          html: contactedVLOTextHtml
+        }
+      },
+      {
+        value: "No",
+        checked: data.openConditions.victimContactScheme.vcsOptedFor === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% set guidanceVictimContactScheme %}
+  <p>Victims who opt-in to the VCS should be provided with information at key stages of the offender’s sentence and at annual intervals.</p>
+  <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You should check:</div>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>nDelius</li>
+    <li>Digital Prisons Service (DPS)</li>
+    <li>with your Victim Liaison Unit</li>
+  </ul>
+  <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>any active victims of the crime who have opted-in to VCS</li>
+    <li>the names of any associated Victim Liaison Officers (VLO)</li>
+  </ul>
+{% endset %}
+
+{{ govukDetails({
+  summaryText: "What information should I consider?",
+  html: guidanceVictimContactScheme
+  })
+}}
+
+{% endblock %}

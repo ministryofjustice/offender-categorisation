@@ -7,6 +7,8 @@ import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
+import java.time.LocalDate
+
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 
 class NextReviewDateSpecification extends AbstractSpecification {
@@ -57,7 +59,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type == ['RECAT']
-    response.recat == [nextReviewDate: [date: SIX_MONTHS_AHEAD]]
+    response.recat == [nextReviewDate: [date: SIX_MONTHS_AHEAD, indeterminate: "false"]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
   }
@@ -78,7 +80,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: "Error is displayed"
     errorSummaries*.text() == ['Please select a choice']
-    errors*.text() == ['Error:\nPlease select a choice']
+    errors.text() == 'Error:\nPlease select a choice'
+
 
     when: "specific date is selected"
     specificOption.click()
@@ -93,8 +96,9 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDatePage
 
     then: "Error is displayed"
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    errorSummaries*.text() == ['The review date must be a real date']
+    errors.text().toString() == "Error:\nThe review date must be a real date"
+
   }
 
   def "The nextReviewDate Standalone page saves details correctly - in PG"() {
@@ -106,6 +110,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     when: 'I go to the Next Review Date Standalone page'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
@@ -122,16 +128,18 @@ class NextReviewDateSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'there are 2 validation errors'
-    errorSummaries*.text() == ['Enter a valid date that is after today','Please enter a reason for the change']
-    errors*.text() == ['Error:\nEnter a valid date that is after today','Error:\nPlease enter details']
+    errorSummaries*.text() == ['The review date must be a real date', 'Enter reason for date change']
+    errors*.text() == ['Error:\nThe review date must be a real date', 'Error:\nEnter reason for date change']
 
     when: 'reason entered'
     reason = 'A test reason'
     submitButton.click()
 
     then: 'there is 1 validation error'
-    errorSummaries*.text() == ['Enter a valid date that is after today']
-    errors*.text() == ['Error:\nEnter a valid date that is after today']
+    waitFor {
+      errorSummaries*.text() == ['The review date must be a real date']
+      errors.text() == 'Error:\nThe review date must be a real date'
+    }
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)
@@ -158,6 +166,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
   def "The nextReviewDate Standalone page saves details correctly - not in PG"() {
     when: 'I go to the Next Review Date Standalone page'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
@@ -194,6 +204,8 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     when: 'I go to the landing page'
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')

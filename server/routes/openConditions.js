@@ -6,7 +6,6 @@ const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
-const CatType = require('../utils/catTypeEnum')
 const log = require('../../log')
 
 const formConfig = {
@@ -27,33 +26,28 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'furtherCharges'
-      const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
+      let result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
 
       // Copy offending history charges or skip ?
-      const textExists =
+      const openConditionsFCTextExists =
         result.data.openConditions &&
         result.data.openConditions.furtherCharges &&
         result.data.openConditions.furtherCharges.furtherChargesText
 
-      const furtherChargesExists =
+      const furtherChargesMainJourneyExists =
         result.data.ratings &&
         result.data.ratings.furtherCharges &&
         result.data.ratings.furtherCharges.furtherCharges === 'Yes'
 
-      if (!furtherChargesExists && !textExists && result.catType === CatType.INITIAL.name) {
-        const formPageConfig = formConfig.openConditions[form]
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-        res.redirect(`${nextPath}${bookingId}`)
-      } else if (furtherChargesExists && !textExists) {
-        const newResult = R.assocPath(
+      if (furtherChargesMainJourneyExists && !openConditionsFCTextExists) {
+        result = R.assocPath(
           ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
           result.data.ratings.furtherCharges.furtherChargesText,
           result
         )
-        res.render(`formPages/openConditions/${form}`, newResult)
-      } else {
-        res.render(`formPages/openConditions/${form}`, result)
       }
+
+      res.render(`formPages/openConditions/${form}`, result)
     })
   )
 
@@ -64,7 +58,12 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      let openConditionsSuggestedCat
+      if (res.locals.user.activeCaseLoad.female) {
+        openConditionsSuggestedCat = 'T'
+      } else {
+        openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      }
       const data = { ...result.data, openConditionsSuggestedCat }
 
       res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
@@ -86,6 +85,26 @@ module.exports = function Index({ formService, offendersService, userService, au
             ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
           ...result,
         })
+      } else if (
+        result.data.openConditions.victimContactScheme &&
+        result.data.openConditions.victimContactScheme.contactedVLO === 'No'
+      ) {
+        res.render('formPages/openConditions/openConditionsNotSuitable', {
+          warningText:
+            'This person cannot be sent to open conditions because a victim of the crime has opted-in' +
+            ' to the Victim Contact Scheme and the VLO has not been contacted.',
+          ...result,
+        })
+      } else if (
+        result.data.openConditions.previousSentences &&
+        result.data.openConditions.previousSentences.releasedLastFiveYears === 'Yes'
+      ) {
+        res.render('formPages/openConditions/openConditionsNotSuitable', {
+          warningText:
+            'This person cannot be sent to open conditions because they have a previous sentence of 7 years or more' +
+            ' that they were released from in the last 5 years.',
+          ...result,
+        })
       } else if (result.data.openConditions.foreignNational.formCompleted === 'No') {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText: 'This person cannot be sent to open conditions without a CCD3 form',
@@ -94,8 +113,8 @@ module.exports = function Index({ formService, offendersService, userService, au
       } else if (result.data.openConditions.foreignNational.exhaustedAppeal === 'Yes') {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText:
-            'This person cannot be sent to open conditions because they are due to be deported and have exhausted' +
-            ' all appeal rights in the UK',
+            'This person cannot be sent to open conditions because they have a liability for deportation and have' +
+            ' exhausted all appeal rights in the UK',
           ...result,
         })
       } else {
@@ -149,6 +168,16 @@ module.exports = function Index({ formService, offendersService, userService, au
       delete updated.justify
       delete updated.justifyText
     }
+    if (body.releasedLastFiveYears === 'No') {
+      delete updated.sevenOrMoreYears
+    }
+    if (body.canTheRiskBeManaged === 'No') {
+      delete updated.howTheRiskCanBeManaged
+    }
+    if (body.haveTheyBeenEverConvicted === 'No') {
+      delete updated.canTheRiskBeManaged
+      delete updated.howTheRiskCanBeManaged
+    }
     if (body.isForeignNational === 'No') {
       delete updated.formCompleted
       delete updated.dueDeported
@@ -176,6 +205,13 @@ module.exports = function Index({ formService, offendersService, userService, au
     if (body.categoryAppropriate === 'Yes') {
       delete updated.overriddenCategory
       delete updated.overriddenCategoryText
+    }
+    if (body.vcsOptedFor === 'No') {
+      delete updated.contactedVLO
+      delete updated.vloResponseText
+    }
+    if (body.contactedVLO === 'No') {
+      delete updated.vloResponseText
     }
     return updated
   }
@@ -209,7 +245,10 @@ module.exports = function Index({ formService, offendersService, userService, au
       const oc = data.openConditions
       if (
         oc &&
-        ((oc.riskOfHarm && oc.riskOfHarm.harmManaged === 'No') ||
+        ((oc.sexualOffences &&
+          oc.sexualOffences.haveTheyBeenEverConvicted === 'Yes' &&
+          oc.sexualOffences.canTheRiskBeManaged === 'No') ||
+          (oc.riskOfHarm && oc.riskOfHarm.harmManaged === 'No') ||
           (oc.furtherCharges && oc.furtherCharges.increasedRisk === 'Yes') ||
           (oc.riskLevels && oc.riskLevels.likelyToAbscond === 'Yes'))
       ) {
@@ -338,7 +377,13 @@ module.exports = function Index({ formService, offendersService, userService, au
         transactionalClient: transactionalDbClient,
       })
 
-      if (userInput.justify === 'No' || userInput.formCompleted === 'No' || userInput.exhaustedAppeal === 'Yes') {
+      if (
+        userInput.justify === 'No' ||
+        userInput.contactedVLO === 'No' ||
+        userInput.formCompleted === 'No' ||
+        userInput.exhaustedAppeal === 'Yes' ||
+        userInput.sevenOrMoreYears === 'Yes'
+      ) {
         await formService.cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
         res.redirect(`/form/openConditions/openConditionsNotSuitable/${bookingId}`)
       } else {

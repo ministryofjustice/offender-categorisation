@@ -107,20 +107,15 @@ module.exports = function Index({
   )
 
   router.get(
-    '/categoriserSubmitted/:bookingId',
-    asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      res.render('pages/categoriserSubmitted')
-    })
-  )
-
-  router.get(
     '/supervisor/outcome/:bookingId',
     asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      res.render('pages/supervisorReviewOutcome')
+      const catType =
+        req.query.catType && req.query.catType.toLowerCase() === 'recat' ? 'supervisorRecat' : 'supervisorInitial'
+      res.render('pages/supervisorReviewOutcome', {
+        data: { surveyParameters: `${catType}=true&host=${req.hostname}` },
+      })
     })
   )
 
@@ -128,6 +123,17 @@ module.exports = function Index({
     '/images/:imageId/data',
     asyncMiddleware(async (req, res) => {
       await offendersService.getImage(res.locals, req.params.imageId, res)
+    })
+  )
+
+  router.get(
+    '/categoriserSubmitted/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      res.render('pages/categoriserSubmitted', {
+        data: { surveyParameters: `initial=true&host=${req.hostname}` },
+      })
     })
   )
 

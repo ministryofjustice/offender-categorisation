@@ -11,7 +11,7 @@ generic-service:
 
   ingress:
     enable_allowlist: true
-    host: preprod.offender-categorisation.service.justice.gov.uk
+    hosts: [preprod.offender-categorisation.service.justice.gov.uk]
 
   env:
     INGRESS_URL: https://preprod.offender-categorisation.service.justice.gov.uk
@@ -20,6 +20,7 @@ generic-service:
     ELITE2API_ENDPOINT_URL: https://api-preprod.prison.service.justice.gov.uk/
     RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
     ALLOCATION_MANAGER_ENDPOINT_URL: https://allocation-manager-preprod.apps.live.cloud-platform.service.justice.gov.uk/
+    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search-preprod.prison.service.justice.gov.uk/
     DPS_URL: https://digital-preprod.prison.service.justice.gov.uk/
 
   allowlist:
@@ -46,6 +47,8 @@ generic-service:
     moj-official-tgw-preprod: 51.149.251.0/24
     moj-official-tgw-prod: 51.149.250.0/24
     mojvpn: 81.134.202.29/32
+    oakwood-01: 217.161.76.184/29
+    oakwood-02: 217.161.76.192/29
     oakwood-1: 217.161.76.187/32
     oakwood-2: 217.161.76.195/32
     oakwood-3: 217.161.76.186/32

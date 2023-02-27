@@ -23,7 +23,7 @@ class SecuritySpecification extends AbstractSpecification {
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]],
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]],
       security: [review: [securityReview: "this is the text from the security team for a recat"]]]),SECURITY_USER.username, "'2019-01-28'", 'RECAT')
 
     db.createRiskProfileDataForExistingRow(13, JsonOutput.toJson([socProfile: [nomsId: "G1110GX", riskType: "SOC", transferToSecurity: true, provisionalCategorisation: "C"]]))
@@ -36,7 +36,7 @@ class SecuritySpecification extends AbstractSpecification {
         escapeRating    : [escapeFurtherCharges: "Yes"],
         extremismRating : [previousTerrorismOffences: "Yes"]
       ],
-      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "Some Text"]
+      categoriser: [provisionalCategory: [suggestedCategory: "C", overriddenCategory: "D", categoryAppropriate: "No", overriddenCategoryText: "over ridden category text"]
       ],
       security: [review: [securityReview: "this is the text from the security team"]]]),SECURITY_USER.username, "'2019-01-31'")
 
@@ -46,7 +46,7 @@ class SecuritySpecification extends AbstractSpecification {
 
     // 14 days after sentenceStartDate
     elite2Api.stubUncategorisedAwaitingApproval()
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     elite2Api.stubUncategorised()
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
 
@@ -98,7 +98,7 @@ class SecuritySpecification extends AbstractSpecification {
     def sentenceStartDate13 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate14 = LocalDate.of(2019, 1, 31)
 
-    elite2Api.stubSentenceData(['B2345XY', 'B2345YZ'], [13, 14], [sentenceStartDate13.toString(), sentenceStartDate14.toString()])
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [13, 14], [sentenceStartDate13.toString(), sentenceStartDate14.toString()])
     elite2Api.stubGetUserDetails(SECURITY_USER, 'LEI')
 
     fixture.loginAs(SECURITY_USER)

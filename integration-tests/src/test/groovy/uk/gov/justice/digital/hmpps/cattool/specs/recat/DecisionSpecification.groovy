@@ -79,7 +79,7 @@ class DecisionSpecification extends AbstractSpecification {
 
     submitButton.click()
     at MiniHigherSecurityReviewPage
-    conditions << 'some text'
+    conditions << 'mini higher security text'
     submitButton.click()
     at TasklistRecatPage
 
@@ -92,7 +92,7 @@ class DecisionSpecification extends AbstractSpecification {
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type == ['RECAT']
-    response.recat == [decision: [category: "B"], miniHigherSecurityReview: [conditions: 'some text']]
+    response.recat == [decision: [category: "B"], miniHigherSecurityReview: [conditions: 'mini higher security text']]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
 
@@ -201,7 +201,7 @@ class DecisionSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     at DecisionPage
-    errorSummaries*.text() == ['Please select a security condition']
-    errors*.text() == ['Error:\nPlease select a security condition']
+    errorSummaries*.text() == ['Select what category is most suitable for this person']
+    errors.text().toString() == "Error:\nSelect what category is most suitable for this person"
   }
 }

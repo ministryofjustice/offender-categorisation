@@ -11,7 +11,7 @@ generic-service:
 
   ingress:
     enable_allowlist: true
-    host: offender-categorisation.service.justice.gov.uk
+    hosts: [offender-categorisation.service.justice.gov.uk]
 
   env:
     INGRESS_URL: https://offender-categorisation.service.justice.gov.uk
@@ -20,6 +20,7 @@ generic-service:
     ELITE2API_ENDPOINT_URL: https://api.prison.service.justice.gov.uk/
     RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
     ALLOCATION_MANAGER_ENDPOINT_URL: https://moic.service.justice.gov.uk/
+    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search.prison.service.justice.gov.uk/
     DPS_URL: https://digital.prison.service.justice.gov.uk/
 
   allowlist:
@@ -46,6 +47,8 @@ generic-service:
     global-protect: 35.176.93.186/32
     petty-france-wifi: 213.121.161.112/28
     mojvpn: 81.134.202.29/32
+    oakwood-01: 217.161.76.184/29
+    oakwood-02: 217.161.76.192/29
     oakwood-1: 217.161.76.187/32
     oakwood-2: 217.161.76.195/32
     oakwood-3: 217.161.76.186/32

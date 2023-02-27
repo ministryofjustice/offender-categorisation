@@ -54,13 +54,13 @@ class TasklistRecatSpecification extends AbstractSpecification {
   def "The recat tasklist of YOI prisoner is correct"() {
     when: 'I go to the recat tasklist page for a YOI prisoner'
 
-    fixture.gotoTasklistRecatForCatI()
+    fixture.gotoTasklistRecatForCatI() // get 404 from http://localhost:8080/api/bookings/12?basicInfo=false
 
     then: 'The tasklist page is displayed'
     at TasklistRecatPage
     headerValue[0].text() == 'C0001AA'
     headerValue[1].text() == '01/01/2018'
-    headerValue[2].text() == 'I'
+    headerValue[2].text() == 'YOI closed'
 
     and: 'data is stored correctly'
     def data = db.getData(21)
@@ -128,6 +128,8 @@ class TasklistRecatSpecification extends AbstractSpecification {
       ratings: TestFixture.defaultRatingsC]), 'INITIAL')
 
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
@@ -163,6 +165,8 @@ class TasklistRecatSpecification extends AbstractSpecification {
 
     // not in todo list so have to go directly
     elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)

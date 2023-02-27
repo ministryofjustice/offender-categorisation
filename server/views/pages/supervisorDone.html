@@ -7,7 +7,7 @@
 {% block beforeContent %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
-  {{ breadCrumb("Categorisation home", breadCrumbList) }}
+  {{ breadCrumb(breadCrumbList) }}
   </div>
   <div class="govuk-grid-column-one-half">
     <div class="rightAlignedButton govuk-breadcrumbs">
@@ -68,7 +68,7 @@
       <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
-      <td class="govuk-table__cell">{{ row.category }}</td>
+      <td class="govuk-table__cell">{{ catMappings(row.category) }}</td>
       <td class="govuk-table__cell">{{ row.catTypeDisplay }}</td>
       <td class="govuk-table__cell">
         {{ govukButton({

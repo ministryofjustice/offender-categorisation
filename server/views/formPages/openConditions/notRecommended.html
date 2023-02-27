@@ -19,16 +19,8 @@
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
 This person is not suitable for open conditions because:
-<ul class="govuk-!-font-weight-bold">
-  {% if data.openConditions.riskOfHarm.harmManaged === 'No' %}
-    <li>They pose a risk of serious harm to the public which cannot be safely managed in open conditions</li>
-  {% endif %}
-  {% if data.openConditions.furtherCharges.increasedRisk === 'Yes' %}
-    <li>They have further charges which pose an increased risk in open conditions</li>
-  {% endif %}
-  {% if data.openConditions.riskLevels.likelyToAbscond === 'Yes' %}
-    <li>They are likely to abscond or otherwise abuse the lower security of open conditions</li>
-  {% endif %}
+<ul id="notRecommendedList">
+  {% include "../../partials/notRecommendedList.html" %}
 </ul>
 
   {{ govukRadios({

@@ -10,11 +10,14 @@ generic-service:
 
   ingress:
     enabled: true
-    modsecurity_enabled: false
-    modsecurity_audit_enabled: false
-    tlsSecretName: "offender-categorisation-cert"
-    path: /
-    contextColour: green
+    modsecurity_enabled: true
+    v1_2_enabled: true
+    v0_47_enabled: false
+    annotations:
+    modsecurity_snippet: |
+        SecRuleEngine On
+        SecRuleRemoveById 949110
+    tlsSecretName: offender-categorisation-cert
 
   livenessProbe:
     httpGet:
