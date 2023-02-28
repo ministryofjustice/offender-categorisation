@@ -1,13 +1,9 @@
-package uk.gov.justice.digital.hmpps.cattool
-
+package uk.gov.justice.digital.hmpps.cattool.specs
 
 import groovy.json.JsonOutput
 import uk.gov.justice.digital.hmpps.cattool.pages.DashboardInitialPage
-import uk.gov.justice.digital.hmpps.cattool.pages.DashboardRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
-import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.WOMEN_SUPERVISOR_USER
 
 class DashboardWomenSpecification extends AbstractSpecification {
@@ -83,6 +79,9 @@ class DashboardWomenSpecification extends AbstractSpecification {
     dbRow(34, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", null, null, '2019-07-22', '2019-07-29', '2019-08-03', ic('R', 'T', 'R').build())
     dbRow(35, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", null, null, '2019-07-22', '2019-07-29', '2019-08-03', ic('R', 'T').build())
 
+    // LEI MEN  INITIAL
+    dbRow(22, 'LEI', 'INITIAL', "'2019-07-01T03:00Z'", "'2019-07-09T15:30Z'", "'2019-07-09T17:40Z'", '2019-07-22', '2019-07-30', '2019-08-03', ic('C').build(), SECURITY_AUTO)
+
     // LNI initial referred to security
     dbRow(36, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", "'2019-07-20T00:00Z'", "'2019-07-29T00:00Z'", '2019-07-22', '2019-07-29', '2019-08-03', ic('R').build(), SECURITY_AUTO)
     dbRow(37, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", "'2019-07-20T00:00Z'", "'2019-07-29T00:00Z'", '2019-07-22', '2019-07-29', '2019-08-03', ic('T').securityType(SecurityType.MANUAL).build())
@@ -100,7 +99,7 @@ class DashboardWomenSpecification extends AbstractSpecification {
     when: 'the user goes to the dashboard with no search criteria'
     to DashboardInitialPage
 
-    then: 'all male prisons option is displayed'
+    then: 'all female prisons option is displayed'
     at DashboardInitialPage
     statsTypeOptions*.text().contains('all female prisons')
 
@@ -131,11 +130,11 @@ class DashboardWomenSpecification extends AbstractSpecification {
 
     then: 'the stats are as follows'
     at DashboardInitialPage
-    numbersTableRows[0].find('td')*.text() == ['Closed', '', '', '37.5%', '3']
-    numbersTableRows[1].find('td')*.text() == ['Closed', 'Open', '', '25.0%', '2']
-    numbersTableRows[2].find('td')*.text() == ['Closed', 'Open', 'Closed', '12.5%', '1']
-    numbersTableRows[3].find('td')*.text() == ['Open', '', '', '12.5%', '1']
-    numbersTableRows[4].find('td')*.text() == ['Open', 'Closed', 'Open', '12.5%', '1']
+    numbersTableRows[0].find('td')*.text() == ['Closed', '', '', '44.4%', '4']
+    numbersTableRows[1].find('td')*.text() == ['Closed', 'Open', '', '22.2%', '2']
+    numbersTableRows[2].find('td')*.text() == ['Closed', 'Open', 'Closed', '11.1%', '1']
+    numbersTableRows[3].find('td')*.text() == ['Open', '', '', '11.1%', '1']
+    numbersTableRows[4].find('td')*.text() == ['Open', 'Closed', 'Open', '11.1%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '2']
@@ -146,11 +145,11 @@ class DashboardWomenSpecification extends AbstractSpecification {
       'Assessment started to sent to security 13.75 days',
       'Sent to security to security review complete 4.75 days',
       'Security review complete to approval complete 9.75 days',
-      'Assessment started to approval complete 28.75 days']
+      'Assessment started to approval complete 25.56 days']
 
     completionTableRows*.text() == [
-      'Before due date 87.5% 7',
-      'Late 12.5% 1',
-      'Total 8']
+      'Before due date 77.8% 7',
+      'Late 22.2% 2',
+      'Total 9']
   }
 }
