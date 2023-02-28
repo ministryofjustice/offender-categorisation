@@ -153,22 +153,6 @@
     {% if not data.details.youngOffender%}
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
-    {% set isFemale = user.activeCaseLoad.female %}
-    {% if isFemale %}
-      {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
-      {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
-      {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
-      {% if (currentCat == "R") %}
-        {% set noLabel = "No, consider for open" %}
-      {% elif (currentCat == "T") %}
-        {% set noLabel = "No, closed is more appropriate" %}
-      {% endif %}
-    {% else %}
-      {% set radios = radios | rejectattr('R') | rejectattr('T')%}
-      {% set radioClasses = 'govuk-radios--inline' %}
-      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
-      {% set noLabel = 'No' %}
-    {% endif %}
 
     {% if isFemale %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
