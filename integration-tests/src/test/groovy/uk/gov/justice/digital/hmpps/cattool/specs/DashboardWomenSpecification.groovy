@@ -130,11 +130,11 @@ class DashboardWomenSpecification extends AbstractSpecification {
 
     then: 'the stats are as follows'
     at DashboardInitialPage
-    numbersTableRows[0].find('td')*.text() == ['Closed', '', '', '44.4%', '4']
-    numbersTableRows[1].find('td')*.text() == ['Closed', 'Open', '', '22.2%', '2']
-    numbersTableRows[2].find('td')*.text() == ['Closed', 'Open', 'Closed', '11.1%', '1']
-    numbersTableRows[3].find('td')*.text() == ['Open', '', '', '11.1%', '1']
-    numbersTableRows[4].find('td')*.text() == ['Open', 'Closed', 'Open', '11.1%', '1']
+    numbersTableRows[0].find('td')*.text() == ['Closed', '', '', '37.5%', '3']
+    numbersTableRows[1].find('td')*.text() == ['Closed', 'Open', '', '25.0%', '2']
+    numbersTableRows[2].find('td')*.text() == ['Closed', 'Open', 'Closed', '12.5%', '1']
+    numbersTableRows[3].find('td')*.text() == ['Open', '', '', '12.5%', '1']
+    numbersTableRows[4].find('td')*.text() == ['Open', 'Closed', 'Open', '12.5%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '2']
@@ -145,11 +145,11 @@ class DashboardWomenSpecification extends AbstractSpecification {
       'Assessment started to sent to security 13.75 days',
       'Sent to security to security review complete 4.75 days',
       'Security review complete to approval complete 9.75 days',
-      'Assessment started to approval complete 25.56 days']
+      'Assessment started to approval complete 28.75 days']
 
     completionTableRows*.text() == [
-      'Before due date 77.8% 7',
-      'Late 22.2% 2',
-      'Total 9']
+      'Before due date 87.5% 7',
+      'Late 12.5% 1',
+      'Total 8']
   }
 }
