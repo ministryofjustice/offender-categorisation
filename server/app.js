@@ -208,6 +208,10 @@ module.exports = function createApp({
     return res.render('autherror')
   })
 
+  app.get('/accessibilityStatement', (req, res) => {
+    return res.render('accessibilityStatement')
+  })
+
   app.get('/login', passport.authenticate('oauth2'))
 
   app.get('/login/callback', (req, res, next) =>
