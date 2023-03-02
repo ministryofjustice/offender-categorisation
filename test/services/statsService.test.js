@@ -7,6 +7,7 @@ const statsClient = {
   getRecatFromTo: jest.fn(),
   getSecurityReferrals: jest.fn(),
   getOnTime: jest.fn(),
+  getInitialCategoryOutcomes: jest.fn(),
 }
 
 let service
@@ -163,5 +164,117 @@ describe('getOnTime', () => {
       notOnTime: 2,
       total: 3,
     })
+  })
+})
+
+describe('getInitialCategoryOutcomes', () => {
+  test('should get row data for male estates', async () => {
+    statsClient.getInitialCategoryOutcomes.mockReturnValue({
+      rows: [
+        {
+          count: 1,
+          initialCat: 'B',
+          initialOverride: 'C',
+          superOverride: null,
+        },
+        {
+          count: 2,
+          initialCat: 'C',
+          initialOverride: null,
+          superOverride: 'B',
+        },
+        {
+          count: 1,
+          initialCat: 'C',
+          initialOverride: 'D',
+          superOverride: 'C',
+        },
+        {
+          count: 2,
+          initialCat: 'I',
+          initialOverride: null,
+          superOverride: 'J',
+        },
+        {
+          count: 1,
+          initialCat: 'I',
+          initialOverride: null,
+          superOverride: null,
+        },
+      ],
+    })
+    const actual = await service.getInitialCategoryOutcomes('dummy', 'dummy', prisonId, mockTransactionalClient)
+    expect(actual).toEqual([
+      {
+        count: 1,
+        initialCat: 'B',
+        initialOverride: 'C',
+        superOverride: null,
+      },
+      {
+        count: 2,
+        initialCat: 'C',
+        initialOverride: null,
+        superOverride: 'B',
+      },
+      {
+        count: 1,
+        initialCat: 'C',
+        initialOverride: 'D',
+        superOverride: 'C',
+      },
+      {
+        count: 2,
+        initialCat: 'I',
+        initialOverride: null,
+        superOverride: 'J',
+      },
+      {
+        count: 1,
+        initialCat: 'I',
+        initialOverride: null,
+        superOverride: null,
+      },
+    ])
+  })
+
+  test('should get row data for female estates', async () => {
+    statsClient.getInitialCategoryOutcomes.mockReturnValue({
+      rows: [
+        {
+          count: 15,
+          initialCat: 'R',
+          superOverride: null,
+        },
+        {
+          count: 4,
+          initialCat: 'T',
+          superOverride: null,
+        },
+        {
+          count: 3,
+          initialCat: 'T',
+          superOverride: 'R',
+        },
+      ],
+    })
+    const actual = await service.getInitialCategoryOutcomes('dummy', 'dummy', prisonId, mockTransactionalClient)
+    expect(actual).toEqual([
+      {
+        count: 15,
+        initialCat: 'R',
+        superOverride: null,
+      },
+      {
+        count: 4,
+        initialCat: 'T',
+        superOverride: null,
+      },
+      {
+        count: 3,
+        initialCat: 'T',
+        superOverride: 'R',
+      },
+    ])
   })
 })
