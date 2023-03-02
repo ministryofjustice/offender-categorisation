@@ -25,3 +25,37 @@ describe('getWhereClause', () => {
     expect(actualResult).toEqual(`${whereClauseStart} and prison_id not in (${expectedFemalePrisonIds})`)
   })
 })
+describe('getInitialCategoryOutcomesQuery', () => {
+  test('query should contain initialOverride for a male prison', async () => {
+    const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', 'LEI')
+    expect(actualResult.text).toContain(`initialOverride`)
+  })
+  test('query should contain initialOverride for all male prisons', async () => {
+    const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', StatsType.MALE)
+    expect(actualResult.text).toContain(`initialOverride`)
+  })
+  test('query should not contain initialOverride for a female prison', async () => {
+    const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', 'PFI')
+    expect(actualResult.text).not.toContain(`initialOverride`)
+  })
+  test('query should not contain initialOverride for all female prisons', async () => {
+    const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', StatsType.FEMALE)
+    expect(actualResult.text).not.toContain(`initialOverride`)
+  })
+  test('query should not contain decision for a male prison', async () => {
+    const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', 'LEI')
+    expect(actualResult.text).not.toContain(`decision`)
+  })
+  test('query should not contain decision for all male prisons', async () => {
+    const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', StatsType.MALE)
+    expect(actualResult.text).not.toContain(`decision`)
+  })
+  test('query should contain decision for a female prison', async () => {
+    const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', 'PFI')
+    expect(actualResult.text).toContain(`decision`)
+  })
+  test('query should contain decision for all female prisons', async () => {
+    const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', StatsType.FEMALE)
+    expect(actualResult.text).toContain(`decision`)
+  })
+})

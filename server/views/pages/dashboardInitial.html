@@ -4,6 +4,7 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "../macros/breadCrumb.html" import breadCrumb %}
 {% set pageTitle = "Initial categorisations statistics" %}
+{% set isFemale = user.activeCaseLoad.female %}
 
 {% block beforeContent %}
 
@@ -26,8 +27,14 @@
     <table class="govuk-table" id="initialTable">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">Suggested category</th>
+          {% if isFemale %}
+            <th class="govuk-table__header" scope="col">Selected by categoriser</th>
+          {% else %}
+            <th class="govuk-table__header" scope="col">Suggested category</th>
+          {% endif %}
+          {% if not isFemale %}
           <th class="govuk-table__header" scope="col">Categoriser override</th>
+          {% endif %}
           <th class="govuk-table__header" scope="col">Supervisor override</th>
           <th class="govuk-table__header" scope="col">Percentage</th>
           <th class="govuk-table__header" scope="col">Numbers</th>
@@ -37,7 +44,9 @@
         {% for row in initial %}
           <tr class="govuk-table__row ">
             <td class="govuk-table__cell">{{ catMappings(row.initialCat) }}</td>
+            {% if not isFemale %}
             <td class="govuk-table__cell">{{ catMappings(row.initialOverride) }}</td>
+            {% endif %}
             <td class="govuk-table__cell">{{ catMappings(row.superOverride) }}</td>
             <td class="govuk-table__cell govuk-table__cell--numeric">{{ (row.count / total * 100) | fixed }}%</td>
             <td class="govuk-table__cell govuk-table__cell--numeric">{{ row.count }}</td>
@@ -45,7 +54,9 @@
         {% endfor %}
         <tr class="govuk-table__row ">
           <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
+          {% if not isFemale %}
           <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
+          {% endif %}
           <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
           <td class="govuk-table__cell govuk-!-font-weight-bold"></td>
           <td class="govuk-table__cell govuk-!-font-weight-bold govuk-table__cell--numeric">{{ total }}</td>

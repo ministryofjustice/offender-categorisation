@@ -1,5 +1,6 @@
 const { femalePrisonIds } = require('../config')
 const StatsType = require('../utils/statsTypeEnum')
+const { isFemalePrisonId } = require('../utils/utils')
 
 const whereClauseStart = `status = 'APPROVED' and
   cat_type = $1::cat_type_enum and
@@ -24,24 +25,44 @@ function createWhereClause(prisonId) {
   return whereClauseStart + endPart
 }
 
+function createInitialCategoryOutcomesQuery(startDate, endDate, prisonId) {
+  const isFemale = prisonId === StatsType.FEMALE || isFemalePrisonId(prisonId)
+  if (isFemale) {
+    return {
+      text: `select count(*),
+               coalesce(form_response -> 'ratings' ->'decision' ->>'category',
+                        form_response -> 'categoriser'->'provisionalCategory' ->>'suggestedCategory') as "initialCat",
+               form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory' as "superOverride"
+             from form
+             where ${createWhereClause(prisonId)}
+             group by "initialCat", "superOverride"
+             order by "initialCat", "superOverride" NULLS FIRST`,
+      values: ['INITIAL', startDate, endDate],
+    }
+  }
+  return {
+    text: `select count(*),
+             form_response -> 'categoriser'->'provisionalCategory' ->>'suggestedCategory' as "initialCat",
+             form_response -> 'categoriser'->'provisionalCategory' ->>'overriddenCategory' as "initialOverride",
+             form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory' as "superOverride"
+           from form
+           where ${createWhereClause(prisonId)}
+           group by "initialCat", "initialOverride",  "superOverride"
+           order by "initialCat",  "initialOverride" NULLS FIRST, "superOverride" NULLS FIRST`,
+    values: ['INITIAL', startDate, endDate],
+  }
+}
+
 module.exports = {
   getWhereClause(prisonId) {
     return createWhereClause(prisonId)
   },
+  getInitialCategoryOutcomesQuery(startDate, endDate, prisonId) {
+    return createInitialCategoryOutcomesQuery(startDate, endDate, prisonId)
+  },
 
   getInitialCategoryOutcomes(startDate, endDate, prisonId, transactionalClient) {
-    const query = {
-      text: `select count(*),
-               form_response -> 'categoriser'->'provisionalCategory' ->>'suggestedCategory' as "initialCat",
-               form_response -> 'categoriser'->'provisionalCategory' ->>'overriddenCategory' as "initialOverride",
-               form_response -> 'supervisor' ->'review' ->>'supervisorOverriddenCategory' as "superOverride"
-             from form
-             where ${createWhereClause(prisonId)}
-             group by "initialCat", "initialOverride",  "superOverride"
-             order by "initialCat",  "initialOverride" NULLS FIRST, "superOverride" NULLS FIRST`,
-      values: ['INITIAL', startDate, endDate],
-    }
-    return transactionalClient.query(query)
+    return transactionalClient.query(createInitialCategoryOutcomesQuery(startDate, endDate, prisonId))
   },
 
   getRecatCategoryOutcomes(startDate, endDate, prisonId, transactionalClient) {
