@@ -4,9 +4,6 @@ import groovy.json.JsonOutput
 import uk.gov.justice.digital.hmpps.cattool.pages.DashboardInitialPage
 import uk.gov.justice.digital.hmpps.cattool.pages.DashboardRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.SupervisorHomePage
-
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.WOMEN_SUPERVISOR_USER
 
 class DashboardWomenSpecification extends AbstractSpecification {
@@ -51,7 +48,7 @@ class DashboardWomenSpecification extends AbstractSpecification {
 
   /** convenience method to make data setup calls as succinct as possible */
   def dbRow(bookingId, prisonId, catType, startDate, referredDate, securityReviewedDate, assessmentDate, approvalDate, dueByDate, json, riskProfile = '{}') {
-    db.doCreateCompleteRow(-bookingId, bookingId, json, catType == 'INITIAL' ? 'FEMALE_USER' : 'FEMALE_USER', 'APPROVED', catType, null, referredDate, null, 1, riskProfile,
+    db.doCreateCompleteRow(-bookingId, bookingId, json,  'FEMALE_USER', 'APPROVED', catType, null, referredDate, null, 1, riskProfile,
       prisonId, "ON${bookingId}", startDate, null, securityReviewedDate, approvalDate, assessmentDate, dueByDate)
   }
 
