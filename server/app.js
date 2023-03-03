@@ -208,8 +208,9 @@ module.exports = function createApp({
     return res.render('autherror')
   })
 
-  app.get('/accessibilityStatement', (req, res) => {
-    return res.render('accessibilityStatement')
+  app.get('/accessibility-statement', async (req, res) => {
+    const user = await userService.getUser(res.locals)
+    return res.render('accessibility-statement', { user })
   })
 
   app.get('/login', passport.authenticate('oauth2'))
