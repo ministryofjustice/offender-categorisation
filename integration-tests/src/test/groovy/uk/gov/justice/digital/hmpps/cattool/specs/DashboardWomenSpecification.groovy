@@ -61,8 +61,8 @@ class DashboardWomenSpecification extends AbstractSpecification {
   }
 
 
-  JasonBuilder ic(suggested, overridden = null, supervisor = null) {
-    def b = new JasonBuilder(catType: CatType.INITIAL, suggested: suggested, overridden: overridden, supervisor: supervisor)
+  JasonBuilder ic(suggested, supervisor = null) {
+    def b = new JasonBuilder(catType: CatType.INITIAL, suggested: suggested, supervisor: supervisor)
     return b
   }
 
@@ -83,12 +83,12 @@ class DashboardWomenSpecification extends AbstractSpecification {
 
     // PFI initial referred to security
     dbRow(32, 'PFI', 'INITIAL', "'2019-07-01T03:00Z'", "'2019-07-09T15:30Z'", "'2019-07-09T17:40Z'", '2019-07-22', '2019-07-30', '2019-08-03', ic('R').build(), SECURITY_AUTO)
-    dbRow(33, 'PFI', 'INITIAL', "'2019-07-01T04:00Z'", "'2019-07-10T09:00Z'", "'2019-07-11T11:00Z'", '2019-07-23', '2019-07-29', '2019-07-28', ic('T', 'R', 'T').securityType(SecurityType.MANUAL).build())
+    dbRow(33, 'PFI', 'INITIAL', "'2019-07-01T04:00Z'", "'2019-07-10T09:00Z'", "'2019-07-11T11:00Z'", '2019-07-23', '2019-07-29', '2019-07-28', ic('T', 'T').securityType(SecurityType.MANUAL).build())
     // .. late
 
     //-------------------------------------------------------------------------------------------------------------
     // LNI initial
-    dbRow(34, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", null, null, '2019-07-22', '2019-07-29', '2019-08-03', ic('R', 'T', 'R').build())
+    dbRow(34, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", null, null, '2019-07-22', '2019-07-29', '2019-08-03', ic('R', 'R').build())
     dbRow(35, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", null, null, '2019-07-22', '2019-07-29', '2019-08-03', ic('R', 'T').build())
 
     // LEI MEN  INITIAL
@@ -116,9 +116,9 @@ class DashboardWomenSpecification extends AbstractSpecification {
     statsTypeOptions*.text().contains('all female prisons')
 
     then: 'The stats displayed are as follows'
-    numbersTableRows[0].find('td')*.text() == ['Closed', '', '', '50.0%', '2']
-    numbersTableRows[1].find('td')*.text() == ['Closed', 'Open', '', '25.0%', '1']
-    numbersTableRows[2].find('td')*.text() == ['Open', 'Closed', 'Open', '25.0%', '1']
+    numbersTableRows[0].find('td')*.text() == ['Closed', '', '50.0%', '2']
+    numbersTableRows[1].find('td')*.text() == ['Closed', 'Open', '25.0%', '1']
+    numbersTableRows[2].find('td')*.text() == ['Open', 'Open', '25.0%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
@@ -142,11 +142,11 @@ class DashboardWomenSpecification extends AbstractSpecification {
 
     then: 'the stats are as follows'
     at DashboardInitialPage
-    numbersTableRows[0].find('td')*.text() == ['Closed', '', '', '37.5%', '3']
-    numbersTableRows[1].find('td')*.text() == ['Closed', 'Open', '', '25.0%', '2']
-    numbersTableRows[2].find('td')*.text() == ['Closed', 'Open', 'Closed', '12.5%', '1']
-    numbersTableRows[3].find('td')*.text() == ['Open', '', '', '12.5%', '1']
-    numbersTableRows[4].find('td')*.text() == ['Open', 'Closed', 'Open', '12.5%', '1']
+    numbersTableRows[0].find('td')*.text() == ['Closed', '', '37.5%', '3']
+    numbersTableRows[1].find('td')*.text() == ['Closed', 'Closed', '12.5%', '1']
+    numbersTableRows[2].find('td')*.text() == ['Closed', 'Open', '25.0%', '2']
+    numbersTableRows[3].find('td')*.text() == ['Open', '', '12.5%', '1']
+    numbersTableRows[4].find('td')*.text() == ['Open', 'Open', '12.5%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '2']
