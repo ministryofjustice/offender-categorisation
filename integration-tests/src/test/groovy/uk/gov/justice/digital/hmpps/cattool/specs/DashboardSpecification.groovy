@@ -86,6 +86,9 @@ class DashboardSpecification extends AbstractSpecification {
     dbRow(23, 'LEI', 'INITIAL', "'2019-07-01T04:00Z'", "'2019-07-10T09:00Z'", "'2019-07-11T11:00Z'", '2019-07-23', '2019-07-29', '2019-07-28', ic('C', 'B', 'D').securityType(SecurityType.MANUAL).build())
     // .. late
 
+    // LNI Women INITIAL
+    dbRow(34, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", null, null, '2019-07-22', '2019-07-29', '2019-08-03', ic('R', 'T', 'R').build())
+
     //-------------------------------------------------------------------------------------------------------------
     // BXI initial
     dbRow(24, 'BXI', 'INITIAL', "'2019-07-01T00:00Z'", null,                  null,                  '2019-07-22', '2019-07-29', '2019-08-03', ic('C', 'B', 'C').build())
