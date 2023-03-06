@@ -86,6 +86,9 @@ class DashboardSpecification extends AbstractSpecification {
     dbRow(23, 'LEI', 'INITIAL', "'2019-07-01T04:00Z'", "'2019-07-10T09:00Z'", "'2019-07-11T11:00Z'", '2019-07-23', '2019-07-29', '2019-07-28', ic('C', 'B', 'D').securityType(SecurityType.MANUAL).build())
     // .. late
 
+    // LNI Women INITIAL
+    dbRow(34, 'LNI', 'INITIAL', "'2019-07-01T00:00Z'", null, null, '2019-07-22', '2019-07-29', '2019-08-03', ic('R', 'T', 'R').build())
+
     //-------------------------------------------------------------------------------------------------------------
     // BXI initial
     dbRow(24, 'BXI', 'INITIAL', "'2019-07-01T00:00Z'", null,                  null,                  '2019-07-22', '2019-07-29', '2019-08-03', ic('C', 'B', 'C').build())
@@ -94,6 +97,7 @@ class DashboardSpecification extends AbstractSpecification {
     // BXI initial referred to security
     dbRow(26, 'BXI', 'INITIAL', "'2019-07-01T00:00Z'", "'2019-07-20T00:00Z'", "'2019-07-29T00:00Z'", '2019-07-22', '2019-07-29', '2019-08-03', ic('C').build(), SECURITY_AUTO)
     dbRow(27, 'BXI', 'INITIAL', "'2019-07-01T00:00Z'", "'2019-07-20T00:00Z'", "'2019-07-29T00:00Z'", '2019-07-22', '2019-07-29', '2019-08-03', ic('I').securityType(SecurityType.MANUAL).build())
+    dbRow(28, 'BXI', 'INITIAL', "'2019-07-01T00:00Z'", "'2019-07-20T00:00Z'", "'2019-07-29T00:00Z'", '2019-07-22', '2019-07-29', '2019-08-03', ic('C').build(), SECURITY_AUTO)
 
     given: 'a supervisor is logged in'
     elite2Api.stubUncategorisedAwaitingApproval()
@@ -103,27 +107,30 @@ class DashboardSpecification extends AbstractSpecification {
     when: 'the user goes to the dashboard with no search criteria'
     to DashboardInitialPage
 
+    then: 'all male prisons option is displayed'
+    at DashboardInitialPage
+    statsTypeOptions*.text().contains('all male prisons')
+
     then: 'The stats displayed are as follows'
-    numbersTableRows[0].find('td')*.text() == ['C', '', '', '2']
-    numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '1']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'Open', '1']
+    numbersTableRows[0].find('td')*.text() == ['C', '', '', '50.0%', '2']
+    numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '25.0%', '1']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'Open', '25.0%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
     securityTableRows[2].find('td')*.text() == ['Flagged', '0']
+    securityTableRows[3].find('td')*.text() == ['Total', '2']
 
-    timelinessTableRows*.text() == [
-      'Number of days before due date that approval occurred 1.75',
-      'Security referral timeliness (Days from start to referral) 8.86',
-      'Days in security 0.59',
-      'Start to assessment completion (days) 20.5',
-      'Assessment to approval (days) 9']
+    timelineTableRows*.text() == [
+      'Assessment started to sent to security 8.5 days',
+      'Sent to security to security review complete 0.5 days',
+      'Security review complete to approval complete 19.5 days',
+      'Assessment started to approval complete 29.5 days']
 
     completionTableRows*.text() == [
-      'Before due date 75% 3',
-      'Late 1']
-
-    total.text() == 'Total: 4'
+      'Before due date 75.0% 3',
+      'Late 25.0% 1',
+      'Total 4']
 
     when: 'the user selects the whole estate'
     form.scope = 'all'
@@ -131,37 +138,27 @@ class DashboardSpecification extends AbstractSpecification {
 
     then: 'the stats are as follows'
     at DashboardInitialPage
-    numbersTableRows[0].find('td')*.text() == ['C', '', '', '3']
-    numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '2']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'C', '1']
-    numbersTableRows[3].find('td')*.text() == ['C', 'B', 'Open', '1']
-    numbersTableRows[4].find('td')*.text() == ['YOI closed', '', '', '1']
+    numbersTableRows[0].find('td')*.text() == ['C', '', '', '44.4%', '4']
+    numbersTableRows[1].find('td')*.text() == ['C', 'B', '', '22.2%', '2']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', 'C', '11.1%', '1']
+    numbersTableRows[3].find('td')*.text() == ['C', 'B', 'Open', '11.1%', '1']
+    numbersTableRows[4].find('td')*.text() == ['YOI closed', '', '', '11.1%', '1']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
-    securityTableRows[1].find('td')*.text() == ['Automatic', '2']
+    securityTableRows[1].find('td')*.text() == ['Automatic', '3']
     securityTableRows[2].find('td')*.text() == ['Flagged', '0']
+    securityTableRows[3].find('td')*.text() == ['Total', '5']
 
-    timelinessTableRows*.text() == [
-      'Number of days before due date that approval occurred 3.38',
-      'Security referral timeliness (Days from start to referral) 13.93',
-      'Days in security 4.79',
-      'Start to assessment completion (days) 20.75',
-      'Assessment to approval (days) 8']
+    timelineTableRows*.text() == [
+      'Assessment started to sent to security 14.8 days',
+      'Sent to security to security review complete 5.6 days',
+      'Security review complete to approval complete 7.8 days',
+      'Assessment started to approval complete 28.67 days']
 
     completionTableRows*.text() == [
-      'Before due date 87.5% 7',
-      'Late 1']
-
-    total.text() == 'Total: 8'
-
-    when: 'the user filters by a date range'
-    form.startDate = '30/07/2019'
-    form.endDate = '31/07/2019'
-    submitButton.click()
-
-    then: 'the total is as follows'
-    at DashboardInitialPage
-    total.text() == 'Total: 2'
+      'Before due date 88.9% 8',
+      'Late 11.1% 1',
+      'Total 9']
   }
 
   def "The recat dashboard should show correct stats data"() {
@@ -200,27 +197,30 @@ class DashboardSpecification extends AbstractSpecification {
     when: 'the user goes to the dashboard with no search criteria'
     to DashboardRecatPage
 
+    then: 'all male prisons option is displayed'
+    at DashboardRecatPage
+    statsTypeOptions*.text().contains('all male prisons')
+
     then: 'The stats displayed are as follows'
-    numbersTableRows[0].find('td')*.text() == ['B', '', '1']
-    numbersTableRows[1].find('td')*.text() == ['C', '', '2']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', '2']
+    numbersTableRows[0].find('td')*.text() == ['B', '', '20.0%', '1']
+    numbersTableRows[1].find('td')*.text() == ['C', '', '40.0%', '2']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', '40.0%',  '2']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '1']
     securityTableRows[1].find('td')*.text() == ['Automatic', '1']
     securityTableRows[2].find('td')*.text() == ['Flagged', '1']
+    securityTableRows[3].find('td')*.text() == ['Total', '3']
 
-    timelinessTableRows*.text() == [
-      'Number of days before due date that approval occurred 2.2',
-      'Security referral timeliness (Days from start to referral) 9',
-      'Days in security 9.06',
-      'Start to assessment completion (days) 21',
-      'Assessment to approval (days) 9.8']
+    timelineTableRows*.text() == [
+      'Assessment started to sent to security 9 days',
+      'Sent to security to security review complete 9 days',
+      'Security review complete to approval complete 12.33 days',
+      'Assessment started to approval complete 30.8 days']
 
     completionTableRows*.text() == [
-      'Before due date 60% 3',
-      'Late 2']
-
-    total.text() == 'Total: 5'
+      'Before due date 60.0% 3',
+      'Late 40.0% 2',
+      'Total 5']
 
     when: 'the user selects the whole estate'
     form.scope = 'all'
@@ -228,35 +228,25 @@ class DashboardSpecification extends AbstractSpecification {
 
     then: 'the stats are as follows'
     at DashboardRecatPage
-    numbersTableRows[0].find('td')*.text() == ['B', '', '2']
-    numbersTableRows[1].find('td')*.text() == ['C', '', '4']
-    numbersTableRows[2].find('td')*.text() == ['C', 'B', '3']
+    numbersTableRows[0].find('td')*.text() == ['B', '', '22.2%', '2']
+    numbersTableRows[1].find('td')*.text() == ['C', '', '44.4%', '4']
+    numbersTableRows[2].find('td')*.text() == ['C', 'B', '33.3%', '3']
 
     securityTableRows[0].find('td')*.text() == ['Manual', '2']
     securityTableRows[1].find('td')*.text() == ['Automatic', '2']
     securityTableRows[2].find('td')*.text() == ['Flagged', '1']
+    securityTableRows[3].find('td')*.text() == ['Total', '5']
 
-    timelinessTableRows*.text() == [
-      'Number of days before due date that approval occurred -1.56',
-      'Security referral timeliness (Days from start to referral) 7.27',
-      'Days in security 10.77',
-      'Start to assessment completion (days) 21',
-      'Assessment to approval (days) 13.56']
+    timelineTableRows*.text() == [
+      'Assessment started to sent to security 7.2 days',
+      'Sent to security to security review complete 10.8 days',
+      'Security review complete to approval complete 12.8 days',
+      'Assessment started to approval complete 34.56 days']
 
     completionTableRows*.text() == [
-      'Before due date 44.44% 4',
-      'Late 5']
-
-    total.text() == 'Total: 9'
-
-    when: 'the user filters by a date range'
-    form.startDate = '05/08/2019'
-    form.endDate = '28/08/2019'
-    submitButton.click()
-
-    then: 'the total is as follows'
-    at DashboardRecatPage
-    total.text() == 'Total: 4'
+      'Before due date 44.4% 4',
+      'Late 55.6% 5',
+      'Total 9']
   }
 
   def "The recat dashboard should show correct change table"() {

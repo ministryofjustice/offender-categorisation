@@ -4,13 +4,13 @@ module.exports = {
       {
         startDate: {
           responseType: 'pastDate',
-          validationMessage: 'Start date should be before today',
+          validationMessage: 'Date from should be before today',
         },
       },
       {
         endDate: {
           responseType: 'pastDate',
-          validationMessage: 'End date should be before today',
+          validationMessage: 'Date to should be before today',
         },
       },
       {
