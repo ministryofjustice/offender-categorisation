@@ -67,4 +67,7 @@ module.exports = (app, path) => {
       const array = fullName.split(' ')
       return `${array[0][0]}. ${array.reverse()[0]}`
     })
+    .addFilter('fixed', (num, length) => {
+      return num.toFixed(length || 1)
+    })
 }
