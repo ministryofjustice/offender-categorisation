@@ -1640,12 +1640,20 @@ describe('requiredCatType', () => {
       classificationCode: cat,
     },
   ]
-  test('when supported cat in nomis', () => {
+  test('when supported cat B from B in nomis', () => {
     expect(service.requiredCatType(BOOKING_ID, 'B', history('B'))).toBe('RECAT')
   })
 
-  test('when missing in nomis', () => {
+  test('when missing cat in nomis', () => {
     expect(service.requiredCatType(BOOKING_ID, null, [])).toBe('INITIAL')
+  })
+
+  test('when supported cat R from T in nomis', () => {
+    expect(service.requiredCatType(BOOKING_ID, 'R', history('T'))).toBe('RECAT')
+  })
+
+  test('when supported cat R  from B in nomis', () => {
+    expect(service.requiredCatType(BOOKING_ID, 'R', history('B'))).toBe('RECAT')
   })
 
   test('when cat Z in nomis', () => {
@@ -1654,6 +1662,14 @@ describe('requiredCatType', () => {
 
   test('when cat A in nomis', () => {
     expect(service.requiredCatType(BOOKING_ID, 'A', history('A'))).toBe(null)
+  })
+
+  test('when cat Q in nomis', () => {
+    expect(service.requiredCatType(BOOKING_ID, 'Q', [])).toBe(null)
+  })
+
+  test('when cat T in from Q nomis', () => {
+    expect(service.requiredCatType(BOOKING_ID, 'T', history('Q'))).toBe('RECAT')
   })
 
   test('when cat U in nomis but there is an earlier cat', () => {

@@ -484,7 +484,7 @@ class LandingPageSpecification extends AbstractSpecification {
     at LandingPage
     !recatButton.displayed
     initialButton.displayed
-    warning.text() endsWith 'This prisoner is already Cat B'
+    warning.text() endsWith 'This prisoner is Category B'
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
