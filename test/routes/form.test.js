@@ -1539,3 +1539,104 @@ describe('Submit provisionalCategory page', () => {
       })
   })
 })
+
+describe('GET /ratings/escapeRating', () => {
+  test('Get mens escape page with no alerts', () => {
+    mockMalePrison()
+    return request(app)
+      .get(`/ratings/escapeRating/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('This person is not on the E-List and does not have an escape risk alert.')
+        expect(res.text).not.toContain('This person is considered an escape risk')
+        expect(res.text).not.toContain('Alert notes')
+        expect(res.text).not.toContain('Escape Risk Alert:')
+        expect(res.text).not.toContain('Do you think this information means they should be in Cat B?')
+        expect(res.text).toContain('Is there any other information to suggest they pose a risk of escape?')
+      })
+  })
+
+  test('Get mens escape page with an alert', () => {
+    mockMalePrison()
+    const escapeProfile = {
+      nomsId: 'G6706UD',
+      provisionalCategorisation: 'C',
+      activeEscapeList: false,
+      activeEscapeRisk: true,
+      escapeRiskAlerts: [
+        {
+          alertCode: 'XER',
+          dateCreated: '2016-12-16',
+          expired: false,
+          active: true,
+        },
+      ],
+      escapeListAlerts: [],
+      riskType: 'ESCAPE',
+    }
+    riskProfilerService.getEscapeProfile.mockResolvedValue(escapeProfile)
+    return request(app)
+      .get(`/ratings/escapeRating/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('This person is considered an escape risk')
+        expect(res.text).toContain('Alert notes')
+        expect(res.text).toContain('Escape Risk Alert:')
+        expect(res.text).toContain('Do you think this information means they should be in Cat B?')
+        expect(res.text).not.toContain('This person is not on the E-List and does not have an escape risk alert.')
+        expect(res.text).toContain('Is there any other information to suggest they pose a risk of escape?')
+      })
+  })
+
+  test('Get womens escape page with no alerts', () => {
+    mockFemalePrison()
+    return request(app)
+      .get(`/ratings/escapeRating/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('This person is not on the E-List and does not have an escape risk alert.')
+        expect(res.text).not.toContain('This person is considered an escape risk')
+        expect(res.text).not.toContain('Alert notes')
+        expect(res.text).not.toContain('Escape Risk Alert:')
+        expect(res.text).not.toContain('Do you think this information means they should be in Cat B?')
+        expect(res.text).toContain('Is there any other information to suggest they pose a risk of escape?')
+      })
+  })
+
+  test('Get womens escape page with an alert', () => {
+    mockFemalePrison()
+    const escapeProfile = {
+      nomsId: 'G6706UD',
+      provisionalCategorisation: 'R',
+      activeEscapeList: false,
+      activeEscapeRisk: true,
+      escapeRiskAlerts: [
+        {
+          alertCode: 'XER',
+          dateCreated: '2016-12-16',
+          expired: false,
+          active: true,
+        },
+      ],
+      escapeListAlerts: [],
+      riskType: 'ESCAPE',
+    }
+    riskProfilerService.getEscapeProfile.mockResolvedValue(escapeProfile)
+
+    return request(app)
+      .get(`/ratings/escapeRating/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('This person is not on the E-List and does not have an escape risk alert.')
+        expect(res.text).toContain('This person is considered an escape risk')
+        expect(res.text).toContain('Alert notes')
+        expect(res.text).toContain('Escape Risk Alert:')
+        expect(res.text).not.toContain('Do you think this information means they should be in Cat B?')
+        expect(res.text).toContain('Is there any other information to suggest they pose a risk of escape?')
+      })
+  })
+})

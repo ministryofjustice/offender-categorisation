@@ -149,6 +149,18 @@ class TestFixture {
     browser.selectSecondPrisoner()
   }
 
+  def gotoInitialWomenTasklist(transferToSecurity = false, multipleSentences = false) {
+    elite2Api.stubUncategorisedNoStatus(700, 'PFI')
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    prisonerSearchApi.stubSentenceData(['ON700'], [700], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+
+    loginAs(FEMALE_USER)
+    browser.at CategoriserHomePage
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
+    riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
+    browser.selectFirstPrisoner()
+  }
 
   def gotoTasklistRecat(transferToSecurity = false, indeterminateSentence = false) {
     elite2Api.stubRecategorise()
