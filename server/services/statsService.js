@@ -3,7 +3,8 @@ function getCount(rows, field, tag) {
   return find ? find.count : 0
 }
 
-const map = { B: 0, C: 1, D: 2, I: 3, J: 4 }
+const maleMap = { B: 0, C: 1, D: 2, I: 3, J: 4 }
+const femaleMap = { T: 0, R: 1, I: 2, J: 3 }
 
 module.exports = function createstatsService(statsClient) {
   return {
@@ -19,12 +20,14 @@ module.exports = function createstatsService(statsClient) {
       return stats.rows
     },
 
-    async getRecatFromTo(startDate, endDate, prisonId, transactionalClient) {
+    async getRecatFromTo(startDate, endDate, prisonId, transactionalClient, female) {
       const stats = await statsClient.getRecatFromTo(startDate, endDate, prisonId, transactionalClient)
       // fill a 5x5 array
-      const table = Array(6)
+      const map = female ? femaleMap : maleMap
+      const numberOfCategories = Object.keys(map).length
+      const table = Array(numberOfCategories + 1)
         .fill()
-        .map(() => Array(5))
+        .map(() => Array(numberOfCategories))
       stats.rows.forEach(row => {
         if (row.previous && row.current) {
           table[map[row.previous]][map[row.current]] = row.count
@@ -32,14 +35,14 @@ module.exports = function createstatsService(statsClient) {
       })
       // Add totals at the bottom
       // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < numberOfCategories; i++) {
         let total = 0
         // eslint-disable-next-line no-plusplus
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < numberOfCategories; j++) {
           const cell = table[j][i]
           if (cell) total += cell
         }
-        table[5][i] = total
+        table[numberOfCategories][i] = total
       }
       // Add totals at the right
       table.forEach(row => {
@@ -54,24 +57,31 @@ module.exports = function createstatsService(statsClient) {
       const stats = await statsClient.getSecurityReferrals(catType, startDate, endDate, prisonId, transactionalClient)
 
       const { rows } = stats
+      const manual = getCount(rows, 'security', 'manual')
+      const auto = getCount(rows, 'security', 'auto')
+      const flagged = getCount(rows, 'security', 'flagged')
       return {
-        manual: getCount(rows, 'security', 'manual'),
-        auto: getCount(rows, 'security', 'auto'),
-        flagged: getCount(rows, 'security', 'flagged'),
+        manual,
+        auto,
+        flagged,
+        total: manual + auto + flagged,
       }
     },
 
-    async getTimeliness(catType, startDate, endDate, prisonId, transactionalClient) {
-      const stats = await statsClient.getTimeliness(catType, startDate, endDate, prisonId, transactionalClient)
+    async getTimeline(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getTimeline(catType, startDate, endDate, prisonId, transactionalClient)
       return stats.rows[0]
     },
 
     async getOnTime(catType, startDate, endDate, prisonId, transactionalClient) {
       const stats = await statsClient.getOnTime(catType, startDate, endDate, prisonId, transactionalClient)
       const { rows } = stats
+      const onTime = getCount(rows, 'onTime', true)
+      const notOnTime = getCount(rows, 'onTime', false)
       return {
-        onTime: getCount(rows, 'onTime', true),
-        notOnTime: getCount(rows, 'onTime', false),
+        onTime,
+        notOnTime,
+        total: onTime + notOnTime,
       }
     },
   }
