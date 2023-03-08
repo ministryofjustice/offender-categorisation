@@ -62,6 +62,31 @@ const userService = {
   getUser: jest.fn(),
 }
 
+const mockFemalePrison = () => {
+  userService.getUser.mockResolvedValue({
+    activeCaseLoad: {
+      caseLoadId: 'PFI',
+      description: 'Peterborough Female HMP',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: true,
+      female: true,
+    },
+  })
+}
+
+const mockMalePrison = () => {
+  userService.getUser.mockResolvedValue({
+    activeCaseLoad: {
+      caseLoadId: 'PBI',
+      description: 'Peterborough HMP',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: true,
+      female: false,
+    },
+  })
+}
 const formRoute = createRouter({
   formService,
   offendersService,
@@ -185,16 +210,7 @@ describe('recat', () => {
   })
 
   test('Get category decision for male offender 21 or over)', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PBI',
-        description: 'Peterborough HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
+    mockMalePrison()
     formService.isYoungOffender.mockReturnValue(false)
     return request(app)
       .get(`/decision/12345`)
@@ -202,22 +218,15 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Category decision')
+        expect(res.text).toContain('catCOption')
         expect(res.text).not.toContain('catIOption')
-        expect(res.text).not.toContain('Consider them for open')
+        expect(res.text).not.toContain('openOption')
+        expect(res.text).not.toContain('Prisoner has an indeterminate sentence')
       })
   })
 
   test('Get category decision for male offender under 21)', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'MDI',
-        description: 'Moorland (HMP & YOI)',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: false,
-      },
-    })
+    mockMalePrison()
     formService.isYoungOffender.mockReturnValue(true)
     return request(app)
       .get(`/decision/12345`)
@@ -225,23 +234,15 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Category decision')
+        expect(res.text).toContain('catCOption')
         expect(res.text).toContain('catIOption')
+        expect(res.text).not.toContain('openOption')
         expect(res.text).not.toContain('Prisoner has an indeterminate sentence')
-        expect(res.text).not.toContain('Consider them for open')
       })
   })
 
-  test('Get category decision for female offender)', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PFI',
-        description: 'Peterborough Female HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: true,
-      },
-    })
+  test('Get category decision for female offender 21 and over)', () => {
+    mockFemalePrison()
     formService.isYoungOffender.mockReturnValue(false)
     return request(app)
       .get(`/decision/12345`)
@@ -249,8 +250,26 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Category decision')
-        expect(res.text).toContain('Consider them for open')
-        expect(res.text).not.toContain('Category C')
+        expect(res.text).not.toContain('catCOption')
+        expect(res.text).not.toContain('catIOption')
+        expect(res.text).toContain('openOption')
+        expect(res.text).not.toContain('Prisoner has an indeterminate sentence')
+      })
+  })
+
+  test('Get category decision for female offender under 21)', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    return request(app)
+      .get(`/decision/12345`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Category decision')
+        expect(res.text).not.toContain('catCOption')
+        expect(res.text).toContain('catIOption')
+        expect(res.text).toContain('openOption')
+        expect(res.text).not.toContain('Prisoner has an indeterminate sentence')
       })
   })
 
@@ -258,6 +277,7 @@ describe('recat', () => {
     offendersService.getOffenderDetails.mockResolvedValue({
       sentence: { indeterminate: true },
     })
+    mockMalePrison()
     formService.isYoungOffender.mockReturnValue(false)
     return request(app)
       .get(`/decision/12345`)
@@ -269,6 +289,7 @@ describe('recat', () => {
         expect(res.text).not.toContain('catIOption')
         expect(res.text).not.toContain('catJOption')
         expect(res.text).toContain('catDOption')
+        expect(res.text).not.toContain('openOption')
       })
   })
 

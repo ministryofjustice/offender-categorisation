@@ -39,7 +39,6 @@
   {% include "../../partials/warningIndeterminate.html" %}
 {% endset %}
 
-{% if not user.activeCaseLoad.female %}
   {% set optionB =  {
     value: "B",
     id: "catBOption",
@@ -80,59 +79,45 @@
     text: "Consider them for YOI (open)",
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
+  {% set optionR =  {
+    value: "R",
+    id: "closedOption",
+    checked: data.recat.decision.category == 'R',
+    hint: {
+      html: hintText('closed')
+    },
+    text: "Closed",
+    label: { classes: "govuk-!-font-weight-bold" }
+  } %}
+  {% set optionT =  {
+    value: "T",
+    id: "openOption",
+    checked: data.recat.decision.category == 'T',
+    hint: {
+      html: hintTextOpen('open')
+    },
+    text: "Consider them for open",
+    label: { classes: "govuk-!-font-weight-bold" }
+   } %}
 
-  {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
-{% endif %}
+  {% if user.activeCaseLoad.female %}
+    {% set itemList = [ optionI, optionJ, optionR, optionT ] if data.details.youngOffender else [ optionR, optionT ] %}
+  {% else %}
+    {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
+  {% endif %}
 
-{% if user.activeCaseLoad.female %}
   {{ govukRadios({
     name: "category",
     classes: "govuk-radios",
     fieldset: {
       legend: {
-        text: "Which category is most suitable for this person?",
-        isPageHeading: false
+        text: "What category is most suitable for this person?"
       }
     },
     errorMessage: {
       text: "Select what category is most suitable for this person"
     } if (errors | findError('category')),
-    items: [
-      {
-        value: "R",
-        id: "closedOption",
-        checked: data.recat.decision.category == 'R',
-        hint: {
-          html: hintText('closed')
-        },
-        text: "Closed",
-        label: { classes: "govuk-!-font-weight-bold" }
-      },
-      {
-        value: "T",
-        id: "openOption",
-        checked: data.recat.decision.category == 'T',
-        hint: {
-          html: hintTextOpen('open')
-        },
-        text: "Consider them for open",
-        label: { classes: "govuk-!-font-weight-bold" }
-      }
-    ]
-  }) }}
-
-{% else %}
-
-  {{ govukRadios({
-    name: "category",
-    classes: "govuk-radios",
-    fieldset: { legend: { text: "What security category is most suitable for this person?" } },
-    errorMessage: {
-      text: "Select what category is most suitable for this person"
-    } if (errors | findError('category')),
     items: itemList
   }) }}
-
-{% endif %}
 
 {% endblock %}
