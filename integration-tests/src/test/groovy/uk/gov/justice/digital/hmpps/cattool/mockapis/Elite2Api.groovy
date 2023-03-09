@@ -196,6 +196,45 @@ class Elite2Api extends WireMockRule {
         .withStatus(200)))
   }
 
+  void stubRecategoriseWomen(assessStatusList = ['R']) {
+    def today = LocalDate.now()
+    final date = today.plusMonths(2)
+    this.stubFor(get("/api/offender-assessments/category/PFI?type=RECATEGORISATIONS&date=$date")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([[bookingId     : 700,
+                                      offenderNo    : 'ON700',
+                                      firstName     : 'ANT',
+                                      lastName      : 'HILLMOB',
+                                      category      : 'R',
+                                      nextReviewDate: today.minusDays(4).format('yyyy-MM-dd'),
+                                      assessStatus  : assessStatusList[0]],
+                                     [bookingId     : 701,
+                                      offenderNo    : 'ON701',
+                                      firstName     : 'PENELOPE',
+                                      lastName      : 'PITSTOP',
+                                      category      : 'T',
+                                      nextReviewDate: today.minusDays(2).format('yyyy-MM-dd'),
+                                      assessStatus  : assessStatusList[1]],]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+
+    this.stubFor(post("/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([[bookingId         : 703,
+                                      offenderNo        : 'ON703',
+                                      classificationCode: 'R',
+                                      nextReviewDate    : today.minusDays(4).format('yyyy-MM-dd'),
+                                      assessmentStatus  : assessStatusList[2]],
+                                     [bookingId         : 704,
+                                      offenderNo        : 'ON704',
+                                      classificationCode: 'T',
+                                      nextReviewDate    : today.minusDays(2).format('yyyy-MM-dd'),
+                                      assessmentStatus  : assessStatusList[3]],]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+  }
+
+
   void stubRecategoriseWithCatI() {
     final date = LocalDate.now().plusMonths(2)
     this.stubFor(get("/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=$date")
@@ -243,6 +282,18 @@ class Elite2Api extends WireMockRule {
         .withStatus(200)))
   }
 
+  void stubGetLatestCategorisationForWomenOffenders() {
+    this.stubFor(post("/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([[bookingId         : 700,
+                                      offenderNo        : 'ON700',
+                                      classificationCode: 'R',
+                                      nextReviewDate    : '2019-07-25',
+                                      assessmentStatus  : 'No CAT A, Restricted']]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+  }
+
   void stubCategorised(bookingIds = [11, 12]) {
     def response = []
     if (bookingIds.contains(10)) {
@@ -284,6 +335,18 @@ class Elite2Api extends WireMockRule {
                     categoriserFirstName: 'JOHN',
                     categoriserLastName : 'LAMB',
                     category            : 'C'])
+    }
+    if (bookingIds.contains(700)) {
+      response.add([offenderNo          : 'ON700',
+                    bookingId           : 700,
+                    firstName           : 'WILLIAM',
+                    lastName            : 'HILLMOB',
+                    assessmentDate      : '2017-03-27',
+                    approvalDate        : '2019-02-21',
+                    assessmentSeq       : 7,
+                    categoriserFirstName: 'JOHN',
+                    categoriserLastName : 'LAMB',
+                    category            : 'R'])
     }
     this.stubFor(post("/api/offender-assessments/category?latestOnly=false")
       .withRequestBody(equalToJson(JsonOutput.toJson(bookingIds), true, true))
@@ -415,8 +478,17 @@ class Elite2Api extends WireMockRule {
                                       lastName            : 'HILLMOB',
                                       status              : 'AWAITING_APPROVAL',
                                       category            : 'R',
-                                      categoriserFirstName: 'BUGS',
-                                      categoriserLastName : 'BUNNY',
+                                      categoriserFirstName: 'ROGER',
+                                      categoriserLastName : 'RABBIT',
+                                      assessmentSeq       : 4,],
+                                      [bookingId           : 11701,
+                                      offenderNo          : 'ON701',
+                                      firstName           : 'PENELOPE',
+                                      lastName            : 'PITSTOP',
+                                      status              : 'AWAITING_APPROVAL',
+                                      category            : 'T',
+                                      categoriserFirstName: 'ROGERBUGS',
+                                      categoriserLastName : 'RABBITBUNNY',
                                       assessmentSeq       : 5,],]))
         .withHeader('Content-Type', 'application/json')
         .withStatus(200)))
@@ -568,6 +640,19 @@ class Elite2Api extends WireMockRule {
         .withStatus(200)))
   }
 
+  def stubGetOffenderDetailsByOffenderNoListWomen(bookingId, offenderNo) {
+    this.stubFor(post("/api/bookings/offenders?activeOnly=false")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([[bookingId  : bookingId,
+                                      offenderNo : offenderNo,
+                                      agencyId   : 'PFI',
+                                      firstName  : 'JANE',
+                                      lastName   : 'DENT',
+                                      dateOfBirth: '1970-02-17',]]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+  }
+
   def stubGetStaffDetailsByUsernameList() {
     this.stubFor(post("/api/users/list")
       .willReturn(aResponse()
@@ -686,7 +771,7 @@ class Elite2Api extends WireMockRule {
         .withStatus(200)))
   }
 
-  def stubGetOffenderDetailsWomen(int bookingId, offenderNo = 'ON700', youngOffender = false, indeterminateSentence = false, category = 'U(Unsentenced)', multipleSentences = false, nextReviewDate = '2020-01-16') {
+  def stubGetOffenderDetailsWomen(int bookingId, offenderNo = 'ON700', youngOffender = false, indeterminateSentence = false, category, multipleSentences = false, nextReviewDate = '2020-01-16') {
     this.stubFor(get("/api/bookings/$bookingId?basicInfo=false")
       .willReturn(aResponse()
         .withBody(JsonOutput.toJson([bookingId         : bookingId,

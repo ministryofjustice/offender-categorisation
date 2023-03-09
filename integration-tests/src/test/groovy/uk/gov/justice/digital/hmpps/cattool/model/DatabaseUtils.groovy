@@ -82,6 +82,10 @@ class DatabaseUtils {
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, 1, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
   }
 
+  def createDataWithIdAndStatusAndCatTypeForWomen(id, bookingId, status, json, catType,offenderNo = 'dummy') {
+    doCreateCompleteRow(id, bookingId, json,'FEMALE_RECAT_USER', status, catType, null, null, null, 1, null, 'PFI', offenderNo, 'current_timestamp(2)', null, null)
+  }
+
   def createDataWithIdAndStatusAndCatTypeAndSeq(id, bookingId, status, json, catType, offenderNo = 'dummy', seq) {
     def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, seq, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)

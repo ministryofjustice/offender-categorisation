@@ -23,7 +23,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     prisonerSearchApi.stubSentenceData(['ON700'], [700], [TODAY.plusDays(-3).toString()])
     fixture.loginAs(FEMALE_USER)
     at CategoriserHomePage
-    elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700", 'U(Unsentenced)')
     riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
     startButtons[0].click()
     at(new TasklistPage(bookingId: '700'))
@@ -121,6 +121,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     categoryDecisionSummary*.text() == ['Closed']
     nextReviewDateSummary*.text() == [SIX_MONTHS_AHEAD_ISO_DAY]
     submitButton.click()
+    submitButton.click()
 
     then: 'I am at categoriser submit page'
     at CategoriserSubmittedPage
@@ -164,7 +165,7 @@ class WomenEstateSpecification extends AbstractSpecification {
 
     fixture.loginAs(WOMEN_SUPERVISOR_USER)
     at SupervisorHomePage
-    elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700", 'U(Unsentenced)')
     elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
