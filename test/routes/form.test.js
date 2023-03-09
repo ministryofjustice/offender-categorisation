@@ -761,10 +761,12 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).not.toContain('overriddenCategoryD')
-        expect(res.text).not.toContain('overriddenCategoryR')
         expect(res.text).toContain('overriddenCategoryT')
         expect(res.text).toContain('No, consider for open')
+        expect(res.text).not.toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).not.toContain('overriddenCategoryC')
+        expect(res.text).not.toContain('overriddenCategoryD')
       })
   })
 
@@ -785,10 +787,12 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).not.toContain('overriddenCategoryD')
         expect(res.text).toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryT')
         expect(res.text).toContain('No, closed is more appropriate')
+        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).not.toContain('overriddenCategoryC')
+        expect(res.text).not.toContain('overriddenCategoryD')
       })
   })
 
@@ -813,6 +817,9 @@ describe('GET /supervisor/review', () => {
         expect(res.text).toContain('overriddenCategoryR')
         expect(res.text).toContain('overriddenCategoryJ')
         expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).not.toContain('overriddenCategoryC')
+        expect(res.text).not.toContain('overriddenCategoryD')
       })
   })
 
@@ -838,6 +845,9 @@ describe('GET /supervisor/review', () => {
         expect(res.text).toContain('overriddenCategoryR')
         expect(res.text).toContain('overriddenCategoryI')
         expect(res.text).not.toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).not.toContain('overriddenCategoryC')
+        expect(res.text).not.toContain('overriddenCategoryD')
       })
   })
 
@@ -863,6 +873,9 @@ describe('GET /supervisor/review', () => {
         expect(res.text).toContain('overriddenCategoryI')
         expect(res.text).toContain('overriddenCategoryJ')
         expect(res.text).not.toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).not.toContain('overriddenCategoryC')
+        expect(res.text).not.toContain('overriddenCategoryD')
       })
   })
 
@@ -888,6 +901,7 @@ describe('GET /supervisor/review', () => {
 
   test('supervisor override decision options for young offender - proposed cat C', () => {
     formService.isYoungOffender.mockReturnValue(true)
+    mockMalePrison()
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'AWAITING_APPROVAL',
       bookingId: 12345,
@@ -903,10 +917,13 @@ describe('GET /supervisor/review', () => {
         expect(res.text).toContain('overriddenCategoryD')
         expect(res.text).toContain('overriddenCategoryI')
         expect(res.text).not.toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('overriddenCategoryT')
       })
   })
 
   test('supervisor override decision options - proposed cat B', () => {
+    mockMalePrison()
     formService.isYoungOffender.mockReturnValue(false)
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'AWAITING_APPROVAL',
@@ -918,15 +935,18 @@ describe('GET /supervisor/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).not.toContain('overriddenCategoryB')
         expect(res.text).toContain('overriddenCategoryC')
         expect(res.text).toContain('overriddenCategoryD')
+        expect(res.text).not.toContain('overriddenCategoryB')
         expect(res.text).not.toContain('overriddenCategoryI')
         expect(res.text).not.toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('overriddenCategoryT')
       })
   })
 
   test('supervisor override decision options - young offender proposed cat I ', () => {
+    mockMalePrison()
     formService.isYoungOffender.mockReturnValue(true)
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'AWAITING_APPROVAL',
@@ -943,13 +963,16 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toContain('overriddenCategoryB')
         expect(res.text).toContain('overriddenCategoryC')
-        expect(res.text).not.toContain('overriddenCategoryI')
-        expect(res.text).toContain('overriddenCategoryJ')
         expect(res.text).toContain('overriddenCategoryD')
+        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('overriddenCategoryT')
       })
   })
 
   test('supervisor override decision options - young offender proposed cat B', () => {
+    mockMalePrison()
     formService.isYoungOffender.mockReturnValue(true)
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'AWAITING_APPROVAL',
@@ -969,6 +992,8 @@ describe('GET /supervisor/review', () => {
         expect(res.text).toContain('overriddenCategoryI')
         expect(res.text).toContain('overriddenCategoryJ')
         expect(res.text).not.toContain('overriddenCategoryB')
+        expect(res.text).not.toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('overriddenCategoryT')
       })
   })
 })
