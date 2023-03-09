@@ -121,7 +121,6 @@ class WomenEstateSpecification extends AbstractSpecification {
     categoryDecisionSummary*.text() == ['Closed']
     nextReviewDateSummary*.text() == [SIX_MONTHS_AHEAD_ISO_DAY]
     submitButton.click()
-    submitButton.click()
 
     then: 'I am at categoriser submit page'
     at CategoriserSubmittedPage
@@ -147,12 +146,12 @@ class WomenEstateSpecification extends AbstractSpecification {
     headerValue*.text() == fixture.FULL_HEADER1
     offendingHistorySummary*.text() == ['No CAT A, Restricted', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
 
-    when: 'the supervisor selects yes (after changing their mind)'
+    when: 'the supervisor selects yes'
     elite2Api.stubSupervisorApprove("R")
     appropriateYes.click()
     submitButton.click()
 
-    then: 'the review outcome page is displayed and review choices persisted'
+    then: 'the review outcome page is displayed'
     at SupervisorReviewOutcomePage
     dcsSurveyLink.displayed
   }
@@ -165,7 +164,7 @@ class WomenEstateSpecification extends AbstractSpecification {
 
     fixture.loginAs(WOMEN_SUPERVISOR_USER)
     at SupervisorHomePage
-    elite2Api.stubGetOffenderDetailsWomen(700, "ON700", 'U(Unsentenced)')
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700",'U(Unsentenced)')
     elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')

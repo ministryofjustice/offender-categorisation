@@ -70,7 +70,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     securityButton.tag() == 'button'
     securityButton.@disabled
 
-    and: 'correct data are saved'
+    and: 'correct data are saved and log in to security'
     def data = db.getData(700)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ["SECURITY_MANUAL"]
@@ -87,7 +87,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     elite2Api.stubGetLatestCategorisationForWomenOffenders()
     fixture.loginAs(FEMALE_SECURITY_USER)
 
-    and: 'this prisoner is present'
+    and: 'The prisoner is present on security page'
     at SecurityHomePage
     prisonNos[0] == 'ON700'
     referredBy[0] == 'Firstname_female_recat_user Lastname_female_recat_user'
@@ -95,18 +95,18 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     dates[0] == '25/07/2019' // nextReviewDate
     catTypes[0] == 'Recat'
 
-    and: 'the security user enters data'
+    and: 'The security user enters data'
     startButtons[0].click()
     at new SecurityReviewPage(bookingId: '700')
     securityText << 'security info text'
     submitButton.click()
 
-    and: 'the prisoner status is back from security'
+    and: 'The prisoner status is back from security'
     at SecurityHomePage
     prisonNos.size() == 0
     noOffendersText == 'There are no referrals to review.'
 
-    and: 'the recategoriser is back to landing page'
+    and: 'The recat task list page is displayed'
     fixture.logout()
     fixture.gotoTasklistRecatForWomen()
     at TasklistRecatPage
@@ -189,12 +189,12 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     assessmentSummary*.text() == ['', 'Closed']
     nextReviewDateSummary*.text() == ['', SIX_MONTHS_AHEAD_ISO_DAY]
 
-    when: 'the supervisor selects yes (after changing their mind)'
+    when: 'the supervisor selects yes'
     elite2Api.stubSupervisorApprove("R")
     appropriateYes.click()
     submitButton.click()
 
-    then: 'the review outcome page is displayed and review choices persisted'
+    then: 'the review outcome page is displayed'
     at SupervisorReviewOutcomePage
     dcsSurveyLink.displayed
   }

@@ -478,17 +478,8 @@ class Elite2Api extends WireMockRule {
                                       lastName            : 'HILLMOB',
                                       status              : 'AWAITING_APPROVAL',
                                       category            : 'R',
-                                      categoriserFirstName: 'ROGER',
-                                      categoriserLastName : 'RABBIT',
-                                      assessmentSeq       : 4,],
-                                      [bookingId           : 11701,
-                                      offenderNo          : 'ON701',
-                                      firstName           : 'PENELOPE',
-                                      lastName            : 'PITSTOP',
-                                      status              : 'AWAITING_APPROVAL',
-                                      category            : 'T',
-                                      categoriserFirstName: 'ROGERBUGS',
-                                      categoriserLastName : 'RABBITBUNNY',
+                                      categoriserFirstName: 'BUGS',
+                                      categoriserLastName : 'BUNNY',
                                       assessmentSeq       : 5,],]))
         .withHeader('Content-Type', 'application/json')
         .withStatus(200)))

@@ -69,7 +69,6 @@ class TestFixture {
       lowerCategory    : "lower category text",
       otherRelevant    : "No",
       higherCategory   : "higher category text",
-      otherRelevantText: "other relevant information"
     ]
   ]
 
