@@ -117,13 +117,14 @@
     {% endif %}
 
     {% if isFemale %}
+      {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') %}
       {% if data.details.youngOffender %}
-        {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') %}
+        {% set radioClasses = 'govuk-radios--inline' %}
+        {% set radioLegendClasses = 'govuk-fieldset__legend' %}
         {% set noLabel = 'No' %}
-      {% else  %}
-        {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
-        {% set hiddenRadioClasses = ' govuk-radios__conditional--hidden' %}
-        {% set hiddenRadioLegendClasses = ' govuk-radios__conditional--hidden' %}
+      {% else %}
+        {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
+        {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
         {% if (currentCat == "R") %}
           {% set noLabel = "No, consider for open" %}
         {% elif (currentCat == "T") %}
@@ -132,18 +133,21 @@
       {% endif %}
     {% else %}
       {% set radios = radios | rejectattr('R') | rejectattr('T') %}
+      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% endif %}
+
 
     {% set overriddenCategoryTextHtml %}
       {{ govukRadios({
         name: "supervisorOverriddenCategory",
-        classes: 'govuk-radios--inline' + hiddenRadioClasses,
+        classes: radioClasses,
         fieldset: {
           legend: {
             text: "Which category is more appropriate?",
             isPageHeading: false,
-            classes: 'govuk-fieldset__legend' + hiddenRadioLegendClasses
+            classes: radioLegendClasses
           }
         },
         items: radios | rejectattr(currentCat),
@@ -169,7 +173,7 @@
           text: "Enter the reason why this category is more appropriate"
         } if (errors | findError('supervisorOverriddenCategoryText'))
         }) }}
-    {% endset %}
+    {% endset -%}
 
     {{ govukRadios({
       name: "supervisorCategoryAppropriate",
@@ -194,7 +198,7 @@
           value: "No",
           text: noLabel,
           conditional: {
-            html:overriddenCategoryTextHtml
+            html: overriddenCategoryTextHtml
           }
         }
       ]
