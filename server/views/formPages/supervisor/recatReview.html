@@ -112,32 +112,27 @@
       }
     ] %}
 
-    {% if not data.details.youngOffender %}
+    {% set isYoungOffender = data.details.youngOffender %}
+    {% if not isYoungOffender %}
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
 
-    {% if isFemale %}
+    {% if isFemale and isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') %}
-      {% if data.details.youngOffender %}
-        {% set radioClasses = 'govuk-radios--inline' %}
-        {% set radioLegendClasses = 'govuk-fieldset__legend' %}
-        {% set noLabel = 'No' %}
-      {% else %}
-        {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
-        {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
-        {% if (currentCat == "R") %}
-          {% set noLabel = "No, consider for open" %}
-        {% elif (currentCat == "T") %}
-          {% set noLabel = "No, closed is more appropriate" %}
-        {% endif %}
+      {% set noLabel = 'No' %}
+    {% elif isFemale and not isYoungOffender %}
+      {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
+      {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
+      {% if (currentCat == "R") %}
+        {% set noLabel = "No, consider for open" %}
+      {% elif (currentCat == "T") %}
+        {% set noLabel = "No, closed is more appropriate" %}
       {% endif %}
     {% else %}
       {% set radios = radios | rejectattr('R') | rejectattr('T') %}
-      {% set radioClasses = 'govuk-radios--inline' %}
-      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% endif %}
-
 
     {% set overriddenCategoryTextHtml %}
       {{ govukRadios({

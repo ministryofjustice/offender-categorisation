@@ -690,7 +690,8 @@ describe('GET /supervisor/review', () => {
       })
   })
 
-  test('Re-categorisations', () => {
+  test('Re-categorisations male', () => {
+    mockMalePrison()
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'AWAITING_APPROVAL',
       catType: 'RECAT',
@@ -706,11 +707,40 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
+        expect(res.text).toContain('overriddenCategoryB')
+        expect(res.text).toContain('overriddenCategoryC')
         expect(res.text).toContain('overriddenCategoryD')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryJ')
         expect(res.text).not.toContain('overriddenCategoryR')
         expect(res.text).not.toContain('overriddenCategoryT')
-        expect(res.text).not.toContain('No, consider for open')
-        expect(res.text).not.toContain('No, closed is more appropriate')
+      })
+  })
+
+  test('Re-categorisations male, YOI closed override with YOI open', () => {
+    mockMalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { recat: { decision: { category: 'I' } } },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Prisoner background')
+        expect(res.text).toContain('overriddenCategoryB')
+        expect(res.text).toContain('overriddenCategoryC')
+        expect(res.text).toContain('overriddenCategoryD')
+        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).not.toContain('overriddenCategoryR')
       })
   })
 
@@ -759,6 +789,80 @@ describe('GET /supervisor/review', () => {
         expect(res.text).toContain('overriddenCategoryR')
         expect(res.text).not.toContain('overriddenCategoryT')
         expect(res.text).toContain('No, closed is more appropriate')
+      })
+  })
+
+  test('Re-categorisations female, YOI closed override with YOI open', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { recat: { decision: { category: 'I' } } },
+    })
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Prisoner background')
+        expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryI')
+      })
+  })
+
+  test('Re-categorisations YOI female, YOI open override with YOI close', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { recat: { decision: { category: 'J' } } },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Prisoner background')
+        expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('overriddenCategoryJ')
+      })
+  })
+
+  test('Re-categorisations YOI female, closed override with YOI closed', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { recat: { decision: { category: 'R' } } },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Prisoner background')
+        expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).toContain('overriddenCategoryI')
+        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('overriddenCategoryR')
       })
   })
 

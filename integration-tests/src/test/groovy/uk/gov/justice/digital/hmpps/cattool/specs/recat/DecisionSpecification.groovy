@@ -202,6 +202,6 @@ class DecisionSpecification extends AbstractSpecification {
     then: 'I stay on the page with validation errors'
     at DecisionPage
     errorSummaries*.text() == ['Select what category is most suitable for this person']
-    errors.text().toString() == "Error:\nSelect what category is most suitable for this person"
+    errors.text().toString() == "Error:\nSelect the category that is most suitable for this person"
   }
 }
