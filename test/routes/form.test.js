@@ -1435,6 +1435,7 @@ describe('Submit provisionalCategory page', () => {
 
   test('Get womens category decision page should render a correct page', () => {
     mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(false)
     return request(app)
       .get('/ratings/decision/12345')
       .expect(200)
@@ -1446,8 +1447,25 @@ describe('Submit provisionalCategory page', () => {
       })
   })
 
+  test('Get womens YOI category decision page should render a correct page', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    return request(app)
+      .get('/ratings/decision/12345')
+      .expect(200)
+      .expect(res => {
+        expect(userService.getUser).toBeCalledTimes(1)
+        expect(res.text).toContain('Category decision')
+        expect(res.text).not.toContain(`id="openOption"`)
+        expect(res.text).toContain(`id="closedOption"`)
+        expect(res.text).toContain(`id="catIOption"`)
+        expect(res.text).toContain(`id="catJOption"`)
+      })
+  })
+
   test('Post womens category decision page with option closed selected should save closed and redirect to task list', () => {
     mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(false)
     return request(app)
       .post('/ratings/decision/12345')
       .send({ category: 'R' })
@@ -1464,9 +1482,43 @@ describe('Submit provisionalCategory page', () => {
   })
   test('Post womens category decision page with option open selected should save open and redirect to open conditions confirmation screen', () => {
     mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(false)
     return request(app)
       .post('/ratings/decision/12345')
       .send({ category: 'T' })
+      .expect(302)
+      .expect('Location', '/openConditionsAdded/12345?catType=INITIAL')
+      .expect(() => {
+        expect(formService.update).toBeCalledTimes(1)
+        const updateArg = formService.update.mock.calls[0][0]
+        expect(updateArg.bookingId).toBe(12345)
+        expect(updateArg.config).toBe(formConfig.ratings.decision)
+        expect(formService.cancelOpenConditions).toBeCalledTimes(0)
+        expect(formService.requiresOpenConditions).toBeCalledTimes(1)
+      })
+  })
+  test('Post womens category decision page with option YOI closed selected should save closed and redirect to task list', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    return request(app)
+      .post('/ratings/decision/12345')
+      .send({ category: 'I' })
+      .expect(302)
+      .expect('Location', '/tasklist/12345')
+      .expect(() => {
+        expect(formService.update).toBeCalledTimes(1)
+        const updateArg = formService.update.mock.calls[0][0]
+        expect(updateArg.bookingId).toBe(12345)
+        expect(updateArg.config).toBe(formConfig.ratings.decision)
+        expect(formService.cancelOpenConditions).toBeCalledTimes(1)
+        expect(formService.requiresOpenConditions).toBeCalledTimes(0)
+      })
+  })
+  test('Post womens category decision page with option YOI open selected should save open and redirect to open conditions confirmation screen', () => {
+    mockFemalePrison()
+    return request(app)
+      .post('/ratings/decision/12345')
+      .send({ category: 'J' })
       .expect(302)
       .expect('Location', '/openConditionsAdded/12345?catType=INITIAL')
       .expect(() => {

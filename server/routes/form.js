@@ -782,7 +782,7 @@ module.exports = function Index({
         transactionalClient: transactionalDbClient,
       })
 
-      if (userInput.category === 'T') {
+      if (userInput.category === 'T' || userInput.category === 'J') {
         await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
         res.redirect(`/openConditionsAdded/${bookingId}?catType=INITIAL`)
       } else {
