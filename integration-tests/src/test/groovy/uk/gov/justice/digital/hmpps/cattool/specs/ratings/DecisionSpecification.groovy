@@ -7,6 +7,8 @@ import uk.gov.justice.digital.hmpps.cattool.pages.TasklistPage
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.DecisionPage
 import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
+import java.time.LocalDate
+
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_USER
 
 class DecisionSpecification extends AbstractSpecification {
@@ -75,4 +77,57 @@ class DecisionSpecification extends AbstractSpecification {
     responseAfterClosed.ratings == [decision: [category: "R"]]
     responseAfterClosed.openConditionsRequested == false
   }
+
+//  Young Offender Category decision page tests
+
+//  def "The Decision page is shown correctly for Youth Offenders"() {
+//    given: 'A female categoriser is logged in'
+//    elite2Api.stubUncategorisedForWomenYO(21, 'PFI')
+//    prisonerSearchApi.stubGetPrisonerSearchPrisonersWomen()
+//    prisonerSearchApi.stubSentenceData(['C0001AA'], [21], [TODAY.plusDays(-3).toString()])
+//    fixture.loginAs(FEMALE_USER)
+//    at CategoriserHomePage
+//
+//    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, 'U(Unsentenced)')
+//    riskProfilerApi.stubForTasklists('C0001AA', 'U(Unsentenced)',  false)
+//    selectFirstPrisoner()
+//
+//    when: 'I go to the decision page'
+//    at(new TasklistPage(bookingId: '21'))
+//    decisionButton.click()
+//
+//    then: 'a decision page is displayed'
+//    at DecisionPage
+
+//  when: 'An empty form is submitted'
+//  submitButton.click()
+//
+//  then: 'There is a validation error'
+//  errorSummaries*.text() == ['Select the category that is most suitable for this person']
+//  errors.text().toString() == "Error:\nSelect the category that is most suitable for this person"
+//
+//    when: 'Open option is submitted'
+//    openOption.click()
+//    submitButton.click()
+//
+//    then: "Open conditions added page is displayed"
+//    at OpenConditionsAddedPage
+//    button.click()
+//    at TasklistPage
+//
+//    when: "On tasklist page"
+//    at(new TasklistPage(bookingId: '700'))
+//    decisionButton.click()
+//
+//    then: 'a decision page is displayed'
+//    at DecisionPage
+//
+//    when: 'Closed option is submitted'
+//    closedOption.click()
+//    submitButton.click()
+//
+//    then: "Tasklist is displayed"
+//    at TasklistPage
+//  }
+
 }

@@ -18,6 +18,7 @@ class DecisionPage extends HeaderPage {
     categoryIOption(required: false) { $('#catIOption') }
     categoryDOption(required: false) { $('#catDOption') }
     categoryROption(required: false) { $('#closedOption') }
+    categoryTOption(required: false) { $('#openOption') }
     categoryCOption { $('#catCOption') }
     hints { $('.govuk-radios__hint') }
     indeterminateWarning(required: false) { $('#indeterminateWarning') }

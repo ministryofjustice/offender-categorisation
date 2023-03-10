@@ -485,6 +485,24 @@ class Elite2Api extends WireMockRule {
         .withStatus(200)))
   }
 
+  void stubUncategorisedAwaitingApprovalForWomenYOI(location) {
+    this.stubFor(get("/api/offender-assessments/category/${location}?type=UNCATEGORISED")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([[bookingId           : 21,
+                                      offenderNo          : 'C0001AA',
+                                      firstName           : 'TINY',
+                                      lastName            : 'TIM',
+                                      status              : 'AWAITING_APPROVAL',
+                                      category            : 'I',
+                                      categoriserFirstName: 'BUGS',
+                                      categoriserLastName : 'BUNNY',
+                                      assessmentSeq       : 5,],]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+  }
+
+
+
   void stubUncategorisedForSupervisorFull() {
     this.stubFor(get("/api/offender-assessments/category/LEI?type=UNCATEGORISED")
       .willReturn(aResponse()
@@ -570,6 +588,18 @@ class Elite2Api extends WireMockRule {
                                       offenderNo: "ON${bookingId}",
                                       firstName : 'WILLIAM',
                                       lastName  : 'BONNET',
+                                      status    : 'UNCATEGORISED',],]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+  }
+
+  void stubUncategorisedForWomenYO(bookingId, location) {
+    this.stubFor(get("/api/offender-assessments/category/${location}?type=UNCATEGORISED")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([[bookingId : bookingId,
+                                      offenderNo: 'C0001AA',
+                                      firstName : 'TINY',
+                                      lastName  : 'TIM',
                                       status    : 'UNCATEGORISED',],]))
         .withHeader('Content-Type', 'application/json')
         .withStatus(200)))
@@ -841,6 +871,76 @@ class Elite2Api extends WireMockRule {
         .withHeader('Content-Type', 'application/json')
         .withStatus(200)))
   }
+
+
+  def stubGetOffenderDetailsWomenYO(int bookingId, offenderNo = 'C0001AA', youngOffender = true, indeterminateSentence = false, category, multipleSentences = false, nextReviewDate = '2020-01-16') {
+    this.stubFor(get("/api/bookings/$bookingId?basicInfo=false")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([bookingId         : bookingId,
+                                     offenderNo        : offenderNo,
+                                     agencyId          : 'PFI',
+                                     firstName         : 'TINY',
+                                     lastName          : 'TIM',
+                                     dateOfBirth       : youngOffender ? '2002-01-01' : '1970-02-17',
+                                     category          : 'Cat ' + category,
+                                     categoryCode      : category,
+                                     assessments       : nextReviewDate ? [[assessmentCode: 'CATEGORY',
+                                                                            nextReviewDate: nextReviewDate,],] : null,
+                                     assignedLivingUnit: [description: 'C-04-02',
+                                                          agencyName : 'Coventry',],
+                                     profileInformation: [[type       : 'IMM',
+                                                           resultValue: 'Other'],
+                                                          [type       : 'NAT',
+                                                           resultValue: 'Latvian']],]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+
+
+    def sentenceDetail = [bookingId                         : bookingId,
+                          sentenceStartDate                 : '2019-08-15',
+                          homeDetentionCurfewEligibilityDate: '2020-06-10',
+                          paroleEligibilityDate             : '2020-06-13',
+                          nonParoleDate                     : '2020-06-14',
+                          tariffDate                        : '2020-06-15',
+                          licenceExpiryDate                 : '2020-06-16',
+                          sentenceExpiryDate                : '2020-06-17',]
+    if (!indeterminateSentence) {
+      sentenceDetail.releaseDate = LocalDate.now().toString()
+      sentenceDetail.conditionalReleaseDate = '2020-02-02'
+      sentenceDetail.confirmedReleaseDate = LocalDate.now().plusYears(4).format('yyyy-MM-dd') // > 3
+      sentenceDetail.automaticReleaseDate = '2020-06-11'
+    }
+
+    this.stubFor(get("/api/bookings/$bookingId/sentenceDetail")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson(sentenceDetail))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+
+    final terms = [[bookingId              : bookingId,
+                    sentenceSequence       : 2,
+                    termSequence           : 1,
+                    sentenceType           : "T1",
+                    sentenceTypeDescription: "Std sentence",
+                    startDate              : "2018-12-31",
+                    years                  : 6,
+                    months                 : 3,
+                    lifeSentence           : indeterminateSentence]]
+    this.stubFor(get("/api/offender-sentences/booking/$bookingId/sentenceTerms")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson(terms))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+    this.stubFor(get("/api/bookings/$bookingId/mainOffence")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([[bookingId         : bookingId,
+                                      offenceDescription: 'A Felony',],
+                                     [bookingId         : bookingId,
+                                      offenceDescription: 'Another Felony',]]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+  }
+
 
   def stubGetBasicOffenderDetails(int bookingId, offenderNo = 'B2345YZ') {
     this.stubFor(get("/api/bookings/$bookingId?basicInfo=true")

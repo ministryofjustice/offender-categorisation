@@ -72,6 +72,20 @@ class TestFixture {
     ]
   ]
 
+  public static final defaultRecatYOIClosed = [
+    decision          : [category: "I"],
+    oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+    securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
+    nextReviewDate    : [date: "14/12/2019"],
+    prisonerBackground: [offenceDetails: "offence Details text"],
+    riskAssessment    : [
+      lowerCategory    : "lower category text",
+      otherRelevant    : "No",
+      higherCategory   : "higher category text",
+    ]
+  ]
+
+
   public static final defaultRecat = [
     decision          : [category: "C"],
     oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
