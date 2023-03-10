@@ -52,6 +52,23 @@
     {% endif %}
 
     {% set radios = [
+     {
+       value: "J",
+       id: "overriddenCategoryJ",
+       checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
+       text: "YOI (open)",
+       J: true,
+       conditional: {
+         html: warningCategoryOpenConditions
+      }
+     },
+     {
+       value: "I",
+       id: "overriddenCategoryI",
+       checked: data.supervisor.review.supervisorOverriddenCategory === 'I',
+       text: "YOI (closed)",
+       I: true
+      },
       {
         value: "B",
         id: "overriddenCategoryB",
@@ -92,23 +109,6 @@
           html: warningCategoryOpenConditions
         },
         T: true
-      },
-      {
-        value: "J",
-        id: "overriddenCategoryJ",
-        checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
-        text: "YOI (open)",
-        J: true,
-        conditional: {
-            html: warningCategoryOpenConditions
-        }
-      },
-      {
-        value: "I",
-        id: "overriddenCategoryI",
-        checked: data.supervisor.review.supervisorOverriddenCategory === 'I',
-        text: "YOI (closed)",
-        I: true
       }
     ] %}
 
@@ -168,7 +168,7 @@
           text: "Enter the reason why this category is more appropriate"
         } if (errors | findError('supervisorOverriddenCategoryText'))
         }) }}
-    {% endset -%}
+    {% endset %}
 
     {{ govukRadios({
       name: "supervisorCategoryAppropriate",

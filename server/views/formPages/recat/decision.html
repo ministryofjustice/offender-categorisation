@@ -40,36 +40,52 @@
 {% endset %}
 
   {% set optionB =  {
-    value: "B",
-    id: "catBOption",
+    value: 'B',
+    id: 'catBOption',
     checked: data.recat.decision.category == 'B',
-    hint: { html: hintText('B') },
+    hint: {
+      html: hintText('B')
+    },
     text: "Category B",
-    label: { classes: "govuk-!-font-weight-bold" }
+    label: {
+      classes: 'govuk-!-font-weight-bold'
+    }
   } %}
   {% set optionC =  {
-    value: "C",
-    id: "catCOption",
+    value: 'C',
+    id: 'catCOption',
     checked: data.recat.decision.category == 'C',
-    hint: { html: hintText('C') },
-    text: "Category C",
-    label: { classes: "govuk-!-font-weight-bold" }
+    hint: {
+      html: hintText('C')
+    },
+    text: 'Category C',
+    label: {
+      classes: 'govuk-!-font-weight-bold'
+   }
   } %}
   {% set optionD =  {
-    value: "D",
-    id: "catDOption",
+    value: 'D',
+    id: 'catDOption',
     checked: data.recat.decision.category == 'D',
-    hint: { html: warningIndeterminate + hintTextOpen('Category D') },
+    hint: {
+      html: warningIndeterminate + hintTextOpen('Category D')
+    },
     text: "Consider them for Category D",
-    label: { classes: "govuk-!-font-weight-bold" }
+    label: {
+      classes: 'govuk-!-font-weight-bold'
+    }
   } %}
   {% set optionI =  {
-    value: "I",
-    id: "catIOption",
+    value: 'I',
+    id: 'catIOption',
     checked: data.recat.decision.category == 'I',
-    hint: { html: hintText('I') },
-    text: "YOI (closed)",
-    label: { classes: "govuk-!-font-weight-bold" }
+    hint: {
+      html: hintText('I')
+    },
+    text: 'YOI (closed)',
+    label: {
+      classes: 'govuk-!-font-weight-bold'
+    }
   } %}
   {% set optionJ =  {
     value: "J",
@@ -80,42 +96,48 @@
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
   {% set optionR =  {
-    value: "R",
-    id: "closedOption",
+    value: 'R',
+    id: 'closedOption',
     checked: data.recat.decision.category == 'R',
     hint: {
       html: hintText('closed')
     },
-    text: "Closed",
-    label: { classes: "govuk-!-font-weight-bold" }
+    text: 'Closed',
+    label: {
+      classes: 'govuk-!-font-weight-bold'
+    }
   } %}
   {% set optionT =  {
-    value: "T",
-    id: "openOption",
+    value: 'T',
+    id: 'openOption',
     checked: data.recat.decision.category == 'T',
     hint: {
       html: hintTextOpen('open')
     },
-    text: "Consider them for open",
-    label: { classes: "govuk-!-font-weight-bold" }
+    text: 'Consider them for open',
+    label: {
+      classes: 'govuk-!-font-weight-bold'
+    }
    } %}
 
   {% if user.activeCaseLoad.female %}
     {% set itemList = [ optionI, optionJ, optionR, optionT ] if data.details.youngOffender else [ optionR, optionT ] %}
+    {% set textCategoryContent = 'What category is most suitable for this person?' %}
   {% else %}
     {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
+    {% set textCategoryContent = 'What security category is most suitable for this prisoner?' %}
   {% endif %}
 
   {{ govukRadios({
-    name: "category",
-    classes: "govuk-radios",
+    name: 'category',
+    classes: 'govuk-radios',
     fieldset: {
       legend: {
-        text: "What category is most suitable for this person?"
+        text: textCategoryContent
       }
     },
     errorMessage: {
-      text: "Select the category that is most suitable for this person"
+      text: 'Select the category that is most suitable for this person'
     } if (errors | findError('category')),
     items: itemList
   }) }}
