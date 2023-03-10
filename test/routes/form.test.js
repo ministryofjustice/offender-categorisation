@@ -690,6 +690,92 @@ describe('GET /supervisor/review', () => {
       })
   })
 
+  test('initial categorisations YOI female, suggested closed shows correct page', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { categoriser: { provisionalCategory: { suggestedCategory: 'R' } } },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
+        expect(res.text).not.toContain('Prisoner background')
+        expect(res.text).not.toContain('overriddenCategoryD')
+        expect(res.text).not.toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).not.toContain('No, consider for open')
+        expect(res.text).toContain('overriddenCategoryI')
+        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).toContain(`id="femaleBanner"`)
+        expect(res.text).toContain(`id="openConditionsInfoMessage"`)
+      })
+  })
+
+  test('initial categorisations female, suggested YOI open shows correct page', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { categoriser: { provisionalCategory: { suggestedCategory: 'J' } } },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
+        expect(res.text).not.toContain('Prisoner background')
+        expect(res.text).not.toContain('overriddenCategoryD')
+        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).not.toContain('overriddenCategoryJ')
+        expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).toContain('overriddenCategoryI')
+        expect(res.text).not.toContain('No, closed is more appropriate')
+      })
+  })
+
+  test('initial categorisations female, suggested YOI closed shows correct page', () => {
+    mockFemalePrison()
+    formService.isYoungOffender.mockReturnValue(true)
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: { categoriser: { provisionalCategory: { suggestedCategory: 'I' } } },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
+        expect(res.text).not.toContain('Prisoner background')
+        expect(res.text).not.toContain('overriddenCategoryD')
+        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).not.toContain('overriddenCategoryI')
+        expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('No, closed is more appropriate')
+      })
+  })
+
   test('Re-categorisations male', () => {
     mockMalePrison()
     formService.getCategorisationRecord.mockResolvedValue({

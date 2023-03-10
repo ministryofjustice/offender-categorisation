@@ -119,6 +119,8 @@
 
     {% if isFemale and isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') %}
+      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% elif isFemale and not isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
@@ -131,6 +133,8 @@
       {% endif %}
     {% else %}
       {% set radios = radios | rejectattr('R') | rejectattr('T') %}
+      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% endif %}
 
