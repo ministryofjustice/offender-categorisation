@@ -122,10 +122,8 @@
 
   {% if user.activeCaseLoad.female %}
     {% set itemList = [ optionI, optionJ, optionR, optionT ] if data.details.youngOffender else [ optionR, optionT ] %}
-    {% set textCategoryContent = 'What category is most suitable for this person?' %}
   {% else %}
     {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
-    {% set textCategoryContent = 'What security category is most suitable for this prisoner?' %}
   {% endif %}
 
   {{ govukRadios({
@@ -133,7 +131,7 @@
     classes: 'govuk-radios',
     fieldset: {
       legend: {
-        text: textCategoryContent
+        text: 'What security category is most suitable for this prisoner?'
       }
     },
     errorMessage: {
