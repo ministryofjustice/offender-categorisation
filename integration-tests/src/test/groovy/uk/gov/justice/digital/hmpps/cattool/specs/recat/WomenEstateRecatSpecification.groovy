@@ -216,8 +216,11 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     navigateToReviewYOI(true, false, false)
 
     when: 'the supervisor selects yes'
-    elite2Api.stubSupervisorApprove("YOI Closed")
+    elite2Api.stubSupervisorApprove("I")
     appropriateYes.click()
+//    overriddenCategoryJ.@type == 'radio'
+//    overriddenCategoryR.@type == 'radio'
+//    overriddenCategoryT.@type == 'radio'
     submitButton.click()
 
     then: 'the review outcome page is displayed'
@@ -257,7 +260,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     at SupervisorHomePage
 
-    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, 'YOI Closed')
+    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, 'I')
     elite2Api.stubAssessmentsWomen(['C0001AA'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('C0001AA', '2014-11-23')
