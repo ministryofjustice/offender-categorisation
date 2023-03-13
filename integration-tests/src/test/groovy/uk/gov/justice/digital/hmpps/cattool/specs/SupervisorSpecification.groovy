@@ -304,7 +304,7 @@ class SupervisorSpecification extends AbstractSpecification {
     overriddenCategoryJ.click()
 
     then: 'A warning is displayed'
-    warnings[2].text() contains "Making this category change means that the categoriser will have to provide more information."
+    warnings[1].text() contains "Making this category change means that the categoriser will have to provide more information."
 
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a J"
