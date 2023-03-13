@@ -92,6 +92,7 @@
       {% include "../../partials/warningIndeterminate.html" %}
     {% endif %}
 
+    {% set isYoungOffender = data.details.youngOffender %}
     {% set radios = [
       {
         value: "J",
@@ -137,20 +138,19 @@
       {
         value: "R",
         id: "overriddenCategoryR",
-        checked: data.supervisor.review.supervisorOverriddenCategory === 'R',
+        checked: not isYoungOffender or data.supervisor.review.supervisorOverriddenCategory === 'R',
         text: "Consider for closed",
         R: true
       },
       {
         value: "T",
         id: "overriddenCategoryT",
-        checked: data.supervisor.review.supervisorOverriddenCategory === 'T',
+        checked:  not isYoungOffender or data.supervisor.review.supervisorOverriddenCategory === 'T',
         text: "Consider for open",
         T: true
       }
     ] %}
 
-    {% set isYoungOffender = data.details.youngOffender %}
     {% if not isYoungOffender %}
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
@@ -164,9 +164,9 @@
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
       {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
-      {% if (currentCat == "R") %}
+      {% if (currentCat == "R" or currentCat == "I") %}
         {% set noLabel = "No, consider for open" %}
-      {% elif (currentCat == "T") %}
+      {% elif (currentCat == "T" or currentCat == "J") %}
         {% set noLabel = "No, closed is more appropriate" %}
       {% endif %}
     {% else %}

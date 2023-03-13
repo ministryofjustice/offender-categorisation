@@ -659,6 +659,7 @@ describe('GET /supervisor/review', () => {
         expect(res.text).not.toContain('overriddenCategoryD')
         expect(res.text).not.toContain('overriddenCategoryR')
         expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).toContain('value="T" checked')
         expect(res.text).toContain('No, consider for open')
         expect(res.text).toContain(`id="femaleBanner"`)
         expect(res.text).toContain(`id="openConditionsInfoMessage"`)
@@ -685,6 +686,7 @@ describe('GET /supervisor/review', () => {
         expect(res.text).not.toContain('Prisoner background')
         expect(res.text).not.toContain('overriddenCategoryD')
         expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).toContain('value="R" checked')
         expect(res.text).not.toContain('overriddenCategoryT')
         expect(res.text).toContain('No, closed is more appropriate')
       })
@@ -848,6 +850,7 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
         expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).toContain('value="T" checked')
         expect(res.text).toContain('No, consider for open')
         expect(res.text).not.toContain('overriddenCategoryR')
         expect(res.text).not.toContain('overriddenCategoryB')
@@ -874,6 +877,7 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
         expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).toContain('value="R" checked')
         expect(res.text).toContain('No, closed is more appropriate')
         expect(res.text).not.toContain('overriddenCategoryT')
         expect(res.text).not.toContain('overriddenCategoryB')
@@ -900,7 +904,9 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
         expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).not.toContain('value="T" checked')
         expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('value="T" checked')
         expect(res.text).toContain('overriddenCategoryJ')
         expect(res.text).not.toContain('overriddenCategoryI')
         expect(res.text).not.toContain('overriddenCategoryB')
@@ -928,7 +934,9 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
         expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).not.toContain('value="T" checked')
         expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).not.toContain('value="R" checked')
         expect(res.text).toContain('overriddenCategoryI')
         expect(res.text).not.toContain('overriddenCategoryJ')
         expect(res.text).not.toContain('overriddenCategoryB')
@@ -956,6 +964,7 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
         expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).not.toContain('value="T" checked')
         expect(res.text).toContain('overriddenCategoryI')
         expect(res.text).toContain('overriddenCategoryJ')
         expect(res.text).not.toContain('overriddenCategoryR')
