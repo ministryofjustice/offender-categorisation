@@ -286,7 +286,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     at SupervisorHomePage
 
-    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, indeterminateSentence,'I')
+    elite2Api.stubGetOffenderDetailsWomenYOI(21, 'C0001AA', true, indeterminateSentence,'I')
     elite2Api.stubAssessmentsWomen(['C0001AA'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('C0001AA', '2014-11-23')

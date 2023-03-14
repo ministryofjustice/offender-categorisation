@@ -593,7 +593,7 @@ class Elite2Api extends WireMockRule {
         .withStatus(200)))
   }
 
-  void stubUncategorisedForWomenYO(bookingId, location) {
+  void stubUncategorisedForWomenYOI(bookingId, location) {
     this.stubFor(get("/api/offender-assessments/category/${location}?type=UNCATEGORISED")
       .willReturn(aResponse()
         .withBody(JsonOutput.toJson([[bookingId : bookingId,
@@ -873,7 +873,7 @@ class Elite2Api extends WireMockRule {
   }
 
 
-  def stubGetOffenderDetailsWomenYO(int bookingId, offenderNo = 'C0001AA', youngOffender = true, indeterminateSentence = false, category, multipleSentences = false, nextReviewDate = '2020-01-16') {
+  def stubGetOffenderDetailsWomenYOI(int bookingId, offenderNo = 'C0001AA', youngOffender = true, indeterminateSentence = false, category, multipleSentences = false, nextReviewDate = '2020-01-16') {
     this.stubFor(get("/api/bookings/$bookingId?basicInfo=false")
       .willReturn(aResponse()
         .withBody(JsonOutput.toJson([bookingId         : bookingId,

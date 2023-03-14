@@ -218,7 +218,7 @@ class DecisionSpecification extends AbstractSpecification {
 
     fixture.loginAs(FEMALE_RECAT_USER)
     browser.at RecategoriserHomePage
-    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, 'YOI Closed')
+    elite2Api.stubGetOffenderDetailsWomenYOI(21, 'C0001AA', true, 'YOI Closed')
     riskProfilerApi.stubForTasklists('C0001AA', 'YOI Closed', false)
     browser.selectSecondPrisoner()
     at TasklistRecatPage
@@ -261,7 +261,7 @@ class DecisionSpecification extends AbstractSpecification {
 
     fixture.loginAs(FEMALE_RECAT_USER)
     browser.at RecategoriserHomePage
-    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, 'YOI Closed')
+    elite2Api.stubGetOffenderDetailsWomenYOI(21, 'C0001AA', true, 'YOI Closed')
     riskProfilerApi.stubForTasklists('C0001AA', 'YOI Closed', false)
     browser.selectSecondPrisoner()
     at TasklistRecatPage
