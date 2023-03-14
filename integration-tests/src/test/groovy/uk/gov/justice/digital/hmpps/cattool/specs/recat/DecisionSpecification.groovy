@@ -212,7 +212,6 @@ class DecisionSpecification extends AbstractSpecification {
 
   def "the category decision page for women YOI"() {
     given: 'I go to category decision page for women YO'
-
     elite2Api.stubRecategoriseWomen()
     prisonerSearchApi.stubGetPrisonerSearchPrisonersWomen()
     prisonerSearchApi.stubSentenceData(['ON700', 'ON701'], [700, 701], [LocalDate.now().toString(), LocalDate.now().toString()])
@@ -254,7 +253,7 @@ class DecisionSpecification extends AbstractSpecification {
 
   }
 
-  def "Validate open and close option on  recat category decision page"(){
+  def "Validate open and close option on  recat category decision page for YOI"(){
     given: 'I go to decision page for YOI'
     elite2Api.stubRecategoriseWomen()
     prisonerSearchApi.stubGetPrisonerSearchPrisonersWomen()
