@@ -139,6 +139,9 @@
     {% endif %}
 
     {% set overriddenCategoryTextHtml %}
+      {% if (currentCat == "R") %}
+        {{ warningCategoryOpenConditions | safe }}
+      {% endif %}
       {{ govukRadios({
         name: "supervisorOverriddenCategory",
         classes: radioClasses,

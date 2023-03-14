@@ -169,6 +169,20 @@ class WomenEstateSpecification extends AbstractSpecification {
     indeterminateWarning.isDisplayed()
   }
 
+  def "The supervisor review page can be confirmed for Women inital YOI - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for C0001AA'
+    db.createDataWithStatusWomen(-1, 21, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsYOIClosed,
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+    db.createNomisSeqNo(21, 5)
+
+    navigateToReviewYOI( true, true, true)
+    appropriateNo.click()
+
+    then: 'indeterminate warning is shown'
+    overriddenCategoryJ.click()
+    indeterminateWarning.isDisplayed()
+  }
+
   private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true) {
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
@@ -182,20 +196,6 @@ class WomenEstateSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     startButton.click()
     at SupervisorReviewPage
-  }
-
-  def "The supervisor review page can be confirmed for Women inital YOI - indeterminate sentence"() {
-    when: 'supervisor is viewing the review page for C0001AA'
-    db.createDataWithStatusWomen(-1, 21, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsYOIClosed,
-                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
-    db.createNomisSeqNo(21, 5)
-
-    navigateToReviewYOI( true, true, true)
-    appropriateNo.click()
-
-    then: 'indeterminate warning is shown'
-    overriddenCategoryJ.click()
-    indeterminateWarning.isDisplayed()
   }
 
   private navigateToReviewYOI(youngOffender = true, indeterminateSentence = false, initial = true) {

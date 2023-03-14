@@ -227,6 +227,35 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     dcsSurveyLink.displayed
   }
 
+  def "The supervisor review page with YOI - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for C0001AA'
+    db.createDataWithStatusAndCatType(21, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat: TestFixture.defaultRecatYOIClosed]), 'RECAT', 'C0001AA')
+    db.createNomisSeqNo(21, 5)
+
+    navigateToReviewYOI(true,true,false)
+    appropriateNo.click()
+
+    then: 'the indeterminate warning is shown'
+    overriddenCategoryJ.click()
+    indeterminateWarning*.text() == ['!\nWarning\nThis person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.', '']
+
+  }
+
+  def "The supervisor review page for recat - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for ON700'
+    db.createDataWithStatusAndCatType(700, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat: TestFixture.defaultRecatClosed]), 'RECAT', 'ON700')
+    db.createNomisSeqNo(700, 5)
+
+    navigateToReview(false,true,false)
+    appropriateNo.click()
+
+    then: 'the indeterminate warning is shown'
+//    indeterminateWarning.isDisplayed()
+    indeterminateWarning*.text() == ['!\nWarning\nThis person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.', '']
+
+  }
 
   private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = false) {
 
@@ -245,36 +274,6 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     startButtons[0].click()
     at SupervisorRecatReviewPage
-  }
-
-  def "The supervisor review page with YOI - indeterminate sentence"() {
-    when: 'supervisor is viewing the review page for C0001AA'
-    db.createDataWithStatusAndCatType(21, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      recat: TestFixture.defaultRecatYOIClosed]), 'RECAT', 'C0001AA')
-    db.createNomisSeqNo(21, 5)
-
-    navigateToReviewYOI(true,true,false)
-    appropriateNo.click()
-
-    then: 'the indeterminate warning is shown'
-    overriddenCategoryJ.click()
-    indeterminateWarning*.text() == ['!\nWarning\nThis person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.', '']
-
-  }
-
-
-  def "The supervisor review page for recat - indeterminate sentence"() {
-    when: 'supervisor is viewing the review page for ON700'
-    db.createDataWithStatusAndCatType(700, 'AWAITING_APPROVAL', JsonOutput.toJson([
-      recat: TestFixture.defaultRecatClosed]), 'RECAT', 'ON700')
-    db.createNomisSeqNo(700, 5)
-
-    navigateToReview(false,true,false)
-    appropriateNo.click()
-
-    then: 'the indeterminate warning is shown'
-    indeterminateWarning*.text() == ['!\nWarning\nThis person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.', '']
-
   }
 
   private navigateToReviewYOI(youngOffender = false, indeterminateSentence = false, initial = true) {
