@@ -15,6 +15,8 @@ class DecisionPage extends HeaderPage {
     behaviour { $('#behaviour') }
     openOption { $('#openOption') }
     closedOption { $('#closedOption') }
+    yoiClosedOption{ $('#catIOption')}
+    yoiOpenOption{ $('#catJOption')}
     hints { $('.govuk-radios__hint') }
     submitButton { $('button', type: 'submit') }
     errorSummaries { $('ul.govuk-error-summary__list li') }

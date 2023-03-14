@@ -14,6 +14,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoField
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_RECAT_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_USER
 
@@ -57,6 +58,43 @@ class TestFixture {
     extremismRating : [previousTerrorismOffences: "Yes"],
     nextReviewDate  : [date: "14/12/2019"]
   ]
+
+  public static final defaultRatingsYOIClosed = [
+    decision          : [category: "I"],
+    offendingHistory: [previousConvictions: "No"],
+    securityInput   : [securityInputNeeded: "No"],
+    violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
+    escapeRating    : [escapeOtherEvidence: "No"],
+    extremismRating : [previousTerrorismOffences: "Yes"],
+    nextReviewDate  : [date: "14/12/2019"]
+  ]
+
+  public static final defaultRecatClosed = [
+    decision          : [category: "R"],
+    oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+    securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
+    nextReviewDate    : [date: "14/12/2019"],
+    prisonerBackground: [offenceDetails: "offence Details text"],
+    riskAssessment    : [
+      lowerCategory    : "lower category text",
+      otherRelevant    : "No",
+      higherCategory   : "higher category text",
+    ]
+  ]
+
+  public static final defaultRecatYOIClosed = [
+    decision          : [category: "I"],
+    oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+    securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
+    nextReviewDate    : [date: "14/12/2019"],
+    prisonerBackground: [offenceDetails: "offence Details text"],
+    riskAssessment    : [
+      lowerCategory    : "lower category text",
+      otherRelevant    : "No",
+      higherCategory   : "higher category text",
+    ]
+  ]
+
 
   public static final defaultRecat = [
     decision          : [category: "C"],
@@ -108,6 +146,20 @@ class TestFixture {
                                       '16/06/2020',
                                       '17/06/2020',
                                       '6 years, 3 months (Std sentence)']
+  public static final FULL_HEADER2 = ['ON700', '17/02/1970', 'Closed',
+                                      'C-04-02', 'Coventry',
+                                      'Latvian',
+                                      'A Felony', 'Another Felony',
+                                      '10/06/2020',
+                                      '11/06/2020',
+                                      '02/02/2020',
+                                      '13/06/2020',
+                                      '14/06/2020',
+                                      '15/06/2020',
+                                      '16/06/2020',
+                                      '17/06/2020',
+                                      '6 years, 3 months (Std sentence)']
+  public static final MINI_HEADER1 = ['Hillmob, William', 'ON700', '17/02/1970', 'Closed']
 
 
   TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1, AllocationApi allocationApi1, PrisonerSearchApi prisonerSearchApi) {
@@ -173,6 +225,19 @@ class TestFixture {
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
     browser.selectFirstPrisoner()
   }
+
+  def gotoTasklistRecatForWomen(transferToSecurity = false, indeterminateSentence = false) {
+    elite2Api.stubRecategoriseWomen()
+    prisonerSearchApi.stubGetPrisonerSearchPrisonersWomen()
+    prisonerSearchApi.stubSentenceData(['ON700', 'ON701'], [700, 701], [LocalDate.now().toString(), LocalDate.now().toString()])
+
+    loginAs(FEMALE_RECAT_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubGetOffenderDetailsWomen(700, 'ON700', false, indeterminateSentence, 'R')
+    riskProfilerApi.stubForTasklists('ON700', 'R', transferToSecurity)
+    browser.selectFirstPrisoner()
+  }
+
 
   def gotoTasklistRecatForCatI(transferToSecurity = false) {
     elite2Api.stubRecategoriseWithCatI()
