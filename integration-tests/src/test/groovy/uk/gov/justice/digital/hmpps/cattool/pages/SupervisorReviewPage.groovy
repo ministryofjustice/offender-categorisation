@@ -25,6 +25,7 @@ class SupervisorReviewPage extends Page {
     overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
     overriddenCategoryI(required: false) { $('#overriddenCategoryI') }
     overriddenCategoryJ(required: false) { $('#overriddenCategoryJ') }
+    overriddenCategoryT(required: false) { $('#supervisorCategoryAppropriate-2') }
     changeLinks(required: false) { $('a.govuk-link', text: startsWith('Change')) }
     indeterminateWarning(required: false) { $('#indeterminateWarning') }
     overriddenCategoryText(required: false) { $('#supervisorOverriddenCategoryText') }

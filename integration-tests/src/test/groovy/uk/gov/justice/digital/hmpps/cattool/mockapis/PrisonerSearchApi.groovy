@@ -136,6 +136,42 @@ class PrisonerSearchApi extends WireMockRule {
     )
   }
 
+  void stubGetPrisonerSearchPrisonersWomen(List dateOfBirths = [], String agencyId = 'PFI') {
+    final today = LocalDate.now()
+    final fromDob = today.minusYears(22)
+    final toDob = today.minusYears(21).plusMonths(2)
+    this.stubFor(
+      get("/prison/${agencyId}/prisoners?size=1000000&fromDob=$fromDob&toDob=$toDob")
+        .willReturn(
+          aResponse()
+            .withBody(JsonOutput.toJson([content: [
+              [
+                bookingId     : '21',
+                prisonerNumber: 'C0001AA',
+                firstName     : 'TINY',
+                lastName      : 'TIM',
+                dateOfBirth   : dateOfBirths[0] ?: today.minusDays(3).minusYears(21).format('yyyy-MM-dd'),
+                category      : 'I',
+              ],
+              [
+                bookingId     : '22',
+                prisonerNumber: 'C0002AA',
+                firstName     : 'ADRIAN',
+                lastName      : 'MOLE',
+                // beware leap-years, when today + 17 days - 21 years DIFFERS from today - 21 years + 17 days (by one day!)
+                dateOfBirth   : dateOfBirths[1] ?: today.plusDays(17).minusYears(21).format('yyyy-MM-dd'),
+                category      : 'I',
+              ]
+            ]
+            ]
+            ))
+            .withHeader('Content-Type', 'application/json')
+            .withStatus(200))
+    )
+  }
+
+
+
   void stubGetPrisonerSearchBookingIds(ArrayList<Integer> bookingIds) {
     this.stubFor(
       post("/prisoner-search/booking-ids")
