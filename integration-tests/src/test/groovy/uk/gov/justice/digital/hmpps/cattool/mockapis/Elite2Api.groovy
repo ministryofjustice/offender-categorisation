@@ -836,7 +836,7 @@ class Elite2Api extends WireMockRule {
         .withHeader('Content-Type', 'application/json')
         .withStatus(200)))
 
-    final terms = [[bookingId              : bookingId,
+    final terms = [[bookingId                         : bookingId,
                     sentenceSequence       : 2,
                     termSequence           : 1,
                     sentenceType           : "T1",
@@ -881,7 +881,7 @@ class Elite2Api extends WireMockRule {
                                      agencyId          : 'PFI',
                                      firstName         : 'TINY',
                                      lastName          : 'TIM',
-                                     dateOfBirth       : youngOffender ? '2002-01-01' : '1970-02-17',
+                                     dateOfBirth       : youngOffender ? '2005-01-01' : '1970-02-17',
                                      category          : 'Cat ' + category,
                                      categoryCode      : category,
                                      assessments       : nextReviewDate ? [[assessmentCode: 'CATEGORY',

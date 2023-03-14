@@ -59,6 +59,16 @@ class TestFixture {
     nextReviewDate  : [date: "14/12/2019"]
   ]
 
+  public static final defaultRatingsYOIClosed = [
+    decision          : [category: "I"],
+    offendingHistory: [previousConvictions: "No"],
+    securityInput   : [securityInputNeeded: "No"],
+    violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
+    escapeRating    : [escapeOtherEvidence: "No"],
+    extremismRating : [previousTerrorismOffences: "Yes"],
+    nextReviewDate  : [date: "14/12/2019"]
+  ]
+
   public static final defaultRecatClosed = [
     decision          : [category: "R"],
     oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],

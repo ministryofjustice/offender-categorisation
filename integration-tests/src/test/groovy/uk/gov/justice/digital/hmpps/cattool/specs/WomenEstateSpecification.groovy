@@ -156,18 +156,59 @@ class WomenEstateSpecification extends AbstractSpecification {
     dcsSurveyLink.displayed
   }
 
+  def "The supervisor review page can be confirmed for Women initial - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for ON700'
+    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsClosed,
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+    db.createNomisSeqNo(700, 5)
+
+    navigateToReview( false, true)
+    appropriateNo.click()
+
+    then: 'indeterminate warning is shown'
+    indeterminateWarning.isDisplayed()
+  }
+
   private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true) {
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
     prisonerSearchApi.stubSentenceData(['ON700'], [700], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     elite2Api.stubUncategorisedAwaitingApproval('PFI')
-
     fixture.loginAs(WOMEN_SUPERVISOR_USER)
     at SupervisorHomePage
-    elite2Api.stubGetOffenderDetailsWomen(700, "ON700",'U(Unsentenced)')
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700",youngOffender, indeterminateSentence, 'R')
     elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
+    startButton.click()
+    at SupervisorReviewPage
+  }
+
+  def "The supervisor review page can be confirmed for Women inital YOI - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for C0001AA'
+    db.createDataWithStatusWomen(-1, 21, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsYOIClosed,
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+    db.createNomisSeqNo(21, 5)
+
+    navigateToReviewYOI( true, true, true)
+    appropriateNo.click()
+
+    then: 'indeterminate warning is shown'
+    overriddenCategoryJ.click()
+    indeterminateWarning.isDisplayed()
+  }
+
+  private navigateToReviewYOI(youngOffender = true, indeterminateSentence = false, initial = true) {
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    prisonerSearchApi.stubSentenceData(['C0001AA'], [21], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedAwaitingApprovalForWomenYOI('PFI')
+    fixture.loginAs(WOMEN_SUPERVISOR_USER)
+    at SupervisorHomePage
+    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, indeterminateSentence,'I')
+    elite2Api.stubAssessmentsWomen(['C0001AA'])
+    elite2Api.stubAgencyDetails('PFI')
+    elite2Api.stubSentenceDataGetSingle('C0001AA', '2014-11-23')
     startButton.click()
     at SupervisorReviewPage
   }

@@ -172,7 +172,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(700, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecatClosed]), 'RECAT', 'ON700')
 
-    db.createNomisSeqNo(700,5)
+    db.createNomisSeqNo(700, 5)
     db.createRiskProfileDataForExistingRow(700, '''{
       "socProfile": {"nomsId": "ON700", "riskType": "SOC", "transferToSecurity": false},
       "escapeProfile": {"nomsId": "ON700", "riskType": "ESCAPE", "activeEscapeList": false, "activeEscapeRisk": false},
@@ -200,12 +200,11 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
   }
 
   def "The supervisor review page with YOI options in provisional category"() {
-
     given: 'supervisor is viewing the review page for C0001AA'
     db.createDataWithStatusAndCatType(21, 'AWAITING_APPROVAL', JsonOutput.toJson([
       recat: TestFixture.defaultRecatYOIClosed]), 'RECAT', 'C0001AA')
 
-    db.createNomisSeqNo(21,5)
+    db.createNomisSeqNo(21, 5)
     db.createRiskProfileDataForExistingRow(21, '''{
       "socProfile": {"nomsId": "C0001AA", "riskType": "SOC", "transferToSecurity": false},
       "escapeProfile": {"nomsId": "C0001AA", "riskType": "ESCAPE", "activeEscapeList": false, "activeEscapeRisk": false},
@@ -218,9 +217,9 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     when: 'the supervisor selects yes'
     elite2Api.stubSupervisorApprove("I")
     appropriateYes.click()
-//    overriddenCategoryJ.@type == 'radio'
-//    overriddenCategoryR.@type == 'radio'
-//    overriddenCategoryT.@type == 'radio'
+    overriddenCategoryJ.@type == 'radio'
+    overriddenCategoryR.@type == 'radio'
+    overriddenCategoryT.@type == 'radio'
     submitButton.click()
 
     then: 'the review outcome page is displayed'
@@ -229,7 +228,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
   }
 
 
-  private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true) {
+  private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = false) {
 
     def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
@@ -240,7 +239,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     at SupervisorHomePage
 
-    elite2Api.stubGetOffenderDetailsWomen(700, "ON700", 'R')
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700", youngOffender, indeterminateSentence, 'R')
     elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
@@ -248,6 +247,35 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     at SupervisorRecatReviewPage
   }
 
+  def "The supervisor review page with YOI - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for C0001AA'
+    db.createDataWithStatusAndCatType(21, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat: TestFixture.defaultRecatYOIClosed]), 'RECAT', 'C0001AA')
+    db.createNomisSeqNo(21, 5)
+
+    navigateToReviewYOI(true,true,false)
+    appropriateNo.click()
+
+    then: 'the indeterminate warning is shown'
+    overriddenCategoryJ.click()
+    indeterminateWarning*.text() == ['!\nWarning\nThis person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.', '']
+
+  }
+
+
+  def "The supervisor review page for recat - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for ON700'
+    db.createDataWithStatusAndCatType(700, 'AWAITING_APPROVAL', JsonOutput.toJson([
+      recat: TestFixture.defaultRecatClosed]), 'RECAT', 'ON700')
+    db.createNomisSeqNo(700, 5)
+
+    navigateToReview(false,true,false)
+    appropriateNo.click()
+
+    then: 'the indeterminate warning is shown'
+    indeterminateWarning*.text() == ['!\nWarning\nThis person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.', '']
+
+  }
 
   private navigateToReviewYOI(youngOffender = false, indeterminateSentence = false, initial = true) {
 
@@ -260,13 +288,11 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     at SupervisorHomePage
 
-    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, 'I')
+    elite2Api.stubGetOffenderDetailsWomenYO(21, 'C0001AA', true, indeterminateSentence,'I')
     elite2Api.stubAssessmentsWomen(['C0001AA'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('C0001AA', '2014-11-23')
     startButtons[0].click()
     at SupervisorRecatReviewPage
   }
-
-  }
-
+}
