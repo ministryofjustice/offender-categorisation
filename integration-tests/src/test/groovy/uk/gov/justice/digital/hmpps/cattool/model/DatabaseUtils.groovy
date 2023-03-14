@@ -68,7 +68,7 @@ class DatabaseUtils {
     doCreateData(-1, bookingId, status, json)
   }
 
-  def createDataWithStatusWomen(id, bookingId, status, json,userid,prisonId) {
+  def createDataWithStatusWomen(id, bookingId, status, json) {
     doCreateCompleteRow(id, bookingId, json, 'FEMALE_USER', status, 'INITIAL', null, null, null, 1, null, 'PFI', 'dummy', 'current_timestamp(2)', null, null)
   }
 

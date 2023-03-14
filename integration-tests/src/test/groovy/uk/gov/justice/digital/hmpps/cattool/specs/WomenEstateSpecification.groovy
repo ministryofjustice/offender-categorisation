@@ -131,7 +131,7 @@ class WomenEstateSpecification extends AbstractSpecification {
   def "The supervisor review page can be confirmed for Women Estate"() {
     given: 'supervisor is viewing the review page for ON700'
     db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsClosed,
-                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]))
     db.createNomisSeqNo(700, 5)
     db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([history : [catType: 'No CatA', finalCat: 'Cat R'],
                                                                    offences: [[bookingId: 700, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
@@ -159,7 +159,7 @@ class WomenEstateSpecification extends AbstractSpecification {
   def "The supervisor review page can be confirmed for Women initial - indeterminate sentence"() {
     when: 'supervisor is viewing the review page for ON700'
     db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsClosed,
-                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]))
     db.createNomisSeqNo(700, 5)
 
     navigateToReview( false, true)
@@ -172,7 +172,7 @@ class WomenEstateSpecification extends AbstractSpecification {
   def "The supervisor review page can be confirmed for Women inital YOI - indeterminate sentence"() {
     when: 'supervisor is viewing the review page for C0001AA'
     db.createDataWithStatusWomen(-1, 21, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsYOIClosed,
-                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
     db.createNomisSeqNo(21, 5)
 
     navigateToReviewYOI( true, true, true)
