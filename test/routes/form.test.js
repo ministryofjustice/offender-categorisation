@@ -638,6 +638,98 @@ describe('GET /supervisor/review', () => {
       })
   })
 
+  test('supervisor approval page should show tprs banner for initial categorisations', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'Yes' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('id="tprsBanner"')
+      })
+  })
+
+  test('supervisor approval page should not show tprs banner for initial categorisations', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'No' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsBanner"')
+      })
+  })
+
+  test('supervisor approval page should show tprs banner for recats', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'Yes' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('id="tprsBanner"')
+      })
+  })
+
+  test('supervisor approval page should not show tprs banner for recats', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'No' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsBanner"')
+      })
+  })
+
   test('initial categorisations female, closed override with open', () => {
     mockFemalePrison()
     formService.getCategorisationRecord.mockResolvedValue({
@@ -1915,6 +2007,122 @@ describe('GET /ratings/escapeRating', () => {
         expect(res.text).toContain('Escape Risk Alert:')
         expect(res.text).not.toContain('Do you think this information means they should be in Cat B?')
         expect(res.text).toContain('Is there any other information to suggest they pose a risk of escape?')
+      })
+  })
+})
+
+describe('TPRS Done view', () => {
+  test('Initial - done view displays open conditions', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      prisonId: 'MPI',
+      approvalDate: moment('2019-08-13'),
+      formObject: {
+        ratings: {
+          escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'No' },
+          securityBack: { catB: 'No' },
+          securityInput: { securityInputNeeded: 'Yes', securityInputNeededText: 'normal checks' },
+          furtherCharges: { furtherCharges: 'No' },
+          nextReviewDate: { date: '23/03/2023', indeterminate: false },
+          violenceRating: { seriousThreat: 'No', highRiskOfViolence: 'No' },
+          extremismRating: { previousTerrorismOffences: 'No' },
+          offendingHistory: { previousConvictions: 'No' },
+        },
+        security: { review: { securityReview: 'nothing to add' } },
+        supervisor: { review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' } },
+        categoriser: {
+          review: {},
+          provisionalCategory: {
+            suggestedCategory: 'C',
+            overriddenCategory: 'D',
+            categoryAppropriate: 'No',
+            otherInformationText: '',
+            overriddenCategoryText: 'Good behaviour',
+          },
+        },
+        openConditions: {
+          openConditionsRequested: true,
+          tprs: { tprsSelected: 'No' },
+          riskLevels: { likelyToAbscond: 'No' },
+          riskOfHarm: { seriousHarm: 'No' },
+          furtherCharges: { furtherCharges: 'No' },
+          foreignNational: { isForeignNational: 'No' },
+          earliestReleaseDate: { threeOrMoreYears: 'No' },
+          victimContactScheme: { vcsOptedFor: 'No' },
+        },
+      },
+    })
+    offendersService.getOptionalAssessmentAgencyDescription.mockResolvedValue('HMP MyPrison')
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Open category')
+        expect(res.text).toContain('The recommended category was changed from Category C to open category')
+        expect(res.text).toContain('The supervisor also recommends open category')
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('Tuesday 13 August 2019')
+        expect(res.text).toContain('HMP MyPrison')
+        expect(res.text).toContain('earliestReleaseDateSummary')
+        expect(res.text).toContain('victimContactSchemeSummary no-print')
+        expect(res.text).toContain('foreignNationalSummary')
+        expect(res.text).toContain('tprsSummary no-print')
+        expect(res.text).toContain('riskOfHarmSummary')
+        expect(res.text).toContain('furtherChargesOpenSummary')
+        expect(res.text).toContain('riskLevelSummary')
+      })
+  })
+
+  test('Recat - done view displays open conditions', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      prisonId: 'MPI',
+      approvalDate: moment('2019-08-13'),
+      formObject: {
+        recat: { decision: { category: 'D' } },
+        supervisor: { review: { proposedCateogry: 'D', supervisorCategoryAppropiate: 'Yes' } },
+        openConditions: {
+          openConditionsRequested: true,
+          tprs: { tprsSelected: 'No' },
+          riskLevels: { likelyToAbscond: 'No' },
+          riskOfHarm: { seriousHarm: 'No' },
+          furtherCharges: { furtherCharges: 'No' },
+          foreignNational: { isForeignNational: 'No' },
+          earliestReleaseDate: { threeOrMoreYears: 'No' },
+          victimContactScheme: { vcsOptedFor: 'No' },
+        },
+      },
+    })
+
+    offendersService.getOptionalAssessmentAgencyDescription.mockResolvedValue('HMP MyPrison')
+
+    return request(app)
+      .get(`/approvedView/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('The categoriser recommends open category')
+        expect(res.text).toContain('The supervisor also recommends open category')
+        expect(res.text).toContain('Open Conditions')
+        expect(res.text).toContain('Tuesday 13 August 2019')
+        expect(res.text).toContain('HMP MyPrison')
+        expect(res.text).toContain('earliestReleaseDateSummary')
+        expect(res.text).toContain('victimContactSchemeSummary no-print')
+        expect(res.text).toContain('foreignNationalSummary')
+        expect(res.text).toContain('tprsSummary no-print')
+        expect(res.text).toContain('riskOfHarmSummary')
+        expect(res.text).toContain('furtherChargesOpenSummary')
+        expect(res.text).toContain('riskLevelSummary')
       })
   })
 })
