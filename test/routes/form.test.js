@@ -638,6 +638,98 @@ describe('GET /supervisor/review', () => {
       })
   })
 
+  test('supervisor approval page should show tprs banner for initial categorisations', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'Yes' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('id="tprsBanner"')
+      })
+  })
+
+  test('supervisor approval page should not show tprs banner for initial categorisations', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'No' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsBanner"')
+      })
+  })
+
+  test('supervisor approval page should show tprs banner for initial categorisations', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'Yes' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('id="tprsBanner"')
+      })
+  })
+
+  test('supervisor approval page should not show tprs banner for initial categorisations', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'No' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsBanner"')
+      })
+  })
+
   test('initial categorisations female, closed override with open', () => {
     mockFemalePrison()
     formService.getCategorisationRecord.mockResolvedValue({
