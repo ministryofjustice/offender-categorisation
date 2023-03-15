@@ -11,9 +11,8 @@ abstract class DashboardPage extends Page {
 
     securityTableRows { $('table#security > tbody > tr') }
 
-    timelinessTableRows { $('table#timeliness > tbody > tr') }
+    timelineTableRows { $('table#timeline > tbody > tr') }
     completionTableRows { $('table#completion > tbody > tr') }
-    total {$('p#total')}
 
     errorSummaries(required: false) { $('ul.govuk-error-summary__list li') }
     errors(required: false) { $('span.govuk-error-message') }

@@ -23,7 +23,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     prisonerSearchApi.stubSentenceData(['ON700'], [700], [TODAY.plusDays(-3).toString()])
     fixture.loginAs(FEMALE_USER)
     at CategoriserHomePage
-    elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700", 'U(Unsentenced)')
     riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
     startButtons[0].click()
     at(new TasklistPage(bookingId: '700'))
@@ -50,7 +50,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '700'))
     elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
-    riskProfilerApi.stubGetEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
+    riskProfilerApi.stubGetProfileWomenEscapeAlert('ON700', 'U(Unsentenced)', false, false)
     escapeButton.click()
     at(new CategoriserEscapePage(bookingId: '700'))
     escapeOtherEvidenceRadio = 'No'
@@ -98,7 +98,7 @@ class WomenEstateSpecification extends AbstractSpecification {
     elite2Api.stubAssessmentsWomen('ON700')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
     elite2Api.stubOffenceHistory('ON700')
-    riskProfilerApi.stubGetEscapeProfileWomen('ON700', 'U(Unsentenced)', false, false)
+    riskProfilerApi.stubGetProfileWomenEscapeAlert('ON700', 'U(Unsentenced)', false, false)
     riskProfilerApi.stubGetViolenceProfile('ON700', 'U(Unsentenced)', false, false, false)
     riskProfilerApi.stubGetExtremismProfile('ON700', 'U(Unsentenced)', true, false, true)
     riskProfilerApi.stubGetLifeProfile('ON700', 'R')
@@ -131,7 +131,7 @@ class WomenEstateSpecification extends AbstractSpecification {
   def "The supervisor review page can be confirmed for Women Estate"() {
     given: 'supervisor is viewing the review page for ON700'
     db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsClosed,
-                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]), 'FEMALE_USER', 'PFI')
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]))
     db.createNomisSeqNo(700, 5)
     db.createRiskProfileDataForExistingRow(700, JsonOutput.toJson([history : [catType: 'No CatA', finalCat: 'Cat R'],
                                                                    offences: [[bookingId: 700, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
@@ -146,14 +146,41 @@ class WomenEstateSpecification extends AbstractSpecification {
     headerValue*.text() == fixture.FULL_HEADER1
     offendingHistorySummary*.text() == ['No CAT A, Restricted', 'Libel (21/02/2019)\nSlander (22/02/2019 - 24/02/2019)\nUndated offence', 'No']
 
-    when: 'the supervisor selects yes (after changing their mind)'
+    when: 'the supervisor selects yes'
     elite2Api.stubSupervisorApprove("R")
     appropriateYes.click()
     submitButton.click()
 
-    then: 'the review outcome page is displayed and review choices persisted'
+    then: 'the review outcome page is displayed'
     at SupervisorReviewOutcomePage
     dcsSurveyLink.displayed
+  }
+
+  def "The supervisor review page can be confirmed for Women initial - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for ON700'
+    db.createDataWithStatusWomen(-1, 700, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsClosed,
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "R", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(700, 5)
+
+    navigateToReview( false, true)
+    appropriateNo.click()
+
+    then: 'indeterminate warning is shown'
+    indeterminateWarning.isDisplayed()
+  }
+
+  def "The supervisor review page can be confirmed for Women inital YOI - indeterminate sentence"() {
+    when: 'supervisor is viewing the review page for C0001AA'
+    db.createDataWithStatusWomen(-1, 21, 'AWAITING_APPROVAL', JsonOutput.toJson([ratings    : TestFixture.defaultRatingsYOIClosed,
+                                                                                  categoriser: [provisionalCategory: [suggestedCategory: "I", categoryAppropriate: "Yes"]]]))
+    db.createNomisSeqNo(21, 5)
+
+    navigateToReviewYOI( true, true, true)
+    appropriateNo.click()
+
+    then: 'indeterminate warning is shown'
+    overriddenCategoryJ.click()
+    indeterminateWarning.isDisplayed()
   }
 
   private navigateToReview(youngOffender = false, indeterminateSentence = false, initial = true) {
@@ -161,13 +188,27 @@ class WomenEstateSpecification extends AbstractSpecification {
     def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
     prisonerSearchApi.stubSentenceData(['ON700'], [700], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
     elite2Api.stubUncategorisedAwaitingApproval('PFI')
-
     fixture.loginAs(WOMEN_SUPERVISOR_USER)
     at SupervisorHomePage
-    elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700",youngOffender, indeterminateSentence, 'R')
     elite2Api.stubAssessmentsWomen(['ON700'])
     elite2Api.stubAgencyDetails('PFI')
     elite2Api.stubSentenceDataGetSingle('ON700', '2014-11-23')
+    startButton.click()
+    at SupervisorReviewPage
+  }
+
+  private navigateToReviewYOI(youngOffender = true, indeterminateSentence = false, initial = true) {
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    prisonerSearchApi.stubSentenceData(['C0001AA'], [21], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+    elite2Api.stubUncategorisedAwaitingApprovalForWomenYOI('PFI')
+    fixture.loginAs(WOMEN_SUPERVISOR_USER)
+    at SupervisorHomePage
+    elite2Api.stubGetOffenderDetailsWomenYOI(21, 'C0001AA', true, indeterminateSentence,'I')
+    elite2Api.stubAssessmentsWomen(['C0001AA'])
+    elite2Api.stubAgencyDetails('PFI')
+    elite2Api.stubSentenceDataGetSingle('C0001AA', '2014-11-23')
     startButton.click()
     at SupervisorReviewPage
   }

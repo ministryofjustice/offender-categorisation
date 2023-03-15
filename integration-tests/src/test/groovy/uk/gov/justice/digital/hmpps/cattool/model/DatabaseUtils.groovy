@@ -68,7 +68,7 @@ class DatabaseUtils {
     doCreateData(-1, bookingId, status, json)
   }
 
-  def createDataWithStatusWomen(id, bookingId, status, json, userId, prisonId) {
+  def createDataWithStatusWomen(id, bookingId, status, json) {
     doCreateCompleteRow(id, bookingId, json, 'FEMALE_USER', status, 'INITIAL', null, null, null, 1, null, 'PFI', 'dummy', 'current_timestamp(2)', null, null)
   }
 
@@ -81,6 +81,7 @@ class DatabaseUtils {
     def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'
     doCreateCompleteRow(id, bookingId, json, userId, status, catType, null, null, null, 1, null, 'LEI', offenderNo, 'current_timestamp(2)', null, null)
   }
+
 
   def createDataWithIdAndStatusAndCatTypeAndSeq(id, bookingId, status, json, catType, offenderNo = 'dummy', seq) {
     def userId = catType == 'RECAT' ? 'RECATEGORISER_USER' : 'CATEGORISER_USER'

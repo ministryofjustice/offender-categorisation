@@ -25,6 +25,8 @@
 
     <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
 
+    {% include "../../partials/tprsBanner.html" %}
+
     {% set currentCat = data.recat.decision.category %}
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(currentCat) }}</span>
@@ -38,7 +40,7 @@
     {% set showChangeLinks = false %}
     {% include "../../partials/reviewContentsRecat.html" %}
 
-    {% if (currentCat == "D" or currentCat == "J" or data.openConditions) %}
+    {% if (currentCat == "D" or currentCat == "J" or currentCat == "T" or data.openConditions) %}
 
       <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
 
@@ -47,11 +49,29 @@
 
     {% endif %}
 
-    {% if currentCat == "D" or currentCat == "J" %}
+    {% if currentCat == "D" or currentCat == "J" or currentCat == "T" %}
       {% include "../../partials/warningIndeterminate.html" %}
     {% endif %}
 
+    {% set isYoungOffender = data.details.youngOffender %}
     {% set radios = [
+     {
+       value: "J",
+       id: "overriddenCategoryJ",
+       checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
+       text: "YOI (open)",
+       J: true,
+       conditional: {
+         html: warningCategoryOpenConditions
+      }
+     },
+     {
+       value: "I",
+       id: "overriddenCategoryI",
+       checked: data.supervisor.review.supervisorOverriddenCategory === 'I',
+       text: "YOI (closed)",
+       I: true
+      },
       {
         value: "B",
         id: "overriddenCategoryB",
@@ -79,62 +99,60 @@
       {
         value: "R",
         id: "overriddenCategoryR",
-        checked: true,
+        checked: not isYoungOffender or data.supervisor.review.supervisorOverriddenCategory === 'R',
         text: "Consider for closed",
         R: true
       },
       {
         value: "T",
         id: "overriddenCategoryT",
-        checked: true,
+        checked: not isYoungOffender or data.supervisor.review.supervisorOverriddenCategory === 'T',
         text: "Consider for open",
-        T: true
-      },
-      {
-        value: "J",
-        id: "overriddenCategoryJ",
-        checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
-        text: "YOI (open)",
-        J: true,
         conditional: {
-            html: warningCategoryOpenConditions
-          }
-      },
-      {
-        value: "I",
-        id: "overriddenCategoryI",
-        checked: data.supervisor.review.supervisorOverriddenCategory === 'I',
-        text: "YOI (closed)",
-        I: true
+          html: warningCategoryOpenConditions
+        },
+        T: true
       }
     ] %}
 
-    {% if not data.details.youngOffender%}
+    {% if not isYoungOffender %}
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
 
-    {% if isFemale %}
+    {% if isFemale and isYoungOffender %}
+      {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') %}
+      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
+      {% set noLabel = 'No' %}
+    {% elif isFemale and not isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
       {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
-      {% if (currentCat == "R") %}
+      {% if (currentCat == "R" or currentCat == "I") %}
         {% set noLabel = "No, consider for open" %}
-      {% elif (currentCat == "T") %}
+      {% elif (currentCat == "T" or currentCat == "J") %}
         {% set noLabel = "No, closed is more appropriate" %}
       {% endif %}
     {% else %}
-      {% set radios = radios | rejectattr('R') | rejectattr('T')%}
+      {% set radios = radios | rejectattr('R') | rejectattr('T') %}
       {% set radioClasses = 'govuk-radios--inline' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% endif %}
 
     {% set overriddenCategoryTextHtml %}
+      {% if (currentCat == "R") %}
+        {{ warningCategoryOpenConditions | safe }}
+      {% endif %}
       {{ govukRadios({
         name: "supervisorOverriddenCategory",
         classes: radioClasses,
         fieldset: {
-          legend: { text: "Which category is more appropriate?", isPageHeading: false, classes: radioLegendClasses }
+          legend: {
+            text: "Which category is more appropriate?",
+            isPageHeading: false,
+            classes: radioLegendClasses
+          }
         },
         items: radios | rejectattr(currentCat),
         errorMessage: {
@@ -146,9 +164,15 @@
         name: "supervisorOverriddenCategoryText",
         type: "myTextWhatsThisFor",
         id: "supervisorOverriddenCategoryText",
-        attributes: { 'maxlength': 50000 },
-        label: { text: "Enter the reason why this category is more appropriate" },
-        hint: { text: "Your comments will be disclosed to the prisoner" },
+        attributes: {
+          'maxlength': 50000
+        },
+        label: {
+          text: "Enter the reason why this category is more appropriate"
+        },
+        hint: {
+          text: "Your comments will be disclosed to the prisoner"
+        },
         errorMessage: {
           text: "Enter the reason why this category is more appropriate"
         } if (errors | findError('supervisorOverriddenCategoryText'))
@@ -178,7 +202,7 @@
           value: "No",
           text: noLabel,
           conditional: {
-            html:overriddenCategoryTextHtml
+            html: overriddenCategoryTextHtml
           }
         }
       ]
@@ -188,9 +212,15 @@
       name: "otherInformationText",
       type: "otherInformationText",
       id: "otherInformationText",
-      attributes: { 'maxlength': 50000 },
-      label: { text: "Is there any other relevant information that you want to record?" },
-      hint: { text: "Your comments will be disclosed to the prisoner" },
+      attributes: {
+       'maxlength': 50000
+      },
+      label: {
+        text: "Is there any other relevant information that you want to record?"
+      },
+      hint: {
+        text: "Your comments will be disclosed to the prisoner"
+      },
       value: data.supervisor.review.otherInformationText
     }) }}
 

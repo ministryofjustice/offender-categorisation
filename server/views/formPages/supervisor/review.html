@@ -24,6 +24,7 @@
 
     <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
 
+    {% include "../../partials/tprsBanner.html" %}
     {% include "../../partials/openConditionsBanner.html" %}
 
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
@@ -67,7 +68,7 @@
     {% set showChangeLinks = false %}
     {% include "../../partials/reviewContents.html" %}
 
-    {% if (currentCat == "D" or currentCat == "J" or data.openConditions) %}
+    {% if (currentCat == "D" or currentCat == "J" or currentCat == "T" or data.openConditions) %}
 
       <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
 
@@ -88,11 +89,29 @@
       ]
     }) }}
 
-    {% if currentCat == "D" or currentCat == "J" %}
+    {% if currentCat == "D" or currentCat == "J" or currentCat == "T" %}
       {% include "../../partials/warningIndeterminate.html" %}
     {% endif %}
 
+    {% set isYoungOffender = data.details.youngOffender %}
     {% set radios = [
+      {
+        value: "J",
+        id: "overriddenCategoryJ",
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
+        text: "YOI (open)",
+        J: true,
+        conditional: {
+            html: warningCategoryOpenConditions
+        }
+      },
+      {
+        value: "I",
+        id: "overriddenCategoryI",
+        checked: data.supervisor.review.supervisorOverriddenCategory === 'I',
+        text: "YOI (closed)",
+        I: true
+      },
       {
         value: "B",
         id: "overriddenCategoryB",
@@ -120,47 +139,35 @@
       {
         value: "R",
         id: "overriddenCategoryR",
-        checked: true,
+        checked: not isYoungOffender or data.supervisor.review.supervisorOverriddenCategory === 'R',
         text: "Consider for closed",
         R: true
       },
       {
         value: "T",
         id: "overriddenCategoryT",
-        checked: true,
+        checked:  not isYoungOffender or data.supervisor.review.supervisorOverriddenCategory === 'T',
         text: "Consider for open",
         T: true
-      },
-      {
-        value: "J",
-        id: "overriddenCategoryJ",
-        checked: data.supervisor.review.supervisorOverriddenCategory === 'J',
-        text: "YOI (open)",
-        J: true,
-        conditional: {
-            html: warningCategoryOpenConditions
-          }
-      },
-      {
-        value: "I",
-        id: "overriddenCategoryI",
-        checked: data.supervisor.review.supervisorOverriddenCategory === 'I',
-        text: "YOI (closed)",
-        I: true
       }
     ] %}
 
-    {% if not data.details.youngOffender%}
+    {% if not isYoungOffender %}
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
 
-    {% if isFemale %}
+    {% if isFemale and isYoungOffender %}
+      {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') | rejectattr('T') %}
+      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioLegendClasses = 'govuk-fieldset__legend' %}
+      {% set noLabel = 'No' %}
+    {% elif isFemale and not isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
       {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
-      {% if (currentCat == "R") %}
+      {% if (currentCat == "R" or currentCat == "I") %}
         {% set noLabel = "No, consider for open" %}
-      {% elif (currentCat == "T") %}
+      {% elif (currentCat == "T" or currentCat == "J") %}
         {% set noLabel = "No, closed is more appropriate" %}
       {% endif %}
     {% else %}

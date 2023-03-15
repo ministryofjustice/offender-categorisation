@@ -133,6 +133,20 @@ module.exports = {
       },
     ],
     nextPath: {
+      path: '/form/openConditions/tprs/',
+    },
+    validate: true,
+  },
+  tprs: {
+    fields: [
+      {
+        tprsSelected: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+    ],
+    nextPath: {
       path: '/form/openConditions/riskOfHarm/',
     },
     validate: true,

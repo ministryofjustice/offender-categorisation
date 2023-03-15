@@ -19,6 +19,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     earliestReleaseDate: [threeOrMoreYears: 'No'],
     victimContactScheme: [vcsOptedFor: 'No'],
     foreignNational    : [isForeignNational: 'No'],
+    tprs               : [tprsSelected: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
     furtherCharges     : [furtherCharges: 'No'],
     riskLevels         : [likelyToAbscond: 'No'],
@@ -93,7 +94,14 @@ class OpenConditionsSpecification extends AbstractSpecification {
     dueDeportedYes.click()
     exhaustedAppealNo.click()
     submitButton.click()
-////////////////////////////////////////////////////////////////////////////
+
+    then: 'the TPRS page is displayed'
+    at TprsPage
+
+    when: 'I submit page'
+    tprsSelectedYes.click()
+    submitButton.click()
+
     then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
@@ -179,6 +187,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
       victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' ],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
+      tprs               : [tprsSelected: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
       furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: ',furtherChargesText details'],
       riskLevels         : [likelyToAbscond: 'Yes', likelyToAbscondText: 'likelyToAbscondText details'],
@@ -622,6 +631,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
     at ForeignNationalPage
     isForeignNationalNo.click()
+    submitButton.click()
+    at TprsPage
+    tprsSelectedNo.click()
     submitButton.click()
     at RiskOfHarmPage
     seriousHarmNo.click()
