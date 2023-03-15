@@ -151,6 +151,26 @@
     ]
   }) }}
 
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 tprsSummary no-print',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Temporary Prison Recategorisation Scheme" },
+          actions: { items: [{
+            href: '/form/openConditions/tprs/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Temporary Prison Recategorisation Scheme"
+          }] if showOpenConditionChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Have they been selected for the Temporary Prison Recategorisation Scheme?" },
+        value: { text: data.openConditions.tprs.tprsSelected or 'Not applicable' },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
+
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 riskOfHarmSummary',
     rows: [
