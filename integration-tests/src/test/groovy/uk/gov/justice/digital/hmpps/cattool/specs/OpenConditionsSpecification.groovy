@@ -20,6 +20,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     victimContactScheme: [vcsOptedFor: 'No'],
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
+    tprs               : [tprsSelected: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
     furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'No', furtherChargesText: 'some charges,furtherChargesText details'],
     riskLevels         : [likelyToAbscond: 'No'],
@@ -31,6 +32,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     victimContactScheme: [vcsOptedFor: 'No'],
     sexualOffences     : [haveTheyBeenEverConvicted:'No'],
     foreignNational    : [isForeignNational: 'No'],
+    tprs               : [tprsSelected: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
     furtherCharges     : [increasedRisk: 'No', furtherCharges: 'Yes', furtherChargesText: ",furtherChargesText details"],
     riskLevels         : [likelyToAbscond: 'No'],
@@ -198,7 +200,23 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the Foreign National page is completed'
     exhaustedAppealNo.click()
     submitButton.click()
-////////////////////////////////////////////////////////////////////////////
+
+    then: 'the TPRS page is displayed'
+    at TprsPage
+
+    when: 'I submit a blank page'
+    submitButton.click()
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
+    }
+
+    when: 'I select a radio option'
+    tprsSelectedYes.click()
+
+    submitButton.click()
     then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
@@ -340,6 +358,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response details text'],
       sexualOffences     : [haveTheyBeenEverConvicted:'No'],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
+      tprs               : [tprsSelected: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
       furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: 'some charges,furtherChargesText details'],
       riskLevels         : [likelyToAbscond: 'Yes', likelyToAbscondText: 'likelyToAbscondText details'],
@@ -766,6 +785,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
     at ForeignNationalPage
     isForeignNationalNo.click()
+    submitButton.click()
+    at TprsPage
+    tprsSelectedNo.click()
     submitButton.click()
     at RiskOfHarmPage
     seriousHarmNo.click()

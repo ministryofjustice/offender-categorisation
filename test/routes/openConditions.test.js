@@ -99,6 +99,7 @@ describe('open conditions', () => {
     ${'previousSentences'}   | ${'Previous sentences'}
     ${'victimContactScheme'} | ${'Victim Contact Scheme'}
     ${'foreignNational'}     | ${'Foreign national'}
+    ${'tprs'}                | ${'Is this prisoner eligible for the Temporary Presumptive Recategorisation Scheme (TPRS)?'}
     ${'riskOfHarm'}          | ${'Risk of serious harm'}
     ${'riskLevels'}          | ${'Risk of escaping or absconding'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
@@ -409,7 +410,8 @@ describe('open conditions', () => {
     ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                                                    | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                        | ${'/form/openConditions/foreignNational/'}
     ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No' }}            | ${'/form/openConditions/victimContactScheme/'}
     ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                                                  | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                      | ${'/form/openConditions/sexualOffences/'}
-    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                                    | ${'/form/openConditions/riskOfHarm/'}
+    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                                    | ${'/form/openConditions/tprs/'}
+    ${'tprs'}                | ${{ tprsSelected: 'No' }}                                                                     | ${{ tprsSelected: 'No' }}                                         | ${'/form/openConditions/riskOfHarm/'}
     ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                                          | ${'/form/openConditions/furtherCharges/'}
     ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                                             | ${'/form/openConditions/riskLevels/'}
     ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                                         | ${'/tasklist/'}

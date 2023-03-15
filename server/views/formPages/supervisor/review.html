@@ -24,6 +24,7 @@
 
     <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
 
+    {% include "../../partials/tprsBanner.html" %}
     {% include "../../partials/openConditionsBanner.html" %}
 
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
