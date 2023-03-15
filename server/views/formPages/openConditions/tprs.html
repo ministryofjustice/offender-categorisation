@@ -1,0 +1,49 @@
+{% extends "../formTemplate.html" %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+{% set pageTitle = "Have they been selected for the Temporary Prison Recategorisation Scheme?" %}
+
+{% block navigation %}
+
+  {% if catType == 'RECAT' %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
+  {% else %}
+    {% include "../../partials/breadCrumbTaskList.html" %}
+  {% endif %}
+
+{% endblock %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "tprsSelected",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "If selected for this scheme you will have been informed of this by your line manager"
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('tprsSelected')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.tprs.tprsSelected === 'Yes'
+      },
+      {
+        value: "No",
+        checked: data.openConditions.tprs.tprsSelected === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+{% endblock %}
