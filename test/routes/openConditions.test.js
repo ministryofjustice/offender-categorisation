@@ -99,7 +99,7 @@ describe('open conditions', () => {
     ${'previousSentences'}   | ${'Previous sentences'}
     ${'victimContactScheme'} | ${'Victim Contact Scheme'}
     ${'foreignNational'}     | ${'Foreign national'}
-    ${'tprs'}                | ${'Have they been selected for the Temporary Prison Recategorisation Scheme?'}
+    ${'tprs'}                | ${'Is this prisoner eligible for the Temporary Presumptive Recategorisation Scheme (TPRS)?'}
     ${'riskOfHarm'}          | ${'Risk of serious harm'}
     ${'riskLevels'}          | ${'Risk of escaping or absconding'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>

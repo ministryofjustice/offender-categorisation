@@ -4,7 +4,7 @@
 {% from "details/macro.njk" import govukDetails %}
 
 {% set greenButtonText = "Continue" %}
-{% set pageTitle = "Have they been selected for the Temporary Prison Recategorisation Scheme?" %}
+{% set pageTitle = "Is this prisoner eligible for the Temporary Presumptive Recategorisation Scheme (TPRS)?" %}
 
 {% block navigation %}
 
@@ -26,7 +26,7 @@
     classes: "govuk-radios--inline",
     fieldset: {
       legend: {
-        text: "If selected for this scheme you will have been informed of this by your line manager"
+        text: "This only applies to prisoners who have been selected as suitable for TPRS after the completion of the TPRS checklist"
       }
     },
     errorMessage: {

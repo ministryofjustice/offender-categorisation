@@ -7,7 +7,7 @@ class TprsPage extends Page {
   static url = '/form/openConditions/tprs'
 
   static at = {
-    headingText == 'Have they been selected for the Temporary Prison Recategorisation Scheme?'
+    headingText == 'Is this prisoner eligible for the Temporary Presumptive Recategorisation Scheme (TPRS)?'
   }
 
   static content = {

@@ -155,16 +155,16 @@
     classes: 'govuk-!-margin-bottom-9 tprsSummary no-print',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Temporary Prison Recategorisation Scheme" },
+        key: { classes: 'summary-list-title', text: "Temporary Presumptive Recategorisation Scheme (TPRS)" },
           actions: { items: [{
             href: '/form/openConditions/tprs/' + data.details.bookingId,
             text: "Change",
-            visuallyHiddenText: "Temporary Prison Recategorisation Scheme"
+            visuallyHiddenText: "Temporary Presumptive Recategorisation Scheme"
           }] if showOpenConditionChangeLinks else []
         }
       },
       {
-        key: { text: "Have they been selected for the Temporary Prison Recategorisation Scheme?" },
+        key: { text: "Are they eligible for TPRS?" },
         value: { text: data.openConditions.tprs.tprsSelected or 'Not applicable' },
         actions: { items: [] }
       }
