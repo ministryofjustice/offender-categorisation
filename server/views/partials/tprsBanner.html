@@ -1,6 +1,6 @@
 {% from "notification-banner/macro.njk" import govukNotificationBanner %}
 
-{% if data.openConditions and (data.openConditions.tprs and data.openConditions.tprs.tprsSelected === 'Yes') %}
+{% if data.openConditions and data.openConditions.tprs and data.openConditions.tprs.tprsSelected === 'Yes' %}
 
   {% set tprsBannerHtml %}
   <p class="govuk-notification-banner__heading">
