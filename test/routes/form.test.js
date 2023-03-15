@@ -684,7 +684,7 @@ describe('GET /supervisor/review', () => {
       })
   })
 
-  test('supervisor approval page should show tprs banner for initial categorisations', () => {
+  test('supervisor approval page should show tprs banner for recats', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'AWAITING_APPROVAL',
       catType: 'RECAT',
@@ -707,7 +707,7 @@ describe('GET /supervisor/review', () => {
       })
   })
 
-  test('supervisor approval page should not show tprs banner for initial categorisations', () => {
+  test('supervisor approval page should not show tprs banner for recats', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'AWAITING_APPROVAL',
       catType: 'RECAT',
