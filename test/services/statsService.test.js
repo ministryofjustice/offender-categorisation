@@ -306,7 +306,7 @@ describe('TPRS Totals', () => {
     )
   })
 
-  test('getInitialCategorisationTprsTotals calls the stats client with the expected arguments', async () => {
+  test('getRecategorisationTprsTotals calls the stats client with the expected arguments', async () => {
     statsClient.getRecategorisationTprsTotals.mockReturnValue({
       rows: [],
     })

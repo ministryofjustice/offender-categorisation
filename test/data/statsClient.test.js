@@ -119,19 +119,19 @@ describe('TPRS Totals', () => {
         expectedQuery = `${commonQuery} and prison_id not in ('AGI','DWI','DHI','ESI','EWI','BZI','FHI','LNI','SDI','STI','NHI','PFI')`
       })
 
-      test('getInitialCategorisationTprsTotalsQuery returns expected query and values', async () => {
+      test('getInitialCategorisationTprsTotalsQuery returns expected query and values when prisonId is explicitly StatsType.MALE', async () => {
         const actualResult = client.getInitialCategorisationTprsTotalsQuery(startDate, endDate, StatsType.MALE)
         expect(actualResult.text).toEqual(expectedQuery)
         expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
       })
 
-      test('getInitialCategorisationTprsTotalsQuery returns expected query and values', async () => {
+      test('getInitialCategorisationTprsTotalsQuery returns expected query and values when prisonId is explicitly null', async () => {
         const actualResult = client.getInitialCategorisationTprsTotalsQuery(startDate, endDate, null)
         expect(actualResult.text).toEqual(expectedQuery)
         expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
       })
 
-      test(`getRecategorisationTprsTotalsQuery returns expected query and values`, async () => {
+      test(`getRecategorisationTprsTotalsQuery returns expected query and values when prisonId is not provided`, async () => {
         const actualResult = client.getRecategorisationTprsTotalsQuery(startDate, endDate)
         expect(actualResult.text).toEqual(expectedQuery)
         expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
