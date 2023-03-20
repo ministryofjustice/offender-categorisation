@@ -1,3 +1,5 @@
+const CatType = require('../utils/catTypeEnum')
+
 function getCount(rows, field, tag) {
   const find = rows.find(r => r[field] === tag)
   return find ? find.count : 0
@@ -86,7 +88,8 @@ module.exports = function createstatsService(statsClient) {
     },
 
     async getInitialCategorisationTprsTotals(startDate, endDate, prisonId, transactionalClient) {
-      const stats = await statsClient.getInitialCategorisationTprsTotals(
+      const stats = await statsClient.getTprsTotals(
+        CatType.INITIAL.name,
         startDate,
         endDate,
         prisonId,
@@ -97,7 +100,13 @@ module.exports = function createstatsService(statsClient) {
     },
 
     async getRecategorisationTprsTotals(startDate, endDate, prisonId, transactionalClient) {
-      const stats = await statsClient.getRecategorisationTprsTotals(startDate, endDate, prisonId, transactionalClient)
+      const stats = await statsClient.getTprsTotals(
+        CatType.RECAT.name,
+        startDate,
+        endDate,
+        prisonId,
+        transactionalClient
+      )
 
       return stats.rows[0]
     },

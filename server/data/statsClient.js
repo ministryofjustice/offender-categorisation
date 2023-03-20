@@ -1,7 +1,6 @@
 const { femalePrisonIds } = require('../config')
 const StatsType = require('../utils/statsTypeEnum')
 const { isFemalePrisonId } = require('../utils/utils')
-const CatType = require('../utils/catTypeEnum')
 
 const whereClauseStart = `status = 'APPROVED' and
   cat_type = $1::cat_type_enum and
@@ -173,21 +172,11 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getInitialCategorisationTprsTotalsQuery(startDate, endDate, prisonId) {
-    return createTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, prisonId)
+  getTprsTotalsQuery(catType, startDate, endDate, prisonId) {
+    return createTprsTotalsQuery(catType, startDate, endDate, prisonId)
   },
 
-  getInitialCategorisationTprsTotals(startDate, endDate, prisonId, transactionalClient) {
-    return transactionalClient.query(
-      module.exports.getInitialCategorisationTprsTotalsQuery(startDate, endDate, prisonId)
-    )
-  },
-
-  getRecategorisationTprsTotalsQuery(startDate, endDate, prisonId) {
-    return createTprsTotalsQuery(CatType.RECAT.name, startDate, endDate, prisonId)
-  },
-
-  getRecategorisationTprsTotals(startDate, endDate, prisonId, transactionalClient) {
-    return transactionalClient.query(module.exports.getRecategorisationTprsTotalsQuery(startDate, endDate, prisonId))
+  getTprsTotals(catType, startDate, endDate, prisonId, transactionalClient) {
+    return transactionalClient.query(createTprsTotalsQuery(catType, startDate, endDate, prisonId))
   },
 }

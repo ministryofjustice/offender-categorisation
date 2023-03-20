@@ -61,7 +61,7 @@ describe('getInitialCategoryOutcomesQuery', () => {
   })
 })
 
-describe('TPRS Totals', () => {
+describe('getTprsTotals', () => {
   let startDate
   let endDate
   let commonQuery
@@ -81,15 +81,15 @@ describe('TPRS Totals', () => {
 
   describe(`with a defined prisonId`, () => {
     describe(`men's estate`, () => {
-      test('getInitialCategorisationTprsTotalsQuery returns expected query and values', async () => {
-        const actualResult = client.getInitialCategorisationTprsTotalsQuery(startDate, endDate, 'ANY')
+      test('initial categorisation returns expected query and values', async () => {
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, 'ANY')
         expect(actualResult.text).toEqual(`${commonQuery} and prison_id = 'ANY'`)
         expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
       })
 
-      test(`getRecategorisationTprsTotalsQuery returns expected query and values`, async () => {
+      test(`recategorisation returns expected query and values`, async () => {
         const prisonId = 'LPI'
-        const actualResult = client.getRecategorisationTprsTotalsQuery(startDate, endDate, prisonId)
+        const actualResult = client.getTprsTotalsQuery(CatType.RECAT.name, startDate, endDate, prisonId)
         expect(actualResult.text).toEqual(`${commonQuery} and prison_id = '${prisonId}'`)
         expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
       })
@@ -97,14 +97,14 @@ describe('TPRS Totals', () => {
 
     describe(`women's estate`, () => {
       test('getInitialCategorisationTprsTotalsQuery returns expected query and values', async () => {
-        const actualResult = client.getInitialCategorisationTprsTotalsQuery(startDate, endDate, 'LNI')
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, 'LNI')
         expect(actualResult.text).toEqual(`${commonQuery} and prison_id = 'LNI'`)
         expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
       })
 
       test(`getRecategorisationTprsTotalsQuery returns expected query and values`, async () => {
         const prisonId = 'AGI'
-        const actualResult = client.getRecategorisationTprsTotalsQuery(startDate, endDate, prisonId)
+        const actualResult = client.getTprsTotalsQuery(CatType.RECAT.name, startDate, endDate, prisonId)
         expect(actualResult.text).toEqual(`${commonQuery} and prison_id = '${prisonId}'`)
         expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
       })
@@ -120,19 +120,19 @@ describe('TPRS Totals', () => {
       })
 
       test('getInitialCategorisationTprsTotalsQuery returns expected query and values when prisonId is explicitly StatsType.MALE', async () => {
-        const actualResult = client.getInitialCategorisationTprsTotalsQuery(startDate, endDate, StatsType.MALE)
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, StatsType.MALE)
         expect(actualResult.text).toEqual(expectedQuery)
         expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
       })
 
       test('getInitialCategorisationTprsTotalsQuery returns expected query and values when prisonId is explicitly null', async () => {
-        const actualResult = client.getInitialCategorisationTprsTotalsQuery(startDate, endDate, null)
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, null)
         expect(actualResult.text).toEqual(expectedQuery)
         expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
       })
 
       test(`getRecategorisationTprsTotalsQuery returns expected query and values when prisonId is not provided`, async () => {
-        const actualResult = client.getRecategorisationTprsTotalsQuery(startDate, endDate)
+        const actualResult = client.getTprsTotalsQuery(CatType.RECAT.name, startDate, endDate)
         expect(actualResult.text).toEqual(expectedQuery)
         expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
       })
@@ -144,13 +144,13 @@ describe('TPRS Totals', () => {
       })
 
       test('getInitialCategorisationTprsTotalsQuery returns expected query and values', async () => {
-        const actualResult = client.getInitialCategorisationTprsTotalsQuery(startDate, endDate, StatsType.FEMALE)
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, StatsType.FEMALE)
         expect(actualResult.text).toEqual(expectedQuery)
         expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
       })
 
       test(`getRecategorisationTprsTotalsQuery returns expected query and values`, async () => {
-        const actualResult = client.getRecategorisationTprsTotalsQuery(startDate, endDate, StatsType.FEMALE)
+        const actualResult = client.getTprsTotalsQuery(CatType.RECAT.name, startDate, endDate, StatsType.FEMALE)
         expect(actualResult.text).toEqual(expectedQuery)
         expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
       })
