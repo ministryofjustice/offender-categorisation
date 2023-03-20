@@ -1205,7 +1205,6 @@ module.exports = function createOffendersService(
           recordExists: !!foundCatRecord,
           approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
           sequence: foundCatRecord && foundCatRecord.sequence,
-          // TODO extract into a method
           tprsSelected:
             foundCatRecord &&
             foundCatRecord.formObject &&
