@@ -16,6 +16,7 @@
 {% block content %}
 
 <div class="govuk-!-width-two-thirds">
+  {% include "../partials/tprsLandingBanner.html" %}
 
   {% if data.nextReviewDate %}
     <p class="data-qa-nextReviewDate">They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
