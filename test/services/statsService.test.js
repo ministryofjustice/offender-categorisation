@@ -8,6 +8,8 @@ const statsClient = {
   getSecurityReferrals: jest.fn(),
   getOnTime: jest.fn(),
   getInitialCategoryOutcomes: jest.fn(),
+  getInitialCategorisationTprsTotals: jest.fn(),
+  getRecategorisationTprsTotals: jest.fn(),
 }
 
 let service
@@ -276,5 +278,49 @@ describe('getInitialCategoryOutcomes', () => {
         superOverride: 'R',
       },
     ])
+  })
+})
+
+describe('TPRS Totals', () => {
+  let startDate
+  let endDate
+
+  beforeEach(() => {
+    startDate = 'dummyStartDate'
+    endDate = 'dummyEndDate'
+  })
+
+  test('getInitialCategorisationTprsTotals calls the stats client with the expected arguments', async () => {
+    statsClient.getInitialCategorisationTprsTotals.mockReturnValue({
+      rows: [],
+    })
+
+    await service.getInitialCategorisationTprsTotals(startDate, endDate, prisonId, mockTransactionalClient)
+
+    expect(statsClient.getInitialCategorisationTprsTotals).toHaveBeenCalledTimes(1)
+    expect(statsClient.getInitialCategorisationTprsTotals).toHaveBeenCalledWith(
+      startDate,
+      endDate,
+      prisonId,
+      mockTransactionalClient
+    )
+  })
+
+  test('getInitialCategorisationTprsTotals calls the stats client with the expected arguments', async () => {
+    statsClient.getRecategorisationTprsTotals.mockReturnValue({
+      rows: [],
+    })
+
+    const anotherPrisonId = 'ANY'
+
+    await service.getRecategorisationTprsTotals(startDate, endDate, anotherPrisonId, mockTransactionalClient)
+
+    expect(statsClient.getRecategorisationTprsTotals).toHaveBeenCalledTimes(1)
+    expect(statsClient.getRecategorisationTprsTotals).toHaveBeenCalledWith(
+      startDate,
+      endDate,
+      anotherPrisonId,
+      mockTransactionalClient
+    )
   })
 })

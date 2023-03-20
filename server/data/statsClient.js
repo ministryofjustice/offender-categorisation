@@ -1,6 +1,7 @@
 const { femalePrisonIds } = require('../config')
 const StatsType = require('../utils/statsTypeEnum')
 const { isFemalePrisonId } = require('../utils/utils')
+const CatType = require('../utils/catTypeEnum')
 
 const whereClauseStart = `status = 'APPROVED' and
   cat_type = $1::cat_type_enum and
@@ -50,6 +51,16 @@ function createInitialCategoryOutcomesQuery(startDate, endDate, prisonId) {
            group by "initialCat", "initialOverride",  "superOverride"
            order by "initialCat",  "initialOverride" NULLS FIRST, "superOverride" NULLS FIRST`,
     values: ['INITIAL', startDate, endDate],
+  }
+}
+
+function createTprsTotalsQuery(catType, startDate, endDate, prisonId) {
+  return {
+    text: `select count(*)
+                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' ) as tprs_selected
+           from form
+           where ${createWhereClause(prisonId)}`,
+    values: [catType, startDate, endDate],
   }
 }
 
@@ -160,5 +171,23 @@ module.exports = {
       values: [catType, startDate, endDate],
     }
     return transactionalClient.query(query)
+  },
+
+  getInitialCategorisationTprsTotalsQuery(startDate, endDate, prisonId) {
+    return createTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, prisonId)
+  },
+
+  getInitialCategorisationTprsTotals(startDate, endDate, prisonId, transactionalClient) {
+    return transactionalClient.query(
+      module.exports.getInitialCategorisationTprsTotalsQuery(startDate, endDate, prisonId)
+    )
+  },
+
+  getRecategorisationTprsTotalsQuery(startDate, endDate, prisonId) {
+    return createTprsTotalsQuery(CatType.RECAT.name, startDate, endDate, prisonId)
+  },
+
+  getRecategorisationTprsTotals(startDate, endDate, prisonId, transactionalClient) {
+    return transactionalClient.query(module.exports.getRecategorisationTprsTotalsQuery(startDate, endDate, prisonId))
   },
 }
