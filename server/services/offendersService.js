@@ -1205,6 +1205,14 @@ module.exports = function createOffendersService(
           recordExists: !!foundCatRecord,
           approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
           sequence: foundCatRecord && foundCatRecord.sequence,
+          // TODO extract into a method
+          tprsSelected:
+            foundCatRecord &&
+            foundCatRecord.formObject &&
+            foundCatRecord.formObject.openConditions &&
+            foundCatRecord.formObject.openConditions.tprs &&
+            foundCatRecord.formObject.openConditions.tprs.tprsSelected &&
+            foundCatRecord.formObject.openConditions.tprs.tprsSelected === 'Yes',
         }
       })
     )

@@ -451,7 +451,7 @@ describe('security upcoming', () => {
 })
 
 describe('Security Landing page', () => {
-  offendersService.getCategoryHistory.mockResolvedValue({ history: {} })
+  offendersService.getCategoryHistory.mockResolvedValue({ history: [] })
   formService.getNextReview.mockResolvedValue([])
 
   test('security user get', () => {
