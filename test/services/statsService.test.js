@@ -295,7 +295,7 @@ describe('getTprsTotals', () => {
   })
 
   test('initial categorisation calls the stats client with the expected arguments', async () => {
-    await service.getInitialCategorisationTprsTotals(startDate, endDate, prisonId, mockTransactionalClient)
+    await service.getTprsTotals(CatType.INITIAL.name, startDate, endDate, prisonId, mockTransactionalClient)
 
     expect(statsClient.getTprsTotals).toHaveBeenCalledTimes(1)
     expect(statsClient.getTprsTotals).toHaveBeenCalledWith(
@@ -310,7 +310,7 @@ describe('getTprsTotals', () => {
   test('recategorisation calls the stats client with the expected arguments', async () => {
     const anotherPrisonId = 'ANY'
 
-    await service.getRecategorisationTprsTotals(startDate, endDate, anotherPrisonId, mockTransactionalClient)
+    await service.getTprsTotals(CatType.RECAT.name, startDate, endDate, anotherPrisonId, mockTransactionalClient)
 
     expect(statsClient.getTprsTotals).toHaveBeenCalledTimes(1)
     expect(statsClient.getTprsTotals).toHaveBeenCalledWith(
