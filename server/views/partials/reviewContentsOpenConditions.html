@@ -30,6 +30,25 @@
 {% endset %}
 
 
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 tprsSummary no-print',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Temporary Presumptive Recategorisation Scheme (TPRS)" },
+          actions: { items: [{
+            href: '/form/openConditions/tprs/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Temporary Presumptive Recategorisation Scheme"
+          }] if showOpenConditionChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Are they eligible for TPRS?" },
+        value: { text: data.openConditions.tprs.tprsSelected or 'Not applicable' },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
 
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 earliestReleaseDateSummary',
@@ -146,26 +165,6 @@
       {
         key: { text: "Have they been through all appeals process in the UK?" },
         value: { text: data.openConditions.foreignNational.exhaustedAppeal or 'Not applicable' },
-        actions: { items: [] }
-      }
-    ]
-  }) }}
-
-  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 tprsSummary no-print',
-    rows: [
-      {
-        key: { classes: 'summary-list-title', text: "Temporary Presumptive Recategorisation Scheme (TPRS)" },
-          actions: { items: [{
-            href: '/form/openConditions/tprs/' + data.details.bookingId,
-            text: "Change",
-            visuallyHiddenText: "Temporary Presumptive Recategorisation Scheme"
-          }] if showOpenConditionChangeLinks else []
-        }
-      },
-      {
-        key: { text: "Are they eligible for TPRS?" },
-        value: { text: data.openConditions.tprs.tprsSelected or 'Not applicable' },
         actions: { items: [] }
       }
     ]
