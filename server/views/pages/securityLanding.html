@@ -14,11 +14,8 @@
 
 {% block content %}
 
-TODO info banner:
-hasTprsSelected: {{ data.hasTprsSelected }}
-tprsDate: {{ data.tprsDate }}
-
 <div class="govuk-!-width-two-thirds">
+  {% include "../partials/tprsLandingBanner.html" %}
 
   {% if data.isSecurityReferred %}
     <h2 class="govuk-heading-m">This person will automatically be referred to security at the next category review.</h2>
