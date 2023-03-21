@@ -2112,7 +2112,20 @@ describe('getCategorisationHistory', () => {
     nomisClient.getMainOffence.mockResolvedValue({ mainOffence: 'stuff' })
     nomisClient.getCategoryHistory.mockResolvedValue(cats)
     formService.getHistoricalCategorisationRecords.mockResolvedValue([
-      { bookingId: -45, sequence: 1, nomisSeq: 10, catType: 'INITIAL', status: Status.APPROVED.name },
+      {
+        bookingId: -45,
+        sequence: 1,
+        nomisSeq: 10,
+        catType: 'INITIAL',
+        status: Status.APPROVED.name,
+        formObject: {
+          openConditions: {
+            tprs: {
+              tprsSelected: 'Yes',
+            },
+          },
+        },
+      },
       { bookingId: -45, sequence: 3, nomisSeq: 7, catType: 'INITIAL', status: Status.APPROVED.name },
     ])
     nomisClient.getAgencyDetail.mockResolvedValue({ description: 'Moorlands' })
@@ -2130,6 +2143,7 @@ describe('getCategorisationHistory', () => {
         assessmentSeq: 10,
         sequence: 1,
         recordExists: true,
+        tprsSelected: true,
       },
       {
         bookingId: -45,
