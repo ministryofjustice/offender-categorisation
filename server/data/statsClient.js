@@ -53,6 +53,16 @@ function createInitialCategoryOutcomesQuery(startDate, endDate, prisonId) {
   }
 }
 
+function createTprsTotalsQuery(catType, startDate, endDate, prisonId) {
+  return {
+    text: `select count(*)
+                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' ) as tprs_selected
+           from form
+           where ${createWhereClause(prisonId)}`,
+    values: [catType, startDate, endDate],
+  }
+}
+
 module.exports = {
   getWhereClause(prisonId) {
     return createWhereClause(prisonId)
@@ -160,5 +170,13 @@ module.exports = {
       values: [catType, startDate, endDate],
     }
     return transactionalClient.query(query)
+  },
+
+  getTprsTotalsQuery(catType, startDate, endDate, prisonId) {
+    return createTprsTotalsQuery(catType, startDate, endDate, prisonId)
+  },
+
+  getTprsTotals(catType, startDate, endDate, prisonId, transactionalClient) {
+    return transactionalClient.query(createTprsTotalsQuery(catType, startDate, endDate, prisonId))
   },
 }

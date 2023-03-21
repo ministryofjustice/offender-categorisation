@@ -1,5 +1,6 @@
 const client = require('../../server/data/statsClient')
 const StatsType = require('../../server/utils/statsTypeEnum')
+const CatType = require('../../server/utils/catTypeEnum')
 
 const expectedFemalePrisonIds = `'AGI','DWI','DHI','ESI','EWI','BZI','FHI','LNI','SDI','STI','NHI','PFI'`
 const whereClauseStart = `status = 'APPROVED' and
@@ -57,5 +58,102 @@ describe('getInitialCategoryOutcomesQuery', () => {
   test('query should contain decision for all female prisons', async () => {
     const actualResult = await client.getInitialCategoryOutcomesQuery('start', 'end', StatsType.FEMALE)
     expect(actualResult.text).toContain(`decision`)
+  })
+})
+
+describe('getTprsTotals', () => {
+  let startDate
+  let endDate
+  let commonQuery
+
+  beforeEach(() => {
+    startDate = 'dummyStartDate'
+    endDate = 'dummyEndDate'
+    // text formatting matters here unfortunately
+    commonQuery = `select count(*)
+                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' ) as tprs_selected
+           from form
+           where status = 'APPROVED' and
+  cat_type = $1::cat_type_enum and
+  ($2::date is null or $2::date <= approval_date) and
+  ($3::date is null or approval_date <= $3::date)`
+  })
+
+  describe(`with a defined prisonId`, () => {
+    describe(`men's estate`, () => {
+      test('initial categorisation returns expected query and values', async () => {
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, 'ANY')
+        expect(actualResult.text).toEqual(`${commonQuery} and prison_id = 'ANY'`)
+        expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
+      })
+
+      test(`recategorisation returns expected query and values`, async () => {
+        const prisonId = 'LPI'
+        const actualResult = client.getTprsTotalsQuery(CatType.RECAT.name, startDate, endDate, prisonId)
+        expect(actualResult.text).toEqual(`${commonQuery} and prison_id = '${prisonId}'`)
+        expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
+      })
+    })
+
+    describe(`women's estate`, () => {
+      test('getInitialCategorisationTprsTotalsQuery returns expected query and values', async () => {
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, 'LNI')
+        expect(actualResult.text).toEqual(`${commonQuery} and prison_id = 'LNI'`)
+        expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
+      })
+
+      test(`getRecategorisationTprsTotalsQuery returns expected query and values`, async () => {
+        const prisonId = 'AGI'
+        const actualResult = client.getTprsTotalsQuery(CatType.RECAT.name, startDate, endDate, prisonId)
+        expect(actualResult.text).toEqual(`${commonQuery} and prison_id = '${prisonId}'`)
+        expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
+      })
+    })
+  })
+
+  describe(`without a defined prisonId`, () => {
+    let expectedQuery
+
+    describe(`men's estate`, () => {
+      beforeEach(() => {
+        expectedQuery = `${commonQuery} and prison_id not in ('AGI','DWI','DHI','ESI','EWI','BZI','FHI','LNI','SDI','STI','NHI','PFI')`
+      })
+
+      test('getInitialCategorisationTprsTotalsQuery returns expected query and values when prisonId is explicitly StatsType.MALE', async () => {
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, StatsType.MALE)
+        expect(actualResult.text).toEqual(expectedQuery)
+        expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
+      })
+
+      test('getInitialCategorisationTprsTotalsQuery returns expected query and values when prisonId is explicitly null', async () => {
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, null)
+        expect(actualResult.text).toEqual(expectedQuery)
+        expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
+      })
+
+      test(`getRecategorisationTprsTotalsQuery returns expected query and values when prisonId is not provided`, async () => {
+        const actualResult = client.getTprsTotalsQuery(CatType.RECAT.name, startDate, endDate)
+        expect(actualResult.text).toEqual(expectedQuery)
+        expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
+      })
+    })
+
+    describe(`women's estate`, () => {
+      beforeEach(() => {
+        expectedQuery = `${commonQuery} and prison_id in ('AGI','DWI','DHI','ESI','EWI','BZI','FHI','LNI','SDI','STI','NHI','PFI')`
+      })
+
+      test('getInitialCategorisationTprsTotalsQuery returns expected query and values', async () => {
+        const actualResult = client.getTprsTotalsQuery(CatType.INITIAL.name, startDate, endDate, StatsType.FEMALE)
+        expect(actualResult.text).toEqual(expectedQuery)
+        expect(actualResult.values).toEqual([CatType.INITIAL.name, startDate, endDate])
+      })
+
+      test(`getRecategorisationTprsTotalsQuery returns expected query and values`, async () => {
+        const actualResult = client.getTprsTotalsQuery(CatType.RECAT.name, startDate, endDate, StatsType.FEMALE)
+        expect(actualResult.text).toEqual(expectedQuery)
+        expect(actualResult.values).toEqual([CatType.RECAT.name, startDate, endDate])
+      })
+    })
   })
 })

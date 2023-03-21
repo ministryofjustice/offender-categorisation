@@ -20,6 +20,8 @@
   hasTprsSelected: {{ data.hasTprsSelected }}
   tprsDate: {{ data.tprsDate }}
 
+  {% include "../partials/tprsLandingBanner.html" %}
+
   <div>
     {% if data.requiredCatType %}
       {% if data.requiredCatType == 'RECAT' %}
