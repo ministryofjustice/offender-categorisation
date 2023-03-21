@@ -51,6 +51,13 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'open conditions task is selected'
     openConditionsButton.click()
 
+    then: 'the TPRS page is displayed'
+    at TprsPage
+
+    when: 'I submit page'
+    tprsSelectedYes.click()
+    submitButton.click()
+
     then: 'the Earliest Release page is displayed'
     at EarliestReleasePage
 
@@ -93,13 +100,6 @@ class OpenConditionsSpecification extends AbstractSpecification {
     formCompletedYes.click()
     dueDeportedYes.click()
     exhaustedAppealNo.click()
-    submitButton.click()
-
-    then: 'the TPRS page is displayed'
-    at TprsPage
-
-    when: 'I submit page'
-    tprsSelectedYes.click()
     submitButton.click()
 
     then: 'the Risk of serious harm page is displayed'
@@ -623,6 +623,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   private completeOpenConditionsWorkflow() {
     openConditionsButton.click()
+    at TprsPage
+    tprsSelectedNo.click()
+    submitButton.click()
     at EarliestReleasePage
     threeOrMoreYearsNo.click()
     submitButton.click()
@@ -631,9 +634,6 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
     at ForeignNationalPage
     isForeignNationalNo.click()
-    submitButton.click()
-    at TprsPage
-    tprsSelectedNo.click()
     submitButton.click()
     at RiskOfHarmPage
     seriousHarmNo.click()
