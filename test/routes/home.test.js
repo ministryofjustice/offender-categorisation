@@ -46,6 +46,7 @@ const formService = {
   isValid: jest.fn(),
   cancelSecurityReferral: jest.fn(),
   getNextReview: jest.fn(),
+  isYoungOffender: jest.fn(),
 }
 
 const homeRoute = createRouter({
@@ -790,7 +791,7 @@ describe('Switching roles', () => {
 })
 
 describe('TPRS banner appears on landing page', () => {
-  test('Categoriser - landing page shows TPRS banner', () => {
+  test('Categoriser - landing page shows TPRS banner for male prison', () => {
     roles = ['ROLE_CREATE_CATEGORISATION']
     userServiceGetUser()
     offenderServiceGetOffenderDetails()
@@ -843,7 +844,7 @@ describe('TPRS banner appears on landing page', () => {
       })
   })
 
-  test('Recategoriser - landing page shows TPRS banner', () => {
+  test('Recategoriser - landing page shows TPRS banner for male prison', () => {
     roles = ['ROLE_CREATE_RECATEGORISATION']
     userServiceGetUser()
     offenderServiceGetOffenderDetails()
@@ -886,7 +887,7 @@ describe('TPRS banner appears on landing page', () => {
       })
   })
 
-  test('Supervisor - landing page shows TPRS banner', () => {
+  test('Supervisor -landing page shows TPRS banner for male prison', () => {
     roles = ['ROLE_APPROVE_CATEGORISATION']
     userServiceGetUser()
     offenderServiceGetOffenderDetails()
@@ -929,7 +930,7 @@ describe('TPRS banner appears on landing page', () => {
       })
   })
 
-  test('Security - landing page shows TPRS banner', () => {
+  test('Security - landing page shows TPRS banner for male prison', () => {
     roles = ['ROLE_CATEGORISATION_SECURITY']
     userServiceGetUser()
     offenderServiceGetOffenderDetails()
@@ -971,7 +972,123 @@ describe('TPRS banner appears on landing page', () => {
       })
   })
 
-  test('Categoriser - landing page does not shows TPRS banner', () => {
+  test('Categoriser - landing page shows TPRS banner for female prison', () => {
+    roles = ['ROLE_CREATE_CATEGORISATION']
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+      roles: { security: true },
+    })
+    offenderServiceGetOffenderDetails()
+
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+      displayStatus: 'Any other status',
+      prisonId: 'PFI',
+      approvalDate: moment('2023-03-13'),
+      formObject: {
+        ratings: {
+          supervisor: {
+            review: { proposedCategory: 'T', supervisorCategoryAppropriate: 'Yes' },
+          },
+          categoriser: {
+            provisionalCategory: {
+              suggestedCategory: 'R',
+              overriddenCategory: 'T',
+              categoryAppropriate: 'No',
+            },
+          },
+          openConditions: {
+            openConditionsRequested: true,
+            tprs: { tprsSelected: 'Yes' },
+          },
+        },
+      },
+    })
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: true,
+        },
+      ],
+    })
+    formService.getNextReview.mockResolvedValue([])
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
+    return request(app)
+      .get(`/categoriserLanding/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('id="tprsLandingBanner"')
+      })
+  })
+
+  test('Recategoriser - landing page shows TPRS banner for female prison YOI', () => {
+    roles = ['ROLE_CREATE_RECATEGORISATION']
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+      roles: { security: true },
+    })
+    formService.isYoungOffender.mockReturnValue(true)
+    offenderServiceGetOffenderDetails()
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+      displayStatus: 'Any other status',
+      prisonId: 'PFI',
+      approvalDate: moment('2023-03-13'),
+      formObject: {
+        recat: { decision: { category: 'J' } },
+        supervisor: { review: { proposedCateogry: 'I', supervisorCategoryAppropiate: 'Yes' } },
+        openConditions: {
+          openConditionsRequested: true,
+          tprs: { tprsSelected: 'No' },
+        },
+      },
+    })
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: true,
+        },
+      ],
+    })
+    formService.getNextReview.mockResolvedValue([])
+    offendersService.requiredCatType.mockResolvedValue('RECAT')
+    return request(app)
+      .get(`/recategoriserLanding/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('id="tprsLandingBanner"')
+      })
+  })
+
+  test('Categoriser - landing page does not show TPRS banner for male prison', () => {
     roles = ['ROLE_CREATE_CATEGORISATION']
     userServiceGetUser()
     offenderServiceGetOffenderDetails()
@@ -1017,6 +1134,58 @@ describe('TPRS banner appears on landing page', () => {
     offendersService.requiredCatType.mockResolvedValue('INITIAL')
     return request(app)
       .get(`/categoriserlanding/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsLandingBanner"')
+      })
+  })
+
+  test('Recategoriser - landing page does not show TPRS banner for female prison', () => {
+    roles = ['ROLE_CREATE_RECATEGORISATION']
+    userService.getUser.mockResolvedValue({
+      activeCaseLoad: {
+        caseLoadId: 'PFI',
+        description: 'Peterborough Female (HMP & YOI)',
+        type: 'INST',
+        caseloadFunction: 'GENERAL',
+        currentlyActive: true,
+        female: true,
+      },
+      roles: { security: true },
+    })
+    offenderServiceGetOffenderDetails()
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+      displayStatus: 'Any other status',
+      prisonId: 'PFI',
+      approvalDate: moment('2023-03-13'),
+      formObject: {
+        recat: { decision: { category: 'T' } },
+        supervisor: { review: { proposedCateogry: 'R', supervisorCategoryAppropiate: 'Yes' } },
+        openConditions: {
+          openConditionsRequested: true,
+          tprs: { tprsSelected: 'No' },
+        },
+      },
+    })
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: false,
+        },
+      ],
+    })
+    formService.getNextReview.mockResolvedValue([])
+    offendersService.requiredCatType.mockResolvedValue('RECAT')
+    return request(app)
+      .get(`/recategoriserLanding/1234`)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
