@@ -1,4 +1,5 @@
 const serviceCreator = require('../../server/services/statsService')
+const CatType = require('../../server/utils/catTypeEnum')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 const prisonId = 'LEI'
@@ -8,6 +9,7 @@ const statsClient = {
   getSecurityReferrals: jest.fn(),
   getOnTime: jest.fn(),
   getInitialCategoryOutcomes: jest.fn(),
+  getTprsTotals: jest.fn(),
 }
 
 let service
@@ -276,5 +278,47 @@ describe('getInitialCategoryOutcomes', () => {
         superOverride: 'R',
       },
     ])
+  })
+})
+
+describe('getTprsTotals', () => {
+  let startDate
+  let endDate
+
+  beforeEach(() => {
+    startDate = 'dummyStartDate'
+    endDate = 'dummyEndDate'
+
+    statsClient.getTprsTotals.mockReturnValue({
+      rows: [],
+    })
+  })
+
+  test('initial categorisation calls the stats client with the expected arguments', async () => {
+    await service.getTprsTotals(CatType.INITIAL.name, startDate, endDate, prisonId, mockTransactionalClient)
+
+    expect(statsClient.getTprsTotals).toHaveBeenCalledTimes(1)
+    expect(statsClient.getTprsTotals).toHaveBeenCalledWith(
+      CatType.INITIAL.name,
+      startDate,
+      endDate,
+      prisonId,
+      mockTransactionalClient
+    )
+  })
+
+  test('recategorisation calls the stats client with the expected arguments', async () => {
+    const anotherPrisonId = 'ANY'
+
+    await service.getTprsTotals(CatType.RECAT.name, startDate, endDate, anotherPrisonId, mockTransactionalClient)
+
+    expect(statsClient.getTprsTotals).toHaveBeenCalledTimes(1)
+    expect(statsClient.getTprsTotals).toHaveBeenCalledWith(
+      CatType.RECAT.name,
+      startDate,
+      endDate,
+      anotherPrisonId,
+      mockTransactionalClient
+    )
   })
 })
