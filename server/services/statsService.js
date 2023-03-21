@@ -84,5 +84,11 @@ module.exports = function createstatsService(statsClient) {
         total: onTime + notOnTime,
       }
     },
+
+    async getTprsTotals(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getTprsTotals(catType, startDate, endDate, prisonId, transactionalClient)
+
+      return stats.rows[0]
+    },
   }
 }
