@@ -369,7 +369,7 @@ module.exports = function Index({
       )
 
       const nextReviewDateHistory = await formService.getNextReview(details.offenderNo, transactionalDbClient)
-
+      const tprsRecord = categoryHistory && categoryHistory.history && categoryHistory.history.find(h => h.tprsSelected)
       res.render(`pages/${role}Landing`, {
         data: {
           requiredCatType,
@@ -379,6 +379,8 @@ module.exports = function Index({
           details,
           categorisationUser,
           status: categorisationRecord.status,
+          hasTprsSelected: !!tprsRecord,
+          tprsDate: tprsRecord ? tprsRecord.approvalDate : '',
           nextReviewDateHistory,
         },
       })
