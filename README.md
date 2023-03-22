@@ -76,6 +76,10 @@ It has services on which it depends :
 |  docker-compose-test.yml   |                                                  Sets up all containers for running locally                                                   |
 
 ## Running the application
+[You will need a valid DPS user account to log in.](https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/4353425498/UI+User+Account+Permissions)
+
+Ensure you have a local `.env` file. You can use `.env.dev.dist` as a starting point. Be sure to populate the commented out variables with real values.
+
 The offender-categorisation can be run in two ways.
 
 `Simplest way to run locally`
@@ -95,8 +99,11 @@ Either set the environment variable ```SQS_ENABLED=false``` or make sure all the
 
 Install dependencies using ```npm install```
 
+Build the application using ```npm run build```
+
 Run the application using  ```npm run start```
 
+Or run the development environment with ```npm run start:dev```
 
 `Alternative way`
 
@@ -176,16 +183,26 @@ To run the integration tests you need to install *chromedriver* :
 
 Or for non-macs, download from <https://chromedriver.chromium.org/downloads> and put *chromedriver.exe* on your path.
 
-The integration tests uses wiremock stubs to log into the application so the default configuration listed above should be used
+The integration tests uses wiremock stubs to log into the application so the default configuration listed above should be used.
 
 The easiest way to run the integration tests on your local machine is to:
 
-- Start the docker containers by running  ```docker-compose-test.yml```
+- Start the docker containers by running  ```docker-compose -f docker-compose-test.yml up```
 
-- Run the application ```npm run start``` using the default environment variables
+- Use the `.env.test.dist` as your starting point (the default values should be good enough), and rename this file to `.env`
+
+- Run the application ```npm run start```. This uses the `.env` for its environment variables
 
 - Run ```./gradlew chromeTest``` to run with a visible browser  or `./gradlew chromeHeadlessTest` to run without a visible browser
 
 The tests can be run in debug mode for troubleshooting.
+
+Alternatively the tests can be run from your IDE. Ensure you are using either `chromeTest` or `chromeHeadlessTest` in your run path. Using `test` will run all the project tests, and will likely fail:
+
+e.g.
+
+```
+:integration-tests:chromeTest --tests "uk.gov.justice.digital.hmpps.cattool.specs.OpenConditionsSpecification"
+```
 
 More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>
