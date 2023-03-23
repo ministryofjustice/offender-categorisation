@@ -1352,4 +1352,109 @@ describe('TPRS banner appears on landing page', () => {
         expect(res.text).not.toContain('id="tprsLandingBanner"')
       })
   })
+
+  test('Landing page does not shows TPRS banner if not the top history item has tprs', () => {
+    roles = ['ROLE_CREATE_CATEGORISATION']
+    userServiceGetUser()
+    offenderServiceGetOffenderDetails()
+
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+      displayStatus: 'Any other status',
+      prisonId: 'MPI',
+      approvalDate: moment('2023-03-13'),
+      formObject: {
+        ratings: {
+          supervisor: {
+            review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
+          },
+          categoriser: {
+            provisionalCategory: {
+              suggestedCategory: 'C',
+              overriddenCategory: 'D',
+              categoryAppropriate: 'No',
+            },
+          },
+          openConditions: {
+            openConditionsRequested: true,
+            tprs: { tprsSelected: 'Yes' },
+          },
+        },
+      },
+    })
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: false,
+        },
+        {
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-10',
+          tprsSelected: true,
+        },
+      ],
+    })
+    formService.getNextReview.mockResolvedValue([])
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
+    return request(app)
+      .get(`/categoriserLanding/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsLandingBanner"')
+      })
+  })
+
+  test('Landing page does not shows TPRS banner if history is empty', () => {
+    roles = ['ROLE_CREATE_CATEGORISATION']
+    userServiceGetUser()
+    offenderServiceGetOffenderDetails()
+
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+      displayStatus: 'Any other status',
+      prisonId: 'MPI',
+      approvalDate: moment('2023-03-13'),
+      formObject: {
+        ratings: {
+          supervisor: {
+            review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
+          },
+          categoriser: {
+            provisionalCategory: {
+              suggestedCategory: 'C',
+              overriddenCategory: 'D',
+              categoryAppropriate: 'No',
+            },
+          },
+          openConditions: {
+            openConditionsRequested: true,
+            tprs: { tprsSelected: 'Yes' },
+          },
+        },
+      },
+    })
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [],
+    })
+    formService.getNextReview.mockResolvedValue([])
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
+    return request(app)
+      .get(`/categoriserLanding/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsLandingBanner"')
+      })
+  })
 })
