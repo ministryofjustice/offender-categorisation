@@ -71,7 +71,8 @@ describe('getTprsTotals', () => {
     endDate = 'dummyEndDate'
     // text formatting matters here unfortunately
     commonQuery = `select count(*)
-                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' ) as tprs_selected
+                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' and
+                                   form_response -> 'recat' -> 'decision' ->> 'category' = 'D' ) as tprs_selected
            from form
            where status = 'APPROVED' and
   cat_type = $1::cat_type_enum and

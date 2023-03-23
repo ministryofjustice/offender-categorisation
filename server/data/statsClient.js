@@ -56,7 +56,8 @@ function createInitialCategoryOutcomesQuery(startDate, endDate, prisonId) {
 function createTprsTotalsQuery(catType, startDate, endDate, prisonId) {
   return {
     text: `select count(*)
-                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' ) as tprs_selected
+                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' and
+                                   form_response -> 'recat' -> 'decision' ->> 'category' = 'D' ) as tprs_selected
            from form
            where ${createWhereClause(prisonId)}`,
     values: [catType, startDate, endDate],
