@@ -53,11 +53,36 @@ function createInitialCategoryOutcomesQuery(startDate, endDate, prisonId) {
   }
 }
 
-function createTprsTotalsQuery(catType, startDate, endDate, prisonId) {
+function createTprsInitialCategorisationTotalsQuery(catType, startDate, endDate, prisonId) {
   return {
     text: `select count(*)
-                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' and
-                                   form_response -> 'recat' -> 'decision' ->> 'category' = 'D' ) as tprs_selected
+             filter (
+               where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' and
+                 (
+                   form_response -> 'categoriser' -> 'provisionalCategory' ->> 'suggestedCategory' in ('D', 'J', 'T')
+                   or
+                   form_response -> 'categoriser' -> 'provisionalCategory' ->> 'overriddenCategory' in ('D', 'J', 'T')
+                   or
+                   form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory' in ('D', 'J', 'T')
+                 )
+               ) as tprs_selected
+           from form
+           where ${createWhereClause(prisonId)}`,
+    values: [catType, startDate, endDate],
+  }
+}
+
+function createTprsRecategorisationTotalsQuery(catType, startDate, endDate, prisonId) {
+  return {
+    text: `select count(*)
+             filter (
+               where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' and
+                 (
+                   form_response -> 'recat' -> 'decision' ->> 'category' in ('D', 'J', 'T')
+                   or
+                   form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory' in ('D', 'J', 'T')
+                 )
+               ) as tprs_selected
            from form
            where ${createWhereClause(prisonId)}`,
     values: [catType, startDate, endDate],
@@ -173,11 +198,19 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getTprsTotalsQuery(catType, startDate, endDate, prisonId) {
-    return createTprsTotalsQuery(catType, startDate, endDate, prisonId)
+  getTprsInitialCategorisationTotalsQuery(catType, startDate, endDate, prisonId) {
+    return createTprsInitialCategorisationTotalsQuery(catType, startDate, endDate, prisonId)
   },
 
-  getTprsTotals(catType, startDate, endDate, prisonId, transactionalClient) {
-    return transactionalClient.query(createTprsTotalsQuery(catType, startDate, endDate, prisonId))
+  getTprsInitialCategorisationTotals(catType, startDate, endDate, prisonId, transactionalClient) {
+    return transactionalClient.query(createTprsInitialCategorisationTotalsQuery(catType, startDate, endDate, prisonId))
+  },
+
+  getTprsRecategorisationTotalsQuery(catType, startDate, endDate, prisonId) {
+    return createTprsRecategorisationTotalsQuery(catType, startDate, endDate, prisonId)
+  },
+
+  getTprsRecategorisationTotals(catType, startDate, endDate, prisonId, transactionalClient) {
+    return transactionalClient.query(createTprsRecategorisationTotalsQuery(catType, startDate, endDate, prisonId))
   },
 }

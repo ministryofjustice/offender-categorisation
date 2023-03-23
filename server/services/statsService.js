@@ -85,8 +85,26 @@ module.exports = function createstatsService(statsClient) {
       }
     },
 
-    async getTprsTotals(catType, startDate, endDate, prisonId, transactionalClient) {
-      const stats = await statsClient.getTprsTotals(catType, startDate, endDate, prisonId, transactionalClient)
+    async getTprsInitialCategorisationTotals(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getTprsInitialCategorisationTotals(
+        catType,
+        startDate,
+        endDate,
+        prisonId,
+        transactionalClient
+      )
+
+      return stats.rows[0]
+    },
+
+    async getTprsRecategorisationTotals(catType, startDate, endDate, prisonId, transactionalClient) {
+      const stats = await statsClient.getTprsRecategorisationTotals(
+        catType,
+        startDate,
+        endDate,
+        prisonId,
+        transactionalClient
+      )
 
       return stats.rows[0]
     },

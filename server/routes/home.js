@@ -223,7 +223,13 @@ module.exports = function Index({
         const security = await statsService.getSecurityReferrals(INIT, start, end, prisonId, transactionalDbClient)
         const timeline = await statsService.getTimeline(INIT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(INIT, start, end, prisonId, transactionalDbClient)
-        const tprs = await statsService.getTprsTotals(INIT, start, end, prisonId, transactionalDbClient)
+        const tprs = await statsService.getTprsInitialCategorisationTotals(
+          INIT,
+          start,
+          end,
+          prisonId,
+          transactionalDbClient
+        )
         const total = getTotal(initial)
         const scopeValues = [
           user.activeCaseLoad.description,

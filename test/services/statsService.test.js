@@ -9,7 +9,8 @@ const statsClient = {
   getSecurityReferrals: jest.fn(),
   getOnTime: jest.fn(),
   getInitialCategoryOutcomes: jest.fn(),
-  getTprsTotals: jest.fn(),
+  getTprsInitialCategorisationTotals: jest.fn(),
+  getTprsRecategorisationTotals: jest.fn(),
 }
 
 let service
@@ -108,11 +109,11 @@ describe('getRecatFromTo', () => {
     const table = await service.getRecatFromTo('dummy', 'dummy', 'PFI', mockTransactionalClient, true)
     /* eslint-disable prettier/prettier */
     expect(table).toEqual([
-      [undefined,         6, undefined, undefined,  6],
-      [8,                 7, undefined, undefined, 15],
-      [undefined, undefined,         5,         2,  7],
-      [undefined, undefined, undefined, undefined,  0],
-      [        8,        13,         5,         2, 28],
+      [undefined, 6, undefined, undefined, 6],
+      [8, 7, undefined, undefined, 15],
+      [undefined, undefined, 5, 2, 7],
+      [undefined, undefined, undefined, undefined, 0],
+      [8, 13, 5, 2, 28],
     ])
     /* eslint-enable prettier/prettier */
   })
@@ -288,17 +289,23 @@ describe('getTprsTotals', () => {
   beforeEach(() => {
     startDate = 'dummyStartDate'
     endDate = 'dummyEndDate'
-
-    statsClient.getTprsTotals.mockReturnValue({
-      rows: [],
-    })
   })
 
   test('initial categorisation calls the stats client with the expected arguments', async () => {
-    await service.getTprsTotals(CatType.INITIAL.name, startDate, endDate, prisonId, mockTransactionalClient)
+    statsClient.getTprsInitialCategorisationTotals.mockReturnValue({
+      rows: [],
+    })
 
-    expect(statsClient.getTprsTotals).toHaveBeenCalledTimes(1)
-    expect(statsClient.getTprsTotals).toHaveBeenCalledWith(
+    await service.getTprsInitialCategorisationTotals(
+      CatType.INITIAL.name,
+      startDate,
+      endDate,
+      prisonId,
+      mockTransactionalClient
+    )
+
+    expect(statsClient.getTprsInitialCategorisationTotals).toHaveBeenCalledTimes(1)
+    expect(statsClient.getTprsInitialCategorisationTotals).toHaveBeenCalledWith(
       CatType.INITIAL.name,
       startDate,
       endDate,
@@ -308,12 +315,22 @@ describe('getTprsTotals', () => {
   })
 
   test('recategorisation calls the stats client with the expected arguments', async () => {
+    statsClient.getTprsRecategorisationTotals.mockReturnValue({
+      rows: [],
+    })
+
     const anotherPrisonId = 'ANY'
 
-    await service.getTprsTotals(CatType.RECAT.name, startDate, endDate, anotherPrisonId, mockTransactionalClient)
+    await service.getTprsRecategorisationTotals(
+      CatType.RECAT.name,
+      startDate,
+      endDate,
+      anotherPrisonId,
+      mockTransactionalClient
+    )
 
-    expect(statsClient.getTprsTotals).toHaveBeenCalledTimes(1)
-    expect(statsClient.getTprsTotals).toHaveBeenCalledWith(
+    expect(statsClient.getTprsRecategorisationTotals).toHaveBeenCalledTimes(1)
+    expect(statsClient.getTprsRecategorisationTotals).toHaveBeenCalledWith(
       CatType.RECAT.name,
       startDate,
       endDate,
