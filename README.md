@@ -197,7 +197,9 @@ The easiest way to run the integration tests on your local machine is to:
 
 The tests can be run in debug mode for troubleshooting.
 
-Alternatively the tests can be run from your IDE. Ensure you are using either `chromeTest` or `chromeHeadlessTest` in your run path. Using `test` will run all the project tests, and will likely fail:
+Alternatively the tests can be run from your IDE. Example IntelliJ run configurations have been provided in the `.run` directory.
+
+Ensure you are using either `chromeTest` or `chromeHeadlessTest` in your run path. Using `test` will run all the project tests, and will likely fail. An example of running a specific test is as follows:
 
 e.g.
 
