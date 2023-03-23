@@ -649,6 +649,11 @@ describe('GET /supervisor/review', () => {
         openConditions: {
           tprs: { tprsSelected: 'Yes' },
         },
+        categoriser: {
+          provisionalCategory: {
+            suggestedCategory: 'D',
+          },
+        },
       },
     })
 
@@ -684,6 +689,29 @@ describe('GET /supervisor/review', () => {
       })
   })
 
+  test('supervisor approval page should show NOT tprs banner for initial categorisations when category is NOT open', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'Yes' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsBanner"')
+      })
+  })
+
   test('supervisor approval page should show tprs banner for recats', () => {
     formService.getCategorisationRecord.mockResolvedValue({
       status: 'AWAITING_APPROVAL',
@@ -694,6 +722,11 @@ describe('GET /supervisor/review', () => {
       formObject: {
         openConditions: {
           tprs: { tprsSelected: 'Yes' },
+        },
+        recat: {
+          decision: {
+            category: 'D',
+          },
         },
       },
     })
@@ -717,6 +750,34 @@ describe('GET /supervisor/review', () => {
       formObject: {
         openConditions: {
           tprs: { tprsSelected: 'No' },
+        },
+      },
+    })
+
+    return request(app)
+      .get(`/supervisor/review/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsBanner"')
+      })
+  })
+
+  test('supervisor approval page should NOT show tprs banner for recats if category is NOT open', () => {
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'AWAITING_APPROVAL',
+      catType: 'RECAT',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      displayStatus: 'Any other status',
+      formObject: {
+        openConditions: {
+          tprs: { tprsSelected: 'Yes' },
+        },
+      },
+      recat: {
+        decision: {
+          category: 'C',
         },
       },
     })

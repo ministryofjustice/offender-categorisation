@@ -79,6 +79,27 @@ const offenderServiceGetOffenderDetails = () => {
   })
 }
 
+const getMockedTprsValues = (cat, selected) => {
+  return [
+    {
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      category: cat,
+      pnomis: true,
+      dbRecord: {
+        formObject: {
+          openConditions: {
+            tprs: {
+              tprsSelected: selected,
+            },
+          },
+        },
+      },
+    },
+  ]
+}
+
 let app
 
 beforeEach(() => {
@@ -174,6 +195,145 @@ describe('GET /supervisorHome', () => {
       .expect(res => {
         expect(res.text).toContain('PNOMIS') // should not display start button
         expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
+      })
+  })
+})
+
+describe('TPRS label tests', () => {
+  test('On supervisor home page TPRS label should not be displayed when tprs yes is selected and category is not open', () => {
+    offendersService.getUnapprovedOffenders.mockResolvedValue(getMockedTprsValues('C', 'Yes'))
+    return request(app)
+      .get('/supervisorHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('On supervisor home page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getUnapprovedOffenders.mockResolvedValue(getMockedTprsValues('D', 'Yes'))
+    return request(app)
+      .get('/supervisorHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+        expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
+      })
+  })
+
+  test('On supervisor done page TPRS label should not be displayed when tprs yes is selected and category is not open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('C', 'Yes'))
+    return request(app)
+      .get('/supervisorDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('On supervisor done page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('D', 'Yes'))
+    return request(app)
+      .get('/supervisorDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+
+  test('On categoriser done page TPRS label should not be displayed when tprs yes is selected and category is not open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('C', 'Yes'))
+    return request(app)
+      .get('/categoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('On categoriser done page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('D', 'Yes'))
+    return request(app)
+      .get('/categoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+
+  test('On recategoriser done page TPRS label should not be displayed when tprs yes is selected and category is not open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('C', 'Yes'))
+    return request(app)
+      .get('/recategoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('On recategoriser done page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('D', 'Yes'))
+    return request(app)
+      .get('/recategoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+
+  test('On category history page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          classificationCode: 'D',
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: true,
+        },
+      ],
+    })
+
+    return request(app)
+      .get('/categoryHistory/12')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+      })
+  })
+
+  test('On category history page TPRS label should NOT be displayed when tprs yes is selected and category is NOT open', () => {
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          classificationCode: 'C',
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: true,
+        },
+      ],
+    })
+
+    return request(app)
+      .get('/categoryHistory/12')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        // expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
       })
   })
 })

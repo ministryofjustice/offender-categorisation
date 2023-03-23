@@ -35,7 +35,7 @@
           <tr class="govuk-table__row ">
             <td class="govuk-table__cell"> {{ row.approvalDateDisplay }}</td>
             <td class="govuk-table__cell">{{ catMappings(row.classificationCode) }}
-              {% if row.tprsSelected %}
+              {% if isOpenCategory(row.classificationCode) and row.tprsSelected %}
               <strong class="govuk-tag govuk-tag--red govuk-!-margin-left-5">TPRS</strong>
               {% endif %}
             </td>
