@@ -6,7 +6,7 @@ const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { dateConverterToISO } = require('../utils/utils')
+const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 
@@ -379,7 +379,7 @@ module.exports = function Index({
           details,
           categorisationUser,
           status: categorisationRecord.status,
-          hasTprsSelected: firstRecord?.tprsSelected || false,
+          hasTprsSelected: (firstRecord?.tprsSelected && isOpenCategory(firstRecord?.classificationCode)) || false,
           tprsDate: firstRecord?.tprsSelected ? firstRecord.approvalDate : '',
           nextReviewDateHistory,
         },
