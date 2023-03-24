@@ -274,7 +274,13 @@ module.exports = function Index({
         const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, transactionalDbClient)
         const timeline = await statsService.getTimeline(RECAT, start, end, prisonId, transactionalDbClient)
         const onTime = await statsService.getOnTime(RECAT, start, end, prisonId, transactionalDbClient)
-        const tprs = await statsService.getTprsTotals(RECAT, start, end, prisonId, transactionalDbClient)
+        const tprs = await statsService.getTprsRecategorisationTotals(
+          RECAT,
+          start,
+          end,
+          prisonId,
+          transactionalDbClient
+        )
         const total = getTotal(recat)
         const scopeValues = [
           user.activeCaseLoad.description,
