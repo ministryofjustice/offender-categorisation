@@ -6,22 +6,24 @@
 
 {% block beforeContent %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-full">
   {{ breadCrumb(breadCrumbList) }}
-  </div>
-  <div class="govuk-grid-column-one-half">
-    <div class="rightAlignedButton govuk-breadcrumbs">
-      <div><a href="/dashboardInitial">Dashboard - initial categorisations</a></div>
-      <div><a href="/dashboardRecat">Dashboard - categorisation reviews</a></div>
-    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block content %}
 
-<div >
-  <h1 class="govuk-heading-l">Prisoner Categorisation Approvals</h1>
+<div class="govuk-grid-row govuk-!-display-inline">
+  <div class="govuk-grid-column-one-half govuk-!-padding-left-0">
+    <h1 class="govuk-heading-l">Prisoner Categorisation Approvals</h1>
+  </div>
+  <div class="govuk-!-display-inline">
+    <div class="rightAlignedButton">
+      <a href="/dashboardInitial" class="govuk-button govuk-button--secondary">Categorisation statistics</a>
+      <a href="/dashboardRecat" class="govuk-button govuk-button--secondary">Recategorisation statistics</a>
+    </div>
+  </div>
 </div>
 
 <div class="govuk-tabs" data-module="govuk-tabs-disabled">
@@ -71,7 +73,11 @@
       <td class="govuk-table__cell">{{ row.dateRequired }}</td>
       <td class="govuk-table__cell">{{ row.nextReviewDate }}</td>
       <td class="govuk-table__cell">{{ row.categoriserDisplayName }}</td>
-      <td class="govuk-table__cell">{{ row.category }}</td>
+      <td class="govuk-table__cell">{{ catMappings(row.category) }}
+        {% if isOpenCategory(row.category) and row.dbRecord.formObject.openConditions.tprs.tprsSelected=='Yes' %}
+        <strong class="govuk-tag govuk-tag--red">TPRS</strong>
+        {% endif %}
+      </td>
       <td class="govuk-table__cell">{{ row.catType }}</td>
       <td class="govuk-table__cell">
         {% if row.pnomis %}

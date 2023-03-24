@@ -11,8 +11,8 @@
     classes: 'govuk-!-margin-bottom-9 print-full-width offendingHistorySummary',
     rows: [
       {
-        key: { text: "Previous Cat A" },
-        value: { text: catAValue if data.history.catAType else 'No Cat A' },
+        key: { text: "Previous Cat A, Restricted." },
+        value: { text: catAValue if data.history.catAType else 'No Cat A, Restricted' },
         actions: { items: [] }
       },
       {
@@ -32,7 +32,7 @@
       }
     ]
   }) }}
-
+{% if not user.activeCaseLoad.female %}
 <h2 class="govuk-heading-m">Further charges</h2>
   {% set further = {
       key: { text: "Further serious charges" },
@@ -44,6 +44,7 @@
           }] if showChangeLinks else []
       }
     } %}
+{% if not user.activeCaseLoad.female %}
   {% set warrantF = {
       key: { classes: 'no-print', text: "Warrant category B?" },
       value: { classes: 'no-print', text: data.ratings.furtherCharges.furtherChargesCatB },
@@ -56,11 +57,12 @@
         }] if showChangeLinks else []
       }
     } %}
+{% endif %}
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 furtherChargesSummary',
     rows: [ further, warrantF ] if data.ratings.furtherCharges.furtherCharges == 'Yes' else [ further ]
   }) }}
-
+{% endif %}
 <h2 class="govuk-heading-m">Safety and good order</h2>
 
 {#  Not in scope until we are using ViSor:
@@ -164,8 +166,8 @@
     ]
   }) }}
 
-  {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB %}
-  <h2 class="govuk-heading-m{{ ' no-print' if not wasReferred }}">Security information</h2>
+  {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB or (user.activeCaseLoad.female and data.ratings.securityBack)%}
+  <h2 class="govuk-heading-m no-print">Security information</h2>
   {% set auto = {
       classes: 'no-print',
       key: { text: "Automatic referral to security team" },
@@ -187,14 +189,18 @@
   {% set flagged = {
       classes: 'no-print',
       key: { text: "Flagged by security team" },
-      value: { text: 'Yes' if data.ratings.securityBack.catB and not data.ratings.securityInput.securityInputNeeded else 'No' },
+      value: { text: 'Yes' if ((not user.activeCaseLoad.female and data.ratings.securityBack.catB)
+                      or (user.activeCaseLoad.female and data.ratings.securityBack))
+                      and not data.ratings.securityInput.securityInputNeeded else 'No' },
       actions: { items: [] }
     } %}
   {% set comments = {
+      classes: 'no-print',
       key: { text: "Security comments" },
       value: { text: data.security.review.securityReview },
       actions: { items: [] }
     } %}
+{% if not user.activeCaseLoad.female %}
   {% set warrantS = {
       classes: 'no-print',
       key: { text: "Warrant category B?" },
@@ -207,10 +213,29 @@
         }] if showChangeLinks and wasReferred else []
       }
     } %}
+{% endif %}
   {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary' + ('' if wasReferred else ' no-print'),
+    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary no-print',
     rows: [ auto, manual, flagged, comments, warrantS ] if wasReferred else [ auto, manual, flagged ]
   }) }}
+
+  {% if user.activeCaseLoad.female %}
+    <h2 class="govuk-heading-m">Category decision</h2>
+    {{ govukSummaryList({
+      classes: 'govuk-!-margin-bottom-9 categoryDecisionSummary no-print',
+      rows: [
+        {
+          key: { text: "What security category is most suitable for this person?" },
+          value: { text: data.ratings.decision.category and catMappings(data.ratings.decision.category) },
+          actions: { items: [{
+                href: '/form/ratings/decision/' + data.details.bookingId,
+                text: "Change",
+                visuallyHiddenText: "Decision"
+              }] if showChangeLinks else [] }
+      }
+    ]
+    }) }}
+  {% endif %}
 
   {% if data.ratings.nextReviewDate %}
     <h2 class="govuk-heading-m">Next category review date</h2>

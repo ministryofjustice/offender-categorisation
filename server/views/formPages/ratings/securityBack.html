@@ -15,20 +15,18 @@
 
 <h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
 
-  {% set warningText %}
-    This prisoner was referred to the security team
-  {% endset %}
-  {{ govukWarningText({
-    text: warningText,
-    iconFallbackText: "Warning",
-    classes: "forms-warning-text warning-overrides"
-  }) }}
+  {% if data.ratings.securityInput.securityInputNeededText %}
+    <h3 class="govuk-heading-s">Note from categoriser:</h3>
+    {{ govukInsetText({
+        text: data.ratings.securityInput.securityInputNeededText
+    }) }}
+  {% endif %}
 
   <h3 class="govuk-heading-s">Note from security:</h3>
   {{ govukInsetText({
     text: data.security.review.securityReview
   }) }}
-
+{% if not user.activeCaseLoad.female %}
   {{ govukRadios({
     name: "catB",
     classes: "govuk-radios--inline",
@@ -54,4 +52,5 @@
       }
     ]
   }) }}
+{% endif %}
 {% endblock %}

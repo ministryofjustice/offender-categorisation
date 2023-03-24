@@ -19,6 +19,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     earliestReleaseDate: [threeOrMoreYears: 'No'],
     victimContactScheme: [vcsOptedFor: 'No'],
     foreignNational    : [isForeignNational: 'No'],
+    tprs               : [tprsSelected: 'No'],
     riskOfHarm         : [seriousHarm: 'No'],
     furtherCharges     : [furtherCharges: 'No'],
     riskLevels         : [likelyToAbscond: 'No'],
@@ -49,6 +50,13 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     when: 'open conditions task is selected'
     openConditionsButton.click()
+
+    then: 'the TPRS page is displayed'
+    at TprsPage
+
+    when: 'I submit page'
+    tprsSelectedYes.click()
+    submitButton.click()
 
     then: 'the Earliest Release page is displayed'
     at EarliestReleasePage
@@ -93,7 +101,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     dueDeportedYes.click()
     exhaustedAppealNo.click()
     submitButton.click()
-////////////////////////////////////////////////////////////////////////////
+
     then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
@@ -163,7 +171,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at ReviewRecatPage
     changeLinks.size() == 6
 
-    securityInputSummary*.text() == ['', 'No', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
@@ -179,6 +187,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
       victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' ],
       foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
+      tprs               : [tprsSelected: 'Yes'],
       riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
       furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: ',furtherChargesText details'],
       riskLevels         : [likelyToAbscond: 'Yes', likelyToAbscondText: 'likelyToAbscondText details'],
@@ -245,7 +254,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == [
       decision          : [category: "D"],
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput     : [securityInputNeeded: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -277,7 +286,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'The correct category is retrieved and data is correct'
     at RecategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is D'
+    categoryDiv.text() contains 'Category for approval is open category'
     earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
 
     def afterSubmitData = db.getData(12)
@@ -291,7 +300,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     afterSubmitResponse.recat == [
       decision          : [category: "D"],
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput     : [securityInputNeeded: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -341,9 +350,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewRecatPage
-    categories*.text() == ['D\nWarning\nCategory D',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['!\nWarning\nOpen category',
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nWarning\nThe supervisor also recommends open category']
     !comments.displayed
     !commentLabel.displayed
   }
@@ -418,7 +427,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == [
       decision          : [category: "D"],
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput     : [securityInputNeeded: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -446,8 +455,8 @@ class OpenConditionsSpecification extends AbstractSpecification {
     then: 'details are correct'
     at ApprovedViewRecatPage
     categories*.text() == ['C\nWarning\nCategory C',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nC\nWarning\nThe recommended category was changed from a D to a C']
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nC\nWarning\nThe recommended category was changed from open category to Category C']
     comments*.text() == ['super changed D to C', 'super other info']
     commentLabel.size() == 1
   }
@@ -549,7 +558,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'The correct category is retrieved'
     at RecategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'Category for approval is D'
+    categoryDiv.text() contains 'Category for approval is open category'
 
     when: 'the supervisor reviews and accepts the cat D'
     fixture.logout()
@@ -574,7 +583,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     response.recat == [
       decision          : [category: "D"],
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput     : [securityInputNeeded: "No"],
+      securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate    : [date: "14/12/2019"],
       prisonerBackground: [offenceDetails: "offence Details text"],
       riskAssessment    : [
@@ -605,15 +614,18 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
     then: 'details are correct'
     at ApprovedViewRecatPage
-    categories*.text() == ['D\nWarning\nCategory D',
-                           'D\nWarning\nThe categoriser recommends category D',
-                           'D\nWarning\nThe supervisor also recommends category D']
+    categories*.text() == ['!\nWarning\nOpen category',
+                           '!\nWarning\nThe categoriser recommends open category',
+                           '!\nWarning\nThe supervisor also recommends open category']
     comments*.text() == ['super overriding C to D reason text', 'super other info 1 + 2']
     commentLabel.size() == 1
   }
 
   private completeOpenConditionsWorkflow() {
     openConditionsButton.click()
+    at TprsPage
+    tprsSelectedNo.click()
+    submitButton.click()
     at EarliestReleasePage
     threeOrMoreYearsNo.click()
     submitButton.click()

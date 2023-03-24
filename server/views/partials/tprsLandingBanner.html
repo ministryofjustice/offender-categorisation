@@ -1,0 +1,17 @@
+{% from "notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% if data.hasTprsSelected == true and (data.tprsDate | length > 0)  %}
+
+  {% set tprsLandingBannerHtml %}
+    <p class="govuk-notification-banner__heading">
+      This prisoner met the criteria for the Temporary Presumptive Recategorisation Scheme (TPRS) on
+        {{ getVerboseDateFormat(dateConverter(data.tprsDate)) }}
+    </p>
+  {% endset %}
+
+  {{ govukNotificationBanner({
+    html: tprsLandingBannerHtml,
+    attributes: {  'id': 'tprsLandingBanner' }
+  }) }}
+
+{% endif %}

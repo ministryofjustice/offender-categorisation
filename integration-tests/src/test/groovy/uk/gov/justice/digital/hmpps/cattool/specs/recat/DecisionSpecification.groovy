@@ -7,7 +7,12 @@ import uk.gov.justice.digital.hmpps.cattool.pages.TasklistRecatPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.DecisionPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.HigherSecurityReviewPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.MiniHigherSecurityReviewPage
+import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
+
+import java.time.LocalDate
+
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_RECAT_USER
 
 class DecisionSpecification extends AbstractSpecification {
 
@@ -201,7 +206,86 @@ class DecisionSpecification extends AbstractSpecification {
 
     then: 'I stay on the page with validation errors'
     at DecisionPage
-    errorSummaries*.text() == ['Please select a security condition']
-    errors.text().toString() == "Error:\nPlease select a security condition"
+    errorSummaries*.text() == ['Select what category is most suitable for this person']
+    errors.text().toString() == "Error:\nSelect the category that is most suitable for this person"
   }
+
+  def "the category decision page for women YOI"() {
+    given: 'I go to category decision page for women YO'
+    elite2Api.stubRecategoriseWomen()
+    prisonerSearchApi.stubGetPrisonerSearchPrisonersWomen()
+    prisonerSearchApi.stubSentenceData(['ON700', 'ON701'], [700, 701], [LocalDate.now().toString(), LocalDate.now().toString()])
+
+    fixture.loginAs(FEMALE_RECAT_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubGetOffenderDetailsWomenYOI(21, 'C0001AA', true, 'YOI Closed')
+    riskProfilerApi.stubForTasklists('C0001AA', 'YOI Closed', false)
+    browser.selectSecondPrisoner()
+    at TasklistRecatPage
+    decisionButton.click()
+
+    when: 'I dont select anything'
+    at DecisionPage
+    submitButton.click()
+
+    then: 'I stay on the page with validation errors'
+    at DecisionPage
+    errorSummaries*.text() == ['Select what category is most suitable for this person']
+    errors.text().toString() == "Error:\nSelect the category that is most suitable for this person"
+
+    when: 'YOI Open option is submitted'
+    categoryJOption.click()
+    submitButton.click()
+
+    then: "Open conditions added page is displayed"
+    at OpenConditionsAddedPage
+    button.click()
+
+    when: 'I select yoi closed option'
+    at TasklistRecatPage
+    decisionButton.click()
+    at DecisionPage
+    categoryIOption.click()
+    submitButton.click()
+
+    then: 'recat task list page is displayed'
+    at TasklistRecatPage
+
+  }
+
+  def "Validate open and close option on  recat category decision page for YOI"(){
+    given: 'I go to decision page for YOI'
+    elite2Api.stubRecategoriseWomen()
+    prisonerSearchApi.stubGetPrisonerSearchPrisonersWomen()
+    prisonerSearchApi.stubSentenceData(['ON700', 'ON701'], [700, 701], [LocalDate.now().toString(), LocalDate.now().toString()])
+
+    fixture.loginAs(FEMALE_RECAT_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubGetOffenderDetailsWomenYOI(21, 'C0001AA', true, 'YOI Closed')
+    riskProfilerApi.stubForTasklists('C0001AA', 'YOI Closed', false)
+    browser.selectSecondPrisoner()
+    at TasklistRecatPage
+    decisionButton.click()
+
+    when: 'Open option is submitted'
+    at DecisionPage
+    categoryTOption.click()
+    submitButton.click()
+
+    then: "Open conditions added page is displayed"
+    at OpenConditionsAddedPage
+    button.click()
+
+    when: 'I select closed option'
+    at TasklistRecatPage
+    decisionButton.click()
+    at DecisionPage
+    categoryROption.click()
+    submitButton.click()
+
+    then: 'recat task list page is displayed'
+    at TasklistRecatPage
+
+  }
+
 }

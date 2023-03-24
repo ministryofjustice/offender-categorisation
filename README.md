@@ -60,6 +60,14 @@ It has services on which it depends :
 |              ingress url              |                                                        | http://localhost:3000/                                              | INGRESS_URL                                    |
 |                dps url                |                                                        | http://localhost:3000/                                              | DPS_URL                                        |
 
+## Other configuration
+
+| Environment variable    | Default value                                                                        |
+|:------------------------|:-------------------------------------------------------------------------------------|
+| GOOGLE_ANALYTICS_ID     | (blank)                                                                              |
+| APPROVED_DISPLAY_MONTHS | 6                                                                                    |
+| RECAT_MARGIN_MONTHS     | 2                                                                                    |
+| FEMALE_PRISON_IDS       | ['AGI', 'DWI', 'DHI', 'ESI', 'EWI', 'BZI', 'FHI', 'LNI', 'SDI', 'STI', 'NHI', 'PFI'] |
 
 ## Docker compose files
 |            File            |                                                                    Purpose                                                                    |
@@ -181,5 +189,3 @@ The easiest way to run the integration tests on your local machine is to:
 The tests can be run in debug mode for troubleshooting.
 
 More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>
-
-

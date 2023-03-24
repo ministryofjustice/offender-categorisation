@@ -7,6 +7,8 @@
 
 {% set pageTitle = "Further charges" %}
 
+{% set isFemale = user.activeCaseLoad.female %}
+
 {% block navigation %}
 
   {% if catType == 'RECAT' %}
@@ -63,7 +65,7 @@
 
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
-  {% if data.ratings.furtherCharges.furtherCharges === 'No' or catType === 'RECAT' %}
+  {% if (not isFemale and data.ratings.furtherCharges.furtherCharges === 'No') or (isFemale and catType === 'INITIAL') or catType === 'RECAT' %}
     {{ govukRadios({
       name: "furtherCharges",
       classes: "govuk-radios--inline",

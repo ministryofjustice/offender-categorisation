@@ -1,4 +1,18 @@
 module.exports = {
+  tprs: {
+    fields: [
+      {
+        tprsSelected: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/openConditions/earliestReleaseDate/',
+    },
+    validate: true,
+  },
   earliestReleaseDate: {
     fields: [
       {

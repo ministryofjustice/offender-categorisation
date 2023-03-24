@@ -6,10 +6,14 @@ const {
   formatLength,
   getLongDateFormat,
   getVerboseDateFormat,
-  catDisplay,
+  catMappings,
+  catLabel,
+  displayIcon,
+  replaceCatLabel,
   choosingHigherCategory,
   offenderLink,
   dpsUrl,
+  isOpenCategory,
 } = require('./utils')
 const config = require('../config')
 const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
@@ -49,10 +53,14 @@ module.exports = (app, path) => {
     .addGlobal('getVerboseDateFormat', getVerboseDateFormat)
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
-    .addGlobal('catDisplay', catDisplay)
+    .addGlobal('catMappings', catMappings)
+    .addGlobal('catLabel', catLabel)
+    .addGlobal('displayIcon', displayIcon)
+    .addGlobal('replaceCatLabel', replaceCatLabel)
     .addGlobal('choosingHigherCategory', choosingHigherCategory)
     .addGlobal('inProgress', inProgress)
     .addGlobal('extractNextReviewDate', extractNextReviewDate)
+    .addGlobal('isOpenCategory', isOpenCategory)
     .addFilter('initialiseName', fullName => {
       // this check is for the authError page
       if (!fullName) {
@@ -60,5 +68,8 @@ module.exports = (app, path) => {
       }
       const array = fullName.split(' ')
       return `${array[0][0]}. ${array.reverse()[0]}`
+    })
+    .addFilter('fixed', (num, length) => {
+      return num.toFixed(length || 1)
     })
 }

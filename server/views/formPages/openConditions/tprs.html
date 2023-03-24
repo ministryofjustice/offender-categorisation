@@ -1,0 +1,69 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set greenButtonText = "Continue" %}
+{% set pageTitle = "Is this prisoner eligible for the Temporary Presumptive Recategorisation Scheme (TPRS)?" %}
+
+{% block navigation %}
+
+  {% if catType == 'RECAT' %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
+  {% else %}
+    {% include "../../partials/breadCrumbTaskList.html" %}
+  {% endif %}
+
+{% endblock %}
+
+{% block formItems %}
+
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+
+  {{ govukRadios({
+    formGroup: { classes: 'govuk-!-margin-bottom-6' },
+    name: "tprsSelected",
+    classes: "govuk-radios--inline",
+    fieldset: {
+      legend: {
+        text: "This only applies to prisoners who have been selected as suitable for TPRS after the completion of the TPRS checklist as detailed in the TPRS Operational Guidance and Annexes."
+      }
+    },
+    errorMessage: {
+      text: "Please select yes or no"
+    } if (errors | findError('tprsSelected')),
+    items: [
+      {
+        value: "Yes",
+        text: "Yes",
+        checked: data.openConditions.tprs.tprsSelected === 'Yes'
+      },
+      {
+        value: "No",
+        checked: data.openConditions.tprs.tprsSelected === 'No',
+        text: "No"
+      }
+    ]
+  }) }}
+
+  {% set guidanceHelpWithRecategorisingTPRSEligiblePrisoners %}
+  <p>If a prisoner meets the criteria for TPRS, you must make sure that “TPRS” is entered in any required text boxes and they should not be rejected for recategorisation.</p>
+
+  <p>This highlights to the approver that further details are not required and that the prisoner meets the criteria for TPRS.</p>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "Help with recategorising TPRS eligible prisoners",
+    html: guidanceHelpWithRecategorisingTPRSEligiblePrisoners
+  }) }}
+
+  {% set guidanceConcernsWithRecategorisation %}
+  <p>If you have serious concerns that the person should not be recategorised, you must make the decision maker (Governor or Head of Function) aware of those concerns.</p>
+  <p>The decision maker will take that information into account when they make their determination. Security information may present valid reasons for concern and the information must be presented to the decision maker where appropriate.</p>
+  {% endset %}
+
+  {{ govukDetails({
+    summaryText: "What do I do if I have concerns over a TPRS recategorisation?",
+    html: guidanceConcernsWithRecategorisation
+  }) }}
+
+{% endblock %}

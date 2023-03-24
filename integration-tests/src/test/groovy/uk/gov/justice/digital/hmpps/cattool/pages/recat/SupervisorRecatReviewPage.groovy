@@ -17,12 +17,14 @@ class SupervisorRecatReviewPage extends Page {
 
     warning { $('div.govuk-warning-text', 0) }
     form { $('form') }
-
     appropriateYes { $('#supervisorCategoryAppropriate') }
     appropriateNo { $('#supervisorCategoryAppropriate-2') }
     overriddenCategoryB(required: false) { $('#overriddenCategoryB') }
     overriddenCategoryC(required: false) { $('#overriddenCategoryC') }
     overriddenCategoryD(required: false) { $('#overriddenCategoryD') }
+    overriddenCategoryJ(required: false) { $('#overriddenCategoryJ')}
+    overriddenCategoryR(required: false) { $('#overriddenCategoryR')}
+    overriddenCategoryT(required: false) { $('#overriddenCategoryT')}
     changeLinks(required: false) { $('a.govuk-link', text: startsWith('Change')) }
     indeterminateWarning(required: false) { $('#indeterminateWarning') }
     overriddenCategoryText(required: false) { $('#supervisorOverriddenCategoryText') }

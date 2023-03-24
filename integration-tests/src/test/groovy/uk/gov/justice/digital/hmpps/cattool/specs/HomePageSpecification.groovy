@@ -239,7 +239,7 @@ class HomePageSpecification extends AbstractSpecification {
     startButtons[0].click()
     then: 'The view page is displayed'
     at CategoriserAwaitingApprovalViewPage
-    categoryDiv.text() contains 'B\nWarning\nCategory for approval is B'
+    categoryDiv.text() contains 'B\nWarning\nCategory for approval is Category B'
 
     when: 'The categorisation is cancelled'
     cancelLink.click()

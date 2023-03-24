@@ -751,7 +751,9 @@ module.exports = function createFormService(formClient) {
       categorisationRecord.catType === 'RECAT' &&
       updated.recat &&
       updated.recat.decision &&
-      (updated.recat.decision.category === 'D' || updated.recat.decision.category === 'J')
+      (updated.recat.decision.category === 'D' ||
+        updated.recat.decision.category === 'J' ||
+        updated.recat.decision.category === 'T')
     ) {
       delete updated.recat.decision.category
       delete updated.recat.decision

@@ -31,6 +31,7 @@ class TasklistPage extends Page {
     violenceButton { $('#violenceButton') }
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }
+    decisionButton { $('#decisionButton') }
     categorisationHomeLink { $('a', text: 'Categorisation dashboard') }
     summarySection(required: true) { $('#review div') }
 

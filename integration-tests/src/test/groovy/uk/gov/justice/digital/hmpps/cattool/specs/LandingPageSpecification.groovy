@@ -304,7 +304,8 @@ class LandingPageSpecification extends AbstractSpecification {
 
     then: 'the security review page displays the referral details'
     at new SecurityReviewPage(bookingId: '12')
-    driver.pageSource.contains('This individual was identified as needing a security review, as part of their categorisation, by Another User of LEEDS (HMP) on ' +  LocalDate.now().format('dd/MM/yyyy'))
+    pFlagged.displayed
+    headerSecInfo.displayed
 
     when: 'the security review page is only saved'
     securityText << 'security info text'
@@ -325,6 +326,8 @@ class LandingPageSpecification extends AbstractSpecification {
     startButtons[0].click()
     at SecurityReviewPage
     securityText << ', more security info'
+    pFlagged.displayed
+    headerSecInfo.displayed
     submitButton.click()
 
     then: 'the prisoner is no longer on the list and the form database table is updated correctly'
@@ -415,7 +418,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     then: 'The previous category reviews page is displayed correctly'
     at CategoryHistoryPage
-    rows[0].find('td')*.text() == ['18/06/2019', 'U', 'LPI prison', 'View (opens in new tab)']
+    rows[0].find('td')*.text() == ['18/06/2019', 'Unsentenced', 'LPI prison', 'View (opens in new tab)']
     rows[1].find('td')*.text() == ['08/06/2018', 'P', 'LPI prison', 'View (opens in new tab)']
     rows[2].find('td')*.text() == ['24/03/2013', 'B', 'LPI prison', ''] // no local record means no view link provided
     rows[3].find('td')*.text() == ['08/06/2012', 'A', 'LPI prison', '']

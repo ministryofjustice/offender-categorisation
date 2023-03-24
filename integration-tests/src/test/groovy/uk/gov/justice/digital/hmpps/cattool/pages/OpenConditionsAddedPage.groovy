@@ -7,7 +7,7 @@ class OpenConditionsAddedPage extends Page {
   static url = '/openConditionsAdded'
 
   static at = {
-    headingText == 'Open Conditions Assessment added to your task list'
+    headingText == 'Open conditions assessment added to your task list'
   }
 
   static content = {
