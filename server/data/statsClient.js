@@ -55,10 +55,18 @@ function createInitialCategoryOutcomesQuery(startDate, endDate, prisonId) {
 
 function createTprsTotalsQuery(catType, startDate, endDate, prisonId) {
   return {
-    text: `select count(*)
-                    filter ( where form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' = 'Yes' ) as tprs_selected
+    text: `with cat_data as (select
+                          form_response -> 'openConditions' -> 'tprs' ->> 'tprsSelected' as tprsSelected,
+                          coalesce(
+                                  form_response -> 'supervisor' -> 'review' ->> 'supervisorOverriddenCategory',
+                                  form_response -> 'recat' -> 'decision' ->> 'category',
+                                  form_response -> 'categoriser'->'provisionalCategory' ->>'overriddenCategory',
+                                  form_response -> 'categoriser'->'provisionalCategory' ->>'suggestedCategory',
+                                  form_response -> 'ratings' ->'decision' ->>'category'
+                            ) as finalCat
            from form
-           where ${createWhereClause(prisonId)}`,
+           where ${createWhereClause(prisonId)})
+           select count(*) as tprs_selected from cat_data where tprsSelected = 'Yes' and finalCat in ('D', 'J', 'T')`,
     values: [catType, startDate, endDate],
   }
 }
