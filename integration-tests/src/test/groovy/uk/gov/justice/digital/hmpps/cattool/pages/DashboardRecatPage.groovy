@@ -12,5 +12,6 @@ class DashboardRecatPage extends DashboardPage {
     reviewNumbersTableRows { $('#reviewNumbersTable > tbody > tr') }
     numbersTableRows { $('#recatTable > tbody > tr') }
     statsTypeOptions { $('#scope option') }
+    tprsTableRows { $('#tprs > tbody > tr') }
   }
 }
