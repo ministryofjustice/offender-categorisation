@@ -1,43 +1,56 @@
+  <h3>Temporary Presumptive Recategorisation Scheme (TPRS)</h3>
+  <table class="govuk-table" id="tprs">
+    <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Total {% if catType == 'INITIAL'%}initial categorisations{% else %}recategorisations{% endif %} through TPRS</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ tprs.tprs_selected }}</td>
+    </tr>
+    </tbody>
+  </table>
+
   <h3>Referrals to security</h3>
   <table class="govuk-table" id="security">
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Manual</td>
-      <td class="govuk-table__cell">{{ security.manual }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ security.manual }}</td>
     </tr>
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Automatic</td>
-      <td class="govuk-table__cell">{{ security.auto }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ security.auto }}</td>
     </tr>
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">Flagged</td>
-      <td class="govuk-table__cell">{{ security.flagged }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ security.flagged }}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
+      <td class="govuk-table__cell govuk-!-font-weight-bold govuk-table__cell--numeric">{{ security.total }}</td>
     </tr>
     </tbody>
   </table>
 
-  <h3>Timeliness Averages</h3>
-  <table class="govuk-table" id="timeliness">
+  <h3>Average durations</h3>
+  {% if catType == 'INITIAL'%}
+    <p>Not all initial categorisations get sent to security.</p>
+  {% endif %}
+  <table class="govuk-table" id="timeline">
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Number of days before due date that approval occurred</td>
-      <td class="govuk-table__cell"> {{ timeliness.approvalTimelinessDays | round(2)}}</td>
+      <td class="govuk-table__cell">Assessment started to sent to security</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"> {{ timeline.fromStartToReferred | round(2)}} days</td>
     </tr>
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Security referral timeliness (Days from start to referral)</td>
-      <td class="govuk-table__cell"> {{ timeliness.securityReferralTimelinessDays | round(2)}}</td>
+      <td class="govuk-table__cell">Sent to security to security review complete</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"> {{ timeline.fromReferredToSecurityReviewed | round(2)}} days</td>
     </tr>
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Days in security</td>
-      <td class="govuk-table__cell"> {{ timeliness.inSecurityDays | round(2)}}</td>
+      <td class="govuk-table__cell">Security review complete to approval complete</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"> {{ timeline.fromSecurityReviewedToApproval | round(2)}} days</td>
     </tr>
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Start to assessment completion (days)</td>
-      <td class="govuk-table__cell"> {{ timeliness.startToAssessmentDays | round(2)}}</td>
-    </tr>
-    <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">Assessment to approval (days)</td>
-      <td class="govuk-table__cell"> {{ timeliness.assessmentToApprovalDays | round(2) }}</td>
+      <td class="govuk-table__cell">Assessment started to approval complete</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"> {{ timeline.fromStartToApproval | round(2)}} days</td>
     </tr>
     </tbody>
   </table>
@@ -47,22 +60,25 @@
     <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Completion</th>
-      <th class="govuk-table__header" scope="col">Percentage completed on time</th>
-      <th class="govuk-table__header" scope="col">Total</th>
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">Percentage</th>
+      <th class="govuk-table__header govuk-table__header--numeric" scope="col">Total</th>
     </tr>
     </thead>
     <tbody class="govuk-table__body">
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">Before due date</td>
-      <td class="govuk-table__cell">{{ (100 * onTime.onTime / (onTime.onTime + onTime.notOnTime)) | round(2) + '%' if onTime.onTime + onTime.notOnTime > 0 }}</td>
-      <td class="govuk-table__cell">{{ onTime.onTime }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ (100 * onTime.onTime / onTime.total) | fixed + '%' if onTime.total > 0 }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ onTime.onTime }}</td>
     </tr>
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">Late</td>
-      <td class="govuk-table__cell"></td>
-      <td class="govuk-table__cell">{{ onTime.notOnTime }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ (100 * onTime.notOnTime / onTime.total) | fixed + '%' if onTime.total > 0 }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ onTime.notOnTime }}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell govuk-!-font-weight-bold">Total</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric"></td>
+      <td class="govuk-table__cell govuk-!-font-weight-bold govuk-table__cell--numeric">{{ onTime.total }}</td>
     </tr>
     </tbody>
   </table>
-
-  <p id="total">Total: {{ total }}</p>

@@ -58,7 +58,12 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      let openConditionsSuggestedCat
+      if (res.locals.user.activeCaseLoad.female) {
+        openConditionsSuggestedCat = 'T'
+      } else {
+        openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+      }
       const data = { ...result.data, openConditionsSuggestedCat }
 
       res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
@@ -80,7 +85,10 @@ module.exports = function Index({ formService, offendersService, userService, au
             ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
           ...result,
         })
-      } else if (result.data.openConditions.victimContactScheme.contactedVLO === 'No') {
+      } else if (
+        result.data.openConditions.victimContactScheme &&
+        result.data.openConditions.victimContactScheme.contactedVLO === 'No'
+      ) {
         res.render('formPages/openConditions/openConditionsNotSuitable', {
           warningText:
             'This person cannot be sent to open conditions because a victim of the crime has opted-in' +

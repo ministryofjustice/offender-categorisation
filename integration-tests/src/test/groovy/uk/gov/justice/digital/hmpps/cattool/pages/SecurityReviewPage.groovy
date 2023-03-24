@@ -11,9 +11,22 @@ class SecurityReviewPage extends HeaderPage {
   }
 
   static content = {
-    categoriserText { $('p.forms-comments-text') }
+    headerRecatNote { $('#header-recat-note') }
+    headerInitialNote { $('#header-initial-note') }
+    headerSecInfo { $('#header-sec-info') }
+
+    pFlagged { $('#p-flagged') }
+    pInitialManual { $('#p-initial-manual') }
+    pInitialNote { $('#p-initial-note') }
+    pRecatNote { $('#p-recat-note') }
+    pRecatNoNote { $('#p-recat-no-note') }
+    pAuto { $('#p-auto') }
+
     submitButton { $('button.govuk-button', value: 'submit') }
     saveOnlyButton { $('button.govuk-button', value: 'return') }
     securityText { $('textarea', name: 'securityReview') }
+    errorSummaries { $('ul.govuk-error-summary__list li') }
+    errors { $('.govuk-error-message') }
+    recatWarning { $('#recatWarning') }
   }
 }

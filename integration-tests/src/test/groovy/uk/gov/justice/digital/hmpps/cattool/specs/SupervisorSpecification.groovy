@@ -79,7 +79,7 @@ class SupervisorSpecification extends AbstractSpecification {
     appropriateNo.click()
 
     then: 'The page shows info Changing to Cat'
-    warnings[0].text().contains 'the provisional category is YOI Closed'
+    warnings[0].text().contains 'the provisional category is YOI closed'
     overriddenCategoryB.@type == 'radio'
     overriddenCategoryC.@type == 'radio'
     overriddenCategoryD.@type == 'radio'
@@ -158,7 +158,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the review page includes changed category and normal answers but not open conditions information'
     !openConditionsHeader.isDisplayed()
-    warning.text() == 'C\nB\nWarning\nThe category was originally C and is now B'
+    warning.text() == 'C\nB\nWarning\nThe category was originally Category C and is now Category B'
     offendingHistorySummary[2].text() == 'Yes\nsome convictions'
   }
 
@@ -304,7 +304,7 @@ class SupervisorSpecification extends AbstractSpecification {
     overriddenCategoryJ.click()
 
     then: 'A warning is displayed'
-    warnings[2].text() contains "Making this category change means that the categoriser will have to provide more information."
+    warnings[1].text() contains "Making this category change means that the categoriser will have to provide more information."
 
     when: 'The continue button is clicked'
     overriddenCategoryText << "should be a J"
@@ -354,7 +354,7 @@ class SupervisorSpecification extends AbstractSpecification {
     overriddenCategoryC.@type == 'radio'
     overriddenCategoryD.@type == null
 
-    errorSummaries*.text() == ['Please enter the new category', 'Please enter the reason why you changed the category']
+    errorSummaries*.text() == ['Please enter the new category', 'Enter the reason why this category is more appropriate']
 
     and: 'the supervisor selects a category and submits'
     appropriateNo.click()
@@ -364,7 +364,7 @@ class SupervisorSpecification extends AbstractSpecification {
     then: 'the review page is displayed with an error - reason not provided'
     at SupervisorReviewPage
 
-    errorSummaries*.text() == ['Please enter the reason why you changed the category']
+    errorSummaries*.text() == ['Enter the reason why this category is more appropriate']
 
     and: 'the supervisor selects a category, reason and submits'
     elite2Api.stubSupervisorApprove('B')
@@ -490,7 +490,7 @@ class SupervisorSpecification extends AbstractSpecification {
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14',
       'This person is at risk of engaging in, or vulnerable to, extremism.', 'offence Details text']
-    securityInputSummary*.text() == ['', 'No', 'No', 'No']
+    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
     assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
@@ -622,7 +622,7 @@ class SupervisorSpecification extends AbstractSpecification {
     // decision is removed when open conditions introduced by supervisor
     response.recat == [
       oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-      securityInput : [securityInputNeeded: "No"],
+      securityInput : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
       nextReviewDate: [date: "14/12/2019"],
       prisonerBackground: [offenceDetails:"offence Details text"],
       riskAssessment: [

@@ -30,6 +30,25 @@
 {% endset %}
 
 
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 tprsSummary no-print',
+    rows: [
+      {
+        key: { classes: 'summary-list-title', text: "Temporary Presumptive Recategorisation Scheme (TPRS)" },
+          actions: { items: [{
+            href: '/form/openConditions/tprs/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Temporary Presumptive Recategorisation Scheme"
+          }] if showOpenConditionChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Are they eligible for TPRS?" },
+        value: { text: data.openConditions.tprs.tprsSelected or 'Not applicable' },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
 
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 earliestReleaseDateSummary',
@@ -190,17 +209,17 @@
       },
       {
         key: { text: "Are they facing any further charges?" },
-        value: { html: formatDetailsWithNA( not (catType == 'INITIAL' and data.ratings.furtherCharges.furtherCharges == 'Yes'), data.openConditions.furtherCharges.furtherCharges) },
+        value: { text:  (catType == 'INITIAL' and data.ratings.furtherCharges.furtherCharges) or (data.openConditions.furtherCharges.furtherCharges) },
         actions: { items: [] }
       },
       {
         key: { text: "Further charges details" },
-        value: { text: data.openConditions.furtherCharges.furtherChargesText },
+        value: { html: formatDetailsWithNA(data.openConditions.furtherCharges.increasedRisk, data.openConditions.furtherCharges.furtherChargesText) },
         actions: { items: [] }
       },
       {
         key: { text: "Do these further charges increase risk in open conditions?" },
-        value: { text : data.openConditions.furtherCharges.increasedRisk },
+        value: { text: data.openConditions.furtherCharges.increasedRisk or 'Not applicable' },
         actions: { items: [] }
       }
     ]
@@ -225,4 +244,3 @@
       }
     ]
   }) }}
-

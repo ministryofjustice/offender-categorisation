@@ -6,6 +6,5 @@ class SecurityBackPage extends SecurityInputPage {
 
   static content = {
     noteFromSecurity { $('div.govuk-inset-text') }
-    warning(required: false) { $('div.govuk-warning-text') }
   }
 }

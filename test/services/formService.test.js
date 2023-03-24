@@ -253,7 +253,7 @@ describe('update', () => {
       ).rejects.toThrow('Cannot transition from status APPROVED to STARTED')
     })
 
-    it('should add new sections and forms to the licence if they dont exist', async () => {
+    test('should add new sections and forms to the licence if they dont exist', async () => {
       formClient.getFormDataForUser.mockResolvedValue({
         rows: [
           {

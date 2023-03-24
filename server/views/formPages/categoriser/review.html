@@ -23,10 +23,10 @@
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8 main-heading">Check your answers before you continue</h1>
 
     {% include "../../partials/openConditionsBanner.html" %}
-
+    {% set isFemale = user.activeCaseLoad.female %}
     {% set showChangeLinks = true %}
     {% include "../../partials/reviewContents.html" %}
-
+    <input type="hidden" name="isFemale" value="{{ isFemale }}" />
     {% if (data.openConditionsRequested) %}
       <h1 class="govuk-heading-l openConditionsHeader">Open Conditions</h1>
 

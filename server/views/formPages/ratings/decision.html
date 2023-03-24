@@ -1,0 +1,80 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% set pageTitle = "Category decision" %}
+{% set greenButtonText = "Continue" %}
+
+{% block navigation %}
+
+{% include "../../partials/breadCrumbTaskList.html" %}
+
+{% endblock %}
+
+{% block formItems %}
+
+<h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
+  {% set optionI =
+    {
+      value: "I",
+      id: "catIOption",
+      checked: data.ratings.decision.category == 'I',
+      hint: {
+        text: "Choosing this category requires no additional reviews or assessments."
+      },
+      text: "YOI (closed)",
+      label: { classes: "govuk-!-font-weight-bold" }
+    }
+  %}
+  {% set optionJ =
+    {
+      value: "J",
+      id: "catJOption",
+      checked: data.ratings.decision.category == 'J',
+      hint: {
+        text: "You will need to complete an open conditions assessment for this person, to check they are suitable for open conditions."
+      },
+      text: "Consider them for YOI (open)",
+      label: { classes: "govuk-!-font-weight-bold" }
+    }
+  %}
+  {% set optionR =
+    {
+      value: "R",
+      id: "closedOption",
+      checked: data.ratings.decision.category == 'R',
+      hint: {
+        text: "Choosing this category requires no additional reviews or assessments."
+      },
+      text: "Closed",
+      label: { classes: "govuk-!-font-weight-bold" }
+    }
+  %}
+  {% set optionT =
+    {
+      value: "T",
+      id: "openOption",
+      checked: data.ratings.decision.category == 'T',
+      hint: {
+        text: "You will need to complete an open conditions assessment for this person, to check they are suitable for open conditions."
+      },
+      text: "Open",
+      label: { classes: "govuk-!-font-weight-bold" }
+    }
+  %}
+  {% set itemList = [ optionI, optionJ, optionR ] if data.details.youngOffender else [ optionR, optionT ] %}
+  {{ govukRadios({
+    name: "category",
+    classes: "govuk-radios",
+    fieldset: {
+      legend: {
+        text: "What security category is most suitable for this person?",
+        isPageHeading: false
+      }
+    },
+    errorMessage: {
+      text: "Select the category that is most suitable for this person"
+    } if (errors | findError('category')),
+    items: itemList
+  }) }}
+
+{% endblock %}

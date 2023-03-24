@@ -2,8 +2,8 @@
 {% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
-{% from "panel/macro.njk" import govukPanel %}
 {% from "textarea/macro.njk" import govukTextarea %}
+{% from "warning-text/macro.njk" import govukWarningText %}
 
 {% set pageTitle = "Security review" %}
 
@@ -19,6 +19,7 @@
 {% include "../../partials/offenderDetails.html" %}
 <hr/>
 <div class="govuk-!-width-two-thirds">
+<h1 class="govuk-heading-l">Security Review</h1>
 {% if errors.length > 0 %}
   {{ govukErrorSummary({
     titleText: "There is a problem",
@@ -26,19 +27,31 @@
   }) }}
 {% endif %}
 
-{% set manuallyReferred = (data.ratings.securityInput.securityInputNeeded and data.ratings.securityInput.securityInputNeededText) or
-  (data.recat.securityInput.securityInputNeeded and data.recat.securityInput.securityInputNeededText) %}
-{% if manuallyReferred %}
-  {{ govukPanel({
-    titleText: "Manually referred for review"
-  }) }}
-  <p>The case has been referred to Security because:</p>
-  <p class="forms-comments-text">{{ data.ratings.securityInput.securityInputNeededText or data.recat.securityInput.securityInputNeededText }}</p>
+{% if status == Status.SECURITY_MANUAL.name %}
+  {% if catType == 'RECAT' %}
+    {{ govukWarningText({
+      text: 'All recategorisations must have a security review.',
+      iconFallbackText: "Warning",
+      classes: "warning-overrides",
+      attributes: {  'id': 'recatWarning' }
+    }) }}
+    <h2 id="header-recat-note" class="govuk-heading-s">Note from categoriser</h2>
+    {% if data.recat.securityInput.securityNoteNeeded == 'Yes' %}
+      <p id="p-recat-note">{{ data.recat.securityInput.securityInputNeededText }}</p>
+    {% else %}
+      <p id="p-recat-no-note">A note was not added</p>
+    {% endif %}
+  {% elif catType == 'INITIAL' %}
+    {% if data.ratings.securityInput.securityInputNeededText %}
+      <p id="p-initial-manual">Manually sent for review</p>
+      <h2 id="header-initial-note" class="govuk-heading-s">Note from categoriser</h2>
+      <p  id="p-initial-note">{{ data.ratings.securityInput.securityInputNeededText  }}</p>
+    {% endif %}
+  {% endif %}
+{% elif status == Status.SECURITY_AUTO.name %}
+  <p id="p-auto">Automatically sent for review</p>
 {% elif status == Status.SECURITY_FLAGGED.name %}
-  {{ govukPanel({
-  titleText: "Referred for review"
-  }) }}
-  <p>This individual was identified as needing a security review, as part of their categorisation, by {{ securityReferred.referrerUser.displayNameAlternative }}{% if securityReferred.prisonDescription %} of {{ securityReferred.prisonDescription}}{% endif %} on {{ securityReferred.referredDate }}.</p>
+  <p id="p-flagged">Flagged for review</p>
 {% endif %}
 
   <form method="post">
@@ -46,7 +59,7 @@
 
   {% block formItems %}
 
-    <h1 class="govuk-heading-l">Security Review</h1>
+    <h2 id="header-sec-info" class="govuk-heading-s">Security information</h2>
 
     {{ govukTextarea({
       name: "securityReview",
@@ -54,8 +67,14 @@
       id: "more-detail",
       attributes: { 'maxlength': 50000 },
       label: {
-        text: "Please provide an assessment of any Security information held on this prisoner, which could be relevant to their security categorisation"
+        text: "Enter details of any security information held on this prisoner, which could be relevant to their security categorisation"
       },
+      hint: {
+        text: "None of the information that you provide in the review will be disclosed to the prisoner. It will not be displayed when printing a completed review"
+      },
+      errorMessage: {
+        text: (errors | findError('securityReview')).text
+      } if (errors | findError('securityReview')),
       value: data.security.review.securityReview
     }) }}
 

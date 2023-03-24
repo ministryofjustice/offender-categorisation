@@ -19,7 +19,7 @@ class OffendingHistorySpecification extends AbstractSpecification {
 
     then: 'a Cat A warning and offence history is displayed'
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    catAWarning.text() endsWith 'This prisoner was categorised as a Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
+    catAWarning.text() endsWith 'This prisoner was categorised as Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
     !catAInfo.displayed
     history*.text() == ['Libel (21/02/2019)', 'Slander (22/02/2019 - 24/02/2019)', 'Undated offence']
 
@@ -57,7 +57,7 @@ class OffendingHistorySpecification extends AbstractSpecification {
 
     then: 'a non Cat A info message is displayed'
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    catAInfo.text() endsWith 'This person has not been categorised as a Cat A or a provisional Cat A before.'
+    catAInfo.text() endsWith 'This person has not been categorised as Cat A, restricted or a provisional Cat A before.'
     !catAWarning.displayed
   }
 
@@ -73,6 +73,6 @@ class OffendingHistorySpecification extends AbstractSpecification {
 
     then: 'the correct Cat A warning message is displayed'
     at new CategoriserOffendingHistoryPage(bookingId: '12')
-    catAWarning.text() endsWith 'This prisoner was categorised as a Provisional Cat A in 2018 until 2019'
+    catAWarning.text() endsWith 'This prisoner was categorised as Provisional Cat A in 2018 until 2019'
   }
 }

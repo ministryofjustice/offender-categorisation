@@ -14,11 +14,11 @@
     {% set cat = data.recat.decision.category %}
 
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
-      <span class="govuk-warning-text__icon" aria-hidden="true">{{ cat }}</span>
-      <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
-        Category for approval is {{ catDisplay(cat) }}
-      </strong>
+        <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+            Category for approval is {{ replaceCatLabel(cat) }}
+        </strong>
     </div>
 
     {% set showChangeLinks = false %}

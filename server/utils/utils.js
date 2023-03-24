@@ -1,6 +1,6 @@
 const moment = require('moment')
 const R = require('ramda')
-const { dpsUrl } = require('../config')
+const { dpsUrl, femalePrisonIds } = require('../config')
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
@@ -116,10 +116,40 @@ const filterJsonObjectForLogging = json => {
   return dup
 }
 
-const catDisplay = cat => {
-  if (cat === 'I') return 'YOI Closed'
-  if (cat === 'J') return 'YOI Open'
-  return cat
+const catLabel = cat => {
+  if (cat === 'B' || cat === 'C') return `Category ${catMappings(cat)}`
+  return `${catMappings(cat)} category`
+}
+
+const replaceCatLabel = cat => {
+  if (catLabel(cat).startsWith('Open') || catLabel(cat).startsWith('Closed')) return catLabel(cat).toLowerCase()
+  return catLabel(cat)
+}
+
+const catMappings = cat => {
+  switch (cat) {
+    case 'D':
+      return 'Open'
+    case 'I':
+      return 'YOI closed'
+    case 'J':
+      return 'YOI open'
+    case 'Q':
+      return 'Restricted'
+    case 'R':
+      return 'Closed'
+    case 'T':
+      return 'Open'
+    case 'U':
+      return 'Unsentenced'
+    default:
+      return cat
+  }
+}
+
+const displayIcon = cat => {
+  if (cat === 'B' || cat === 'C') return cat
+  return '!'
 }
 
 // R.cond is like a switch statement
@@ -129,7 +159,7 @@ const calculateNextReviewDate = R.cond([
   [R.T, R.always('')],
 ])
 
-const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB'])
+const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB', 'TR'])
 const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
 const offenderLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}`
@@ -155,6 +185,21 @@ const getNamesFromString = string =>
     .map(name => properCaseName(name))
     .join(' ')
 
+const isFemalePrisonId = prisonId => {
+  const females = femalePrisonIds ? femalePrisonIds.split(',') : []
+  return females.includes(prisonId)
+}
+
+const setFemaleCaseLoads = caseLoads => {
+  return caseLoads.map(c => {
+    return { ...c, female: isFemalePrisonId(c.caseLoadId) }
+  })
+}
+
+const isOpenCategory = cat => {
+  return ['D', 'J', 'T'].includes(cat)
+}
+
 module.exports = {
   dateConverter,
   dateConverterToISO,
@@ -169,7 +214,10 @@ module.exports = {
   stripAgencyPrefix,
   linkOnClick,
   filterJsonObjectForLogging,
-  catDisplay,
+  catMappings,
+  catLabel,
+  displayIcon,
+  replaceCatLabel,
   calculateNextReviewDate,
   choosingHigherCategory,
   offenderLink,
@@ -179,4 +227,7 @@ module.exports = {
   offenderAdjudicationLink,
   sanitisePrisonName,
   getNamesFromString,
+  isFemalePrisonId,
+  setFemaleCaseLoads,
+  isOpenCategory,
 }

@@ -14,7 +14,9 @@ import java.time.LocalDate
 import java.time.temporal.ChronoField
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_RECAT_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_USER
 
 class TestFixture {
 
@@ -47,10 +49,57 @@ class TestFixture {
     nextReviewDate  : [date: "14/12/2019"]
   ]
 
+  public static final defaultRatingsClosed = [
+    decision          : [category: "R"],
+    offendingHistory: [previousConvictions: "No"],
+    securityInput   : [securityInputNeeded: "No"],
+    violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
+    escapeRating    : [escapeOtherEvidence: "No"],
+    extremismRating : [previousTerrorismOffences: "Yes"],
+    nextReviewDate  : [date: "14/12/2019"]
+  ]
+
+  public static final defaultRatingsYOIClosed = [
+    decision          : [category: "I"],
+    offendingHistory: [previousConvictions: "No"],
+    securityInput   : [securityInputNeeded: "No"],
+    violenceRating  : [highRiskOfViolence: "No", seriousThreat: "No"],
+    escapeRating    : [escapeOtherEvidence: "No"],
+    extremismRating : [previousTerrorismOffences: "Yes"],
+    nextReviewDate  : [date: "14/12/2019"]
+  ]
+
+  public static final defaultRecatClosed = [
+    decision          : [category: "R"],
+    oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+    securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
+    nextReviewDate    : [date: "14/12/2019"],
+    prisonerBackground: [offenceDetails: "offence Details text"],
+    riskAssessment    : [
+      lowerCategory    : "lower category text",
+      otherRelevant    : "No",
+      higherCategory   : "higher category text",
+    ]
+  ]
+
+  public static final defaultRecatYOIClosed = [
+    decision          : [category: "I"],
+    oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
+    securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
+    nextReviewDate    : [date: "14/12/2019"],
+    prisonerBackground: [offenceDetails: "offence Details text"],
+    riskAssessment    : [
+      lowerCategory    : "lower category text",
+      otherRelevant    : "No",
+      higherCategory   : "higher category text",
+    ]
+  ]
+
+
   public static final defaultRecat = [
     decision          : [category: "C"],
     oasysInput        : [date: "14/12/2019", oasysRelevantInfo: "No"],
-    securityInput     : [securityInputNeeded: "No"],
+    securityInput     : [securityInputNeeded: "Yes", securityNoteNeeded: "No"],
     nextReviewDate    : [date: "14/12/2019"],
     prisonerBackground: [offenceDetails: "offence Details text"],
     riskAssessment    : [
@@ -70,19 +119,48 @@ class TestFixture {
   ]
 
   public static final FULL_HEADER = ['B2345YZ', '17/02/1970', 'C',
-  'C-04-02', 'Coventry',
-  'Latvian',
-  'A Felony', 'Another Felony',
-  '10/06/2020',
-  '11/06/2020',
-  '02/02/2020',
-  '13/06/2020',
-  '14/06/2020',
-  '15/06/2020',
-  '16/06/2020',
-  '17/06/2020',
-  '6 years, 3 months (Std sentence)']
+                                     'C-04-02', 'Coventry',
+                                     'Latvian',
+                                     'A Felony', 'Another Felony',
+                                     '10/06/2020',
+                                     '11/06/2020',
+                                     '02/02/2020',
+                                     '13/06/2020',
+                                     '14/06/2020',
+                                     '15/06/2020',
+                                     '16/06/2020',
+                                     '17/06/2020',
+                                     '6 years, 3 months (Std sentence)']
   public static final MINI_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
+
+  public static final FULL_HEADER1 = ['ON700', '17/02/1970', 'U(Unsentenced)',
+                                      'C-04-02', 'Coventry',
+                                      'Latvian',
+                                      'A Felony', 'Another Felony',
+                                      '10/06/2020',
+                                      '11/06/2020',
+                                      '02/02/2020',
+                                      '13/06/2020',
+                                      '14/06/2020',
+                                      '15/06/2020',
+                                      '16/06/2020',
+                                      '17/06/2020',
+                                      '6 years, 3 months (Std sentence)']
+  public static final FULL_HEADER2 = ['ON700', '17/02/1970', 'Closed',
+                                      'C-04-02', 'Coventry',
+                                      'Latvian',
+                                      'A Felony', 'Another Felony',
+                                      '10/06/2020',
+                                      '11/06/2020',
+                                      '02/02/2020',
+                                      '13/06/2020',
+                                      '14/06/2020',
+                                      '15/06/2020',
+                                      '16/06/2020',
+                                      '17/06/2020',
+                                      '6 years, 3 months (Std sentence)']
+  public static final MINI_HEADER1 = ['Hillmob, William', 'ON700', '17/02/1970', 'Closed']
+
 
   TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1, AllocationApi allocationApi1, PrisonerSearchApi prisonerSearchApi) {
     this.browser = browser
@@ -118,9 +196,22 @@ class TestFixture {
 
     loginAs(CATEGORISER_USER)
     browser.at CategoriserHomePage
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', multipleSentences)
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', multipleSentences)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
     browser.selectSecondPrisoner()
+  }
+
+  def gotoInitialWomenTasklist(transferToSecurity = false, multipleSentences = false) {
+    elite2Api.stubUncategorisedNoStatus(700, 'PFI')
+    def sentenceStartDate11 = LocalDate.of(2019, 1, 28)
+    def sentenceStartDate12 = LocalDate.of(2019, 1, 31)
+    prisonerSearchApi.stubSentenceData(['ON700'], [700], [sentenceStartDate11.toString(), sentenceStartDate12.toString()])
+
+    loginAs(FEMALE_USER)
+    browser.at CategoriserHomePage
+    elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
+    riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
+    browser.selectFirstPrisoner()
   }
 
   def gotoTasklistRecat(transferToSecurity = false, indeterminateSentence = false) {
@@ -134,6 +225,19 @@ class TestFixture {
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
     browser.selectFirstPrisoner()
   }
+
+  def gotoTasklistRecatForWomen(transferToSecurity = false, indeterminateSentence = false) {
+    elite2Api.stubRecategoriseWomen()
+    prisonerSearchApi.stubGetPrisonerSearchPrisonersWomen()
+    prisonerSearchApi.stubSentenceData(['ON700', 'ON701'], [700, 701], [LocalDate.now().toString(), LocalDate.now().toString()])
+
+    loginAs(FEMALE_RECAT_USER)
+    browser.at RecategoriserHomePage
+    elite2Api.stubGetOffenderDetailsWomen(700, 'ON700', false, indeterminateSentence, 'R')
+    riskProfilerApi.stubForTasklists('ON700', 'R', transferToSecurity)
+    browser.selectFirstPrisoner()
+  }
+
 
   def gotoTasklistRecatForCatI(transferToSecurity = false) {
     elite2Api.stubRecategoriseWithCatI()
