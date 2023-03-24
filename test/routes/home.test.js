@@ -79,6 +79,27 @@ const offenderServiceGetOffenderDetails = () => {
   })
 }
 
+const getMockedTprsValues = (cat, selected) => {
+  return [
+    {
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      displayName: 'Tim Handle',
+      category: cat,
+      pnomis: true,
+      dbRecord: {
+        formObject: {
+          openConditions: {
+            tprs: {
+              tprsSelected: selected,
+            },
+          },
+        },
+      },
+    },
+  ]
+}
+
 let app
 
 beforeEach(() => {
@@ -174,6 +195,145 @@ describe('GET /supervisorHome', () => {
       .expect(res => {
         expect(res.text).toContain('PNOMIS') // should not display start button
         expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
+      })
+  })
+})
+
+describe('TPRS label tests', () => {
+  test('On supervisor home page TPRS label should not be displayed when tprs yes is selected and category is not open', () => {
+    offendersService.getUnapprovedOffenders.mockResolvedValue(getMockedTprsValues('C', 'Yes'))
+    return request(app)
+      .get('/supervisorHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('On supervisor home page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getUnapprovedOffenders.mockResolvedValue(getMockedTprsValues('D', 'Yes'))
+    return request(app)
+      .get('/supervisorHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+        expect(offendersService.getUnapprovedOffenders).toBeCalledTimes(1)
+      })
+  })
+
+  test('On supervisor done page TPRS label should not be displayed when tprs yes is selected and category is not open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('C', 'Yes'))
+    return request(app)
+      .get('/supervisorDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('On supervisor done page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('D', 'Yes'))
+    return request(app)
+      .get('/supervisorDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+
+  test('On categoriser done page TPRS label should not be displayed when tprs yes is selected and category is not open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('C', 'Yes'))
+    return request(app)
+      .get('/categoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('On categoriser done page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('D', 'Yes'))
+    return request(app)
+      .get('/categoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+
+  test('On recategoriser done page TPRS label should not be displayed when tprs yes is selected and category is not open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('C', 'Yes'))
+    return request(app)
+      .get('/recategoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('On recategoriser done page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getCategorisedOffenders.mockResolvedValue(getMockedTprsValues('D', 'Yes'))
+    return request(app)
+      .get('/recategoriserDone')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+        expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
+      })
+  })
+
+  test('On category history page TPRS label should be displayed when tprs yes is selected and category is open', () => {
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          classificationCode: 'D',
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: true,
+        },
+      ],
+    })
+
+    return request(app)
+      .get('/categoryHistory/12')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('TPRS')
+      })
+  })
+
+  test('On category history page TPRS label should NOT be displayed when tprs yes is selected and category is NOT open', () => {
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          classificationCode: 'C',
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: true,
+        },
+      ],
+    })
+
+    return request(app)
+      .get('/categoryHistory/12')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('TPRS')
+        // expect(offendersService.getCategorisedOffenders).toBeCalledTimes(1)
       })
   })
 })
@@ -830,6 +990,7 @@ describe('TPRS banner appears on landing page', () => {
           recordExists: true,
           approvalDate: '2023-03-13',
           tprsSelected: true,
+          classificationCode: 'D',
         },
       ],
     })
@@ -873,6 +1034,7 @@ describe('TPRS banner appears on landing page', () => {
           recordExists: true,
           approvalDate: '2023-03-13',
           tprsSelected: true,
+          classificationCode: 'D',
         },
       ],
     })
@@ -916,6 +1078,7 @@ describe('TPRS banner appears on landing page', () => {
           recordExists: true,
           approvalDate: '2023-03-13',
           tprsSelected: true,
+          classificationCode: 'D',
         },
       ],
     })
@@ -958,6 +1121,7 @@ describe('TPRS banner appears on landing page', () => {
           recordExists: true,
           approvalDate: '2023-03-13',
           tprsSelected: true,
+          classificationCode: 'D',
         },
       ],
     })
@@ -1021,6 +1185,7 @@ describe('TPRS banner appears on landing page', () => {
           recordExists: true,
           approvalDate: '2023-03-13',
           tprsSelected: true,
+          classificationCode: 'D',
         },
       ],
     })
@@ -1074,6 +1239,7 @@ describe('TPRS banner appears on landing page', () => {
           recordExists: true,
           approvalDate: '2023-03-13',
           tprsSelected: true,
+          classificationCode: 'D',
         },
       ],
     })
@@ -1186,6 +1352,167 @@ describe('TPRS banner appears on landing page', () => {
     offendersService.requiredCatType.mockResolvedValue('RECAT')
     return request(app)
       .get(`/recategoriserLanding/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsLandingBanner"')
+      })
+  })
+
+  test('Landing page does not shows TPRS banner if not the top history item has tprs', () => {
+    roles = ['ROLE_CREATE_CATEGORISATION']
+    userServiceGetUser()
+    offenderServiceGetOffenderDetails()
+
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+      displayStatus: 'Any other status',
+      prisonId: 'MPI',
+      approvalDate: moment('2023-03-13'),
+      formObject: {
+        ratings: {
+          supervisor: {
+            review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
+          },
+          categoriser: {
+            provisionalCategory: {
+              suggestedCategory: 'C',
+              overriddenCategory: 'D',
+              categoryAppropriate: 'No',
+            },
+          },
+          openConditions: {
+            openConditionsRequested: true,
+            tprs: { tprsSelected: 'Yes' },
+          },
+        },
+      },
+    })
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: false,
+          classificationCode: 'D',
+        },
+        {
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-10',
+          tprsSelected: true,
+          classificationCode: 'D',
+        },
+      ],
+    })
+    formService.getNextReview.mockResolvedValue([])
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
+    return request(app)
+      .get(`/categoriserLanding/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsLandingBanner"')
+      })
+  })
+
+  test('Landing page does not shows TPRS banner if history is empty', () => {
+    roles = ['ROLE_CREATE_CATEGORISATION']
+    userServiceGetUser()
+    offenderServiceGetOffenderDetails()
+
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+      displayStatus: 'Any other status',
+      prisonId: 'MPI',
+      approvalDate: moment('2023-03-13'),
+      formObject: {
+        ratings: {
+          supervisor: {
+            review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
+          },
+          categoriser: {
+            provisionalCategory: {
+              suggestedCategory: 'C',
+              overriddenCategory: 'D',
+              categoryAppropriate: 'No',
+            },
+          },
+          openConditions: {
+            openConditionsRequested: true,
+            tprs: { tprsSelected: 'Yes' },
+          },
+        },
+      },
+    })
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [],
+    })
+    formService.getNextReview.mockResolvedValue([])
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
+    return request(app)
+      .get(`/categoriserLanding/1234`)
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('id="tprsLandingBanner"')
+      })
+  })
+
+  test('Landing page does not shows TPRS banner if the history item is not open', () => {
+    roles = ['ROLE_CREATE_CATEGORISATION']
+    userServiceGetUser()
+    offenderServiceGetOffenderDetails()
+
+    formService.getCategorisationRecord.mockResolvedValue({
+      status: 'APPROVED',
+      catType: 'INITIAL',
+      bookingId: 12,
+      displayName: 'Dexter Spaniel',
+      displayStatus: 'Any other status',
+      prisonId: 'MPI',
+      approvalDate: moment('2023-03-13'),
+      formObject: {
+        ratings: {
+          supervisor: {
+            review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
+          },
+          categoriser: {
+            provisionalCategory: {
+              suggestedCategory: 'C',
+              overriddenCategory: 'D',
+              categoryAppropriate: 'No',
+            },
+          },
+          openConditions: {
+            openConditionsRequested: true,
+            tprs: { tprsSelected: 'Yes' },
+          },
+        },
+      },
+    })
+    offendersService.getCategoryHistory.mockResolvedValue({
+      history: [
+        {
+          bookingId: 12,
+          recordExists: true,
+          approvalDate: '2023-03-13',
+          tprsSelected: true,
+          classificationCode: 'C',
+        },
+      ],
+    })
+    formService.getNextReview.mockResolvedValue([])
+    offendersService.requiredCatType.mockResolvedValue('INITIAL')
+    return request(app)
+      .get(`/categoriserLanding/1234`)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
