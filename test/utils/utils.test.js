@@ -9,6 +9,7 @@ const {
   setFemaleCaseLoads,
   catMappings,
   catLabel,
+  isOpenCategory,
 } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
@@ -131,4 +132,12 @@ describe('catLabel called with different categories should return expect result'
   expect(catLabel('J')).toEqual('YOI open category')
   expect(catLabel('Q')).toEqual('Restricted category')
   expect(catLabel('SS')).toEqual('SS category')
+})
+describe('isOpenCategory should return expected value', () => {
+  expect(isOpenCategory('D')).toEqual(true)
+  expect(isOpenCategory('J')).toEqual(true)
+  expect(isOpenCategory('T')).toEqual(true)
+  expect(isOpenCategory('Anything else')).toEqual(false)
+  expect(isOpenCategory(null)).toEqual(false)
+  expect(isOpenCategory(undefined)).toEqual(false)
 })

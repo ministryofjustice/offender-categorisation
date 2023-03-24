@@ -6,7 +6,7 @@ const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { dateConverterToISO } = require('../utils/utils')
+const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 
@@ -369,7 +369,7 @@ module.exports = function Index({
       )
 
       const nextReviewDateHistory = await formService.getNextReview(details.offenderNo, transactionalDbClient)
-      const tprsRecord = categoryHistory && categoryHistory.history && categoryHistory.history.find(h => h.tprsSelected)
+      const firstRecord = categoryHistory?.history.length > 0 && categoryHistory.history[0]
       res.render(`pages/${role}Landing`, {
         data: {
           requiredCatType,
@@ -379,8 +379,8 @@ module.exports = function Index({
           details,
           categorisationUser,
           status: categorisationRecord.status,
-          hasTprsSelected: !!tprsRecord,
-          tprsDate: tprsRecord ? tprsRecord.approvalDate : '',
+          hasTprsSelected: (firstRecord?.tprsSelected && isOpenCategory(firstRecord?.classificationCode)) || false,
+          tprsDate: firstRecord?.tprsSelected ? firstRecord.approvalDate : '',
           nextReviewDateHistory,
         },
       })

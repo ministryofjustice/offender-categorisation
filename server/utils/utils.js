@@ -196,6 +196,10 @@ const setFemaleCaseLoads = caseLoads => {
   })
 }
 
+const isOpenCategory = cat => {
+  return ['D', 'J', 'T'].includes(cat)
+}
+
 module.exports = {
   dateConverter,
   dateConverterToISO,
@@ -225,4 +229,5 @@ module.exports = {
   getNamesFromString,
   isFemalePrisonId,
   setFemaleCaseLoads,
+  isOpenCategory,
 }

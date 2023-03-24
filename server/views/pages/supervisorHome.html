@@ -74,7 +74,7 @@
       <td class="govuk-table__cell">{{ row.nextReviewDate }}</td>
       <td class="govuk-table__cell">{{ row.categoriserDisplayName }}</td>
       <td class="govuk-table__cell">{{ catMappings(row.category) }}
-        {% if row.dbRecord.formObject.openConditions.tprs.tprsSelected=='Yes' %}
+        {% if isOpenCategory(row.category) and row.dbRecord.formObject.openConditions.tprs.tprsSelected=='Yes' %}
         <strong class="govuk-tag govuk-tag--red">TPRS</strong>
         {% endif %}
       </td>
