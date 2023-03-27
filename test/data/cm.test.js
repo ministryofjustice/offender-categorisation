@@ -1,14 +1,12 @@
-const { execSync } = require('child_process')
 const path = require('path')
 
-const containerName = 'form-builder-unit-tests-db'
 const knexUnitTestConfig = {
   client: 'pg',
   connection: {
-    host: process.env.UNIT_TEST_DB_HOSTNAME || 'localhost',
-    port: 5434,
-    user: 'form-builder',
-    password: 'form-builder',
+    host: process.env.POSTGRES_HOSTNAME || 'localhost',
+    port: parseInt(process.env.POSTGRES_PORT, 10) || 5434,
+    user: 'form-builder-unit-tests',
+    password: 'form-builder-unit-tests',
     database: 'form-builder-unit-tests',
     ssl: false,
   },
@@ -21,16 +19,6 @@ const knex = require('knex')(knexUnitTestConfig)
 
 const migrate = async () => {
   try {
-    // start the database container
-    execSync(
-      `docker run --name ${containerName} -d -p ${knexUnitTestConfig.connection.port}:5432 -e POSTGRES_USER=${knexUnitTestConfig.connection.user} -e POSTGRES_PASSWORD=${knexUnitTestConfig.connection.password} -e POSTGRES_DB=${knexUnitTestConfig.connection.database} -e POSTGRES_HOST_AUTH_METHOD=md5 postgres:14.3`,
-      { stdio: 'inherit' }
-    )
-    // wait for the database to be ready
-    // await knex.raw('DROP DATABASE IF EXISTS "form-builder-unit-tests";')
-    // await knex.raw('CREATE DATABASE "form-builder-unit-tests";')
-    await new Promise(resolve => setTimeout(resolve, 5000))
-    execSync('docker ps -a', { stdio: 'inherit' })
     // run knex migrations
     await knex.migrate.latest()
     // console.log('migration complete')
@@ -44,9 +32,6 @@ const rollback = async () => {
   try {
     // rollback knex migrations
     await knex.migrate.rollback()
-    // stop the database container
-    execSync(`docker stop ${containerName}`)
-    execSync(`docker rm ${containerName}`)
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error(err)

@@ -13,6 +13,19 @@ services:
       - POSTGRES_USER=form-builder
       - POSTGRES_DB=form-builder
 
+  form-db-unit-tests:
+    image: postgres
+    networks:
+      - hmpps
+    container_name: form-builder-db-unit-tests
+    restart: always
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_PASSWORD=form-builder-unit-tests
+      - POSTGRES_USER=form-builder-unit-tests
+      - POSTGRES_DB=form-builder-unit-tests
+
   categorisation-redis:
     image: redis
     networks:

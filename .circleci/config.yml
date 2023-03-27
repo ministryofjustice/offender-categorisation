@@ -51,15 +51,16 @@ jobs:
           - assets/stylesheets
   test:
     executor: builder
-    environment:
-      UNIT_TEST_DB_HOSTNAME: '0.0.0.0'
+    docker:
+      - image: cimg/postgres:14.3
+        environment:
+          POSTGRES_HOSTNAME: form-db-unit-tests
+          POSTGRES_USER: form-builder-unit-tests
+          POSTGRES_PASSWORD: form-builder-unit-tests
+          POSTGRES_DB: form-builder-unit-tests
+          POSTGRES_PORT: 5432
     steps:
     - checkout
-    - setup_remote_docker:
-        version: 20.10.14
-    - run:
-        name: pull postgres docker image
-        command: docker pull postgres:14.3
     - restore_cache:
         key: dependency-cache-{{ checksum "package-lock.json" }}
     - run:
