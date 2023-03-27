@@ -51,12 +51,13 @@ jobs:
           - assets/stylesheets
   test:
     executor: builder
-    docker:
-      - image: cimg/postgres:14.3
     steps:
     - checkout
     - setup_remote_docker:
         version: 20.10.14
+    - run:
+        name: pull postgres docker image
+        command: docker pull postgres:14.3
     - restore_cache:
         key: dependency-cache-{{ checksum "package-lock.json" }}
     - run:
