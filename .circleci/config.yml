@@ -52,7 +52,7 @@ jobs:
   test:
     executor: builder
     environment:
-      POSTGRES_HOSTNAME: form-builder-db-unit-tests
+      POSTGRES_HOSTNAME: form-db-unit-tests
       POSTGRES_USER: form-builder-unit-tests
       POSTGRES_PASSWORD: form-builder-unit-tests
       POSTGRES_DB: form-builder-unit-tests
@@ -60,6 +60,7 @@ jobs:
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
       - image: cimg/postgres:14.3
+        name: form-db-unit-tests
     steps:
     - checkout
     - restore_cache:
