@@ -5,7 +5,7 @@ const containerName = 'form-builder-unit-tests-db'
 const knexUnitTestConfig = {
   client: 'pg',
   connection: {
-    host: 'localhost',
+    host: process.env.UNIT_TEST_DB_HOSTNAME || 'localhost',
     port: 5434,
     user: 'form-builder',
     password: 'form-builder',

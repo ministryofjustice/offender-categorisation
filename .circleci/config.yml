@@ -51,6 +51,8 @@ jobs:
           - assets/stylesheets
   test:
     executor: builder
+    environment:
+      UNIT_TEST_DB_HOSTNAME: 'form-builder-unit-tests-db'
     steps:
     - checkout
     - setup_remote_docker:
