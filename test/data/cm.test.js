@@ -29,6 +29,7 @@ const migrate = async () => {
     // await knex.raw('DROP DATABASE IF EXISTS "form-builder-unit-tests";')
     // await knex.raw('CREATE DATABASE "form-builder-unit-tests";')
     await new Promise(resolve => setTimeout(resolve, 5000))
+    execSync('docker ps -a')
     // run knex migrations
     await knex.migrate.latest()
     // console.log('migration complete')
