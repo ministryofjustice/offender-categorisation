@@ -52,6 +52,7 @@ jobs:
   test:
     executor: builder
     docker:
+      - image: cimg/node:<< pipeline.parameters.node-version >>
       - image: cimg/postgres:14.3
         environment:
           POSTGRES_HOSTNAME: form-db-unit-tests
