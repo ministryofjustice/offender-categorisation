@@ -23,7 +23,7 @@ const migrate = async () => {
   try {
     // start the database container
     execSync(
-      `docker run --name ${containerName} -d -p ${knexUnitTestConfig.connection.port}:5432 -e POSTGRES_USER=${knexUnitTestConfig.connection.user} -e POSTGRES_PASSWORD=${knexUnitTestConfig.connection.password} -e POSTGRES_DB=${knexUnitTestConfig.connection.database} -e POSTGRES_HOST_AUTH_METHOD=md5 postgres`
+      `docker run --name ${containerName} -d -p ${knexUnitTestConfig.connection.port}:5432 -e POSTGRES_USER=${knexUnitTestConfig.connection.user} -e POSTGRES_PASSWORD=${knexUnitTestConfig.connection.password} -e POSTGRES_DB=${knexUnitTestConfig.connection.database} -e POSTGRES_HOST_AUTH_METHOD=md5 postgres:14.3`
     )
     // wait for the database to be ready
     // await knex.raw('DROP DATABASE IF EXISTS "form-builder-unit-tests";')

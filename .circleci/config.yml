@@ -51,6 +51,8 @@ jobs:
           - assets/stylesheets
   test:
     executor: builder
+    docker:
+      - image: cimg/postgres:14.3
     steps:
     - checkout
     - setup_remote_docker:
