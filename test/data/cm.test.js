@@ -31,8 +31,9 @@ const migrate = async () => {
     await new Promise(resolve => setTimeout(resolve, 5000))
     // run knex migrations
     await knex.migrate.latest()
-    console.log('migration complete')
+    // console.log('migration complete')
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error(err)
   }
 }
@@ -45,6 +46,7 @@ const rollback = async () => {
     execSync(`docker stop ${containerName}`)
     execSync(`docker rm ${containerName}`)
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error(err)
   }
 }
