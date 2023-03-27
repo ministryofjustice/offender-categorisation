@@ -23,13 +23,14 @@ const migrate = async () => {
   try {
     // start the database container
     execSync(
-      `docker run --name ${containerName} -d -p ${knexUnitTestConfig.connection.port}:5432 -e POSTGRES_USER=${knexUnitTestConfig.connection.user} -e POSTGRES_PASSWORD=${knexUnitTestConfig.connection.password} -e POSTGRES_DB=${knexUnitTestConfig.connection.database} -e POSTGRES_HOST_AUTH_METHOD=md5 postgres:14.3`
+      `docker run --name ${containerName} -d -p ${knexUnitTestConfig.connection.port}:5432 -e POSTGRES_USER=${knexUnitTestConfig.connection.user} -e POSTGRES_PASSWORD=${knexUnitTestConfig.connection.password} -e POSTGRES_DB=${knexUnitTestConfig.connection.database} -e POSTGRES_HOST_AUTH_METHOD=md5 postgres:14.3`,
+      { stdio: 'inherit' }
     )
     // wait for the database to be ready
     // await knex.raw('DROP DATABASE IF EXISTS "form-builder-unit-tests";')
     // await knex.raw('CREATE DATABASE "form-builder-unit-tests";')
     await new Promise(resolve => setTimeout(resolve, 5000))
-    execSync('docker ps -a')
+    execSync('docker ps -a', { stdio: 'inherit' })
     // run knex migrations
     await knex.migrate.latest()
     // console.log('migration complete')

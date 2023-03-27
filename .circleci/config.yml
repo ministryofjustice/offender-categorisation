@@ -52,7 +52,7 @@ jobs:
   test:
     executor: builder
     environment:
-      UNIT_TEST_DB_HOSTNAME: '127.0.0.1'
+      UNIT_TEST_DB_HOSTNAME: 'form-builder-unit-tests-db'
     steps:
     - checkout
     - setup_remote_docker:
