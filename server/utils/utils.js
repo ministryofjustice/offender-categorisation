@@ -159,7 +159,7 @@ const calculateNextReviewDate = R.cond([
   [R.T, R.always('')],
 ])
 
-const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB', 'JD', 'JT', 'JR', 'TR'])
+const catMap = new Set(['DB', 'DC', 'DI', 'CB', 'JI', 'JC', 'JB', 'JD', 'JT', 'JR', 'TR', 'TI'])
 const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
 const offenderLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}`

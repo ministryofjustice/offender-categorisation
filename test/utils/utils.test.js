@@ -172,3 +172,9 @@ describe('choosingHigherCategory should return expected value for YOI into femal
   expect(choosingHigherCategory('J', 'T')).toEqual(true)
   expect(choosingHigherCategory('T', 'J')).toEqual(false)
 })
+describe('choosingHigherCategory should return expected value for opne into YOI closed category transitions', () => {
+  expect(choosingHigherCategory('T', 'I')).toEqual(true)
+  expect(choosingHigherCategory('I', 'T')).toEqual(false)
+  expect(choosingHigherCategory('D', 'I')).toEqual(true)
+  expect(choosingHigherCategory('I', 'D')).toEqual(false)
+})
