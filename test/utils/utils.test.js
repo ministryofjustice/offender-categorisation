@@ -10,6 +10,7 @@ const {
   catMappings,
   catLabel,
   isOpenCategory,
+  choosingHigherCategory,
 } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
@@ -140,4 +141,40 @@ describe('isOpenCategory should return expected value', () => {
   expect(isOpenCategory('Anything else')).toEqual(false)
   expect(isOpenCategory(null)).toEqual(false)
   expect(isOpenCategory(undefined)).toEqual(false)
+})
+describe('choosingHigherCategory should return expected value for male category transitions', () => {
+  expect(choosingHigherCategory('D', 'B')).toEqual(true)
+  expect(choosingHigherCategory('B', 'D')).toEqual(false)
+  expect(choosingHigherCategory('D', 'C')).toEqual(true)
+  expect(choosingHigherCategory('C', 'D')).toEqual(false)
+  expect(choosingHigherCategory('C', 'B')).toEqual(true)
+  expect(choosingHigherCategory('B', 'C')).toEqual(false)
+})
+describe('choosingHigherCategory should return expected value for female category transitions', () => {
+  expect(choosingHigherCategory('T', 'R')).toEqual(true)
+  expect(choosingHigherCategory('R', 'T')).toEqual(false)
+})
+describe('choosingHigherCategory should return expected value for YOI category transitions', () => {
+  expect(choosingHigherCategory('J', 'I')).toEqual(true)
+  expect(choosingHigherCategory('I', 'J')).toEqual(false)
+})
+describe('choosingHigherCategory should return expected value for YOI into male category transitions', () => {
+  expect(choosingHigherCategory('J', 'C')).toEqual(true)
+  expect(choosingHigherCategory('C', 'J')).toEqual(false)
+  expect(choosingHigherCategory('J', 'B')).toEqual(true)
+  expect(choosingHigherCategory('B', 'J')).toEqual(false)
+  expect(choosingHigherCategory('J', 'D')).toEqual(true)
+  expect(choosingHigherCategory('D', 'J')).toEqual(false)
+})
+describe('choosingHigherCategory should return expected value for YOI into female category transitions', () => {
+  expect(choosingHigherCategory('J', 'R')).toEqual(true)
+  expect(choosingHigherCategory('R', 'J')).toEqual(false)
+  expect(choosingHigherCategory('J', 'T')).toEqual(true)
+  expect(choosingHigherCategory('T', 'J')).toEqual(false)
+})
+describe('choosingHigherCategory should return expected value for opne into YOI closed category transitions', () => {
+  expect(choosingHigherCategory('T', 'I')).toEqual(true)
+  expect(choosingHigherCategory('I', 'T')).toEqual(false)
+  expect(choosingHigherCategory('D', 'I')).toEqual(true)
+  expect(choosingHigherCategory('I', 'D')).toEqual(false)
 })
