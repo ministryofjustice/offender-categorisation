@@ -40,6 +40,7 @@ module.exports = {
     password: get('DB_PASS', 'form-builder'),
     server: get('DB_SERVER', 'localhost', true),
     database: get('DB_NAME', 'form-builder', true),
+    port: get('DB_PORT', 5432, true),
     sslEnabled: get('DB_SSL_ENABLED', 'false', true),
   },
   sqs: {
