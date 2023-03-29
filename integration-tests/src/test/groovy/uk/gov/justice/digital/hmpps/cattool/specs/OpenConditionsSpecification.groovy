@@ -65,6 +65,23 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'open conditions task is selected'
     openConditionsButton.click()
 
+    then: 'the TPRS page is displayed'
+    at TprsPage
+
+    when: 'I submit a blank page'
+    submitButton.click()
+
+    then: 'there is a validation error'
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+      errors.text().toString() == "Error:\nPlease select yes or no"
+    }
+
+    when: 'I select a radio option'
+    tprsSelectedYes.click()
+
+    submitButton.click()
+
     then: 'the Earliest Release page is displayed'
     at EarliestReleasePage
 
@@ -201,22 +218,6 @@ class OpenConditionsSpecification extends AbstractSpecification {
     exhaustedAppealNo.click()
     submitButton.click()
 
-    then: 'the TPRS page is displayed'
-    at TprsPage
-
-    when: 'I submit a blank page'
-    submitButton.click()
-
-    then: 'there is a validation error'
-    waitFor {
-      errorSummaries*.text() == ['Please select yes or no']
-      errors.text().toString() == "Error:\nPlease select yes or no"
-    }
-
-    when: 'I select a radio option'
-    tprsSelectedYes.click()
-
-    submitButton.click()
     then: 'the Risk of serious harm page is displayed'
     at RiskOfHarmPage
 
@@ -771,6 +772,9 @@ class OpenConditionsSpecification extends AbstractSpecification {
 
   private completeOpenConditionsWorkflow(boolean furtherChargesExist) {
     openConditionsButton.click()
+    at TprsPage
+    tprsSelectedNo.click()
+    submitButton.click()
     at EarliestReleasePage
     threeOrMoreYearsNo.click()
     submitButton.click()
@@ -785,9 +789,6 @@ class OpenConditionsSpecification extends AbstractSpecification {
     submitButton.click()
     at ForeignNationalPage
     isForeignNationalNo.click()
-    submitButton.click()
-    at TprsPage
-    tprsSelectedNo.click()
     submitButton.click()
     at RiskOfHarmPage
     seriousHarmNo.click()

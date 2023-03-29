@@ -24,12 +24,14 @@
 
     <h1 class="govuk-heading-l mainHeading">{{ pageTitle }}</h1>
 
-    {% include "../../partials/tprsBanner.html" %}
-    {% include "../../partials/openConditionsBanner.html" %}
-
     {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
     {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
     {% set currentCat = overriddenCat if overriddenCat else cat %}
+
+    {% if isOpenCategory(currentCat) %}
+      {% include "../../partials/tprsBanner.html" %}
+    {% endif %}
+    {% include "../../partials/openConditionsBanner.html" %}
 
     {% if isFemale %}
     <div id="femaleBanner" class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">

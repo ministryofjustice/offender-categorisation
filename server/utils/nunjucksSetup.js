@@ -13,6 +13,7 @@ const {
   choosingHigherCategory,
   offenderLink,
   dpsUrl,
+  isOpenCategory,
 } = require('./utils')
 const config = require('../config')
 const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
@@ -59,6 +60,7 @@ module.exports = (app, path) => {
     .addGlobal('choosingHigherCategory', choosingHigherCategory)
     .addGlobal('inProgress', inProgress)
     .addGlobal('extractNextReviewDate', extractNextReviewDate)
+    .addGlobal('isOpenCategory', isOpenCategory)
     .addFilter('initialiseName', fullName => {
       // this check is for the authError page
       if (!fullName) {
