@@ -53,7 +53,7 @@ jobs:
     executor: builder
     environment:
       POSTGRES_HOSTNAME: form-db-unit-tests
-      POSTGRES_PORT: 5432
+      DB_PORT: 5432
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
       - image: cimg/postgres:14.3
