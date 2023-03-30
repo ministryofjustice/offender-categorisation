@@ -52,7 +52,7 @@ jobs:
   test:
     executor: builder
     environment:
-      POSTGRES_HOSTNAME: form-db-unit-tests
+#      POSTGRES_HOSTNAME: form-db-unit-tests
       DB_PORT: 5432
       POSTGRES_PORT: 5432
     docker:
