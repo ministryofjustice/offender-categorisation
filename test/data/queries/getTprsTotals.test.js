@@ -153,34 +153,33 @@ describe('getTprsTotals', () => {
             approval_date: startDate,
             ...initialCategory('C'),
           }),
-          // // included, correct category
-          // fakePrisoner(3, {
-          //   prison_id: prisons.ADULT.WOMENS.PETERBOROUGH,
-          //   approval_date: startDate,
-          //   ...{ form_response: { supervisor: {} } },
-          //   ...initialCategory('D'),
-          // }),
-          // // included, override initial category regrades to open
-          // fakePrisoner(4, {
-          //   prison_id: prisons.ADULT.WOMENS.PETERBOROUGH,
-          //   approval_date: startDate,
-          //   ...{ form_response: { supervisor: {} } },
-          //   ...initialCategory('C'),
-          //   ...initialCategoryOverridden('J'),
-          // }),
-
-          // fakePrisoner(4, {
-          //   prison_id: prisons.ADULT.WOMENS.PETERBOROUGH,
-          //   approval_date: startDate,
-          //   ...initialCategoryOverridden('J'),
-          // }),
+          // included, correct category
+          fakePrisoner(3, {
+            prison_id: prisons.ADULT.WOMENS.PETERBOROUGH,
+            approval_date: startDate,
+            ...initialCategory('D'),
+          }),
+          // included, override initial category regrades to open
+          fakePrisoner(4, {
+            prison_id: prisons.ADULT.WOMENS.PETERBOROUGH,
+            approval_date: startDate,
+            ...initialCategory('C'),
+            ...initialCategoryOverridden('J'),
+          }),
+          // excluded, supervisor overrules
+          fakePrisoner(5, {
+            prison_id: prisons.ADULT.WOMENS.PETERBOROUGH,
+            approval_date: startDate,
+            ...initialCategoryOverridden('D'),
+            ...supervisorOverriddenCategory('C'),
+          }),
           // excluded as wrong category
-          // fakePrisoner(5, {
-          //   prison_id: prisons.ADULT.WOMENS.PETERBOROUGH,
-          //   approval_date: startDate,
-          //   ...initialCategory('C'),
-          //   ...initialCategoryOverridden('B'),
-          // }),
+          fakePrisoner(6, {
+            prison_id: prisons.ADULT.WOMENS.PETERBOROUGH,
+            approval_date: startDate,
+            ...initialCategory('C'),
+            ...initialCategoryOverridden('B'),
+          }),
         ])
 
         await doTransactional(async dbClient => {
@@ -192,7 +191,7 @@ describe('getTprsTotals', () => {
             dbClient
           )
 
-          expect(result.rows).toEqual([{ tprs_selected: 0 }])
+          expect(result.rows).toEqual([{ tprs_selected: 2 }])
         })
       })
 
