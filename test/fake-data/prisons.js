@@ -5,6 +5,7 @@ const PRISONS = {
       PETERBOROUGH: 'PBI',
     },
     WOMENS: {
+      FOSTON_HALL: 'FHI',
       PETERBOROUGH: 'PFI',
     },
   },

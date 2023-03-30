@@ -1,5 +1,7 @@
 const ramda = require('ramda')
 const prisons = require('./prisons')
+const CatType = require('../../server/utils/catTypeEnum')
+const Status = require('../../server/utils/statusEnum')
 
 const fakePrisoner = (id, fields = {}) =>
   ramda.mergeDeepRight(
@@ -15,27 +17,8 @@ const fakePrisoner = (id, fields = {}) =>
           extremismRating: { previousTerrorismOffences: 'No' },
           offendingHistory: { previousConvictions: 'Yes', previousConvictionsText: 'some convictions' },
         },
-        supervisor: {
-          review: {
-            proposedCategory: 'D',
-            otherInformationText: 'super other info 1',
-            previousOverrideCategoryText: 'super overriding C to D reason text',
-            supervisorCategoryAppropriate: 'Yes',
-          },
-          confirmBack: {
-            isRead: true,
-            messageText: 'super overriding C to D reason text',
-            supervisorName: 'Test User',
-          },
-        },
-        categoriser: {
-          review: {},
-          provisionalCategory: {
-            suggestedCategory: 'D',
-            categoryAppropriate: 'Yes',
-            otherInformationText: 'categoriser relevant info for accept',
-          },
-        },
+        supervisor: {},
+        categoriser: {},
         openConditions: {
           tprs: { tprsSelected: 'Yes' },
           riskLevels: { likelyToAbscond: 'No' },
@@ -55,7 +38,7 @@ const fakePrisoner = (id, fields = {}) =>
       },
       booking_id: id,
       user_id: 'user123',
-      status: 'APPROVED',
+      status: Status.APPROVED.name,
       assigned_user_id: 'user456',
       referred_date: '2022-02-01T10:30:00Z',
       referred_by: 'referral123',
@@ -71,7 +54,7 @@ const fakePrisoner = (id, fields = {}) =>
       security_reviewed_by: 'security123',
       security_reviewed_date: '2022-01-15T10:30:00Z',
       approval_date: '2022-01-24',
-      cat_type: 'INITIAL',
+      cat_type: CatType.INITIAL.name,
       nomis_sequence_no: id,
       assessment_date: '2022-01-10',
       approved_by: 'approver123',
