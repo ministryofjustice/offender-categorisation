@@ -54,6 +54,7 @@ jobs:
     environment:
       POSTGRES_HOSTNAME: form-db-unit-tests
       DB_PORT: 5432
+      POSTGRES_PORT: 5432
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
       - image: cimg/postgres:14.3
