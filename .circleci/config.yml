@@ -52,6 +52,7 @@ jobs:
   test:
     executor: builder
     environment:
+      DB_NAME: form-builder
       DB_SERVER: form-db-unit-tests
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
