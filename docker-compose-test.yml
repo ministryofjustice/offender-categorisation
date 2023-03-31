@@ -12,21 +12,8 @@ services:
       - POSTGRES_PASSWORD=form-builder
       - POSTGRES_USER=form-builder
       - POSTGRES_DB=form-builder
-    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
-
-  form-db-unit-tests:
-    image: postgres
-    networks:
-      - hmpps
-    container_name: form-builder-db-unit-tests
-    restart: always
-    ports:
-      - "5434:5432"
-    environment:
-      - POSTGRES_PASSWORD=form-builder-unit-tests
-      - POSTGRES_USER=form-builder-unit-tests
-      - POSTGRES_DB=form-builder-unit-tests
-    command: ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
+    volumes:
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   categorisation-redis:
     image: redis

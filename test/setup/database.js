@@ -1,20 +1,14 @@
 const path = require('path')
+const knexConfig = require('../../knexfile')
 
 const knexUnitTestConfig = {
-  client: 'pg',
-  connection: {
-    host: process.env.POSTGRES_HOSTNAME || 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT, 10) || 5434,
-    user: 'form-builder-unit-tests',
-    password: 'form-builder-unit-tests',
-    database: 'form-builder-unit-tests',
-    ssl: false,
-  },
+  ...knexConfig,
   // debug: true,
   migrations: {
     directory: path.join(__dirname, '/../../migrations'),
   },
 }
+// eslint-disable-next-line import/order
 const knex = require('knex')(knexUnitTestConfig)
 
 const migrate = async () => {

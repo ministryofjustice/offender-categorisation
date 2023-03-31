@@ -10,7 +10,7 @@ const pool = new Pool({
   host: config.db.server,
   database: config.db.database,
   password: config.db.password,
-  port: config.db.port,
+  port: 5432,
   ssl:
     config.db.sslEnabled === 'true'
       ? {

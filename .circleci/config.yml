@@ -51,19 +51,12 @@ jobs:
           - assets/stylesheets
   test:
     executor: builder
-    environment:
-      DB_SERVER: form-db-unit-tests
-      DB_PORT: 5432
-      POSTGRES_PORT: 5432
-      POSTGRES_HOSTNAME: form-db-unit-tests
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
       - image: cimg/postgres:14.3
-        name: form-db-unit-tests
         environment:
-          POSTGRES_USER: form-builder-unit-tests
-          POSTGRES_PASSWORD: form-builder-unit-tests
-          POSTGRES_DB: form-builder-unit-tests
+          POSTGRES_USER: form-builder
+          POSTGRES_DB: form-builder
     steps:
     - checkout
     - restore_cache:
