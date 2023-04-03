@@ -50,7 +50,6 @@ jobs:
           paths:
           - node_modules
           - assets/stylesheets
-          - ~/.cache/Cypress
   test:
     executor: builder
     steps:
@@ -137,6 +136,9 @@ jobs:
           command: sudo apt-get install libxss1
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Install Dependencies
+          command: npm --version && npm ci
       - run:
           name: Get wiremock
           command: curl -o wiremock.jar https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.27.1/wiremock-standalone-2.27.1.jar
