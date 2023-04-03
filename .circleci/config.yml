@@ -51,6 +51,7 @@ jobs:
           - node_modules
           - assets/stylesheets
           - .cache/Cypress
+          - cypress/*
   test:
     executor: builder
     steps:
