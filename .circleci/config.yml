@@ -121,7 +121,7 @@ jobs:
           destination: integration/geb
       - store_test_results:
           path: integration-tests/build/test-results
-  integration_test_cypress:
+  integration_tests_cypress:
     executor:
       name: hmpps/node_redis
       node_tag: << pipeline.parameters.node-version >>
