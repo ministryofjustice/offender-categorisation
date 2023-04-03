@@ -50,8 +50,7 @@ jobs:
           paths:
           - node_modules
           - assets/stylesheets
-          - .cache/Cypress
-          - cypress/*
+          - ~/.cache/Cypress
   test:
     executor: builder
     steps:
