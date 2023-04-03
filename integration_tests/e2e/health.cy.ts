@@ -1,6 +1,10 @@
 context('Healthcheck', () => {
   beforeEach(() => {
     cy.task('reset')
+    cy.task('stubAllocationManagerHealth')
+    cy.task('stubAuthPing')
+    cy.task('stubElite2Ping')
+    cy.task('stubPrisonerSearchPing')
     cy.task('stubRiskProfilerPing')
   })
 
@@ -15,7 +19,7 @@ context('Healthcheck', () => {
   })
 
   context('Some unhealthy', () => {
-    it('Reports correctly when token verification down', () => {
+    it('Reports correctly when risk profiler is down', () => {
       cy.task('stubRiskProfilerPing', 500)
 
       cy.request({ url: '/health', method: 'GET', failOnStatusCode: false }).then(response => {
