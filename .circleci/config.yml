@@ -123,10 +123,21 @@ jobs:
       - store_test_results:
           path: integration-tests/build/test-results
   integration_tests_cypress:
-    executor:
-      name: hmpps/node_redis
-      node_tag: << pipeline.parameters.node-version >>
-      redis_tag: "6.2"
+    working_directory: ~/app
+    docker:
+      - image: cimg/node:<< pipeline.parameters.node-version >>
+      - image: cimg/postgres:14.3
+        environment:
+          POSTGRES_USER: form-builder
+          POSTGRES_DB: form-builder
+      - image: redis
+      - image: localstack/localstack:0.11.2
+        environment:
+          SERVICES: sqs
+          PORT_WEB_UI: 8088
+          DATA_DIR: /tmp/localstack/data
+          TMP_DIR: /private
+          DEFAULT_REGION: eu-west-2
     steps:
       - checkout
       - attach_workspace:
