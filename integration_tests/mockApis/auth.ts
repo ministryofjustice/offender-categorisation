@@ -9,7 +9,12 @@ const createToken = () => {
     user_name: 'USER1',
     scope: ['read'],
     auth_source: 'nomis',
-    authorities: [],
+    authorities: [
+      'ROLE_CATEGORISATION_SECURITY',
+      // 'ROLE_CREATE_CATEGORISATION',
+      // 'ROLE_CREATE_RECATEGORISATION',
+      // 'ROLE_APPROVE_CATEGORISATION',
+    ],
     jti: '83b50a10-cca6-41db-985f-e87efb303ddb',
     client_id: 'clientid',
   }
@@ -24,7 +29,7 @@ const getSignInUrl = (): Promise<string> =>
   }).then(data => {
     const { requests } = data.body
     const stateValue = requests[requests.length - 1].queryParams.state.values[0]
-    return `/sign-in/callback?code=codexxxx&state=${stateValue}`
+    return `/login/callback?code=codexxxx&state=${stateValue}`
   })
 
 const favicon = () =>
@@ -42,7 +47,7 @@ const ping = () =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/auth/health/ping',
+      urlPattern: '/auth/ping',
     },
     response: {
       status: 200,
@@ -59,7 +64,7 @@ const redirect = () =>
       status: 200,
       headers: {
         'Content-Type': 'text/html',
-        Location: 'http://localhost:3007/sign-in/callback?code=codexxxx&state=stateyyyy',
+        Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
       },
       body: '<html><body>SignIn page<h1>Sign in</h1></body></html>',
     },
@@ -69,7 +74,7 @@ const signOut = () =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: '/auth/sign-out.*',
+      urlPattern: '/auth/logout.*',
     },
     response: {
       status: 200,
@@ -105,7 +110,7 @@ const token = () =>
       status: 200,
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
-        Location: 'http://localhost:3007/sign-in/callback?code=codexxxx&state=stateyyyy',
+        Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
       },
       jsonBody: {
         access_token: createToken(),
