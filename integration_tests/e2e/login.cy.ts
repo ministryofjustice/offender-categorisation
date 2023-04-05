@@ -10,7 +10,6 @@ context('SignIn', () => {
     cy.task('stubSignIn')
     cy.task('stubAuthUser')
     cy.task('stubGetMyDetails', SECURITY_USER)
-    // cy.task('stubNomisUserGetBuilder')
   })
 
   it('Unauthenticated user directed to auth', () => {
