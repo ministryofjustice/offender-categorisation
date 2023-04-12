@@ -68,7 +68,7 @@ jobs:
       - image: cimg/postgres:14.3
         environment:
           POSTGRES_USER: form-builder
-          POSTGRES_DB: form-builder
+          POSTGRES_DB: form-builder-integration-tests
       - image: redis
       - image: localstack/localstack:0.11.2
         environment:
