@@ -2,7 +2,7 @@ import AuthSignInPage from '../pages/authSignIn'
 import Page from '../pages/page'
 import AuthManageDetailsPage from '../pages/authManageDetails'
 import { SECURITY_USER } from '../factory/user'
-import SecurityHomePage from '../pages/security/securityHome'
+import SecurityHomePage from '../pages/security/home'
 
 context('SignIn', () => {
   beforeEach(() => {

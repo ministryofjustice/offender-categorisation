@@ -18,3 +18,7 @@ Cypress.Commands.add(
       })
   }
 )
+
+Cypress.Commands.add('checkDefinitionList', ({ term, definition }: { term: string; definition: string }) => {
+  cy.get('.govuk-summary-list').contains('dt', term).siblings('dd').should('contain.text', definition)
+})

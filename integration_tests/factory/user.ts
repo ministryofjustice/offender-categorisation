@@ -24,14 +24,6 @@ function createUserAccount(
   caseloads: Caseload[],
   roles: string[]
 ): UserAccount {
-  console.log('creating user account', {
-    username,
-    staffMember,
-    type,
-    workingCaseload,
-    caseloads,
-    roles,
-  })
   return {
     username,
     staffMember,

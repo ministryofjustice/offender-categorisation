@@ -61,7 +61,7 @@ export default {
     return stubFor({
       request: {
         method: 'POST',
-        url: '/prisoner-search/booking-ids',
+        url: '/prisoner-search/prisoner-search/booking-ids',
         bodyPatterns: [
           {
             equalToJson: JSON.stringify({ bookingIds }),
