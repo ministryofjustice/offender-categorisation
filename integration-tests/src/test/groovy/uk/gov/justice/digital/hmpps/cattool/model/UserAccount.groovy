@@ -21,7 +21,7 @@ enum UserAccount {
     FEMALE_USER('FEMALE_USER', SM_11, GENERAL, PFI, [PFI, LNI, AGI], ['ROLE_CREATE_CATEGORISATION']),
     FEMALE_RECAT_USER('FEMALE_RECAT_USER', SM_13, GENERAL, PFI, [PFI, LNI, AGI], ['ROLE_CREATE_RECATEGORISATION'])
 
-    String username
+    String  username
     StaffMember staffMember
     UserType type
     Caseload workingCaseload
