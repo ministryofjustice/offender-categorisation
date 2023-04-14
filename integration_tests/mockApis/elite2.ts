@@ -1,6 +1,6 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { leiCaseload, UserAccount } from '../factory/user'
+import { UserAccount } from '../factory/user'
 import moment from 'moment'
 
 interface SentenceDetail {
@@ -98,6 +98,117 @@ export default {
       request: {
         method: 'POST',
         url: '/elite2/api/offender-assessments/category?latestOnly=false',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+        jsonBody: response,
+      },
+    })
+  },
+  stubCategorisedMultiple: ({ bookingIds }: { bookingIds: number[] }): SuperAgentRequest => {
+    const response = []
+    if (bookingIds.includes(10)) {
+      response.push({
+        offenderNo: 'B1234AB',
+        bookingId: 10,
+        firstName: 'PETER',
+        lastName: 'PERFECT',
+        assessmentDate: '2018-03-28',
+        approvalDate: '2019-01-19',
+        assessmentSeq: 5,
+        categoriserFirstName: 'SIMON',
+        categoriserLastName: 'TABLE',
+        approverFirstName: 'SAM',
+        approverLastName: 'HAND',
+        category: 'B',
+      })
+      response.push({
+        offenderNo: 'B1234AB',
+        bookingId: 10,
+        firstName: 'PETER',
+        lastName: 'PERFECT',
+        assessmentDate: '2018-03-28',
+        approvalDate: '2019-03-20',
+        assessmentSeq: 7,
+        categoriserFirstName: 'DICK',
+        categoriserLastName: 'DASTARDLY',
+        approverFirstName: 'PAT',
+        approverLastName: 'PENDING',
+        category: 'B',
+      })
+    }
+    if (bookingIds.includes(11)) {
+      response.push({
+        offenderNo: 'B2345YZ',
+        bookingId: 11,
+        firstName: 'SARAH',
+        lastName: 'HEMMEL',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2019-02-28',
+        assessmentSeq: 7,
+        categoriserFirstName: 'JANE',
+        categoriserLastName: 'FAN',
+        approverFirstName: 'JAMES',
+        approverLastName: 'HELLY',
+        category: 'C',
+      })
+      response.push({
+        offenderNo: 'B2345YZ',
+        bookingId: 11,
+        firstName: 'SARAH',
+        lastName: 'HEMMEL',
+        assessmentDate: '2017-04-28',
+        approvalDate: '2019-04-29',
+        assessmentSeq: 8,
+        categoriserFirstName: 'JANE',
+        categoriserLastName: 'FAN',
+        approverFirstName: 'JAMES',
+        approverLastName: 'HELLY',
+        category: 'C',
+      })
+    }
+    if (bookingIds.includes(12)) {
+      response.push({
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        firstName: 'TIM',
+        lastName: 'SCRAMBLE',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2019-02-21',
+        assessmentSeq: 7,
+        categoriserFirstName: 'JOHN',
+        categoriserLastName: 'LAMB',
+        approverFirstName: 'JAMES',
+        approverLastName: 'HELLY',
+        category: 'C',
+      })
+      response.push({
+        offenderNo: 'B2345XY',
+        bookingId: 12,
+        firstName: 'TIM',
+        lastName: 'SCRAMBLE',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2019-04-20',
+        assessmentSeq: 8,
+        categoriserFirstName: 'JOHN',
+        categoriserLastName: 'LAMB',
+        approverFirstName: 'JAMES',
+        approverLastName: 'HELLY',
+        category: 'C',
+      })
+    }
+    return stubFor({
+      request: {
+        method: 'POST',
+        url: '/elite2/api/offender-assessments/category?latestOnly=false',
+        bodyPatterns: [
+          {
+            equalToJson: JSON.stringify(bookingIds),
+            ignoreArrayOrder: true,
+            ignoreExtraElements: true,
+          },
+        ],
       },
       response: {
         status: 200,
@@ -435,7 +546,6 @@ export default {
         ],
       },
     }),
-
   stubUncategorisedAwaitingApproval: (statusCode = 200): SuperAgentRequest =>
     stubFor({
       request: {

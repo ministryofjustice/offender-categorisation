@@ -9,8 +9,6 @@ type MandatoryRowData = Pick<
   'id' | 'bookingId' | 'sequenceNumber' | 'prisonId' | 'offenderNo' | 'startDate' | 'catType' | 'reviewReason'
 >
 
-export type SecurityReviewedData = MandatoryRowData & Partial<FormDbRow>
-
 interface FormDbRow {
   id: number
   formResponse: string | null
@@ -60,7 +58,7 @@ const defaultRowData: Partial<FormDbRow> = {
   cancelledBy: null,
 }
 
-async function doCreateCompleteRow(rowData: MandatoryRowData & Partial<FormDbRow>) {
+async function insertFormTableDbRow(rowData: MandatoryRowData & Partial<FormDbRow>) {
   const {
     id,
     formResponse,
@@ -149,7 +147,7 @@ async function doCreateCompleteRow(rowData: MandatoryRowData & Partial<FormDbRow
   )
 }
 
-async function createSecurityData({
+async function insertSecurityReferralTableDbRow({
   offenderNumber,
   prisonId = 'LEI',
   id = -1,
@@ -176,12 +174,8 @@ async function updateRiskProfile({
   return await db.query(`update form set risk_profile = $1::JSON where booking_id = $2`, [riskProfile, bookingId])
 }
 
-async function createSecurityReviewedData(securityReviewedData: SecurityReviewedData): Promise<void> {
-  return await doCreateCompleteRow(securityReviewedData)
-}
-
 export default {
-  createSecurityData,
-  createSecurityReviewedData,
+  insertFormTableDbRow,
+  insertSecurityReferralTableDbRow,
   updateRiskProfile,
 }

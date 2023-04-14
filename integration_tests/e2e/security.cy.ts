@@ -6,18 +6,21 @@ import SecurityDonePage from '../pages/security/done'
 import SecurityViewPage from '../pages/security/view'
 import SecurityUpcomingPage from '../pages/security/upcoming'
 import { CASELOAD } from '../factory/caseload'
+import { STATUS } from '../support/status'
+import { CATEGORISATION_TYPE } from '../support/categorisationType'
 
 context('Security', () => {
   beforeEach(() => {
+    cy.task('reset')
     cy.task('setUpDb')
   })
 
   beforeEach(() => {
-    cy.task('createSecurityReviewedData', {
+    cy.task('insertFormTableDbRow', {
       id: -2,
       bookingId: 13,
       offenderNo: 'B2345XY',
-      status: 'SECURITY_BACK',
+      status: STATUS.SECURITY_BACK,
       sequenceNumber: 1,
       prisonId: 'LEI',
       startDate: new Date(),
@@ -40,7 +43,7 @@ context('Security', () => {
       },
       securityReviewedBy: SECURITY_USER.username,
       securityReviewedDate: '2019-01-28',
-      catType: 'RECAT',
+      catType: CATEGORISATION_TYPE.RECAT,
       assignedUserId: 'CATEGORISER_USER',
     })
 
@@ -56,11 +59,11 @@ context('Security', () => {
       },
     })
 
-    cy.task('createSecurityReviewedData', {
+    cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 14,
       offenderNo: 'B2345YZ',
-      status: 'APPROVED',
+      status: STATUS.APPROVED,
       sequenceNumber: 1,
       prisonId: 'LEI',
       startDate: new Date(),
@@ -84,7 +87,7 @@ context('Security', () => {
       },
       securityReviewedBy: SECURITY_USER.username,
       securityReviewedDate: '2019-01-31',
-      catType: 'INITIAL',
+      catType: CATEGORISATION_TYPE.INITIAL,
       assignedUserId: 'CATEGORISER_USER',
     })
 
@@ -204,13 +207,13 @@ context('Security', () => {
     let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
 
     beforeEach(() => {
-      cy.task('createSecurityData', {
+      cy.task('insertSecurityReferralTableDbRow', {
         offenderNumber: 'B2345XY',
         prisonId: 'LEI',
         id: 1,
         status: 'NEW',
       })
-      cy.task('createSecurityData', {
+      cy.task('insertSecurityReferralTableDbRow', {
         offenderNumber: 'B2345YZ',
         prisonId: 'LEI',
         id: 2,
@@ -225,7 +228,7 @@ context('Security', () => {
       cy.task('stubSentenceData', {
         offenderNumbers: ['B2345XY', 'B2345YZ'],
         bookingIds: [13, 14],
-        startDates: [sentenceStartDates['B2345XY'], sentenceStartDates['B2345YZ']],
+        startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
       })
 
       cy.signIn()

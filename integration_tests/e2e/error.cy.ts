@@ -3,6 +3,7 @@ import ErrorPage from '../pages/error/error'
 
 describe('Error pages', () => {
   beforeEach(() => {
+    cy.task('reset')
     cy.task('stubUncategorisedAwaitingApproval')
   })
 

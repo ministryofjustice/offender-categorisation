@@ -7,6 +7,7 @@ import SupervisorHomePage from '../pages/supervisor/home'
 
 context('SignIn', () => {
   beforeEach(() => {
+    cy.task('reset')
     cy.stubLogin({
       user: SECURITY_USER,
     })

@@ -1,0 +1,4 @@
+export const STATUS = {
+  APPROVED: 'APPROVED',
+  SECURITY_BACK: 'SECURITY_BACK',
+}
