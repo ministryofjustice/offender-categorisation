@@ -121,9 +121,8 @@ export default {
         },
       },
     }),
-  stubGetMyCaseloads: ({ caseloads } = { caseloads: [leiCaseload] }): SuperAgentRequest => {
-    console.log('stubGetMyCaseloads,', { caseloads })
-    return stubFor({
+  stubGetMyCaseloads: ({ caseloads } = { caseloads: [leiCaseload] }): SuperAgentRequest =>
+    stubFor({
       request: {
         method: 'GET',
         url: '/elite2/api/users/me/caseLoads',
@@ -140,11 +139,9 @@ export default {
           caseloadFunction: 'DUMMY',
         })),
       },
-    })
-  },
-  stubGetMyDetails: ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest => {
-    console.log('stubGetMyDetails,', { user, caseloadId })
-    return stubFor({
+    }),
+  stubGetMyDetails: ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest =>
+    stubFor({
       request: {
         method: 'GET',
         url: '/elite2/api/users/me',
@@ -163,8 +160,7 @@ export default {
           activeCaseLoadId: caseloadId,
         },
       },
-    })
-  },
+    }),
   stubGetOffenderDetailsBasicInfo({
     bookingId,
     offenderNo = 'B2345YZ',

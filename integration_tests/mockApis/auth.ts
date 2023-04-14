@@ -162,8 +162,6 @@ export default {
   getSignInUrl,
   manageDetails,
   stubAuthPing: ping,
-  // stubSignIn: (): Promise<[Response, Response, Response, Response, Response]> =>
-  //   Promise.all([favicon(), redirect(), signOut(), manageDetails(), tokenVerification.stubVerifyToken()]),
   stubUser,
   stubUserRoles,
   stubValidOAuthTokenRequest,
