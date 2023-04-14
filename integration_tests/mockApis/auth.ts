@@ -1,20 +1,15 @@
 import jwt from 'jsonwebtoken'
-import { Response } from 'superagent'
+import { stubFor, getMatchingRequests, clearPreviousRequests } from './wiremock'
+import { UserAccount } from '../factory/user'
 
-import { stubFor, getMatchingRequests } from './wiremock'
-import tokenVerification from './tokenVerification'
+type AccessToken = string
 
-const createToken = () => {
+const createTokenForUser = ({ user }: { user: UserAccount }): AccessToken => {
   const payload = {
-    user_name: 'USER1',
+    user_name: user.username,
     scope: ['read'],
     auth_source: 'nomis',
-    authorities: [
-      'ROLE_CATEGORISATION_SECURITY',
-      // 'ROLE_CREATE_CATEGORISATION',
-      // 'ROLE_CREATE_RECATEGORISATION',
-      // 'ROLE_APPROVE_CATEGORISATION',
-    ],
+    authorities: user.roles,
     jti: '83b50a10-cca6-41db-985f-e87efb303ddb',
     client_id: 'clientid',
   }
@@ -28,6 +23,7 @@ const getSignInUrl = (): Promise<string> =>
     urlPath: '/auth/oauth/authorize',
   }).then(data => {
     const { requests } = data.body
+
     const stateValue = requests[requests.length - 1].queryParams.state.values[0]
     return `/login/callback?code=codexxxx&state=${stateValue}`
   })
@@ -100,30 +96,7 @@ const manageDetails = () =>
     },
   })
 
-const token = () =>
-  stubFor({
-    request: {
-      method: 'POST',
-      urlPattern: '/auth/oauth/token',
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
-      },
-      jsonBody: {
-        access_token: createToken(),
-        token_type: 'bearer',
-        user_name: 'USER1',
-        expires_in: 599,
-        scope: 'read',
-        internalUser: true,
-      },
-    },
-  })
-
-const stubUser = (name: string) =>
+const stubUser = ({ user }: { user: UserAccount }) =>
   stubFor({
     request: {
       method: 'GET',
@@ -136,14 +109,14 @@ const stubUser = (name: string) =>
       },
       jsonBody: {
         staffId: 231232,
-        username: 'USER1',
+        username: user.username,
         active: true,
-        name,
+        name: `${user.staffMember.firstName} ${user.staffMember.lastName}`,
       },
     },
   })
 
-const stubUserRoles = () =>
+const stubUserRoles = ({ user }: { user: UserAccount }) =>
   stubFor({
     request: {
       method: 'GET',
@@ -154,14 +127,44 @@ const stubUserRoles = () =>
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
       },
-      jsonBody: [{ roleCode: 'SOME_USER_ROLE' }],
+      jsonBody: user.roles,
     },
   })
 
+const stubTokenResponse = ({ user }: { user: UserAccount }) =>
+  stubFor({
+    request: {
+      method: 'POST',
+      urlPattern: '/auth/oauth/token',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+        Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
+      },
+      jsonBody: {
+        access_token: createTokenForUser({ user }),
+        refresh_token: createTokenForUser({ user }),
+        token_type: 'bearer',
+        user_name: user.username,
+        expires_in: 599,
+        scope: 'read write',
+        internalUser: true,
+      },
+    },
+  })
+
+const stubValidOAuthTokenRequest = ({ user }: { user: UserAccount }) =>
+  Promise.all([clearPreviousRequests(), redirect(), signOut(), favicon(), stubTokenResponse({ user })])
+
 export default {
   getSignInUrl,
+  manageDetails,
   stubAuthPing: ping,
-  stubSignIn: (): Promise<[Response, Response, Response, Response, Response, Response]> =>
-    Promise.all([favicon(), redirect(), signOut(), manageDetails(), token(), tokenVerification.stubVerifyToken()]),
-  stubAuthUser: (name = 'john smith'): Promise<[Response, Response]> => Promise.all([stubUser(name), stubUserRoles()]),
+  // stubSignIn: (): Promise<[Response, Response, Response, Response, Response]> =>
+  //   Promise.all([favicon(), redirect(), signOut(), manageDetails(), tokenVerification.stubVerifyToken()]),
+  stubUser,
+  stubUserRoles,
+  stubValidOAuthTokenRequest,
 }

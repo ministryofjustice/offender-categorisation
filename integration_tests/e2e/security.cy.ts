@@ -1,17 +1,15 @@
+import moment from 'moment'
 import Page from '../pages/page'
-import { SECURITY_USER } from '../factory/user'
+import { CATEGORISER_USER, SECURITY_USER } from '../factory/user'
 import SecurityHomePage from '../pages/security/home'
 import SecurityDonePage from '../pages/security/done'
 import SecurityViewPage from '../pages/security/view'
 import SecurityUpcomingPage from '../pages/security/upcoming'
-import moment from 'moment'
+import { CASELOAD } from '../factory/caseload'
 
 context('Security', () => {
   beforeEach(() => {
-    cy.task('reset')
     cy.task('setUpDb')
-    cy.task('stubSignIn')
-    cy.task('stubAuthUser')
   })
 
   beforeEach(() => {
@@ -93,7 +91,7 @@ context('Security', () => {
     cy.task('stubUncategorisedAwaitingApproval')
     cy.task('stubUncategorised')
     cy.task('stubGetMyDetails', { user: SECURITY_USER, caseloadId: 'LEI' })
-    cy.task('stubGetMyCaseloads')
+    cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.LEI] })
     cy.task('stubGetUserDetails', { user: SECURITY_USER, caseloadId: 'LEI' })
 
     cy.task('stubCategorised', { bookingIds: [11, 12] })
@@ -101,7 +99,26 @@ context('Security', () => {
     cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SECURITY_USER.username] })
   })
 
+  beforeEach(() => {
+    cy.stubLogin({
+      user: SECURITY_USER,
+    })
+  })
+
   describe(`'To do' Page`, () => {
+    it('should be inaccessible to users without ROLE_CATEGORISATION_SECURITY', () => {
+      cy.stubLogin({
+        user: CATEGORISER_USER,
+      })
+      cy.signIn()
+      cy.request({
+        url: SecurityHomePage.baseUrl,
+        failOnStatusCode: false,
+      }).then(resp => {
+        expect(resp.status).to.eq(403)
+      })
+    })
+
     it('should display by default', () => {
       cy.signIn()
       Page.verifyOnPage(SecurityHomePage)
@@ -118,6 +135,20 @@ context('Security', () => {
       securityHomePage.doneTabLink().click()
 
       securityDonePage = Page.verifyOnPage(SecurityDonePage)
+    })
+
+    it('should be inaccessible to users without ROLE_CATEGORISATION_SECURITY', () => {
+      securityDonePage.signOut().click()
+      cy.stubLogin({
+        user: CATEGORISER_USER,
+      })
+      cy.signIn()
+      cy.request({
+        url: SecurityDonePage.baseUrl,
+        failOnStatusCode: false,
+      }).then(resp => {
+        expect(resp.status).to.eq(403)
+      })
     })
 
     it(`should display a table containing the expected prisoner categorisation data`, () => {
@@ -203,6 +234,20 @@ context('Security', () => {
       securityHomePage.upcomingTabLink().click()
 
       securityUpcomingPage = Page.verifyOnPage(SecurityUpcomingPage)
+    })
+
+    it('should be inaccessible to users without ROLE_CATEGORISATION_SECURITY', () => {
+      securityUpcomingPage.signOut().click()
+      cy.stubLogin({
+        user: CATEGORISER_USER,
+      })
+      cy.signIn()
+      cy.request({
+        url: SecurityDonePage.baseUrl,
+        failOnStatusCode: false,
+      }).then(resp => {
+        expect(resp.status).to.eq(403)
+      })
     })
 
     it(`should display a table containing the expected upcoming categorisation referrals`, () => {

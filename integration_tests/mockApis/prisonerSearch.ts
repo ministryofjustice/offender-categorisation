@@ -77,4 +77,15 @@ export default {
       },
     })
   },
+  stubSentenceDataError: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: '/prisoner-search/prisoner-search/booking-ids',
+      },
+      response: {
+        status: 500,
+        body: 'A test error',
+      },
+    }),
 }

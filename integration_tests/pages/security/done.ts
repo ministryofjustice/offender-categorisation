@@ -1,6 +1,9 @@
-import Page, { PageElement } from '../page'
+import { PageElement } from '../page'
+import BaseSecurityPage from './base'
 
-export default class SecurityDonePage extends Page {
+export default class SecurityDonePage extends BaseSecurityPage {
+  static baseUrl: string = '/securityDone'
+
   constructor() {
     super('Prisoner Categorisation')
   }

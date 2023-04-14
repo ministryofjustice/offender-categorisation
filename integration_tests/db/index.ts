@@ -1,5 +1,5 @@
 import setup from './setup'
-import testing from './testing'
+import testing from './queries'
 
 export default {
   ...setup,

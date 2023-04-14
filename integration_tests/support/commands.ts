@@ -1,6 +1,7 @@
-Cypress.Commands.add('signIn', (options = { failOnStatusCode: false }) => {
-  cy.request('/')
-  return cy.task('getSignInUrl').then((url: string) => cy.visit(url, options))
+import { UserAccount } from '../factory/user'
+
+Cypress.Commands.add('checkDefinitionList', ({ term, definition }: { term: string; definition: string }) => {
+  cy.get('.govuk-summary-list').contains('dt', term).siblings('dd').should('contain.text', definition)
 })
 
 Cypress.Commands.add(
@@ -19,6 +20,19 @@ Cypress.Commands.add(
   }
 )
 
-Cypress.Commands.add('checkDefinitionList', ({ term, definition }: { term: string; definition: string }) => {
-  cy.get('.govuk-summary-list').contains('dt', term).siblings('dd').should('contain.text', definition)
+Cypress.Commands.add('signIn', (options = { failOnStatusCode: false }) => {
+  cy.request('/')
+  return cy.task('getSignInUrl').then((url: string) => cy.visit(url, options))
+})
+
+Cypress.Commands.add('stubLogin', ({ user }: { user: UserAccount }) => {
+  cy.log('stub login for', { user })
+
+  cy.task('stubValidOAuthTokenRequest', { user })
+  cy.task('stubUser', { user })
+  cy.task('stubUserRoles', { user })
+  cy.task('manageDetails')
+  cy.task('stubGetMyDetails', { user, caseloadId: user.workingCaseload.id })
+  cy.task('stubGetMyCaseloads', { caseloads: user.caseloads })
+  cy.task('stubGetPomByOffenderNo')
 })

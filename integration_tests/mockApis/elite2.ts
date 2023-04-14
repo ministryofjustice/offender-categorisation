@@ -122,6 +122,7 @@ export default {
       },
     }),
   stubGetMyCaseloads: ({ caseloads } = { caseloads: [leiCaseload] }): SuperAgentRequest => {
+    console.log('stubGetMyCaseloads,', { caseloads })
     return stubFor({
       request: {
         method: 'GET',
@@ -142,6 +143,7 @@ export default {
     })
   },
   stubGetMyDetails: ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest => {
+    console.log('stubGetMyDetails,', { user, caseloadId })
     return stubFor({
       request: {
         method: 'GET',
@@ -412,7 +414,7 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
+        url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
       },
       response: {
         status: 200,
@@ -437,42 +439,40 @@ export default {
         ],
       },
     }),
+
   stubUncategorisedAwaitingApproval: (statusCode = 200): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
+        url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
       },
       response: {
         status: statusCode,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          status: statusCode,
-          response: [
-            {
-              bookingId: 11,
-              offenderNo: 'B2345XY',
-              firstName: 'PENELOPE',
-              lastName: 'PITSTOP',
-              status: 'AWAITING_APPROVAL',
-              category: 'B',
-              categoriserFirstName: 'ROGER',
-              categoriserLastName: 'RABBIT',
-              assessmentSeq: 4,
-            },
-            {
-              bookingId: 12,
-              offenderNo: 'B2345YZ',
-              firstName: 'ANT',
-              lastName: 'HILLMOB',
-              status: 'AWAITING_APPROVAL',
-              category: 'C',
-              categoriserFirstName: 'BUGS',
-              categoriserLastName: 'BUNNY',
-              assessmentSeq: 5,
-            },
-          ],
-        },
+        jsonBody: [
+          {
+            bookingId: 11,
+            offenderNo: 'B2345XY',
+            firstName: 'PENELOPE',
+            lastName: 'PITSTOP',
+            status: 'AWAITING_APPROVAL',
+            category: 'B',
+            categoriserFirstName: 'ROGER',
+            categoriserLastName: 'RABBIT',
+            assessmentSeq: 4,
+          },
+          {
+            bookingId: 12,
+            offenderNo: 'B2345YZ',
+            firstName: 'ANT',
+            lastName: 'HILLMOB',
+            status: 'AWAITING_APPROVAL',
+            category: 'C',
+            categoriserFirstName: 'BUGS',
+            categoriserLastName: 'BUNNY',
+            assessmentSeq: 5,
+          },
+        ],
       },
     }),
 }

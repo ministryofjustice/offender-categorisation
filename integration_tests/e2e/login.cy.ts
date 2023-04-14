@@ -1,15 +1,15 @@
 import AuthSignInPage from '../pages/authSignIn'
 import Page from '../pages/page'
 import AuthManageDetailsPage from '../pages/authManageDetails'
-import { SECURITY_USER } from '../factory/user'
+import { SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
 import SecurityHomePage from '../pages/security/home'
+import SupervisorHomePage from '../pages/supervisor/home'
 
 context('SignIn', () => {
   beforeEach(() => {
-    cy.task('reset')
-    cy.task('stubSignIn')
-    cy.task('stubAuthUser')
-    cy.task('stubGetMyDetails', { user: SECURITY_USER })
+    cy.stubLogin({
+      user: SECURITY_USER,
+    })
   })
 
   it('Unauthenticated user directed to auth', () => {
@@ -36,11 +36,16 @@ context('SignIn', () => {
   })
 
   it('User can manage their details', () => {
+    cy.stubLogin({
+      user: SUPERVISOR_USER,
+    })
+    cy.task('stubSentenceData', { emptyResponse: true })
+    cy.task('stubUncategorised')
     cy.signIn()
-    const securityHomePage = Page.verifyOnPage(SecurityHomePage)
+    const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
 
-    securityHomePage.manageDetails().get('a').invoke('removeAttr', 'target')
-    securityHomePage.manageDetails().click()
+    supervisorHomePage.manageDetails().get('a').invoke('removeAttr', 'target')
+    supervisorHomePage.manageDetails().click()
     Page.verifyOnPage(AuthManageDetailsPage)
   })
 
@@ -52,8 +57,6 @@ context('SignIn', () => {
     // can't do a visit here as cypress requires only one domain
     cy.request('/').its('body').should('contain', 'Sign in')
 
-    cy.task('stubSignIn')
-    cy.task('stubAuthUser')
     cy.signIn()
 
     securityHomePage.headerUserName().should('contain.text', 'A. User')
