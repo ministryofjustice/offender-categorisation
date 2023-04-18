@@ -170,13 +170,8 @@ context('Security', () => {
       ].forEach(cy.checkTableColumnTextValues)
     })
 
-    const setupPrisonerViewTests = (config: { bookingId: number }) => {
-      const { bookingId } = config
-
-      cy.task('stubGetOffenderDetailsBasicInfo', config)
-      cy.task('stubGetOffenderDetailsMainOffence', config)
-      cy.task('stubGetOffenderDetailsSentenceDetail', config)
-      cy.task('stubGetOffenderDetailsSentenceTerms', config)
+    const setupPrisonerViewTests = ({ bookingId }: { bookingId: number }) => {
+      cy.task('stubGetOffenderDetails', { bookingId })
 
       securityDonePage.viewOffenderDetails(bookingId)
 

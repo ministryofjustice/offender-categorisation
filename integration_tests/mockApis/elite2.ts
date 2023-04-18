@@ -1,7 +1,7 @@
-import { SuperAgentRequest } from 'superagent'
+import { SuperAgentRequest, Response } from 'superagent'
 import { stubFor } from './wiremock'
 import { UserAccount } from '../factory/user'
-import moment from 'moment'
+import { CASELOAD } from '../factory/caseload'
 
 interface SentenceDetail {
   bookingId: number
@@ -31,278 +31,375 @@ interface Term {
   lifeSentence: boolean
 }
 
-export default {
-  stubCategorised: ({ bookingIds }: { bookingIds: number[] }): SuperAgentRequest => {
-    const response = []
-    if (bookingIds.includes(10)) {
-      response.push({
-        offenderNo: 'B1234AB',
-        bookingId: 10,
-        firstName: 'PETER',
-        lastName: 'PERFECT',
-        assessmentDate: '2018-03-28',
-        approvalDate: '2019-03-20',
-        assessmentSeq: 7,
-        categoriserFirstName: 'DICK',
-        categoriserLastName: 'DASTARDLY',
-        approverFirstName: 'PAT',
-        approverLastName: 'PENDING',
-        category: 'B',
-      })
-    }
-    if (bookingIds.includes(11)) {
-      response.push({
-        offenderNo: 'B2345YZ',
-        bookingId: 11,
-        firstName: 'SARAH',
-        lastName: 'HEMMEL',
-        assessmentDate: '2017-03-27',
-        approvalDate: '2019-02-20',
-        assessmentSeq: 7,
-        categoriserFirstName: 'JANE',
-        categoriserLastName: 'FAN',
-        approverFirstName: 'JAMES',
-        approverLastName: 'HELLY',
-        category: 'C',
-      })
-    }
-    if (bookingIds.includes(12)) {
-      response.push({
-        offenderNo: 'B2345XY',
-        bookingId: 12,
-        firstName: 'TIM',
-        lastName: 'SCRAMBLE',
-        assessmentDate: '2017-03-27',
-        approvalDate: '2019-02-21',
-        assessmentSeq: 7,
-        categoriserFirstName: 'JOHN',
-        categoriserLastName: 'LAMB',
-        category: 'C',
-      })
-    }
-    if (bookingIds.includes(700)) {
-      response.push({
-        offenderNo: 'ON700',
-        bookingId: 700,
-        firstName: 'WILLIAM',
-        lastName: 'HILLMOB',
-        assessmentDate: '2017-03-27',
-        approvalDate: '2019-02-21',
-        assessmentSeq: 7,
-        categoriserFirstName: 'JOHN',
-        categoriserLastName: 'LAMB',
-        category: 'R',
-      })
-    }
-    return stubFor({
-      request: {
-        method: 'POST',
-        url: '/elite2/api/offender-assessments/category?latestOnly=false',
+const stubAgencyDetails = ({ agency }: { agency: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/agencies/${agency}?activeOnly=false`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        agencyId: agency,
+        description: `${agency} prison`,
+        agencyType: 'INST',
       },
-      response: {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-        jsonBody: response,
-      },
+    },
+  })
+
+const stubAssessments = ({
+  offenderNumber,
+  emptyResponse = false,
+  bookingId = -45,
+}: {
+  offenderNumber: string
+  emptyResponse?: boolean
+  bookingId?: number
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/CATEGORY?offenderNo=${offenderNumber}&latestOnly=false&activeOnly=false`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: emptyResponse
+        ? []
+        : [
+            {
+              bookingId,
+              offenderNo: offenderNumber,
+              classificationCode: 'A',
+              classification: 'Cat A',
+              assessmentCode: 'CATEGORY',
+              assessmentDescription: 'Categorisation',
+              cellSharingAlertFlag: false,
+              assessmentDate: '2012-04-04',
+              nextReviewDate: '2012-06-07',
+              approvalDate: '2012-06-08',
+              assessmentAgencyId: 'LPI',
+              assessmentStatus: 'A',
+            },
+            {
+              bookingId,
+              offenderNo: offenderNumber,
+              classificationCode: 'A',
+              classification: 'Cat A',
+              assessmentCode: 'CATEGORY',
+              assessmentDescription: 'Categorisation',
+              cellSharingAlertFlag: false,
+              assessmentDate: '2012-03-28',
+              nextReviewDate: '2012-06-07',
+              assessmentAgencyId: 'LPI',
+              assessmentStatus: 'P',
+            },
+            {
+              bookingId,
+              offenderNo: offenderNumber,
+              classificationCode: 'B',
+              classification: 'Cat B',
+              assessmentCode: 'CATEGORY',
+              assessmentDescription: 'Categorisation',
+              cellSharingAlertFlag: false,
+              assessmentDate: '2013-03-24',
+              nextReviewDate: '2013-09-17',
+              approvalDate: '2013-03-24',
+              assessmentAgencyId: 'LPI',
+              assessmentStatus: 'I',
+            },
+          ],
+    },
+  })
+
+const stubCategorised = ({ bookingIds }: { bookingIds: number[] }): SuperAgentRequest => {
+  const response = []
+  if (bookingIds.includes(10)) {
+    response.push({
+      offenderNo: 'B1234AB',
+      bookingId: 10,
+      firstName: 'PETER',
+      lastName: 'PERFECT',
+      assessmentDate: '2018-03-28',
+      approvalDate: '2019-03-20',
+      assessmentSeq: 7,
+      categoriserFirstName: 'DICK',
+      categoriserLastName: 'DASTARDLY',
+      approverFirstName: 'PAT',
+      approverLastName: 'PENDING',
+      category: 'B',
     })
-  },
-  stubCategorisedMultiple: ({ bookingIds }: { bookingIds: number[] }): SuperAgentRequest => {
-    const response = []
-    if (bookingIds.includes(10)) {
-      response.push({
-        offenderNo: 'B1234AB',
-        bookingId: 10,
-        firstName: 'PETER',
-        lastName: 'PERFECT',
-        assessmentDate: '2018-03-28',
-        approvalDate: '2019-01-19',
-        assessmentSeq: 5,
-        categoriserFirstName: 'SIMON',
-        categoriserLastName: 'TABLE',
-        approverFirstName: 'SAM',
-        approverLastName: 'HAND',
-        category: 'B',
-      })
-      response.push({
-        offenderNo: 'B1234AB',
-        bookingId: 10,
-        firstName: 'PETER',
-        lastName: 'PERFECT',
-        assessmentDate: '2018-03-28',
-        approvalDate: '2019-03-20',
-        assessmentSeq: 7,
-        categoriserFirstName: 'DICK',
-        categoriserLastName: 'DASTARDLY',
-        approverFirstName: 'PAT',
-        approverLastName: 'PENDING',
-        category: 'B',
-      })
-    }
-    if (bookingIds.includes(11)) {
-      response.push({
-        offenderNo: 'B2345YZ',
-        bookingId: 11,
-        firstName: 'SARAH',
-        lastName: 'HEMMEL',
-        assessmentDate: '2017-03-27',
-        approvalDate: '2019-02-28',
-        assessmentSeq: 7,
-        categoriserFirstName: 'JANE',
-        categoriserLastName: 'FAN',
-        approverFirstName: 'JAMES',
-        approverLastName: 'HELLY',
-        category: 'C',
-      })
-      response.push({
-        offenderNo: 'B2345YZ',
-        bookingId: 11,
-        firstName: 'SARAH',
-        lastName: 'HEMMEL',
-        assessmentDate: '2017-04-28',
-        approvalDate: '2019-04-29',
-        assessmentSeq: 8,
-        categoriserFirstName: 'JANE',
-        categoriserLastName: 'FAN',
-        approverFirstName: 'JAMES',
-        approverLastName: 'HELLY',
-        category: 'C',
-      })
-    }
-    if (bookingIds.includes(12)) {
-      response.push({
-        offenderNo: 'B2345XY',
-        bookingId: 12,
-        firstName: 'TIM',
-        lastName: 'SCRAMBLE',
-        assessmentDate: '2017-03-27',
-        approvalDate: '2019-02-21',
-        assessmentSeq: 7,
-        categoriserFirstName: 'JOHN',
-        categoriserLastName: 'LAMB',
-        approverFirstName: 'JAMES',
-        approverLastName: 'HELLY',
-        category: 'C',
-      })
-      response.push({
-        offenderNo: 'B2345XY',
-        bookingId: 12,
-        firstName: 'TIM',
-        lastName: 'SCRAMBLE',
-        assessmentDate: '2017-03-27',
-        approvalDate: '2019-04-20',
-        assessmentSeq: 8,
-        categoriserFirstName: 'JOHN',
-        categoriserLastName: 'LAMB',
-        approverFirstName: 'JAMES',
-        approverLastName: 'HELLY',
-        category: 'C',
-      })
-    }
-    return stubFor({
-      request: {
-        method: 'POST',
-        url: '/elite2/api/offender-assessments/category?latestOnly=false',
-        bodyPatterns: [
-          {
-            equalToJson: JSON.stringify(bookingIds),
-            ignoreArrayOrder: true,
-            ignoreExtraElements: true,
-          },
-        ],
-      },
-      response: {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-        jsonBody: response,
-      },
+  }
+  if (bookingIds.includes(11)) {
+    response.push({
+      offenderNo: 'B2345YZ',
+      bookingId: 11,
+      firstName: 'SARAH',
+      lastName: 'HEMMEL',
+      assessmentDate: '2017-03-27',
+      approvalDate: '2019-02-20',
+      assessmentSeq: 7,
+      categoriserFirstName: 'JANE',
+      categoriserLastName: 'FAN',
+      approverFirstName: 'JAMES',
+      approverLastName: 'HELLY',
+      category: 'C',
     })
-  },
-  stubElite2Ping: (statusCode = 200): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'GET',
-        urlPattern: `/elite2/ping`,
-      },
-      response: {
+  }
+  if (bookingIds.includes(12)) {
+    response.push({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      firstName: 'TIM',
+      lastName: 'SCRAMBLE',
+      assessmentDate: '2017-03-27',
+      approvalDate: '2019-02-21',
+      assessmentSeq: 7,
+      categoriserFirstName: 'JOHN',
+      categoriserLastName: 'LAMB',
+      category: 'C',
+    })
+  }
+  if (bookingIds.includes(700)) {
+    response.push({
+      offenderNo: 'ON700',
+      bookingId: 700,
+      firstName: 'WILLIAM',
+      lastName: 'HILLMOB',
+      assessmentDate: '2017-03-27',
+      approvalDate: '2019-02-21',
+      assessmentSeq: 7,
+      categoriserFirstName: 'JOHN',
+      categoriserLastName: 'LAMB',
+      category: 'R',
+    })
+  }
+  return stubFor({
+    request: {
+      method: 'POST',
+      url: '/elite2/api/offender-assessments/category?latestOnly=false',
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      jsonBody: response,
+    },
+  })
+}
+const stubCategorisedMultiple = ({ bookingIds }: { bookingIds: number[] }): SuperAgentRequest => {
+  const response = []
+  if (bookingIds.includes(10)) {
+    response.push({
+      offenderNo: 'B1234AB',
+      bookingId: 10,
+      firstName: 'PETER',
+      lastName: 'PERFECT',
+      assessmentDate: '2018-03-28',
+      approvalDate: '2019-01-19',
+      assessmentSeq: 5,
+      categoriserFirstName: 'SIMON',
+      categoriserLastName: 'TABLE',
+      approverFirstName: 'SAM',
+      approverLastName: 'HAND',
+      category: 'B',
+    })
+    response.push({
+      offenderNo: 'B1234AB',
+      bookingId: 10,
+      firstName: 'PETER',
+      lastName: 'PERFECT',
+      assessmentDate: '2018-03-28',
+      approvalDate: '2019-03-20',
+      assessmentSeq: 7,
+      categoriserFirstName: 'DICK',
+      categoriserLastName: 'DASTARDLY',
+      approverFirstName: 'PAT',
+      approverLastName: 'PENDING',
+      category: 'B',
+    })
+  }
+  if (bookingIds.includes(11)) {
+    response.push({
+      offenderNo: 'B2345YZ',
+      bookingId: 11,
+      firstName: 'SARAH',
+      lastName: 'HEMMEL',
+      assessmentDate: '2017-03-27',
+      approvalDate: '2019-02-28',
+      assessmentSeq: 7,
+      categoriserFirstName: 'JANE',
+      categoriserLastName: 'FAN',
+      approverFirstName: 'JAMES',
+      approverLastName: 'HELLY',
+      category: 'C',
+    })
+    response.push({
+      offenderNo: 'B2345YZ',
+      bookingId: 11,
+      firstName: 'SARAH',
+      lastName: 'HEMMEL',
+      assessmentDate: '2017-04-28',
+      approvalDate: '2019-04-29',
+      assessmentSeq: 8,
+      categoriserFirstName: 'JANE',
+      categoriserLastName: 'FAN',
+      approverFirstName: 'JAMES',
+      approverLastName: 'HELLY',
+      category: 'C',
+    })
+  }
+  if (bookingIds.includes(12)) {
+    response.push({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      firstName: 'TIM',
+      lastName: 'SCRAMBLE',
+      assessmentDate: '2017-03-27',
+      approvalDate: '2019-02-21',
+      assessmentSeq: 7,
+      categoriserFirstName: 'JOHN',
+      categoriserLastName: 'LAMB',
+      approverFirstName: 'JAMES',
+      approverLastName: 'HELLY',
+      category: 'C',
+    })
+    response.push({
+      offenderNo: 'B2345XY',
+      bookingId: 12,
+      firstName: 'TIM',
+      lastName: 'SCRAMBLE',
+      assessmentDate: '2017-03-27',
+      approvalDate: '2019-04-20',
+      assessmentSeq: 8,
+      categoriserFirstName: 'JOHN',
+      categoriserLastName: 'LAMB',
+      approverFirstName: 'JAMES',
+      approverLastName: 'HELLY',
+      category: 'C',
+    })
+  }
+  return stubFor({
+    request: {
+      method: 'POST',
+      url: '/elite2/api/offender-assessments/category?latestOnly=false',
+      bodyPatterns: [
+        {
+          equalToJson: JSON.stringify(bookingIds),
+          ignoreArrayOrder: true,
+          ignoreExtraElements: true,
+        },
+      ],
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      jsonBody: response,
+    },
+  })
+}
+
+const stubElite2Ping = (statusCode = 200): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/elite2/ping`,
+    },
+    response: {
+      status: statusCode,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
         status: statusCode,
-        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: {
-          status: statusCode,
-          response: {},
-        },
+        response: {},
       },
-    }),
-  stubGetMyCaseloads: ({ caseloads } = { caseloads: [leiCaseload] }): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'GET',
-        url: '/elite2/api/users/me/caseLoads',
+    },
+  })
+
+const stubGetMyCaseloads = ({ caseloads } = { caseloads: [CASELOAD.LEI] }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: '/elite2/api/users/me/caseLoads',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
       },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        jsonBody: caseloads.map(caseload => ({
-          caseLoadId: caseload.id,
-          description: caseload.description,
-          type: caseload.type,
-          caseloadFunction: 'DUMMY',
-        })),
+      jsonBody: caseloads.map(caseload => ({
+        caseLoadId: caseload.id,
+        description: caseload.description,
+        type: caseload.type,
+        caseloadFunction: 'DUMMY',
+      })),
+    },
+  })
+
+const stubGetMyDetails = ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: '/elite2/api/users/me',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
       },
-    }),
-  stubGetMyDetails: ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'GET',
-        url: '/elite2/api/users/me',
+      jsonBody: {
+        staffId: user.staffMember.id,
+        username: user.username,
+        firstName: user.staffMember.firstName,
+        lastName: user.staffMember.lastName,
+        email: 'itaguser@syscon.net',
+        activeCaseLoadId: caseloadId,
       },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        jsonBody: {
-          staffId: user.staffMember.id,
-          username: user.username,
-          firstName: user.staffMember.firstName,
-          lastName: user.staffMember.lastName,
-          email: 'itaguser@syscon.net',
-          activeCaseLoadId: caseloadId,
-        },
-      },
-    }),
-  stubGetOffenderDetailsBasicInfo({
+    },
+  })
+
+const stubGetOffenderDetails = ({
+  bookingId,
+  offenderNo = 'B2345YZ',
+  youngOffender = false,
+  indeterminateSentence = false,
+  category = 'C',
+  multipleSentences = false,
+  nextReviewDate = '2020-01-16',
+}: {
+  bookingId: number
+  offenderNo?: string
+  youngOffender?: boolean
+  indeterminateSentence?: boolean
+  category?: string
+  multipleSentences?: boolean
+  nextReviewDate?: string
+}): Promise<Response[]> => {
+  console.log('hjwerwe', {
     bookingId,
-    offenderNo = 'B2345YZ',
-    youngOffender = false,
-    category = 'C',
-    nextReviewDate = '2020-01-16',
-  }: {
-    bookingId: number
-    offenderNo: string
-    youngOffender: boolean
-    category: string
-    nextReviewDate: string
-  }): SuperAgentRequest {
-    return stubFor({
+    offenderNo,
+    youngOffender,
+    indeterminateSentence,
+    category,
+    multipleSentences,
+    nextReviewDate,
+  })
+  const stubBasicInfo = () =>
+    stubFor({
       request: {
         method: 'GET',
         url: `/elite2/api/bookings/${bookingId}?basicInfo=false`,
       },
       response: {
         status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        jsonBody: {
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           bookingId,
           offenderNo,
           agencyId: 'LEI',
           firstName: 'ANT',
           lastName: 'HILLMOB',
           dateOfBirth: youngOffender ? '2018-01-01' : '1970-02-17',
-          category: `Cat ${category}`,
+          category: 'Cat ' + category,
           categoryCode: category,
           assessments: nextReviewDate ? [{ assessmentCode: 'CATEGORY', nextReviewDate }] : null,
           assignedLivingUnit: { description: 'C-04-02', agencyName: 'Coventry' },
@@ -310,12 +407,87 @@ export default {
             { type: 'IMM', resultValue: 'Other' },
             { type: 'NAT', resultValue: 'Latvian' },
           ],
-        },
+        }),
       },
     })
-  },
-  stubGetOffenderDetailsMainOffence({ bookingId }: { bookingId: number }): SuperAgentRequest {
-    return stubFor({
+
+  const sentenceDetail: { [key: string]: any } = {
+    bookingId,
+    sentenceStartDate: '2019-08-15',
+    homeDetentionCurfewEligibilityDate: '2020-06-10',
+    paroleEligibilityDate: '2020-06-13',
+    nonParoleDate: '2020-06-14',
+    tariffDate: '2020-06-15',
+    licenceExpiryDate: '2020-06-16',
+    sentenceExpiryDate: '2020-06-17',
+  }
+  if (!indeterminateSentence) {
+    sentenceDetail.releaseDate = new Date().toISOString().substring(0, 10)
+    sentenceDetail.conditionalReleaseDate = '2020-02-02'
+    sentenceDetail.confirmedReleaseDate = new Date(new Date().getFullYear() + 4, 0, 1).toISOString().substring(0, 10)
+    sentenceDetail.automaticReleaseDate = '2020-06-11'
+  }
+
+  const stubSentenceDetail = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/bookings/${bookingId}/sentenceDetail`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: sentenceDetail,
+      },
+    })
+
+  const terms: { [key: string]: any }[] = [
+    {
+      bookingId,
+      sentenceSequence: 2,
+      termSequence: 1,
+      sentenceType: 'T1',
+      sentenceTypeDescription: 'Std sentence',
+      startDate: '2018-12-31',
+      years: 6,
+      months: 3,
+      lifeSentence: indeterminateSentence,
+    },
+  ]
+  if (multipleSentences) {
+    terms.push({
+      bookingId,
+      sentenceSequence: 4,
+      termSequence: 1,
+      consecutiveTo: 2,
+      sentenceType: 'R',
+      sentenceTypeDescription: 'Recall 14 days',
+      startDate: '2019-03-31',
+      years: 4,
+      months: 2,
+      lifeSentence: false,
+    })
+  }
+
+  const stubSentenceTerms = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/offender-sentences/booking/${bookingId}/sentenceTerms`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: terms,
+      },
+    })
+
+  const stubMainOffence = (): SuperAgentRequest =>
+    stubFor({
       request: {
         method: 'GET',
         url: `/elite2/api/bookings/${bookingId}/mainOffence`,
@@ -331,254 +503,223 @@ export default {
         ],
       },
     })
-  },
-  stubGetOffenderDetailsSentenceDetail({
-    bookingId,
-    indeterminateSentence = false,
-  }: {
-    bookingId: number
-    indeterminateSentence: boolean
-    multipleSentences: boolean
-  }): SuperAgentRequest {
-    const sentenceDetail: { [key: string]: string | number } = {
-      bookingId,
-      sentenceStartDate: '2019-08-15',
-      homeDetentionCurfewEligibilityDate: '2020-06-10',
-      paroleEligibilityDate: '2020-06-13',
-      nonParoleDate: '2020-06-14',
-      tariffDate: '2020-06-15',
-      licenceExpiryDate: '2020-06-16',
-      sentenceExpiryDate: '2020-06-17',
-    }
 
-    if (!indeterminateSentence) {
-      sentenceDetail.releaseDate = moment().format('YYYY-MM-DD')
-      sentenceDetail.conditionalReleaseDate = '2020-02-02'
-      sentenceDetail.confirmedReleaseDate = moment().add(4, 'years').format('YYYY-MM-DD')
-      sentenceDetail.automaticReleaseDate = '2020-06-11'
-    }
+  return Promise.all([
+    stubBasicInfo(),
+    stubSentenceDetail(),
+    stubSentenceTerms(),
+    stubMainOffence(),
+    // stubBookings(),
+    // stubBookingsAgain(),
+    // stubGetOffenderDetailsMainOffence({
+    //   bookingId,
+    // }),
+  ])
+}
 
-    return stubFor({
-      request: {
-        method: 'GET',
-        url: `/elite2/api/bookings/${bookingId}/sentenceDetail`,
+const stubGetOffenderDetailsByOffenderNoList = ({
+  offenderNumbers,
+}: {
+  offenderNumbers: string[]
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      url: '/elite2/api/bookings/offenders?activeOnly=false',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
       },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
+      body: JSON.stringify([
+        {
+          bookingId: 13,
+          offenderNo: offenderNumbers[0],
+          agencyId: 'LEI',
+          firstName: 'FRANK',
+          lastName: 'CLARK',
+          dateOfBirth: '1970-02-17',
         },
-        jsonBody: sentenceDetail,
-      },
-    })
-  },
-  stubGetOffenderDetailsSentenceTerms({
-    bookingId,
-    indeterminateSentence = false,
-    multipleSentences = false,
-  }: {
-    bookingId: number
-    indeterminateSentence: boolean
-    multipleSentences: boolean
-  }): SuperAgentRequest {
-    const sentenceDetail: { [key: string]: string | number } = {
-      bookingId,
-      sentenceStartDate: '2019-08-15',
-      homeDetentionCurfewEligibilityDate: '2020-06-10',
-      paroleEligibilityDate: '2020-06-13',
-      nonParoleDate: '2020-06-14',
-      tariffDate: '2020-06-15',
-      licenceExpiryDate: '2020-06-16',
-      sentenceExpiryDate: '2020-06-17',
-    }
-
-    if (!indeterminateSentence) {
-      sentenceDetail.releaseDate = moment().format('YYYY-MM-DD')
-      sentenceDetail.conditionalReleaseDate = '2020-02-02'
-      sentenceDetail.confirmedReleaseDate = moment().add(4, 'years').format('YYYY-MM-DD')
-      sentenceDetail.automaticReleaseDate = '2020-06-11'
-    }
-
-    const terms: Term[] = [
-      {
-        bookingId,
-        sentenceSequence: 2,
-        termSequence: 1,
-        sentenceType: 'T1',
-        sentenceTypeDescription: 'Std sentence',
-        startDate: '2018-12-31',
-        years: 6,
-        months: 3,
-        lifeSentence: indeterminateSentence,
-      },
-    ]
-
-    if (multipleSentences) {
-      terms.push({
-        bookingId,
-        sentenceSequence: 4,
-        termSequence: 1,
-        consecutiveTo: 2,
-        sentenceType: 'R',
-        sentenceTypeDescription: 'Recall 14 days',
-        startDate: '2019-03-31',
-        years: 4,
-        months: 2,
-        lifeSentence: false,
-      })
-    }
-
-    return stubFor({
-      request: {
-        method: 'GET',
-        url: `/elite2/api/offender-sentences/booking/${bookingId}/sentenceTerms`,
-      },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
+        {
+          bookingId: 14,
+          offenderNo: offenderNumbers[1],
+          agencyId: 'LEI',
+          firstName: 'JANE',
+          lastName: 'DENT',
+          dateOfBirth: '1970-02-17',
         },
-        jsonBody: terms,
+      ]),
+    },
+  })
+
+const stubGetUserDetails = ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/users/${user.username}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
       },
-    })
-  },
-  stubGetOffenderDetailsByOffenderNoList: ({ offenderNumbers }: { offenderNumbers: string[] }): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'POST',
-        url: '/elite2/api/bookings/offenders?activeOnly=false',
+      jsonBody: {
+        staffId: user.staffMember.id,
+        username: user.username,
+        firstName: user.staffMember.firstName,
+        lastName: user.staffMember.lastName,
+        email: 'itaguser@syscon.net',
+        activeCaseLoadId: caseloadId,
       },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify([
-          {
-            bookingId: 13,
-            offenderNo: offenderNumbers[0],
-            agencyId: 'LEI',
-            firstName: 'FRANK',
-            lastName: 'CLARK',
-            dateOfBirth: '1970-02-17',
-          },
-          {
-            bookingId: 14,
-            offenderNo: offenderNumbers[1],
-            agencyId: 'LEI',
-            firstName: 'JANE',
-            lastName: 'DENT',
-            dateOfBirth: '1970-02-17',
-          },
-        ]),
+    },
+  })
+
+const stubGetStaffDetailsByUsernameList = ({ usernames = [] }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      url: '/elite2/api/users/list',
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
       },
-    }),
-  stubGetUserDetails: ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'GET',
-        url: `/elite2/api/users/${user.username}`,
-      },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        jsonBody: {
-          staffId: user.staffMember.id,
-          username: user.username,
-          firstName: user.staffMember.firstName,
-          lastName: user.staffMember.lastName,
+      body: JSON.stringify(
+        usernames.map(username => ({
+          staffId: 123,
+          username: username,
+          firstName: `firstName_${username}`,
+          lastName: `lastName_${username}`,
           email: 'itaguser@syscon.net',
-          activeCaseLoadId: caseloadId,
+          activeCaseLoadId: 'LEI',
+        }))
+      ),
+    },
+  })
+
+const stubSentenceDataGetSingle = ({
+  offenderNumber,
+  formattedReleaseDate,
+}: {
+  offenderNumber: string
+  formattedReleaseDate: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-sentences?offenderNo=${offenderNumber}`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify([
+        {
+          offenderNo: offenderNumber,
+          bookingId: -45,
+          firstName: 'firstName',
+          lastName: 'lastName',
+          sentenceDetail: { bookingId: -45, releaseDate: formattedReleaseDate },
         },
-      },
-    }),
-  stubGetStaffDetailsByUsernameList: ({ usernames = [] }): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'POST',
-        url: '/elite2/api/users/list',
-      },
-      response: {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
+        {
+          offenderNo: offenderNumber,
+          bookingId: -55,
+          firstName: 'firstName',
+          lastName: 'lastName',
+          sentenceDetail: { bookingId: -55, releaseDate: formattedReleaseDate },
         },
-        body: JSON.stringify(
-          usernames.map(username => ({
-            staffId: 123,
-            username: username,
-            firstName: `firstName_${username}`,
-            lastName: `lastName_${username}`,
-            email: 'itaguser@syscon.net',
-            activeCaseLoadId: 'LEI',
-          }))
-        ),
-      },
-    }),
-  stubUncategorised: (): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'GET',
-        url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
-      },
-      response: {
-        status: 200,
-        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: [
-          {
-            bookingId: 12,
-            offenderNo: 'B2345XY',
-            firstName: 'PENELOPE',
-            lastName: 'PITSTOP',
-            status: 'UNCATEGORISED',
-            assessmentSeq: 5,
-          },
-          {
-            bookingId: 11,
-            offenderNo: 'B2345YZ',
-            firstName: 'ANT',
-            lastName: 'HILLMOB',
-            status: 'AWAITING_APPROVAL',
-            assessmentSeq: 4,
-          },
-        ],
-      },
-    }),
-  stubUncategorisedAwaitingApproval: (statusCode = 200): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'GET',
-        url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
-      },
-      response: {
-        status: statusCode,
-        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-        jsonBody: [
-          {
-            bookingId: 11,
-            offenderNo: 'B2345XY',
-            firstName: 'PENELOPE',
-            lastName: 'PITSTOP',
-            status: 'AWAITING_APPROVAL',
-            category: 'B',
-            categoriserFirstName: 'ROGER',
-            categoriserLastName: 'RABBIT',
-            assessmentSeq: 4,
-          },
-          {
-            bookingId: 12,
-            offenderNo: 'B2345YZ',
-            firstName: 'ANT',
-            lastName: 'HILLMOB',
-            status: 'AWAITING_APPROVAL',
-            category: 'C',
-            categoriserFirstName: 'BUGS',
-            categoriserLastName: 'BUNNY',
-            assessmentSeq: 5,
-          },
-        ],
-      },
-    }),
+        {
+          offenderNo: offenderNumber,
+          bookingId: 12,
+          firstName: 'firstName12',
+          lastName: 'lastName12',
+          sentenceDetail: { bookingId: 12, releaseDate: '2020-11-30' },
+        },
+      ]),
+    },
+  })
+
+const stubUncategorised = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345XY',
+          firstName: 'PENELOPE',
+          lastName: 'PITSTOP',
+          status: 'UNCATEGORISED',
+          assessmentSeq: 5,
+        },
+        {
+          bookingId: 11,
+          offenderNo: 'B2345YZ',
+          firstName: 'ANT',
+          lastName: 'HILLMOB',
+          status: 'AWAITING_APPROVAL',
+          assessmentSeq: 4,
+        },
+      ],
+    },
+  })
+const stubUncategorisedAwaitingApproval = (statusCode = 200): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
+    },
+    response: {
+      status: statusCode,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 11,
+          offenderNo: 'B2345XY',
+          firstName: 'PENELOPE',
+          lastName: 'PITSTOP',
+          status: 'AWAITING_APPROVAL',
+          category: 'B',
+          categoriserFirstName: 'ROGER',
+          categoriserLastName: 'RABBIT',
+          assessmentSeq: 4,
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          firstName: 'ANT',
+          lastName: 'HILLMOB',
+          status: 'AWAITING_APPROVAL',
+          category: 'C',
+          categoriserFirstName: 'BUGS',
+          categoriserLastName: 'BUNNY',
+          assessmentSeq: 5,
+        },
+      ],
+    },
+  })
+
+export default {
+  stubAgencyDetails,
+  stubAssessments,
+  stubCategorised,
+  stubCategorisedMultiple,
+  stubElite2Ping,
+  stubGetMyCaseloads,
+  stubGetMyDetails,
+  stubGetOffenderDetails,
+  stubGetOffenderDetailsByOffenderNoList,
+  stubGetUserDetails,
+  stubGetStaffDetailsByUsernameList,
+  stubSentenceDataGetSingle,
+  stubUncategorised,
+  stubUncategorisedAwaitingApproval,
 }
