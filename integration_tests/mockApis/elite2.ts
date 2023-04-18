@@ -374,15 +374,6 @@ const stubGetOffenderDetails = ({
   multipleSentences?: boolean
   nextReviewDate?: string
 }): Promise<Response[]> => {
-  console.log('hjwerwe', {
-    bookingId,
-    offenderNo,
-    youngOffender,
-    indeterminateSentence,
-    category,
-    multipleSentences,
-    nextReviewDate,
-  })
   const stubBasicInfo = () =>
     stubFor({
       request: {

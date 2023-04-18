@@ -11,14 +11,13 @@ import moment from 'moment'
 describe('Approved view', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
   let formApprovedView: ApprovedViewPage
-  let supervisorDonePage: SupervisorDonePage
 
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
   })
 
-  it('should be inaccessible to users without CATEGORISER_USER', () => {
+  it('should be inaccessible to users without the role of CATEGORISER_USER', () => {
     cy.stubLogin({
       user: SECURITY_USER,
     })
@@ -76,7 +75,7 @@ describe('Approved view', () => {
     formApprovedView = Page.verifyOnPage(ApprovedViewPage)
   }
 
-  it('The approved view page is correctly displayed (suggested Cat)', () => {
+  it('should correctly display the Suggested Category messaging)', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
@@ -154,7 +153,7 @@ describe('Approved view', () => {
     formApprovedView.validateOpenConditionsHeadingVisibility({ isVisible: false })
   })
 
-  it('The approved view page is correctly displayed (Cat overridden by categoriser and supervisor)', () => {
+  it('should correctly display the "Cat overridden by categoriser and supervisor" messaging', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       userId: CATEGORISER_USER.username,
@@ -217,7 +216,7 @@ describe('Approved view', () => {
     Page.verifyOnPage(SupervisorDonePage)
   })
 
-  it.only('An old cat can be displayed', () => {
+  it('should allow the display of a previous / older categorisation', () => {
     cy.task('stubAgencyDetails', { agency: 'BXI' })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
 
