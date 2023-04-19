@@ -6,8 +6,9 @@ import SecurityDonePage from '../pages/security/done'
 import SecurityViewPage from '../pages/security/view'
 import SecurityUpcomingPage from '../pages/security/upcoming'
 import { CASELOAD } from '../factory/caseload'
-import { STATUS } from '../support/status'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
+import STATUS from '../../server/utils/statusEnum'
+import { AGENCY_LOCATION } from '../factory/agencyLocation'
 
 context('Security', () => {
   beforeEach(() => {
@@ -20,9 +21,9 @@ context('Security', () => {
       id: -2,
       bookingId: 13,
       offenderNo: 'B2345XY',
-      status: STATUS.SECURITY_BACK,
+      status: STATUS.SECURITY_BACK.name,
       sequenceNumber: 1,
-      prisonId: 'LEI',
+      prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
       formResponse: {
         ratings: {
@@ -63,9 +64,9 @@ context('Security', () => {
       id: -1,
       bookingId: 14,
       offenderNo: 'B2345YZ',
-      status: STATUS.APPROVED,
+      status: STATUS.APPROVED.name,
       sequenceNumber: 1,
-      prisonId: 'LEI',
+      prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
       formResponse: {
         ratings: {
@@ -204,13 +205,13 @@ context('Security', () => {
     beforeEach(() => {
       cy.task('insertSecurityReferralTableDbRow', {
         offenderNumber: 'B2345XY',
-        prisonId: 'LEI',
+        prisonId: AGENCY_LOCATION.LEI.id,
         id: 1,
         status: 'NEW',
       })
       cy.task('insertSecurityReferralTableDbRow', {
         offenderNumber: 'B2345YZ',
-        prisonId: 'LEI',
+        prisonId: AGENCY_LOCATION.LEI.id,
         id: 2,
         status: 'NEW',
       })

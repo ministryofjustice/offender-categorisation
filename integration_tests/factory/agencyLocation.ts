@@ -28,4 +28,5 @@ export const AGENCY_LOCATION = {
   TRO: agencyLocationFactory('TRO', 'TROOM', 'INST', true),
   MDI: agencyLocationFactory('MDI', 'MOORLAND', 'INST', true),
   SYI: agencyLocationFactory('SYI', 'SHREWSBURY', 'INST', true),
+  LNI: agencyLocationFactory('LNI', 'LOW NEWTON (HMP)', 'INST', true),
 }

@@ -1,12 +1,13 @@
 import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
 import CategorisationHomePage from '../pages/categoriser/home'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
-import { STATUS } from '../support/status'
+import STATUS from '../../server/utils/statusEnum'
 import SupervisorHomePage from '../pages/supervisor/home'
 import SupervisorDonePage from '../pages/supervisor/done'
 import Page from '../pages/page'
 import ApprovedViewPage from '../pages/form/approvedView'
 import moment from 'moment'
+import { AGENCY_LOCATION } from '../factory/agencyLocation'
 
 describe('Approved view', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -83,8 +84,8 @@ describe('Approved view', () => {
       catType: CATEGORISATION_TYPE.INITIAL,
       offenderNo: 'dummy',
       sequenceNumber: 1,
-      status: STATUS.APPROVED,
-      prisonId: 'LEI',
+      status: STATUS.APPROVED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
       formResponse: {
         categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes' } },
@@ -162,8 +163,8 @@ describe('Approved view', () => {
       catType: CATEGORISATION_TYPE.INITIAL,
       offenderNo: 'dummy',
       sequenceNumber: 1,
-      status: STATUS.APPROVED,
-      prisonId: 'LEI',
+      status: STATUS.APPROVED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
       formResponse: {
         categoriser: {
@@ -226,7 +227,7 @@ describe('Approved view', () => {
     const commonPrisonerData = {
       bookingId: 12,
       offenderNo: 'B2345YZ',
-      status: STATUS.APPROVED,
+      status: STATUS.APPROVED.name,
       startDate: new Date(),
       securityReviewedBy: null,
       assignedUserId: null,
@@ -239,7 +240,7 @@ describe('Approved view', () => {
       nomisSequenceNumber: 1,
       catType: CATEGORISATION_TYPE.RECAT,
       sequenceNumber: 1,
-      prisonId: 'BXI',
+      prisonId: AGENCY_LOCATION.BXI.id,
       formResponse: {
         recat: { decision: { category: 'B', categoryAppropriate: 'Yes' } },
       },
@@ -253,7 +254,7 @@ describe('Approved view', () => {
       userId: CATEGORISER_USER.username,
       catType: CATEGORISATION_TYPE.INITIAL,
       sequenceNumber: 2,
-      prisonId: 'LEI',
+      prisonId: AGENCY_LOCATION.LEI.id,
       formResponse: {
         categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes' } },
         supervisor: { review: { supervisorCategoryAppropriate: 'Yes' } },

@@ -1,4 +1,4 @@
-import Page, { PageElement } from '../page'
+import Page from '../page'
 
 export default class ApprovedViewPage extends Page {
   static baseUrl: string = '/form/approvedView'
@@ -10,11 +10,6 @@ export default class ApprovedViewPage extends Page {
   validateCategorisationDetails(columns: { key: string; value: string }[][]) {
     columns.forEach((column, index) => {
       column.forEach(({ key, value }) => {
-        cy.log('column', column)
-        cy.log('index', index)
-        cy.log('key', key)
-        cy.log('value', value)
-
         cy.get('.govuk-grid-column-one-third').eq(index).should('contain.text', key).should('contain.text', value)
       })
     })

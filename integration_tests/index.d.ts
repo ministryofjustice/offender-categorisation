@@ -13,6 +13,12 @@ declare namespace Cypress {
     checkTableColumnTextValues({ columnName: string, expectedValues: string[] }): Chainable<AUTWindow>
 
     /**
+     * Custom command to check all rows in a HTML table match the provided array of values
+     * @example cy.checkTableRowData({ tableRowsSelector: '#initialTable > tbody > tr', expectedValues: [['a','b','c'], ['a','x','y]] })
+     */
+    checkTableRowData<T>({ tableRowsSelector: string; expectedValues: T }): Chainable<AUTWindow>
+
+    /**
      * Custom command to signIn. Set failOnStatusCode to false if you expect and non 200 return code
      * @example cy.signIn({ failOnStatusCode: boolean })
      */

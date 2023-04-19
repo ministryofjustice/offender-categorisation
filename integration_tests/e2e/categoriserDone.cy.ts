@@ -1,16 +1,17 @@
 import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
-import { STATUS } from '../support/status'
+import STATUS from '../../server/utils/statusEnum'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import defaultRatingsFactory from '../factory/defaultRatings'
 import Page from '../pages/page'
 import CategorisationHomePage from '../pages/categoriser/home'
 import CategorisationDonePage from '../pages/categoriser/done'
+import { AGENCY_LOCATION } from '../factory/agencyLocation'
 
 const commonOffenderData = {
   offenderNo: 'dummy',
   sequenceNumber: 1,
-  status: STATUS.APPROVED,
-  prisonId: 'LEI',
+  status: STATUS.APPROVED.name,
+  prisonId: AGENCY_LOCATION.LEI.id,
   startDate: new Date(),
   formResponse: defaultRatingsFactory('C'),
   securityReviewedBy: null,

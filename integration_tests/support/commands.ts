@@ -20,6 +20,19 @@ Cypress.Commands.add(
   }
 )
 
+Cypress.Commands.add(
+  'checkTableRowData',
+  <T>({ tableRowsSelector, expectedValues }: { tableRowsSelector: string; expectedValues: T }) => {
+    cy.get(tableRowsSelector).each(($row, $index, $rows) => {
+      const rowData = []
+      $row.find('td').each(($index, $cell) => {
+        rowData.push($cell.textContent.trim())
+      })
+      expect(rowData).to.deep.equal(expectedValues[$index])
+    })
+  }
+)
+
 Cypress.Commands.add('signIn', (options = { failOnStatusCode: false }) => {
   cy.request('/')
   return cy.task('getSignInUrl').then((url: string) => cy.visit(url, options))
