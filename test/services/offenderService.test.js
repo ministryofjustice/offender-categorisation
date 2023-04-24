@@ -3306,7 +3306,7 @@ describe('getReleaseDateMap', () => {
 
 describe('getPomMap', () => {
   const mockAllocationClient = {
-    getPomByOffenderNo: jest.fn().mockImplementation(offenderNo => Promise.resolve({ name: 'John Doe' })),
+    getPomByOffenderNo: jest.fn().mockImplementation(() => Promise.resolve({ name: 'John Doe' })),
   }
 
   afterEach(() => {
