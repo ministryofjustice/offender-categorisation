@@ -650,6 +650,10 @@ module.exports = function createOffendersService(
     return nextReviewDate && releaseDate && moment(nextReviewDate).isAfter(moment(releaseDate))
   }
 
+  function isAwaitingApproval(status) {
+    return [Status.AWAITING_APPROVAL.name].includes(status)
+  }
+
   async function getDueRecats(
     agencyId,
     user,
@@ -691,7 +695,11 @@ module.exports = function createOffendersService(
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
-        if (isInitialInProgress(dbRecord) || isNextReviewAfterRelease(nomisRecord, releaseDateMap.get(raw.bookingId))) {
+        if (
+          isInitialInProgress(dbRecord) ||
+          (!isAwaitingApproval(dbRecord.status) &&
+            isNextReviewAfterRelease(nomisRecord, releaseDateMap.get(raw.bookingId)))
+        ) {
           return null
         }
 
@@ -1638,5 +1646,15 @@ module.exports = function createOffendersService(
     mergeU21ResultWithNomisCategorisationData,
     mergeOffenderLists: mergeOffenderListsRemovingNulls,
     getOffenderDetailsWithNextReviewDate,
+    isNextReviewAfterRelease,
+    getReleaseDateMap,
+    getPomMap,
+    isInitialInProgress,
+    statusTextDisplay,
+    isOverdue,
+    calculateRecatDisplayStatus,
+    decorateWithCategorisationData,
+    getDueRecats,
+    isAwaitingApproval,
   }
 }
