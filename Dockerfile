@@ -1,4 +1,4 @@
-FROM node:14.18-buster-slim
+FROM node:18.16-buster-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 ARG BUILD_NUMBER
 ARG GIT_REF
