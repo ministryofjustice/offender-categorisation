@@ -1,15 +1,16 @@
-import STATUS from '../../server/utils/statusEnum'
-import { CATEGORISER_USER, RECATEGORISER_USER, SUPERVISOR_USER } from '../factory/user'
-import { CATEGORISATION_TYPE } from '../support/categorisationType'
-import { AGENCY_LOCATION } from '../factory/agencyLocation'
+import { SUPERVISOR_USER } from '../factory/user'
 import Page from '../pages/page'
 import DashboardInitialPage from '../pages/dashboard/initial'
 import DashboardRecategorisationPage from '../pages/dashboard/recat'
-import setupRecatStats from '../fixtures/dashboard/recategorisation-statistics'
-import setupChangeTable from '../fixtures/dashboard/change-table'
-import setupTprsStats from '../fixtures/dashboard/tprs-statistics'
+import mensInitialCategorisationDashboardStatsSeedData from '../fixtures/dashboard/mens/inital-cat'
+import mensRecatStatSeedData from '../fixtures/dashboard/mens/recategorisation-statistics'
+import mensChangeTableSeedData from '../fixtures/dashboard/mens/change-table'
+import mensTprsStatsSeedData from '../fixtures/dashboard/mens/tprs-statistics'
+import dbSeeder from '../fixtures/db-seeder'
 
 describe('Dashboard', () => {
+  const allMalePrisonEstateScope = 'all male prisons'
+
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
@@ -29,179 +30,11 @@ describe('Dashboard', () => {
     cy.signIn()
   })
 
-  const allMalePrisonEstateScope = 'all male prisons'
-
   describe('Initial Categorisation dashboard', () => {
     let dashboardInitialPage: DashboardInitialPage
 
-    const baseOffenderData = (bookingId: number) => ({
-      id: -bookingId,
-      bookingId,
-      offenderNo: `B00${bookingId}XY`,
-      assignedUserId: CATEGORISER_USER.username,
-      nomisSequenceNumber: 1,
-      catType: CATEGORISATION_TYPE.INITIAL,
-      sequenceNumber: 1,
-      status: STATUS.APPROVED.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      riskProfile: {},
-      startDate: new Date('2019-07-01Z00:00'),
-      assessmentDate: new Date('2019-07-22'),
-      approvedBy: SUPERVISOR_USER.username,
-      approvalDate: new Date('2019-07-29'),
-      dueByDate: new Date('2019-08-03'),
-    })
-
     beforeEach(() => {
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(10),
-        status: STATUS.AWAITING_APPROVAL.name,
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: null },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: null } },
-        },
-        approvedBy: null,
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(11),
-        assignedUserId: RECATEGORISER_USER.username,
-        catType: CATEGORISATION_TYPE.RECAT,
-        status: STATUS.AWAITING_APPROVAL.name,
-        formResponse: { recat: { decision: { category: 'B' }, securityInput: null }, supervisor: { review: null } },
-        approvedBy: null,
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(30),
-        assignedUserId: RECATEGORISER_USER.username,
-        catType: CATEGORISATION_TYPE.RECAT,
-        formResponse: { recat: { decision: { category: 'C' }, securityInput: null }, supervisor: { review: null } },
-        riskProfile: {},
-        approvalDate: new Date('2019-08-05'),
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(20),
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: null },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: null } },
-        },
-        approvalDate: new Date('2019-08-01'),
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(21),
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: null },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: 'B' } },
-        },
-        assessmentDate: new Date('2019-07-21'),
-        approvalDate: new Date('2019-07-31'),
-        dueByDate: new Date('2019-08-02'),
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(22),
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: null },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: null } },
-        },
-        startDate: new Date('2019-07-01T03:00Z'),
-        referredDate: new Date('2019-07-09T15:30Z'),
-        securityReviewedDate: new Date('2019-07-09T17:40Z'),
-        assessmentDate: new Date('2019-07-22'),
-        approvalDate: new Date('2019-07-30'),
-        dueByDate: new Date('2019-08-03'),
-        riskProfile: { socProfile: { transferToSecurity: 'true' } },
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(23),
-        formResponse: {
-          ratings: { securityInput: { securityInputNeeded: 'Yes' } },
-          supervisor: { review: { supervisorOverriddenCategory: 'D' } },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: 'B' } },
-        },
-        startDate: new Date('2019-07-01T04:00Z'),
-        referredDate: new Date('2019-07-10T09:00Z'),
-        securityReviewedDate: new Date('2019-07-11T11:00Z'),
-        assessmentDate: new Date('2019-07-23'),
-        approvalDate: new Date('2019-07-29'),
-        dueByDate: new Date('2019-07-28'),
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(34),
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: { supervisorOverriddenCategory: 'R' } },
-          categoriser: { provisionalCategory: { suggestedCategory: 'R', overriddenCategory: 'T' } },
-        },
-        prisonId: AGENCY_LOCATION.LNI.id,
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(24),
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: { supervisorOverriddenCategory: 'C' } },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: 'B' } },
-        },
-        prisonId: AGENCY_LOCATION.BXI.id,
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(25),
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: null },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: 'B' } },
-        },
-        prisonId: AGENCY_LOCATION.BXI.id,
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(26),
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: null },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: null } },
-        },
-        prisonId: AGENCY_LOCATION.BXI.id,
-        riskProfile: { socProfile: { transferToSecurity: 'true' } },
-        referredDate: new Date('2019-07-20T00:00Z'),
-        securityReviewedDate: new Date('2019-07-29T00:00Z'),
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(27),
-        formResponse: {
-          ratings: { securityInput: { securityInputNeeded: 'Yes' } },
-          supervisor: { review: null },
-          categoriser: { provisionalCategory: { suggestedCategory: 'I', overriddenCategory: null } },
-        },
-        prisonId: AGENCY_LOCATION.BXI.id,
-        referredDate: new Date('2019-07-20T00:00Z'),
-        securityReviewedDate: new Date('2019-07-29T00:00Z'),
-      })
-
-      cy.task('insertFormTableDbRow', {
-        ...baseOffenderData(28),
-        formResponse: {
-          ratings: { securityInput: null },
-          supervisor: { review: null },
-          categoriser: { provisionalCategory: { suggestedCategory: 'C', overriddenCategory: null } },
-        },
-        prisonId: AGENCY_LOCATION.BXI.id,
-        riskProfile: { socProfile: { transferToSecurity: 'true' } },
-        referredDate: new Date('2019-07-20T00:00Z'),
-        securityReviewedDate: new Date('2019-07-29T00:00Z'),
-      })
+      dbSeeder(mensInitialCategorisationDashboardStatsSeedData)
 
       cy.visit(DashboardInitialPage.baseUrl)
       dashboardInitialPage = Page.verifyOnPage(DashboardInitialPage)
@@ -277,7 +110,7 @@ describe('Dashboard', () => {
     let dashboardRecategorisationPage: DashboardRecategorisationPage
 
     it('should show the expected stats when no search criteria are provided', () => {
-      setupRecatStats()
+      dbSeeder(mensRecatStatSeedData)
 
       cy.visit(DashboardRecategorisationPage.baseUrl)
       dashboardRecategorisationPage = Page.verifyOnPage(DashboardRecategorisationPage)
@@ -313,7 +146,7 @@ describe('Dashboard', () => {
     })
 
     it('should show the expected stats when the user selects the whole estate', () => {
-      setupRecatStats()
+      dbSeeder(mensRecatStatSeedData)
 
       cy.visit(DashboardRecategorisationPage.baseUrl)
       dashboardRecategorisationPage = Page.verifyOnPage(DashboardRecategorisationPage)
@@ -351,7 +184,7 @@ describe('Dashboard', () => {
 
     describe('Recategorisation decisions', () => {
       beforeEach(() => {
-        setupChangeTable()
+        dbSeeder(mensChangeTableSeedData)
         cy.visit(DashboardRecategorisationPage.baseUrl)
         dashboardRecategorisationPage = Page.verifyOnPage(DashboardRecategorisationPage)
       })
@@ -415,7 +248,7 @@ describe('Dashboard', () => {
 
     describe('TPRS details', () => {
       beforeEach(() => {
-        setupTprsStats()
+        dbSeeder(mensTprsStatsSeedData)
         cy.visit(DashboardRecategorisationPage.baseUrl)
         dashboardRecategorisationPage = Page.verifyOnPage(DashboardRecategorisationPage)
       })

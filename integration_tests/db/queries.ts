@@ -1,15 +1,15 @@
 import { mergeRight } from 'ramda'
 import db from '../../server/data/dataAccess/db'
 
-type CatType = 'INITIAL' | 'RECAT'
-type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
+export type CatType = 'INITIAL' | 'RECAT'
+export type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
 
 type MandatoryRowData = Pick<
   FormDbRow,
   'id' | 'bookingId' | 'sequenceNumber' | 'prisonId' | 'offenderNo' | 'startDate' | 'catType' | 'reviewReason'
 >
 
-interface FormDbRow {
+export interface FormDbRow {
   id: number
   formResponse: string | null
   bookingId: number

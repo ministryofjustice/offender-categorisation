@@ -2,6 +2,8 @@ import { SuperAgentRequest, Response } from 'superagent'
 import { stubFor } from './wiremock'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
+import { AgencyLocation } from '../factory/agencyLocation'
+import moment from 'moment'
 
 interface SentenceDetail {
   bookingId: number
@@ -108,6 +110,43 @@ const stubAssessments = ({
               approvalDate: '2013-03-24',
               assessmentAgencyId: 'LPI',
               assessmentStatus: 'I',
+            },
+          ],
+    },
+  })
+
+const stubAssessmentsWomen = ({
+  offenderNo,
+  emptyResponse = false,
+  bookingId = -45,
+}: {
+  offenderNo: string
+  emptyResponse?: boolean
+  bookingId?: number
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/CATEGORY?offenderNo=${offenderNo}&latestOnly=false&activeOnly=false`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: emptyResponse
+        ? []
+        : [
+            {
+              bookingId,
+              offenderNo,
+              classification: 'No Cat A',
+              assessmentCode: 'CATEGORY',
+              assessmentDescription: 'Categorisation',
+              cellSharingAlertFlag: false,
+              assessmentDate: '2012-04-04',
+              nextReviewDate: '2012-06-07',
+              approvalDate: '2012-06-08',
+              assessmentAgencyId: 'PFI',
+              assessmentStatus: 'No CAT A, Restricted',
             },
           ],
     },
@@ -495,17 +534,7 @@ const stubGetOffenderDetails = ({
       },
     })
 
-  return Promise.all([
-    stubBasicInfo(),
-    stubSentenceDetail(),
-    stubSentenceTerms(),
-    stubMainOffence(),
-    // stubBookings(),
-    // stubBookingsAgain(),
-    // stubGetOffenderDetailsMainOffence({
-    //   bookingId,
-    // }),
-  ])
+  return Promise.all([stubBasicInfo(), stubSentenceDetail(), stubSentenceTerms(), stubMainOffence()])
 }
 
 const stubGetOffenderDetailsByOffenderNoList = ({
@@ -543,6 +572,156 @@ const stubGetOffenderDetailsByOffenderNoList = ({
       ]),
     },
   })
+
+const stubGetOffenderDetailsWomen = ({
+  bookingId,
+  offenderNo = 'B2345YZ',
+  youngOffender = false,
+  indeterminateSentence = false,
+  category = 'C',
+  multipleSentences = false,
+  nextReviewDate = '2020-01-16',
+}: {
+  bookingId: number
+  offenderNo?: string
+  youngOffender?: boolean
+  indeterminateSentence?: boolean
+  category?: string
+  multipleSentences?: boolean
+  nextReviewDate?: string
+}): Promise<Response[]> => {
+  const stubBasicInfo = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/bookings/${bookingId}?basicInfo=false`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookingId,
+          offenderNo,
+          agencyId: 'PFI',
+          firstName: 'WILLIAM',
+          lastName: 'HILLMOB',
+          dateOfBirth: youngOffender ? '2018-01-01' : '1970-02-17',
+          category: `Cat ${category}`,
+          categoryCode: category,
+          assessments: nextReviewDate ? [{ assessmentCode: 'CATEGORY', nextReviewDate }] : null,
+          assignedLivingUnit: { description: 'C-04-02', agencyName: 'Coventry' },
+          profileInformation: [
+            { type: 'IMM', resultValue: 'Other' },
+            { type: 'NAT', resultValue: 'Latvian' },
+          ],
+        }),
+      },
+    })
+
+  const sentenceDetail = {
+    bookingId,
+    sentenceStartDate: '2019-08-15',
+    homeDetentionCurfewEligibilityDate: '2020-06-10',
+    paroleEligibilityDate: '2020-06-13',
+    nonParoleDate: '2020-06-14',
+    tariffDate: '2020-06-15',
+    licenceExpiryDate: '2020-06-16',
+    sentenceExpiryDate: '2020-06-17',
+    releaseDate: undefined,
+    conditionalReleaseDate: undefined,
+    confirmedReleaseDate: undefined,
+    automaticReleaseDate: undefined,
+  }
+
+  if (!indeterminateSentence) {
+    sentenceDetail.releaseDate = new Date()
+    sentenceDetail.conditionalReleaseDate = '2020-02-02'
+    sentenceDetail.confirmedReleaseDate = moment().add(4, 'years').format('yyyy-MM-dd') // > 3
+    sentenceDetail.automaticReleaseDate = '2020-06-11'
+  }
+
+  const stubSentenceDetail = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/bookings/${bookingId}/sentenceDetail`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sentenceDetail),
+      },
+    })
+
+  const terms = [
+    {
+      bookingId,
+      sentenceSequence: 2,
+      termSequence: 1,
+      sentenceType: 'T1',
+      sentenceTypeDescription: 'Std sentence',
+      startDate: '2018-12-31',
+      years: 6,
+      months: 3,
+      lifeSentence: indeterminateSentence,
+      consecutiveTo: undefined,
+    },
+  ]
+
+  if (multipleSentences) {
+    terms.push({
+      bookingId,
+      sentenceSequence: 4,
+      termSequence: 1,
+      consecutiveTo: 2,
+      sentenceType: 'R',
+      sentenceTypeDescription: 'Recall 14 days',
+      startDate: '2019-03-31',
+      years: 4,
+      months: 2,
+      lifeSentence: false,
+    })
+  }
+
+  const stubSentenceTerms = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/bookings/${bookingId}/sentenceTerms`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(terms),
+      },
+    })
+
+  const stubMainOffence = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/bookings/${bookingId}/mainOffence`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([
+          { bookingId, offenceDescription: 'A Felony' },
+          { bookingId, offenceDescription: 'Another Felony' },
+        ]),
+      },
+    })
+
+  return Promise.all([stubBasicInfo(), stubSentenceDetail(), stubSentenceTerms(), stubMainOffence()])
+}
 
 const stubGetUserDetails = ({ user, caseloadId }: { user: UserAccount; caseloadId: string }): SuperAgentRequest =>
   stubFor({
@@ -662,14 +841,14 @@ const stubUncategorised = (): SuperAgentRequest =>
       ],
     },
   })
-const stubUncategorisedAwaitingApproval = (statusCode = 200): SuperAgentRequest =>
+const stubUncategorisedAwaitingApproval = (): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
       url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
     },
     response: {
-      status: statusCode,
+      status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: [
         {
@@ -698,9 +877,35 @@ const stubUncategorisedAwaitingApproval = (statusCode = 200): SuperAgentRequest 
     },
   })
 
+const stubUncategorisedAwaitingApprovalWithLocation = (location: AgencyLocation['id']): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/${location}?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 700,
+          offenderNo: 'ON700',
+          firstName: 'WILLIAM',
+          lastName: 'HILLMOB',
+          status: 'AWAITING_APPROVAL',
+          category: 'R',
+          categoriserFirstName: 'BUGS',
+          categoriserLastName: 'BUNNY',
+          assessmentSeq: 5,
+        },
+      ],
+    },
+  })
+
 export default {
   stubAgencyDetails,
   stubAssessments,
+  stubAssessmentsWomen,
   stubCategorised,
   stubCategorisedMultiple,
   stubElite2Ping,
@@ -708,9 +913,11 @@ export default {
   stubGetMyDetails,
   stubGetOffenderDetails,
   stubGetOffenderDetailsByOffenderNoList,
+  stubGetOffenderDetailsWomen,
   stubGetUserDetails,
   stubGetStaffDetailsByUsernameList,
   stubSentenceDataGetSingle,
   stubUncategorised,
   stubUncategorisedAwaitingApproval,
+  stubUncategorisedAwaitingApprovalWithLocation,
 }
