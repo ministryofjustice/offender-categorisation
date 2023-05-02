@@ -31,5 +31,11 @@ export default abstract class Page {
       cy.get(optionSelector).should(isChecked ? 'be.checked' : 'not.be.checked')
     )
 
+  validateSelectorExists = (selector: string, exists: boolean) =>
+    cy.get(selector).should(exists ? 'exist' : 'not.exist')
+
+  validateSelectorVisibility = (selector: string, isVisible: boolean) =>
+    cy.get(selector).should(isVisible ? 'be.visible' : 'not.be.visible')
+
   protected _cleanString = (rawText): string => rawText.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
 }

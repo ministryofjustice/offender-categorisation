@@ -2,6 +2,8 @@ import moment from 'moment/moment'
 import { CATEGORISER_USER } from '../../factory/user'
 import TaskListPage from '../../pages/taskList/taskList'
 import CategoriserOffendingHistoryPage from '../../pages/form/ratings/offendingHistory'
+import Status from '../../../server/utils/statusEnum'
+import { FormDbRow } from '../../db/queries'
 
 describe('Offending History', () => {
   let taskListPage: TaskListPage
@@ -40,28 +42,38 @@ describe('Offending History', () => {
       notifyRegionalCTLead: false,
     })
 
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
     cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
+  })
 
+  /**
+   * Extracted to a separate step as some of the stubbing needs to differ between tests before
+   * this point is reached.
+   */
+  const stubLoginAndBrowseToOffendingHistoryPage = () => {
     cy.stubLogin({
       user: CATEGORISER_USER,
     })
     cy.signIn()
-  })
+
+    cy.get('a[href*="/tasklist/12"]').click()
+
+    taskListPage = TaskListPage.createForBookingId(12)
+    taskListPage.offendingHistoryButton().click()
+
+    categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(12)
+  }
 
   describe('The Offending history page is shown correctly', () => {
     it('should display for a previous Cat A', () => {
-      cy.get('a[href*="/tasklist/12"]').click()
+      cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
 
-      taskListPage = TaskListPage.createForBookingId(12)
-      taskListPage.offendingHistoryButton().click()
+      stubLoginAndBrowseToOffendingHistoryPage()
 
-      categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(12)
       categoriserOffendingHistoryPage.validateExpectedCatAWarning(
         'This prisoner was categorised as Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
       )
-      categoriserOffendingHistoryPage.validateCatAInfoVisibility({ isVisible: false })
+      categoriserOffendingHistoryPage.validateCatAInfoExists({ exists: false })
       categoriserOffendingHistoryPage.validateExpectedConvictions([
         'Libel (21/02/2019)',
         'Slander (22/02/2019 - 24/02/2019)',
@@ -69,19 +81,35 @@ describe('Offending History', () => {
       ])
     })
 
-    xit('should display when not a previous Cat A', () => {})
+    it('should display when not a previous Cat A', () => {
+      cy.task('stubAssessments', { offenderNumber: 'B2345YZ', emptyResponse: true })
 
-    xit('should display when Cat A in current booking', () => {})
+      stubLoginAndBrowseToOffendingHistoryPage()
+
+      categoriserOffendingHistoryPage.validateExpectedCatAInfo(
+        'This person has not been categorised as Cat A, restricted or a provisional Cat A before.'
+      )
+      categoriserOffendingHistoryPage.validateCatAWarningExists({ exists: false })
+    })
+
+    it('should display when Cat A in current booking', () => {
+      cy.task('stubAssessmentsWithCurrent', { offenderNumber: 'B2345YZ' })
+
+      stubLoginAndBrowseToOffendingHistoryPage()
+
+      categoriserOffendingHistoryPage.validateExpectedCatAWarning(
+        'This prisoner was categorised as Provisional Cat A in 2018 until 2019'
+      )
+      categoriserOffendingHistoryPage.validateCatAInfoExists({ exists: false })
+    })
   })
 
   describe('form submission', () => {
     beforeEach(() => {
-      cy.get('a[href*="/tasklist/12"]').click()
+      cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
 
-      taskListPage = TaskListPage.createForBookingId(12)
-      taskListPage.offendingHistoryButton().click()
+      stubLoginAndBrowseToOffendingHistoryPage()
 
-      categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(12)
       categoriserOffendingHistoryPage.validatePreviousConvictionRadioButtons({
         selection: ['NO', 'YES'],
         isChecked: false,
@@ -97,7 +125,7 @@ describe('Offending History', () => {
     })
 
     describe('should record a valid form submission', () => {
-      it.only('should accept no previous convictions', () => {
+      it('should accept no previous convictions', () => {
         categoriserOffendingHistoryPage.selectPreviousConditionsRadioButton('NO')
         categoriserOffendingHistoryPage.validatePreviousConvictionsTextBox({ isVisible: false })
         categoriserOffendingHistoryPage.saveAndReturnButton().click()
@@ -114,7 +142,9 @@ describe('Offending History', () => {
           isChecked: true,
         })
 
-        cy.task('selectFormTableDbRow', { bookingId: 12 }).then(v => cy.log('v', v))
+        cy.task('selectFormTableDbRow', { bookingId: 12 }).then((result: { rows: FormDbRow[] }) =>
+          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+        )
       })
 
       it('should record previous convictions and the reasoning', () => {
@@ -134,6 +164,10 @@ describe('Offending History', () => {
           selection: ['YES'],
           isChecked: true,
         })
+
+        cy.task('selectFormTableDbRow', { bookingId: 12 }).then((result: { rows: FormDbRow[] }) =>
+          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+        )
       })
     })
   })

@@ -7,6 +7,15 @@ const previousConditionsRadioChoiceHtmlSelectors = {
 
 type PreviousConditionsChoice = keyof typeof previousConditionsRadioChoiceHtmlSelectors
 
+const SELECTORS = {
+  CAT_A: {
+    INFO: '.govuk-inset-text',
+    WARNING: '.govuk-warning-text__text',
+  },
+  CONVICTIONS_LIST: '.govuk-body-s.forms-comments-text ul li',
+  PREVIOUS_CONVICTIONS: '#previousConvictionsText',
+}
+
 export default class CategoriserOffendingHistoryPage extends Page {
   private static _bookingId: number
 
@@ -40,29 +49,40 @@ export default class CategoriserOffendingHistoryPage extends Page {
       isChecked
     )
 
+  validateCatAWarningExists = ({ exists }: { exists: boolean }) =>
+    this.validateSelectorExists(SELECTORS.CAT_A.WARNING, exists)
+
   validateExpectedCatAWarning = (expected: string) =>
     cy
-      .get('.govuk-warning-text__text')
+      .get(SELECTORS.CAT_A.WARNING)
       .invoke('text')
       .then(text => {
         expect(this._cleanString(text)).to.contains(expected)
       })
 
-  validateCatAInfoVisibility = ({ isVisible }: { isVisible: boolean }) =>
-    cy.get('.govuk-inset-text').should(isVisible ? 'exist' : 'not.exist')
+  validateCatAInfoExists = ({ exists }: { exists: boolean }) =>
+    this.validateSelectorExists(SELECTORS.CAT_A.INFO, exists)
+
+  validateExpectedCatAInfo = (expected: string) =>
+    cy
+      .get(SELECTORS.CAT_A.INFO)
+      .invoke('text')
+      .then(text => {
+        expect(this._cleanString(text)).to.contains(expected)
+      })
 
   validateExpectedConvictions = (convictions: string[]) =>
     cy
-      .get('.govuk-body-s.forms-comments-text ul li')
+      .get(SELECTORS.CONVICTIONS_LIST)
       .each(($li, index) => expect(this._cleanString($li.text())).to.contain(convictions[index]))
 
   validatePreviousConvictionsTextBox = ({ expectedText, isVisible }: { expectedText?: string; isVisible: boolean }) => {
-    cy.get('#previousConvictionsText').should(isVisible ? 'be.visible' : 'not.be.visible')
+    this.validateSelectorVisibility(SELECTORS.PREVIOUS_CONVICTIONS, isVisible)
 
     if (isVisible) {
-      cy.get('#previousConvictionsText').should('contain.text', expectedText)
+      cy.get(SELECTORS.PREVIOUS_CONVICTIONS).should('contain.text', expectedText)
     }
   }
 
-  setPreviousConvictionsText = (text: string) => cy.get('#previousConvictionsText').type(text)
+  setPreviousConvictionsText = (text: string) => cy.get(SELECTORS.PREVIOUS_CONVICTIONS).type(text)
 }
