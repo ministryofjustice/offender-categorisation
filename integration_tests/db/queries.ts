@@ -1,5 +1,6 @@
 import { mergeRight } from 'ramda'
 import db from '../../server/data/dataAccess/db'
+import { QueryArrayResult } from 'pg'
 
 export type CatType = 'INITIAL' | 'RECAT'
 export type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
@@ -164,6 +165,14 @@ async function insertSecurityReferralTableDbRow({
   )
 }
 
+async function selectFormTableDbRow({
+  bookingId,
+}: {
+  bookingId: FormDbRow['bookingId']
+}): Promise<QueryArrayResult<FormDbRow[]>> {
+  return await db.query(`select * from form where booking_id = $1 order by sequence_no`, [bookingId])
+}
+
 async function updateRiskProfile({
   riskProfile,
   bookingId,
@@ -177,5 +186,6 @@ async function updateRiskProfile({
 export default {
   insertFormTableDbRow,
   insertSecurityReferralTableDbRow,
+  selectFormTableDbRow,
   updateRiskProfile,
 }

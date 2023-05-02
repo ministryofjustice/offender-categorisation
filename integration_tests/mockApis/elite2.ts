@@ -1,37 +1,9 @@
 import { SuperAgentRequest, Response } from 'superagent'
 import { stubFor } from './wiremock'
+import moment from 'moment'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
 import { AgencyLocation } from '../factory/agencyLocation'
-import moment from 'moment'
-
-interface SentenceDetail {
-  bookingId: number
-  sentenceStartDate: string
-  homeDetentionCurfewEligibilityDate: string
-  paroleEligibilityDate: string
-  nonParoleDate: string
-  tariffDate: string
-  licenceExpiryDate: string
-  sentenceExpiryDate: string
-  releaseDate?: string
-  conditionalReleaseDate?: string
-  confirmedReleaseDate?: string
-  automaticReleaseDate?: string
-}
-
-interface Term {
-  bookingId: number
-  sentenceSequence: number
-  termSequence: number
-  consecutiveTo?: number
-  sentenceType: string
-  sentenceTypeDescription: string
-  startDate: string
-  years: number
-  months: number
-  lifeSentence: boolean
-}
 
 const stubAgencyDetails = ({ agency }: { agency: string }): SuperAgentRequest =>
   stubFor({
@@ -769,6 +741,25 @@ const stubGetStaffDetailsByUsernameList = ({ usernames = [] }): SuperAgentReques
     },
   })
 
+const stubOffenceHistory = ({ offenderNumber }: { offenderNumber: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/bookings/offenderNo/${offenderNumber}/offenceHistory`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      jsonBody: [
+        { bookingId: 12, offenceDescription: 'Libel', offenceDate: '2019-02-21' },
+        { bookingId: 12, offenceDescription: 'Slander', offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24' },
+        { bookingId: 12, offenceDescription: 'Undated offence' },
+      ],
+    },
+  })
+
 const stubSentenceDataGetSingle = ({
   offenderNumber,
   formattedReleaseDate,
@@ -916,6 +907,7 @@ export default {
   stubGetOffenderDetailsWomen,
   stubGetUserDetails,
   stubGetStaffDetailsByUsernameList,
+  stubOffenceHistory,
   stubSentenceDataGetSingle,
   stubUncategorised,
   stubUncategorisedAwaitingApproval,

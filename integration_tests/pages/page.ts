@@ -20,4 +20,16 @@ export default abstract class Page {
   signOut = (): PageElement => cy.get('[data-qa=logout]')
 
   manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')
+
+  errorSummaries = (): PageElement =>
+    cy.get('#error-summary-title').contains('There is a problem').get('ul.govuk-error-summary__list li')
+
+  errors = (): PageElement => cy.get('.govuk-error-message')
+
+  validateRadioButtonSelections = (optionSelectors: string[], isChecked: boolean): void =>
+    optionSelectors.forEach(optionSelector =>
+      cy.get(optionSelector).should(isChecked ? 'be.checked' : 'not.be.checked')
+    )
+
+  protected _cleanString = (rawText): string => rawText.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
 }

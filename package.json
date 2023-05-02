@@ -94,6 +94,7 @@
     "@types/nunjucks": "^3.2.2",
     "@types/passport": "^1.0.12",
     "@types/passport-oauth2": "^1.4.12",
+    "@types/pg": "^8.6.6",
     "@types/superagent": "^4.1.16",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.1",
