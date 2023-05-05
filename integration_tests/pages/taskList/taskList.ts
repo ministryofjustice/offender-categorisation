@@ -11,6 +11,7 @@ export default class TaskListPage extends Page {
     super('Categorisation task list')
   }
 
+  categoryDecisionButton = (): PageElement => cy.get('#decisionButton')
   offendingHistoryButton = (): PageElement => cy.get('#offendingHistoryButton')
 
   static createForBookingId = (bookingId: number) => {

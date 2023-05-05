@@ -635,7 +635,7 @@ const stubGetOffenderDetailsByOffenderNoList = ({
 
 const stubGetOffenderDetailsWomen = ({
   bookingId,
-  offenderNo = 'B2345YZ',
+  offenderNo = 'ON700',
   youngOffender = false,
   indeterminateSentence = false,
   category = 'C',
@@ -751,7 +751,140 @@ const stubGetOffenderDetailsWomen = ({
     stubFor({
       request: {
         method: 'GET',
-        url: `/elite2/api/bookings/${bookingId}/sentenceTerms`,
+        url: `/elite2/api/offender-sentences/booking/${bookingId}/sentenceTerms`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(terms),
+      },
+    })
+
+  const stubMainOffence = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/bookings/${bookingId}/mainOffence`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([
+          { bookingId, offenceDescription: 'A Felony' },
+          { bookingId, offenceDescription: 'Another Felony' },
+        ]),
+      },
+    })
+
+  return Promise.all([stubBasicInfo(), stubSentenceDetail(), stubSentenceTerms(), stubMainOffence()])
+}
+
+const stubGetOffenderDetailsWomenYOI = ({
+  bookingId,
+  offenderNo = 'C0001AA',
+  youngOffender = true,
+  indeterminateSentence = false,
+  category,
+  multipleSentences = false,
+  nextReviewDate = '2020-01-16',
+}: {
+  bookingId: number
+  offenderNo?: string
+  youngOffender?: boolean
+  indeterminateSentence?: boolean
+  category: string
+  multipleSentences?: boolean
+  nextReviewDate?: string
+}): Promise<Response[]> => {
+  const stubBasicInfo = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/bookings/${bookingId}?basicInfo=false`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookingId,
+          offenderNo,
+          agencyId: 'PFI',
+          firstName: 'TINY',
+          lastName: 'TIM',
+          dateOfBirth: youngOffender ? '2005-01-01' : '1970-02-17',
+          category: 'Cat ' + category,
+          categoryCode: category,
+          assessments: nextReviewDate ? [{ assessmentCode: 'CATEGORY', nextReviewDate: nextReviewDate }] : null,
+          assignedLivingUnit: { description: 'C-04-02', agencyName: 'Coventry' },
+          profileInformation: [
+            { type: 'IMM', resultValue: 'Other' },
+            { type: 'NAT', resultValue: 'Latvian' },
+          ],
+        }),
+      },
+    })
+
+  const sentenceDetail = {
+    bookingId,
+    sentenceStartDate: '2019-08-15',
+    homeDetentionCurfewEligibilityDate: '2020-06-10',
+    paroleEligibilityDate: '2020-06-13',
+    nonParoleDate: '2020-06-14',
+    tariffDate: '2020-06-15',
+    licenceExpiryDate: '2020-06-16',
+    sentenceExpiryDate: '2020-06-17',
+    releaseDate: undefined,
+    conditionalReleaseDate: undefined,
+    confirmedReleaseDate: undefined,
+    automaticReleaseDate: undefined,
+  }
+
+  if (!indeterminateSentence) {
+    sentenceDetail.releaseDate = new Date()
+    sentenceDetail.conditionalReleaseDate = '2020-02-02'
+    sentenceDetail.confirmedReleaseDate = moment().add(4, 'years').format('yyyy-MM-dd') // > 3
+    sentenceDetail.automaticReleaseDate = '2020-06-11'
+  }
+
+  const stubSentenceDetail = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/bookings/${bookingId}/sentenceDetail`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sentenceDetail),
+      },
+    })
+
+  const terms = [
+    {
+      bookingId,
+      sentenceSequence: 2,
+      termSequence: 1,
+      sentenceType: 'T1',
+      sentenceTypeDescription: 'Std sentence',
+      startDate: '2018-12-31',
+      years: 6,
+      months: 3,
+      lifeSentence: indeterminateSentence,
+    },
+  ]
+  const stubSentenceTerms = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/offender-sentences/booking/${bookingId}/sentenceTerms`,
       },
       response: {
         status: 200,
@@ -920,6 +1053,7 @@ const stubUncategorised = (): SuperAgentRequest =>
       ],
     },
   })
+
 const stubUncategorisedAwaitingApproval = (): SuperAgentRequest =>
   stubFor({
     request: {
@@ -981,6 +1115,60 @@ const stubUncategorisedAwaitingApprovalWithLocation = (location: AgencyLocation[
     },
   })
 
+const stubUncategorisedForWomenYOI = ({
+  bookingId,
+  location = 'LEI',
+}: {
+  bookingId: number
+  location: AgencyLocation['id']
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/${location}?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: bookingId,
+          offenderNo: 'C0001AA',
+          firstName: 'TINY',
+          lastName: 'TIM',
+          status: 'UNCATEGORISED',
+        },
+      ],
+    },
+  })
+
+const stubUncategorisedNoStatus = ({
+  bookingId,
+  location = 'LEI',
+}: {
+  bookingId: number
+  location: AgencyLocation['id']
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/${location}?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId,
+          offenderNo: `ON${bookingId}`,
+          firstName: location === 'LEI' ? 'HARRY' : 'WILLIAM',
+          lastName: 'BONNET',
+          status: 'UNCATEGORISED',
+        },
+      ],
+    },
+  })
+
 export default {
   stubAgencyDetails,
   stubAssessments,
@@ -994,6 +1182,7 @@ export default {
   stubGetOffenderDetails,
   stubGetOffenderDetailsByOffenderNoList,
   stubGetOffenderDetailsWomen,
+  stubGetOffenderDetailsWomenYOI,
   stubGetUserDetails,
   stubGetStaffDetailsByUsernameList,
   stubOffenceHistory,
@@ -1001,4 +1190,6 @@ export default {
   stubUncategorised,
   stubUncategorisedAwaitingApproval,
   stubUncategorisedAwaitingApprovalWithLocation,
+  stubUncategorisedForWomenYOI,
+  stubUncategorisedNoStatus,
 }

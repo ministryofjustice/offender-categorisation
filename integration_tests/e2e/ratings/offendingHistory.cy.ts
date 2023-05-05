@@ -3,7 +3,7 @@ import { CATEGORISER_USER } from '../../factory/user'
 import TaskListPage from '../../pages/taskList/taskList'
 import CategoriserOffendingHistoryPage from '../../pages/form/ratings/offendingHistory'
 import Status from '../../../server/utils/statusEnum'
-import { FormDbRow } from '../../db/queries'
+import { FormDbJson } from '../../fixtures/db-key-convertor'
 
 describe('Offending History', () => {
   let taskListPage: TaskListPage
@@ -142,7 +142,7 @@ describe('Offending History', () => {
           isChecked: true,
         })
 
-        cy.task('selectFormTableDbRow', { bookingId: 12 }).then((result: { rows: FormDbRow[] }) =>
+        cy.task('selectFormTableDbRow', { bookingId: 12 }).then((result: { rows: FormDbJson[] }) =>
           expect(result.rows[0].status).to.eq(Status.STARTED.name)
         )
       })
@@ -165,7 +165,7 @@ describe('Offending History', () => {
           isChecked: true,
         })
 
-        cy.task('selectFormTableDbRow', { bookingId: 12 }).then((result: { rows: FormDbRow[] }) =>
+        cy.task('selectFormTableDbRow', { bookingId: 12 }).then((result: { rows: FormDbJson[] }) =>
           expect(result.rows[0].status).to.eq(Status.STARTED.name)
         )
       })
