@@ -10,11 +10,6 @@ const stubGetSocProfile = ({
   category: string
   transferToSecurity: boolean
 }): SuperAgentRequest => {
-  console.log('sindie?', {
-    offenderNo,
-    category,
-    transferToSecurity,
-  })
   return stubFor({
     request: {
       method: 'GET',
