@@ -37,5 +37,17 @@ export default abstract class Page {
   validateSelectorVisibility = (selector: string, isVisible: boolean) =>
     cy.get(selector).should(isVisible ? 'be.visible' : 'not.be.visible')
 
+  validateErrorSummaryMessages(errorSummaryMessages: { index: number; href: string; text: string }[]) {
+    errorSummaryMessages.forEach(({ index, href, text }) => {
+      this.errorSummaries().eq(index).find('a').should('have.attr', 'href', href).should('have.text', text)
+    })
+  }
+
+  validateErrorMessages(errorMessages: { selector: string; text: string }[]) {
+    errorMessages.forEach(({ selector, text }) => {
+      cy.get(selector).should('contain.text', text)
+    })
+  }
+
   protected _cleanString = (rawText): string => rawText.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
 }
