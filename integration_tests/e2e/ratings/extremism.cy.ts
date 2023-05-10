@@ -1,5 +1,4 @@
 import CategorisationHomePage from '../../pages/categoriser/home'
-import Extremism from '../../pages/form/ratings/extremism'
 import TaskListPage from '../../pages/taskList/taskList'
 import moment from 'moment/moment'
 import { CATEGORISER_USER, UserAccount } from '../../factory/user'
@@ -10,7 +9,7 @@ import Status from '../../../server/utils/statusEnum'
 
 describe('Extremism', () => {
   let categorisationHomePage: CategorisationHomePage
-  let extremismPage: Extremism
+  let extremismPage: ExtremismPage
   let taskListPage: TaskListPage
   let bookingId: number
 

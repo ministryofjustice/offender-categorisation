@@ -11,20 +11,13 @@ type PreviousTerrorismOffencesChoiceValues =
   | typeof previousTerrorismOffencesRadioChoiceHtmlSelectors.NO
 
 const SELECTORS = {
-  // ALERT: '.govuk-details__text p',
   INFO: '.govuk-inset-text',
   WARNING: '.govuk-warning-text__text',
   PREVIOUS_TERRORISM_OFFENCES: {
     ERROR: '#previousTerrorismOffencesText-error',
-    //   QUESTION: 'input[name="escapeCatB"]',
     TEXT_ERROR: '#previousTerrorismOffencesText-error',
     TEXTAREA: '#previousTerrorismOffencesText',
   },
-  // ESCAPE_RISK: {
-  //   ERROR: '#escapeOtherEvidence-error',
-  //   TEXT_ERROR: '#escapeOtherEvidenceText-error',
-  //   TEXTAREA: '#escapeOtherEvidenceText',
-  // },
 }
 
 export default class ExtremismPage extends Page {
