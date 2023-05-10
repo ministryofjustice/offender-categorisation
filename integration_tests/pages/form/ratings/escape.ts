@@ -53,14 +53,14 @@ export default class EscapePage extends Page {
     return new EscapePage()
   }
 
-  validateInfoVisibility({ isVisible }: { isVisible: boolean }) {
-    cy.get(SELECTORS.INFO).should(isVisible ? 'exist' : 'not.exist')
-  }
-
   validCategoryBQuestionVisibility({ isVisible }: { isVisible: boolean }) {
     cy.get(SELECTORS.CAT_B.QUESTION).then(input => {
       expect(input.attr('type') !== 'hidden').to.be.eq(isVisible)
     })
+  }
+
+  validateInfoVisibility({ isVisible }: { isVisible: boolean }) {
+    cy.get(SELECTORS.INFO).should(isVisible ? 'exist' : 'not.exist')
   }
 
   validateInfoText = (expected: string) =>

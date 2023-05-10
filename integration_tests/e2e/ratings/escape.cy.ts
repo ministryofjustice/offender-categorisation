@@ -44,7 +44,7 @@ describe('Escape Risk', () => {
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
       category: 'C',
-      increasedRisk: false,
+      increasedRisk: true,
       notifyRegionalCTLead: false,
     })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
