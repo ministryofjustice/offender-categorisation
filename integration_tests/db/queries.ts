@@ -38,6 +38,16 @@ export interface FormDbRow {
   cancelledBy: string | null
 }
 
+export interface NextReviewChangeHistoryDbRow {
+  id: number
+  booking_id: number
+  offender_no: string
+  next_review_date: string
+  reason: string
+  change_date: string
+  changed_by: string
+}
+
 const defaultRowData: Partial<FormDbRow> = {
   formResponse: null,
   userId: null,
@@ -173,6 +183,14 @@ async function selectFormTableDbRow({
   return await db.query(`select * from form where booking_id = $1 order by sequence_no`, [bookingId])
 }
 
+async function selectNextReviewChangeHistoryTableDbRow({
+  offenderNo,
+}: {
+  offenderNo: NextReviewChangeHistoryDbRow['offender_no']
+}): Promise<QueryArrayResult<NextReviewChangeHistoryDbRow[]>> {
+  return await db.query(`select * from next_review_change_history where offender_no = $1`, [offenderNo])
+}
+
 async function updateRiskProfile({
   riskProfile,
   bookingId,
@@ -187,5 +205,6 @@ export default {
   insertFormTableDbRow,
   insertSecurityReferralTableDbRow,
   selectFormTableDbRow,
+  selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
 }

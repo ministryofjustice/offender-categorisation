@@ -1,5 +1,5 @@
 import { SuperAgentRequest, Response } from 'superagent'
-import { stubFor } from './wiremock'
+import { getMatchingRequests, stubFor } from './wiremock'
 import moment from 'moment'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
@@ -1169,6 +1169,31 @@ const stubUncategorisedNoStatus = ({
     },
   })
 
+const stubUpdateNextReviewDate = ({ date }: { date: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      url: `/elite2/api/offender-assessments/category/12/nextReviewDate/${date}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {},
+    },
+  })
+
+const verifyUpdateNextReviewDate = ({ date }: { date: string }) =>
+  getMatchingRequests({
+    method: 'PUT',
+    urlPath: `/elite2/api/offender-assessments/category/12/nextReviewDate/${date}`,
+  }).then(data => {
+    try {
+      return JSON.parse(data.text)
+    } catch (e) {
+      return []
+    }
+  })
+
 export default {
   stubAgencyDetails,
   stubAssessments,
@@ -1192,4 +1217,6 @@ export default {
   stubUncategorisedAwaitingApprovalWithLocation,
   stubUncategorisedForWomenYOI,
   stubUncategorisedNoStatus,
+  stubUpdateNextReviewDate,
+  verifyUpdateNextReviewDate,
 }
