@@ -7,7 +7,7 @@ export default class CategorisationHomePage extends BaseCategorisationPage {
     super('Prisoner Categorisation')
   }
 
-  selectPrisonerWithBookingId(bookingId: number) {
-    cy.contains(`a[href="/tasklist/${bookingId}"]`, 'Start').click()
+  selectPrisonerWithBookingId(bookingId: number, expectedButtonText = 'Start') {
+    cy.contains(`a[href="/tasklist/${bookingId}"]`, expectedButtonText).click()
   }
 }

@@ -41,6 +41,8 @@ Cypress.Commands.add('signIn', (options = { failOnStatusCode: false }) => {
 Cypress.Commands.add('stubLogin', ({ user }: { user: UserAccount }) => {
   cy.log('stub login for', { user })
 
+  cy.clearCookies()
+
   cy.task('stubValidOAuthTokenRequest', { user })
   cy.task('stubUser', { user })
   cy.task('stubUserRoles', { user })

@@ -6,7 +6,7 @@ const nextReviewDateHtmlSelectors = {
 } as const
 
 type NextReviewDateValues = typeof nextReviewDateHtmlSelectors.NEW_DATE | typeof nextReviewDateHtmlSelectors.REASON
-//
+
 const SELECTORS = {
   DATE: '#date',
   DATE_ERROR: '#reviewDate-error',
@@ -31,9 +31,6 @@ export default class NextReviewStandalonePage extends Page {
     this._bookingId = bookingId
     return new NextReviewStandalonePage()
   }
-
-  getChangeThisDateLink = (expectedUrl: string): PageElement =>
-    cy.get('#changeLink').contains('Change this').should('have.attr', 'href', expectedUrl)
 
   validateErrorSummaryMessages(
     errorSummaryMessages: {
