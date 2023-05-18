@@ -19,6 +19,7 @@ export default class TaskListPage extends Page {
   nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
   offendingHistoryButton = (): PageElement => cy.get('#offendingHistoryButton')
   securityButton = (): PageElement => cy.get('#securityButton')
+  violenceButton = (): PageElement => cy.get('#violenceButton')
 
   static createForBookingId = (bookingId: number) => {
     this._bookingId = bookingId
