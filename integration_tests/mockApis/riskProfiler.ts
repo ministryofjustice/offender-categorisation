@@ -182,6 +182,41 @@ comment with lengthy text comment with lengthy text comment with lengthy text
     },
   })
 
+const stubGetViolenceProfile = ({
+  offenderNo,
+  category,
+  veryHighRiskViolentOffender,
+  notifySafetyCustodyLead,
+  displayAssaults,
+}: {
+  offenderNo: string
+  category: string
+  veryHighRiskViolentOffender: boolean
+  notifySafetyCustodyLead: boolean
+  displayAssaults: boolean
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/risk-profiler/risk-profile/violence/${offenderNo}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        nomsId: offenderNo,
+        riskType: 'VIOLENCE',
+        provisionalCategorisation: category,
+        veryHighRiskViolentOffender: veryHighRiskViolentOffender,
+        notifySafetyCustodyLead: notifySafetyCustodyLead,
+        displayAssaults: displayAssaults,
+        numberOfAssaults: 5,
+        numberOfSeriousAssaults: 2,
+        numberOfNonSeriousAssaults: 3,
+      },
+    },
+  })
+
 const stubRiskProfilerPing = (statusCode = 200): SuperAgentRequest =>
   stubFor({
     request: {
@@ -203,5 +238,6 @@ export default {
   stubGetExtremismProfile,
   stubGetSocProfile,
   stubGetProfileWomenEscapeAlert,
+  stubGetViolenceProfile,
   stubRiskProfilerPing,
 }
