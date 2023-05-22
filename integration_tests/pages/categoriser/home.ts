@@ -1,7 +1,7 @@
-import BaseCategorisationPage from './base'
+import BaseCategoriserPage from './base'
 
-export default class CategorisationHomePage extends BaseCategorisationPage {
-  static baseUrl: string = '/categorisationHome'
+export default class CategoriserHomePage extends BaseCategoriserPage {
+  static baseUrl: string = '/categoriserHome'
 
   constructor() {
     super('Prisoner Categorisation')

@@ -1,6 +1,6 @@
-import BaseCategorisationPage from './base'
+import BaseCategoriserPage from './base'
 
-export default class CategorisationDonePage extends BaseCategorisationPage {
+export default class CategoriserDonePage extends BaseCategoriserPage {
   static baseUrl: string = '/categorisationDone'
 
   constructor() {

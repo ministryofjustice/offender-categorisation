@@ -1,6 +1,6 @@
 import moment from 'moment'
 import { FEMALE_USER } from '../../factory/user'
-import CategorisationHomePage from '../../pages/categoriser/home'
+import CategoriserHomePage from '../../pages/categoriser/home'
 import Page from '../../pages/page'
 import TaskListPage from '../../pages/taskList/taskList'
 import CategoryDecisionPage from '../../pages/form/ratings/categoryDecision'
@@ -9,7 +9,7 @@ import OpenConditionsAdded from '../../pages/openConditionsAdded'
 
 describe('Category Decision', () => {
   let categoryDecisionPage: CategoryDecisionPage
-  let categorisationHomePage: CategorisationHomePage
+  let categoriserHomePage: CategoriserHomePage
   let taskListPage: TaskListPage
   let bookingId: number
 
@@ -47,8 +47,8 @@ describe('Category Decision', () => {
       })
       cy.signIn()
 
-      categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-      categorisationHomePage.selectPrisonerWithBookingId(bookingId)
+      categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
       taskListPage.categoryDecisionButton().click()
@@ -134,8 +134,8 @@ describe('Category Decision', () => {
       })
       cy.signIn()
 
-      categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-      categorisationHomePage.selectPrisonerWithBookingId(bookingId)
+      categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
       taskListPage.categoryDecisionButton().click()

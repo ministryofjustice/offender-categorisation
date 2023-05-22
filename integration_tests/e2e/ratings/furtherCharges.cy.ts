@@ -1,4 +1,4 @@
-import CategorisationHomePage from '../../pages/categoriser/home'
+import CategoriserHomePage from '../../pages/categoriser/home'
 import FurtherChargesPage, { FurtherChargesCategoryBAppropriateChoice } from '../../pages/form/ratings/furtherCharges'
 import TaskListPage from '../../pages/taskList/taskList'
 import moment from 'moment'
@@ -8,7 +8,7 @@ import { FormDbJson } from '../../fixtures/db-key-convertor'
 import Status from '../../../server/utils/statusEnum'
 
 describe('Further Charges', () => {
-  let categorisationHomePage: CategorisationHomePage
+  let categoriserHomePage: CategoriserHomePage
   let furtherChargesPage: FurtherChargesPage
   let taskListPage: TaskListPage
   let bookingId: number
@@ -57,8 +57,8 @@ describe('Further Charges', () => {
     })
     cy.signIn()
 
-    categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-    categorisationHomePage.selectPrisonerWithBookingId(bookingId)
+    categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+    categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
     taskListPage.furtherChargesButton().click()
