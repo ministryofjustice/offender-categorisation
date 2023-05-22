@@ -1,4 +1,4 @@
-import CategorisationHomePage from '../../pages/categoriser/home'
+import CategoriserHomePage from '../../pages/categoriser/home'
 import TaskListPage from '../../pages/taskList/taskList'
 import moment from 'moment/moment'
 import { CATEGORISER_USER, UserAccount } from '../../factory/user'
@@ -8,7 +8,7 @@ import Status from '../../../server/utils/statusEnum'
 import ViolencePage from '../../pages/form/ratings/violence'
 
 describe('Violence', () => {
-  let categorisationHomePage: CategorisationHomePage
+  let categoriserHomePage: CategoriserHomePage
   let violencePage: ViolencePage
   let taskListPage: TaskListPage
   let bookingId: number
@@ -56,8 +56,8 @@ describe('Violence', () => {
     })
     cy.signIn()
 
-    categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-    categorisationHomePage.selectPrisonerWithBookingId(bookingId)
+    categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+    categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
     taskListPage.violenceButton().click()

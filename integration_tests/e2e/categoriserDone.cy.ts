@@ -3,8 +3,8 @@ import STATUS from '../../server/utils/statusEnum'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import defaultRatingsFactory from '../factory/defaultRatings'
 import Page from '../pages/page'
-import CategorisationHomePage from '../pages/categoriser/home'
-import CategorisationDonePage from '../pages/categoriser/done'
+import CategoriserHomePage from '../pages/categoriser/home'
+import CategoriserDonePage from '../pages/categoriser/done'
 import { AGENCY_LOCATION } from '../factory/agencyLocation'
 
 const commonOffenderData = {
@@ -33,7 +33,7 @@ describe('Categoriser Done page', () => {
     })
     cy.signIn()
     cy.request({
-      url: CategorisationHomePage.baseUrl,
+      url: CategoriserHomePage.baseUrl,
       failOnStatusCode: false,
     }).then(resp => {
       expect(resp.status).to.eq(403)
@@ -92,8 +92,8 @@ describe('Categoriser Done page', () => {
 
       cy.task('stubCategorisedMultiple', { bookingIds: [11, 12] })
 
-      const categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-      categorisationHomePage.doneTabLink().click()
+      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.doneTabLink().click()
       ;[
         { columnName: 'Name', expectedValues: ['Scramble, Tim', 'Hemmel, Sarah'] },
         { columnName: 'Prison no.', expectedValues: ['B2345XY', 'B2345YZ'] },
@@ -119,11 +119,11 @@ describe('Categoriser Done page', () => {
     it("should not display offenders that haven't been categorised through the Categorisation tool", () => {
       cy.task('stubCategorised', { bookingIds: [] })
 
-      const categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-      categorisationHomePage.doneTabLink().click()
+      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.doneTabLink().click()
 
-      const categorisationDonePage = Page.verifyOnPage(CategorisationDonePage)
-      categorisationDonePage.noResultsDiv().should('be.visible')
+      const categoriserDonePage = Page.verifyOnPage(CategoriserDonePage)
+      categoriserDonePage.noResultsDiv().should('be.visible')
     })
   })
 })
