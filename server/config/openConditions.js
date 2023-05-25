@@ -1,4 +1,18 @@
 module.exports = {
+  tprs: {
+    fields: [
+      {
+        tprsSelected: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select yes or no',
+        },
+      },
+    ],
+    nextPath: {
+      path: '/form/openConditions/earliestReleaseDate/',
+    },
+    validate: true,
+  },
   earliestReleaseDate: {
     fields: [
       {
@@ -128,20 +142,6 @@ module.exports = {
       {
         exhaustedAppeal: {
           responseType: 'requiredStringIf_dueDeported_Yes',
-          validationMessage: 'Please select yes or no',
-        },
-      },
-    ],
-    nextPath: {
-      path: '/form/openConditions/tprs/',
-    },
-    validate: true,
-  },
-  tprs: {
-    fields: [
-      {
-        tprsSelected: {
-          responseType: 'requiredString',
           validationMessage: 'Please select yes or no',
         },
       },
