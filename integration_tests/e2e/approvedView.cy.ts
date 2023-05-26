@@ -99,7 +99,7 @@ describe('Approved view', () => {
 
     navigateToView()
 
-    formApprovedView.validateCategorisationDetails([
+    cy.validateCategorisationDetails([
       // column 1
       [
         { key: 'Name', value: 'Hillmob, Ant' },

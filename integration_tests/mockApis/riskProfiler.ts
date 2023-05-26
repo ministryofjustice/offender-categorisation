@@ -94,6 +94,23 @@ const stubGetExtremismProfile = ({
     },
   })
 
+const stubGetLifeProfile = ({ offenderNo, category }: { offenderNo: string; category: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/risk-profiler/risk-profile/life/${offenderNo}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        nomsId: offenderNo,
+        riskType: 'LIFE',
+        provisionalCategorisation: category,
+      },
+    },
+  })
+
 const stubGetSocProfile = ({
   offenderNo,
   category,
@@ -236,6 +253,7 @@ const stubRiskProfilerPing = (statusCode = 200): SuperAgentRequest =>
 export default {
   stubGetEscapeProfile,
   stubGetExtremismProfile,
+  stubGetLifeProfile,
   stubGetSocProfile,
   stubGetProfileWomenEscapeAlert,
   stubGetViolenceProfile,
