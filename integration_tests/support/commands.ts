@@ -1,7 +1,12 @@
 import { UserAccount } from '../factory/user'
+import { cleanString } from './utilities'
 
 Cypress.Commands.add('checkDefinitionList', ({ term, definition }: { term: string; definition: string }) => {
-  cy.get('.govuk-summary-list').contains('dt', term).siblings('dd').should('contain.text', definition)
+  cy.get('.govuk-summary-list')
+    .contains('dt', term)
+    .siblings('dd')
+    .invoke('text')
+    .then(text => expect(cleanString(text)).to.contains(definition))
 })
 
 Cypress.Commands.add(
@@ -32,6 +37,14 @@ Cypress.Commands.add(
     })
   }
 )
+
+Cypress.Commands.add('validateCategorisationDetails', (columns: { key: string; value: string }[][]) => {
+  columns.forEach((column, index) => {
+    column.forEach(({ key, value }) => {
+      cy.get('.govuk-grid-column-one-third').eq(index).should('contain.text', key).should('contain.text', value)
+    })
+  })
+})
 
 Cypress.Commands.add('signIn', (options = { failOnStatusCode: false }) => {
   cy.request('/')

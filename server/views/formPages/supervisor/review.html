@@ -184,6 +184,9 @@
         {{ warningCategoryOpenConditions | safe }}
       {% endif %}
 
+      <!-- required because the radio options are dynamic, and none of them have
+           this ID - which the error message summary will try to link to -->
+      <span id="supervisorOverriddenCategory"></span>
       {{ govukRadios({
         name: "supervisorOverriddenCategory",
         classes: radioClasses,
@@ -226,14 +229,16 @@
       items: [
         {
           value: "Yes",
-          text: "Yes"
+          text: "Yes",
+          checked: data.supervisor.review.supervisorCategoryAppropriate === 'Yes'
         },
         {
           value: "No",
           text: noLabel,
           conditional: {
             html:overriddenCategoryTextHtml
-          }
+          },
+          checked: data.supervisor.review.supervisorCategoryAppropriate === 'No'
         }
       ]
     }) }}

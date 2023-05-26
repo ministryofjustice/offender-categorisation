@@ -1,11 +1,11 @@
 import Page, { PageElement } from '../../page'
 
-const previousConditionsRadioChoiceHtmlSelectors = {
+const previousConvictionsRadioChoiceHtmlSelectors = {
   YES: '#previousConvictions',
   NO: '#previousConvictions-2',
 } as const
 
-type PreviousConditionsChoice = keyof typeof previousConditionsRadioChoiceHtmlSelectors
+type PreviousConvictionsChoice = keyof typeof previousConvictionsRadioChoiceHtmlSelectors
 
 const SELECTORS = {
   CAT_A: {
@@ -34,18 +34,18 @@ export default class CategoriserOffendingHistoryPage extends Page {
 
   saveAndReturnButton = (): PageElement => cy.get('button[type="submit"]').contains('Save and return')
 
-  selectPreviousConditionsRadioButton = (selectedTextValue: PreviousConditionsChoice): PageElement =>
-    cy.get(previousConditionsRadioChoiceHtmlSelectors[selectedTextValue]).click()
+  selectPreviousConvictionsRadioButton = (selectedTextValue: PreviousConvictionsChoice): PageElement =>
+    cy.get(previousConvictionsRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
   validatePreviousConvictionRadioButtons = ({
     selection,
     isChecked,
   }: {
-    selection: PreviousConditionsChoice[]
+    selection: PreviousConvictionsChoice[]
     isChecked: boolean
   }) =>
     this.validateRadioButtonSelections(
-      selection.map(selectedTextValue => previousConditionsRadioChoiceHtmlSelectors[selectedTextValue]),
+      selection.map(selectedTextValue => previousConvictionsRadioChoiceHtmlSelectors[selectedTextValue]),
       isChecked
     )
 
