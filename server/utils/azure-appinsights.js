@@ -18,6 +18,7 @@ const buildAppInsightsClient = (name = applicationVersion.packageData.name) => {
   if (process.env.APPINSIGHTS_INSTRUMENTATIONKEY) {
     appInsights.defaultClient.context.tags['ai.cloud.role'] = `${name}`
     appInsights.defaultClient.context.tags['ai.application.ver'] = version()
+    appInsights.defaultClient.addTelemetryProcessor(addUserDataToRequests)
     return appInsights.defaultClient
   }
   return null
