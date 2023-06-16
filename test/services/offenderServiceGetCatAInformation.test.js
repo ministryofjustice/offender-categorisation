@@ -371,7 +371,7 @@ describe('getCatAInformation for female prison', () => {
         bookingId: 45,
         offenderNo,
         classificationCode: 'R',
-        classification: 'Fem Closed',
+        classification: 'Closed',
         assessmentDate: '2013-03-24',
         approvalDate: '2013-03-24',
         assessmentSeq: 3,
@@ -380,7 +380,7 @@ describe('getCatAInformation for female prison', () => {
         bookingId: 45,
         offenderNo,
         classificationCode: 'T',
-        classification: 'Fem Open',
+        classification: 'Open',
         assessmentDate: '2014-03-24',
         approvalDate: '2014-03-24',
         assessmentSeq: 4,
@@ -412,7 +412,7 @@ describe('getCatAInformation for female prison', () => {
       catAStartYear: '2012',
       catAEndYear: '2013',
       releaseYear: '2014',
-      finalCat: 'Fem Open',
+      finalCat: 'Open',
     })
   })
 
@@ -422,7 +422,7 @@ describe('getCatAInformation for female prison', () => {
         bookingId: 45,
         offenderNo,
         classificationCode: 'R',
-        classification: 'Fem Closed',
+        classification: 'Closed',
         approvalDate: '2015-03-24',
         assessmentSeq: 2,
       },
@@ -464,7 +464,7 @@ describe('getCatAInformation for female prison', () => {
         bookingId: 35,
         offenderNo,
         classificationCode: 'R',
-        classification: 'Fem Closed',
+        classification: 'Closed',
         approvalDate: '2012-03-24',
         assessmentSeq: 6,
       },
@@ -490,7 +490,7 @@ describe('getCatAInformation for female prison', () => {
       catAStartYear: '2011',
       catAEndYear: '2012',
       releaseYear: null,
-      finalCat: 'Fem Closed',
+      finalCat: 'Closed',
     })
   })
 })
