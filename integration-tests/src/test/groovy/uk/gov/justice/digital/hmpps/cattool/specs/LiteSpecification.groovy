@@ -161,7 +161,7 @@ class LiteSpecification extends AbstractSpecification {
     when: 'a categorisation approval is attempted with a future approval Date and past nextReviewDate'
     elite2Api.stubGetUserDetails(CATEGORISER_USER, 'SYI')
     approveButtons[0].click()
-    at LiteApprovalPage
+    at LiteApprovalPage // -- HERE *******************
     // check defaults
     form.approvedDate == now.format('dd/MM/yyyy')
     form.nextReviewDate == SIX_MONTHS_TIME.format('dd/MM/yyyy')
