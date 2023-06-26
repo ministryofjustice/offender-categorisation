@@ -11,6 +11,10 @@ import CategoriserHomePage from '../pages/categoriser/home'
 import SupervisorDashboardHomePage from '../pages/dashboard/supervisor/home'
 import dbSeeder, { dbSeederLiteCategory } from '../fixtures/db-seeder'
 import { supervisorViewSeedData } from '../fixtures/liteCategoriser/supervisorView'
+import LiteCategoriesApprovalPage from '../pages/liteCategories/approval'
+import { unapprovedLiteCategorisation } from '../fixtures/liteCategoriser/unapprovedLiteCategorisation'
+import SupervisorLiteListPage from '../pages/liteCategories/approveList'
+import LiteCategoriesAlreadyApprovedPage from '../pages/liteCategories/alreadyApproved'
 
 const SHORT_DATE_FORMAT = 'DD/MM/YYYY'
 
@@ -18,6 +22,7 @@ describe('Lite Categories', () => {
   let categoriserLandingPage: CategoriserLandingPage
   let liteCategoriesPage: LiteCategoriesPage
   let bookingId: number
+  let sixMonthsFromNow: moment.Moment
 
   beforeEach(() => {
     cy.task('reset')
@@ -26,11 +31,11 @@ describe('Lite Categories', () => {
 
   beforeEach(() => {
     bookingId = 12
+    sixMonthsFromNow = moment().add(6, 'months').startOf('day')
   })
 
   describe('A categoriser user can create an assessment', () => {
     let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
-    let sixMonthsFromNow: moment.Moment
 
     beforeEach(() => {
       cy.task('stubAgencyDetails', { agency: CASELOAD.LPI.id })
@@ -38,8 +43,8 @@ describe('Lite Categories', () => {
 
       cy.task('stubUncategorised')
       sentenceStartDates = {
-        B2345XY: new Date('2019-01-28'),
-        B2345YZ: new Date('2019-01-31'),
+        B2345XY: new Date('2019-01-31'),
+        B2345YZ: new Date('2019-01-28'),
       }
 
       cy.task('stubSentenceData', {
@@ -66,8 +71,6 @@ describe('Lite Categories', () => {
 
       categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
       categoriserLandingPage.liteCategoriesButton().click()
-
-      sixMonthsFromNow = moment().add(6, 'months').startOf('day')
 
       liteCategoriesPage = LiteCategoriesPage.createForBookingId(bookingId)
       liteCategoriesPage.validateWarningVisibility({ isVisible: false })
@@ -209,8 +212,24 @@ describe('Lite Categories', () => {
 
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         categoriserHomePage.validateToDoTableData([
-          ['OVERDUE', 'Hillmob, Ant', 'B2345YZ', '1607', 'Awaiting approval', '', 'PNOMIS'],
-          ['OVERDUE', 'Pitstop, Penelope', 'B2345XY', '1604', 'Not categorised', '', 'OTHER'],
+          [
+            'OVERDUE',
+            'Pitstop, Penelope',
+            'B2345XY',
+            moment().diff(new Date(sentenceStartDates['B2345YZ']), 'days').toString(),
+            'Not categorised',
+            '',
+            'OTHER',
+          ],
+          [
+            'OVERDUE',
+            'Hillmob, Ant',
+            'B2345YZ',
+            moment().diff(new Date(sentenceStartDates['B2345XY']), 'days').toString(),
+            'Awaiting approval',
+            '',
+            'PNOMIS',
+          ],
         ])
       })
 
@@ -228,8 +247,9 @@ describe('Lite Categories', () => {
     })
   })
 
-  xdescribe('supervisor view', () => {
+  describe('supervisor view', () => {
     let supervisorDashboardHomePage: SupervisorDashboardHomePage
+    let liteApprovalPage: LiteCategoriesApprovalPage
 
     beforeEach(() => {
       dbSeederLiteCategory(supervisorViewSeedData)
@@ -269,16 +289,153 @@ describe('Lite Categories', () => {
       cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
 
       supervisorDashboardHomePage.approveOtherCategoriesApprovalButton({ bookingId }).click()
+
+      liteApprovalPage = LiteCategoriesApprovalPage.createForBookingId(bookingId)
+      liteApprovalPage.getApprovalDate().should('have.value', moment().format(SHORT_DATE_FORMAT))
+      liteApprovalPage.getNextReviewDate().should('have.value', sixMonthsFromNow.format(SHORT_DATE_FORMAT))
     })
 
-    it('should require an approval date', () => {})
+    describe('field validations', () => {
+      describe('approval date', () => {
+        afterEach(() => {
+          liteApprovalPage.validateErrorSummaryMessages([
+            { href: '#approvedDate', index: 0, text: 'Enter a valid date that is today or earlier' },
+          ])
+          liteApprovalPage.validateErrorMessages([{ selector: '#approvedDate-error', text: 'Enter a valid date' }])
+        })
 
-    xit('should require a valid approval date string', () => {})
+        it('should require an approval date', () => {
+          liteApprovalPage.clearApprovalDate()
+          liteApprovalPage.submitButton().click()
+        })
 
-    xit('should require the approval date is in the future', () => {})
+        it('should require a valid approval date string', () => {
+          liteApprovalPage.setApprovalDate('some invalid value')
+          liteApprovalPage.submitButton().click()
+        })
 
-    xit('should handle a valid form submission', () => {})
+        it('should require the approval date that is today or earlier', () => {
+          liteApprovalPage.setApprovalDate(moment().add(1, 'day').format(SHORT_DATE_FORMAT))
+          liteApprovalPage.submitButton().click()
+        })
+      })
+
+      describe('next review date', () => {
+        afterEach(() => {
+          liteApprovalPage.validateErrorSummaryMessages([
+            { href: '#nextReviewDate', index: 0, text: 'Enter a valid date that is after today' },
+          ])
+          liteApprovalPage.validateErrorMessages([
+            { selector: '#nextReviewDate-error', text: 'Enter a valid future date' },
+          ])
+        })
+
+        it('should require a next review date', () => {
+          liteApprovalPage.clearNextReviewDate()
+          liteApprovalPage.submitButton().click()
+        })
+
+        it('should require a valid next review date string', () => {
+          liteApprovalPage.setNextReviewDate('some invalid value')
+          liteApprovalPage.submitButton().click()
+        })
+
+        it('should require the next review date that is after today', () => {
+          liteApprovalPage.setNextReviewDate(moment().format(SHORT_DATE_FORMAT))
+          liteApprovalPage.submitButton().click()
+        })
+      })
+    })
+
+    it('should handle a valid form submission', () => {
+      liteApprovalPage.setApprovalDate('29/04/2020')
+      liteApprovalPage.setApprovedCategory('T')
+      liteApprovalPage.setApprovedCategoryComment('approved category comment')
+      liteApprovalPage.setDepartment('GOV')
+      liteApprovalPage.setApprovedPlacement('SYI')
+      liteApprovalPage.setApprovedPlacementComment('approved placement comment')
+      liteApprovalPage.setNextReviewDate(moment().add(1, 'year').format(SHORT_DATE_FORMAT))
+      liteApprovalPage.setApprovedComment('approved comment')
+
+      cy.task('stubSupervisorApprove')
+
+      liteApprovalPage.submitButton().click()
+
+      LiteCategoriesConfirmedPage.createForBookingId(bookingId)
+
+      cy.task('selectLiteCategoryTableDbRow', { bookingId }).then((result: { rows: LiteCategoryDbRow[] }) => {
+        const data = result.rows[0]
+
+        expect(data.supervisor_category).eq('T')
+        expect(data.approved_date).eq(new Date('2020-04-29').toISOString())
+        expect(data.approved_by).eq('SUPERVISOR_USER')
+        expect(data.approved_committee).eq('GOV')
+        expect(data.next_review_date).eq(moment().add(1, 'year').startOf('day').toISOString())
+        expect(data.approved_placement_prison_id).eq('SYI')
+        expect(data.approved_placement_comment).eq('approved placement comment')
+        expect(data.approved_comment).eq('approved comment')
+      })
+    })
   })
 
-  xit('should remove an assessment if already approved in Nomis', () => {})
+  describe('should remove an assessment if already approved in Nomis', () => {
+    beforeEach(() => {
+      dbSeederLiteCategory(unapprovedLiteCategorisation)
+
+      cy.task('stubSentenceData', {
+        offenderNumbers: ['B2345YZ'],
+        bookingIds: [11],
+        startDates: [moment().toISOString(), moment().toISOString()],
+      })
+      cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
+      cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+      cy.task('stubGetOffenderDetailsByOffenderNoList', {
+        bookingId: [12],
+        offenderNumbers: ['B2345YZ'],
+      })
+      cy.task('stubGetOffenderDetails', {
+        bookingId,
+        offenderNo: 'B2345YZ',
+        youngOffender: false,
+        indeterminateSentence: false,
+      })
+      cy.task('stubAgenciesPrison')
+      cy.task('stubUncategorised')
+
+      cy.stubLogin({
+        user: SUPERVISOR_USER,
+      })
+      cy.signIn()
+
+      cy.task('getLiteData', { bookingId }).then((result: { rows: LiteCategoryDbRow[] }) => {
+        expect(result.rows.length).eq(1)
+      })
+
+      cy.visit(SupervisorLiteListPage.baseUrl)
+      const supervisorLiteListPage = Page.verifyOnPage(SupervisorLiteListPage)
+      supervisorLiteListPage.approveOtherCategoriesApprovalButton({ bookingId }).click()
+    })
+
+    it('should display an error from nomis stating that the assessment is not found', () => {
+      cy.task('stubSupervisorApproveNoPendingAssessmentError', {
+        bookingId: 12,
+        assessmentSeq: 1,
+        category: 'V',
+      })
+
+      const liteApprovalPage = LiteCategoriesApprovalPage.createForBookingId(bookingId)
+      liteApprovalPage.setNextReviewDate(moment().add(1, 'year').format(SHORT_DATE_FORMAT))
+      liteApprovalPage.submitButton().click()
+
+      const liteCategorisationAlreadyApprovedPage = LiteCategoriesAlreadyApprovedPage.createForBookingId(bookingId)
+      liteCategorisationAlreadyApprovedPage.validateAlreadyApprovedWarningExists({ exists: true })
+      liteCategorisationAlreadyApprovedPage.validateExpectedAlreadyApprovedWarning(
+        'Categorisation has already been approved'
+      )
+
+      cy.task('getLiteData', { bookingId }).then((result: { rows: LiteCategoryDbRow[] }) => {
+        expect(result.rows.length).eq(0)
+      })
+    })
+  })
 })

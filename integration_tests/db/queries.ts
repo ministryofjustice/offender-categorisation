@@ -258,6 +258,14 @@ async function insertSecurityReferralTableDbRow({
   )
 }
 
+async function getLiteData({
+  bookingId,
+}: {
+  bookingId: LiteCategoryDbRow['booking_id']
+}): Promise<QueryArrayResult<LiteCategoryDbRow[]>> {
+  return await db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
+}
+
 async function selectFormTableDbRow({
   bookingId,
 }: {
@@ -296,6 +304,7 @@ export default {
   insertFormTableDbRow,
   insertLiteCategoryTableDbRow,
   insertSecurityReferralTableDbRow,
+  getLiteData,
   selectFormTableDbRow,
   selectLiteCategoryTableDbRow,
   selectNextReviewChangeHistoryTableDbRow,

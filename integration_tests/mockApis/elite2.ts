@@ -1087,6 +1087,31 @@ const stubSupervisorApprove = (): SuperAgentRequest =>
     },
   })
 
+const stubSupervisorApproveNoPendingAssessmentError = ({
+  category,
+  bookingId,
+  assessmentSeq,
+}: {
+  category: string
+  bookingId: number
+  assessmentSeq: number
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      url: `/elite2/api/offender-assessments/category/approve`,
+    },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        developerMessage: '400 No pending category assessment found, $category, booking $bookingId, seq $assessmentSeq',
+        status: 400,
+        userMessage: 'No pending category assessment found, category $category, booking $bookingId, seq $assessmentSeq',
+      },
+    },
+  })
+
 const stubSupervisorReject = (): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1328,6 +1353,7 @@ export default {
   stubOffenceHistory,
   stubSentenceDataGetSingle,
   stubSupervisorApprove,
+  stubSupervisorApproveNoPendingAssessmentError,
   stubSupervisorReject,
   stubUncategorised,
   stubUncategorisedAwaitingApproval,

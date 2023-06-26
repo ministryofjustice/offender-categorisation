@@ -16,8 +16,6 @@ const SELECTORS = {
     INPUT: '#comment',
   },
   REASSESSMENT_DATE: {
-    // ERROR: '#securityInputNeededText-error',
-    // TEXT_ERROR: '#securityInputNeededText-error',
     INPUT: '#nextReviewDate',
   },
   RECOMMENDED_PLACEMENT: {
