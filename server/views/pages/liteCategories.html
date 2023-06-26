@@ -130,3 +130,9 @@
 </div>
 
 {% endblock %}
+
+
+{% block bodyEnd %}
+{{ super() }}
+<script src="/assets/js/preventDoubleSubmit/index.js"></script>
+{% endblock %}
