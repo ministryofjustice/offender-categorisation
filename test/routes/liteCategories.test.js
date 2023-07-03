@@ -134,7 +134,7 @@ describe('approve', () => {
     formService.getLiteCategorisation.mockResolvedValue({
       bookingId: 12,
       assessedBy: 'categoriser',
-      category: 'R',
+      category: 'D',
       assessmentCommittee: 'GOV',
       displayCreatedDate: '01/01/2020',
       placementPrisonId: 'SYI',
@@ -148,7 +148,7 @@ describe('approve', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Other category approval</h1>')
-        // expect(res.text).toContain('<div id="category" class="govuk-grid-column-one-third">Fem Closed')
+        expect(res.text).toContain('<div id="category" class="govuk-grid-column-one-third">Indeterminate Cat D')
         expect(res.text).toContain('<div id="assessmentCommittee" class="govuk-grid-column-one-third">Governor')
         expect(res.text).toContain('<div id="displayCreatedDate" class="govuk-grid-column-one-third">01/01/2020')
         expect(res.text).toContain('<div id="assessedBy" class="govuk-grid-column-one-third">Fred Perry')
