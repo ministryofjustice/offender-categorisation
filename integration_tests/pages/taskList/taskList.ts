@@ -32,7 +32,7 @@ export default class TaskListPage extends Page {
   validateSecurityReferralDate = (date: Date) => {
     cy.get('#securitySection').should(
       'contain.text',
-      `Manually referred to Security (${moment(date).format('D/MM/yyyy')})`
+      `Manually referred to Security (${moment(date).format('DD/MM/yyyy')})`
     )
   }
 
