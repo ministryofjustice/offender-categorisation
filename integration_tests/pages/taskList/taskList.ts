@@ -37,6 +37,6 @@ export default class TaskListPage extends Page {
   }
 
   validateSecurityCompletedDate = (date: Date) => {
-    cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('D/MM/yyyy')})`)
+    cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
   }
 }
