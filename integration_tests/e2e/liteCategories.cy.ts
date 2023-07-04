@@ -77,9 +77,13 @@ describe('Lite Categories', () => {
       liteCategoriesPage.getReAssessmentDate().should('have.value', sixMonthsFromNow.format(SHORT_DATE_FORMAT))
     })
 
+    it('should have the expected lite categorisation options', () => {
+      liteCategoriesPage.validateAvailableCategoryOptions()
+    })
+
     describe('Re-assessment date validation', () => {
       beforeEach(() => {
-        liteCategoriesPage.setCategory('T')
+        liteCategoriesPage.setCategory('A')
         liteCategoriesPage.setAuthority('GOV')
         liteCategoriesPage.setRecommendedPlacement('BXI')
         liteCategoriesPage.setComment('comment text')
@@ -95,7 +99,7 @@ describe('Lite Categories', () => {
         ])
 
         // ensure other field values are preserved
-        liteCategoriesPage.getCategory().should('have.value', 'T')
+        liteCategoriesPage.getCategory().should('have.value', 'A')
         liteCategoriesPage.getAuthority().should('have.value', 'GOV')
         liteCategoriesPage.getRecommendedPlacement().should('have.value', 'BXI')
         liteCategoriesPage.getComment().should('have.text', 'comment text')
@@ -295,6 +299,10 @@ describe('Lite Categories', () => {
       liteApprovalPage.getNextReviewDate().should('have.value', sixMonthsFromNow.format(SHORT_DATE_FORMAT))
     })
 
+    it('should have the expected lite categorisation approved category options', () => {
+      liteApprovalPage.validateAvailableApprovedCategoryOptions()
+    })
+
     describe('field validations', () => {
       describe('approval date', () => {
         afterEach(() => {
@@ -349,7 +357,7 @@ describe('Lite Categories', () => {
 
     it('should handle a valid form submission', () => {
       liteApprovalPage.setApprovalDate('29/04/2020')
-      liteApprovalPage.setApprovedCategory('T')
+      liteApprovalPage.setApprovedCategory('A')
       liteApprovalPage.setApprovedCategoryComment('approved category comment')
       liteApprovalPage.setDepartment('GOV')
       liteApprovalPage.setApprovedPlacement('SYI')
@@ -366,7 +374,7 @@ describe('Lite Categories', () => {
       cy.task('selectLiteCategoryTableDbRow', { bookingId }).then((result: { rows: LiteCategoryDbRow[] }) => {
         const data = result.rows[0]
 
-        expect(data.supervisor_category).eq('T')
+        expect(data.supervisor_category).eq('A')
         expect(data.approved_date).eq(new Date('2020-04-29').toISOString())
         expect(data.approved_by).eq('SUPERVISOR_USER')
         expect(data.approved_committee).eq('GOV')

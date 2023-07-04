@@ -87,4 +87,29 @@ export default class LiteCategoriesPage extends Page {
       .then(text => {
         expect(this._cleanString(text)).to.contains(expected)
       })
+
+  validateAvailableCategoryOptions = () => {
+    const expected = [
+      { value: 'U', text: 'Unsentenced' },
+      { value: 'Z', text: 'Unclass' },
+      { value: 'A', text: 'Cat A' },
+      { value: 'E', text: 'Cat A Ex' },
+      { value: 'H', text: 'Cat A Hi' },
+      { value: 'P', text: 'Prov A' },
+      { value: 'V', text: 'YOI Restricted' },
+      { value: 'B', text: 'Downgrade A to B' },
+      { value: 'D', text: 'Indeterminate Cat D' },
+    ]
+
+    this.getCategory()
+      .find('option')
+      .should('have.length', expected.length)
+      .each(option => {
+        const value = option.val()
+        const text = option.text()
+
+        const matchingOption = expected.find(o => o.value === value && o.text === text)
+        expect(matchingOption).to.exist
+      })
+  }
 }
