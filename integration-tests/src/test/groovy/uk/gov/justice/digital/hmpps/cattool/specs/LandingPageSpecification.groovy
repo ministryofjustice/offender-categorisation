@@ -87,6 +87,44 @@ class LandingPageSpecification extends AbstractSpecification {
     nextReviewDateButton.displayed
   }
 
+  def "A recategoriser user sees a warning for cat T"() {
+
+    given: 'A recategoriser is logged in'
+    elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubAssessments('B2345YZ')
+    fixture.loginAs(RECATEGORISER_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'T')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !recatButton.displayed
+    warning.text() contains 'This prisoner is Cat T. They cannot be categorised here'
+  }
+
+  def "A recategoriser user sees a warning for cat R"() {
+
+    given: 'A recategoriser is logged in'
+    elite2Api.stubRecategorise()
+    prisonerSearchApi.stubGetPrisonerSearchPrisoners()
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
+    elite2Api.stubAssessments('B2345YZ')
+    fixture.loginAs(RECATEGORISER_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'R')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !recatButton.displayed
+    warning.text() contains 'This prisoner is Cat R. They cannot be categorised here'
+  }
+
   def "A recategoriser user sees a warning for cat A"() {
 
     given: 'A recategoriser is logged in'
@@ -549,6 +587,40 @@ class LandingPageSpecification extends AbstractSpecification {
     !initialButton.displayed
     !editButton.displayed
     warning.text() contains "This prisoner has a categorisation review in progress"
+  }
+
+  def "A categoriser user sees a warning for cat T"() {
+    given: 'A categoriser is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubAssessments('B2345YZ')
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'T')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !initialButton.displayed
+    warning.text() contains 'This prisoner is Cat T. They cannot be categorised here'
+  }
+
+  def "A categoriser user sees a warning for cat R"() {
+    given: 'A categoriser is logged in'
+    elite2Api.stubUncategorised()
+    elite2Api.stubAssessments('B2345YZ')
+    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [11, 12], [LocalDate.now().toString(), LocalDate.now().toString()])
+    fixture.loginAs(CATEGORISER_USER)
+
+    when: 'The user arrives at the landing page'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'R')
+    go '/12'
+
+    then: 'The page contains a warning'
+    at LandingPage
+    !initialButton.displayed
+    warning.text() contains 'This prisoner is Cat R. They cannot be categorised here'
   }
 
   def "A categoriser user sees a warning for awaiting approval"() {
