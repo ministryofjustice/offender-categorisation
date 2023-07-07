@@ -1640,8 +1640,11 @@ describe('requiredCatType', () => {
       classificationCode: cat,
     },
   ]
-  test('when supported cat in nomis', () => {
-    expect(service.requiredCatType(BOOKING_ID, 'B', history('B'))).toBe('RECAT')
+
+  'BCDIJTR'.split('').forEach(supportedCategory => {
+    test(`when supported cat in nomis (Cat ${supportedCategory})`, () => {
+      expect(service.requiredCatType(BOOKING_ID, supportedCategory, history(supportedCategory))).toBe('RECAT')
+    })
   })
 
   test('when missing in nomis', () => {
