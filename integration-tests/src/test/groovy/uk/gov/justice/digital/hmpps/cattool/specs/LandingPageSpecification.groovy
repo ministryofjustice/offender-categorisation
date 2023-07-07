@@ -87,7 +87,7 @@ class LandingPageSpecification extends AbstractSpecification {
     nextReviewDateButton.displayed
   }
 
-  def "A recategoriser user sees a warning for cat T"() {
+  def "A recategoriser user can proceed with a cat when prisoner is Women's Open category (T)"() {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
@@ -100,13 +100,13 @@ class LandingPageSpecification extends AbstractSpecification {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'T')
     go '/12'
 
-    then: 'The page contains a warning'
+    then: 'The user can continue with the recategorisation'
     at LandingPage
-    !recatButton.displayed
-    warning.text() contains 'This prisoner is Cat T. They cannot be categorised here'
+    recatButton.displayed
+    !warning.displayed
   }
 
-  def "A recategoriser user sees a warning for cat R"() {
+  def "A recategoriser user can proceed with a cat when prisoner is Women's Closed category (R)"() {
 
     given: 'A recategoriser is logged in'
     elite2Api.stubRecategorise()
@@ -119,10 +119,10 @@ class LandingPageSpecification extends AbstractSpecification {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'R')
     go '/12'
 
-    then: 'The page contains a warning'
+    then: 'The user can continue with the recategorisation'
     at LandingPage
-    !recatButton.displayed
-    warning.text() contains 'This prisoner is Cat R. They cannot be categorised here'
+    recatButton.displayed
+    !warning.displayed
   }
 
   def "A recategoriser user sees a warning for cat A"() {
@@ -589,7 +589,7 @@ class LandingPageSpecification extends AbstractSpecification {
     warning.text() contains "This prisoner has a categorisation review in progress"
   }
 
-  def "A categoriser user sees a warning for cat T"() {
+  def "A categoriser user can proceed with a cat when prisoner is Women's Open category (T)"() {
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
     elite2Api.stubAssessments('B2345YZ')
@@ -600,13 +600,13 @@ class LandingPageSpecification extends AbstractSpecification {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'T')
     go '/12'
 
-    then: 'The page contains a warning'
+    then: 'The user can continue with the categorisation'
     at LandingPage
-    !initialButton.displayed
-    warning.text() contains 'This prisoner is Cat T. They cannot be categorised here'
+    initialButton.displayed
+    warning.text() contains "This prisoner is already Cat T"
   }
 
-  def "A categoriser user sees a warning for cat R"() {
+  def "A categoriser user can proceed with a cat when prisoner is Women's Closed category (R)"() {
     given: 'A categoriser is logged in'
     elite2Api.stubUncategorised()
     elite2Api.stubAssessments('B2345YZ')
@@ -617,10 +617,10 @@ class LandingPageSpecification extends AbstractSpecification {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ',  false,  false, 'R')
     go '/12'
 
-    then: 'The page contains a warning'
+    then: 'The user can continue with the categorisation'
     at LandingPage
-    !initialButton.displayed
-    warning.text() contains 'This prisoner is Cat R. They cannot be categorised here'
+    initialButton.displayed
+    warning.text() contains "This prisoner is already Cat R"
   }
 
   def "A categoriser user sees a warning for awaiting approval"() {
