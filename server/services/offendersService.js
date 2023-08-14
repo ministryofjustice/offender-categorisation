@@ -1441,7 +1441,7 @@ module.exports = function createOffendersService(
         .some(c => !/[UXZ]/.test(c.classificationCode))
       return catExistsForThisBooking ? CatType.RECAT.name : CatType.INITIAL.name
     }
-    if (/[BCDIJ]/.test(classificationCodeFromNomis)) {
+    if (/[BCDIJTR]/.test(classificationCodeFromNomis)) {
       return CatType.RECAT.name
     }
     return null
