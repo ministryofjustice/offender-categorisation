@@ -3029,7 +3029,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
     {
       description: 'should return false if status is missing and release date is in the past',
       dbRecord: {},
-      releaseDate: '2023-08-10', // Replace with a date in the past
+      releaseDate: mockTodaySubtract(2),
       expected: false,
     },
     {

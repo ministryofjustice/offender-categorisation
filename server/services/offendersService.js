@@ -1655,6 +1655,5 @@ module.exports = function createOffendersService(
     getOffenderDetailsWithNextReviewDate,
     isNextReviewAfterRelease,
     isRejectedBySupervisorSuitableForDisplay,
-    getDueRecats,
   }
 }
