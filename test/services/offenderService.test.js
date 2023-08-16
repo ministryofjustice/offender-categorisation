@@ -2854,3 +2854,198 @@ describe('getOffenderDetailsWithNextReviewDate', () => {
     })
   })
 })
+
+describe('isNextReviewAfterRelease', () => {
+  const testCases = [
+    {
+      description: 'should return true if next review date is after release date',
+      nomisRecord: {
+        nextReviewDate: '2023-08-20',
+      },
+      releaseDate: '2023-08-15',
+      expected: true,
+    },
+    {
+      description: 'should return false if next review date is before release date',
+      nomisRecord: {
+        nextReviewDate: '2023-08-10',
+      },
+      releaseDate: '2023-08-15',
+      expected: false,
+    },
+    {
+      description: 'should return false if next review date is the same as release date',
+      nomisRecord: {
+        nextReviewDate: '2023-08-15',
+      },
+      releaseDate: '2023-08-15',
+      expected: false,
+    },
+    {
+      description: 'should return false if next review date is not a valid date',
+      nomisRecord: {
+        nextReviewDate: 'invalid-date',
+      },
+      releaseDate: '2023-08-15',
+      expected: false,
+    },
+    {
+      description: 'should return false if release date is not a valid date',
+      nomisRecord: {
+        nextReviewDate: '2023-08-20',
+      },
+      releaseDate: 'invalid-date',
+      expected: false,
+    },
+    // possibly unexpected cases
+    {
+      description: 'returns null if next review date is null',
+      nomisRecord: {
+        nextReviewDate: null,
+      },
+      releaseDate: '2023-08-15',
+      expected: null,
+    },
+    {
+      description: 'returns null if release date is null',
+      nomisRecord: {
+        nextReviewDate: '2023-08-20',
+      },
+      releaseDate: null,
+      expected: null,
+    },
+    {
+      description: 'returns undefined if both next review date and release date are missing',
+      nomisRecord: {},
+      releaseDate: null,
+      expected: undefined,
+    },
+    {
+      description: 'returns undefined if next review date is missing and release date is valid',
+      nomisRecord: {},
+      releaseDate: '2023-08-15',
+      expected: undefined,
+    },
+    {
+      description: 'returns null if next review date is valid and release date is missing',
+      nomisRecord: {
+        nextReviewDate: '2023-08-20',
+      },
+      releaseDate: null,
+      expected: null,
+    },
+  ]
+
+  testCases.forEach(({ description, nomisRecord, releaseDate, expected }) => {
+    it(description, () => {
+      const result = service.isNextReviewAfterRelease(nomisRecord, releaseDate)
+      expect(result).toBe(expected)
+    })
+  })
+})
+
+describe('isRejectedBySupervisorSuitableForDisplay', () => {
+  const testCases = [
+    {
+      description: 'should return false if status is not supervisor back and release date is in the past',
+      dbRecord: {
+        status: Status.APPROVED.name,
+      },
+      releaseDate: mockTodaySubtract(1),
+      expected: false,
+    },
+    {
+      description: 'should return false if status is not supervisor back and release date is in the future',
+      dbRecord: {
+        status: Status.APPROVED.name,
+      },
+      releaseDate: moment().add(1, 'week'),
+      expected: false,
+    },
+    {
+      description: 'should return false if status is not supervisor back and release date is in today',
+      dbRecord: {
+        status: Status.APPROVED.name,
+      },
+      releaseDate: moment(),
+      expected: false,
+    },
+    {
+      description: 'should return false if status is supervisor back and release date is in the past',
+      dbRecord: {
+        status: Status.SUPERVISOR_BACK.name,
+      },
+      releaseDate: mockTodaySubtract(37),
+      expected: false,
+    },
+    {
+      description: 'should return true if status is supervisor back and release date is in the future',
+      dbRecord: {
+        status: Status.SUPERVISOR_BACK.name,
+      },
+      releaseDate: moment().add(1, 'month'),
+      expected: true,
+    },
+    {
+      description: 'should return true if status is supervisor back and release date is null',
+      dbRecord: {
+        status: Status.SUPERVISOR_BACK.name,
+      },
+      releaseDate: null,
+      expected: true,
+    },
+    {
+      description: 'should return true if status is supervisor back and release date is today',
+      dbRecord: {
+        status: Status.SUPERVISOR_BACK.name,
+      },
+      releaseDate: moment(),
+      expected: true,
+    },
+    {
+      description: 'should return false if status is invalid and release date is in the past',
+      dbRecord: {
+        status: 'invalid-status',
+      },
+      releaseDate: mockTodaySubtract(44),
+      expected: false,
+    },
+    {
+      description: 'should return true if status is supervisor back and release date is not a valid date',
+      dbRecord: {
+        status: Status.SUPERVISOR_BACK.name,
+      },
+      releaseDate: 'invalid-date',
+      expected: true,
+    },
+    {
+      description: 'should return true if status is supervisor back and release date is null',
+      dbRecord: {
+        status: Status.SUPERVISOR_BACK.name,
+      },
+      releaseDate: null,
+      expected: true,
+    },
+    {
+      description: 'should return false if status is missing and release date is in the past',
+      dbRecord: {},
+      releaseDate: '2023-08-10', // Replace with a date in the past
+      expected: false,
+    },
+    {
+      description: 'should return true if status is supervisor back and release date is missing',
+      dbRecord: {
+        status: Status.SUPERVISOR_BACK.name,
+      },
+      releaseDate: null,
+      expected: true,
+    },
+  ]
+
+  testCases.forEach(({ description, dbRecord, releaseDate, expected }) => {
+    it(description, () => {
+      const result = service.isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate)
+      expect(result).toBe(expected)
+    })
+  })
+})
