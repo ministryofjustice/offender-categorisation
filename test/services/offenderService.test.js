@@ -3,6 +3,7 @@ const serviceCreator = require('../../server/services/offendersService')
 const Status = require('../../server/utils/statusEnum')
 const ReviewReason = require('../../server/utils/reviewReasonEnum')
 const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
+const CatType = require('../../server/utils/catTypeEnum')
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -79,6 +80,7 @@ beforeEach(() => {
 
 afterEach(() => {
   nomisClient.getUncategorisedOffenders.mockReset()
+  nomisClient.getRecategoriseOffenders.mockReset()
   prisonerSearchClient.getPrisonersByBookingIds.mockReset()
   nomisClient.getUserByUserId.mockReset()
   nomisClient.getOffenderDetails.mockReset()
@@ -2852,5 +2854,699 @@ describe('getOffenderDetailsWithNextReviewDate', () => {
       bookingId: 123,
       nextReviewDate: undefined,
     })
+  })
+})
+
+describe('getDueRecats', () => {
+  it('should return an empty array when no data is available', async () => {
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([])
+
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      mockTransactionalClient
+    )
+
+    expect(result).toEqual([])
+  })
+
+  it('should return a filtered list of offenders pending recats - keeping nulls for records that have been filtered', async () => {
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate: '2017-09-23',
+      },
+      {
+        offenderNo: 'G4159VQ',
+        bookingId: 1185580,
+        firstName: 'DEHICEY',
+        lastName: 'SUMMAIN',
+        assessmentDate: '2017-03-24',
+        approvalDate: '2017-03-24',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'C',
+        nextReviewDate: '2018-09-20',
+      },
+      {
+        offenderNo: 'G9805GJ',
+        bookingId: 1173380,
+        firstName: 'CAHIRD',
+        lastName: 'ASHLINDA',
+        assessmentDate: '2017-02-16',
+        approvalDate: '2017-02-16',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'C',
+        nextReviewDate: '2017-08-15',
+      },
+    ])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      {
+        bookingId: 1186272,
+        releaseDate: '2017-04-12',
+        sentenceStartDate: '2017-04-01',
+      },
+      {
+        bookingId: 1185580,
+        releaseDate: '2024-09-28',
+        sentenceStartDate: '2016-12-19',
+      },
+      {
+        bookingId: 1173380,
+        releaseDate: '2017-04-12',
+        sentenceStartDate: '2017-02-23',
+      },
+    ])
+
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      mockTransactionalClient
+    )
+
+    expect(result).toEqual([
+      null,
+      {
+        offenderNo: 'G4159VQ',
+        bookingId: 1185580,
+        firstName: 'DEHICEY',
+        lastName: 'SUMMAIN',
+        assessmentDate: '2017-03-24',
+        approvalDate: '2017-03-24',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'C',
+        nextReviewDate: '2018-09-20',
+        displayName: 'Summain, Dehicey',
+        displayStatus: 'Not started',
+        reason: { name: 'DUE', value: 'Review due' },
+        nextReviewDateDisplay: '20/09/2018',
+        overdue: true,
+        pnomis: false,
+        buttonText: 'Start',
+        pom: 'Steve Rendell',
+      },
+      null,
+    ])
+  })
+
+  it('should show the expected offender who is due for a recat where there review date is before their release date', async () => {
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate: '2017-09-23',
+      },
+    ])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      {
+        bookingId: 1186272,
+        releaseDate: '2018-11-15',
+        sentenceStartDate: '2017-04-01',
+      },
+    ])
+
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      mockTransactionalClient
+    )
+
+    expect(result).toEqual([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate: '2017-09-23',
+        displayName: 'Khaliam, Obinins',
+        displayStatus: 'Not started',
+        reason: { name: 'DUE', value: 'Review due' },
+        nextReviewDateDisplay: '23/09/2017',
+        overdue: true,
+        pnomis: false,
+        buttonText: 'Start',
+        pom: 'Steve Rendell',
+      },
+    ])
+  })
+
+  it('it should not show an offender who has a release date before their next review date, AND they are not currently in review', async () => {
+    const releaseDate = '2017-09-23'
+    const nextReviewDate = '2017-10-23'
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate,
+      },
+    ])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      {
+        bookingId: 1186272,
+        releaseDate,
+        sentenceStartDate: '2017-04-01',
+      },
+    ])
+
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      mockTransactionalClient
+    )
+
+    expect(result).toEqual([null])
+  })
+
+  it('it should not show an offender who has a release date AFTER their next review date, AND they are not currently in review', async () => {
+    const releaseDate = '2017-09-23'
+    const nextReviewDate = '2017-10-23'
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate,
+      },
+    ])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    formService.getCategorisationRecord.mockImplementation(bookingId => {
+      if (bookingId === 1186272) {
+        return {
+          id: 36,
+          bookingId: 1133213,
+          offenderNo: 'G9285UP',
+          sequence: 1,
+          userId: 'CMOSS_GEN',
+          status: Status.SECURITY_BACK.name,
+          formObject: {
+            // removed for brevity
+          },
+          riskProfile: {},
+          assignedUserId: 'CMOSS_GEN',
+          securityReferredDate: '2023-04-24T11:36:38.426Z',
+          securityReferredBy: 'CMOSS_GEN',
+          securityReviewedDate: '2023-04-24T11:37:07.424Z',
+          securityReviewedBy: 'CMOSS_GEN',
+          approvalDate: null,
+          prisonId: 'DMI',
+          catType: 'RECAT',
+          reviewReason: 'DUE',
+          nomisSeq: 5,
+        }
+      }
+      return {}
+    })
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      {
+        bookingId: 1186272,
+        releaseDate,
+        sentenceStartDate: '2017-04-01',
+      },
+    ])
+
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      mockTransactionalClient
+    )
+
+    expect(result).toEqual([null])
+  })
+
+  it('it should show an offender who has a release date AFTER their next review date, AND they are currently in review', async () => {
+    const releaseDate = '2017-09-23'
+    const nextReviewDate = '2017-10-23'
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate,
+      },
+    ])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    formService.getCategorisationRecord.mockImplementation(bookingId => {
+      if (bookingId === 1186272) {
+        return {
+          id: 36,
+          bookingId: 1133213,
+          offenderNo: 'G9285UP',
+          sequence: 1,
+          userId: 'CMOSS_GEN',
+          status: Status.AWAITING_APPROVAL.name,
+          formObject: {
+            // removed for brevity
+          },
+          riskProfile: {},
+          assignedUserId: 'CMOSS_GEN',
+          securityReferredDate: '2023-04-24T11:36:38.426Z',
+          securityReferredBy: 'CMOSS_GEN',
+          securityReviewedDate: '2023-04-24T11:37:07.424Z',
+          securityReviewedBy: 'CMOSS_GEN',
+          approvalDate: null,
+          prisonId: 'DMI',
+          catType: 'RECAT',
+          reviewReason: 'DUE',
+          nomisSeq: 5,
+        }
+      }
+      return {}
+    })
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      {
+        bookingId: 1186272,
+        releaseDate,
+        sentenceStartDate: '2017-04-01',
+      },
+    ])
+
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      mockTransactionalClient
+    )
+
+    expect(result).toEqual([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate: '2017-10-23',
+        displayName: 'Khaliam, Obinins',
+        displayStatus: 'Awaiting approval',
+        dbStatus: 'AWAITING_APPROVAL',
+        reason: { name: 'DUE', value: 'Review due' },
+        nextReviewDateDisplay: '23/10/2017',
+        overdue: true,
+        dbRecordExists: true,
+        pnomis: 'PNOMIS',
+        buttonText: 'Start',
+        pom: 'Steve Rendell',
+      },
+    ])
+  })
+})
+
+describe('isNextReviewAfterRelease', () => {
+  const nomisRecord = { nextReviewDate: '2023-04-23' }
+  const releaseDate = '2023-04-22'
+
+  it('returns true when next review date is after release date', () => {
+    const result = service.isNextReviewAfterRelease(nomisRecord, releaseDate)
+    expect(result).toBe(true)
+  })
+
+  it('returns false when next review date is before release date', () => {
+    nomisRecord.nextReviewDate = '2023-04-21'
+    const result = service.isNextReviewAfterRelease(nomisRecord, releaseDate)
+    expect(result).toBe(false)
+  })
+
+  it('returns false when next review date is equal to release date', () => {
+    nomisRecord.nextReviewDate = '2023-04-22'
+    const result = service.isNextReviewAfterRelease(nomisRecord, releaseDate)
+    expect(result).toBe(false)
+  })
+
+  describe('potentially unexpected behaviour - returns null rather than false', () => {
+    const nullButShouldProbablyBeFalse = null
+
+    it('returns false when next review date is not provided', () => {
+      nomisRecord.nextReviewDate = null
+      const result = service.isNextReviewAfterRelease(nomisRecord, releaseDate)
+      expect(result).toBe(nullButShouldProbablyBeFalse)
+    })
+
+    it('returns false when release date is not provided', () => {
+      const result = service.isNextReviewAfterRelease(nomisRecord, null)
+      expect(result).toBe(nullButShouldProbablyBeFalse)
+    })
+  })
+})
+
+describe('getReleaseDateMap', () => {
+  const offenderList = [
+    { bookingId: 'bookingId1', dbRecord: { catType: CatType.RECAT.name } },
+    { bookingId: 'bookingId2', dbRecord: null },
+    { bookingId: 'bookingId3', dbRecord: { catType: 'Other CatType' } },
+  ]
+
+  beforeEach(() => {
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      { bookingId: 'bookingId1', releaseDate: '2023-05-01' },
+      { bookingId: 'bookingId2', releaseDate: null },
+      { bookingId: 'bookingId3', releaseDate: '2023-04-30' },
+      { bookingId: 'bookingId4' }, // This record doesn't have a releaseDate
+    ])
+  })
+
+  it('should return a Map of bookingIds and releaseDates', async () => {
+    const releaseDateMap = await service.getReleaseDateMap(offenderList, prisonerSearchClient)
+
+    expect(releaseDateMap).toBeInstanceOf(Map)
+    expect(releaseDateMap.size).toBe(2)
+    expect(releaseDateMap.get('bookingId1')).toBe('2023-05-01')
+    expect(releaseDateMap.get('bookingId3')).toBe('2023-04-30')
+  })
+
+  it('should handle offenderList with no matching records', async () => {
+    const emptyOffenderList = []
+    const releaseDateMap = await service.getReleaseDateMap(emptyOffenderList, prisonerSearchClient)
+
+    expect(releaseDateMap).toBeInstanceOf(Map)
+    expect(releaseDateMap.size).toBe(2)
+  })
+
+  it('should handle prisonerSearchClient returning no records', async () => {
+    const emptyPrisoners = []
+    prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue(emptyPrisoners)
+
+    const releaseDateMap = await service.getReleaseDateMap(offenderList, prisonerSearchClient)
+
+    expect(releaseDateMap).toBeInstanceOf(Map)
+    expect(releaseDateMap.size).toBe(0)
+  })
+
+  it('should handle prisonerSearchClient throwing an error', async () => {
+    const errorMessage = 'Error retrieving prisoners'
+    prisonerSearchClient.getPrisonersByBookingIds.mockImplementation(() => {
+      throw new Error(errorMessage)
+    })
+
+    await expect(service.getReleaseDateMap(offenderList, prisonerSearchClient)).rejects.toThrow(errorMessage)
+  })
+})
+
+describe('getPomMap', () => {
+  const mockAllocationClient = {
+    getPomByOffenderNo: jest.fn().mockImplementation(() => Promise.resolve({ name: 'John Doe' })),
+  }
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  test('returns an empty map when given an empty offender list', async () => {
+    const result = await service.getPomMap([], mockAllocationClient)
+
+    expect(result.size).toBe(0)
+  })
+
+  test('returns a map with one entry when given a single offender', async () => {
+    const offender = { offenderNo: 'exists' }
+    const result = await service.getPomMap([offender], mockAllocationClient)
+
+    expect(result.size).toBe(1)
+    expect(result.get(offender.offenderNo)).toEqual({ name: 'John Doe' })
+    expect(mockAllocationClient.getPomByOffenderNo).toHaveBeenCalledTimes(1)
+    expect(mockAllocationClient.getPomByOffenderNo).toHaveBeenCalledWith(offender.offenderNo)
+  })
+
+  test('returns a map with multiple entries when given multiple offenders', async () => {
+    const offender1 = { offenderNo: '123' }
+    const offender2 = { prisonerNumber: '456' }
+    const result = await service.getPomMap([offender1, offender2], mockAllocationClient)
+
+    expect(result.size).toBe(2)
+    expect(result.get(offender1.offenderNo)).toEqual({ name: 'John Doe' })
+    expect(result.get(offender2.prisonerNumber)).toEqual({ name: 'John Doe' })
+    expect(mockAllocationClient.getPomByOffenderNo).toHaveBeenCalledTimes(2)
+    expect(mockAllocationClient.getPomByOffenderNo).toHaveBeenCalledWith(offender1.offenderNo)
+    expect(mockAllocationClient.getPomByOffenderNo).toHaveBeenCalledWith(offender2.prisonerNumber)
+  })
+
+  test('throws an error if allocationClient.getPomByOffenderNo throws an error', async () => {
+    mockAllocationClient.getPomByOffenderNo.mockRejectedValueOnce(new Error('API error'))
+
+    await expect(service.getPomMap([{ offenderNo: 'exists' }], mockAllocationClient)).rejects.toThrow('API error')
+    expect(mockAllocationClient.getPomByOffenderNo).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('isInitialInProgress', () => {
+  it('returns false when given a dbRecord with a catType other than INITIAL', () => {
+    const dbRecord = { catType: 'OTHER' }
+    const result = service.isInitialInProgress(dbRecord)
+    expect(result).toBe(false)
+  })
+
+  it('returns false when given a dbRecord with no catType', () => {
+    const dbRecord = {}
+    const result = service.isInitialInProgress(dbRecord)
+    expect(result).toBe(false)
+  })
+
+  it('returns false when given a dbRecord with a catType of null', () => {
+    const dbRecord = { catType: null }
+    const result = service.isInitialInProgress(dbRecord)
+    expect(result).toBe(false)
+  })
+
+  it('returns false when given a dbRecord with a catType of undefined', () => {
+    const dbRecord = { catType: undefined }
+    const result = service.isInitialInProgress(dbRecord)
+    expect(result).toBe(false)
+  })
+
+  describe('when calling through to inProgress', () => {
+    it('returns false when given a dbRecord with an approved status', () => {
+      const dbRecord = { catType: CatType.INITIAL.name, status: Status.APPROVED.name }
+      const result = service.isInitialInProgress(dbRecord)
+      expect(result).toBe(false)
+    })
+
+    it('returns true when given a dbRecord with an in-progress status', () => {
+      const dbRecord = { catType: CatType.INITIAL.name, status: Status.SUPERVISOR_BACK.name }
+      const result = service.isInitialInProgress(dbRecord)
+      expect(result).toBe(true)
+    })
+  })
+})
+
+describe('isOverdue', () => {
+  it('returns true if the date is before the current time', () => {
+    const dbDate = '2022-01-01'
+    const now = moment('2022-01-02', 'YYYY-MM-DD')
+    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
+
+    expect(service.isOverdue(dbDate)).toBe(true)
+  })
+
+  it('returns false if the date is after the current time', () => {
+    const dbDate = '2022-01-02'
+    const now = moment('2022-01-01', 'YYYY-MM-DD')
+    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
+
+    expect(service.isOverdue(dbDate)).toBe(false)
+  })
+
+  it('returns false if the date is the same as the current time', () => {
+    const dbDate = '2022-01-01'
+    const now = moment('2022-01-01', 'YYYY-MM-DD')
+    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
+
+    expect(service.isOverdue(dbDate)).toBe(false)
+  })
+
+  it('returns false if the input is null or undefined', () => {
+    expect(service.isOverdue(null)).toBe(false)
+    expect(service.isOverdue(undefined)).toBe(false)
+  })
+
+  it('returns false if the input is not a string in the format of "YYYY-MM-DD"', () => {
+    expect(service.isOverdue('2022-01-01T00:00:00')).toBe(false)
+    expect(service.isOverdue('January 1, 2022')).toBe(false)
+    expect(service.isOverdue('22-01-01')).toBe(false)
+  })
+})
+
+describe('calculateRecatDisplayStatus', () => {
+  it('returns "Not started" when given an empty or undefined displayStatus', () => {
+    expect(service.calculateRecatDisplayStatus(undefined)).toBe('Not started')
+    expect(service.calculateRecatDisplayStatus(null)).toBe('Not started')
+    expect(service.calculateRecatDisplayStatus('')).toBe('Not started')
+  })
+
+  it('returns "Not started" when given displayStatus === Status.APPROVED.value', () => {
+    expect(service.calculateRecatDisplayStatus(Status.APPROVED.value)).toBe('Not started')
+  })
+
+  it('returns the original displayStatus when it is not equal to the value of the "APPROVED" status', () => {
+    Object.values(Status)
+      .filter(({ name }) => name !== Status.APPROVED.name)
+      .forEach(({ value }) => expect(service.calculateRecatDisplayStatus(value)).toBe(value))
+  })
+})
+
+describe('statusTextDisplay', () => {
+  it('returns an empty string for an invalid input', () => {
+    expect(service.statusTextDisplay(undefined)).toEqual('')
+    expect(service.statusTextDisplay(null)).toEqual('')
+    expect(service.statusTextDisplay('invalid')).toEqual('')
+    expect(service.statusTextDisplay(3)).toEqual('')
+  })
+
+  it('returns the correct status text for valid inputs', () => {
+    expect(service.statusTextDisplay(Status.SUPERVISOR_BACK.name)).toEqual('Back from Supervisor')
+
+    Object.values(Status).forEach(({ name, value }) => expect(service.statusTextDisplay(name)).toEqual(value))
+  })
+})
+
+describe('decorateWithCategorisationData', () => {
+  let mockOffender
+  let mockUser
+  let mockNomisClient
+
+  beforeEach(() => {
+    mockOffender = { bookingId: 12345, status: 'status' }
+    mockUser = { username: 'username', firstName: 'firstname', lastName: 'lastname' }
+    mockNomisClient = {
+      getUserByUserId: jest.fn(() => Promise.resolve({ firstName: 'firstname', lastName: 'lastname' })),
+    }
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it(`returns an object with displayStatus: '' when categorisation.status is undefined`, async () => {
+    const result = await service.decorateWithCategorisationData(mockOffender, mockUser, mockNomisClient, {})
+    expect(result).toEqual({ displayStatus: '' })
+  })
+
+  it('returns an object with displayStatus and assigned user details when categorisation.assignedUserId is not the current user', async () => {
+    const mockCategorisation = { status: Status.STARTED.name, assignedUserId: 'otheruser' }
+    const result = await service.decorateWithCategorisationData(
+      mockOffender,
+      mockUser,
+      mockNomisClient,
+      mockCategorisation
+    )
+    const expectedStatusText = `${service.statusTextDisplay(mockCategorisation.status)} (Firstname Lastname)`
+    expect(mockNomisClient.getUserByUserId).toHaveBeenCalledWith(mockCategorisation.assignedUserId)
+    expect(result).toEqual({
+      dbRecordExists: true,
+      dbStatus: mockCategorisation.status,
+      displayStatus: expectedStatusText,
+      assignedUserId: mockCategorisation.assignedUserId,
+    })
+  })
+
+  it('returns an object with displayStatus and assigned user details when categorisation.assignedUserId is the current user', async () => {
+    const mockCategorisation = { status: Status.STARTED.name, assignedUserId: mockUser.username }
+    const result = await service.decorateWithCategorisationData(
+      mockOffender,
+      mockUser,
+      mockNomisClient,
+      mockCategorisation
+    )
+    const expectedStatusText = `${service.statusTextDisplay(mockCategorisation.status)} (Firstname Lastname)`
+    expect(mockNomisClient.getUserByUserId).not.toHaveBeenCalled()
+    expect(result).toEqual({
+      dbRecordExists: true,
+      dbStatus: mockCategorisation.status,
+      displayStatus: expectedStatusText,
+      assignedUserId: mockCategorisation.assignedUserId,
+    })
+  })
+
+  it('returns an object with displayStatus and no assigned user details when categorisation.assignedUserId is not provided', async () => {
+    const mockCategorisation = { status: Status.APPROVED.name }
+    const result = await service.decorateWithCategorisationData(
+      mockOffender,
+      mockUser,
+      mockNomisClient,
+      mockCategorisation
+    )
+    const expectedStatusText = service.statusTextDisplay(mockCategorisation.status)
+    expect(result).toEqual({
+      dbRecordExists: true,
+      dbStatus: mockCategorisation.status,
+      displayStatus: expectedStatusText,
+      assignedUserId: undefined,
+    })
+  })
+})
+
+describe('statusTextDisplay', () => {
+  it('returns false for everything except Awaiting Approval', () => {
+    ;[null, undefined, 1, 2, {}, false, true, ...Object.values(Status).map(({ name }) => name)]
+      .filter(status => status !== Status.AWAITING_APPROVAL.name)
+      .forEach(status => expect(service.isAwaitingApproval(status)).toEqual(false))
+  })
+
+  it('returns true for Awaiting Approval', () => {
+    expect(service.isAwaitingApproval(Status.AWAITING_APPROVAL.name)).toBeTruthy()
   })
 })
