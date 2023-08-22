@@ -654,6 +654,12 @@ module.exports = function createOffendersService(
     return [Status.AWAITING_APPROVAL.name].includes(status)
   }
 
+  function isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate) {
+    const isSupervisorBack = dbRecord.status === Status.SUPERVISOR_BACK.name
+    const hasBeenReleased = moment().isAfter(moment(releaseDate))
+    return !hasBeenReleased && isSupervisorBack
+  }
+
   async function getDueRecats(
     agencyId,
     user,
@@ -695,10 +701,16 @@ module.exports = function createOffendersService(
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
+        if (isInitialInProgress(dbRecord)) {
+          return null
+        }
+
+        const releaseDate = releaseDateMap.get(raw.bookingId)
+
         if (
-          isInitialInProgress(dbRecord) ||
-          (!isAwaitingApproval(dbRecord.status) &&
-            isNextReviewAfterRelease(nomisRecord, releaseDateMap.get(raw.bookingId)))
+          isNextReviewAfterRelease(nomisRecord, releaseDate) &&
+          !isAwaitingApproval(dbRecord.status) &&
+          !isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate)
         ) {
           return null
         }
@@ -1656,5 +1668,6 @@ module.exports = function createOffendersService(
     decorateWithCategorisationData,
     getDueRecats,
     isAwaitingApproval,
+    isRejectedBySupervisorSuitableForDisplay,
   }
 }
