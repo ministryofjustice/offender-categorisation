@@ -13,7 +13,7 @@
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "engines": {
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@joi/date": "^2.1.0",
+    "@snyk/protect": "^1.1206.0",
     "agentkeepalive": "^4.2.1",
     "applicationinsights": "^2.5.1",
     "aws-sdk": "^2.1354.0",
@@ -67,7 +68,6 @@
     "querystring": "^0.2.1",
     "ramda": "^0.28.0",
     "redis": "^3.1.2",
-    "snyk": "^1.1081.0",
     "sqs-consumer": "^5.8.0",
     "superagent": "^6.1.0",
     "uuid": "^8.3.2"
