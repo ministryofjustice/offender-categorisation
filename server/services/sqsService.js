@@ -46,12 +46,23 @@ module.exports = function createSqsService(offenderService, formService) {
     }
   }
 
+  const rpSqsAccessKeyId = config.sqs.riskProfiler.accessKeyId
+  const rpSqsSecretAccessKey = config.sqs.riskProfiler.secretAccessKey
+
+  const rpSqsCredentials =
+    rpSqsAccessKeyId && rpSqsSecretAccessKey
+      ? {
+          accessKeyId: rpSqsAccessKeyId,
+          secretAccessKey: rpSqsSecretAccessKey,
+        }
+      : undefined
+
   const rpQueueConsumer = Consumer.create({
     queueUrl: config.sqs.riskProfiler.queueUrl,
     handleMessage: handleRiskProfilerMessage,
+
     sqs: new AWS.SQS({
-      accessKeyId: config.sqs.riskProfiler.accessKeyId,
-      secretAccessKey: config.sqs.riskProfiler.secretAccessKey,
+      ...rpSqsCredentials,
     }),
   })
 
@@ -120,12 +131,22 @@ module.exports = function createSqsService(offenderService, formService) {
     }
   }
 
+  const eventSqsAccessKeyId = config.sqs.event.accessKeyId
+  const eventSqsSecretAccessKey = config.sqs.event.secretAccessKey
+
+  const eventSqsCredentials =
+    eventSqsAccessKeyId && eventSqsSecretAccessKey
+      ? {
+          accessKeyId: eventSqsAccessKeyId,
+          secretAccessKey: eventSqsSecretAccessKey,
+        }
+      : undefined
+
   const eventQueueConsumer = Consumer.create({
     queueUrl: config.sqs.event.queueUrl,
     handleMessage: handleEventMessage,
     sqs: new AWS.SQS({
-      accessKeyId: config.sqs.event.accessKeyId,
-      secretAccessKey: config.sqs.event.secretAccessKey,
+      ...eventSqsCredentials,
     }),
   })
 
