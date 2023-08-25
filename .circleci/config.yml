@@ -64,6 +64,15 @@ jobs:
     working_directory: ~/app
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
+        environment:
+          RP_QUEUE_ACCESS_KEY_ID: 'dummy'
+          RP_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+          RP_DL_QUEUE_ACCESS_KEY_ID:  'dummy'
+          RP_DL_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+          EVENT_QUEUE_ACCESS_KEY_ID: 'dummy'
+          EVENT_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+          EVENT_DL_QUEUE_ACCESS_KEY_ID: 'dummy'
+          EVENT_DL_QUEUE_SECRET_ACCESS_KEY: 'dummy'
       - image: cimg/postgres:14.3
         environment:
           POSTGRES_USER: form-builder
