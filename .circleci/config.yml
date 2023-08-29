@@ -20,6 +20,7 @@ parameters:
 
 executors:
   builder:
+    resource_class: large
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
     working_directory: ~/app
