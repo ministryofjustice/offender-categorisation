@@ -20,7 +20,6 @@ parameters:
 
 executors:
   builder:
-    resource_class: large
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
     working_directory: ~/app
@@ -62,6 +61,7 @@ jobs:
     - store_test_results:
         path: ./reports
   integration_tests:
+    resource_class: large
     working_directory: ~/app
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
