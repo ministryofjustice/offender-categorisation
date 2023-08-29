@@ -61,7 +61,6 @@ jobs:
     - store_test_results:
         path: ./reports
   integration_tests:
-    resource_class: large
     working_directory: ~/app
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
@@ -86,6 +85,7 @@ jobs:
           DATA_DIR: /tmp/localstack/data
           TMP_DIR: /private
           DEFAULT_REGION: eu-west-2
+    resource_class: large
     steps:
       - hmpps/install_aws_cli
       - checkout
