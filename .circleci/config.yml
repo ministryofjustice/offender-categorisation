@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@6.2.0
-  browser-tools: circleci/browser-tools@1.4.3
+  browser-tools: circleci/browser-tools@1.4.4
 
 parameters:
   node-version:
@@ -89,7 +89,11 @@ jobs:
     steps:
       - hmpps/install_aws_cli
       - checkout
-      - browser-tools/install-chrome
+      - run: sudo apt-get update
+      - browser-tools/install-chrome:
+          # TODO remove following line when fixed https://github.com/CircleCI-Public/browser-tools-orb/issues/90
+          chrome-version: 116.0.5845.96
+      #- browser-tools/install-chrome
       - browser-tools/install-chromedriver
       - attach_workspace:
           at: ~/app
