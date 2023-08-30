@@ -189,3 +189,27 @@ The easiest way to run the integration tests on your local machine is to:
 The tests can be run in debug mode for troubleshooting.
 
 More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>
+
+#### Example Test `.env` File
+
+```
+DB_USER=form-builder
+DB_PASS=form-builder
+DB_SERVER=0.0.0.0
+DB_NAME=form-builder
+SQS_ENABLED=true
+NOMIS_AUTH_URL=http://localhost:9090/auth
+NOMIS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
+EVENT_QUEUE_ACCESS_KEY_ID=dummy
+EVENT_QUEUE_SECRET_ACCESS_KEY=dummy
+EVENT_DL_QUEUE_ACCESS_KEY_ID=dummy
+EVENT_DL_QUEUE_SECRET_ACCESS_KEY=dummy
+RP_QUEUE_ACCESS_KEY_ID=dummy
+RP_QUEUE_SECRET_ACCESS_KEY=dummy
+RP_DL_QUEUE_ACCESS_KEY_ID=dummy
+RP_DL_QUEUE_SECRET_ACCESS_KEY=dummy
+RP_QUEUE_URL=http://0.0.0.0:4576/queue/risk_profiler_change
+RP_DL_QUEUE_URL=http://0.0.0.0:4576/queue/risk_profiler_change_dlq
+EVENT_QUEUE_URL=http://0.0.0.0:4576/queue/event
+EVENT_DL_QUEUE_URL=http://0.0.0.0:4576/queue/event_dlq
+```

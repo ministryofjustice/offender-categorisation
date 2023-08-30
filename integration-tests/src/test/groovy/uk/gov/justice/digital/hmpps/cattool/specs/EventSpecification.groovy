@@ -8,6 +8,28 @@ import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 
 import java.time.LocalDate
 
+/**
+ *                                              **  TEST NOTES  **
+ *
+ * These tests are to be run as a group - later tests depend on earlier test setup steps and will not pass independently.
+ *
+ * Be sure that all four queues exist in Localstack before running. These should match up to those found in
+ * the `config.js` file. E.g.:
+ *
+ *  - RP_QUEUE_URL=http://0.0.0.0:4576/queue/risk_profiler_change
+ *  - RP_DL_QUEUE_URL=http://0.0.0.0:4576/queue/risk_profiler_change_dlq
+ *  - EVENT_QUEUE_URL=http://0.0.0.0:4576/queue/event
+ *  - EVENT_DL_QUEUE_URL=http://0.0.0.0:4576/queue/event_dlq
+ *
+ *  Ensure SQS_ENABLED=true in your `.env` file.
+ *
+ *  Also ensure you have set the following in your `.env` file:
+ *
+ *  - RP_QUEUE_ACCESS_KEY_ID=dummy
+ *  - RP_QUEUE_SECRET_ACCESS_KEY=dummy
+ *  - RP_DL_QUEUE_ACCESS_KEY_ID=dummy
+ *  - RP_DL_QUEUE_SECRET_ACCESS_KEY=dummy
+ */
 class EventSpecification extends AbstractSpecification {
 
   AmazonSQS sqs = AmazonSQSClientBuilder
@@ -134,6 +156,8 @@ class EventSpecification extends AbstractSpecification {
   }
 
   def "Clear DLQ job moves messages to the normal queue"() {
+    // this test relies on setup steps from the previous tests and will not pass in isolation.
+
     given: 'There are messages stuck on the DLQs'
 
     sqs.sendMessage('http://localhost:4576/queue/event_dlq', """{
