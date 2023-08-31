@@ -1,6 +1,9 @@
 // Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
 // In particular, applicationinsights automatically collects bunyan logs
-require('./utils/azure-appinsights')
+const { initialiseAppInsights, buildAppInsightsClient } = require('./utils/azure-appinsights')
+
+initialiseAppInsights()
+buildAppInsightsClient()
 
 const createApp = require('./app')
 
