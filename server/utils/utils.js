@@ -159,7 +159,7 @@ const calculateNextReviewDate = R.cond([
   [R.T, R.always('')],
 ])
 
-const catMap = new Set(['DB', 'DC', 'CB', 'JI', 'JC', 'JB', 'TR'])
+const catMap = new Set(['DB', 'DC', 'DI', 'CB', 'JI', 'JC', 'JB', 'JD', 'JT', 'JR', 'TR', 'TI'])
 const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
 const offenderLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}`
@@ -196,6 +196,10 @@ const setFemaleCaseLoads = caseLoads => {
   })
 }
 
+const isOpenCategory = cat => {
+  return ['D', 'J', 'T'].includes(cat)
+}
+
 module.exports = {
   dateConverter,
   dateConverterToISO,
@@ -225,4 +229,7 @@ module.exports = {
   getNamesFromString,
   isFemalePrisonId,
   setFemaleCaseLoads,
+  isOpenCategory,
+  // exposed for test purposes
+  isBlank,
 }

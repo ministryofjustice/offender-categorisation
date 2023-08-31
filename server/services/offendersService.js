@@ -650,6 +650,16 @@ module.exports = function createOffendersService(
     return nextReviewDate && releaseDate && moment(nextReviewDate).isAfter(moment(releaseDate))
   }
 
+  function isAwaitingApproval(status) {
+    return [Status.AWAITING_APPROVAL.name].includes(status)
+  }
+
+  function isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate) {
+    const isSupervisorBack = dbRecord.status === Status.SUPERVISOR_BACK.name
+    const hasBeenReleased = moment().isAfter(moment(releaseDate))
+    return !hasBeenReleased && isSupervisorBack
+  }
+
   async function getDueRecats(
     agencyId,
     user,
@@ -691,7 +701,17 @@ module.exports = function createOffendersService(
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
-        if (isInitialInProgress(dbRecord) || isNextReviewAfterRelease(nomisRecord, releaseDateMap.get(raw.bookingId))) {
+        if (isInitialInProgress(dbRecord)) {
+          return null
+        }
+
+        const releaseDate = releaseDateMap.get(raw.bookingId)
+
+        if (
+          isNextReviewAfterRelease(nomisRecord, releaseDate) &&
+          !isAwaitingApproval(dbRecord.status) &&
+          !isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate)
+        ) {
           return null
         }
 
@@ -1205,13 +1225,7 @@ module.exports = function createOffendersService(
           recordExists: !!foundCatRecord,
           approvalDateDisplay: dateConverter(nomisRecord.approvalDate),
           sequence: foundCatRecord && foundCatRecord.sequence,
-          tprsSelected:
-            foundCatRecord &&
-            foundCatRecord.formObject &&
-            foundCatRecord.formObject.openConditions &&
-            foundCatRecord.formObject.openConditions.tprs &&
-            foundCatRecord.formObject.openConditions.tprs.tprsSelected &&
-            foundCatRecord.formObject.openConditions.tprs.tprsSelected === 'Yes',
+          tprsSelected: foundCatRecord?.formObject?.openConditions?.tprs?.tprsSelected === 'Yes' || false,
         }
       })
     )
@@ -1447,7 +1461,7 @@ module.exports = function createOffendersService(
         .some(c => !/[UXZ]/.test(c.classificationCode))
       return catExistsForThisBooking ? CatType.RECAT.name : CatType.INITIAL.name
     }
-    if (/[BCDIJ]/.test(classificationCodeFromNomis)) {
+    if (/[BCDIJTR]/.test(classificationCodeFromNomis)) {
       return CatType.RECAT.name
     }
     return null
@@ -1644,5 +1658,16 @@ module.exports = function createOffendersService(
     mergeU21ResultWithNomisCategorisationData,
     mergeOffenderLists: mergeOffenderListsRemovingNulls,
     getOffenderDetailsWithNextReviewDate,
+    isNextReviewAfterRelease,
+    getReleaseDateMap,
+    getPomMap,
+    isInitialInProgress,
+    statusTextDisplay,
+    isOverdue,
+    calculateRecatDisplayStatus,
+    decorateWithCategorisationData,
+    getDueRecats,
+    isAwaitingApproval,
+    isRejectedBySupervisorSuitableForDisplay,
   }
 }

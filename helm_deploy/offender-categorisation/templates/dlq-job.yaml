@@ -18,6 +18,7 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: {{ with index .Values "generic-service" }}{{ .serviceAccountName }}{{ end }}
           containers:
           - name: offender-categorisation
             image: "{{ with index .Values "generic-service" }}{{ .image.repository }}:{{ .image.tag }}{{ end }}"

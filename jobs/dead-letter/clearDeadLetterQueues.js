@@ -3,34 +3,44 @@ const logger = require('../../log')
 const config = require('../../server/config')
 const { transferDlqEventMessages } = require('../../server/utils/eventUtils')
 
+const sqsRiskProfilerCredentials = getAwsCredentials(
+  config.sqs.riskProfiler.accessKeyId,
+  config.sqs.riskProfiler.secretAccessKey
+)
+
 const sqsRiskProfiler = new AWS.SQS({
   region: 'eu-west-2',
-  accessKeyId: config.sqs.riskProfiler.accessKeyId,
-  secretAccessKey: config.sqs.riskProfiler.secretAccessKey,
+  ...sqsRiskProfilerCredentials,
 })
 
 const sqsRiskProfilerQueueUrl = config.sqs.riskProfiler.queueUrl
 
+const sqsRiskProfilerDlqCredentials = getAwsCredentials(
+  config.sqs.riskProfiler.dlq.accessKeyId,
+  config.sqs.riskProfiler.dlq.secretAccessKey
+)
+
 const sqsRiskProfilerDlq = new AWS.SQS({
   region: 'eu-west-2',
-  accessKeyId: config.sqs.riskProfiler.dlq.accessKeyId,
-  secretAccessKey: config.sqs.riskProfiler.dlq.secretAccessKey,
+  ...sqsRiskProfilerDlqCredentials,
 })
 
 const sqsRiskProfilerDlqQueueUrl = config.sqs.riskProfiler.dlq.queueUrl
 
+const sqsEventCredentials = getAwsCredentials(config.sqs.event.accessKeyId, config.sqs.event.secretAccessKey)
+
 const sqsEvent = new AWS.SQS({
   region: 'eu-west-2',
-  accessKeyId: config.sqs.event.accessKeyId,
-  secretAccessKey: config.sqs.event.secretAccessKey,
+  ...sqsEventCredentials,
 })
 
 const sqsEventQueueUrl = config.sqs.event.queueUrl
 
+const sqsEventDlqCredentials = getAwsCredentials(config.sqs.event.dlq.accessKeyId, config.sqs.event.dlq.secretAccessKey)
+
 const sqsEventDlq = new AWS.SQS({
   region: 'eu-west-2',
-  accessKeyId: config.sqs.event.dlq.accessKeyId,
-  secretAccessKey: config.sqs.event.dlq.secretAccessKey,
+  ...sqsEventDlqCredentials,
 })
 
 const sqsEventDlqQueueUrl = config.sqs.event.dlq.queueUrl
@@ -59,6 +69,17 @@ async function runJob() {
     logger.error(error, 'Problem processing Event DLQ transfer job') // NOTE alert depends on this
   }
   logger.info('DLQ transfer job finished') // NOTE alert depends on this
+}
+
+function getAwsCredentials(accessKeyId, secretAccessKey) {
+  const credentials =
+    accessKeyId && secretAccessKey
+      ? {
+          accessKeyId,
+          secretAccessKey,
+        }
+      : undefined
+  return credentials
 }
 
 module.exports = runJob

@@ -329,4 +329,34 @@ class DashboardSpecification extends AbstractSpecification {
     at DashboardRecatPage
     reviewNumbersTableRows[5].find('td')*.text() == ['Total', '0', '0', '1', '0', '0', '1']
   }
+
+  def "The recat dashboard should show correct tprs detail"() {
+    db.doCreateCompleteRow(-11, 11, rc('B').build(), 'RECATEGORISER_USER', 'AWAITING_APPROVAL', 'RECAT', null, null, null, 1, '{}',
+      'LEI', "B0011XY", "'2019-07-01T00:00Z'", null, null, '2019-08-15', '2019-07-22', '2019-08-03')
+
+    dbRow(30, 'LEI', 'RECAT', "'2019-07-01T00:00Z'", null,                  null,                  '2019-07-22', '2019-08-05', '2019-08-03',
+      "{\"recat\":{\"decision\":{\"category\":\"C\"},\"securityInput\":null},\"supervisor\":{\"review\":null}, \"openConditions\": {\"tprs\": {\"tprsSelected\": \"Yes\"}}}"
+    )
+    dbRow(31, 'LEI', 'RECAT', "'2019-07-01T00:00Z'", null,                  null,                  '2019-07-22', '2019-08-05', '2019-08-03',
+      "{\"recat\":{\"decision\":{\"category\":\"D\"},\"securityInput\":null},\"supervisor\":{\"review\":null}, \"openConditions\": {\"tprs\": {\"tprsSelected\": \"Yes\"}}}"
+    )
+    dbRow(32, 'LEI', 'RECAT', "'2019-07-01T00:00Z'", null,                  null,                  '2019-07-22', '2019-08-05', '2019-08-03',
+      "{\"recat\":{\"decision\":{\"category\":\"D\"},\"securityInput\":null},\"supervisor\": {\"review\": {\"proposedCategory\": \"D\", \"supervisorOverriddenCategory\": \"C\", \"supervisorCategoryAppropriate\": \"No\", \"supervisorOverriddenCategoryText\": \"test\"}}, \"openConditions\": {\"tprs\": {\"tprsSelected\": \"Yes\"}}}"
+    )
+
+    given: 'a supervisor is logged in'
+    elite2Api.stubUncategorisedAwaitingApproval()
+    prisonerSearchApi.stubSentenceData(['B0012XY'], [12], ['28/01/2019'])
+    fixture.loginAs(SUPERVISOR_USER)
+
+    when: 'the user goes to the dashboard with no search criteria'
+    to DashboardRecatPage
+
+    then: 'all male prisons option is displayed'
+    at DashboardRecatPage
+    statsTypeOptions*.text().contains('all male prisons')
+
+    then: 'The stats displayed are as follows'
+    tprsTableRows[0].find('td')*.text() == ['Total recategorisations through TPRS', '1']
+  }
 }
