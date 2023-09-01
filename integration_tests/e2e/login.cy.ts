@@ -1,13 +1,16 @@
-import IndexPage from '../pages/index'
 import AuthSignInPage from '../pages/authSignIn'
 import Page from '../pages/page'
 import AuthManageDetailsPage from '../pages/authManageDetails'
+import { SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
+import SecurityHomePage from '../pages/security/home'
+import SupervisorHomePage from '../pages/supervisor/home'
 
-xcontext('SignIn', () => {
+context('SignIn', () => {
   beforeEach(() => {
     cy.task('reset')
-    cy.task('stubSignIn')
-    cy.task('stubAuthUser')
+    cy.stubLogin({
+      user: SECURITY_USER,
+    })
   })
 
   it('Unauthenticated user directed to auth', () => {
@@ -16,53 +19,47 @@ xcontext('SignIn', () => {
   })
 
   it('Unauthenticated user navigating to sign in page directed to auth', () => {
-    cy.visit('/sign-in')
+    cy.visit('/login')
     Page.verifyOnPage(AuthSignInPage)
   })
 
   it('User name visible in header', () => {
     cy.signIn()
-    const indexPage = Page.verifyOnPage(IndexPage)
-    indexPage.headerUserName().should('contain.text', 'J. Smith')
+    const securityHomePage = Page.verifyOnPage(SecurityHomePage)
+    securityHomePage.headerUserName().should('contain.text', 'A. User')
   })
 
   it('User can log out', () => {
     cy.signIn()
-    const indexPage = Page.verifyOnPage(IndexPage)
-    indexPage.signOut().click()
+    const securityHomePage = Page.verifyOnPage(SecurityHomePage)
+    securityHomePage.signOut().click()
     Page.verifyOnPage(AuthSignInPage)
   })
 
   it('User can manage their details', () => {
+    cy.stubLogin({
+      user: SUPERVISOR_USER,
+    })
+    cy.task('stubSentenceData', { emptyResponse: true })
+    cy.task('stubUncategorised')
     cy.signIn()
-    const indexPage = Page.verifyOnPage(IndexPage)
+    const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
 
-    indexPage.manageDetails().get('a').invoke('removeAttr', 'target')
-    indexPage.manageDetails().click()
+    supervisorHomePage.manageDetails().get('a').invoke('removeAttr', 'target')
+    supervisorHomePage.manageDetails().click()
     Page.verifyOnPage(AuthManageDetailsPage)
   })
 
-  it('Token verification failure takes user to sign in page', () => {
+  it('Token verification failure clears user session and takes user to sign in page', () => {
     cy.signIn()
-    Page.verifyOnPage(IndexPage)
-    cy.task('stubVerifyToken', false)
-
-    // can't do a visit here as cypress requires only one domain
-    cy.request('/').its('body').should('contain', 'Sign in')
-  })
-
-  it('Token verification failure clears user session', () => {
-    cy.signIn()
-    const indexPage = Page.verifyOnPage(IndexPage)
-    cy.task('stubVerifyToken', false)
+    const securityHomePage = Page.verifyOnPage(SecurityHomePage)
+    cy.setCookie('session', 'no_longer_valid')
 
     // can't do a visit here as cypress requires only one domain
     cy.request('/').its('body').should('contain', 'Sign in')
 
-    cy.task('stubVerifyToken', true)
-    cy.task('stubAuthUser', 'bobby brown')
     cy.signIn()
 
-    indexPage.headerUserName().contains('B. Brown')
+    securityHomePage.headerUserName().should('contain.text', 'A. User')
   })
 })
