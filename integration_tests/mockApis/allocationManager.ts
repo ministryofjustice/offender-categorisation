@@ -17,4 +17,19 @@ export default {
         },
       },
     }),
+  stubGetPomByOffenderNo: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/api/allocation/\\w+',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          primary_pom: { name: 'Humperdinck, Engelbert', staff_id: 12345 },
+          secondary_pom: { name: 'Depp, Johnny', staff_id: 6789 },
+        },
+      },
+    }),
 }

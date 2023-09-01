@@ -12,6 +12,8 @@ services:
       - POSTGRES_PASSWORD=form-builder
       - POSTGRES_USER=form-builder
       - POSTGRES_DB=form-builder
+    volumes:
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   categorisation-redis:
     image: redis
