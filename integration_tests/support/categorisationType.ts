@@ -1,0 +1,4 @@
+export const CATEGORISATION_TYPE = {
+  INITIAL: 'INITIAL',
+  RECAT: 'RECAT',
+}

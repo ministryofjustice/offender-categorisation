@@ -167,7 +167,7 @@ To run the jest unit tests:
 npm run test
 ```
 
-### Integration Tests
+### Integration Tests (Groovy)
 
 To run the integration tests you need to install *chromedriver* :
 
@@ -189,3 +189,22 @@ The easiest way to run the integration tests on your local machine is to:
 The tests can be run in debug mode for troubleshooting.
 
 More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>
+
+### Running integration tests (Cypress)
+
+For local running, start a test db, redis, and wiremock instance by:
+
+`docker-compose -f docker-compose-test.yml up`
+
+Then run the server in test mode by:
+
+`npm run start-feature` (or `npm run start-feature:dev` to run with nodemon)
+
+And then either, run tests in headless mode with:
+
+`npm run int-test`
+
+Or run tests with the cypress UI:
+
+`npm run int-test-ui`
+
