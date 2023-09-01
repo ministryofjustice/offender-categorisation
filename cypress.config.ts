@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress'
 import { resetStubs } from './integration_tests/mockApis/wiremock'
 import mockApis from './integration_tests/mockApis'
+import db from './integration_tests/db'
 
 export default defineConfig({
   chromeWebSecurity: false,
@@ -18,6 +19,7 @@ export default defineConfig({
       on('task', {
         reset: resetStubs,
         ...mockApis,
+        ...db,
       })
     },
     baseUrl: 'http://localhost:3007',
