@@ -30,6 +30,8 @@ describe('Dashboard', () => {
     cy.signIn()
   })
 
+  const allMalePrisonEstateScope = 'all male prisons'
+
   describe('Initial Categorisation dashboard', () => {
     let dashboardInitialPage: DashboardInitialPage
 

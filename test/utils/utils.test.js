@@ -11,6 +11,12 @@ const {
   catLabel,
   isOpenCategory,
   choosingHigherCategory,
+  properCase,
+  isBlank,
+  properCaseName,
+  getNamesFromString,
+  dateConverter,
+  dateConverterToISO,
 } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
@@ -177,4 +183,124 @@ describe('choosingHigherCategory should return expected value for opne into YOI 
   expect(choosingHigherCategory('I', 'T')).toEqual(false)
   expect(choosingHigherCategory('D', 'I')).toEqual(true)
   expect(choosingHigherCategory('I', 'D')).toEqual(false)
+})
+
+describe('properCase', () => {
+  it('returns a string in proper case', () => {
+    expect(properCase('hello')).toBe('Hello')
+    expect(properCase('hELLO')).toBe('Hello')
+    expect(properCase('')).toBe('')
+  })
+
+  it('returns the original input if it is not a string or has a length of zero', () => {
+    expect(properCase(null)).toBe(null)
+    expect(properCase(undefined)).toBe(undefined)
+    expect(properCase([])).toEqual([])
+    expect(properCase({})).toEqual({})
+  })
+})
+
+describe('isBlank', () => {
+  it('returns true if a string is blank', () => {
+    expect(isBlank('')).toBe(true)
+    expect(isBlank('   ')).toBe(true)
+    expect(isBlank('\n')).toBe(true)
+  })
+
+  it('returns false if a string is not blank', () => {
+    expect(isBlank('hello')).toBe(false)
+    expect(isBlank('  hello  ')).toBe(false)
+    expect(isBlank('hello\nworld')).toBe(false)
+  })
+})
+
+describe('properCaseName', () => {
+  it('returns a string in proper case', () => {
+    expect(properCaseName('double-barrel')).toBe('Double-Barrel')
+    expect(properCaseName('DOUBLE-BARREL')).toBe('Double-Barrel')
+    expect(properCaseName('LONG-double-bArrEl')).toBe('Long-Double-Barrel')
+    expect(properCaseName('single')).toBe('Single')
+    expect(properCaseName('')).toBe('')
+  })
+
+  it('returns the original input if it is blank', () => {
+    expect(properCaseName(null)).toBe('')
+    expect(properCaseName(undefined)).toBe('')
+    expect(properCaseName('   ')).toBe('')
+  })
+})
+
+describe('getNamesFromString', () => {
+  it('returns a string with proper case names in reverse order', () => {
+    expect(getNamesFromString('doe, john')).toBe('John Doe')
+    expect(getNamesFromString('SMITH, JANE, doe, john')).toBe('John Doe Jane Smith')
+    expect(getNamesFromString('SARAH')).toBe('Sarah')
+  })
+
+  describe('potentially unexpected behaviour', () => {
+    it('does not always return a string', () => {
+      expect(getNamesFromString(null)).toBe(undefined)
+      expect(getNamesFromString(undefined)).toBe(undefined)
+    })
+
+    it('errors when given other types', () => {
+      ;[123, [], {}].forEach(input => {
+        expect(() => getNamesFromString(input)).toThrow(TypeError)
+      })
+    })
+
+    it('returns the full string if the string did not contain a comma', () => {
+      expect(getNamesFromString('doe john')).toBe('Doe john')
+    })
+
+    it('does not trim the names', () => {
+      expect(getNamesFromString('doe , john')).toBe('John Doe ')
+      expect(getNamesFromString('SMITH   ,  JANE , doe,   john')).toBe('  john Doe  jane  Smith   ')
+      expect(getNamesFromString('   SARAH  ')).toBe('   sarah  ')
+    })
+  })
+})
+
+describe('dateConverter', () => {
+  it('returns a formatted date when given a valid input', () => {
+    expect(dateConverter('2022-01-01')).toBe('01/01/2022')
+    expect(dateConverter('2022/01/01')).toBe('01/01/2022')
+  })
+
+  describe('potentially unexpected behaviour', () => {
+    it('returns a non string type when given null or undefined', () => {
+      expect(dateConverter(null)).toBe(null)
+      expect(dateConverter(undefined)).toBe(undefined)
+    })
+
+    it("returns the literal string 'Invalid date' when given an invalid date", () => {
+      expect(dateConverter('2022-13-01')).toBe('Invalid date')
+    })
+
+    it('returns an unexpected date when given a valid date in the wrong format', () => {
+      expect(dateConverter('01/01/2022')).toBe('20/01/2001')
+    })
+  })
+})
+
+describe('dateConverterToISO', () => {
+  it('returns a formatted date when given a valid input', () => {
+    expect(dateConverterToISO('01/01/2022')).toBe('2022-01-01')
+    expect(dateConverterToISO('01-01-2022')).toBe('2022-01-01')
+  })
+
+  describe('potentially unexpected behaviour', () => {
+    it('returns a non string type when given null or undefined', () => {
+      expect(dateConverterToISO(null)).toBe(null)
+      expect(dateConverterToISO(undefined)).toBe(undefined)
+    })
+
+    it("returns the literal string 'Invalid date' when given a string in the wrong date format", () => {
+      expect(dateConverterToISO('2022-01-01')).toBe('Invalid date')
+    })
+
+    it("returns the literal string 'Invalid date' when given an invalid date", () => {
+      expect(dateConverterToISO('01/13/2022')).toBe('Invalid date')
+    })
+  })
 })

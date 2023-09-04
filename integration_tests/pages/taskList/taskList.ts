@@ -30,13 +30,13 @@ export default class TaskListPage extends Page {
   }
 
   validateSecurityReferralDate = (date: Date) => {
-    cy.get('#securitySection').should(
-      'contain.text',
-      `Manually referred to Security (${moment(date).format('D/MM/yyyy')})`
-    )
+    cy.get('#securitySection')
+      .find('div')
+      .contains(`Manually referred to Security (${moment(date).format('DD/MM/yyyy')})`)
+      .should('exist')
   }
 
   validateSecurityCompletedDate = (date: Date) => {
-    cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('D/MM/yyyy')})`)
+    cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
   }
 }
