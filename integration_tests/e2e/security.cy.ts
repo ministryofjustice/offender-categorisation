@@ -177,7 +177,7 @@ context('Security', () => {
       securityDonePage.viewOffenderDetails(bookingId)
 
       const securityViewPage = Page.verifyOnPage(SecurityViewPage)
-      securityViewPage.checkPageUrl(new RegExp(`/form/security/view/${bookingId}$`))
+      securityViewPage.checkPageUrl(`/form/security/view/${bookingId}`)
     }
 
     it('should allow viewing an initial categorisation prisoner', () => {
