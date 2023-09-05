@@ -6,4 +6,8 @@ export default class CategorisationHomePage extends BaseCategorisationPage {
   constructor() {
     super('Prisoner Categorisation')
   }
+
+  selectPrisonerWithBookingId(bookingId: number, expectedButtonText = 'Start') {
+    cy.contains(`a[href="/tasklist/${bookingId}"]`, expectedButtonText).click()
+  }
 }

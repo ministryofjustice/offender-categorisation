@@ -1,8 +1,9 @@
 import BaseDashboardPage from './base'
 
-type RecategorisationDecisionsTableData = [string, string, string, string][]
-type ReviewNumbersTableData = [string, string, string, string, string, string, string][]
-type TprsTableData = [string, string][]
+type StringArray = [string, ...string[]][]
+type RecategorisationDecisionsTableData = StringArray
+type ReviewNumbersTableData = StringArray
+type TprsTableData = StringArray
 
 export default class DashboardRecategorisationPage extends BaseDashboardPage {
   static baseUrl: string = '/dashboardRecat'
