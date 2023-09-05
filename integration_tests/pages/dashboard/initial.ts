@@ -1,6 +1,6 @@
 import BaseDashboardPage from './base'
 
-type CategorisationDecisionsTableData = [string, string, string, string, string][]
+type StringArray = [string, ...string[]][]
 
 export default class DashboardInitialPage extends BaseDashboardPage {
   static baseUrl: string = '/dashboardInitial'
@@ -9,8 +9,8 @@ export default class DashboardInitialPage extends BaseDashboardPage {
     super('Initial categorisations statistics')
   }
 
-  validateCategorisationDecisionsTableData = (expectedValues: CategorisationDecisionsTableData) =>
-    cy.checkTableRowData<CategorisationDecisionsTableData>({
+  validateCategorisationDecisionsTableData = (expectedValues: StringArray) =>
+    cy.checkTableRowData({
       tableRowsSelector: 'table#initialTable > tbody > tr',
       expectedValues,
     })

@@ -1,15 +1,16 @@
 import { mergeRight } from 'ramda'
 import db from '../../server/data/dataAccess/db'
+import { QueryArrayResult } from 'pg'
 
-type CatType = 'INITIAL' | 'RECAT'
-type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
+export type CatType = 'INITIAL' | 'RECAT'
+export type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
 
 type MandatoryRowData = Pick<
   FormDbRow,
   'id' | 'bookingId' | 'sequenceNumber' | 'prisonId' | 'offenderNo' | 'startDate' | 'catType' | 'reviewReason'
 >
 
-interface FormDbRow {
+export interface FormDbRow {
   id: number
   formResponse: string | null
   bookingId: number
@@ -35,6 +36,16 @@ interface FormDbRow {
   dueByDate: Date | null
   cancelledDate: Date | null
   cancelledBy: string | null
+}
+
+export interface NextReviewChangeHistoryDbRow {
+  id: number
+  booking_id: number
+  offender_no: string
+  next_review_date: string
+  reason: string
+  change_date: string
+  changed_by: string
 }
 
 const defaultRowData: Partial<FormDbRow> = {
@@ -164,6 +175,22 @@ async function insertSecurityReferralTableDbRow({
   )
 }
 
+async function selectFormTableDbRow({
+  bookingId,
+}: {
+  bookingId: FormDbRow['bookingId']
+}): Promise<QueryArrayResult<FormDbRow[]>> {
+  return await db.query(`select * from form where booking_id = $1 order by sequence_no`, [bookingId])
+}
+
+async function selectNextReviewChangeHistoryTableDbRow({
+  offenderNo,
+}: {
+  offenderNo: NextReviewChangeHistoryDbRow['offender_no']
+}): Promise<QueryArrayResult<NextReviewChangeHistoryDbRow[]>> {
+  return await db.query(`select * from next_review_change_history where offender_no = $1`, [offenderNo])
+}
+
 async function updateRiskProfile({
   riskProfile,
   bookingId,
@@ -177,5 +204,7 @@ async function updateRiskProfile({
 export default {
   insertFormTableDbRow,
   insertSecurityReferralTableDbRow,
+  selectFormTableDbRow,
+  selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
 }
