@@ -1,6 +1,4 @@
-import Page, { PageElement } from '../page'
-
-const SELECTORS = {}
+import Page from '../page'
 
 export default class LiteCategoriesConfirmedPage extends Page {
   private static _bookingId: number
@@ -17,6 +15,4 @@ export default class LiteCategoriesConfirmedPage extends Page {
     this._bookingId = bookingId
     return new LiteCategoriesConfirmedPage()
   }
-
-  // submitButton = (): PageElement => cy.get(SELECTORS.BUTTON.SUBMIT).contains('Submit')
 }
