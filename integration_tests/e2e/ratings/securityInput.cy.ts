@@ -125,7 +125,7 @@ describe('Security Input', () => {
         })
       })
 
-      describe.only("it should record a 'yes' decision", () => {
+      describe("it should record a 'yes' decision", () => {
         beforeEach(() => {
           cy.task('stubGetExtremismProfile', {
             offenderNo: 'B2345YZ',
