@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@6.2.0
-  browser-tools: circleci/browser-tools@1.4.0
+  browser-tools: circleci/browser-tools@1.4.4
 
 parameters:
   node-version:
@@ -65,6 +65,15 @@ jobs:
     working_directory: ~/app
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
+        environment:
+          RP_QUEUE_ACCESS_KEY_ID: 'dummy'
+          RP_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+          RP_DL_QUEUE_ACCESS_KEY_ID:  'dummy'
+          RP_DL_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+          EVENT_QUEUE_ACCESS_KEY_ID: 'dummy'
+          EVENT_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+          EVENT_DL_QUEUE_ACCESS_KEY_ID: 'dummy'
+          EVENT_DL_QUEUE_SECRET_ACCESS_KEY: 'dummy'
       - image: cimg/postgres:14.3
         environment:
           POSTGRES_USER: form-builder
@@ -77,10 +86,15 @@ jobs:
           DATA_DIR: /tmp/localstack/data
           TMP_DIR: /private
           DEFAULT_REGION: eu-west-2
+    resource_class: large
     steps:
       - hmpps/install_aws_cli
       - checkout
-      - browser-tools/install-chrome
+      - run: sudo apt-get update
+      - browser-tools/install-chrome:
+          # TODO remove following line when fixed https://github.com/CircleCI-Public/browser-tools-orb/issues/90
+          chrome-version: 116.0.5845.96
+      #- browser-tools/install-chrome
       - browser-tools/install-chromedriver
       - attach_workspace:
           at: ~/app

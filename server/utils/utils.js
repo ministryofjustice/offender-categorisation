@@ -230,4 +230,6 @@ module.exports = {
   isFemalePrisonId,
   setFemaleCaseLoads,
   isOpenCategory,
+  // exposed for test purposes
+  isBlank,
 }

@@ -9,7 +9,7 @@ class ErrorPage extends Page {
   }
 
   static content = {
-    errorSummaryTitle { $('#error-summary-title') }
+    errorSummaryTitle { $('h2.govuk-error-summary__title') }
     errorText(required: false) { $( 'div.govuk-error-summary__body p') }
   }
 }

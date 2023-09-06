@@ -1,3 +1,4 @@
+import ErrorPage from './error/error'
 import { cleanString } from '../support/utilities'
 
 export type PageElement = Cypress.Chainable<JQuery>
@@ -24,7 +25,7 @@ export default abstract class Page {
   manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')
 
   errorSummaries = (): PageElement =>
-    cy.get('#error-summary-title').contains('There is a problem').get('ul.govuk-error-summary__list li')
+    cy.get(ErrorPage.ERROR_SUMMARY_TITLE_SELECTOR).contains('There is a problem').get('ul.govuk-error-summary__list li')
 
   errors = (): PageElement => cy.get('.govuk-error-message')
 
