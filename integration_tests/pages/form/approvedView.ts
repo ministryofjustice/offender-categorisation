@@ -7,14 +7,6 @@ export default class ApprovedViewPage extends Page {
     super('Categorisation outcome')
   }
 
-  // validateCategorisationDetails(columns: { key: string; value: string }[][]) {
-  //   columns.forEach((column, index) => {
-  //     column.forEach(({ key, value }) => {
-  //       cy.get('.govuk-grid-column-one-third').eq(index).should('contain.text', key).should('contain.text', value)
-  //     })
-  //   })
-  // }
-
   validateCategorisationWarnings(warnings: string[]) {
     warnings.forEach((warning, index) => {
       cy.get(`.govuk-warning-text:eq(${index})`).should('contain.text', 'Warning')
