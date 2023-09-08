@@ -128,7 +128,7 @@ const stubSentenceDataError = (): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'POST',
-      urlPattern: '/prisoner-search/prisoner-search/booking-ids',
+      url: '/prisoner-search/prisoner-search/booking-ids',
     },
     response: {
       status: 500,

@@ -1,5 +1,5 @@
 import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
-import CategorisationHomePage from '../pages/categoriser/home'
+import CategoriserHomePage from '../pages/categoriser/home'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import STATUS from '../../server/utils/statusEnum'
 import SupervisorHomePage from '../pages/supervisor/home'
@@ -24,7 +24,7 @@ describe('Approved view', () => {
     })
     cy.signIn()
     cy.request({
-      url: CategorisationHomePage.baseUrl,
+      url: CategoriserHomePage.baseUrl,
       failOnStatusCode: false,
     }).then(resp => {
       expect(resp.status).to.eq(403)
@@ -99,7 +99,7 @@ describe('Approved view', () => {
 
     navigateToView()
 
-    formApprovedView.validateCategorisationDetails([
+    cy.validateCategorisationDetails([
       // column 1
       [
         { key: 'Name', value: 'Hillmob, Ant' },

@@ -1,4 +1,5 @@
 import ErrorPage from './error/error'
+import { cleanString } from '../support/utilities'
 
 export type PageElement = Cypress.Chainable<JQuery>
 
@@ -51,5 +52,5 @@ export default abstract class Page {
     })
   }
 
-  protected _cleanString = (rawText): string => rawText.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
+  protected _cleanString = cleanString
 }

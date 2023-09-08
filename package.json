@@ -88,14 +88,14 @@
     "@types/csurf": "^1.11.2",
     "@types/express-session": "^1.17.7",
     "@types/http-errors": "^2.0.1",
-    "@types/jest": "^29.5.0",
+    "@types/jest": "^29.5.4",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.15.3",
-    "@types/nunjucks": "^3.2.2",
+    "@types/nunjucks": "^3.2.3",
     "@types/passport": "^1.0.12",
     "@types/passport-oauth2": "^1.4.12",
     "@types/pg": "^8.6.6",
-    "@types/superagent": "^4.1.16",
+    "@types/superagent": "^4.1.18",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
@@ -103,7 +103,7 @@
     "audit-ci": "^6.6.1",
     "concurrently": "^7.6.0",
     "cookie-session": "^2.0.0",
-    "cypress": "^12.17.4",
+    "cypress": "^13.1.0",
     "cypress-multi-reporters": "^1.6.3",
     "eslint": "^8.47.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -126,8 +126,8 @@
     "prettier-plugin-jinja-template": "^0.2.0",
     "sass": "^1.57.1",
     "supertest": "^6.3.3",
-    "ts-jest": "^29.0.5",
-    "typescript": "^5.0.2"
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
   },
   "snyk": true
 }

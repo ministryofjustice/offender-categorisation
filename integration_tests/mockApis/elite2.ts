@@ -22,6 +22,23 @@ const stubAgencyDetails = ({ agency }: { agency: string }): SuperAgentRequest =>
     },
   })
 
+const stubAgenciesPrison = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/agencies/prison`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        { agencyId: 'SYI', description: 'SHREWSBURY (HMP)' },
+        { agencyId: 'BXI', description: 'BRIXTON (HMP)' },
+        { agencyId: 'MDI', description: 'MOORLAND' },
+      ],
+    },
+  })
+
 const stubAssessments = ({
   offenderNumber,
   emptyResponse = false,
@@ -209,6 +226,37 @@ const stubAssessmentsWomen = ({
               assessmentStatus: 'No CAT A, Restricted',
             },
           ],
+    },
+  })
+
+const stubCategorise = ({
+  expectedCat,
+  nextReviewDate,
+  bookingId = 700,
+  committee = 'OCA',
+  sequenceNumber = 4,
+}: {
+  expectedCat: string
+  nextReviewDate: string
+  bookingId: number
+  committee: string
+  sequenceNumber: number
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'POST',
+      url: '/elite2/api/offender-assessments/category/categorise',
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      jsonBody: {
+        expectedCat,
+        nextReviewDate,
+        bookingId,
+        committee,
+        sequenceNumber,
+      },
     },
   })
 
@@ -598,8 +646,10 @@ const stubGetOffenderDetails = ({
 }
 
 const stubGetOffenderDetailsByOffenderNoList = ({
+  bookingId = [13, 14],
   offenderNumbers,
 }: {
+  bookingId: number[]
   offenderNumbers: string[]
 }): SuperAgentRequest =>
   stubFor({
@@ -614,7 +664,7 @@ const stubGetOffenderDetailsByOffenderNoList = ({
       },
       body: JSON.stringify([
         {
-          bookingId: 13,
+          bookingId: bookingId[0],
           offenderNo: offenderNumbers[0],
           agencyId: 'LEI',
           firstName: 'FRANK',
@@ -622,7 +672,7 @@ const stubGetOffenderDetailsByOffenderNoList = ({
           dateOfBirth: '1970-02-17',
         },
         {
-          bookingId: 14,
+          bookingId: bookingId[1],
           offenderNo: offenderNumbers[1],
           agencyId: 'LEI',
           firstName: 'JANE',
@@ -1024,6 +1074,69 @@ const stubSentenceDataGetSingle = ({
     },
   })
 
+const stubSupervisorApprove = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      url: `/elite2/api/offender-assessments/category/approve`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {},
+    },
+  })
+
+const stubSupervisorApproveNoPendingAssessmentError = ({
+  category,
+  bookingId,
+  assessmentSeq,
+}: {
+  category: string
+  bookingId: number
+  assessmentSeq: number
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      url: `/elite2/api/offender-assessments/category/approve`,
+    },
+    response: {
+      status: 400,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        developerMessage: '400 No pending category assessment found, $category, booking $bookingId, seq $assessmentSeq',
+        status: 400,
+        userMessage: 'No pending category assessment found, category $category, booking $bookingId, seq $assessmentSeq',
+      },
+    },
+  })
+
+const stubSupervisorReject = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      url: `/elite2/api/offender-assessments/category/reject`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {},
+    },
+  })
+
+const verifySupervisorApprove = ({ date }: { date: string }) =>
+  getMatchingRequests({
+    method: 'PUT',
+    urlPath: `/elite2/api/offender-assessments/category/approve`,
+  }).then(data => {
+    try {
+      return JSON.parse(data.text)
+    } catch (e) {
+      return []
+    }
+  })
+
 const stubUncategorised = (): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1082,6 +1195,31 @@ const stubUncategorisedAwaitingApproval = (): SuperAgentRequest =>
           lastName: 'HILLMOB',
           status: 'AWAITING_APPROVAL',
           category: 'C',
+          categoriserFirstName: 'BUGS',
+          categoriserLastName: 'BUNNY',
+          assessmentSeq: 5,
+        },
+      ],
+    },
+  })
+
+const stubUncategorisedAwaitingApprovalForWomenYOI = (location: AgencyLocation['id']): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/${location}?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 21,
+          offenderNo: 'C0001AA',
+          firstName: 'TINY',
+          lastName: 'TIM',
+          status: 'AWAITING_APPROVAL',
+          category: 'I',
           categoriserFirstName: 'BUGS',
           categoriserLastName: 'BUNNY',
           assessmentSeq: 5,
@@ -1196,9 +1334,11 @@ const verifyUpdateNextReviewDate = ({ date }: { date: string }) =>
 
 export default {
   stubAgencyDetails,
+  stubAgenciesPrison,
   stubAssessments,
   stubAssessmentsWithCurrent,
   stubAssessmentsWomen,
+  stubCategorise,
   stubCategorised,
   stubCategorisedMultiple,
   stubElite2Ping,
@@ -1212,11 +1352,16 @@ export default {
   stubGetStaffDetailsByUsernameList,
   stubOffenceHistory,
   stubSentenceDataGetSingle,
+  stubSupervisorApprove,
+  stubSupervisorApproveNoPendingAssessmentError,
+  stubSupervisorReject,
   stubUncategorised,
   stubUncategorisedAwaitingApproval,
+  stubUncategorisedAwaitingApprovalForWomenYOI,
   stubUncategorisedAwaitingApprovalWithLocation,
   stubUncategorisedForWomenYOI,
   stubUncategorisedNoStatus,
   stubUpdateNextReviewDate,
+  verifySupervisorApprove,
   verifyUpdateNextReviewDate,
 }

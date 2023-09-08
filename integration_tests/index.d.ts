@@ -19,6 +19,12 @@ declare namespace Cypress {
     checkTableRowData<T>({ tableRowsSelector: string; expectedValues: T }): Chainable<AUTWindow>
 
     /**
+     * Custom command to validate the common categorisation details
+     * @see formApprovedView.validateCategorisationDetails(...) for example usage
+     */
+    validateCategorisationDetails(columns: { key: string; value: string }[][]): Chainable<AUTWindow>
+
+    /**
      * Custom command to signIn. Set failOnStatusCode to false if you expect and non 200 return code
      * @example cy.signIn({ failOnStatusCode: boolean })
      */

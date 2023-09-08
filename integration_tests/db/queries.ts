@@ -38,6 +38,27 @@ export interface FormDbRow {
   cancelledBy: string | null
 }
 
+export interface LiteCategoryDbRow {
+  booking_id: number
+  sequence: number
+  category: string
+  supervisor_category: string
+  offender_no: string
+  prison_id: string
+  created_date: string
+  approved_date: string
+  assessed_by: string
+  approved_by: string
+  assessment_committee: string
+  assessment_comment: string
+  next_review_date: string
+  placement_prison_id: string
+  approved_committee: string
+  approved_placement_prison_id: string
+  approved_placement_comment: string
+  approved_comment: string
+}
+
 export interface NextReviewChangeHistoryDbRow {
   id: number
   booking_id: number
@@ -158,6 +179,68 @@ async function insertFormTableDbRow(rowData: MandatoryRowData & Partial<FormDbRo
   )
 }
 
+async function insertLiteCategoryTableDbRow({
+  booking_id,
+  sequence,
+  category,
+  supervisor_category,
+  offender_no,
+  prison_id,
+  created_date,
+  approved_date,
+  assessed_by,
+  approved_by,
+  assessment_committee,
+  assessment_comment,
+  next_review_date,
+  placement_prison_id,
+  approved_committee,
+  approved_placement_prison_id,
+  approved_placement_comment,
+  approved_comment,
+}: LiteCategoryDbRow) {
+  return await db.query(
+    `insert into lite_category (  booking_id,
+                                      sequence,
+                                      category,
+                                      supervisor_category,
+                                      offender_no,
+                                      prison_id,
+                                      created_date,
+                                      approved_date,
+                                      assessed_by,
+                                      approved_by,
+                                      assessment_committee,
+                                      assessment_comment,
+                                      next_review_date,
+                                      placement_prison_id,
+                                      approved_committee,
+                                      approved_placement_prison_id,
+                                      approved_placement_comment,
+                                      approved_comment) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
+    [
+      booking_id,
+      sequence,
+      category,
+      supervisor_category,
+      offender_no,
+      prison_id,
+      created_date,
+      approved_date,
+      assessed_by,
+      approved_by,
+      assessment_committee,
+      assessment_comment,
+      next_review_date,
+      placement_prison_id,
+      approved_committee,
+      approved_placement_prison_id,
+      approved_placement_comment,
+      approved_comment,
+    ]
+  )
+}
+
 async function insertSecurityReferralTableDbRow({
   offenderNumber,
   prisonId = 'LEI',
@@ -175,12 +258,28 @@ async function insertSecurityReferralTableDbRow({
   )
 }
 
+async function getLiteData({
+  bookingId,
+}: {
+  bookingId: LiteCategoryDbRow['booking_id']
+}): Promise<QueryArrayResult<LiteCategoryDbRow[]>> {
+  return await db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
+}
+
 async function selectFormTableDbRow({
   bookingId,
 }: {
   bookingId: FormDbRow['bookingId']
 }): Promise<QueryArrayResult<FormDbRow[]>> {
   return await db.query(`select * from form where booking_id = $1 order by sequence_no`, [bookingId])
+}
+
+async function selectLiteCategoryTableDbRow({
+  bookingId,
+}: {
+  bookingId: LiteCategoryDbRow['booking_id']
+}): Promise<QueryArrayResult<LiteCategoryDbRow[]>> {
+  return await db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
 }
 
 async function selectNextReviewChangeHistoryTableDbRow({
@@ -203,8 +302,11 @@ async function updateRiskProfile({
 
 export default {
   insertFormTableDbRow,
+  insertLiteCategoryTableDbRow,
   insertSecurityReferralTableDbRow,
+  getLiteData,
   selectFormTableDbRow,
+  selectLiteCategoryTableDbRow,
   selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
 }

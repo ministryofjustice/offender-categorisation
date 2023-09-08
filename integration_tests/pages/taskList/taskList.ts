@@ -18,7 +18,9 @@ export default class TaskListPage extends Page {
   furtherChargesButton = (): PageElement => cy.get('#furtherChargesButton')
   nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
   offendingHistoryButton = (): PageElement => cy.get('#offendingHistoryButton')
+  openConditionsButton = (): PageElement => cy.get('#openConditionsButton')
   securityButton = (): PageElement => cy.get('#securityButton')
+  violenceButton = (): PageElement => cy.get('#violenceButton')
 
   static createForBookingId = (bookingId: number) => {
     this._bookingId = bookingId
@@ -30,13 +32,21 @@ export default class TaskListPage extends Page {
   }
 
   validateSecurityReferralDate = (date: Date) => {
-    cy.get('#securitySection')
-      .find('div')
-      .contains(`Manually referred to Security (${moment(date).format('DD/MM/yyyy')})`)
-      .should('exist')
+    cy.get('#securitySection').should(
+      'contain.text',
+      `Manually referred to Security (${moment(date).format('DD/MM/yyyy')})`
+    )
   }
 
   validateSecurityCompletedDate = (date: Date) => {
     cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
   }
+
+  validateSummarySectionText = (expectedText: string[]) =>
+    expectedText.forEach(text => {
+      cy.get('#review').should('contain.text', text)
+    })
+
+  continueReviewAndCategorisationButton = (bookingId: number, expectedButtonText = 'Continue') =>
+    cy.contains(`a[href="/form/categoriser/review/${bookingId}"]`, expectedButtonText)
 }
