@@ -1,4 +1,4 @@
-import CategorisationHomePage from '../../pages/categoriser/home'
+import CategoriserHomePage from '../../pages/categoriser/home'
 import CategoriserLandingPage from '../../pages/categoriser/landing'
 import NextReviewQuestionPage, { NextReviewChoice } from '../../pages/form/ratings/nextReviewQuestionPage'
 import NextReviewConfirmationPage, { NextDateChoice } from '../../pages/form/ratings/nextReviewConfirmationPage'
@@ -24,7 +24,7 @@ const EXPECTED_DATE_FORMAT_FRONT_END = 'DD/MM/yyyy'
 const EXPECTED_DATE_FORMAT_BACK_END = 'yyyy-MM-DD'
 
 describe('Next Review', () => {
-  let categorisationHomePage: CategorisationHomePage
+  let categoriserHomePage: CategoriserHomePage
   let categoriserLandingPage: CategoriserLandingPage
   let nextReviewQuestionPage: NextReviewQuestionPage
   let nextReviewConfirmationPage: NextReviewConfirmationPage
@@ -80,8 +80,8 @@ describe('Next Review', () => {
       })
       cy.signIn()
 
-      categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-      categorisationHomePage.selectPrisonerWithBookingId(bookingId)
+      categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
       taskListPage.nextReviewDateButton().click()
@@ -131,8 +131,8 @@ describe('Next Review', () => {
       })
       cy.signIn()
 
-      categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-      categorisationHomePage.selectPrisonerWithBookingId(bookingId)
+      categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
       taskListPage.nextReviewDateButton().click()

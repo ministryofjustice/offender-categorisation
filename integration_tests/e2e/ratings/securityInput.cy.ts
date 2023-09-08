@@ -1,4 +1,4 @@
-import CategorisationHomePage from '../../pages/categoriser/home'
+import CategoriserHomePage from '../../pages/categoriser/home'
 import TaskListPage from '../../pages/taskList/taskList'
 import moment from 'moment/moment'
 import { CATEGORISER_USER, SECURITY_USER, UserAccount } from '../../factory/user'
@@ -14,7 +14,7 @@ import CategoriserSecurityBackPage, {
 } from '../../pages/form/ratings/categoriserSecurityBackPage'
 
 describe('Security Input', () => {
-  let categorisationHomePage: CategorisationHomePage
+  let categoriserHomePage: CategoriserHomePage
   let categoriserSecurityInputPage: CategoriserSecurityInputPage
   let taskListPage: TaskListPage
   let bookingId: number
@@ -58,8 +58,8 @@ describe('Security Input', () => {
     })
     cy.signIn()
 
-    categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-    categorisationHomePage.selectPrisonerWithBookingId(bookingId)
+    categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+    categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
     taskListPage.securityButton().click()
@@ -215,7 +215,7 @@ describe('Security Input', () => {
             })
             cy.signIn()
 
-            categorisationHomePage.selectPrisonerWithBookingId(bookingId, 'Edit')
+            categoriserHomePage.selectPrisonerWithBookingId(bookingId, 'Edit')
 
             taskListPage.securityButton().click()
 

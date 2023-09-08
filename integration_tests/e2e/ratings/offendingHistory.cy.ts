@@ -126,7 +126,7 @@ describe('Offending History', () => {
 
     describe('should record a valid form submission', () => {
       it('should accept no previous convictions', () => {
-        categoriserOffendingHistoryPage.selectPreviousConditionsRadioButton('NO')
+        categoriserOffendingHistoryPage.selectPreviousConvictionsRadioButton('NO')
         categoriserOffendingHistoryPage.validatePreviousConvictionsTextBox({ isVisible: false })
         categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
@@ -148,7 +148,7 @@ describe('Offending History', () => {
       })
 
       it('should record previous convictions and the reasoning', () => {
-        categoriserOffendingHistoryPage.selectPreviousConditionsRadioButton('YES')
+        categoriserOffendingHistoryPage.selectPreviousConvictionsRadioButton('YES')
         categoriserOffendingHistoryPage.validatePreviousConvictionsTextBox({ isVisible: true, expectedText: '' })
         categoriserOffendingHistoryPage.setPreviousConvictionsText('some convictions details')
         categoriserOffendingHistoryPage.saveAndReturnButton().click()

@@ -1,7 +1,9 @@
-import BaseCategorisationPage from './base'
+import BaseCategoriserPage from './base'
 
-export default class CategorisationHomePage extends BaseCategorisationPage {
-  static baseUrl: string = '/categorisationHome'
+type ToDoTableData = [string, string, string, string, string, string, string][]
+
+export default class CategoriserHomePage extends BaseCategoriserPage {
+  static baseUrl: string = '/categoriserHome'
 
   constructor() {
     super('Prisoner Categorisation')
@@ -10,4 +12,10 @@ export default class CategorisationHomePage extends BaseCategorisationPage {
   selectPrisonerWithBookingId(bookingId: number, expectedButtonText = 'Start') {
     cy.contains(`a[href="/tasklist/${bookingId}"]`, expectedButtonText).click()
   }
+
+  validateToDoTableData = (expectedValues: ToDoTableData) =>
+    cy.checkTableRowData<ToDoTableData>({
+      tableRowsSelector: 'table#offenderTable > tbody > tr',
+      expectedValues,
+    })
 }

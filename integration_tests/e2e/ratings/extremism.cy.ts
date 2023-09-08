@@ -1,4 +1,4 @@
-import CategorisationHomePage from '../../pages/categoriser/home'
+import CategoriserHomePage from '../../pages/categoriser/home'
 import TaskListPage from '../../pages/taskList/taskList'
 import moment from 'moment/moment'
 import { CATEGORISER_USER, UserAccount } from '../../factory/user'
@@ -8,7 +8,7 @@ import { FormDbJson } from '../../fixtures/db-key-convertor'
 import Status from '../../../server/utils/statusEnum'
 
 describe('Extremism', () => {
-  let categorisationHomePage: CategorisationHomePage
+  let categoriserHomePage: CategoriserHomePage
   let extremismPage: ExtremismPage
   let taskListPage: TaskListPage
   let bookingId: number
@@ -53,8 +53,8 @@ describe('Extremism', () => {
     })
     cy.signIn()
 
-    categorisationHomePage = Page.verifyOnPage(CategorisationHomePage)
-    categorisationHomePage.selectPrisonerWithBookingId(bookingId)
+    categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+    categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
     taskListPage.extremismButton().click()
