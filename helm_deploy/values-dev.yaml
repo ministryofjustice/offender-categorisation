@@ -16,7 +16,7 @@ generic-service:
   env:
     INGRESS_URL: https://dev.offender-categorisation.service.justice.gov.uk
     NOMIS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-    ELITE2API_ENDPOINT_URL: https://api-dev.prison.service.justice.gov.uk/
+    ELITE2API_ENDPOINT_URL: https://prison-api-dev.prison.service.justice.gov.uk/
     RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
     ALLOCATION_MANAGER_ENDPOINT_URL: https://dev.moic.service.justice.gov.uk/
     PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search-dev.prison.service.justice.gov.uk/
