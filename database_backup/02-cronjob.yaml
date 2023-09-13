@@ -17,6 +17,7 @@ spec:
         spec:
           securityContext:
             runAsUser: 999
+          serviceAccountName: "offender-categorisation"
           containers:
             - name: dbsnapshot
               image: "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools:latest"
