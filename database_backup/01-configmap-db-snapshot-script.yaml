@@ -14,6 +14,7 @@ data:
     SNAPSHOT_TIME="$(date +%s)"
     DB_SNAPSHOT_IDENTIFIER="${SNAPSHOT_PREFIX}-${SNAPSHOT_TIME}"
     SORT_FIELD="$(echo -n "${DB_SNAPSHOT_IDENTIFIER}-" | tr -cd '-' | wc -c)"
+    cd ~
     aws rds create-db-snapshot --db-instance-identifier $DB_INSTANCE_IDENTIFIER  --db-snapshot-identifier $DB_SNAPSHOT_IDENTIFIER
     aws rds wait db-snapshot-available --db-instance-identifier $DB_INSTANCE_IDENTIFIER  --db-snapshot-identifier $DB_SNAPSHOT_IDENTIFIER
     aws rds describe-db-snapshots --snapshot-type manual --db-instance-identifier $DB_INSTANCE_IDENTIFIER | jq -r  ".[][] | select(.DBSnapshotIdentifier | startswith(\"${SNAPSHOT_PREFIX}\")) | .DBSnapshotIdentifier" | sort -nr | tail -n +$RETENTION

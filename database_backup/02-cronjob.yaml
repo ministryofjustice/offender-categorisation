@@ -15,12 +15,11 @@ spec:
       activeDeadlineSeconds: 1200
       template:
         spec:
-          securityContext:
-            runAsUser: 999
+          serviceAccountName: "offender-categorisation"
           serviceAccountName: "offender-categorisation"
           containers:
             - name: dbsnapshot
-              image: "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools:latest"
+              image: "ghcr.io/ministryofjustice/hmpps-devops-tools:latest"
               command:
                 - /bin/entrypoint.sh
               volumeMounts:
