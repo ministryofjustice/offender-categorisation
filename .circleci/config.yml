@@ -7,7 +7,7 @@ orbs:
 parameters:
   node-version:
     type: string
-    default: 14.18.1-browsers
+    default: 18.17.1-browsers
   alerts-slack-channel:
     type: string
     default: dps_sed_alerts
