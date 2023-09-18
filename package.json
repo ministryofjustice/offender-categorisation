@@ -24,8 +24,8 @@
     "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-node-feature\" \"npm run watch-sass\""
   },
   "engines": {
-    "node": ">= 14.17.0",
-    "npm": ">= 7.11.1"
+    "node": ">= 18.17.1",
+    "npm": ">= 9.5.1"
   },
   "nodemonConfig": {
     "ext": "js,mjs,json,html",

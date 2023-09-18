@@ -31,8 +31,8 @@ You will need the following tools installed:
 
 |      Tool       |   Version   |                                Reason                                |
 |:---------------:|:-----------:|:--------------------------------------------------------------------:|
-|       npm       | &ge; 7.11.x |  Node package manager for resolving/installing project dependencies  |
-|      node       | &ge;14.17.x |                          NodeJS interpreter                          |
+|       npm       |  &ge;9.5.x  |  Node package manager for resolving/installing project dependencies  |
+|      node       | &ge;18.17.x |                          NodeJS interpreter                          |
 |     docker      |  &ge;18.x   |           Installing/removing/managing containers & images           |
 | docker-compose  | &ge;1.25.x  |       Convenience utility for grouped management of containers       |
 |       jdk       |    17.x     |        For running the integration tests using groovy 2.5.18         |
