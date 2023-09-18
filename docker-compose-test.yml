@@ -12,6 +12,8 @@ services:
       - POSTGRES_PASSWORD=form-builder
       - POSTGRES_USER=form-builder
       - POSTGRES_DB=form-builder
+    volumes:
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   categorisation-redis:
     image: redis
@@ -65,6 +67,15 @@ services:
         aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name risk_profiler_change_dlq
         exit 0
       "
+
+  wiremock:
+    image: wiremock/wiremock
+    networks:
+      - hmpps
+    container_name: wiremock
+    restart: always
+    ports:
+      - "9091:8080"
 
 networks:
   hmpps:

@@ -1,6 +1,7 @@
 ---
 generic-service:
   nameOverride: offender-categorisation
+  serviceAccountName: offender-categorisation
 
   image:
     repository: quay.io/hmpps/offender-categorisation
@@ -55,23 +56,15 @@ generic-service:
       GOOGLE_ANALYTICS_ID: "GOOGLE_ANALYTICS_ID"
 
     rp-sqs-instance-output:
-      RP_QUEUE_ACCESS_KEY_ID: "access_key_id"
-      RP_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
       RP_QUEUE_URL: "sqs_rpc_url"
 
     rp-sqs-dl-instance-output:
-      RP_DL_QUEUE_ACCESS_KEY_ID: "access_key_id"
-      RP_DL_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
       RP_DL_QUEUE_URL: "sqs_rpc_url"
 
     ocu-events-sqs-instance-output:
-      EVENT_QUEUE_ACCESS_KEY_ID: "access_key_id"
-      EVENT_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
       EVENT_QUEUE_URL: "url"
 
     ocu-events-sqs-dl-instance-output:
-      EVENT_DL_QUEUE_ACCESS_KEY_ID: "access_key_id"
-      EVENT_DL_QUEUE_SECRET_ACCESS_KEY: "secret_access_key"
       EVENT_DL_QUEUE_URL: "url"
 
     oc-elasticache-redis:
