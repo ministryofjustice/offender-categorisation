@@ -20,7 +20,7 @@ export default abstract class Page {
     cy.url().should('contain', url)
   }
 
-  signOut = (): PageElement => cy.get('[data-qa=logout]')
+  signOut = (): PageElement => cy.get('[data-qa=signOut]')
 
   manageDetails = (): PageElement => cy.get('[data-qa=manageDetails]')
 
@@ -51,6 +51,13 @@ export default abstract class Page {
       cy.get(selector).should('contain.text', text)
     })
   }
+
+  fallbackHeader = (): PageElement => cy.get('[data-qa=cat-tool-fallback-header]')
+  fallbackFooter = (): PageElement => cy.get('[data-qa=cat-tool-fallback-footer]')
+  headerUserName = (): PageElement => cy.get('[data-qa=header-user-name]')
+
+  mockDpsComponentHeader = (): PageElement => cy.get('.connect-dps-common-header')
+  mockDpsComponentFooter = (): PageElement => cy.get('.connect-dps-common-footer')
 
   protected _cleanString = cleanString
 }

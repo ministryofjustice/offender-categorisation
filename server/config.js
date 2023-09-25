@@ -22,6 +22,7 @@ function get(name, fallback, log, options = {}) {
 const authUrl = get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true)
 
 module.exports = {
+  environment: process.env.ENVIRONMENT || 'local',
   redis: {
     tls_enabled: get('REDIS_TLS_ENABLED', 'false', true),
     port: get('REDIS_PORT', 6379, true),
@@ -47,26 +48,26 @@ module.exports = {
       queueUrl: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', false, {
         requireInProduction: true,
       }),
-      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null),
-      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null),
+      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null, false),
+      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
         queueUrl: get('RP_DL_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change_dlq', false, {
           requireInProduction: true,
         }),
-        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null),
-        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', null),
+        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null, false),
+        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', null, false),
       },
     },
     event: {
       queueUrl: get('EVENT_QUEUE_URL', 'http://localhost:4576/queue/event', true),
-      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null),
-      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null),
+      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null, false),
+      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
         queueUrl: get('EVENT_DL_QUEUE_URL', 'http://localhost:4576/queue/event_dlq', false, {
           requireInProduction: true,
         }),
-        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null),
-        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', null),
+        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null, false),
+        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', null, false),
       },
     },
     enabled: get('SQS_ENABLED', 'true', true),
@@ -81,7 +82,7 @@ module.exports = {
         deadline: 35000,
       },
       apiClientId: get('API_CLIENT_ID', 'categorisationtool', true),
-      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', false),
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
@@ -136,9 +137,22 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
     },
+    frontendComponents: {
+      url: get('COMPONENT_API_URL', 'http://localhost:8085/components', true),
+      timeout: {
+        response: Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 20000, true)),
+        deadline: Number(get('COMPONENT_API_TIMEOUT_DEADLINE', 20000, true)),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
   dpsUrl: `${get('DPS_URL', 'http://localhost:3000/', true)}`,
+  supportUrl: `${get('SUPPORT_URL', 'http://localhost:3000/', true)}`,
   googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', ' ', true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 6, true)}`,
   recatMarginMonths: `${get('RECAT_MARGIN_MONTHS', 2, true)}`,

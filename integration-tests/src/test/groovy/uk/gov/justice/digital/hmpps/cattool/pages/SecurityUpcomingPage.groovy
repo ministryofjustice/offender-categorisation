@@ -17,7 +17,7 @@ class SecurityUpcomingPage extends Page {
     prisonNos { bodyRows*.$('td', 1)*.text()  }
     dueDates { bodyRows*.$('td', 3)*.text()  }
     referrer { bodyRows*.$('td', 4)*.text()  }
-    logoutLink { $('a', href: '/logout')}
+    logoutLink { $('a', href: '/sign-out')}
     homeTabLink { $('a', href: '/securityHome')}
   }
 }

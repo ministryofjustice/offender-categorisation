@@ -20,6 +20,8 @@ const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
+const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
+const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
 const logger = require('../log')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const config = require('./config')
@@ -42,6 +44,7 @@ module.exports = function createApp({
   userService,
   riskProfilerService,
   statsService,
+  frontEndComponentsService,
 }) {
   const app = express()
 
@@ -59,6 +62,8 @@ module.exports = function createApp({
 
   // View Engine Configuration
   app.set('view engine', 'html')
+
+  setUpEnvironmentName(app)
 
   nunjucksSetup(app, path)
 
@@ -187,7 +192,7 @@ module.exports = function createApp({
         } catch (error) {
           const sanitisedError = getSanitisedError(error)
           logger.error(sanitisedError, `Token refresh error: ${req.user.username}`)
-          return res.redirect('/logout')
+          return res.redirect('/sign-out')
         }
       }
     }
@@ -222,7 +227,7 @@ module.exports = function createApp({
     })(req, res, next)
   )
 
-  app.use('/logout', (req, res, next) => {
+  app.use('/sign-out', (req, res, next) => {
     if (req.user) {
       req.logout(err => {
         if (err) return next(err)
@@ -232,6 +237,7 @@ module.exports = function createApp({
   })
 
   app.use(authorisationMiddleware(userService, offendersService))
+  app.use(getFrontEndComponentsMiddleware(frontEndComponentsService))
 
   const homeRouter = createHomeRouter({
     userService,

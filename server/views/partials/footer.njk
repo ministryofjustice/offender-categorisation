@@ -1,0 +1,27 @@
+{% from "footer/macro.njk" import govukFooter %}
+
+{{ govukFooter({
+  contentLicence: { text: "Official sensitive" },
+  attributes: {
+    "data-qa": "cat-tool-fallback-footer"
+  },
+  meta: {
+    items: [
+      {
+        href: supportUrl + "feedback-and-support",
+        text: "Get help"
+      },
+      {
+        href: dpsHome + "content/terms-conditions",
+        text: "Terms and conditions"
+      },
+      {
+        href: dpsHome + "content/terms-conditions",
+        text: "Terms and conditions",
+        attributes: {
+          id: "surveyLink"
+        }
+      }
+    ]
+  }
+}) }}
