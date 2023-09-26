@@ -47,26 +47,26 @@ module.exports = {
       queueUrl: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', false, {
         requireInProduction: true,
       }),
-      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null),
-      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null),
+      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null, false),
+      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
         queueUrl: get('RP_DL_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change_dlq', false, {
           requireInProduction: true,
         }),
-        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null),
-        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', null),
+        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null, false),
+        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', null, false),
       },
     },
     event: {
       queueUrl: get('EVENT_QUEUE_URL', 'http://localhost:4576/queue/event', true),
-      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null),
-      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null),
+      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null, false),
+      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
         queueUrl: get('EVENT_DL_QUEUE_URL', 'http://localhost:4576/queue/event_dlq', false, {
           requireInProduction: true,
         }),
-        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null),
-        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', null),
+        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null, false),
+        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', null, false),
       },
     },
     enabled: get('SQS_ENABLED', 'true', true),
@@ -81,7 +81,7 @@ module.exports = {
         deadline: 35000,
       },
       apiClientId: get('API_CLIENT_ID', 'categorisationtool', true),
-      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', false),
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
