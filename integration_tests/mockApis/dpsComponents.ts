@@ -47,7 +47,7 @@ const stubHeaderSuccess = () =>
           '<header class="connect-dps-common-header govuk-!-display-none-print" role="banner">\n' +
           '  <div class="connect-dps-common-header__container">\n' +
           '    <div class="connect-dps-common-header__title">\n' +
-          '      <a class="connect-dps-common-header__link connect-dps-common-header__title__organisation-name" href="https://digital-dev.prison.service.justice.gov.uk">\n' +
+          '      <a class="connect-dps-common-header__link connect-dps-common-header__title__organisation-name" href="http://localhost:9091/dps">\n' +
           '        <svg role="presentation" focusable="false" class="connect-dps-common-header__logo" xmlns="http://www.w3.org/2000/svg" width="41" height="30" viewBox="0 0 41 30">\n' +
           '          <path fill-rule="evenodd" clip-rule="evenodd" d="M7.54677 9.20065C8.64351 9.65301 9.88802 9.13584 10.3347 8.05183C10.7839 6.97073 10.27 5.71374 9.17342 5.26352C8.09836 4.82212 6.84843 5.34938 6.40124 6.4349C5.95404 7.515 6.47121 8.76014 7.54677 9.20065Z"/>\n' +
           '          <path fill-rule="evenodd" clip-rule="evenodd" d="M2.71865 12.0298C3.81564 12.4821 5.0599 11.965 5.50659 10.881C5.9558 9.79984 5.44191 8.54286 4.34529 8.09264C3.27023 7.65124 2.02031 8.17837 1.57311 9.26402C1.12592 10.3441 1.64308 11.5891 2.71865 12.0298Z"/>\n' +
@@ -79,7 +79,7 @@ const stubHeaderSuccess = () =>
           '        \n' +
           '          <li class="connect-dps-common-header__navigation__item">\n' +
           '            <img class="connect-dps-common-header__link__icon govuk-!-padding-right-3" src="https://frontend-components-dev.hmpps.service.justice.gov.uk/assets/images/location.svg" aria-hidden="true" alt="" />\n' +
-          '            <a data-qa="changeCaseLoad" class="connect-dps-common-header__link" href="https://digital-dev.prison.service.justice.gov.uk/change-caseload" data-test="change-case-load-link" referrerpolicy="no-referrer-when-downgrade">\n' +
+          '            <a data-qa="changeCaseLoad" class="connect-dps-common-header__link" href="http://localhost:9091/dps/change-caseload" data-test="change-case-load-link" referrerpolicy="no-referrer-when-downgrade">\n' +
           '              <span data-qa=header-active-case-load>Hewell (HMP)</span>\n' +
           '            </a>\n' +
           '          </li>\n' +
@@ -87,7 +87,7 @@ const stubHeaderSuccess = () =>
           '\n' +
           '        \n' +
           '          <li class="connect-dps-common-header__navigation__item">\n' +
-          '            <a data-qa="manageDetails" class="connect-dps-common-header__link" href="https://sign-in-dev.hmpps.service.justice.gov.uk/auth/account-details" data-test="manage-account-link" referrerpolicy="no-referrer-when-downgrade">\n' +
+          '            <a data-qa="manageDetails" class="connect-dps-common-header__link" href="http://localhost:9091/auth/account-details" data-test="manage-account-link" referrerpolicy="no-referrer-when-downgrade">\n' +
           '              <span data-qa=header-user-name>T. Testfield</span>\n' +
           '              <span class="connect-dps-common-header__link__sub-text">Manage your details</span>\n' +
           '            </a>\n' +
@@ -142,25 +142,25 @@ const stubFooterSuccess = () =>
           '\n' +
           '                \n' +
           '                    <li class="connect-dps-common-footer__inline-list-item">\n' +
-          '                        <a class="connect-dps-common-footer__link" href="https://dps-dev.prison.service.justice.gov.uk/accessibility-statement">\n' +
+          '                        <a class="connect-dps-common-footer__link" href="http://localhost:9091/dps/accessibility-statement">\n' +
           '                            Accessibility statement\n' +
           '                        </a>\n' +
           '                    </li>\n' +
           '                \n' +
           '                    <li class="connect-dps-common-footer__inline-list-item">\n' +
-          '                        <a class="connect-dps-common-footer__link" href="https://dps-dev.prison.service.justice.gov.uk/terms-and-conditions">\n' +
+          '                        <a class="connect-dps-common-footer__link" href="http://localhost:9091/dps/terms-and-conditions">\n' +
           '                            Terms and conditions\n' +
           '                        </a>\n' +
           '                    </li>\n' +
           '                \n' +
           '                    <li class="connect-dps-common-footer__inline-list-item">\n' +
-          '                        <a class="connect-dps-common-footer__link" href="https://dps-dev.prison.service.justice.gov.uk/privacy-policy">\n' +
+          '                        <a class="connect-dps-common-footer__link" href="http://localhost:9091/dps/privacy-policy">\n' +
           '                            Privacy policy\n' +
           '                        </a>\n' +
           '                    </li>\n' +
           '                \n' +
           '                    <li class="connect-dps-common-footer__inline-list-item">\n' +
-          '                        <a class="connect-dps-common-footer__link" href="https://dps-dev.prison.service.justice.gov.uk/cookies-policy">\n' +
+          '                        <a class="connect-dps-common-footer__link" href="http://localhost:9091/dps/cookies-policy">\n' +
           '                            Cookies policy\n' +
           '                        </a>\n' +
           '                    </li>\n' +
