@@ -148,4 +148,10 @@ module.exports = {
     true
   )}`,
   https: production,
+  featureFlags: {
+    dpsComponents: {
+      header: get('FEATURE_FLAG_ENABLE_DPS_COMPONENT_HEADER', false, true),
+      footer: get('FEATURE_FLAG_ENABLE_DPS_COMPONENT_FOOTER', false, true),
+    },
+  },
 }
