@@ -30,14 +30,14 @@ module.exports = {
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),
-    ttl: get('SESSION_TTL', 1200),
+    ttl: get('SESSION_TTL', 1200, true),
   },
 
   expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120', true),
   staticResourceCacheDuration: get('STATIC_RESOURCE_TIMEOUT_IN_MINUTES', '0', true),
   db: {
     username: get('DB_USER', 'form-builder', true),
-    password: get('DB_PASS', 'form-builder'),
+    password: get('DB_PASS', 'form-builder', false),
     server: get('DB_SERVER', 'localhost', true),
     database: get('DB_NAME', 'form-builder', true),
     sslEnabled: get('DB_SSL_ENABLED', 'false', true),
@@ -47,26 +47,26 @@ module.exports = {
       queueUrl: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', false, {
         requireInProduction: true,
       }),
-      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null),
-      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null),
+      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null, false),
+      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
         queueUrl: get('RP_DL_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change_dlq', false, {
           requireInProduction: true,
         }),
-        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null),
-        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', null),
+        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null, false),
+        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', null, false),
       },
     },
     event: {
       queueUrl: get('EVENT_QUEUE_URL', 'http://localhost:4576/queue/event', true),
-      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null),
-      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null),
+      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null, false),
+      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
         queueUrl: get('EVENT_DL_QUEUE_URL', 'http://localhost:4576/queue/event_dlq', false, {
           requireInProduction: true,
         }),
-        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null),
-        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', null),
+        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null, false),
+        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', null, false),
       },
     },
     enabled: get('SQS_ENABLED', 'true', true),
@@ -74,14 +74,14 @@ module.exports = {
   apis: {
     oauth2: {
       url: authUrl,
-      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'), true),
+      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true), true),
       manageAccountUrl: `${authUrl}/account-details`,
       timeout: {
         response: 30000,
         deadline: 35000,
       },
       apiClientId: get('API_CLIENT_ID', 'categorisationtool', true),
-      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', false),
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
