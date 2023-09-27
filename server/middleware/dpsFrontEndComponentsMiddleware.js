@@ -2,6 +2,14 @@ const logger = require('../../log')
 
 module.exports = function getFrontendComponents(frontEndComponentsService) {
   return async (req, res, next) => {
+    if (!res.locals.featureFlag.dpsHeader && !res.locals.featureFlag.dpsFooter) {
+      logger.debug('DPS Front End Components middleware early return')
+      next()
+      return
+    }
+
+    logger.debug('Using DPS Front End Components middleware')
+
     try {
       const [header, footer] = await Promise.all([
         frontEndComponentsService.getComponent('header', res.locals?.user?.token),

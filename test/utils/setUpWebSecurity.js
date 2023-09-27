@@ -1,8 +1,8 @@
 const express = require('express')
 const supertest = require('supertest')
-const setUpWebSecurity = require('../../server/middleware/webSecurityMiddleware')
+const setUpWebSecurity = require('../../server/utils/setUpWebSecurity')
 
-describe('Web Security Middleware', () => {
+describe('Set Up Web Security', () => {
   let app
 
   beforeAll(() => {

@@ -24,6 +24,7 @@ const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const featureFlagMiddleware = require('./middleware/featureFlagMiddleware')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
+const setUpWebSecurity = require('./utils/setUpWebSecurity')
 const logger = require('../log')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const config = require('./config')
@@ -72,11 +73,17 @@ module.exports = function createApp({
   // Server Configuration
   app.set('port', process.env.PORT || 3000)
 
-  // Secure code best practice - see:
-  // 1. https://expressjs.com/en/advanced/best-practice-security.html,
-  // 2. https://www.npmjs.com/package/helmet
-  app.use(helmet({ contentSecurityPolicy: false })) // compatible with helmet 3.x
-  app.use(helmet.referrerPolicy({ policy: 'same-origin' }))
+  if (config.featureFlags.securityHeaders) {
+    logger.debug('Using new helmet config')
+    app.use(setUpWebSecurity())
+  } else {
+    logger.debug('Using deprecated helmet config')
+    // Secure code best practice - see:
+    // 1. https://expressjs.com/en/advanced/best-practice-security.html,
+    // 2. https://www.npmjs.com/package/helmet
+    app.use(helmet({ contentSecurityPolicy: false })) // compatible with helmet 3.x
+    app.use(helmet.referrerPolicy({ policy: 'same-origin' }))
+  }
 
   app.use(addRequestId)
 

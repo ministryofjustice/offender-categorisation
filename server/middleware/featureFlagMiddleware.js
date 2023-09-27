@@ -1,10 +1,12 @@
 const config = require('../config')
 
 module.exports = async (req, res, next) => {
-  const enableDpsHeader = config.featureFlags.dpsComponents.header || req.cookies.enableDpsComponentHeader === 'true'
-  const enableDpsFooter = config.featureFlags.dpsComponents.footer || req.cookies.enableDpsComponentFooter === 'true'
+  const securityHeaders = config.featureFlags.securityHeaders || req.cookies.enableUpdatedSecurityHeaders1 === 'true'
+  const enableDpsHeader = config.featureFlags.dpsComponents.header || req.cookies.enableDpsComponentHeader1 === 'true'
+  const enableDpsFooter = config.featureFlags.dpsComponents.footer || req.cookies.enableDpsComponentFooter1 === 'true'
 
   res.locals.featureFlag = {
+    securityHeaders,
     dpsHeader: enableDpsHeader,
     dpsFooter: enableDpsFooter,
   }
