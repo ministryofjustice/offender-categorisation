@@ -1,4 +1,4 @@
-const createDpsFeComponentService = require('./dpsFeComponentService')
+const createDpsFeComponentService = require('../../server/services/dpsFeComponentService')
 
 const mockDpsFeComponentsClientBuilder = jest.fn()
 
