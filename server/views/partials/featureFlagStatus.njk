@@ -1,0 +1,23 @@
+{% if featureFlag.detected %}
+
+  {% from "phase-banner/macro.njk" import govukPhaseBanner %}
+
+  {% if featureFlag.dpsHeader %}
+    {{ govukPhaseBanner({
+      tag: {
+        text: "Header"
+      },
+      html: 'The DPS header component is enabled.'
+    }) }}
+  {% endif %}
+
+  {% if featureFlag.dpsFooter %}
+    {{ govukPhaseBanner({
+      tag: {
+        text: "Footer"
+      },
+      html: 'The DPS footer component is enabled.'
+    }) }}
+  {% endif %}
+
+{% endif %}
