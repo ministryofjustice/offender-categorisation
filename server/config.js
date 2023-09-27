@@ -3,7 +3,7 @@ const logger = require('../log')
 
 const production = process.env.NODE_ENV === 'production'
 
-function get(name, fallback, log, options = {}) {
+function get(name, fallback, log = false, options = {}) {
   if (process.env[name]) {
     if (log) {
       logger.info(`Env var: ${name} value: ${process.env[name]} `)
@@ -31,14 +31,14 @@ module.exports = {
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),
-    ttl: get('SESSION_TTL', 1200),
+    ttl: get('SESSION_TTL', 1200, true),
   },
 
   expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120', true),
   staticResourceCacheDuration: get('STATIC_RESOURCE_TIMEOUT_IN_MINUTES', '0', true),
   db: {
     username: get('DB_USER', 'form-builder', true),
-    password: get('DB_PASS', 'form-builder'),
+    password: get('DB_PASS', 'form-builder', false),
     server: get('DB_SERVER', 'localhost', true),
     database: get('DB_NAME', 'form-builder', true),
     sslEnabled: get('DB_SSL_ENABLED', 'false', true),
@@ -75,7 +75,7 @@ module.exports = {
   apis: {
     oauth2: {
       url: authUrl,
-      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'), true),
+      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true), true),
       manageAccountUrl: `${authUrl}/account-details`,
       timeout: {
         response: 30000,
@@ -162,4 +162,10 @@ module.exports = {
     true
   )}`,
   https: production,
+  featureFlags: {
+    dpsComponents: {
+      header: get('FEATURE_FLAG_ENABLE_DPS_COMPONENT_HEADER', false, true),
+      footer: get('FEATURE_FLAG_ENABLE_DPS_COMPONENT_FOOTER', false, true),
+    },
+  },
 }

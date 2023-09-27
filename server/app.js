@@ -8,6 +8,7 @@ const csurf = require('csurf')
 const compression = require('compression')
 const passport = require('passport')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
@@ -20,6 +21,7 @@ const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
+const featureFlagMiddleware = require('./middleware/featureFlagMiddleware')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
 const logger = require('../log')
@@ -205,6 +207,9 @@ module.exports = function createApp({
     req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
     next()
   })
+
+  app.use(cookieParser())
+  app.use(featureFlagMiddleware)
 
   const authLogoutUrl = `${config.apis.oauth2.externalUrl}/logout?client_id=${config.apis.oauth2.apiClientId}&redirect_uri=${config.domain}`
 
