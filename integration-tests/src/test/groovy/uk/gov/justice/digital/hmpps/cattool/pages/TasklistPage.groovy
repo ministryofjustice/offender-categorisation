@@ -18,7 +18,7 @@ class TasklistPage extends Page {
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     sentenceTableRow1(required: false) { $('table#sentences tr', 1).find('td') }
     sentenceTableRow2(required: false) { $('table#sentences tr', 2).find('td') }
-    logoutLink { $('a', href: '/logout') }
+    logoutLink { $('a', href: '/sign-out') }
     supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
     offendingHistoryButton { $('#offendingHistoryButton') }
     furtherChargesButton { $('#furtherChargesButton') }
