@@ -1,4 +1,4 @@
-const dpsFrontEndComponentsMiddleware = require('./dpsFrontEndComponentsMiddleware')
+const dpsFrontEndComponentsMiddleware = require('../../server/middleware/dpsFrontEndComponentsMiddleware')
 const logger = require('../../log')
 
 describe('dpsFrontEndComponentsMiddleware', () => {
