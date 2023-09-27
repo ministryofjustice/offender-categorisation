@@ -22,7 +22,6 @@ class SecurityHomePage extends Page {
     startButtons { bodyRows*.$('td', 6)*.find('*')  }
     logoutLink { $('a', href: '/sign-out')}
     noOffendersText(required: false) { $('#no-results-message').text() }
-    logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/securityDone')}
     upcomingTabLink { $('a', href: '/securityUpcoming')}
   }
