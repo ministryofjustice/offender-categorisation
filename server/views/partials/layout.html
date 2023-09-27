@@ -84,7 +84,7 @@
 <script src="/assets/all.js"></script>
 <script>window.GOVUKFrontend.initAll();</script>
 
-  {% if featureFlag.dpsHeader or featureFlag.dpsFooter %}
+  {% if featureFlag.dpsFooter %}
     <script src="/assets/js/dps-footer-feedback-link-updater.js"></script>
   {% else %}
     <script>document.getElementById('terms').setAttribute("href", "{{ dpsHome }}content/terms-conditions");</script>
