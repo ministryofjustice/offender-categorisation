@@ -73,7 +73,7 @@ module.exports = function createApp({
   // Server Configuration
   app.set('port', process.env.PORT || 3000)
 
-  if (config.featureFlags.securityHeaders) {
+  if (config.featureFlags.securityHeaders === 'true') {
     logger.debug('Using new helmet config')
     app.use(setUpWebSecurity())
   } else {

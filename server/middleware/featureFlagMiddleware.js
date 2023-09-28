@@ -1,9 +1,16 @@
 const config = require('../config')
 
+const isTruthy = value => value === 'true'
+
 module.exports = async (req, res, next) => {
-  const securityHeaders = config.featureFlags.securityHeaders || req.cookies.enableUpdatedSecurityHeaders === 'true'
-  const enableDpsHeader = config.featureFlags.dpsComponents.header || req.cookies.enableDpsComponentHeader === 'true'
-  const enableDpsFooter = config.featureFlags.dpsComponents.footer || req.cookies.enableDpsComponentFooter === 'true'
+  // cannot be enabled with a cookie as invocation occurs too early in the app setup
+  // this is really here only for display purposes
+  const securityHeaders = isTruthy(config.featureFlags.securityHeaders)
+
+  const enableDpsHeader =
+    isTruthy(config.featureFlags.dpsComponents.header) || isTruthy(req.cookies.enableDpsComponentHeader)
+  const enableDpsFooter =
+    isTruthy(config.featureFlags.dpsComponents.footer) || isTruthy(req.cookies.enableDpsComponentFooter)
 
   res.locals.featureFlag = {
     securityHeaders,

@@ -1,3 +1,10 @@
+/**
+ * The DPS Component footer provides a Feedback link in the format:
+ *
+ * https://eu.surveymonkey.com/r/FRZYGVQ?source=[source_value]
+ *
+ * We are expected to replace the [source_value] with the current host and path.
+ */
 function updateFeedbackFooterLinkHref() {
   var footer = document.querySelector('footer')
 

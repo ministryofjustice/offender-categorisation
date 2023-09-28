@@ -1,23 +1,36 @@
-{% if featureFlag.detected %}
+{% if featureFlag.detected and environmentName != "prod" %}
 
   {% from "phase-banner/macro.njk" import govukPhaseBanner %}
 
-  {% if featureFlag.dpsHeader %}
-    {{ govukPhaseBanner({
-      tag: {
-        text: "Header"
-      },
-      html: 'The DPS header component is enabled.'
-    }) }}
-  {% endif %}
+  <div class="govuk-!-display-none-print">
 
-  {% if featureFlag.dpsFooter %}
-    {{ govukPhaseBanner({
-      tag: {
-        text: "Footer"
-      },
-      html: 'The DPS footer component is enabled.'
-    }) }}
-  {% endif %}
+    {% if featureFlag.dpsHeader %}
+      {{ govukPhaseBanner({
+        tag: {
+          text: "Header"
+        },
+        html: 'The DPS header component is enabled.'
+      }) }}
+    {% endif %}
+
+    {% if featureFlag.dpsFooter %}
+      {{ govukPhaseBanner({
+        tag: {
+          text: "Footer"
+        },
+        html: 'The DPS footer component is enabled.'
+      }) }}
+    {% endif %}
+
+    {% if featureFlag.securityHeaders %}
+      {{ govukPhaseBanner({
+        tag: {
+          text: "Helmet"
+        },
+        html: 'The updated Helmet implementation is enabled.'
+      }) }}
+    {% endif %}
+
+  </div>
 
 {% endif %}

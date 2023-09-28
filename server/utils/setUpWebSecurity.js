@@ -14,14 +14,13 @@ module.exports = function setUpWebSecurity() {
     next()
   })
 
-  const scriptSrc = [
-    "'self'",
-    '*.google-analytics.com',
-    '*.googletagmanager.com',
-    (_req, res) => `'nonce-${res.locals.cspNonce}'`,
-  ]
-  const styleSrc = ["'self'", (_req, res) => `'nonce-${res.locals.cspNonce}'`]
-  const imgSrc = ["'self'", 'data:', '*.google-analytics.com', '*.googletagmanager.com']
+  const googleDomains = ['*.google-analytics.com', '*.analytics.google.com', '*.googletagmanager.com']
+  const nonceFn = (_req, res) => `'nonce-${res.locals.cspNonce}'`
+
+  const scriptSrc = ["'self'", ...googleDomains, nonceFn]
+  const styleSrc = ["'self'", ...googleDomains, 'fonts.googleapis.com', nonceFn]
+  const formAction = [`'self' ${config.apis.oauth2.externalUrl} ${config.dpsUrl}`]
+  const imgSrc = ["'self'", 'data:', ...googleDomains]
   const fontSrc = ["'self'"]
 
   if (config.apis.frontendComponents.url) {
@@ -35,21 +34,15 @@ module.exports = function setUpWebSecurity() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        // This nonce allows us to use scripts with the use of the `cspNonce` local, e.g (in a Nunjucks template):
-        // <script nonce="{{ cspNonce }}">
-        // or
-        // <link href="http://example.com/" rel="stylesheet" nonce="{{ cspNonce }}">
-        // This ensures only scripts we trust are loaded, and not anything injected into the
-        // page by an attacker.
-        imgSrc,
+        connectSrc: ["'self'", ...googleDomains, nonceFn],
+        formAction,
         scriptSrc,
         styleSrc,
+        imgSrc,
         fontSrc,
-        formAction: [`'self' ${config.apis.oauth2.externalUrl}`],
-        connectSrc: ["'self'", '*.google-analytics.com', '*.googletagmanager.com', '*.analytics.google.com'],
       },
     },
-    crossOriginEmbedderPolicy: { policy: 'require-corp' },
+    crossOriginEmbedderPolicy: { policy: 'credentialless' },
   }
 
   router.use(helmet(helmetOptions))

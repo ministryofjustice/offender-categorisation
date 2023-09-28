@@ -17,11 +17,11 @@
   {% endif %}
 
 <!--[if !IE 8]><!-->
-<link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet"/>
+<link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet" nonce="{{ cspNonce }}"/>
 <!--<![endif]-->
 
 <!--[if lt IE 9]>
-<link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet"/>
+<link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet" nonce="{{ cspNonce }}"/>
 <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
 <![endif]-->
 
@@ -82,12 +82,13 @@
 {% block bodyEnd %}
 {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
 <script src="/assets/all.js"></script>
-<script>window.GOVUKFrontend.initAll();</script>
+<script nonce="{{ cspNonce }}">window.GOVUKFrontend.initAll();</script>
+<script src="/assets/js/multirole-switcher.js"></script>
 
   {% if featureFlag.dpsFooter %}
     <script src="/assets/js/dps-footer-feedback-link-updater.js"></script>
   {% else %}
-    <script>document.getElementById('terms').setAttribute("href", "{{ dpsHome }}content/terms-conditions");</script>
+    <script nonce="{{ cspNonce }}">document.getElementById('terms').setAttribute("href", "{{ dpsHome }}content/terms-conditions");</script>
   {% endif %}
 
 {% endblock %}

@@ -21,7 +21,7 @@ describe('Feature Flag Middleware', () => {
   })
 
   it('should set feature flags based on config and cookies', async () => {
-    config.featureFlags.dpsComponents.header = true
+    config.featureFlags.dpsComponents.header = 'true'
     req.cookies.enableDpsComponentHeader = 'false'
 
     await featureFlagMiddleware(req, res, next)

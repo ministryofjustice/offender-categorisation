@@ -42,7 +42,7 @@ describe('dpsFrontEndComponentsMiddleware', () => {
 
   describe('Feature Flags Enabled', () => {
     beforeEach(() => {
-      mockResponse.locals.featureFlag.dpsHeader = true
+      mockResponse.locals.featureFlag.dpsHeader = 'true'
     })
 
     it('should retrieve frontend components and set them in res.locals', async () => {
