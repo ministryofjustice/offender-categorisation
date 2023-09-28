@@ -17,70 +17,78 @@
   {% endif %}
 
 <!--[if !IE 8]><!-->
-<link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet"/>
+<link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet" nonce="{{ cspNonce }}"/>
 <!--<![endif]-->
 
 <!--[if lt IE 9]>
-<link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet"/>
+<link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet" nonce="{{ cspNonce }}"/>
 <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
 <![endif]-->
+
+  {% if featureFlag.dpsHeader or featureFlag.dpsFooter %}
+
+    {% if feComponents.jsInclude %}
+      {% for js in feComponents.jsIncludes %}
+        <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
+      {% endfor %}
+    {% endif %}
+
+    {% if feComponents.cssIncludes %}
+      {% for css in feComponents.cssIncludes %}
+        <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet" />
+      {% endfor %}
+    {% endif %}
+
+  {% endif %}
 
 {% endblock %}
 
 {% block header %}
-  {% include "./header.html" %}
+  {% if featureFlag.dpsHeader %}
+
+    {% if feComponents.header %}
+      {{ feComponents.header | safe }}
+    {% else %}
+      {% include "./header.njk" %}
+    {% endif %}
+
+  {% else %}
+
+    {% include "./headerDeprecated.html" %}
+
+  {% endif %}
+
   {% include "./locationBar.html" %}
 {% endblock %}
 
 {% block footer %}
-<div class="govuk-!-display-none-print">
-  <div class="govuk-width-container">
-    <div class="feedback-banner govuk-!-display-none-print govuk-width-container" data-test="feedback-banner">
-      <a id="surveyLink"
-         href=""
-         class="govuk-link govuk-link--inverse govuk-!-font-size-16"
-         target="_blank"
-         rel="noopener noreferrer"
-      >Give feedback on Digital Prison Services (opens in a new tab)</a>
-    </div>
-  </div>
-</div>
-<div class="govuk-!-display-none-print">
-  {{ govukFooter({
-    meta: {
-      html: '
-        <ul class="govuk-footer__inline-list">
+  {% if featureFlag.dpsFooter %}
 
-          <li class="govuk-footer__inline-list-item">
-            <a class="govuk-footer__link" href="https://support.hmpps.service.justice.gov.uk/feedback-and-support">
-              Get help
-            </a>
-          </li>
+    {% if feComponents.footer %}
+      {{ feComponents.footer | safe }}
+    {% else %}
+      {% include "./footer.njk" %}
+    {% endif %}
 
-          <li class="govuk-footer__inline-list-item">
-              <a class="govuk-footer__link" href="/accessibility-statement">
-              Accessibility statement
-            </a>
-          </li>
+  {% else %}
 
-          <li class="govuk-footer__inline-list-item">
-            <a id = "terms" class="govuk-footer__link" href="">
-              Terms and conditions
-            </a>
-          </li>
+    {% include "./footerDeprecated.html" %}
 
-        </ul>'
-}
-  }) }}
-</div>
+  {% endif %}
 
-{% include "./featureFlagStatus.njk" %}
+  {% include "./featureFlagStatus.njk" %}
 {% endblock %}
 
 {% block bodyEnd %}
 {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
 <script src="/assets/all.js"></script>
-<script>window.GOVUKFrontend.initAll();</script>
-<script>document.getElementById('surveyLink').setAttribute("href", "https://eu.surveymonkey.com/r/GYB8Y9Q?source=" + window.location.hostname + window.location.pathname);</script>
-<script>document.getElementById('terms').setAttribute("href", "{{ dpsHome }}content/terms-conditions");</script>
+<script nonce="{{ cspNonce }}">window.GOVUKFrontend.initAll();</script>
+<script src="/assets/js/multirole-switcher.js"></script>
+
+  {% if featureFlag.dpsFooter %}
+    <script src="/assets/js/dps-footer-feedback-link-updater.js"></script>
+  {% else %}
+    <script nonce="{{ cspNonce }}">document.getElementById('terms').setAttribute("href", "{{ dpsHome }}content/terms-conditions");</script>
+  {% endif %}
+
 {% endblock %}

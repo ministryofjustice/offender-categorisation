@@ -24,6 +24,8 @@ context('SignIn', () => {
   })
 
   it('User name visible in header', () => {
+    cy.task('stubDpsComponentsFail')
+
     cy.signIn()
     const securityHomePage = Page.verifyOnPage(SecurityHomePage)
     securityHomePage.headerUserName().should('contain.text', 'A. User')

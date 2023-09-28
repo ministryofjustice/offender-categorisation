@@ -59,6 +59,7 @@ Cypress.Commands.add('stubLogin', ({ user }: { user: UserAccount }) => {
   cy.task('stubValidOAuthTokenRequest', { user })
   cy.task('stubUser', { user })
   cy.task('stubUserRoles', { user })
+  cy.task('stubDpsComponentsSuccess')
   cy.task('manageDetails')
   cy.task('stubGetMyDetails', { user, caseloadId: user.workingCaseload.id })
   cy.task('stubGetMyCaseloads', { caseloads: user.caseloads })
