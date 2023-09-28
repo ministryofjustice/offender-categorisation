@@ -22,6 +22,6 @@ class SupervisorLiteListPage extends Page {
     approveButtons { bodyRows*.$('td', 5)*.find('*')  }
     todoTabLink { $('a', href: '/supervisorHome')}
     doneTabLink { $('a', href: '/supervisorDone')}
-    logoutLink { $('a', href: '/logout')}
+    logoutLink { $('a', href: '/sign-out')}
   }
 }
