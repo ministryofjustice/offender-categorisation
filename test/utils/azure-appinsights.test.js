@@ -1,4 +1,4 @@
-const { addUserDataToRequests } = require('./azure-appinsights')
+const { addUserDataToRequests } = require('../../server/utils/azure-appinsights')
 
 const user = {
   activeCaseLoadId: 'LII',

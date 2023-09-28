@@ -22,6 +22,7 @@ function get(name, fallback, log = false, options = {}) {
 const authUrl = get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true)
 
 module.exports = {
+  environment: process.env.ENVIRONMENT || 'local',
   redis: {
     tls_enabled: get('REDIS_TLS_ENABLED', 'false', true),
     port: get('REDIS_PORT', 6379, true),
@@ -136,9 +137,22 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
     },
+    frontendComponents: {
+      url: get('COMPONENT_API_URL', 'http://localhost:8085/components', true),
+      timeout: {
+        response: Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 20000, true)),
+        deadline: Number(get('COMPONENT_API_TIMEOUT_DEADLINE', 20000, true)),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
   dpsUrl: `${get('DPS_URL', 'http://localhost:3000/', true)}`,
+  supportUrl: `${get('SUPPORT_URL', 'http://localhost:3000/', true)}`,
   googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', ' ', true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 6, true)}`,
   recatMarginMonths: `${get('RECAT_MARGIN_MONTHS', 2, true)}`,
@@ -149,6 +163,7 @@ module.exports = {
   )}`,
   https: production,
   featureFlags: {
+    securityHeaders: get('FEATURE_FLAG_ENABLE_UPDATED_SECURITY_HEADERS', false, true),
     dpsComponents: {
       header: get('FEATURE_FLAG_ENABLE_DPS_COMPONENT_HEADER', false, true),
       footer: get('FEATURE_FLAG_ENABLE_DPS_COMPONENT_FOOTER', false, true),

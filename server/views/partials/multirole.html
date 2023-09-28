@@ -6,7 +6,7 @@
       </label>
     </span>
     {# NOTE: order must match redirectUsingRole() #}
-    <select class="govuk-select govuk-!-margin-left-1" id="roleSwitch" name="roleSwitch" onchange="location = '/switchRole/' + this.value">
+    <select class="govuk-select govuk-!-margin-left-1" id="roleSwitch" name="roleSwitch" nonce="{{ cspNonce }}">
       {% if user.roles.supervisor %}
         <option value="supervisor" {{ "selected" if currentRole === 'supervisor' }}>Supervisor</option>
       {% endif %}
