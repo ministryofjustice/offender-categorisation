@@ -276,7 +276,7 @@ class TestFixture {
   }
 
   def logout() {
-    browser.$('a', href: '/logout').click()
+    browser.$('a', href: '/sign-out').click()
     browser.waitFor { browser.$('h1').text() == 'Sign in' }
   }
 

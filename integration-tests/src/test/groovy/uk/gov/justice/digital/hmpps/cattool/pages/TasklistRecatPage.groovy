@@ -15,7 +15,7 @@ class TasklistRecatPage extends Page {
     headerBlock { $('div.govuk-grid-column-one-third') }
     headerValue { headerBlock.$('p.govuk-\\!-font-weight-bold') }
     headerLink { headerBlock.$('a') }
-    logoutLink { $('a', href: '/logout') }
+    logoutLink { $('a', href: '/sign-out') }
 
     supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
     fastrackEligibilityButton(required: false) { $('#fastrackEligibilityButton') }

@@ -189,7 +189,7 @@ module.exports = function createApp({
         } catch (error) {
           const sanitisedError = getSanitisedError(error)
           logger.error(sanitisedError, `Token refresh error: ${req.user.username}`)
-          return res.redirect('/logout')
+          return res.redirect('/sign-out')
         }
       }
     }
@@ -227,7 +227,7 @@ module.exports = function createApp({
     })(req, res, next)
   )
 
-  app.use('/logout', (req, res, next) => {
+  app.use('/sign-out', (req, res, next) => {
     if (req.user) {
       req.logout(err => {
         if (err) return next(err)
