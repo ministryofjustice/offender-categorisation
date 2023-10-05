@@ -76,7 +76,7 @@ describe('Approved view', () => {
     formApprovedView = Page.verifyOnPage(ApprovedViewPage)
   }
 
-  it('should correctly display the Suggested Category messaging)', () => {
+  it('should correctly display the Suggested Category messaging', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,

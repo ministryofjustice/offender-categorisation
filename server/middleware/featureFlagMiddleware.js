@@ -3,10 +3,6 @@ const config = require('../config')
 const isTruthy = value => value === 'true'
 
 module.exports = async (req, res, next) => {
-  // cannot be enabled with a cookie as invocation occurs too early in the app setup
-  // this is really here only for display purposes
-  const securityHeaders = isTruthy(config.featureFlags.securityHeaders)
-
   const enableDpsHeader =
     isTruthy(config.featureFlags.dpsComponents.header) || isTruthy(req.cookies.enableDpsComponentHeader)
   const enableDpsFooter =

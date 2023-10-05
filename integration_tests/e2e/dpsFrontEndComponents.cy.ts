@@ -3,7 +3,7 @@ import Page from '../pages/page'
 import { SUPERVISOR_USER } from '../factory/user'
 import { cleanString } from '../support/utilities'
 
-describe.skip('DPS Front End Components', () => {
+describe('DPS Front End Components', () => {
   let dashboardInitialPage: DashboardInitialPage
 
   beforeEach(() => {
