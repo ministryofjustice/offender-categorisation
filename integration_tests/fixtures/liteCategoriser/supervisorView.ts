@@ -15,7 +15,7 @@ export const supervisorViewSeedData: LiteCategoryDbRow[] = [
     approved_by: null,
     assessment_committee: 'RECP',
     assessment_comment: 'comment',
-    next_review_date: moment().add(6, 'months').startOf('day').toISOString(),
+    next_review_date: moment().add(6, 'months').toISOString(),
     placement_prison_id: 'BXI',
     approved_committee: null,
     approved_placement_prison_id: null,
