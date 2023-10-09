@@ -5,6 +5,7 @@ type ChangeHistoryTableData = StringArray
 
 const SELECTORS = {
   BUTTON: {
+    LITE_CATEGORIES: '#liteCategoriesButton',
     NEXT_REVIEW_DATE: '#nextReviewDateButton',
   },
 }
@@ -26,6 +27,7 @@ export default class CategoriserLandingPage extends Page {
   }
 
   changeReviewDateButton = (): PageElement => cy.get(SELECTORS.BUTTON.NEXT_REVIEW_DATE).contains('Change review date')
+  liteCategoriesButton = (): PageElement => cy.get(SELECTORS.BUTTON.LITE_CATEGORIES).contains('Change category')
 
   validateChangeHistoryTableData = (expectedValues: ChangeHistoryTableData) =>
     cy.checkTableRowData<ChangeHistoryTableData>({
