@@ -43,6 +43,9 @@ module.exports = function setUpWebSecurity() {
       },
     },
     crossOriginEmbedderPolicy: { policy: 'credentialless' },
+    referrerPolicy: {
+      policy: 'same-origin',
+    },
   }
 
   router.use(helmet(helmetOptions))
