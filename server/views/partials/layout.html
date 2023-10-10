@@ -25,58 +25,36 @@
 <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
 <![endif]-->
 
-  {% if featureFlag.dpsHeader or featureFlag.dpsFooter %}
+  {% if feComponents.jsInclude %}
+    {% for js in feComponents.jsIncludes %}
+      <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
+    {% endfor %}
+  {% endif %}
 
-    {% if feComponents.jsInclude %}
-      {% for js in feComponents.jsIncludes %}
-        <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
-      {% endfor %}
-    {% endif %}
-
-    {% if feComponents.cssIncludes %}
-      {% for css in feComponents.cssIncludes %}
-        <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet" />
-      {% endfor %}
-    {% endif %}
-
+  {% if feComponents.cssIncludes %}
+    {% for css in feComponents.cssIncludes %}
+      <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet" />
+    {% endfor %}
   {% endif %}
 
 {% endblock %}
 
 {% block header %}
-  {% if featureFlag.dpsHeader %}
-
-    {% if feComponents.header %}
-      {{ feComponents.header | safe }}
-    {% else %}
-      {% include "./header.njk" %}
-    {% endif %}
-
+  {% if feComponents.header %}
+    {{ feComponents.header | safe }}
   {% else %}
-
-    {% include "./headerDeprecated.html" %}
-
+    {% include "./header.njk" %}
   {% endif %}
 
   {% include "./locationBar.html" %}
 {% endblock %}
 
 {% block footer %}
-  {% if featureFlag.dpsFooter %}
-
-    {% if feComponents.footer %}
-      {{ feComponents.footer | safe }}
-    {% else %}
-      {% include "./footer.njk" %}
-    {% endif %}
-
+  {% if feComponents.footer %}
+    {{ feComponents.footer | safe }}
   {% else %}
-
-    {% include "./footerDeprecated.html" %}
-
+    {% include "./footer.njk" %}
   {% endif %}
-
-  {% include "./featureFlagStatus.njk" %}
 {% endblock %}
 
 {% block bodyEnd %}
@@ -84,11 +62,5 @@
 <script src="/assets/all.js"></script>
 <script nonce="{{ cspNonce }}">window.GOVUKFrontend.initAll();</script>
 <script src="/assets/js/multirole-switcher.js"></script>
-
-  {% if featureFlag.dpsFooter %}
-    <script src="/assets/js/dps-footer-feedback-link-updater.js"></script>
-  {% else %}
-    <script nonce="{{ cspNonce }}">document.getElementById('terms').setAttribute("href", "{{ dpsHome }}content/terms-conditions");</script>
-  {% endif %}
-
+<script src="/assets/js/dps-footer-feedback-link-updater.js"></script>
 {% endblock %}

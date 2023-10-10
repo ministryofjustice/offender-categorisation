@@ -162,11 +162,4 @@ module.exports = {
     true
   )}`,
   https: production,
-  featureFlags: {
-    securityHeaders: get('FEATURE_FLAG_ENABLE_UPDATED_SECURITY_HEADERS', false, true),
-    dpsComponents: {
-      header: get('FEATURE_FLAG_ENABLE_DPS_COMPONENT_HEADER', false, true),
-      footer: get('FEATURE_FLAG_ENABLE_DPS_COMPONENT_FOOTER', false, true),
-    },
-  },
 }
