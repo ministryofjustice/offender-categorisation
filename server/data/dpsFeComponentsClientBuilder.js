@@ -49,7 +49,7 @@ function dpsFeClientGetBuilder(token) {
       return raw ? result : result.body
     } catch (error) {
       const sanitisedError = getSanitisedError(error)
-      logger.error(
+      logger.warn(
         { ...sanitisedError, path, query },
         'Error in DPS Front End Components GET using clientId credentials'
       )
