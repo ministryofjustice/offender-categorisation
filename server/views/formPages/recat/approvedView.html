@@ -1,7 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 
-{% set googleAnalyticsOverrideTitle = true %}
+{% set googleAnalyticsHideTitle = true %}
 {% block pageTitle %}{{data.details.offenderNo}} {{data.details.displayName}}{% endblock %}
 {% set pageTitle = "Categorisation review outcome" %}
 
@@ -118,7 +118,7 @@
   </div>
 
 {{ govukButton({
-  href: backLink,
+  href: "/",
   text: "Back to case list",
   classes: "govuk-grid-row"
 }) }}

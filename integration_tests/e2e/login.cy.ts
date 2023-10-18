@@ -62,6 +62,6 @@ context('SignIn', () => {
 
     cy.signIn()
 
-    securityHomePage.headerUserName().should('contain.text', 'A. User')
+    securityHomePage.headerUserName().should('contain.text', 'T. Testfield')
   })
 })

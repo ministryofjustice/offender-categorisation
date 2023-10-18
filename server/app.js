@@ -2,7 +2,6 @@ const express = require('express')
 const addRequestId = require('express-request-id')()
 const moment = require('moment')
 const path = require('path')
-const helmet = require('helmet')
 const noCache = require('nocache')
 const csurf = require('csurf')
 const compression = require('compression')
@@ -21,7 +20,6 @@ const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
-const featureFlagMiddleware = require('./middleware/featureFlagMiddleware')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
 const setUpWebSecurity = require('./utils/setUpWebSecurity')
@@ -73,18 +71,7 @@ module.exports = function createApp({
   // Server Configuration
   app.set('port', process.env.PORT || 3000)
 
-  if (config.featureFlags.securityHeaders === 'true') {
-    logger.debug('Using new helmet config')
-    app.use(setUpWebSecurity())
-  } else {
-    logger.debug('Using deprecated helmet config')
-    // Secure code best practice - see:
-    // 1. https://expressjs.com/en/advanced/best-practice-security.html,
-    // 2. https://www.npmjs.com/package/helmet
-    app.use(helmet({ contentSecurityPolicy: false })) // compatible with helmet 3.x
-    app.use(helmet.referrerPolicy({ policy: 'same-origin' }))
-  }
-
+  app.use(setUpWebSecurity())
   app.use(addRequestId)
 
   const client = redis.createClient({
@@ -216,7 +203,6 @@ module.exports = function createApp({
   })
 
   app.use(cookieParser())
-  app.use(featureFlagMiddleware)
 
   const authLogoutUrl = `${config.apis.oauth2.externalUrl}/logout?client_id=${config.apis.oauth2.apiClientId}&redirect_uri=${config.domain}`
 
