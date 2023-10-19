@@ -21,7 +21,7 @@ generic-service:
     ELITE2API_ENDPOINT_URL: https://api.prison.service.justice.gov.uk/
     RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
     ALLOCATION_MANAGER_ENDPOINT_URL: https://moic.service.justice.gov.uk/
-    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search.prison.service.justice.gov.uk/
+    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-search.prison.service.justice.gov.uk/
     DPS_URL: https://digital.prison.service.justice.gov.uk/
     SUPPORT_URL: https://support.hmpps.service.justice.gov.uk/
     COMPONENT_API_URL: https://frontend-components.hmpps.service.justice.gov.uk
