@@ -1,5 +1,5 @@
 const config = {
-  setupFiles: ['<rootDir>/test/setup/jest-setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup/jest-setup.js', '<rootDir>/test/setup/jest-teardown.js'],
 }
 
 module.exports = config
