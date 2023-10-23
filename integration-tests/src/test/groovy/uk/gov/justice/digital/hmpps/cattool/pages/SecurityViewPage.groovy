@@ -13,6 +13,6 @@ class SecurityViewPage extends Page {
   static content = {
     headingText { $('h1').text() }
     securityInputSummary { $('.securitySummary .govuk-summary-list__value') }
-    logoutLink { $('a', href: '/logout')}
+    logoutLink { $('a', href: '/sign-out')}
   }
 }

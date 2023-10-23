@@ -1,6 +1,9 @@
 // Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
 // In particular, applicationinsights automatically collects bunyan logs
-require('./utils/azure-appinsights')
+const { initialiseAppInsights, buildAppInsightsClient } = require('./utils/azure-appinsights')
+
+initialiseAppInsights()
+buildAppInsightsClient()
 
 const createApp = require('./app')
 
@@ -10,6 +13,7 @@ const nomisClientBuilder = require('./data/nomisClientBuilder')
 const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
 const allocationClientBuilder = require('./data/allocationManagerApi')
 const prisonerSearchClientBuilder = require('./data/prisonerSearchApi')
+const dpsFeComponentsClientBuilder = require('./data/dpsFeComponentsClientBuilder')
 
 const createFormService = require('./services/formService')
 const createStatsService = require('./services/statsService')
@@ -18,6 +22,7 @@ const createSignInService = require('./authentication/signInService')
 const createUserService = require('./services/userService')
 const createRiskProfilerService = require('./services/riskProfilerService')
 const createSqsService = require('./services/sqsService')
+const createDpsFeComponentService = require('./services/dpsFeComponentService')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)
@@ -31,6 +36,7 @@ const offendersService = createOffendersService(
 const userService = createUserService(nomisClientBuilder)
 const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
 const sqsService = createSqsService(offendersService, formService)
+const frontEndComponentsService = createDpsFeComponentService(dpsFeComponentsClientBuilder)
 
 const app = createApp({
   formService,
@@ -39,6 +45,7 @@ const app = createApp({
   userService,
   riskProfilerService,
   statsService,
+  frontEndComponentsService,
 })
 
 module.exports = { app, sqsService }

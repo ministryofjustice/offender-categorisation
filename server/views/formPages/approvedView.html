@@ -13,6 +13,11 @@
 
 {% endblock %}
 
+{% block bodyEnd %}
+  {{ super() }}
+  <script src="/assets/js/handle-approved-view-print.js"></script>
+{% endblock %}
+
 {% block content %}
 
   <div class="govuk-grid-row">
@@ -25,17 +30,12 @@
       {{ pageTitle }}
     </h1>
     <div class="govuk-!-width-one-third govuk-!-display-inline">
-      <a class="govuk-link rightAlignedButton" href="#" onclick="handlePrint()">
+      <a class="govuk-link rightAlignedButton" href="#" id="handlePrint">
         <img class="print-icon" src="/assets/images/Printer_icon.png" height="23" width="20" alt="Print icon"/>
         Print this page
       </a>
     </div>
   </div>
-  <script>
-    function handlePrint() {
-      window.print()
-    }
-  </script>
   <div class="govuk-grid-row govuk-body-s">
 
     <div class="govuk-!-width-two-thirds">
@@ -156,7 +156,7 @@
   </div>
 
 {{ govukButton({
-  href: backLink,
+  href: "/",
   text: "Back to case list",
   classes: "govuk-grid-row"
 }) }}

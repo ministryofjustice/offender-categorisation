@@ -14,14 +14,17 @@ generic-service:
     hosts: [offender-categorisation.service.justice.gov.uk]
 
   env:
+    ENVIRONMENT: prod
     INGRESS_URL: https://offender-categorisation.service.justice.gov.uk
     NOMIS_OAUTH_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFwSkdtYWp6SW9POVdSY2owM2VTbQpFeWJTYnNJaEdkNkRWVDRxUWFSRTZwN3RIN1ppSklvRWtzczRkOFphMGhuYWJwa0JqWTYwS3NnMW5teXpoZVlSCithWXVtc0gxbm1JcmJ4ZCtqV043T3A2V1pteWRBU3JMek1XWVdBYlNHOHBXMXkxY1RwdkRaMTlBSGJTYTRRL2UKSnRlcDFscCsyMnVHMW5kTVRwclRkNjRLTkcyZnRwcmV3aFExeE5xdmtUWjZoQnVRRVJKMzFhUXBkRThNQTFxSwpDWnI3VDJxTk1BTWNkTlpia0FqRjVLOXE0alZ0QkY3WXFPeXJ0T1JmTldqYUJoWHA5TlN0YWJCTXBURTdQNm8vClhJaU9rcmltNjlzaG1OdDhVRlU3WUlJN0ZvejgzM29HZnk2dmtDRjRxcGpIZ0RNc21STjc1UXRrRmRtaU8xaDgKcHdJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t
     NOMIS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
     ELITE2API_ENDPOINT_URL: https://api.prison.service.justice.gov.uk/
     RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
     ALLOCATION_MANAGER_ENDPOINT_URL: https://moic.service.justice.gov.uk/
-    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search.prison.service.justice.gov.uk/
+    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-search.prison.service.justice.gov.uk/
     DPS_URL: https://digital.prison.service.justice.gov.uk/
+    SUPPORT_URL: https://support.hmpps.service.justice.gov.uk/
+    COMPONENT_API_URL: https://frontend-components.hmpps.service.justice.gov.uk
 
   allowlist:
     ark-nps-hmcts-ttp1: 195.59.75.0/24
@@ -75,6 +78,8 @@ generic-service:
     fivewells-7: "194.33.249.0/29"
     fivewells-8: "51.149.249.32/29"
     fivewells-9: "194.33.248.0/29"
+    azure-landing-zone-public-egress-1: "20.26.11.71/32"
+    azure-landing-zone-public-egress-2: "20.26.11.108/32"
 
   # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:

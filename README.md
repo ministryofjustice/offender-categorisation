@@ -31,8 +31,8 @@ You will need the following tools installed:
 
 |      Tool       |   Version   |                                Reason                                |
 |:---------------:|:-----------:|:--------------------------------------------------------------------:|
-|       npm       | &ge; 7.11.x |  Node package manager for resolving/installing project dependencies  |
-|      node       | &ge;14.17.x |                          NodeJS interpreter                          |
+|       npm       |  &ge;9.5.x  |  Node package manager for resolving/installing project dependencies  |
+|      node       | &ge;18.17.x |                          NodeJS interpreter                          |
 |     docker      |  &ge;18.x   |           Installing/removing/managing containers & images           |
 | docker-compose  | &ge;1.25.x  |       Convenience utility for grouped management of containers       |
 |       jdk       |    17.x     |        For running the integration tests using groovy 2.5.18         |
@@ -167,7 +167,7 @@ To run the jest unit tests:
 npm run test
 ```
 
-### Integration Tests
+### Integration Tests (Groovy)
 
 To run the integration tests you need to install *chromedriver* :
 
@@ -189,3 +189,22 @@ The easiest way to run the integration tests on your local machine is to:
 The tests can be run in debug mode for troubleshooting.
 
 More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>
+
+### Running integration tests (Cypress)
+
+For local running, start a test db, redis, and wiremock instance by:
+
+`docker-compose -f docker-compose-test.yml up`
+
+Then run the server in test mode by:
+
+`npm run start-feature` (or `npm run start-feature:dev` to run with nodemon)
+
+And then either, run tests in headless mode with:
+
+`npm run int-test`
+
+Or run tests with the cypress UI:
+
+`npm run int-test-ui`
+
