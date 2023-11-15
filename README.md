@@ -53,10 +53,10 @@ It has services on which it depends :
 |        postgres (form-builder)        | PostgreSQL database server for offender-categorisation | jdbc:postgresql://localhost:5432/form-builder                       | DB_USER<br>DB_PASS<br>DB_SERVER<br>DB_NAME     |
 |       postgres (risk profiler)        | PostgreSQL database server for risk-profiler           | jdbc:postgresql://localhost:5433/<DB_NAME>                          | Uses port forwarding<br>DB_NAME found in Lens  |
 |                 redis                 | Redis cache for user 'session' data (roles)            | localhost:6379/tcp                                                  |                                                |
-|              SQS (event)              | AWS SQS queue for events                               | http://localhost:4576<br>Name: event<br>(localstack)                | EVENT_QUEUE_URL                                |
-|          SQS (Risk Profiler)          | AWS SQS queue for risk profiler change events          | http://localhost:4576<br>Name: risk_profiler_change<br>(localstack) | RP_QUEUE_URL                                   |
-|        SQS (event dead letter)        | AWS SQS queue for events dead letter                   | http://localhost:4576<br>Name: event<br>(localstack)                | EVENT_DL_QUEUE_URL                             |
-| SQS (Risk Profiler dead letter queue) | AWS SQS queue for risk profiler dead letter            | http://localhost:4576<br>Name: events_dlq<br>(localstack)           | RP_DL_QUEUE_URL                                |
+|              SQS (event)              | AWS SQS queue for events                               | http://localhost:4566<br>Name: event<br>(localstack)                | EVENT_QUEUE_URL                                |
+|          SQS (Risk Profiler)          | AWS SQS queue for risk profiler change events          | http://localhost:4566<br>Name: risk_profiler_change<br>(localstack) | RP_QUEUE_URL                                   |
+|        SQS (event dead letter)        | AWS SQS queue for events dead letter                   | http://localhost:4566<br>Name: event<br>(localstack)                | EVENT_DL_QUEUE_URL                             |
+| SQS (Risk Profiler dead letter queue) | AWS SQS queue for risk profiler dead letter            | http://localhost:4566<br>Name: events_dlq<br>(localstack)           | RP_DL_QUEUE_URL                                |
 |              ingress url              |                                                        | http://localhost:3000/                                              | INGRESS_URL                                    |
 |                dps url                |                                                        | http://localhost:3000/                                              | DPS_URL                                        |
 
