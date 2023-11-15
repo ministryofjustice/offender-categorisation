@@ -79,7 +79,7 @@ jobs:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder
       - image: redis
-      - image: localstack/localstack:0.11.2
+      - image: localstack/localstack:0.11.3
         environment:
           SERVICES: sqs
           PORT_WEB_UI: 8088
@@ -145,7 +145,7 @@ jobs:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder
       - image: redis
-      - image: localstack/localstack:0.11.2
+      - image: localstack/localstack:0.11.3
         environment:
           SERVICES: sqs
           PORT_WEB_UI: 8088
