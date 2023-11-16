@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   form-db:
-    image: postgres
+    image: postgres:15
     networks:
       - hmpps
     container_name: form-builder-db
@@ -41,8 +41,8 @@ services:
       - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
       - AWS_DEFAULT_REGION=eu-west-2
       - LOCALSTACK_HOST=categorisation-localstack
-#    volumes:
-#      - './.localstack:/tmp/localstack'
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
   categorisation-localstack-setup:
     image: jetbrainsinfra/aws-cli
