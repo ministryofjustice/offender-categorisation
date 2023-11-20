@@ -29,7 +29,7 @@ services:
   categorisation-localstack:
     image: localstack/localstack:latest
     ports:
-      - "4566-4584:4566-4584"
+      - "4566:4566"
     networks:
       - hmpps
     container_name: categorisation-localstack
@@ -41,7 +41,9 @@ services:
       - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
       - AWS_DEFAULT_REGION=eu-west-2
       - LOCALSTACK_HOST=categorisation-localstack
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   categorisation-localstack-setup:
