@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.cattool.specs
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.client.builder.AwsClientBuilder
 import com.amazonaws.services.sqs.AmazonSQS
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder
+import com.amazonaws.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.cattool.model.UserAccount
 
 import java.time.LocalDate
@@ -13,7 +15,7 @@ class EventSpecification extends AbstractSpecification {
   AmazonSQS sqs = AmazonSQSClientBuilder
     .standard()
     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials('foo', 'bar')))
-    .withRegion('eu-west-2')
+    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration('http://localhost:4566', 'eu-west-2'))
     .build()
 
   def "prison transfer events should change the prison id in all tables"() {
@@ -42,17 +44,21 @@ class EventSpecification extends AbstractSpecification {
 
     when: 'a prison transfer event arrives'
 
-    sqs.sendMessage('http://localhost:4576/queue/event', """{
-      "Message" : "{ \\"eventType\\": \\"EXTERNAL_MOVEMENT_RECORD-INSERTED\\", \\"offenderIdDisplay\\": \\"A1234AA\\",\\"bookingId\\":123, \\"fromAgencyLocationId\\": \\"MDI\\", \\"toAgencyLocationId\\": \\"LEI\\", \\"movementType\\": \\"ADM\\", \\"movementSeq\\": 1, \\"movementDateTime\\": \\"2020-02-25T15:57:45\\", \\"directionCode\\": \\"IN\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"M1_RESULT\\" }",
-      "Timestamp" : "2020-01-14T15:14:33.624Z",
-      "MessageAttributes" : {
-        "code" : { "Type" : "String", "Value" : "" } ,
-        "eventType" : { "Type" : "String", "Value" : "EXTERNAL_MOVEMENT_RECORD-INSERTED" } ,
-        "id" : { "Type" : "String", "Value" : "f9f1e5e4-999a-78ad-d1d8-442d8864481a" } ,
-        "contentType" : { "Type" : "String", "Value" : "text/plain;charset=UTF-8" } ,
-        "timestamp" : { "Type" : "Number.java.lang.Long", "Value" : "1579014873619" }
-      }
-    }""")
+    def sendMessageRequest = new SendMessageRequest()
+      .withQueueUrl('http://localhost:4566/000000000000/event')
+      .withMessageBody("""{
+        "Message" : "{ \\"eventType\\": \\"EXTERNAL_MOVEMENT_RECORD-INSERTED\\", \\"offenderIdDisplay\\": \\"A1234AA\\",\\"bookingId\\":123, \\"fromAgencyLocationId\\": \\"MDI\\", \\"toAgencyLocationId\\": \\"LEI\\", \\"movementType\\": \\"ADM\\", \\"movementSeq\\": 1, \\"movementDateTime\\": \\"2020-02-25T15:57:45\\", \\"directionCode\\": \\"IN\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"M1_RESULT\\" }",
+        "Timestamp" : "2020-01-14T15:14:33.624Z",
+        "MessageAttributes" : {
+          "code" : { "Type" : "String", "Value" : "" } ,
+          "eventType" : { "Type" : "String", "Value" : "EXTERNAL_MOVEMENT_RECORD-INSERTED" } ,
+          "id" : { "Type" : "String", "Value" : "f9f1e5e4-999a-78ad-d1d8-442d8864481a" } ,
+          "contentType" : { "Type" : "String", "Value" : "text/plain;charset=UTF-8" } ,
+          "timestamp" : { "Type" : "Number.java.lang.Long", "Value" : "1579014873619" }
+        }
+      }""")
+
+    sqs.sendMessage(sendMessageRequest)
 
     then: 'The prison id is updated as follows'
 
@@ -105,7 +111,10 @@ class EventSpecification extends AbstractSpecification {
     when: 'a merge event arrives merging A1234AA to A1234AB'
 
     fixture.stubLogin(UserAccount.CATEGORISER_USER)
-    sqs.sendMessage('http://localhost:4576/queue/event', """{
+
+    def sendMessageRequest = new SendMessageRequest()
+      .withQueueUrl('http://localhost:4566/000000000000/event')
+      .withMessageBody("""{
       "Message" : "{ \\"eventType\\": \\"BOOKING_NUMBER-CHANGED\\", \\"bookingId\\":123, \\"offenderId\\":1577871, \\"previousBookingNumber\\": \\"M07037\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"BOOK_UPD_OASYS\\" }",
       "MessageAttributes" : {
         "eventType" : { "Type" : "String", "Value" : "BOOKING_NUMBER-CHANGED" } ,
@@ -114,6 +123,8 @@ class EventSpecification extends AbstractSpecification {
         "timestamp" : { "Type" : "Number.java.lang.Long", "Value" : "1579014873619" }
       }
     }""")
+
+    sqs.sendMessage(sendMessageRequest)
 
     then: 'The offenderNo is updated as follows'
 
@@ -136,7 +147,9 @@ class EventSpecification extends AbstractSpecification {
   def "Clear DLQ job moves messages to the normal queue"() {
     given: 'There are messages stuck on the DLQs'
 
-    sqs.sendMessage('http://localhost:4576/queue/event_dlq', """{
+    def sendMessageRequestEventDLQ = new SendMessageRequest()
+      .withQueueUrl('http://localhost:4566/000000000000/event_dlq')
+      .withMessageBody("""{
       "Message" : "{ \\"eventType\\": \\"BOOKING_NUMBER-CHANGED\\", \\"bookingId\\":1234, \\"offenderId\\":1577871, \\"previousBookingNumber\\": \\"M07037\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"BOOK_UPD_OASYS\\" }",
       "MessageAttributes" : {
         "eventType" : { "Type" : "String", "Value" : "BOOKING_NUMBER-CHANGED" } ,
@@ -146,11 +159,17 @@ class EventSpecification extends AbstractSpecification {
       }
     }""")
 
-    sqs.sendMessage('http://localhost:4576/queue/risk_profiler_change_dlq', """{
+    sqs.sendMessage(sendMessageRequestEventDLQ)
+
+    def sendMessageRequestRiskProfilerChangeDLQ = new SendMessageRequest()
+      .withQueueUrl('http://localhost:4566/000000000000/risk_profiler_change_dlq')
+      .withMessageBody("""{
       "offenderNo": "G1234FF",
       "oldProfile": {"soc": {"transferToSecurity": false} , "escape": {"escapeListAlerts": [], "escapeRiskAlerts": [] }, "violence" : {} },
       "newProfile": {"soc": {"transferToSecurity": true } , "escape": {"escapeListAlerts": [], "escapeRiskAlerts": [] }, "violence" : {} }
     }""")
+
+    sqs.sendMessage(sendMessageRequestRiskProfilerChangeDLQ)
 
     elite2Api.stubGetBasicOffenderDetails(1234, 'A1234AB')
     elite2Api.stubGetIdentifiersByBookingId(1234)

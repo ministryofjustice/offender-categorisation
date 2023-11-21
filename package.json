@@ -42,7 +42,7 @@
     "@snyk/protect": "^1.1206.0",
     "agentkeepalive": "^4.2.1",
     "applicationinsights": "^2.5.1",
-    "aws-sdk": "^2.1354.0",
+    "aws-sdk": "^2.1496.0",
     "body-parser": "^1.20.1",
     "bunyan": "^1.8.15",
     "bunyan-format": "^0.2.1",
