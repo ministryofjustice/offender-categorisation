@@ -45,13 +45,13 @@ module.exports = {
   },
   sqs: {
     riskProfiler: {
-      queueUrl: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', false, {
+      queueUrl: get('RP_QUEUE_URL', 'http://localhost:4566/000000000000/risk_profiler_change', false, {
         requireInProduction: true,
       }),
       accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null, false),
       secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
-        queueUrl: get('RP_DL_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change_dlq', false, {
+        queueUrl: get('RP_DL_QUEUE_URL', 'http://localhost:4566/000000000000/risk_profiler_change_dlq', false, {
           requireInProduction: true,
         }),
         accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null, false),
@@ -59,11 +59,11 @@ module.exports = {
       },
     },
     event: {
-      queueUrl: get('EVENT_QUEUE_URL', 'http://localhost:4576/queue/event', true),
+      queueUrl: get('EVENT_QUEUE_URL', 'http://localhost:4566/000000000000/event', true),
       accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null, false),
       secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
-        queueUrl: get('EVENT_DL_QUEUE_URL', 'http://localhost:4576/queue/event_dlq', false, {
+        queueUrl: get('EVENT_DL_QUEUE_URL', 'http://localhost:4566/000000000000/event_dlq', false, {
           requireInProduction: true,
         }),
         accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null, false),
