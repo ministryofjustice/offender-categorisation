@@ -79,7 +79,7 @@ jobs:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder
       - image: redis
-      - image: localstack/localstack:latest
+      - image: localstack/localstack:3.0.0
         environment:
           SERVICES: sqs
           PERSISTENCE: /tmp/localstack/data
@@ -145,7 +145,7 @@ jobs:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder
       - image: redis
-      - image: localstack/localstack:latest
+      - image: localstack/localstack:3.0.0
         environment:
           SERVICES: sqs
           PERSISTENCE: /tmp/localstack/data
