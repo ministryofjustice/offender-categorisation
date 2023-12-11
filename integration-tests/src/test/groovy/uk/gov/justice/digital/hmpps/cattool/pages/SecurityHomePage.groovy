@@ -20,9 +20,8 @@ class SecurityHomePage extends Page {
     referredBy { bodyRows*.$('td', 4)*.text()  }
     catTypes { bodyRows*.$('td', 5)*.text()  }
     startButtons { bodyRows*.$('td', 6)*.find('*')  }
-    logoutLink { $('a', href: '/logout')}
+    logoutLink { $('a', href: '/sign-out')}
     noOffendersText(required: false) { $('#no-results-message').text() }
-    logoutLink { $('a', href: '/logout')}
     doneTabLink { $('a', href: '/securityDone')}
     upcomingTabLink { $('a', href: '/securityUpcoming')}
   }

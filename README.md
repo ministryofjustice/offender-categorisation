@@ -31,8 +31,8 @@ You will need the following tools installed:
 
 |      Tool       |   Version   |                                Reason                                |
 |:---------------:|:-----------:|:--------------------------------------------------------------------:|
-|       npm       | &ge; 7.11.x |  Node package manager for resolving/installing project dependencies  |
-|      node       | &ge;14.17.x |                          NodeJS interpreter                          |
+|       npm       |  &ge;9.5.x  |  Node package manager for resolving/installing project dependencies  |
+|      node       | &ge;18.17.x |                          NodeJS interpreter                          |
 |     docker      |  &ge;18.x   |           Installing/removing/managing containers & images           |
 | docker-compose  | &ge;1.25.x  |       Convenience utility for grouped management of containers       |
 |       jdk       |    17.x     |        For running the integration tests using groovy 2.5.18         |
@@ -53,10 +53,10 @@ It has services on which it depends :
 |        postgres (form-builder)        | PostgreSQL database server for offender-categorisation | jdbc:postgresql://localhost:5432/form-builder                       | DB_USER<br>DB_PASS<br>DB_SERVER<br>DB_NAME     |
 |       postgres (risk profiler)        | PostgreSQL database server for risk-profiler           | jdbc:postgresql://localhost:5433/<DB_NAME>                          | Uses port forwarding<br>DB_NAME found in Lens  |
 |                 redis                 | Redis cache for user 'session' data (roles)            | localhost:6379/tcp                                                  |                                                |
-|              SQS (event)              | AWS SQS queue for events                               | http://localhost:4576<br>Name: event<br>(localstack)                | EVENT_QUEUE_URL                                |
-|          SQS (Risk Profiler)          | AWS SQS queue for risk profiler change events          | http://localhost:4576<br>Name: risk_profiler_change<br>(localstack) | RP_QUEUE_URL                                   |
-|        SQS (event dead letter)        | AWS SQS queue for events dead letter                   | http://localhost:4576<br>Name: event<br>(localstack)                | EVENT_DL_QUEUE_URL                             |
-| SQS (Risk Profiler dead letter queue) | AWS SQS queue for risk profiler dead letter            | http://localhost:4576<br>Name: events_dlq<br>(localstack)           | RP_DL_QUEUE_URL                                |
+|              SQS (event)              | AWS SQS queue for events                               | http://localhost:4566<br>Name: event<br>(localstack)                | EVENT_QUEUE_URL                                |
+|          SQS (Risk Profiler)          | AWS SQS queue for risk profiler change events          | http://localhost:4566<br>Name: risk_profiler_change<br>(localstack) | RP_QUEUE_URL                                   |
+|        SQS (event dead letter)        | AWS SQS queue for events dead letter                   | http://localhost:4566<br>Name: event<br>(localstack)                | EVENT_DL_QUEUE_URL                             |
+| SQS (Risk Profiler dead letter queue) | AWS SQS queue for risk profiler dead letter            | http://localhost:4566<br>Name: events_dlq<br>(localstack)           | RP_DL_QUEUE_URL                                |
 |              ingress url              |                                                        | http://localhost:3000/                                              | INGRESS_URL                                    |
 |                dps url                |                                                        | http://localhost:3000/                                              | DPS_URL                                        |
 
@@ -167,7 +167,7 @@ To run the jest unit tests:
 npm run test
 ```
 
-### Integration Tests
+### Integration Tests (Groovy)
 
 To run the integration tests you need to install *chromedriver* :
 
@@ -189,3 +189,22 @@ The easiest way to run the integration tests on your local machine is to:
 The tests can be run in debug mode for troubleshooting.
 
 More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>
+
+### Running integration tests (Cypress)
+
+For local running, start a test db, redis, and wiremock instance by:
+
+`docker-compose -f docker-compose-test.yml up`
+
+Then run the server in test mode by:
+
+`npm run start-feature` (or `npm run start-feature:dev` to run with nodemon)
+
+And then either, run tests in headless mode with:
+
+`npm run int-test`
+
+Or run tests with the cypress UI:
+
+`npm run int-test-ui`
+

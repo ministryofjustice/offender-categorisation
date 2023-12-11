@@ -1,0 +1,47 @@
+{% from "footer/macro.njk" import govukFooter %}
+
+{{ govukFooter({
+  contentLicence: { text: "Official sensitive" },
+  attributes: {
+    "data-qa": "cat-tool-fallback-footer"
+  },
+  meta: {
+    items: [
+      {
+        href: "https://eu.surveymonkey.com/r/FRZYGVQ?source=[source_value]",
+        text: "Feedback",
+        attributes: {
+          id: "surveyLink"
+        }
+      },
+      {
+        href: dpsHome + "/accessibility-statement",
+        text: "Accessibility statement",
+        attributes: {
+          "data-qa": "cat-tool-fallback-accessibility-statement-link"
+        }
+      },
+      {
+        href: dpsHome + "/terms-and-conditions",
+        text: "Terms and conditions",
+        attributes: {
+          "data-qa": "cat-tool-fallback-terms-conditions-link"
+        }
+      },
+      {
+        href: dpsHome + "/privacy-policy",
+        text: "Privacy policy",
+        attributes: {
+          "data-qa": "cat-tool-fallback-privacy-policy-link"
+        }
+      },
+      {
+        href: dpsHome + "/cookies-policy",
+        text: "Cookies policy",
+        attributes: {
+          "data-qa": "cat-tool-fallback-cookies-policy-link"
+        }
+      }
+    ]
+  }
+}) }}
