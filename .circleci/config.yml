@@ -195,6 +195,13 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      - hmpps/npm_security_audit:
+          node_tag: << pipeline.parameters.node-version >>
+          context:
+            - hmpps-common-vars
+      - hmpps/trivy_latest_scan:
+          context:
+            - hmpps-common-vars
       - test:
           requires:
             - build
