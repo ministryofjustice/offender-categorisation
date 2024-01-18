@@ -130,7 +130,7 @@ module.exports = context => {
     },
     getUserDetailList(usernames) {
       const path = `${apiUrl}api/users/list`
-      return nomisPost({ path, body: usernames })
+      return nomisClientPost({ path, body: usernames })
     },
     updateNextReviewDate(bookingId, nextReviewDate) {
       const path = `${apiUrl}api/offender-assessments/category/${bookingId}/nextReviewDate/${nextReviewDate}`
