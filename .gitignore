@@ -22,3 +22,4 @@ yarn-error.log
 integration-tests/build
 integration-tests/out
 .env
+volume/cache
