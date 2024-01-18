@@ -10,7 +10,7 @@
     "build": "npm run compile-sass",
     "clean": "rm -rf assets/stylesheets/* .port.tmp *.log dist build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
-    "test": "jest",
+    "test": "jest --runInBand",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
