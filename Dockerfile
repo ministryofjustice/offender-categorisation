@@ -30,6 +30,7 @@ RUN npm ci --no-audit && \
     npm run record-build-info
 
 RUN npm prune --no-audit --production
+RUN rm -rf /root/.cache
 
 ENV PORT=3000
 ENV NODE_ENV='production'
