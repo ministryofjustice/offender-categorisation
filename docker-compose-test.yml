@@ -27,7 +27,7 @@ services:
       - "6379:6379"
 
   categorisation-localstack:
-    image: localstack/localstack:3.0.0
+    image: localstack/localstack
     ports:
       - "4566:4566"
     networks:
