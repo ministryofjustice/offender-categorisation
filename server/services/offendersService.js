@@ -605,6 +605,7 @@ module.exports = function createOffendersService(
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const prisonerSearchClient = prisonerSearchClientBuilder(context)
 
       const unapprovedLite = await formService.getUnapprovedLite(agencyId, transactionalDbClient)
 
@@ -613,10 +614,17 @@ module.exports = function createOffendersService(
         return []
       }
 
-      const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
+      const [offenderDetailsFromElite, userDetailFromElite, releaseDateMap] = await Promise.all([
         nomisClient.getOffenderDetailList(unapprovedLite.map(c => c.offenderNo)),
         nomisClient.getUserDetailList([...new Set(unapprovedLite.map(c => c.assessedBy))]),
+        getReleaseDateMap(unapprovedLite, prisonerSearchClient),
       ])
+
+      const alreadyReleased = offenderDetailsFromElite.filter(offender => releaseDateMap.has(offender.bookingId))
+      logger.debug(
+        'The following prisoners have been released and should be removed from the lite_categories table',
+        alreadyReleased.map(p => p.bookingId)
+      )
 
       const decoratedResults = unapprovedLite.map(o => {
         const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)

@@ -1321,6 +1321,9 @@ describe('Lite', () => {
       },
     ])
 
+    const sentenceDates = [{ bookingId: 121, releaseDate: '2019-04-18' }]
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
+
     const data = await service.getUnapprovedLite(context, mockTransactionalClient)
 
     expect(data).toEqual([
