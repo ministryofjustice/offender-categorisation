@@ -271,6 +271,11 @@ describe('Lite Categories', () => {
         bookingIds: [11],
         startDates: ['28/01/2019'],
       })
+      cy.task('stubSentenceData', {
+        offenderNumbers: ['B2345YZ'],
+        bookingIds: [12],
+        startDates: ['2019-01-31'],
+      })
 
       cy.task('stubGetOffenderDetailsByOffenderNoList', {
         bookingId: [11, 12],
@@ -393,7 +398,12 @@ describe('Lite Categories', () => {
       cy.task('stubSentenceData', {
         offenderNumbers: ['B2345YZ'],
         bookingIds: [11],
-        startDates: [moment().toISOString(), moment().toISOString()],
+        startDates: [moment().toISOString()],
+      })
+      cy.task('stubSentenceData', {
+        offenderNumbers: ['B2345XY'],
+        bookingIds: [12],
+        startDates: ['28/03/2019'],
       })
       cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
       cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
