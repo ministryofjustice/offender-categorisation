@@ -627,11 +627,12 @@ module.exports = function createOffendersService(
         )
         .map(p => p.bookingId)
 
-      alreadyReleased.length &&
+      if (alreadyReleased.length) {
         logger.debug(
           'The following prisoners have been released and should be removed from the lite_category table',
           alreadyReleased
         )
+      }
 
       const decoratedResults = unapprovedLite
         .filter(offender => !alreadyReleased.some(o => o === offender.bookingId))
