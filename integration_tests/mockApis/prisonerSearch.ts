@@ -83,11 +83,13 @@ const stubSentenceData = ({
   bookingIds,
   startDates,
   emptyResponse = false,
+  releaseDates = [],
 }: {
   offenderNumbers: OffenderNumber[]
   bookingIds: BookingId[]
   startDates: Date
   emptyResponse: boolean
+  releaseDates: string[]
 }): SuperAgentRequest => {
   let index = 0
   const response: SentenceData[] = emptyResponse
@@ -96,7 +98,9 @@ const stubSentenceData = ({
         prisonerNumber: offenderNumber,
         bookingId: bookingIds[index].toString(),
         sentenceStartDate: startDates[index],
-        releaseDate: new Date().toISOString(),
+        releaseDate: releaseDates[index]
+          ? moment(releaseDates[index]).toISOString()
+          : moment().add(1, 'days').toISOString(),
         firstName: `firstName-${index}`,
         lastName: `lastName-${index++}`,
         offenceCode: `OFF${offenderNumber}`,

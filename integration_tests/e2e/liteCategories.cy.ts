@@ -456,4 +456,80 @@ describe('Lite Categories', () => {
       })
     })
   })
+
+  describe('hide released prisoners from supervisor display', () => {
+    let supervisorDashboardHomePage: SupervisorDashboardHomePage
+    beforeEach(() => {
+      dbSeederLiteCategory([
+        ...supervisorViewSeedData,
+        {
+          booking_id: 11,
+          sequence: 1,
+          category: 'V',
+          supervisor_category: null,
+          offender_no: 'B2345XY',
+          prison_id: 'LEI',
+          created_date: '2023-06-23 13:45:49.776453 +00:00',
+          approved_date: null,
+          assessed_by: 'CATEGORISER_USER',
+          approved_by: null,
+          assessment_committee: 'RECP',
+          assessment_comment: 'comment',
+          next_review_date: moment().add(6, 'months').toISOString(),
+          placement_prison_id: 'BXI',
+          approved_committee: null,
+          approved_placement_prison_id: null,
+          approved_placement_comment: null,
+          approved_comment: null,
+        },
+      ])
+
+      cy.task('stubAgenciesPrison')
+
+      cy.task('stubUncategorisedAwaitingApproval')
+
+      cy.task('stubGetOffenderDetailsByOffenderNoList', {
+        bookingId: [11, 12],
+        offenderNumbers: ['B2345XY', 'B2345YZ'],
+      })
+      cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+
+      cy.stubLogin({
+        user: SUPERVISOR_USER,
+      })
+      cy.signIn()
+    })
+
+    it('filter B2345XY, show B2345YZ', () => {
+      cy.task('stubSentenceData', {
+        offenderNumbers: ['B2345XY', 'B2345YZ'],
+        bookingIds: [11, 12],
+        startDates: ['28/01/2019', '2019-01-31'],
+        releaseDates: ['01/01/2000'],
+      })
+
+      supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
+      supervisorDashboardHomePage.otherCategoriesTabLink().click()
+
+      supervisorDashboardHomePage.validateOtherCategoriesTableData([
+        ['23/06/2023', 'Dent, Jane', 'B2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
+      ])
+    })
+
+    it('show B2345XY, filter B2345YZ', () => {
+      cy.task('stubSentenceData', {
+        offenderNumbers: ['B2345XY', 'B2345YZ'],
+        bookingIds: [11, 12],
+        startDates: ['28/01/2019', '2019-01-31'],
+        releaseDates: [undefined, '01/01/2000'],
+      })
+
+      supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
+      supervisorDashboardHomePage.otherCategoriesTabLink().click()
+
+      supervisorDashboardHomePage.validateOtherCategoriesTableData([
+        ['23/06/2023', 'Clark, Frank', 'B2345XY', 'CATEGORISER_USER', 'V', 'Approve'],
+      ])
+    })
+  })
 })

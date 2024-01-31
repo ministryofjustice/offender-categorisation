@@ -620,31 +620,41 @@ module.exports = function createOffendersService(
         getReleaseDateMap(unapprovedLite, prisonerSearchClient),
       ])
 
-      const alreadyReleased = offenderDetailsFromElite.filter(offender => releaseDateMap.has(offender.bookingId))
-      logger.debug(
-        'The following prisoners have been released and should be removed from the lite_categories table',
-        alreadyReleased.map(p => p.bookingId)
-      )
+      const alreadyReleased = offenderDetailsFromElite
+        .filter(
+          offender =>
+            releaseDateMap.has(offender.bookingId) && moment().isAfter(moment(releaseDateMap.get(offender.bookingId)))
+        )
+        .map(p => p.bookingId)
 
-      const decoratedResults = unapprovedLite.map(o => {
-        const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
-        const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
-        const assessor = userDetailFromElite.find(record => record.username === o.assessedBy)
-        const categoriserDisplayName = assessor
-          ? `${properCaseName(assessor.firstName)} ${properCaseName(assessor.lastName)}`
-          : o.assessedBy
+      if (alreadyReleased.length) {
+        logger.debug(
+          'The following prisoners have been released and should be removed from the lite_category table',
+          alreadyReleased
+        )
+      }
 
-        if (!offenderDetail) {
-          logger.error(`getUnapprovedLite: Offender ${o.offenderNo} in DB not found in NOMIS`)
-          return { ...o, assessedDate, categoriserDisplayName }
-        }
-        return {
-          ...o,
-          assessedDate,
-          displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
-          categoriserDisplayName,
-        }
-      })
+      const decoratedResults = unapprovedLite
+        .filter(offender => !alreadyReleased.some(o => o === offender.bookingId))
+        .map(o => {
+          const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
+          const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
+          const assessor = userDetailFromElite.find(record => record.username === o.assessedBy)
+          const categoriserDisplayName = assessor
+            ? `${properCaseName(assessor.firstName)} ${properCaseName(assessor.lastName)}`
+            : o.assessedBy
+
+          if (!offenderDetail) {
+            logger.error(`getUnapprovedLite: Offender ${o.offenderNo} in DB not found in NOMIS`)
+            return { ...o, assessedDate, categoriserDisplayName }
+          }
+          return {
+            ...o,
+            assessedDate,
+            displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+            categoriserDisplayName,
+          }
+        })
 
       return decoratedResults.sort((a, b) => sortByDateTime(b.createdDate, a.createdDate))
     } catch (error) {
