@@ -620,7 +620,8 @@ module.exports = function createOffendersService(
         getReleaseDateMap(unapprovedLite, prisonerSearchClient),
       ])
 
-      logger.debug('releaseDateMap', releaseDateMap)
+      // eslint-disable-next-line no-console
+      console.log('releaseDateMap', releaseDateMap)
 
       const alreadyReleased = offenderDetailsFromElite
         .filter(
