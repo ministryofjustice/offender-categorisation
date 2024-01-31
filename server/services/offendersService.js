@@ -620,8 +620,6 @@ module.exports = function createOffendersService(
         getReleaseDateMap(unapprovedLite, prisonerSearchClient),
       ])
 
-      logger.debug('releaseDateMap', releaseDateMap)
-
       const alreadyReleased = offenderDetailsFromElite
         .filter(
           offender =>
