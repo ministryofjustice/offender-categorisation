@@ -58,6 +58,8 @@ async function getReleaseDateMap(offenderList, prisonerSearchClient) {
     .map(o => o.bookingId)
 
   const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
+  // eslint-disable-next-line no-console
+  console.log('prisoners', prisoners)
 
   return new Map(
     prisoners
