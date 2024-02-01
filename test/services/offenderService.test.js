@@ -1321,7 +1321,13 @@ describe('Lite', () => {
       },
     ])
 
-    const sentenceDates = [{ bookingId: 121, releaseDate: '2019-04-18' }]
+    const sentenceDates = [
+      { bookingId: 111, releaseDate: '2020-04-21' },
+      { bookingId: 222, releaseDate: '2020-11-30' },
+      { bookingId: 333, releaseDate: '2020-04-18' },
+      { bookingId: 444, releaseDate: '2020-04-18' },
+    ]
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
 
     const data = await service.getUnapprovedLite(context, mockTransactionalClient)
