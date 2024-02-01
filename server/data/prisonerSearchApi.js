@@ -54,6 +54,7 @@ module.exports = context => {
             bookingId: Number(r.bookingId),
             releaseDate: r.releaseDate,
             sentenceStartDate: r.sentenceStartDate,
+            status: r.status,
           })
         )
       }

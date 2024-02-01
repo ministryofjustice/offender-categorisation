@@ -1322,10 +1322,10 @@ describe('Lite', () => {
     ])
 
     const sentenceDates = [
-      { bookingId: 111, releaseDate: '2020-04-21' },
-      { bookingId: 222, releaseDate: '2020-11-30' },
-      { bookingId: 333, releaseDate: '2020-04-18' },
-      { bookingId: 444, releaseDate: '2020-04-18' },
+      { bookingId: 111, status: 'ACTIVE IN' },
+      { bookingId: 222, status: 'ACTIVE IN' },
+      { bookingId: 333, status: 'ACTIVE IN' },
+      { bookingId: 444, status: 'ACTIVE IN' },
     ]
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
