@@ -16,6 +16,7 @@ const { sortByDateTime, sortByStatus } = require('./offenderSort')
 const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
+const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
 
 const dirname = process.cwd()
 
@@ -620,25 +621,16 @@ module.exports = function createOffendersService(
         getReleaseDateMap(unapprovedLite, prisonerSearchClient),
       ])
 
-      // eslint-disable-next-line no-console
-      console.log('releaseDateMap', releaseDateMap)
+      const [insidePrisonPartition, releasedPartition] = liteCategoriesPrisonerPartition(unapprovedLite, releaseDateMap)
+      const insidePrison = insidePrisonPartition.map(o => o.bookingId)
+      const released = releasedPartition.map(o => o.bookingId)
 
-      const alreadyReleased = offenderDetailsFromElite
-        .filter(
-          offender =>
-            releaseDateMap.has(offender.bookingId) && moment().isAfter(moment(releaseDateMap.get(offender.bookingId)))
-        )
-        .map(p => p.bookingId)
-
-      if (alreadyReleased.length) {
-        logger.debug(
-          'The following prisoners have been released and should be removed from the lite_category table',
-          alreadyReleased
-        )
+      if (released.length) {
+        logger.debug('The following prisoners should be removed from the lite_category table', released)
       }
 
       const decoratedResults = unapprovedLite
-        .filter(offender => !alreadyReleased.some(o => o === offender.bookingId))
+        .filter(offender => insidePrison.includes(offender.bookingId))
         .map(o => {
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
           const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
