@@ -84,28 +84,31 @@ const stubSentenceData = ({
   startDates,
   emptyResponse = false,
   releaseDates = [],
+  status = [],
 }: {
   offenderNumbers: OffenderNumber[]
   bookingIds: BookingId[]
   startDates: Date
   emptyResponse: boolean
   releaseDates: string[]
+  status: string[]
 }): SuperAgentRequest => {
   let index = 0
   const response: SentenceData[] = emptyResponse
     ? []
-    : offenderNumbers.map(offenderNumber => ({
+    : offenderNumbers.map((offenderNumber, idx) => ({
         prisonerNumber: offenderNumber,
         bookingId: bookingIds[index].toString(),
-        sentenceStartDate: startDates[index],
-        releaseDate: releaseDates[index]
-          ? moment(releaseDates[index]).toISOString()
+        sentenceStartDate: startDates[idx],
+        releaseDate: releaseDates[idx]
+          ? moment(releaseDates[idx]).toISOString()
           : moment().add(1, 'days').toISOString(),
         firstName: `firstName-${index}`,
         lastName: `lastName-${index++}`,
         offenceCode: `OFF${offenderNumber}`,
         statuteCode: `ST${offenderNumber}`,
         mostSeriousOffence: 'Robbery',
+        status: status[idx] ? status[idx] : 'ACTIVE IN',
       }))
 
   return stubFor({

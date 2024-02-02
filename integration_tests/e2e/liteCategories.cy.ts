@@ -505,7 +505,8 @@ describe('Lite Categories', () => {
         offenderNumbers: ['B2345XY', 'B2345YZ'],
         bookingIds: [11, 12],
         startDates: ['28/01/2019', '2019-01-31'],
-        releaseDates: ['01/01/2000'],
+        releaseDates: ['01/01/2001'],
+        status: ['ACTIVE OUT', 'ACTIVE IN'],
       })
 
       supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
@@ -522,6 +523,7 @@ describe('Lite Categories', () => {
         bookingIds: [11, 12],
         startDates: ['28/01/2019', '2019-01-31'],
         releaseDates: [undefined, '01/01/2000'],
+        status: ['ACTIVE IN', 'ACTIVE OUT'],
       })
 
       supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)

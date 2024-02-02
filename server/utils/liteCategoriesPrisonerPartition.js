@@ -1,16 +1,14 @@
-const moment = require('moment')
-
-function liteCategoriesPrisonerPartition(unapprovedLiteCategorisations, releaseDateMap) {
+function liteCategoriesPrisonerPartition(unapprovedLiteCategorisations, prisonerData) {
   const insidePrison = []
   const released = []
 
-  unapprovedLiteCategorisations.forEach(item => {
-    const bookingDate = releaseDateMap.get(item.bookingId)
+  unapprovedLiteCategorisations.forEach(offender => {
+    const prisoner = prisonerData.find(pd => pd.bookingId === offender.bookingId)
 
-    if (bookingDate && moment().isBefore(moment(bookingDate))) {
-      insidePrison.push(item)
+    if (prisoner && prisoner.status === 'ACTIVE IN') {
+      insidePrison.push(offender)
     } else {
-      released.push(item)
+      released.push(offender)
     }
   })
 
