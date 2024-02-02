@@ -32,6 +32,7 @@ module.exports = token => {
 }
 
 function dpsFeClientGetBuilder(token) {
+  // eslint-disable-next-line consistent-return
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
     const time = moment()
     try {
@@ -39,7 +40,7 @@ function dpsFeClientGetBuilder(token) {
         .get(path)
         .agent(keepaliveAgent)
         .query(query)
-        .set('x-user-token', token)
+        .set('x-user-token', token ?? '')
         .set(headers)
         .responseType(responseType)
         .timeout(timeoutSpec)
@@ -49,11 +50,14 @@ function dpsFeClientGetBuilder(token) {
       return raw ? result : result.body
     } catch (error) {
       const sanitisedError = getSanitisedError(error)
-      logger.warn(
-        { ...sanitisedError, path, query },
-        'Error in DPS Front End Components GET using clientId credentials'
-      )
-      throw sanitisedError
+      // a 401 is a valid outcome here if logged out and trying to request the header / footer
+      if (sanitisedError.status !== 401) {
+        logger.warn(
+          { ...sanitisedError, path, query },
+          'Error in DPS Front End Components GET using clientId credentials'
+        )
+        throw sanitisedError
+      }
     }
   }
 }
