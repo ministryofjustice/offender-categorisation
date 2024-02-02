@@ -66,6 +66,12 @@ async function getReleaseDateMap(offenderList, prisonerSearchClient) {
   )
 }
 
+async function getPrisoners(offenderList, prisonerSearchClient) {
+  const bookingIds = offenderList.filter(o => !o.dbRecord || !o.dbRecord.catType).map(o => o.bookingId)
+
+  return prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
+}
+
 async function getPomMap(offenderList, allocationClient) {
   const result = new Map()
   const BATCH_SIZE = 15
@@ -615,13 +621,15 @@ module.exports = function createOffendersService(
         return []
       }
 
-      const [offenderDetailsFromElite, userDetailFromElite, releaseDateMap] = await Promise.all([
+      const [offenderDetailsFromElite, userDetailFromElite] = await Promise.all([
         nomisClient.getOffenderDetailList(unapprovedLite.map(c => c.offenderNo)),
         nomisClient.getUserDetailList([...new Set(unapprovedLite.map(c => c.assessedBy))]),
-        getReleaseDateMap(unapprovedLite, prisonerSearchClient),
       ])
 
-      const [insidePrisonPartition, releasedPartition] = liteCategoriesPrisonerPartition(unapprovedLite, releaseDateMap)
+      // cannot merge with promise.all as only one concurrent call can be sent to prisoner search api
+      const prisonerData = await getPrisoners(unapprovedLite, prisonerSearchClient)
+
+      const [insidePrisonPartition, releasedPartition] = liteCategoriesPrisonerPartition(unapprovedLite, prisonerData)
       const insidePrison = insidePrisonPartition.map(o => o.bookingId)
       const released = releasedPartition.map(o => o.bookingId)
 
