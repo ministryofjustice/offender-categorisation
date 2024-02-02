@@ -1,4 +1,4 @@
-const { serviceCheckFactory } = require('../data/healthCheck')
+const { serviceCheckFactory, dbCheck } = require('../data/healthCheck')
 
 const service = (name, url) => {
   const check = serviceCheckFactory(name, url)
@@ -30,8 +30,14 @@ const addAppInfo = result => {
   return { ...result, ...buildInfo }
 }
 
+const db = () =>
+  dbCheck()
+    .then(() => ({ name: 'db', status: 'ok', message: 'OK' }))
+    .catch(err => ({ name: 'db', status: 'ERROR', message: err.message }))
+
 module.exports = function healthcheckFactory(authUrl, elite2Url, riskProfilerUrl, allocationUrl, prisonerSearchUrl) {
   const checks = [
+    db,
     service('auth', `${authUrl}/ping`),
     service('elite2', `${elite2Url}ping`),
     service('riskProfiler', `${riskProfilerUrl}ping`),
