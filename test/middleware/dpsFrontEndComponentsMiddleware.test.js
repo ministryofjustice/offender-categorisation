@@ -26,6 +26,16 @@ describe('dpsFrontEndComponentsMiddleware', () => {
     jest.clearAllMocks()
   })
 
+  it('should not make any api calls if res.locals.user.token is undefined', async () => {
+    mockResponse.locals.user = undefined
+
+    await dpsFrontEndComponentsMiddleware(mockComponentService)(mockRequest, mockResponse, mockNext)
+
+    expect(mockComponentService.getComponent).not.toHaveBeenCalled()
+
+    expect(mockNext).toHaveBeenCalledTimes(1)
+  })
+
   it('should retrieve frontend components and set them in res.locals', async () => {
     const headerResponse = {
       html: '<header>Header Content</header>',
@@ -50,6 +60,7 @@ describe('dpsFrontEndComponentsMiddleware', () => {
       jsIncludes: [...headerResponse.javascript, ...footerResponse.javascript],
     })
 
+    expect(mockComponentService.getComponent).toHaveBeenCalledTimes(2)
     expect(mockNext).toHaveBeenCalledTimes(1)
   })
 
