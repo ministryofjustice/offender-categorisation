@@ -2,7 +2,12 @@ const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log')
+const db = require('./dataAccess/db')
 const getSanitisedError = require('../sanitisedError')
+
+function dbCheck() {
+  return db.query('SELECT 1 AS ok')
+}
 
 const agentOptions = {
   maxSockets: 100,
@@ -41,5 +46,6 @@ function serviceCheckFactory(name, url) {
 }
 
 module.exports = {
+  dbCheck,
   serviceCheckFactory,
 }
