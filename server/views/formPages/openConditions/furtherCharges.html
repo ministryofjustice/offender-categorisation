@@ -40,7 +40,6 @@
   {{ govukRadios({
     formGroup: { classes: 'govuk-!-margin-bottom-6' },
     name: "increasedRisk",
-    classes: "govuk-radios--inline",
     fieldset: { legend: { text: "Do these charges mean they pose an increased risk if placed in open conditions?" } },
     errorMessage: {
       text: "Please select yes or no"
@@ -68,7 +67,6 @@
   {% if (not isFemale and data.ratings.furtherCharges.furtherCharges === 'No') or (isFemale and catType === 'INITIAL') or catType === 'RECAT' %}
     {{ govukRadios({
       name: "furtherCharges",
-      classes: "govuk-radios--inline",
       fieldset: { legend: { text: "Are they facing any further charges?" } },
       hint: {
         text: "You should include all further charges, including minor offences."
