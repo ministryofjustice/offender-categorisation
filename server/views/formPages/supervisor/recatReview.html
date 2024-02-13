@@ -120,6 +120,8 @@
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
 
+    {% set noLabel = 'No' %}
+
     {% if isFemale and isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') %}
       {% set radioClasses = '' %}
