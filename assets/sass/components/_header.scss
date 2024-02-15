@@ -13,7 +13,7 @@
   }
 
   &__logo {
-    @include govuk-responsive-margin(3, 'right');
+    @include govuk-responsive-margin(3, 'right', true);
     position: relative;
     top: -1px;
     fill: govuk-colour('white');
