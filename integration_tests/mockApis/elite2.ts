@@ -450,7 +450,7 @@ const stubElite2Ping = (statusCode = 200): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/elite2/ping`,
+      urlPattern: `/elite2/health/ping`,
     },
     response: {
       status: statusCode,
