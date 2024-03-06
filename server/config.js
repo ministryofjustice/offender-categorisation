@@ -162,4 +162,5 @@ module.exports = {
     true
   )}`,
   https: production,
+  productId: get('PRODUCT_ID', 'UNASSIGNED', true, { requireInProduction: true }),
 }
