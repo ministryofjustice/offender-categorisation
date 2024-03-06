@@ -1,4 +1,5 @@
 const { serviceCheckFactory, dbCheck } = require('../data/healthCheck')
+const { productId } = require('../config')
 
 const service = (name, url) => {
   const check = serviceCheckFactory(name, url)
@@ -23,6 +24,7 @@ const addAppInfo = result => {
   const buildInformation = getBuild()
   const buildInfo = {
     uptime: process.uptime(),
+    productId,
     build: buildInformation,
     version: (buildInformation && buildInformation.buildNumber) || 'Not available',
   }
