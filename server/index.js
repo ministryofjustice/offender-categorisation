@@ -9,6 +9,7 @@ const createApp = require('./app')
 
 const formClient = require('./data/formClient')
 const statsClient = require('./data/statsClient')
+const subjectAccessRequestClient = require('./data/subjectAccessRequestClient')
 const nomisClientBuilder = require('./data/nomisClientBuilder')
 const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
 const allocationClientBuilder = require('./data/allocationManagerApi')
@@ -23,6 +24,7 @@ const createUserService = require('./services/userService')
 const createRiskProfilerService = require('./services/riskProfilerService')
 const createSqsService = require('./services/sqsService')
 const createDpsFeComponentService = require('./services/dpsFeComponentService')
+const createSubjectAccessRequestService = require('./services/subjectAccessRequestService')
 
 // pass in dependencies of service
 const formService = createFormService(formClient)
@@ -37,6 +39,7 @@ const userService = createUserService(nomisClientBuilder)
 const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
 const sqsService = createSqsService(offendersService, formService)
 const frontEndComponentsService = createDpsFeComponentService(dpsFeComponentsClientBuilder)
+const subjectAccessRequestService = createSubjectAccessRequestService(subjectAccessRequestClient)
 
 const app = createApp({
   formService,
@@ -46,6 +49,7 @@ const app = createApp({
   riskProfilerService,
   statsService,
   frontEndComponentsService,
+  subjectAccessRequestService,
 })
 
 module.exports = { app, sqsService }

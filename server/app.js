@@ -30,6 +30,7 @@ const createOpenConditionsRouter = require('./routes/openConditions')
 const createRecatRouter = require('./routes/recat')
 const createNextReviewDateRouter = require('./routes/nextReviewDate')
 const createLiteCategoriesRouter = require('./routes/liteCategories')
+const createSubjectAccessRequestRouter = require('./routes/subjectAccessRequest')
 const errorHandler = require('./errorHandler')
 
 const { authenticationMiddleware } = auth
@@ -46,6 +47,7 @@ module.exports = function createApp({
   riskProfilerService,
   statsService,
   frontEndComponentsService,
+  subjectAccessRequestService,
 }) {
   const app = express()
 
@@ -233,6 +235,15 @@ module.exports = function createApp({
       })
     }
   })
+
+  app.use(
+    '/subject-access-request',
+    createSubjectAccessRequestRouter({
+      subjectAccessRequestService,
+      userService,
+      offendersService,
+    })
+  )
 
   app.use(authorisationMiddleware(userService, offendersService))
   app.use(getFrontEndComponentsMiddleware(frontEndComponentsService))

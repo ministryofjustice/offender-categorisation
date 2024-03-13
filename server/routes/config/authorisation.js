@@ -53,4 +53,8 @@ module.exports = {
   '/liteCategories/alreadyApproved/\\d+': {
     authorised: ['ROLE_APPROVE_CATEGORISATION'],
   },
+  '/subject-access-request.+': {
+    // remove ROLE_APPROVE_CATEGORISATION after dev complete
+    authorised: ['ROLE_SAR_DATA_ACCESS', 'ROLE_APPROVE_CATEGORISATION'],
+  },
 }
