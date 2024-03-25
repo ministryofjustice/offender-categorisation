@@ -1,5 +1,17 @@
 version: 2.1
 
+develop_branch: &develop_branch
+  filters:
+    branches:
+      only:
+        - develop
+
+main_branch: &main_branch
+  filters:
+    branches:
+      only:
+        - main
+
 orbs:
   hmpps: ministryofjustice/hmpps@7
   browser-tools: circleci/browser-tools@1.4.4
@@ -207,32 +219,31 @@ workflows:
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
-          name: build_docker
-          filters:
-            branches:
-              only:
-                - main
+          <<: *develop_branch
+          name: dev_branch_build_docker
+          requires:
+            - helm_lint
+            - test
+            - integration_tests
       - hmpps/deploy_env:
-          name: deploy_dev
+          <<: *develop_branch
+          name: dev_branch_deploy_dev
           env: "dev"
           slack_notification: true
           slack_channel_name: << pipeline.parameters.nonprod-releases-slack-channel >>
           context:
             - hmpps-common-vars
-          filters:
-            branches:
-              only:
-                - main
+          requires:
+            - dev_branch_build_docker
+      - hmpps/build_docker:
+          <<: *main_branch
+          name: build_docker
           requires:
             - helm_lint
             - test
-            - integration_tests
-            - build_docker
-      - request-preprod-approval:
-          type: approval
-          requires:
-            - deploy_dev
+            - integration_test
       - hmpps/deploy_env:
+          <<: *main_branch
           name: deploy_preprod
           env: "preprod"
           slack_notification: true
@@ -241,12 +252,14 @@ workflows:
             - offender-categorisation-preprod
             - hmpps-common-vars
           requires:
-            - request-preprod-approval
+            - build_docker
       - request-prod-approval:
+          <<: *main_branch
           type: approval
           requires:
             - deploy_preprod
       - hmpps/deploy_env:
+          <<: *main_branch
           name: deploy_prod
           env: "prod"
           slack_notification: true
