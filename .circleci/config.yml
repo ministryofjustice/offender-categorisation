@@ -225,6 +225,7 @@ workflows:
             - helm_lint
             - test
             - integration_tests
+            - integration_tests_cypress
       - hmpps/deploy_env:
           <<: *develop_branch
           name: dev_branch_deploy_dev
@@ -241,7 +242,8 @@ workflows:
           requires:
             - helm_lint
             - test
-            - integration_test
+            - integration_tests
+            - integration_tests_cypress
       - hmpps/deploy_env:
           <<: *main_branch
           name: deploy_preprod
