@@ -27,7 +27,7 @@ class TasklistRecatPage extends Page {
     nextReviewDateButton { $('#nextReviewDateButton') }
 
     continueButton(required: false) { $('#review a') }
-    continueButtonDisabled(required: false) { $('button.govuk-button--disabled') }
+    continueButtonDisabled(required: false) { $('button:disabled') }
     categorisationHomeLink { $('a', text: 'Categorisation dashboard') }
     summarySection(required: true) { $('#review div') }
     oasysInputButton(required: true) { $('#oasysInputButton') }

@@ -164,7 +164,6 @@ describe('Lite Categories', () => {
         liteCategoriesPage.submitButton().should('not.have.attr', 'data-clicked', 'true')
         liteCategoriesPage.submitButton().should('not.have.attr', 'disabled', 'disabled')
         liteCategoriesPage.submitButton().should('not.have.attr', 'aria-disabled', 'true')
-        liteCategoriesPage.submitButton().should('not.have.class', 'govuk-button--disabled')
 
         // a total hack to fake a form submission as every other attempt
         // immediately redirected before running the desired assertions
@@ -174,7 +173,6 @@ describe('Lite Categories', () => {
         liteCategoriesPage.submitButton().should('have.attr', 'data-clicked', 'true')
         liteCategoriesPage.submitButton().should('have.attr', 'disabled', 'disabled')
         liteCategoriesPage.submitButton().should('have.attr', 'aria-disabled', 'true')
-        liteCategoriesPage.submitButton().should('have.class', 'govuk-button--disabled')
       })
 
       it('should not allow a second categorisation to begin when a categorisation is already in progress', () => {
