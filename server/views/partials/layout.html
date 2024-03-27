@@ -54,7 +54,7 @@
 {% block bodyEnd %}
 {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
 <script src="/assets/all.js"></script>
-<script nonce="{{ cspNonce }}">
+<script type="module">
   import { initAll } from '/assets/govuk/govuk-frontend.min.js';
   initAll();
 </script>
