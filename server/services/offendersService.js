@@ -16,6 +16,7 @@ const { sortByDateTime, sortByStatus } = require('./offenderSort')
 const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
+const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
 
 const dirname = process.cwd()
 
@@ -63,6 +64,12 @@ async function getReleaseDateMap(offenderList, prisonerSearchClient) {
       .filter(s => s.releaseDate) // the endpoint returns records for offenders without sentences
       .map(s => [s.bookingId, s.releaseDate])
   )
+}
+
+async function getPrisoners(offenderList, prisonerSearchClient) {
+  const bookingIds = offenderList.filter(o => !o.dbRecord || !o.dbRecord.catType).map(o => o.bookingId)
+
+  return prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
 }
 
 async function getPomMap(offenderList, allocationClient) {
@@ -605,6 +612,7 @@ module.exports = function createOffendersService(
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
+      const prisonerSearchClient = prisonerSearchClientBuilder(context)
 
       const unapprovedLite = await formService.getUnapprovedLite(agencyId, transactionalDbClient)
 
@@ -618,25 +626,38 @@ module.exports = function createOffendersService(
         nomisClient.getUserDetailList([...new Set(unapprovedLite.map(c => c.assessedBy))]),
       ])
 
-      const decoratedResults = unapprovedLite.map(o => {
-        const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
-        const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
-        const assessor = userDetailFromElite.find(record => record.username === o.assessedBy)
-        const categoriserDisplayName = assessor
-          ? `${properCaseName(assessor.firstName)} ${properCaseName(assessor.lastName)}`
-          : o.assessedBy
+      // cannot merge with promise.all as only one concurrent call can be sent to prisoner search api
+      const prisonerData = await getPrisoners(unapprovedLite, prisonerSearchClient)
 
-        if (!offenderDetail) {
-          logger.error(`getUnapprovedLite: Offender ${o.offenderNo} in DB not found in NOMIS`)
-          return { ...o, assessedDate, categoriserDisplayName }
-        }
-        return {
-          ...o,
-          assessedDate,
-          displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
-          categoriserDisplayName,
-        }
-      })
+      const [insidePrisonPartition, releasedPartition] = liteCategoriesPrisonerPartition(unapprovedLite, prisonerData)
+      const insidePrison = insidePrisonPartition.map(o => o.bookingId)
+      const released = releasedPartition.map(o => o.bookingId)
+
+      if (released.length) {
+        logger.debug('The following prisoners should be removed from the lite_category table', released)
+      }
+
+      const decoratedResults = unapprovedLite
+        .filter(offender => insidePrison.includes(offender.bookingId))
+        .map(o => {
+          const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
+          const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
+          const assessor = userDetailFromElite.find(record => record.username === o.assessedBy)
+          const categoriserDisplayName = assessor
+            ? `${properCaseName(assessor.firstName)} ${properCaseName(assessor.lastName)}`
+            : o.assessedBy
+
+          if (!offenderDetail) {
+            logger.error(`getUnapprovedLite: Offender ${o.offenderNo} in DB not found in NOMIS`)
+            return { ...o, assessedDate, categoriserDisplayName }
+          }
+          return {
+            ...o,
+            assessedDate,
+            displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
+            categoriserDisplayName,
+          }
+        })
 
       return decoratedResults.sort((a, b) => sortByDateTime(b.createdDate, a.createdDate))
     } catch (error) {

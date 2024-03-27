@@ -2,12 +2,12 @@ const express = require('express')
 const addRequestId = require('express-request-id')()
 const moment = require('moment')
 const path = require('path')
-const helmet = require('helmet')
 const noCache = require('nocache')
 const csurf = require('csurf')
 const compression = require('compression')
 const passport = require('passport')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
@@ -20,6 +20,9 @@ const createFormRouter = require('./routes/form')
 const createTasklistRouter = require('./routes/tasklist')
 const createTasklistRecatRouter = require('./routes/tasklistRecat')
 const authorisationMiddleware = require('./middleware/authorisationMiddleware')
+const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
+const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
+const setUpWebSecurity = require('./utils/setUpWebSecurity')
 const logger = require('../log')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const config = require('./config')
@@ -42,6 +45,7 @@ module.exports = function createApp({
   userService,
   riskProfilerService,
   statsService,
+  frontEndComponentsService,
 }) {
   const app = express()
 
@@ -60,17 +64,14 @@ module.exports = function createApp({
   // View Engine Configuration
   app.set('view engine', 'html')
 
+  setUpEnvironmentName(app)
+
   nunjucksSetup(app, path)
 
   // Server Configuration
   app.set('port', process.env.PORT || 3000)
 
-  // Secure code best practice - see:
-  // 1. https://expressjs.com/en/advanced/best-practice-security.html,
-  // 2. https://www.npmjs.com/package/helmet
-  app.use(helmet({ contentSecurityPolicy: false })) // compatible with helmet 3.x
-  app.use(helmet.referrerPolicy({ policy: 'same-origin' }))
-
+  app.use(setUpWebSecurity())
   app.use(addRequestId)
 
   const client = redis.createClient({
@@ -187,7 +188,7 @@ module.exports = function createApp({
         } catch (error) {
           const sanitisedError = getSanitisedError(error)
           logger.error(sanitisedError, `Token refresh error: ${req.user.username}`)
-          return res.redirect('/logout')
+          return res.redirect('/sign-out')
         }
       }
     }
@@ -200,6 +201,8 @@ module.exports = function createApp({
     req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
     next()
   })
+
+  app.use(cookieParser())
 
   const authLogoutUrl = `${config.apis.oauth2.externalUrl}/logout?client_id=${config.apis.oauth2.apiClientId}&redirect_uri=${config.domain}`
 
@@ -222,7 +225,7 @@ module.exports = function createApp({
     })(req, res, next)
   )
 
-  app.use('/logout', (req, res, next) => {
+  app.use('/sign-out', (req, res, next) => {
     if (req.user) {
       req.logout(err => {
         if (err) return next(err)
@@ -232,6 +235,7 @@ module.exports = function createApp({
   })
 
   app.use(authorisationMiddleware(userService, offendersService))
+  app.use(getFrontEndComponentsMiddleware(frontEndComponentsService))
 
   const homeRouter = createHomeRouter({
     userService,

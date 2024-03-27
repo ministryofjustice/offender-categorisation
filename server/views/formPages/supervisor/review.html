@@ -160,12 +160,12 @@
 
     {% if isFemale and isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') | rejectattr('T') %}
-      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioClasses = '' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% elif isFemale and not isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
-      {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
+      {% set radioClasses = 'govuk-radios__conditional--hidden' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
       {% if (currentCat == "R" or currentCat == "I") %}
         {% set noLabel = "No, consider for open" %}
@@ -174,7 +174,7 @@
       {% endif %}
     {% else %}
       {% set radios = radios | rejectattr('R') | rejectattr('T')%}
-      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioClasses = '' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% endif %}
@@ -184,6 +184,9 @@
         {{ warningCategoryOpenConditions | safe }}
       {% endif %}
 
+      <!-- required because the radio options are dynamic, and none of them have
+           this ID - which the error message summary will try to link to -->
+      <span id="supervisorOverriddenCategory"></span>
       {{ govukRadios({
         name: "supervisorOverriddenCategory",
         classes: radioClasses,
@@ -211,7 +214,6 @@
 
     {{ govukRadios({
       name: "supervisorCategoryAppropriate",
-      classes: "govuk-radios--inline",
       fieldset: {
         legend: {
           text: "Do you agree with the provisional category?",
@@ -226,14 +228,16 @@
       items: [
         {
           value: "Yes",
-          text: "Yes"
+          text: "Yes",
+          checked: data.supervisor.review.supervisorCategoryAppropriate === 'Yes'
         },
         {
           value: "No",
           text: noLabel,
           conditional: {
             html:overriddenCategoryTextHtml
-          }
+          },
+          checked: data.supervisor.review.supervisorCategoryAppropriate === 'No'
         }
       ]
     }) }}

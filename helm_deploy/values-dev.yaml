@@ -1,4 +1,3 @@
----
 generic-service:
 
   replicaCount: 2
@@ -11,16 +10,19 @@ generic-service:
 
   ingress:
     enable_allowlist: true
-    hosts: [dev.offender-categorisation.service.justice.gov.uk]
+    hosts: [ dev.offender-categorisation.service.justice.gov.uk ]
 
   env:
+    ENVIRONMENT: dev
     INGRESS_URL: https://dev.offender-categorisation.service.justice.gov.uk
     NOMIS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-    ELITE2API_ENDPOINT_URL: https://api-dev.prison.service.justice.gov.uk/
+    ELITE2API_ENDPOINT_URL: https://prison-api-dev.prison.service.justice.gov.uk/
     RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
-    ALLOCATION_MANAGER_ENDPOINT_URL: https://allocation-manager-staging.apps.live.cloud-platform.service.justice.gov.uk/
-    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-offender-search-dev.prison.service.justice.gov.uk/
+    ALLOCATION_MANAGER_ENDPOINT_URL: https://dev.moic.service.justice.gov.uk/
+    PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-search-dev.prison.service.justice.gov.uk/
     DPS_URL: https://digital-dev.prison.service.justice.gov.uk/
+    SUPPORT_URL: https://support-dev.hmpps.service.justice.gov.uk/
+    COMPONENT_API_URL: https://frontend-components-dev.hmpps.service.justice.gov.uk
 
   allowlist:
     ark-nps-hmcts-ttp1: 195.59.75.0/24
@@ -28,10 +30,5 @@ generic-service:
     ark-nps-hmcts-ttp3: 194.33.193.0/25
     ark-nps-hmcts-ttp4: 194.33.196.0/25
     ark-nps-hmcts-ttp5: 194.33.197.0/25
-    cloudplatform-live1-1: 35.178.209.113/32
-    cloudplatform-live1-2: 3.8.51.207/32
-    cloudplatform-live1-3: 35.177.252.54/32
-    health-kick: 35.177.252.195/32
-    global-protect: 35.176.93.186/32
-    mojvpn: 81.134.202.29/32
-    office: 217.33.148.210/32
+    groups:
+      - internal

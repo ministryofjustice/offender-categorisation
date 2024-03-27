@@ -18,7 +18,7 @@ class SecurityDonePage extends Page {
     reviewedDates { bodyRows*.$('td', 2)*.text()  }
     reviewer { bodyRows*.$('td', 3)*.text()  }
     catTypes { bodyRows*.$('td', 4)*.text()  }
-    logoutLink { $('a', href: '/logout')}
+    logoutLink { $('a', href: '/sign-out')}
     homeTabLink { $('a', href: '/securityHome')}
     viewButtons { bodyRows*.$('td', 5)*.find('*')  }
   }

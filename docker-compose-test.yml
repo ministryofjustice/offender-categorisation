@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   form-db:
-    image: postgres
+    image: postgres:15
     networks:
       - hmpps
     container_name: form-builder-db
@@ -12,6 +12,8 @@ services:
       - POSTGRES_PASSWORD=form-builder
       - POSTGRES_USER=form-builder
       - POSTGRES_DB=form-builder
+    volumes:
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   categorisation-redis:
     image: redis
@@ -25,9 +27,9 @@ services:
       - "6379:6379"
 
   categorisation-localstack:
-    image: localstack/localstack:0.11.2
+    image: localstack/localstack
     ports:
-      - "4567-4584:4567-4584"
+      - "4566:4566"
     networks:
       - hmpps
     container_name: categorisation-localstack
@@ -35,13 +37,14 @@ services:
     environment:
       - SERVICES=${SERVICES-sqs}
       - DEBUG=${DEBUG- }
-      - DATA_DIR=${DATA_DIR- }
-      - PORT_WEB_UI=${PORT_WEB_UI-8088}
-      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - PERSISTENCE=${DATA_DIR- }
       - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
-      - DEFAULT_REGION=eu-west-2
+      - AWS_DEFAULT_REGION=eu-west-2
+      - LOCALSTACK_HOST=categorisation-localstack
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - './.localstack:/tmp/localstack'
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
   categorisation-localstack-setup:
     image: jetbrainsinfra/aws-cli
@@ -59,12 +62,21 @@ services:
     entrypoint: /bin/sh -c
     command: >
       "
-        aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name event
-        aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name risk_profiler_change
-        aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name event_dlq
-        aws --endpoint-url=http://categorisation-localstack:4576 sqs create-queue --queue-name risk_profiler_change_dlq
+        aws --endpoint-url=http://categorisation-localstack:4566 --region eu-west-2 sqs create-queue --queue-name event
+        aws --endpoint-url=http://categorisation-localstack:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change
+        aws --endpoint-url=http://categorisation-localstack:4566 --region eu-west-2 sqs create-queue --queue-name event_dlq
+        aws --endpoint-url=http://categorisation-localstack:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
         exit 0
       "
+
+  wiremock:
+    image: wiremock/wiremock
+    networks:
+      - hmpps
+    container_name: categorisation-wiremock
+    restart: always
+    ports:
+      - "9091:8080"
 
 networks:
   hmpps:

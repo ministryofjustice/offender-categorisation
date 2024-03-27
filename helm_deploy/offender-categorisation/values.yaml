@@ -2,6 +2,7 @@
 generic-service:
   nameOverride: offender-categorisation
   serviceAccountName: offender-categorisation
+  productId: "DPS006"
 
   image:
     repository: quay.io/hmpps/offender-categorisation

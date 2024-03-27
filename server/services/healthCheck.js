@@ -1,4 +1,5 @@
-const { serviceCheckFactory } = require('../data/healthCheck')
+const { serviceCheckFactory, dbCheck } = require('../data/healthCheck')
+const { productId } = require('../config')
 
 const service = (name, url) => {
   const check = serviceCheckFactory(name, url)
@@ -23,6 +24,7 @@ const addAppInfo = result => {
   const buildInformation = getBuild()
   const buildInfo = {
     uptime: process.uptime(),
+    productId,
     build: buildInformation,
     version: (buildInformation && buildInformation.buildNumber) || 'Not available',
   }
@@ -30,13 +32,19 @@ const addAppInfo = result => {
   return { ...result, ...buildInfo }
 }
 
+const db = () =>
+  dbCheck()
+    .then(() => ({ name: 'db', status: 'UP', message: 'UP' }))
+    .catch(err => ({ name: 'db', status: 'ERROR', message: err.message }))
+
 module.exports = function healthcheckFactory(authUrl, elite2Url, riskProfilerUrl, allocationUrl, prisonerSearchUrl) {
   const checks = [
     service('auth', `${authUrl}/ping`),
-    service('elite2', `${elite2Url}ping`),
+    service('elite2', `${elite2Url}health/ping`),
     service('riskProfiler', `${riskProfilerUrl}ping`),
     service('allocation', `${allocationUrl}health`),
     service('prisonerSearch', `${prisonerSearchUrl}health/ping`),
+    db,
   ]
 
   return callback =>

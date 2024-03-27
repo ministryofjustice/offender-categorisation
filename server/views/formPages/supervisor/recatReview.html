@@ -120,14 +120,16 @@
       {% set radios = radios | rejectattr('I') | rejectattr('J')%}
     {% endif %}
 
+    {% set noLabel = 'No' %}
+
     {% if isFemale and isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D') %}
-      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioClasses = '' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% elif isFemale and not isYoungOffender %}
       {% set radios = radios | rejectattr('B') | rejectattr('C') | rejectattr('D')%}
-      {% set radioClasses = 'govuk-radios--inline govuk-radios__conditional--hidden' %}
+      {% set radioClasses = 'govuk-radios__conditional--hidden' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend govuk-radios__conditional--hidden' %}
       {% if (currentCat == "R" or currentCat == "I") %}
         {% set noLabel = "No, consider for open" %}
@@ -136,7 +138,7 @@
       {% endif %}
     {% else %}
       {% set radios = radios | rejectattr('R') | rejectattr('T') %}
-      {% set radioClasses = 'govuk-radios--inline' %}
+      {% set radioClasses = '' %}
       {% set radioLegendClasses = 'govuk-fieldset__legend' %}
       {% set noLabel = 'No' %}
     {% endif %}
@@ -182,7 +184,6 @@
 
     {{ govukRadios({
       name: "supervisorCategoryAppropriate",
-      classes: "govuk-radios--inline",
       fieldset: {
         legend: {
           text: "Do you agree with the provisional category?",

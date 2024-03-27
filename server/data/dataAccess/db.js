@@ -40,4 +40,5 @@ module.exports = {
   },
 
   pool, // for testing only
+  query: (text, params) => pool.query(text, params),
 }

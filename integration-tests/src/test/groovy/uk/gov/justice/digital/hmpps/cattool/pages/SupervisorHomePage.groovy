@@ -23,7 +23,7 @@ class SupervisorHomePage extends Page {
     catTypes { bodyRows*.$('td', 7)*.text()  }
     startButtons { bodyRows*.$('td', 8)*.find('*')  }
     startButton{$('#offenderTable > tbody > tr > td:nth-child(9) > a') }
-    logoutLink { $('a', href: '/logout')}
+    logoutLink { $('a', href: '/sign-out')}
     doneTabLink { $('a', href: '/supervisorDone')}
     liteCategoriesTab { $('a', href: '/liteCategories/approveList') }
     multipleRoleDiv(required: false) { $('#multiple-role') }

@@ -20,7 +20,7 @@ class CategoriserHomePage extends Page {
     statuses { bodyRows*.$('td', 4)*.text() }
     poms { bodyRows*.$('td', 5)*.text() }
     startButtons { bodyRows*.$('td', 6)*.find('*') }
-    logoutLink { $('a', href: '/logout') }
+    logoutLink { $('a', href: '/sign-out') }
     doneTabLink { $('a', href: '/categoriserDone') }
     roleSwitchSelect(required: false) { $('#roleSwitch') }
   }

@@ -3,7 +3,7 @@ const logger = require('../log')
 
 const production = process.env.NODE_ENV === 'production'
 
-function get(name, fallback, log, options = {}) {
+function get(name, fallback, log = false, options = {}) {
   if (process.env[name]) {
     if (log) {
       logger.info(`Env var: ${name} value: ${process.env[name]} `)
@@ -22,6 +22,7 @@ function get(name, fallback, log, options = {}) {
 const authUrl = get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true)
 
 module.exports = {
+  environment: process.env.ENVIRONMENT || 'local',
   redis: {
     tls_enabled: get('REDIS_TLS_ENABLED', 'false', true),
     port: get('REDIS_PORT', 6379, true),
@@ -30,43 +31,43 @@ module.exports = {
   },
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', false, { requireInProduction: true }),
-    ttl: get('SESSION_TTL', 1200),
+    ttl: get('SESSION_TTL', 1200, true),
   },
 
   expiryMinutes: get('WEB_SESSION_TIMEOUT_IN_MINUTES', '120', true),
   staticResourceCacheDuration: get('STATIC_RESOURCE_TIMEOUT_IN_MINUTES', '0', true),
   db: {
     username: get('DB_USER', 'form-builder', true),
-    password: get('DB_PASS', 'form-builder'),
+    password: get('DB_PASS', 'form-builder', false),
     server: get('DB_SERVER', 'localhost', true),
     database: get('DB_NAME', 'form-builder', true),
     sslEnabled: get('DB_SSL_ENABLED', 'false', true),
   },
   sqs: {
     riskProfiler: {
-      queueUrl: get('RP_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change', false, {
+      queueUrl: get('RP_QUEUE_URL', 'http://localhost:4566/000000000000/risk_profiler_change', false, {
         requireInProduction: true,
       }),
-      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null),
-      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null),
+      accessKeyId: get('RP_QUEUE_ACCESS_KEY_ID', null, false),
+      secretAccessKey: get('RP_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
-        queueUrl: get('RP_DL_QUEUE_URL', 'http://localhost:4576/queue/risk_profiler_change_dlq', false, {
+        queueUrl: get('RP_DL_QUEUE_URL', 'http://localhost:4566/000000000000/risk_profiler_change_dlq', false, {
           requireInProduction: true,
         }),
-        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null),
-        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', null),
+        accessKeyId: get('RP_DL_QUEUE_ACCESS_KEY_ID', null, false),
+        secretAccessKey: get('RP_DL_QUEUE_SECRET_ACCESS_KEY', null, false),
       },
     },
     event: {
-      queueUrl: get('EVENT_QUEUE_URL', 'http://localhost:4576/queue/event', true),
-      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null),
-      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null),
+      queueUrl: get('EVENT_QUEUE_URL', 'http://localhost:4566/000000000000/event', true),
+      accessKeyId: get('EVENT_QUEUE_ACCESS_KEY_ID', null, false),
+      secretAccessKey: get('EVENT_QUEUE_SECRET_ACCESS_KEY', null, false),
       dlq: {
-        queueUrl: get('EVENT_DL_QUEUE_URL', 'http://localhost:4576/queue/event_dlq', false, {
+        queueUrl: get('EVENT_DL_QUEUE_URL', 'http://localhost:4566/000000000000/event_dlq', false, {
           requireInProduction: true,
         }),
-        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null),
-        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', null),
+        accessKeyId: get('EVENT_DL_QUEUE_ACCESS_KEY_ID', null, false),
+        secretAccessKey: get('EVENT_DL_QUEUE_SECRET_ACCESS_KEY', null, false),
       },
     },
     enabled: get('SQS_ENABLED', 'true', true),
@@ -74,14 +75,14 @@ module.exports = {
   apis: {
     oauth2: {
       url: authUrl,
-      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth'), true),
+      externalUrl: get('NOMIS_AUTH_EXTERNAL_URL', get('NOMIS_AUTH_URL', 'http://localhost:9090/auth', true), true),
       manageAccountUrl: `${authUrl}/account-details`,
       timeout: {
         response: 30000,
         deadline: 35000,
       },
       apiClientId: get('API_CLIENT_ID', 'categorisationtool', true),
-      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret'),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', false),
       agent: {
         maxSockets: 100,
         maxFreeSockets: 10,
@@ -136,9 +137,22 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
     },
+    frontendComponents: {
+      url: get('COMPONENT_API_URL', 'http://localhost:8085/components', true),
+      timeout: {
+        response: Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 20000, true)),
+        deadline: Number(get('COMPONENT_API_TIMEOUT_DEADLINE', 20000, true)),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
   },
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
   dpsUrl: `${get('DPS_URL', 'http://localhost:3000/', true)}`,
+  supportUrl: `${get('SUPPORT_URL', 'http://localhost:3000/', true)}`,
   googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', ' ', true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 6, true)}`,
   recatMarginMonths: `${get('RECAT_MARGIN_MONTHS', 2, true)}`,
@@ -148,4 +162,5 @@ module.exports = {
     true
   )}`,
   https: production,
+  productId: get('PRODUCT_ID', 'UNASSIGNED', true, { requireInProduction: true }),
 }

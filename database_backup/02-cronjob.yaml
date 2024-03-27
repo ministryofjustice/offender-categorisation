@@ -15,11 +15,11 @@ spec:
       activeDeadlineSeconds: 1200
       template:
         spec:
-          securityContext:
-            runAsUser: 999
+          serviceAccountName: "offender-categorisation"
+          serviceAccountName: "offender-categorisation"
           containers:
             - name: dbsnapshot
-              image: "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools:latest"
+              image: "ghcr.io/ministryofjustice/hmpps-devops-tools:latest"
               command:
                 - /bin/entrypoint.sh
               volumeMounts:
@@ -35,16 +35,6 @@ spec:
                       key: rds_instance_address
                 - name: AWS_DEFAULT_REGION
                   value: "eu-west-2"
-                - name: AWS_ACCESS_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      name: dps-rds-instance-output
-                      key: access_key_id
-                - name: AWS_SECRET_ACCESS_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      name: dps-rds-instance-output
-                      key: secret_access_key
           restartPolicy: "Never"
           volumes:
             - name: rds-snapshot-script

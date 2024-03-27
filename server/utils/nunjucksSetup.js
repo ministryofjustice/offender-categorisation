@@ -46,6 +46,7 @@ module.exports = (app, path) => {
     .addFilter('offenderLink', offenderLink)
     .addGlobal('dpsHome', dpsUrl)
     .addGlobal('manageAccountUrl', config.apis.oauth2.manageAccountUrl)
+    .addGlobal('supportUrl', config.supportUrl)
     .addGlobal('Status', Status)
     .addGlobal('ReviewReason', ReviewReason)
     .addGlobal('dateConverter', dateConverter)

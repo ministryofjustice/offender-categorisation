@@ -1,4 +1,4 @@
-FROM node:14.18-buster-slim
+FROM node:20.11-buster-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -30,6 +30,7 @@ RUN npm ci --no-audit && \
     npm run record-build-info
 
 RUN npm prune --no-audit --production
+RUN rm -rf /root/.cache
 
 ENV PORT=3000
 ENV NODE_ENV='production'
