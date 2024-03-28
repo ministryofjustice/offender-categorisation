@@ -32,8 +32,8 @@ module.exports = (app, path) => {
   const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
-      'node_modules/govuk-frontend/govuk/',
-      'node_modules/govuk-frontend/govuk/components/',
+      'node_modules/govuk-frontend/dist/govuk/',
+      'node_modules/govuk-frontend/dist/govuk/components/',
     ],
     {
       autoescape: true,

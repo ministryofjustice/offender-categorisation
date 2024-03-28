@@ -21,5 +21,7 @@ yarn-error.log
 .localstack
 integration-tests/build
 integration-tests/out
+integration_tests/screenshots/*
 .env
 volume/cache
+test_results/*

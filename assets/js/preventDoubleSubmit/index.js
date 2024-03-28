@@ -6,7 +6,6 @@
       button.dataset.clicked = 'true'
       button.disabled = true
       button.setAttribute('aria-disabled', 'true')
-      button.classList.add('govuk-button--disabled')
     })
   }
 
