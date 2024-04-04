@@ -37,7 +37,7 @@
     <div id="femaleBanner" class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(currentCat) }}</span>
       <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
+        <span class="govuk-visually-hidden">Warning</span>
         The categoriser recommends {{ replaceCatLabel(currentCat) }}
       </strong>
     </div>
@@ -47,7 +47,7 @@
       <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
       <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ displayIcon(overriddenCat) }}</span>
       <strong class="govuk-warning-text__text override-icon-text">
-        <span class="govuk-warning-text__assistive">Warning</span>
+        <span class="govuk-visually-hidden">Warning</span>
         The category was originally {{ replaceCatLabel(cat) }} and is now {{ replaceCatLabel(overriddenCat) }}
       </strong>
     </div>
@@ -60,7 +60,7 @@
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
       <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
+        <span class="govuk-visually-hidden">Warning</span>
         Based on the information provided, the provisional category is {{ replaceCatLabel(cat) }}
       </strong>
     </div>
