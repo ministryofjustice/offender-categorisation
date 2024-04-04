@@ -44,7 +44,7 @@
     <div id="category-div" class="govuk-warning-text forms-info-text warning-overrides">
         <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(currentCat) }}</span>
         <strong class="govuk-warning-text__text">
-          <span class="govuk-warning-text__assistive">Warning</span>
+          <span class="govuk-visually-hidden">Warning</span>
             {{ catLabel(currentCat) }}
         </strong>
     </div>
@@ -53,7 +53,7 @@
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(categoriserCat) }}</span>
       <div class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
+        <span class="govuk-visually-hidden">Warning</span>
         The categoriser recommends {{ replaceCatLabel(categoriserCat) }}
       </div>
     </div>
@@ -65,7 +65,7 @@
         <span class="warning-arrow"><img src='/assets/images/Triangle.png' alt='arrow' height='18' width='12'/></span>
         <span class="govuk-warning-text__icon override-cat-icon" aria-hidden="true">{{ displayIcon(superCat) }}</span>
         <div class="govuk-warning-text__text override-icon-text">
-          <span class="govuk-warning-text__assistive">Warning</span>
+          <span class="govuk-visually-hidden">Warning</span>
           The recommended category was changed from {{ replaceCatLabel(categoriserCat) }} to {{ replaceCatLabel(superCat) }}
         </div>
       </div>
@@ -73,7 +73,7 @@
       <div class="govuk-warning-text forms-supervisor-info-text warning-overrides govuk-!-margin-bottom-6 no-print">
         <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(categoriserCat) }}</span>
         <div class="govuk-warning-text__text">
-          <span class="govuk-warning-text__assistive">Warning</span>
+          <span class="govuk-visually-hidden">Warning</span>
           The supervisor also recommends {{ replaceCatLabel(categoriserCat) }}
         </div>
       </div>
