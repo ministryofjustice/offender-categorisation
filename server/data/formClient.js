@@ -516,6 +516,7 @@ module.exports = {
     approvedPlacement,
     approvedPlacementComment,
     approvedComment,
+    approvedCategoryComment,
     transactionalClient,
   }) {
     logger.info(`lite categorisation record for booking id ${bookingId} and user ${approvedBy}`)
@@ -528,7 +529,8 @@ module.exports = {
                  next_review_date             = $7,
                  approved_placement_prison_id = $8,
                  approved_placement_comment   = $9,
-                 approved_comment             = $10
+                 approved_comment             = $10,
+                 approved_category_comment    = $11
              where booking_id = $1
                and sequence = $2`,
       values: [
@@ -542,6 +544,7 @@ module.exports = {
         approvedPlacement,
         approvedPlacementComment,
         approvedComment,
+        approvedCategoryComment
       ],
     }
     return transactionalClient.query(query)
