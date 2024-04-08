@@ -544,7 +544,7 @@ module.exports = {
         approvedPlacement,
         approvedPlacementComment,
         approvedComment,
-        approvedCategoryComment
+        approvedCategoryComment,
       ],
     }
     return transactionalClient.query(query)
