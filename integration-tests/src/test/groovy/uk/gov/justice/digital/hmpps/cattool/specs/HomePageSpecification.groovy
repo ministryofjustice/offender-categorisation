@@ -283,11 +283,11 @@ class HomePageSpecification extends AbstractSpecification {
     prisonerSearchApi.stubGetPrisonerSearchPrisoners()
     prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345XY')
+    elite2Api.stubGetOffenderDetails(11, "B2345XY")
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
     elite2Api.stubAgencyDetails('LPI') // existing assessments
-    elite2Api.stubGetOffenderDetails(11, "B2345XY")
-    startButtons[2].click()
+    startButtons[0].click()
 
     then: 'The view page is displayed'
     at RecategoriserAwaitingApprovalViewPage
@@ -352,12 +352,12 @@ class HomePageSpecification extends AbstractSpecification {
     prisonerSearchApi.stubGetPrisonerSearchPrisoners()
     prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345XY')
+    elite2Api.stubGetOffenderDetails(11, "B2345XY")
     fixture.loginAs(RECATEGORISER_USER)
     at RecategoriserHomePage
 
     elite2Api.stubAgencyDetails('LPI') // existing assessments
-    elite2Api.stubGetOffenderDetails(11, "B2345XY")
-    startButtons[2].click()
+    startButtons[0].click()
 
     then: 'The view page is displayed'
     at RecategoriserAwaitingApprovalViewPage
