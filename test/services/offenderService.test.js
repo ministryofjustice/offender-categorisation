@@ -352,6 +352,7 @@ describe('getRecategoriseOffenders', () => {
     const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getOffenderDetails).not.toBeCalled()
+    expect(nomisClient.getBasicOffenderDetails).toBeCalledTimes(1)
     expect(formService.getCategorisationRecord).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })

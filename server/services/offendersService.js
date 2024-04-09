@@ -17,6 +17,7 @@ const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
+const { off } = require("bunyan-format");
 
 const dirname = process.cwd()
 
@@ -718,7 +719,12 @@ module.exports = function createOffendersService(
 
     return Promise.all(
       allOffenders.map(async raw => {
-        const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
+        let offenderDetails = null
+        let nomisRecord = raw
+        if (typeof raw.lastName === 'undefined') {
+          offenderDetails = await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
+          nomisRecord = offenderDetails
+        }
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
@@ -755,13 +761,25 @@ module.exports = function createOffendersService(
         const reason =
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.DUE
+        let { nextReviewDate } = nomisRecord
+        // if a recat has been started then the nextReviewDate might have been changed as part of the recat that's in progress, we want the original recat nextReviewDate value
+        if (buttonText !== 'Start') {
+          console.log('HERE')
+          console.log(nomisRecord.bookingId)
+          console.log('HERE')
+          if (offenderDetails === null) {
+            offenderDetails = await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
+          }
+          console.log(offenderDetails)
+          nextReviewDate = offenderDetails.nextReviewDate
+        }
         return {
           ...nomisRecord,
           displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason,
-          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
+          nextReviewDateDisplay: dateConverter(nextReviewDate),
           overdue: isOverdue(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
