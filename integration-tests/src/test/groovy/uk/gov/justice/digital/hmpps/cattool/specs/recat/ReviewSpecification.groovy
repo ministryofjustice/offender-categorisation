@@ -37,6 +37,7 @@ class ReviewSpecification extends AbstractSpecification {
     db.createReviewReason(12, 'AGE')
 
     when: 'The task list is displayed for a fully completed set of forms'
+    elite2Api.stubGetOffenderDetails(12)
     fixture.gotoTasklistRecat()
     at TasklistRecatPage
 

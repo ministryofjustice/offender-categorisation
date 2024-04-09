@@ -30,13 +30,13 @@ class OpenConditionsSpecification extends AbstractSpecification {
     db.createDataWithStatusAndCatType(12, 'STARTED', JsonOutput.toJson([recat: TestFixture.defaultRecat]), 'RECAT')
 
     when: 'The categoriser sets cat D'
+    elite2Api.stubGetOffenderDetails(12)
     fixture.gotoTasklistRecat()
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
 
-    elite2Api.stubGetOffenderDetails(12)
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
@@ -202,6 +202,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       recat: TestFixture.defaultRecat
     ]), 'RECAT')
 
+    elite2Api.stubGetOffenderDetails(12)
     fixture.gotoTasklistRecat()
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
@@ -363,6 +364,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       recat: TestFixture.defaultRecat
     ]), 'RECAT')
 
+    elite2Api.stubGetOffenderDetails(12)
     fixture.gotoTasklistRecat()
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
@@ -467,6 +469,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
       recat: TestFixture.defaultRecat
     ]), 'RECAT')
 
+    elite2Api.stubGetOffenderDetails(12)
     fixture.gotoTasklistRecat()
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')

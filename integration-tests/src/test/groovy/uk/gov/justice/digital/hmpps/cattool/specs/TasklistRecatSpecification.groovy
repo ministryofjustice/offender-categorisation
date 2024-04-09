@@ -182,6 +182,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     when: 'I go to the recat tasklist page'
     db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT')
     elite2Api.stubGetUserDetails(CATEGORISER_USER, Caseload.LEI.id)
+    elite2Api.stubGetOffenderDetails(12, "B2345XY")
     fixture.gotoTasklistRecat()
     at TasklistRecatPage
 
