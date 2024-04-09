@@ -17,7 +17,6 @@ const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
-const { off } = require("bunyan-format");
 
 const dirname = process.cwd()
 
@@ -764,13 +763,10 @@ module.exports = function createOffendersService(
         let { nextReviewDate } = nomisRecord
         // if a recat has been started then the nextReviewDate might have been changed as part of the recat that's in progress, we want the original recat nextReviewDate value
         if (buttonText !== 'Start') {
-          console.log('HERE')
-          console.log(nomisRecord.bookingId)
-          console.log('HERE')
           if (offenderDetails === null) {
             offenderDetails = await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
           }
-          console.log(offenderDetails)
+          logger.debug(offenderDetails)
           nextReviewDate = offenderDetails.nextReviewDate
         }
         return {
