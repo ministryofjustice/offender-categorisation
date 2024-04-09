@@ -204,17 +204,6 @@ describe('getRecategoriseOffenders', () => {
 
     const expected = [
       {
-        offenderNo: 'G12345',
-        displayName: 'Brown, Jane',
-        bookingId: 123,
-        displayStatus: Status.SECURITY_MANUAL.value,
-        nextReviewDateDisplay: '20/04/2019',
-        reason: ReviewReason.DUE,
-        overdue: true,
-        buttonText: 'Edit',
-        pom: 'Steve Rendell',
-      },
-      {
         offenderNo: 'U2101AA',
         displayName: 'Pan, Peter',
         bookingId: 21,
@@ -253,6 +242,17 @@ describe('getRecategoriseOffenders', () => {
         reason: ReviewReason.DUE,
         overdue: false,
         buttonText: 'Start',
+      },
+      {
+        offenderNo: 'G12345',
+        displayName: 'Brown, Jane',
+        bookingId: 123,
+        displayStatus: Status.SECURITY_MANUAL.value,
+        nextReviewDateDisplay: '11/02/2024',
+        reason: ReviewReason.DUE,
+        overdue: true,
+        buttonText: 'Edit',
+        pom: 'Steve Rendell',
       },
       {
         bookingId: 555,
@@ -351,8 +351,7 @@ describe('getRecategoriseOffenders', () => {
 
     const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
-    expect(nomisClient.getOffenderDetails).not.toBeCalled()
-    expect(nomisClient.getBasicOffenderDetails).toBeCalledTimes(1)
+    expect(nomisClient.getOffenderDetails).toBeCalledTimes(1)
     expect(formService.getCategorisationRecord).toBeCalledTimes(1)
     expect(result).toMatchObject(expected)
   })

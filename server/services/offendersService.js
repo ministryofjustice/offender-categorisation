@@ -767,7 +767,9 @@ module.exports = function createOffendersService(
             offenderDetails = await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
           }
           logger.debug(offenderDetails)
-          nextReviewDate = offenderDetails.nextReviewDate
+          if (typeof offenderDetails.nextReviewDate !== 'undefined') {
+            nextReviewDate = offenderDetails.nextReviewDate
+          }
         }
         return {
           ...nomisRecord,
