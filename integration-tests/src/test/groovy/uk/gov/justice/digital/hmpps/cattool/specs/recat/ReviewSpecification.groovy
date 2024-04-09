@@ -111,6 +111,7 @@ class ReviewSpecification extends AbstractSpecification {
       ]
     ]), 'RECAT')
     when: 'The review page is displayed for a fully completed set of pages'
+    elite2Api.stubGetOffenderDetails(12)
     fixture.gotoTasklistRecat()
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
@@ -148,6 +149,7 @@ class ReviewSpecification extends AbstractSpecification {
       security: [review: [securityReview: "security info text"]]
     ]), 'RECAT')
     when: 'The review page is displayed for a fully completed set of pages'
+    elite2Api.stubGetOffenderDetails(12)
     fixture.gotoTasklistRecat()
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
