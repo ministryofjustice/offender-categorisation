@@ -57,6 +57,7 @@ export interface LiteCategoryDbRow {
   approved_placement_prison_id: string
   approved_placement_comment: string
   approved_comment: string
+  approved_category_comment: string
 }
 
 export interface NextReviewChangeHistoryDbRow {

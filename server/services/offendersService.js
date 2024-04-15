@@ -1417,6 +1417,7 @@ module.exports = function createOffendersService(
         approvedPlacement,
         approvedPlacementComment,
         approvedComment,
+        approvedCategoryComment,
         transactionalClient,
       })
       return nomisClient.createSupervisorApproval({

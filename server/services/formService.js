@@ -343,6 +343,7 @@ module.exports = function createFormService(formClient) {
     approvedPlacement,
     approvedPlacementComment,
     approvedComment,
+    approvedCategoryComment,
     transactionalClient,
   }) {
     return formClient.approveLiteCategorisation({
@@ -357,6 +358,7 @@ module.exports = function createFormService(formClient) {
       approvedPlacement,
       approvedPlacementComment,
       approvedComment,
+      approvedCategoryComment,
       transactionalClient,
     })
   }
