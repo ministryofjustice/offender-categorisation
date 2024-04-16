@@ -15,7 +15,7 @@ function getEnvironmentVariable(name) {
 fs.writeFileSync(
   target,
   JSON.stringify({
-    buildNumber: 1,
-    gitRef: '',
+    buildNumber: getEnvironmentVariable('BUILD_NUMBER'),
+    gitRef: getEnvironmentVariable('GIT_REF'),
   })
 )
