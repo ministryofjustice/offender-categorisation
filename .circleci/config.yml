@@ -13,7 +13,7 @@ main_branch: &main_branch
         - main
 
 orbs:
-  hmpps: ministryofjustice/hmpps@7
+  hmpps: ministryofjustice/hmpps@8
   browser-tools: circleci/browser-tools@1.4.4
 
 parameters:

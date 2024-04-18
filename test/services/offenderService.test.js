@@ -1239,6 +1239,7 @@ describe('Lite', () => {
       approvedPlacement: 'BMI',
       approvedPlacementComment: 'approvedPlacementComment',
       approvedComment: 'approvedComment',
+      approvedCategoryComment: 'approvedCategoryComment',
       transactionalClient: mockTransactionalClient,
     })
     expect(nomisClient.createSupervisorApproval).toBeCalledWith({
