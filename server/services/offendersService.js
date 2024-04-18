@@ -709,6 +709,7 @@ module.exports = function createOffendersService(
 
     // trim db results to only those not in the Nomis-derived list
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
+    const dbInProgressBookingIds = dbInProgressFiltered.map(d => d.bookingId)
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [releaseDateMap, pomMap] = await Promise.all([
@@ -718,12 +719,10 @@ module.exports = function createOffendersService(
 
     return Promise.all(
       allOffenders.map(async raw => {
-        let offenderDetails = null
-        let nomisRecord = raw
-        if (typeof raw.lastName === 'undefined') {
-          offenderDetails = await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
-          nomisRecord = offenderDetails
-        }
+        const nomisRecord =
+          raw.lastName || dbInProgressBookingIds.includes(raw.bookingId)
+            ? raw
+            : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
@@ -760,24 +759,14 @@ module.exports = function createOffendersService(
         const reason =
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.DUE
-        let { nextReviewDate } = nomisRecord
-        // if a recat has been started then the nextReviewDate might have been changed as part of the recat that's in progress, we want the original recat nextReviewDate value
-        if (buttonText !== 'Start') {
-          if (offenderDetails === null) {
-            offenderDetails = await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
-          }
-          logger.debug(offenderDetails)
-          if (typeof offenderDetails.nextReviewDate !== 'undefined') {
-            nextReviewDate = offenderDetails.nextReviewDate
-          }
-        }
+
         return {
           ...nomisRecord,
           displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason,
-          nextReviewDateDisplay: dateConverter(nextReviewDate),
+          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
           overdue: isOverdue(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
