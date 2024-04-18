@@ -720,7 +720,7 @@ module.exports = function createOffendersService(
     return Promise.all(
       allOffenders.map(async raw => {
         const nomisRecord =
-          raw.lastName || dbInProgressBookingIds.includes(raw.bookingId)
+          raw.lastName && !dbInProgressBookingIds.includes(raw.bookingId)
             ? raw
             : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)

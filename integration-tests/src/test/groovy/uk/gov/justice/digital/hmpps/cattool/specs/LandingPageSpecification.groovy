@@ -153,10 +153,10 @@ class LandingPageSpecification extends AbstractSpecification {
     prisonerSearchApi.stubGetPrisonerSearchPrisoners()
     prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     elite2Api.stubAssessments('B2345YZ')
-    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C')
     fixture.loginAs(RECATEGORISER_USER)
 
     when: 'The user arrives at the landing page for an already-started cat'
+    elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C')
     go '/12'
 
     then: 'The page contains a recat continue button'

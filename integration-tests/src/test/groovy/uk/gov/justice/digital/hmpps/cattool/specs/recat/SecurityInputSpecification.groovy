@@ -175,7 +175,7 @@ class SecurityInputSpecification extends AbstractSpecification {
     given: 'The recategoriser selected no note needed'
     db.createDataWithIdAndStatusAndCatType(-1, 12, 'SECURITY_BACK', JsonOutput.toJson([
       recat: fixture.defaultRecat]), 'RECAT')
-    elite2Api.stubGetOffenderDetails(12)
+
     fixture.gotoTasklistRecat()
     at TasklistRecatPage
 
@@ -202,7 +202,6 @@ class SecurityInputSpecification extends AbstractSpecification {
       ]
     ]), 'RECAT')
 
-    elite2Api.stubGetOffenderDetails(12)
     fixture.gotoTasklistRecat()
     at TasklistRecatPage
 
