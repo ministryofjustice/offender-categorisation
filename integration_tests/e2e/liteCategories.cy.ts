@@ -385,6 +385,7 @@ describe('Lite Categories', () => {
         expect(data.approved_placement_prison_id).eq('SYI')
         expect(data.approved_placement_comment).eq('approved placement comment')
         expect(data.approved_comment).eq('approved comment')
+        expect(data.approved_category_comment).eq('approved category comment')
       })
     })
   })
@@ -479,6 +480,7 @@ describe('Lite Categories', () => {
           approved_placement_prison_id: null,
           approved_placement_comment: null,
           approved_comment: null,
+          approved_category_comment: null
         },
       ])
 
