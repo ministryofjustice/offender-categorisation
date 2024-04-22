@@ -61,7 +61,8 @@
         {% if row.overdue %}
         {{ govukTag({
             text: 'OVERDUE',
-            classes: 'moj-tag--red'
+            classes: 'moj-tag--red',
+            attributes: { 'title': 'Due date: ' + row.nextReviewDateDisplay }
           }) }} <!-- {{ row.nextReviewDateDisplay }} -->
         {% else %}
           {{ row.nextReviewDateDisplay }}

@@ -17,22 +17,22 @@ interface SentenceData {
   mostSeriousOffence: string
 }
 
-const stubGetPrisonerSearchPrisonersWomen = (
+const stubGetPrisonerSearchPrisoners = (
   {
     dateOfBirths = [],
-    agencyId = 'PFI',
+    agencyId = 'LEI',
   }: {
     dateOfBirths: string[]
     agencyId: string
-  } = { dateOfBirths: [], agencyId: 'PFI' }
+  } = { dateOfBirths: [], agencyId: 'LEI' }
 ): SuperAgentRequest => {
-  const fromDob = moment().subtract(22, 'years')
-  const toDob = moment().subtract(21, 'years').add(2, 'months')
+  const fromDob = moment().subtract(22, 'years').format('yyyy-MM-DD')
+  const toDob = moment().subtract(21, 'years').add(2, 'months').format('yyyy-MM-DD')
 
   return stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/prisoner-search/prison/${agencyId}/prisoners?size=1000000&fromDob=${fromDob}&toDob=${toDob}`,
+      url: `/prisoner-search/prison/${agencyId}/prisoners?size=1000000&fromDob=${fromDob}&toDob=${toDob}`,
     },
     response: {
       status: 200,
@@ -44,7 +44,7 @@ const stubGetPrisonerSearchPrisonersWomen = (
             prisonerNumber: 'C0001AA',
             firstName: 'TINY',
             lastName: 'TIM',
-            dateOfBirth: dateOfBirths[0] ?? moment().subtract(3, 'days').subtract(21, 'years').format('yyyy-MM-dd'),
+            dateOfBirth: dateOfBirths[0] ?? moment().subtract(3, 'days').subtract(21, 'years').format('yyyy-MM-DD'),
             category: 'I',
           },
           {
@@ -53,13 +53,25 @@ const stubGetPrisonerSearchPrisonersWomen = (
             firstName: 'ADRIAN',
             lastName: 'MOLE',
             // beware leap-years, when today + 17 days - 21 years DIFFERS from today - 21 years + 17 days (by one day!)
-            dateOfBirth: dateOfBirths[1] ?? moment().add(17, 'days').subtract(21, 'years').format('yyyy-MM-dd'),
+            dateOfBirth: dateOfBirths[1] ?? moment().add(17, 'days').subtract(21, 'years').format('yyyy-MM-DD'),
             category: 'I',
           },
         ],
       },
     },
   })
+}
+
+const stubGetPrisonerSearchPrisonersWomen = (
+  {
+    dateOfBirths = [],
+    agencyId = 'PFI',
+  }: {
+    dateOfBirths: string[]
+    agencyId: string
+  } = { dateOfBirths: [], agencyId: 'PFI' }
+): SuperAgentRequest => {
+  return stubGetPrisonerSearchPrisoners({ dateOfBirths, agencyId })
 }
 
 const stubPrisonerSearchPing = (statusCode = 200): SuperAgentRequest =>
@@ -144,6 +156,7 @@ const stubSentenceDataError = (): SuperAgentRequest =>
   })
 
 export default {
+  stubGetPrisonerSearchPrisoners,
   stubGetPrisonerSearchPrisonersWomen,
   stubPrisonerSearchPing,
   stubSentenceData,
