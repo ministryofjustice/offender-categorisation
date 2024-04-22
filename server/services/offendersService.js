@@ -710,6 +710,8 @@ module.exports = function createOffendersService(
     // trim db results to only those not in the Nomis-derived list
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
 
+    const dbInProgressBookingIds = dbInProgressFiltered.map(d => d.bookingId)
+
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [releaseDateMap, pomMap] = await Promise.all([
       getReleaseDateMap(allOffenders, prisonerSearchClient),
@@ -719,6 +721,12 @@ module.exports = function createOffendersService(
     return Promise.all(
       allOffenders.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
+
+        const nomisRecord2 =
+          raw.lastName && !dbInProgressBookingIds.includes(raw.bookingId)
+            ? raw
+            : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
+
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
@@ -749,20 +757,33 @@ module.exports = function createOffendersService(
           )
         }
 
+        if (raw.bookingId === 1201723) {
+          console.log('dbRecord', dbRecord)
+          console.log('nomisRecord', nomisRecord)
+          console.log('nomisRecord2', nomisRecord2)
+          console.log('raw', raw)
+          console.log(
+            '!dbInProgressBookingIds.includes(raw.bookingId)',
+            !dbInProgressBookingIds.includes(raw.bookingId)
+          )
+        }
+
         const decorated = await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)
         const buttonText = calculateButtonStatus(dbRecord, nomisRecord.assessStatus)
         // if this review hasn't been started the reason is always 'Review Due', for started reviews, use the persisted reason
         const reason =
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.DUE
+        const nextReviewDate = dbRecord.dueByDate || nomisRecord.nextReviewDate
+
         return {
           ...nomisRecord,
           displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason,
-          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isOverdue(nomisRecord.nextReviewDate),
+          nextReviewDateDisplay: dateConverter(nextReviewDate),
+          overdue: isOverdue(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
