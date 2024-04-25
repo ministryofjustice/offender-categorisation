@@ -17,6 +17,38 @@ interface SentenceData {
   mostSeriousOffence: string
 }
 
+const stubGetPrisonerSearchPrisoners = (
+  {
+    agencyId = 'LEI',
+    content,
+  }: {
+    agencyId: string
+    content: {
+      bookingId: string
+      prisonerNumber: string
+      firstName: string
+      lastName: string
+      dateOfBirth: string
+      category: string
+    }[]
+  } = { agencyId: 'LEI', content: [] }
+): SuperAgentRequest => {
+  const datePattern = `\\d{4}-\\d{2}-\\d{2}`
+  return stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prisoner-search/prison/${agencyId}/prisoners\\?size=1000000&fromDob=${datePattern}&toDob=${datePattern}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        content,
+      },
+    },
+  })
+}
+
 const stubGetPrisonerSearchPrisonersWomen = (
   {
     dateOfBirths = [],
@@ -26,13 +58,13 @@ const stubGetPrisonerSearchPrisonersWomen = (
     agencyId: string
   } = { dateOfBirths: [], agencyId: 'PFI' }
 ): SuperAgentRequest => {
-  const fromDob = moment().subtract(22, 'years')
-  const toDob = moment().subtract(21, 'years').add(2, 'months')
+  const fromDob = moment().subtract(22, 'years').format('yyyy-MM-DD')
+  const toDob = moment().subtract(21, 'years').add(2, 'months').format('yyyy-MM-DD')
 
   return stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/prisoner-search/prison/${agencyId}/prisoners?size=1000000&fromDob=${fromDob}&toDob=${toDob}`,
+      url: `/prisoner-search/prison/${agencyId}/prisoners?size=1000000&fromDob=${fromDob}&toDob=${toDob}`,
     },
     response: {
       status: 200,
@@ -44,7 +76,7 @@ const stubGetPrisonerSearchPrisonersWomen = (
             prisonerNumber: 'C0001AA',
             firstName: 'TINY',
             lastName: 'TIM',
-            dateOfBirth: dateOfBirths[0] ?? moment().subtract(3, 'days').subtract(21, 'years').format('yyyy-MM-dd'),
+            dateOfBirth: dateOfBirths[0] ?? moment().subtract(3, 'days').subtract(21, 'years').format('yyyy-MM-DD'),
             category: 'I',
           },
           {
@@ -53,7 +85,7 @@ const stubGetPrisonerSearchPrisonersWomen = (
             firstName: 'ADRIAN',
             lastName: 'MOLE',
             // beware leap-years, when today + 17 days - 21 years DIFFERS from today - 21 years + 17 days (by one day!)
-            dateOfBirth: dateOfBirths[1] ?? moment().add(17, 'days').subtract(21, 'years').format('yyyy-MM-dd'),
+            dateOfBirth: dateOfBirths[1] ?? moment().add(17, 'days').subtract(21, 'years').format('yyyy-MM-DD'),
             category: 'I',
           },
         ],
@@ -144,6 +176,7 @@ const stubSentenceDataError = (): SuperAgentRequest =>
   })
 
 export default {
+  stubGetPrisonerSearchPrisoners,
   stubGetPrisonerSearchPrisonersWomen,
   stubPrisonerSearchPing,
   stubSentenceData,

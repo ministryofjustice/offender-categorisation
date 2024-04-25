@@ -719,6 +719,7 @@ module.exports = function createOffendersService(
     return Promise.all(
       allOffenders.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
+
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
@@ -755,14 +756,16 @@ module.exports = function createOffendersService(
         const reason =
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.DUE
+        const nextReviewDate = dbRecord.dueByDate || nomisRecord.nextReviewDate
+
         return {
           ...nomisRecord,
           displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason,
-          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isOverdue(nomisRecord.nextReviewDate),
+          nextReviewDateDisplay: dateConverter(nextReviewDate),
+          overdue: isOverdue(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
