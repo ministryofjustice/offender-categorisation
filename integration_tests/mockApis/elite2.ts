@@ -334,7 +334,7 @@ const stubCategorised = ({ bookingIds }: { bookingIds: number[] }): SuperAgentRe
     },
   })
 }
-const stubCategorisedMultiple = ({ bookingIds }: { bookingIds: number[] }): SuperAgentRequest => {
+const stubCategorisedMultiple = ({ bookingIds }: { bookingIds: number[] } = { bookingIds: [] }): SuperAgentRequest => {
   const response = []
   if (bookingIds.includes(10)) {
     response.push({
@@ -748,7 +748,7 @@ const stubGetOffenderDetailsWomen = ({
   if (!indeterminateSentence) {
     sentenceDetail.releaseDate = new Date()
     sentenceDetail.conditionalReleaseDate = '2020-02-02'
-    sentenceDetail.confirmedReleaseDate = moment().add(4, 'years').format('yyyy-MM-dd') // > 3
+    sentenceDetail.confirmedReleaseDate = moment().add(4, 'years').format('yyyy-MM-DD') // > 3
     sentenceDetail.automaticReleaseDate = '2020-06-11'
   }
 
@@ -898,7 +898,7 @@ const stubGetOffenderDetailsWomenYOI = ({
   if (!indeterminateSentence) {
     sentenceDetail.releaseDate = new Date()
     sentenceDetail.conditionalReleaseDate = '2020-02-02'
-    sentenceDetail.confirmedReleaseDate = moment().add(4, 'years').format('yyyy-MM-dd') // > 3
+    sentenceDetail.confirmedReleaseDate = moment().add(4, 'years').format('yyyy-MM-DD') // > 3
     sentenceDetail.automaticReleaseDate = '2020-06-11'
   }
 
@@ -1167,7 +1167,9 @@ const stubUncategorised = (): SuperAgentRequest =>
     },
   })
 
-const stubUncategorisedAwaitingApproval = (): SuperAgentRequest =>
+const stubUncategorisedAwaitingApproval = (
+  { emptyResponse }: { emptyResponse: boolean } = { emptyResponse: false }
+): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
@@ -1176,30 +1178,34 @@ const stubUncategorisedAwaitingApproval = (): SuperAgentRequest =>
     response: {
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: [
-        {
-          bookingId: 11,
-          offenderNo: 'B2345XY',
-          firstName: 'PENELOPE',
-          lastName: 'PITSTOP',
-          status: 'AWAITING_APPROVAL',
-          category: 'B',
-          categoriserFirstName: 'ROGER',
-          categoriserLastName: 'RABBIT',
-          assessmentSeq: 4,
-        },
-        {
-          bookingId: 12,
-          offenderNo: 'B2345YZ',
-          firstName: 'ANT',
-          lastName: 'HILLMOB',
-          status: 'AWAITING_APPROVAL',
-          category: 'C',
-          categoriserFirstName: 'BUGS',
-          categoriserLastName: 'BUNNY',
-          assessmentSeq: 5,
-        },
-      ],
+      jsonBody: emptyResponse
+        ? []
+        : [
+            {
+              bookingId: 11,
+              offenderNo: 'B2345XY',
+              firstName: 'PENELOPE',
+              lastName: 'PITSTOP',
+              status: 'AWAITING_APPROVAL',
+              category: 'B',
+              categoriserFirstName: 'ROGER',
+              categoriserLastName: 'RABBIT',
+              assessmentSeq: 4,
+              nextReviewDate: '2025-01-01',
+            },
+            {
+              bookingId: 12,
+              offenderNo: 'B2345YZ',
+              firstName: 'ANT',
+              lastName: 'HILLMOB',
+              status: 'AWAITING_APPROVAL',
+              category: 'C',
+              categoriserFirstName: 'BUGS',
+              categoriserLastName: 'BUNNY',
+              assessmentSeq: 5,
+              nextReviewDate: '2025-02-02',
+            },
+          ],
     },
   })
 
@@ -1332,6 +1338,83 @@ const verifyUpdateNextReviewDate = ({ date }: { date: string }) =>
     }
   })
 
+const stubRecategorise = (
+  { recategorisations, latestOnly } = { recategorisations: undefined, latestOnly: undefined }
+) => {
+  let recategorisationsResponse = recategorisations
+  if (typeof recategorisations === 'undefined' || !Array.isArray(recategorisations)) {
+    recategorisationsResponse = [
+      {
+        bookingId: 12,
+        offenderNo: 'B2345XY',
+        firstName: 'PENELOPE',
+        lastName: 'PITSTOP',
+        category: 'C',
+        nextReviewDate: moment().subtract(4, 'days').format('yyyy-MM-DD'),
+        assessStatus: 'A',
+      },
+      {
+        bookingId: 11,
+        offenderNo: 'B2345YZ',
+        firstName: 'ANT',
+        lastName: 'HILLMOB',
+        category: 'D',
+        nextReviewDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
+        assessStatus: 'A',
+      },
+    ]
+  }
+  const twoMonthsFromToday = moment().add(2, 'months').format('yyyy-MM-DD')
+
+  console.log('url?', `/elite2/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=${twoMonthsFromToday}`)
+  const recategorisationsStub = () =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/elite2/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=${twoMonthsFromToday}`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: recategorisationsResponse,
+      },
+    })
+
+  let latestOnlyResponse = latestOnly
+  if (typeof latestOnly === 'undefined' || !Array.isArray(latestOnly)) {
+    latestOnlyResponse = [
+      {
+        bookingId: 21,
+        offenderNo: 'C0001AA',
+        classificationCode: 'C',
+        nextReviewDate: moment().subtract(4, 'days').format('yyyy-MM-DD'),
+        assessmentStatus: 'A',
+      },
+      {
+        bookingId: 22,
+        offenderNo: 'C0002AA',
+        classificationCode: 'D',
+        nextReviewDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
+        assessmentStatus: 'A',
+      },
+    ]
+  }
+  const latestOnlyStub = () =>
+    stubFor({
+      request: {
+        method: 'POST',
+        url: `/elite2/api/offender-assessments/CATEGORY?latestOnly=true&activeOnly=false`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: latestOnlyResponse,
+      },
+    })
+
+  return Promise.all([recategorisationsStub(), latestOnlyStub()])
+}
+
 export default {
   stubAgencyDetails,
   stubAgenciesPrison,
@@ -1364,4 +1447,5 @@ export default {
   stubUpdateNextReviewDate,
   verifySupervisorApprove,
   verifyUpdateNextReviewDate,
+  stubRecategorise,
 }
