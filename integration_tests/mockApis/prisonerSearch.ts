@@ -19,12 +19,44 @@ interface SentenceData {
 
 const stubGetPrisonerSearchPrisoners = (
   {
-    dateOfBirths = [],
     agencyId = 'LEI',
+    content,
+  }: {
+    agencyId: string
+    content: {
+      bookingId: string
+      prisonerNumber: string
+      firstName: string
+      lastName: string
+      dateOfBirth: string
+      category: string
+    }[]
+  } = { agencyId: 'LEI', content: [] }
+): SuperAgentRequest => {
+  const datePattern = `\\d{4}-\\d{2}-\\d{2}`
+  return stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/prisoner-search/prison/${agencyId}/prisoners\\?size=1000000&fromDob=${datePattern}&toDob=${datePattern}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        content,
+      },
+    },
+  })
+}
+
+const stubGetPrisonerSearchPrisonersWomen = (
+  {
+    dateOfBirths = [],
+    agencyId = 'PFI',
   }: {
     dateOfBirths: string[]
     agencyId: string
-  } = { dateOfBirths: [], agencyId: 'LEI' }
+  } = { dateOfBirths: [], agencyId: 'PFI' }
 ): SuperAgentRequest => {
   const fromDob = moment().subtract(22, 'years').format('yyyy-MM-DD')
   const toDob = moment().subtract(21, 'years').add(2, 'months').format('yyyy-MM-DD')
@@ -60,18 +92,6 @@ const stubGetPrisonerSearchPrisoners = (
       },
     },
   })
-}
-
-const stubGetPrisonerSearchPrisonersWomen = (
-  {
-    dateOfBirths = [],
-    agencyId = 'PFI',
-  }: {
-    dateOfBirths: string[]
-    agencyId: string
-  } = { dateOfBirths: [], agencyId: 'PFI' }
-): SuperAgentRequest => {
-  return stubGetPrisonerSearchPrisoners({ dateOfBirths, agencyId })
 }
 
 const stubPrisonerSearchPing = (statusCode = 200): SuperAgentRequest =>

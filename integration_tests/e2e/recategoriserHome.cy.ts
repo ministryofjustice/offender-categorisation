@@ -1,6 +1,7 @@
 import moment from 'moment'
 import { RECATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
 import STATUS from '../../server/utils/statusEnum'
+import REVIEW_REASON from '../../server/utils/reviewReasonEnum'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import defaultRatingsFactory from '../factory/defaultRatings'
 import Page from '../pages/page'
@@ -11,13 +12,13 @@ import { CASELOAD } from '../factory/caseload'
 const commonOffenderData = {
   offenderNo: 'dummy',
   sequenceNumber: 1,
-  status: STATUS.APPROVED.name,
+  status: STATUS.STARTED.name,
   prisonId: AGENCY_LOCATION.LEI.id,
-  startDate: new Date(),
   formResponse: defaultRatingsFactory('C'),
-  securityReviewedBy: null,
-  securityReviewedDate: null,
+  userId: 'RECATEGORISER_USER',
   assignedUserId: 'RECATEGORISER_USER',
+  reviewReason: REVIEW_REASON.DUE.name,
+  referredDate: moment().subtract(1, 'month').format('yyyy-MM-DD'),
 }
 
 describe('Recategoriser Home page', () => {
@@ -41,109 +42,90 @@ describe('Recategoriser Home page', () => {
 
   describe('when the user has the required role', () => {
     beforeEach(() => {
-      cy.task('stubRecategorise')
-
-      cy.task('stubGetPrisonerSearchPrisoners')
-
-      let sentenceStartDates = {
-        B2345XY: new Date('2019-01-28'),
-        B2345YZ: new Date('2019-01-31'),
-      }
-
-      cy.task('stubSentenceData', {
-        offenderNumbers: ['B2345XY', 'B2345YZ'],
-        bookingIds: [11, 12],
-        startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
-      })
-
-      cy.task('stubCategorisedMultiple', { bookingIds: [12, 10] })
+      cy.task('stubCategorisedMultiple')
 
       cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.LEI] })
       cy.task('stubGetStaffDetailsByUsernameList', {
         usernames: [RECATEGORISER_USER.username, SUPERVISOR_USER.username],
+      })
+    })
+
+    it('should show the no results message by default', () => {
+      cy.task('stubRecategorise', { recategorisations: [], latestOnly: [] })
+      cy.task('stubGetPrisonerSearchPrisoners')
+
+      cy.stubLogin({
+        user: RECATEGORISER_USER,
+      })
+      cy.signIn()
+
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.noResultsDiv().should('be.visible')
+    })
+
+    it('should show upcoming recategorisations', () => {
+      const recat = {
+        offenderNo: 'G6707GT',
+        bookingId: 99,
+        firstName: 'DUFEATHOPHE',
+        lastName: 'BETHID',
+        assessmentDate: '2024-04-22',
+        assessmentSeq: 18,
+        assessStatus: 'P',
+        category: 'C',
+        nextReviewDate: '2025-01-01',
+      }
+
+      const sentenceStartDates = {
+        [recat.offenderNo]: new Date('2019-01-28'),
+      }
+
+      cy.task('stubSentenceData', {
+        offenderNumbers: [recat.offenderNo],
+        bookingIds: [recat.bookingId],
+        startDates: [sentenceStartDates.G6707GT],
+      })
+
+      cy.task('stubRecategorise', { recategorisations: [recat], latestOnly: [] })
+
+      const dueByDate = moment().add(2, 'days')
+      cy.task('insertFormTableDbRow', {
+        ...commonOffenderData,
+        id: -100,
+        bookingId: recat.bookingId,
+        nomisSequenceNumber: 8,
+        catType: CATEGORISATION_TYPE.RECAT,
+        dueByDate: dueByDate.format('yyyy-MM-DD'),
+        status: STATUS.AWAITING_APPROVAL.name,
+        securityReviewedBy: 'FAKE_SECURITY_PERSON',
+        startDate: moment().subtract(4, 'days').format('yyyy-MM-DD'),
+        securityReviewedDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
+        assessmentDate: new Date(),
+        assessedBy: 'RECATEGORISER_USER',
+      })
+
+      cy.task('stubGetPrisonerSearchPrisoners', {
+        agencyId: 'LEI',
+        content: [recat],
       })
 
       cy.stubLogin({
         user: RECATEGORISER_USER,
       })
       cy.signIn()
-    })
 
-    it.only('should show the no results message by default', () => {
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
-      recategoriserHomePage.noResultsDiv().should('be.visible')
+      recategoriserHomePage.validateCategoryReviewsTableData([
+        [
+          dueByDate.format('DD/MM/yyyy'),
+          'Bethid, Dufeathophe',
+          recat.offenderNo,
+          'Review due',
+          'Awaiting approval',
+          '',
+          'View',
+        ],
+      ])
     })
-
-    it('should show upcoming recategorisations', () => {
-      cy.task('insertFormTableDbRow', {
-        ...commonOffenderData,
-        id: -1,
-        bookingId: 12,
-        nomisSequenceNumber: 8,
-        catType: CATEGORISATION_TYPE.RECAT,
-        dueByDate: moment().add(2, 'days').format('yyyy-MM-DD'),
-      })
-    })
-
-    // it('should show only approved initial cats', () => {
-    //   cy.task('insertFormTableDbRow', {
-    //     ...commonOffenderData,
-    //     id: -1,
-    //     bookingId: 12,
-    //     nomisSequenceNumber: 8,
-    //     catType: CATEGORISATION_TYPE.INITIAL,
-    //   })
-    //
-    //   cy.task('insertFormTableDbRow', {
-    //     ...commonOffenderData,
-    //     id: -2,
-    //     bookingId: 11,
-    //     nomisSequenceNumber: 7,
-    //     catType: CATEGORISATION_TYPE.INITIAL,
-    //   })
-    //
-    //   cy.task('insertFormTableDbRow', {
-    //     ...commonOffenderData,
-    //     id: -3,
-    //     bookingId: 10,
-    //     catType: CATEGORISATION_TYPE.RECAT,
-    //     assignedUserId: 'RECATEGORISER_USER',
-    //   })
-    //
-    //   cy.task('stubCategorisedMultiple', { bookingIds: [11, 12] })
-    //
-    //   const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-    //   categoriserHomePage.doneTabLink().click()
-    //   ;[
-    //     { columnName: 'Name', expectedValues: ['Scramble, Tim', 'Hemmel, Sarah'] },
-    //     { columnName: 'Prison no.', expectedValues: ['B2345XY', 'B2345YZ'] },
-    //     {
-    //       columnName: 'Approved on',
-    //       expectedValues: ['20/04/2019', '28/02/2019'],
-    //     },
-    //     {
-    //       columnName: 'Categorised by',
-    //       expectedValues: ['Lamb, John', 'Fan, Jane'],
-    //     },
-    //     {
-    //       columnName: 'Approved by',
-    //       expectedValues: [
-    //         'Lastname_supervisor_user, Firstname_supervisor_user',
-    //         'Lastname_supervisor_user, Firstname_supervisor_user',
-    //       ],
-    //     },
-    //     { columnName: 'Category', expectedValues: ['C', 'C'] },
-    //   ].forEach(cy.checkTableColumnTextValues)
-    // })
-
-    // it("should not display offenders that haven't been categorised through the Categorisation tool", () => {
-    //   cy.task('stubCategorised', { bookingIds: [] })
-    //
-    //   const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-    //   categoriserHomePage.doneTabLink().click()
-    //
-    //   const categoriserDonePage = Page.verifyOnPage(CategoriserDonePage)
-    //   categoriserDonePage.noResultsDiv().should('be.visible')
-    // })
   })
 })

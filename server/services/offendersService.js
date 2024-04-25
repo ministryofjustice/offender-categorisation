@@ -757,17 +757,6 @@ module.exports = function createOffendersService(
           )
         }
 
-        if (raw.bookingId === 1201723) {
-          console.log('dbRecord', dbRecord)
-          console.log('nomisRecord', nomisRecord)
-          console.log('nomisRecord2', nomisRecord2)
-          console.log('raw', raw)
-          console.log(
-            '!dbInProgressBookingIds.includes(raw.bookingId)',
-            !dbInProgressBookingIds.includes(raw.bookingId)
-          )
-        }
-
         const decorated = await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)
         const buttonText = calculateButtonStatus(dbRecord, nomisRecord.assessStatus)
         // if this review hasn't been started the reason is always 'Review Due', for started reviews, use the persisted reason
