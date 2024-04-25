@@ -722,11 +722,6 @@ module.exports = function createOffendersService(
       allOffenders.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
 
-        const nomisRecord2 =
-          raw.lastName && !dbInProgressBookingIds.includes(raw.bookingId)
-            ? raw
-            : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
-
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
