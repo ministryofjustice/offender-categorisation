@@ -710,8 +710,6 @@ module.exports = function createOffendersService(
     // trim db results to only those not in the Nomis-derived list
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
 
-    const dbInProgressBookingIds = dbInProgressFiltered.map(d => d.bookingId)
-
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [releaseDateMap, pomMap] = await Promise.all([
       getReleaseDateMap(allOffenders, prisonerSearchClient),
