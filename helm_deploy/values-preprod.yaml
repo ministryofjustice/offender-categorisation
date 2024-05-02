@@ -27,5 +27,3 @@ generic-service:
   allowlist:
     groups:
       - internal
-      - prisons
-      - private_prisons
