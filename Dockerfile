@@ -23,6 +23,8 @@ ADD . .
 # Install AWS RDS Root cert
 RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem > /app/root.cert
 
+ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
+ENV GIT_REF ${GIT_REF:-dummy}
 RUN npm ci --no-audit && \
     npm run build && \
     export BUILD_NUMBER=${BUILD_NUMBER} && \
