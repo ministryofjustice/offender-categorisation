@@ -231,6 +231,8 @@ module.exports = function createApp({
         if (err) return next(err)
         return req.session.destroy(() => res.redirect(authLogoutUrl))
       })
+    } else {
+      res.redirect(authLogoutUrl)
     }
   })
 
