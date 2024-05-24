@@ -8,6 +8,11 @@ module.exports =
   (error, req, res, next) => {
     logger.error(error)
 
+    if (error.status === 401) {
+      logger.info('Logging user out')
+      return res.redirect('/sign-out')
+    }
+
     // code to handle unknown errors
     const prodMessage = `Something went wrong at ${moment()}. The error has been logged. Please try again`
     res.locals.message = production ? prodMessage : error.message
