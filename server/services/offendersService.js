@@ -185,7 +185,7 @@ module.exports = function createOffendersService(
       const dbInProgressFiltered = dbManualInProgress.filter(d => !nomisFiltered.some(n => d.bookingId === n.bookingId))
 
       const allRecords = [...nomisFiltered, ...dbInProgressFiltered]
-      const pomMap = getPomMap(allRecords, allocationClient)
+      const pomMap = await getPomMap(allRecords, allocationClient)
 
       const decoratedResults = await Promise.all(
         allRecords.map(async raw => {
