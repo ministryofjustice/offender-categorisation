@@ -3,9 +3,9 @@ const { Strategy } = require('passport-oauth2')
 const config = require('../config')
 const { generateOauthClientToken } = require('./clientCredentials')
 
-function authenticationMiddleware(tokenVerifier) {
-  return async (req, res, next) => {
-    if (req.isAuthenticated() && (await tokenVerifier(req))) {
+function authenticationMiddleware() {
+  return (req, res, next) => {
+    if (req.isAuthenticated()) {
       return next()
     }
 
