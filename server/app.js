@@ -171,6 +171,9 @@ module.exports = function createApp({
 
   // JWT token refresh
   app.use(async (req, res, next) => {
+    if (req.originalUrl.startsWith('/sign-out')) {
+      return next() // don't try to refresh token on sign-out route
+    }
     if (req.user) {
       const timeToRefresh = new Date() > req.user.refreshTime
       if (timeToRefresh) {
