@@ -24,6 +24,7 @@ const createRiskProfilerService = require('./services/riskProfilerService')
 const createSqsService = require('./services/sqsService')
 const createDpsFeComponentService = require('./services/dpsFeComponentService')
 
+const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
 // pass in dependencies of service
 const formService = createFormService(formClient)
 const statsService = createStatsService(statsClient)
@@ -31,10 +32,10 @@ const offendersService = createOffendersService(
   nomisClientBuilder,
   allocationClientBuilder,
   formService,
-  prisonerSearchClientBuilder
+  prisonerSearchClientBuilder,
+  riskProfilerService
 )
 const userService = createUserService(nomisClientBuilder)
-const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
 const sqsService = createSqsService(offendersService, formService)
 const frontEndComponentsService = createDpsFeComponentService(dpsFeComponentsClientBuilder)
 

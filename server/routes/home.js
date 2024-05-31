@@ -143,9 +143,10 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+      const { filters } = req.query
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient)
+        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient, filters)
         : []
 
       const riskChangeCount = await formService.getRiskChangeCount(

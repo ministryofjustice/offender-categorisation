@@ -90,6 +90,23 @@ async function getPomMap(offenderList, allocationClient) {
   return result
 }
 
+async function getEscapeData(offenderNumbers, riskProfilerService, context) {
+  const results = new Map()
+  const BATCH_SIZE = 15
+  for (let range = 0; range < offenderNumbers.length; range += BATCH_SIZE) {
+    const offenderNumbersBatch = offenderNumbers.slice(range, range + BATCH_SIZE)
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      offenderNumbersBatch.map(async offenderNumber => {
+        const escapeProfiler = await riskProfilerService.getEscapeProfile(offenderNumber, context)
+        results.set(offenderNumber, escapeProfiler)
+      })
+    )
+  }
+  logger.debug('end getEscapeData')
+  return results
+}
+
 function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
   return (
     !!dbRecord &&
@@ -112,11 +129,13 @@ function isNewSecurityReferred(offenderNo, securityReferredOffenders) {
   return securityReferredOffenders.filter(s => s.offenderNo === offenderNo).some(s => s.status === 'NEW')
 }
 
+const FILTER_NO_ESCAPE_RISK = 'NO_ESCAPE_RISK'
 module.exports = function createOffendersService(
   nomisClientBuilder,
   allocationClientBuilder,
   formService,
-  prisonerSearchClientBuilder
+  prisonerSearchClientBuilder,
+  riskProfilerService
 ) {
   async function getUncategorisedOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -936,7 +955,8 @@ module.exports = function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, transactionalDbClient) {
+  async function getRecategoriseOffenders(context, user, transactionalDbClient, filters = []) {
+    let timer = Date.now()
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
@@ -949,12 +969,17 @@ module.exports = function createOffendersService(
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
+      logger.info(
+        `RecategoriserHome timing investigation: time to getDueRecats, u21Recats and security referrals: ${Date.now() - timer}ms`
+      )
+      timer = Date.now()
+
       if (isNilOrEmpty(decoratedResultsReview) && isNilOrEmpty(decoratedResultsU21)) {
         logger.info(`No recat offenders found for ${agencyId}`)
         return []
       }
 
-      return mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
+      const offenders = mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
@@ -965,6 +990,46 @@ module.exports = function createOffendersService(
             securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
+
+      logger.info(
+        `RecategoriserHome timing investigation: time to merge offender lists and remove nulls / sort: ${Date.now() - timer}ms`
+      )
+      timer = Date.now()
+
+      const escapeRiskData = []
+      if (filters.includes(FILTER_NO_ESCAPE_RISK)) {
+        escapeRiskData.push(
+          ...(await getEscapeData(
+            offenders.map(offender => offender.offenderNo),
+            riskProfilerService,
+            context
+          ))
+        )
+      }
+
+      logger.info(`RecategoriserHome timing investigation: time to load escape risk data: ${Date.now() - timer}ms`)
+      timer = Date.now()
+
+      const filteredOffenders = offenders.filter(offender => {
+        for (let i = 0; i < filters.length; i += 1) {
+          switch (filters[i]) {
+            case FILTER_NO_ESCAPE_RISK:
+              if (
+                escapeRiskData[offender.offenderNo]?.activeEscapeList ||
+                escapeRiskData[offender.offenderNo]?.activeEscapeRisk
+              ) {
+                return false
+              }
+              break
+            default:
+              throw new Error(`Unknown filter type ${filters[i]} for recategorisationHome route`)
+          }
+        }
+        return true
+      })
+
+      logger.info(`RecategoriserHome timing investigation: time to perform filtering: ${Date.now() - timer}ms`)
+      return filteredOffenders
     } catch (error) {
       logger.error(error, 'Error during getRecategoriseOffenders')
       throw error
