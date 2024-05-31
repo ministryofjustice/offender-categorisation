@@ -152,9 +152,8 @@ module.exports = function createOffendersService(
         .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
         .map(o => o.bookingId)
 
-      const [prisoners, pomMap, securityReferredOffenders] = await Promise.all([
+      const [prisoners, securityReferredOffenders] = await Promise.all([
         prisonerSearchClient.getPrisonersByBookingIds(bookingIds),
-        getPomMap(combined, allocationClient),
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
@@ -185,8 +184,11 @@ module.exports = function createOffendersService(
       // trim db results to only those not in the Nomis-derived list
       const dbInProgressFiltered = dbManualInProgress.filter(d => !nomisFiltered.some(n => d.bookingId === n.bookingId))
 
+      const allRecords = [...nomisFiltered, ...dbInProgressFiltered]
+      const pomMap = await getPomMap(allRecords, allocationClient)
+
       const decoratedResults = await Promise.all(
-        [...nomisFiltered, ...dbInProgressFiltered].map(async raw => {
+        allRecords.map(async raw => {
           const nomisRecord = raw.lastName ? raw : await nomisClient.getBasicOffenderDetails(raw.bookingId)
           const dbRecord = raw.lastName
             ? await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
