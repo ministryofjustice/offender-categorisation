@@ -90,6 +90,20 @@ async function getPomMap(offenderList, allocationClient) {
   return result
 }
 
+/**
+ * This is a temporary function added to test the performance implications of
+ * querying the risk profiler escape profile endpoint in a for loop for each
+ * offender number. A better way of doing this would be to use the prison API
+ * directly to get the escape risk (/api/bookings/offenderNo/alerts with an
+ * array of offender numbers and looking for Escape list or Escape risk alerts)
+ * or at the very least, adding an endpoint to risk profiler which takes an array
+ * of offender numbers.
+ *
+ * @param offenderNumbers
+ * @param riskProfilerService
+ * @param context
+ * @returns {Promise<Map<any, any>>}
+ */
 async function getEscapeData(offenderNumbers, riskProfilerService, context) {
   const results = new Map()
   const BATCH_SIZE = 15
