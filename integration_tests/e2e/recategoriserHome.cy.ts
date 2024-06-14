@@ -117,7 +117,7 @@ describe('Recategoriser Home page', () => {
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.validateCategoryReviewsTableData([
         [
-          dueByDate.format('DD/MM/yyyy'),
+          moment(recat.nextReviewDate).format('DD/MM/yyyy'),
           'Bethid, Dufeathophe',
           recat.offenderNo,
           'Review due',

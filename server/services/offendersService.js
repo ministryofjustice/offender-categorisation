@@ -152,9 +152,8 @@ module.exports = function createOffendersService(
         .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
         .map(o => o.bookingId)
 
-      const [prisoners, pomMap, securityReferredOffenders] = await Promise.all([
+      const [prisoners, securityReferredOffenders] = await Promise.all([
         prisonerSearchClient.getPrisonersByBookingIds(bookingIds),
-        getPomMap(combined, allocationClient),
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
@@ -185,8 +184,11 @@ module.exports = function createOffendersService(
       // trim db results to only those not in the Nomis-derived list
       const dbInProgressFiltered = dbManualInProgress.filter(d => !nomisFiltered.some(n => d.bookingId === n.bookingId))
 
+      const allRecords = [...nomisFiltered, ...dbInProgressFiltered]
+      const pomMap = await getPomMap(allRecords, allocationClient)
+
       const decoratedResults = await Promise.all(
-        [...nomisFiltered, ...dbInProgressFiltered].map(async raw => {
+        allRecords.map(async raw => {
           const nomisRecord = raw.lastName ? raw : await nomisClient.getBasicOffenderDetails(raw.bookingId)
           const dbRecord = raw.lastName
             ? await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
@@ -708,7 +710,16 @@ module.exports = function createOffendersService(
     )
 
     // trim db results to only those not in the Nomis-derived list
+
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
+
+    logger.info({
+      key: 'RecategoriserHome getDueRecats investigation',
+      agencyId,
+      numberFromNomis: resultsReview.length,
+      numberFromDb: dbManualInProgress.length,
+      intersectionOfNomisAndDb: dbManualInProgress.length - dbInProgressFiltered.length,
+    })
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [releaseDateMap, pomMap] = await Promise.all([
@@ -719,7 +730,6 @@ module.exports = function createOffendersService(
     return Promise.all(
       allOffenders.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
-
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
@@ -756,16 +766,14 @@ module.exports = function createOffendersService(
         const reason =
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.DUE
-        const nextReviewDate = dbRecord.dueByDate || nomisRecord.nextReviewDate
-
         return {
           ...nomisRecord,
           displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason,
-          nextReviewDateDisplay: dateConverter(nextReviewDate),
-          overdue: isOverdue(nextReviewDate),
+          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
+          overdue: isOverdue(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -955,7 +963,7 @@ module.exports = function createOffendersService(
         return []
       }
 
-      return mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
+      const offenders = mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
@@ -966,6 +974,16 @@ module.exports = function createOffendersService(
             securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
+
+      logger.info({
+        key: 'RecategoriserHome getRecategoriseOffenders investigation',
+        agencyId,
+        numberOfOffenders: offenders.length,
+        numberOfDueRecats: decoratedResultsReview.length,
+        numberOfU21Recats: decoratedResultsU21.length,
+      })
+
+      return offenders
     } catch (error) {
       logger.error(error, 'Error during getRecategoriseOffenders')
       throw error

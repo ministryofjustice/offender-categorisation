@@ -34,7 +34,6 @@ describe('getFormDataForUser', () => {
                     security_reviewed_date as "securityReviewedDate",
                     security_reviewed_by   as "securityReviewedBy",
                     approval_date          as "approvalDate",
-                    due_by_date            as "dueByDate",
                     prison_id              as "prisonId",
                     cat_type               as "catType",
                     review_reason          as "reviewReason",
