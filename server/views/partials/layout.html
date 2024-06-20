@@ -13,15 +13,15 @@
   })(window,document,'script','dataLayer','GTM-MWWCBZ6X');</script>
   <!-- End Google Tag Manager -->
   {% if googleAnalyticsKey | trim %}
-  {% set googleAnalyticsOptions = { title: '' } if googleAnalyticsHideTitle else {} %}
-  <!-- Global Site Tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ googleAnalyticsKey }}"></script>
-  <script nonce="{{ cspNonce }}">
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ googleAnalyticsKey }}', {{ googleAnalyticsOptions | dump | safe }});
-  </script>
+    {% set googleAnalyticsOptions = { title: '' } if googleAnalyticsHideTitle else {} %}
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ googleAnalyticsKey }}"></script>
+    <script nonce="{{ cspNonce }}">
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ googleAnalyticsKey }}', {{ googleAnalyticsOptions | dump | safe }});
+    </script>
   {% endif %}
 
 <link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet" nonce="{{ cspNonce }}"/>
