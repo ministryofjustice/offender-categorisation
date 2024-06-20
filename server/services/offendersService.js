@@ -710,7 +710,16 @@ module.exports = function createOffendersService(
     )
 
     // trim db results to only those not in the Nomis-derived list
+
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
+
+    logger.info({
+      key: 'RecategoriserHome getDueRecats investigation',
+      agencyId,
+      numberFromNomis: resultsReview.length,
+      numberFromDb: dbManualInProgress.length,
+      intersectionOfNomisAndDb: dbManualInProgress.length - dbInProgressFiltered.length,
+    })
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [releaseDateMap, pomMap] = await Promise.all([
@@ -954,7 +963,7 @@ module.exports = function createOffendersService(
         return []
       }
 
-      return mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
+      const offenders = mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
@@ -965,6 +974,16 @@ module.exports = function createOffendersService(
             securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
+
+      logger.info({
+        key: 'RecategoriserHome getRecategoriseOffenders investigation',
+        agencyId,
+        numberOfOffenders: offenders.length,
+        numberOfDueRecats: decoratedResultsReview.length,
+        numberOfU21Recats: decoratedResultsU21.length,
+      })
+
+      return offenders
     } catch (error) {
       logger.error(error, 'Error during getRecategoriseOffenders')
       throw error
