@@ -7,7 +7,7 @@ class CancelPage extends HeaderPage {
   static url = '/form/cancel'
 
   static at = {
-    headingText == 'Confirm Cancellation'
+    headingText == 'Confirm cancellation'
   }
 
   static content = {

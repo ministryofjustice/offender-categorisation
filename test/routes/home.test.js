@@ -898,7 +898,7 @@ describe('Security Landing page', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Dexter Spaniel')
-        expect(res.text).toContain('Confirm Cancellation')
+        expect(res.text).toContain('Confirm cancellation')
         expect(res.text).toContain('Are you sure you want to cancel this referral?')
       })
   })
