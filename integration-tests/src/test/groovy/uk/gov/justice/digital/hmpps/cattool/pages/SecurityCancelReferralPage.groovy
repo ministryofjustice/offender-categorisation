@@ -5,7 +5,7 @@ import geb.Page
 class SecurityCancelReferralPage extends Page {
 
   static at = {
-    headingText == 'Confirm Cancellation'
+    headingText == 'Confirm cancellation'
   }
 
   static content = {

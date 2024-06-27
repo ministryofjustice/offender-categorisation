@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.ApprovedViewPage
 class ApprovedViewRecatPage extends ApprovedViewPage {
 
   static at = {
-    headingText == 'Categorisation review outcome'
+    headingText == 'Categorisation outcome - Digital Categorisation Service'
   }
 
   static content = {
