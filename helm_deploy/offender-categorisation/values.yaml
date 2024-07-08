@@ -55,6 +55,7 @@ generic-service:
       API_CLIENT_SECRET: "API_CLIENT_SECRET"
       SESSION_SECRET: "SESSION_SECRET"
       GOOGLE_ANALYTICS_ID: "GOOGLE_ANALYTICS_ID"
+      GOOGLE_TAG_MANAGER_TAG: "GOOGLE_TAG_MANAGER_TAG"
 
     rp-sqs-instance-output:
       RP_QUEUE_URL: "sqs_rpc_url"
