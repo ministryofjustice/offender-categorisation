@@ -5,6 +5,16 @@
 {% block pageTitle %}Digital Categorisation Tool{% endblock %}
 
 {% block head %}
+  {% if googleTagManagerKey | trim %}
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','{{ googleTagManagerKey }}');</script>
+    <!-- End Google Tag Manager -->
+  {% endif %}
+
   {% if googleAnalyticsKey | trim %}
     {% set googleAnalyticsOptions = { title: '' } if googleAnalyticsHideTitle else {} %}
     <!-- Global Site Tag (gtag.js) - Google Analytics -->
@@ -31,6 +41,15 @@
     {% endfor %}
   {% endif %}
 
+{% endblock %}
+
+{% block bodyStart %}
+  {% if googleTagManagerKey | trim %}
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ googleTagManagerKey }}"
+                      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+  {% endif %}
 {% endblock %}
 
 {% block header %}
