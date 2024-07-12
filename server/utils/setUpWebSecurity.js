@@ -14,7 +14,7 @@ module.exports = function setUpWebSecurity() {
     next()
   })
 
-  const googleDomains = ['*.google-analytics.com', '*.analytics.google.com']
+  const googleDomains = ['*.analytics.google.com']
   const nonceFn = (_req, res) => `'nonce-${res.locals.cspNonce}'`
 
   const scriptSrc = ["'self'", ...googleDomains, nonceFn]
