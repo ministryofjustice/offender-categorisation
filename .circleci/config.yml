@@ -14,7 +14,7 @@ main_branch: &main_branch
 
 orbs:
   hmpps: ministryofjustice/hmpps@8
-  browser-tools: circleci/browser-tools@1.4.4
+  browser-tools: circleci/browser-tools@1.4.8
 
 parameters:
   node-version:
@@ -106,11 +106,6 @@ jobs:
       - hmpps/install_aws_cli
       - checkout
       - run: sudo apt-get update
-      - browser-tools/install-chrome:
-          # TODO remove following line when fixed https://github.com/CircleCI-Public/browser-tools-orb/issues/90
-          chrome-version: 116.0.5845.96
-      #- browser-tools/install-chrome
-      - browser-tools/install-chromedriver
       - attach_workspace:
           at: ~/app
       - hmpps/wait_till_ready # Wait for localstack to start before creating resources
