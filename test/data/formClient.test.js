@@ -1,6 +1,7 @@
 const moment = require('moment')
 const formClient = require('../../server/data/formClient')
 const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
+const Status = require('../../server/utils/statusEnum')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
@@ -252,6 +253,63 @@ describe('getSecurityReferrals', () => {
              from security_referral s
              where prison_id = $1 `,
       values: ['MDI'],
+    })
+  })
+})
+
+describe('getPendingCategorisations', () => {
+  test('is should get a list of pending categorisations for a given offender number', () => {
+    const fakeOffenderNumber = 'T1234567'
+
+    formClient.getPendingCategorisations(fakeOffenderNumber, mockTransactionalClient)
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text: `select f.id, f.booking_id, f.status, f.cat_type
+             from form f
+             where f.offender_no = $1
+             and f.approval_date is null
+             and f.approved_by is null
+             and f.status in (
+                'UNCATEGORISED',
+                'STARTED',
+                'SECURITY_MANUAL',
+                'SECURITY_AUTO',
+                'SECURITY_FLAGGED',
+                'SECURITY_BACK',
+                'AWAITING_APPROVAL',
+                'SUPERVISOR_BACK'
+             );`,
+      values: [fakeOffenderNumber],
+    })
+  })
+})
+
+describe('getPendingLiteCategorisations', () => {
+  test('is should get a list of pending lite categorisations for a given offender number', () => {
+    const fakeOffenderNumber = 'T1234567'
+
+    formClient.getPendingLiteCategorisations(fakeOffenderNumber, mockTransactionalClient)
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text: `select lc.booking_id, lc.sequence
+             from public.lite_category lc
+             where lc.offender_no = $1
+             and lc.approved_date is null
+             and lc.approved_by is null;`,
+      values: [fakeOffenderNumber],
+    })
+  })
+})
+
+describe('deleteCategorisation', () => {
+  test('is should delete a categorisation by categorisation id', () => {
+    const fakeCategorisationId = 987123
+
+    formClient.deleteCategorisation(fakeCategorisationId, mockTransactionalClient)
+
+    expect(mockTransactionalClient.query).toBeCalledWith({
+      text: `delete from form f where f.id=$1`,
+      values: [fakeCategorisationId],
     })
   })
 })

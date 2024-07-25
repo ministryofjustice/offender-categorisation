@@ -164,4 +164,13 @@ module.exports = {
   )}`,
   https: production,
   productId: get('PRODUCT_ID', 'UNASSIGNED', true, { requireInProduction: true }),
+  featureFlags: {
+    events: {
+      offender_release: {
+        enable_pending_categorisation_deletion: get('FEATURE_FLAG__EVENT__DELETE_PENDING_RECATS', 'false', true, {
+          requireInProduction: false,
+        }),
+      },
+    },
+  },
 }

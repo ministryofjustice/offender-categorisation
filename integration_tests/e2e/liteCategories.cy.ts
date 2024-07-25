@@ -9,7 +9,7 @@ import Page from '../pages/page'
 import ErrorPage from '../pages/error/error'
 import CategoriserHomePage from '../pages/categoriser/home'
 import SupervisorDashboardHomePage from '../pages/dashboard/supervisor/home'
-import dbSeeder, { dbSeederLiteCategory } from '../fixtures/db-seeder'
+import { dbSeederLiteCategory } from '../fixtures/db-seeder'
 import { supervisorViewSeedData } from '../fixtures/liteCategoriser/supervisorView'
 import LiteCategoriesApprovalPage from '../pages/liteCategories/approval'
 import { unapprovedLiteCategorisation } from '../fixtures/liteCategoriser/unapprovedLiteCategorisation'
@@ -480,7 +480,7 @@ describe('Lite Categories', () => {
           approved_placement_prison_id: null,
           approved_placement_comment: null,
           approved_comment: null,
-          approved_category_comment: null
+          approved_category_comment: null,
         },
       ])
 

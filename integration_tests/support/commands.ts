@@ -65,3 +65,25 @@ Cypress.Commands.add('stubLogin', ({ user }: { user: UserAccount }) => {
   cy.task('stubGetMyCaseloads', { caseloads: user.caseloads })
   cy.task('stubGetPomByOffenderNo')
 })
+
+Cypress.Commands.add(
+  'assertDBWithRetries',
+  (task: string, arg: any, assertionFn: (result: any) => boolean, retries: number = 10, delay: number = 500) => {
+    const assertDBWithRetries = (remainingRetries: number): Cypress.Chainable => {
+      if (remainingRetries <= 0) {
+        throw new Error(`Database assertion remained false after the specified retries`)
+      }
+
+      return cy.task(task, arg).then((result: any) => {
+        if (result && assertionFn(result)) {
+          return Cypress.Promise.resolve(true)
+        }
+        return cy.wait(delay).then(() => {
+          assertDBWithRetries(remainingRetries - 1)
+        })
+      })
+    }
+
+    return assertDBWithRetries(retries)
+  }
+)

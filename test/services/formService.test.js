@@ -3,6 +3,7 @@ const serviceCreator = require('../../server/services/formService')
 const { validate } = require('../../server/utils/fieldValidation')
 const Status = require('../../server/utils/statusEnum')
 const CatType = require('../../server/utils/catTypeEnum')
+const config = require('../../server/config')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 const bookingId = 34
@@ -33,6 +34,9 @@ const formClient = {
   updateOffenderIdentifierSecurityReferral: jest.fn(),
   deleteSecurityReferral: jest.fn(),
   getSecurityReferrals: jest.fn(),
+  getPendingCategorisations: jest.fn(),
+  getPendingLiteCategorisations: jest.fn(),
+  deleteCategorisation: jest.fn(),
 }
 let service
 
@@ -1117,5 +1121,71 @@ describe('getSecurityReferrals', () => {
     const result = await service.getSecurityReferrals('LEI', mockTransactionalClient)
 
     expect(result).toEqual(['test'])
+  })
+})
+
+describe('deletePendingCategorisations', () => {
+  const fakeOffenderNumber = 'X987654'
+
+  describe('feature flag :: on', () => {
+    beforeEach(() => {
+      config.featureFlags.events.offender_release.enable_pending_categorisation_deletion = 'true'
+    })
+
+    test('Finds and deletes pending categorisations and lite categorisations', async () => {
+      formClient.getPendingCategorisations.mockResolvedValue({ rows: [{ id: 123 }, { id: 124 }, { id: 125 }] })
+      formClient.getPendingLiteCategorisations.mockResolvedValue({
+        rows: [
+          { booking_id: 91, sequence: 11 },
+          { booking_id: 92, sequence: 2 },
+        ],
+      })
+
+      await service.deletePendingCategorisations(fakeOffenderNumber, mockTransactionalClient)
+
+      expect(formClient.deleteCategorisation).toHaveBeenCalledTimes(3)
+      expect(formClient.deleteCategorisation.mock.calls[0][0]).toEqual(123)
+      expect(formClient.deleteCategorisation.mock.calls[1][0]).toEqual(124)
+      expect(formClient.deleteCategorisation.mock.calls[2][0]).toEqual(125)
+
+      expect(formClient.deleteLiteCategorisation).toHaveBeenCalledTimes(2)
+      expect(formClient.deleteLiteCategorisation.mock.calls[0][0].bookingId).toEqual(91)
+      expect(formClient.deleteLiteCategorisation.mock.calls[0][0].sequence).toEqual(11)
+      expect(formClient.deleteLiteCategorisation.mock.calls[1][0].bookingId).toEqual(92)
+      expect(formClient.deleteLiteCategorisation.mock.calls[1][0].sequence).toEqual(2)
+    })
+
+    test('It handles a situation where there are no pending cats / lite cats', async () => {
+      formClient.getPendingCategorisations.mockResolvedValue({ rows: [] })
+      formClient.getPendingLiteCategorisations.mockResolvedValue({
+        rows: [],
+      })
+
+      await service.deletePendingCategorisations(fakeOffenderNumber, mockTransactionalClient)
+
+      expect(formClient.deleteCategorisation).not.toHaveBeenCalled()
+      expect(formClient.deleteLiteCategorisation).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('feature flag :: off', () => {
+    beforeEach(() => {
+      config.featureFlags.events.offender_release.enable_pending_categorisation_deletion = 'false'
+    })
+
+    test('Does not delete', async () => {
+      formClient.getPendingCategorisations.mockResolvedValue({ rows: [{ id: 123 }, { id: 124 }, { id: 125 }] })
+      formClient.getPendingLiteCategorisations.mockResolvedValue({
+        rows: [
+          { booking_id: 91, sequence: 11 },
+          { booking_id: 92, sequence: 2 },
+        ],
+      })
+
+      await service.deletePendingCategorisations(fakeOffenderNumber, mockTransactionalClient)
+
+      expect(formClient.deleteCategorisation).not.toHaveBeenCalled()
+      expect(formClient.deleteLiteCategorisation).not.toHaveBeenCalled()
+    })
   })
 })
