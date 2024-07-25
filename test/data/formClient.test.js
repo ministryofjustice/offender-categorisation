@@ -1,7 +1,6 @@
 const moment = require('moment')
 const formClient = require('../../server/data/formClient')
 const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
-const Status = require('../../server/utils/statusEnum')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
