@@ -15,7 +15,6 @@ const eventParamsWith = body => {
 }
 
 const sendMessage = message => {
-  console.log('send message', message)
   sqs.sendMessage(message, (err, data) => {
     if (err) {
       // eslint-disable-next-line no-console
