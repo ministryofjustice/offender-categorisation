@@ -3,7 +3,7 @@
 {% set greenButtonText = "Save and submit" %}
 {% set extraButtonClasses = "govuk-grid-row" %}
 
-{% set pageTitle = "Check your answers" %}
+{% set pageTitle = "Check your answers before submitting" %}
 
 {% block beforeContent %}
 
@@ -21,7 +21,7 @@
 <div class="govuk-grid-row govuk-body-s">
   <div>
 
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-8 main-heading">Check your answers before submitting</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8 main-heading">{{ pageTitle }}</h1>
 
     {% include "../../partials/openConditionsBanner.html" %}
 

@@ -5,6 +5,8 @@
 {% from "../macros/breadCrumb.html" import breadCrumb %}
 {% from "details/macro.njk" import govukDetails %}
 
+{% set pageTitle = "Prisoner Categorisation" %}
+
 {% block beforeContent %}
 
   {{ breadCrumb(breadCrumbList) }}
@@ -15,7 +17,7 @@
 
 
 <div >
-  <h1 class="govuk-heading-l">Prisoner Categorisation</h1>
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
 
 <div class="govuk-tabs" data-module="govuk-tabs-disabled">
