@@ -1,6 +1,6 @@
 {% extends "../formTemplate.html" %}
 
-{% set pageTitle = "Next review date" %}
+{% set pageTitle = "Check the date they will be reviewed by" %}
 
 {% block navigation %}
 
@@ -16,7 +16,7 @@
 
 {% block formItems %}
 
-  <h1 class="govuk-heading-l">Check the date they will be reviewed by</h1>
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
   <p>Your chosen date</p>
   <p id="chosenDate">{{ date }}</p>
   <p><a id="changeLink" href="/form/nextReviewDate/nextReviewDateQuestion/{{ data.details.bookingId }}">Change this</a></p>

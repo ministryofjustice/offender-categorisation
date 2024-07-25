@@ -2,7 +2,7 @@
 {% extends "template.njk" %}
 {% from "footer/macro.njk" import govukFooter %}
 
-{% block pageTitle %}Digital Categorisation Tool{% endblock %}
+{% block pageTitle %}{{ pageTitle }} {{ '-' if pageTitle }} Digital Categorisation Tool - DPS{% endblock %}
 
 {% block head %}
   {% if googleTagManagerKey | trim %}
