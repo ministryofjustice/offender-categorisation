@@ -12,6 +12,21 @@ describe('Events', () => {
   })
 
   describe('prisoner-offender-search.prisoner.released', () => {
+    it('should do nothing with release events when the "reason" is not "RELEASED"', () => {
+      dbSeeder(mensUnapprovedInitialCategorisationSeedData())
+      cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 10000 }, (data: DbQueryResult) => {
+        cy.log('Result: ', data.rowCount)
+        return data.rowCount === 12
+      })
+
+      cy.task('sendPrisonerReleasedMessage', { nomsNumber: 'B0010XY', reason: 'TRANSFER' }).then(() => {
+        cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 10000 }, (data: DbQueryResult) => {
+          cy.log('Result: ', data.rowCount)
+          return data.rowCount === 12
+        })
+      })
+    })
+
     it('should delete any unapproved initial categorisations for a given bookingId', () => {
       dbSeeder(mensUnapprovedInitialCategorisationSeedData())
       cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 10000 }, (data: DbQueryResult) => {

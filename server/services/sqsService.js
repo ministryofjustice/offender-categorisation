@@ -113,6 +113,11 @@ module.exports = function createSqsService(offenderService, formService) {
               logger.warn({ MessageId: message.MessageId }, 'MessageId was missing a nomsNumber')
               break
             }
+            const reason = event?.additionalInformation?.reason
+            if (!reason || reason !== 'RELEASED') {
+              logger.warn({ MessageId: message.MessageId, nomsNumber }, 'Reason was not "RELEASED"')
+              break
+            }
             await formService.deletePendingCategorisations(nomsNumber, transactionalDbClient)
             break
           }

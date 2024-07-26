@@ -171,5 +171,16 @@ describe('eventQueueConsumer', () => {
 
       expect(formService.deletePendingCategorisations).not.toHaveBeenCalled()
     })
+
+    // -- spacer
+    ;[null, false, 'OTHER_REASON', '', 'reason'].forEach(invalidReason => {
+      it(`should only delete when the reason is "RELEASED", given: "${invalidReason}"`, async () => {
+        const event = createPrisonerReleasedMessage(offenderId, invalidReason)
+
+        await service.eventQueueConsumer.handleMessage(event)
+
+        expect(formService.deletePendingCategorisations).not.toHaveBeenCalled()
+      })
+    })
   })
 })
