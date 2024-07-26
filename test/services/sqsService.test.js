@@ -1,5 +1,6 @@
 const serviceCreator = require('../../server/services/sqsService')
 const db = require('../../server/data/dataAccess/db')
+const { events } = require('../../server/utils/eventUtils')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 db.pool.connect = jest.fn()
@@ -12,6 +13,7 @@ const offendersService = {
 
 const formService = {
   createRiskChange: jest.fn(),
+  deletePendingCategorisations: jest.fn(),
 }
 
 let service
@@ -127,5 +129,58 @@ describe('eventQueueConsumer', () => {
     expect(offendersService.handleExternalMovementEvent.mock.calls[0][4]).toEqual('FROM')
     expect(offendersService.handleExternalMovementEvent.mock.calls[0][5]).toEqual('TO')
     expect(offendersService.handleExternalMovementEvent.mock.calls[0][6]).toEqual(mockTransactionalClient)
+  })
+
+  describe(`${events.EVENT_DOMAIN_PRISONER_OFFENDER_SEARCH_PRISONER_RELEASED} event handler`, () => {
+    const offenderId = 'T123456'
+
+    const createPrisonerReleasedMessage = (nomsNumber, reason = 'RELEASED') => {
+      return {
+        Body: JSON.stringify({
+          Type: 'Notification',
+          MessageId: 'fake-message-id',
+          TopicArn: 'arn:aws:sns:fake',
+          Message: `{"additionalInformation":{"nomsNumber":"${nomsNumber}","reason":"${reason}","prisonId":"WTI"},"occurredAt":"2024-07-25T07:57:37.883940701+01:00","eventType":"prisoner-offender-search.prisoner.released","version":1,"description":"A prisoner has been released from a prison with reason: released on temporary absence","detailUrl":"https://prisoner-search.prison.service.justice.gov.uk/prisoner/${nomsNumber}"}`,
+          Timestamp: '2024-07-25T06:57:39.938Z',
+          SignatureVersion: '1',
+          Signature: 'fakesig',
+          SigningCertURL: 'https://some.pem',
+          UnsubscribeURL: 'https://fake.url',
+          MessageAttributes: {
+            traceparent: { Type: 'String', Value: 'a-guid' },
+            eventType: { Type: 'String', Value: 'prisoner-offender-search.prisoner.released' },
+          },
+        }),
+      }
+    }
+
+    it('should delete pending categorisations', async () => {
+      const event = createPrisonerReleasedMessage(offenderId)
+
+      await service.eventQueueConsumer.handleMessage(event)
+
+      expect(formService.deletePendingCategorisations).toHaveBeenCalledTimes(1)
+      expect(formService.deletePendingCategorisations.mock.calls[0][0]).toEqual(offenderId)
+      expect(formService.deletePendingCategorisations.mock.calls[0][1]).toEqual(mockTransactionalClient)
+    })
+
+    it('should exit early if a nomsNumber is unavailable', async () => {
+      const event = createPrisonerReleasedMessage('')
+
+      await service.eventQueueConsumer.handleMessage(event)
+
+      expect(formService.deletePendingCategorisations).not.toHaveBeenCalled()
+    })
+
+    // -- spacer
+    ;[null, false, 'OTHER_REASON', '', 'reason'].forEach(invalidReason => {
+      it(`should only delete when the reason is "RELEASED", given: "${invalidReason}"`, async () => {
+        const event = createPrisonerReleasedMessage(offenderId, invalidReason)
+
+        await service.eventQueueConsumer.handleMessage(event)
+
+        expect(formService.deletePendingCategorisations).not.toHaveBeenCalled()
+      })
+    })
   })
 })
