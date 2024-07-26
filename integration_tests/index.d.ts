@@ -35,5 +35,15 @@ declare namespace Cypress {
      * @example cy.stubLogin({ user: SUPERVISOR_USER })
      */
     stubLogin({ user: UserAccount }): Chainable<AUTWindow>
+
+    /**
+     * Custom command to assert a database condition is met, retrying the assertion X times.
+     * @param task The name of the Cypress task to run.
+     * @param arg The argument to pass to the task.
+     * @param assertionFn The assertion function.
+     * @param retries Number of retries to perform. Default is 10.
+     * @param delay Delay between retries in milliseconds. Default is 500ms.
+     */
+    assertDBWithRetries(task: string, arg: any, assertionFn: (result: any) => boolean, retries?: number, delay?: number): Chainable<boolean>;
   }
 }

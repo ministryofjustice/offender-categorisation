@@ -862,6 +862,45 @@ module.exports = function createFormService(formClient) {
     return data.rows
   }
 
+  async function deletePendingCategorisations(offenderNo, transactionalClient) {
+    const [pendingCategorisations, pendingLiteCategorisations] = await Promise.all([
+      formClient.getPendingCategorisations(offenderNo, transactionalClient),
+      formClient.getPendingLiteCategorisations(offenderNo, transactionalClient),
+    ])
+
+    if (conf.featureFlags.events.offender_release.enable_pending_categorisation_deletion === 'true') {
+      await Promise.all(
+        pendingCategorisations.rows.map(async pendingCategorisation =>
+          formClient.deleteCategorisation(pendingCategorisation.id, transactionalClient)
+        )
+      )
+
+      await Promise.all(
+        pendingLiteCategorisations.rows.map(async pendingLiteCategorisation =>
+          formClient.deleteLiteCategorisation({
+            bookingId: pendingLiteCategorisation.booking_id,
+            sequence: pendingLiteCategorisation.sequence,
+            transactionalClient,
+          })
+        )
+      )
+    } else {
+      logger.debug('Would have deleted the following pending categorisations', {
+        offenderNo,
+        categorisationIds: pendingCategorisations.rows.map(pendingCategorisation => pendingCategorisation.id),
+      })
+
+      const liteCatsToDelete = pendingLiteCategorisations.rows.map(pendingLiteCategorisation => ({
+        booking_id: pendingLiteCategorisation.booking_id,
+        sequence: pendingLiteCategorisation.sequence,
+      }))
+      logger.debug('Would have deleted the following pending lite_categorisations', {
+        offenderNo,
+        liteCatsToDelete,
+      })
+    }
+  }
+
   return {
     getCategorisationRecord,
     update,
@@ -916,5 +955,6 @@ module.exports = function createFormService(formClient) {
     updateOffenderIdentifierReturningBookingId,
     recordNextReview,
     getNextReview,
+    deletePendingCategorisations,
   }
 }

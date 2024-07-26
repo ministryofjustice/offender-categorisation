@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress'
 import { resetStubs } from './integration_tests/mockApis/wiremock'
 import mockApis from './integration_tests/mockApis'
+import mockEvents from './integration_tests/events'
 import db from './integration_tests/db'
 
 export default defineConfig({
@@ -19,6 +20,7 @@ export default defineConfig({
       on('task', {
         reset: resetStubs,
         ...mockApis,
+        ...mockEvents,
         ...db,
       })
     },
