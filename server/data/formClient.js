@@ -585,4 +585,49 @@ module.exports = {
     }
     return transactionalClient.query(query)
   },
+
+  getPendingCategorisations(offenderNo, transactionalClient) {
+    logger.info(`get pending categorisations for offenderNo ${offenderNo}`)
+    const query = {
+      text: `select f.id, f.booking_id, f.status, f.cat_type
+             from form f
+             where f.offender_no = $1
+             and f.approval_date is null
+             and f.approved_by is null
+             and f.status in (
+                '${Status.UNCATEGORISED.name}',
+                '${Status.STARTED.name}',
+                '${Status.SECURITY_MANUAL.name}',
+                '${Status.SECURITY_AUTO.name}',
+                '${Status.SECURITY_FLAGGED.name}',
+                '${Status.SECURITY_BACK.name}',
+                '${Status.AWAITING_APPROVAL.name}',
+                '${Status.SUPERVISOR_BACK.name}'
+             );`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  getPendingLiteCategorisations(offenderNo, transactionalClient) {
+    logger.info(`get pending lite categorisations for offenderNo ${offenderNo}`)
+    const query = {
+      text: `select lc.booking_id, lc.sequence
+             from public.lite_category lc
+             where lc.offender_no = $1
+             and lc.approved_date is null
+             and lc.approved_by is null;`,
+      values: [offenderNo],
+    }
+    return transactionalClient.query(query)
+  },
+
+  deleteCategorisation(categorisationId, transactionalClient) {
+    logger.info(`deleting categorisation record ${categorisationId}`)
+    const query = {
+      text: `delete from form f where f.id=$1`,
+      values: [categorisationId],
+    }
+    return transactionalClient.query(query)
+  },
 }

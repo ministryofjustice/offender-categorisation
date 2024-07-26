@@ -58,4 +58,8 @@ const transferDlqEventMessages = async ({ sqs, sqsDlq, sqsQueueUrl, sqsDlqQueueU
   }
 }
 
-module.exports = { transferDlqEventMessages }
+const events = {
+  EVENT_DOMAIN_PRISONER_OFFENDER_SEARCH_PRISONER_RELEASED: 'prisoner-offender-search.prisoner.released',
+}
+
+module.exports = { transferDlqEventMessages, events }
