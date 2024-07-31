@@ -21,7 +21,7 @@ export default class SecurityReviewPage extends Page {
   }
 
   constructor() {
-    super('Security Review')
+    super('Security review')
   }
 
   static createForBookingId = (bookingId: number) => {
