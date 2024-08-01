@@ -4,6 +4,7 @@ const logger = require('../../log')
 const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const db = require('../data/dataAccess/db')
+const { events } = require('../utils/eventUtils')
 
 AWS.config.update({
   region: 'eu-west-2',
@@ -102,9 +103,24 @@ module.exports = function createSqsService(offenderService, formService) {
               await offenderService.checkAndMergeOffenderNo(context, bookingId, transactionalDbClient)
             }
             break
-          case 'DATA_COMPLIANCE_DELETE-OFFENDER':
-            // TODO
+          case events.EVENT_DOMAIN_PRISONER_OFFENDER_SEARCH_PRISONER_RELEASED: {
+            logger.info(
+              { event },
+              `${events.EVENT_DOMAIN_PRISONER_OFFENDER_SEARCH_PRISONER_RELEASED}: Received payload`
+            )
+            const nomsNumber = event?.additionalInformation?.nomsNumber
+            if (!nomsNumber) {
+              logger.warn({ MessageId: message.MessageId }, 'MessageId was missing a nomsNumber')
+              break
+            }
+            const reason = event?.additionalInformation?.reason
+            if (!reason || reason !== 'RELEASED') {
+              logger.info({ MessageId: message.MessageId, nomsNumber }, 'Reason was not "RELEASED"')
+              break
+            }
+            await formService.deletePendingCategorisations(nomsNumber, transactionalDbClient)
             break
+          }
           case 'EXTERNAL_MOVEMENT_RECORD-INSERTED':
             {
               const { bookingId, offenderIdDisplay, movementType, fromAgencyLocationId, toAgencyLocationId } = event
