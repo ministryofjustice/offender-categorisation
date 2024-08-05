@@ -3,7 +3,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "panel/macro.njk" import govukPanel %}
 
-{% set pageTitle = "Other categorisation confirmed" %}
+{% set pageTitle = "Categorisation has been submitted" %}
 
 {% block beforeContent %}
 
@@ -14,7 +14,7 @@
 {% block content %}
 
   {{ govukPanel({
-    titleText: "Categorisation has been submitted",
+    titleText: pageTitle,
     classes: "govuk-!-margin-bottom-6"
   }) }}
 
