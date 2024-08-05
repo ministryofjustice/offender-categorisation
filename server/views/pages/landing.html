@@ -2,7 +2,7 @@
 {% from "button/macro.njk" import govukButton %}
 
 
-{% set pageTitle = "Manage categorisations" %}
+{% set pageTitle = "Check previous category reviews" %}
 
 {% block beforeContent %}
   {% set offenderBack = offenderLink %}
@@ -21,7 +21,7 @@
     <p class="data-qa-nextReviewDate">They are due to be reviewed by {{ getLongDateFormat(dateConverter(data.nextReviewDate)) }}.</p>
   {% endif %}
 
-  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">Check previous category reviews</h1>
+  <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">{{ pageTitle }}</h1>
   <p>See all information from previous category reviews.</p>
   {{ govukButton({
     text: 'Check previous reviews',

@@ -4,7 +4,7 @@
 
 {% set greenButtonText = "Continue" %}
 
-{% set pageTitle = "Next review date" %}
+{% set pageTitle = "When should they next be reviewed by?" %}
 
 {% block navigation %}
 
@@ -18,7 +18,7 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l govuk-radios--inline">When should they next be reviewed by?</h1>
+<h1 class="govuk-heading-l govuk-radios--inline">{{ pageTitle }}</h1>
 <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate))
     if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
 
