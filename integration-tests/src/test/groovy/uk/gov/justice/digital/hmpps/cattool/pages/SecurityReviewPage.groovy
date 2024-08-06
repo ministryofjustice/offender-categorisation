@@ -7,7 +7,7 @@ class SecurityReviewPage extends HeaderPage {
   static url = '/form/security/review/' + bookingId
 
   static at = {
-    headingText == 'Security Review'
+    headingText == 'Security review'
   }
 
   static content = {

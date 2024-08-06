@@ -190,7 +190,7 @@ describe('GET /ratings/securityInput', () => {
 describe('GET /security/review', () => {
   test.each`
     path                       | expectedContent
-    ${'security/review/12345'} | ${'Security Review'}
+    ${'security/review/12345'} | ${'Security review'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
