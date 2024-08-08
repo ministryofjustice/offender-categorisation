@@ -2,7 +2,7 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "details/macro.njk" import govukDetails %}
 
-{% set pageTitle = "Next review date" %}
+{% set pageTitle = "Confirm the date they should be reviewed by" %}
 
 {% block navigation %}
 
@@ -18,7 +18,7 @@
 
 <input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}" />
 
-<h1 class="govuk-heading-l">Confirm the date they should be reviewed by</h1>
+<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
   <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}.</p>
 {% elif data.details.sentence.indeterminate %}

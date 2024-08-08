@@ -3,7 +3,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "panel/macro.njk" import govukPanel %}
 
-{% set pageTitle = "Security cancellation confirmed" %}
+{% set pageTitle = "Cancellation confirmed" %}
 
 {% block beforeContent %}
 
@@ -14,7 +14,7 @@
 {% block content %}
 
   {{ govukPanel({
-    titleText: "Cancellation confirmed",
+    titleText: pageTitle,
     classes: "govuk-!-margin-bottom-6"
   }) }}
   <h2>What happens next</h2>

@@ -3,7 +3,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "panel/macro.njk" import govukPanel %}
 
-{% set pageTitle = "Automatic referral confirmation" %}
+{% set pageTitle = "Automatic referral setup successful" %}
 
 {% block beforeContent %}
 
@@ -14,7 +14,7 @@
 {% block content %}
 
 {{ govukPanel({
-  titleText: "Automatic referral setup successful"
+  titleText: pageTitle
 }) }}
 <h2>What happens next</h2>
 <p>At this person’s next category review, they’ll automatically be referred to security.</p>
