@@ -9,6 +9,7 @@ const { inProgress, extractNextReviewDate } = require('../utils/functionalHelper
 const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
+const conf = require("../config");
 
 const formConfig = {
   security: securityConfig,
@@ -144,7 +145,12 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      const offenders = res.locals.user.activeCaseLoad
+      let showRecategorisationPrioritisationFilter = false
+      if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
+        showRecategorisationPrioritisationFilter = true
+      }
+
+      const offenders = res.locals.user.activeCaseLoad && false
         ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient)
         : []
 
@@ -152,7 +158,7 @@ module.exports = function Index({
         res.locals.user.activeCaseLoad.caseLoadId,
         transactionalDbClient
       )
-      res.render('pages/recategoriserHome', { offenders, riskChangeCount })
+      res.render('pages/recategoriserHome', { offenders, riskChangeCount, showRecategorisationPrioritisationFilter })
     })
   )
 

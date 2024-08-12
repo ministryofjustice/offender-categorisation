@@ -1,0 +1,33 @@
+.side-filter {
+  &__heading {
+    background: $govuk-border-colour;
+    font-weight: bold;
+    padding: 9px 20px 8px 20px;
+    margin-bottom: 0;
+  }
+
+  &__sub-heading {
+    background: govuk-colour("light-grey");
+    border: solid 1px $govuk-border-colour;
+    padding: 20px;
+
+    &__text-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-content: center;
+    }
+  }
+
+  &__body {
+    border: solid 1px $govuk-border-colour;
+    padding: 20px;
+
+    &__info-box {
+      background: govuk-colour("light-grey");
+      padding: 20px;
+      font-size: 19px;
+      margin-bottom: 20px;
+    }
+  }
+}
