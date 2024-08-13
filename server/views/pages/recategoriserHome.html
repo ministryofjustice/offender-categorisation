@@ -6,6 +6,7 @@
 {% from "tag/macro.njk" import govukTag %}
 {% from "details/macro.njk" import govukDetails %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "button/macro.njk" import govukButton %}
 
 {% set pageTitle = "Category reviews for prisoners" %}
 
@@ -45,82 +46,84 @@
 
   <div class="govuk-grid-row">
     {% if showRecategorisationPrioritisationFilter %}
-      <div class="side-filter govuk-grid-column-one-third govuk-!-padding-right-0">
-        <div class="side-filter__heading govuk-heading-m">
-          Filter
-        </div>
-        <div class="side-filter__sub-heading">
-          <div class="side-filter__sub-heading__text-container">
-            <div class="govuk-heading-m govuk-!-margin-bottom-0">
-              Selected filters
+      <form id="recategorisationPrioritisationFilter" method="post">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}"/>
+        <div class="side-filter govuk-grid-column-one-third govuk-!-padding-right-0">
+          <div class="side-filter__heading govuk-heading-m">
+            Filter
+          </div>
+          <div class="side-filter__sub-heading">
+            <div class="side-filter__sub-heading__text-container govuk-!-margin-bottom-3">
+              <div class="govuk-heading-m govuk-!-margin-bottom-0">
+                Selected filters
+              </div>
+              <a
+                href="."
+                type="submit"
+                class="govuk-!-font-size-16"
+              >
+                Clear filters
+              </a>
             </div>
-            <button type="submit" class="linkStyledButton govuk-!-font-size-16">
-              Clear filters
+            <div class="side-filter__sub-heading__filter-chip-container">
+              {% if filters.length > 0 %}
+                {% for filter in filters %}
+                  <div class="filter-chip">
+                    {{ allFiltersFlattened[filter] }}
+                    <div
+                      class="remove-filter"
+                      aria-label="Remove filter"
+                      data-target="{{ filter }}"
+                    >
+                      &times;
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                No filters selected
+              {% endif %}
+            </div>
+          </div>
+          <div class="side-filter__body">
+            <div class="govuk-heading-m">
+              Suitability for open conditions
+            </div>
+            <div class="side-filter__body__info-box">
+              Filter the category reviews list to see prisoners who may be suitable to move to open conditions.
+            </div>
+            <button
+              id="selectAllSuitabilityForOpenConditionsFilter"
+              class="linkStyledButton govuk-!-font-size-16 govuk-!-margin-bottom-3"
+            >
+              Select all
             </button>
+            {% set filterCheckboxes = [] %}
+            {% for key, displayName in allFilters.suitabilityForOpenConditions %}
+              {% set filterCheckboxes = (filterCheckboxes.push({
+                id: 'filterCheckbox_' + key,
+                value: key,
+                text: displayName,
+                checked: key in filters
+              }), filterCheckboxes) %}
+            {% endfor %}
+            {{ govukCheckboxes({
+              name: "suitabilityForOpenConditionsFilter",
+              id: "suitabilityForOpenConditionsFilter",
+              classes: "govuk-checkboxes--small",
+              fieldset: {
+                legend: {
+                  text: "Filter based on suitability for open conditions",
+                  classes: "govuk-visually-hidden"
+                }
+              },
+              items: filterCheckboxes
+            }) }}
+            {{ govukButton({
+              text: "Apply filters"
+            }) }}
           </div>
         </div>
-        <div class="side-filter__body">
-          <div class="govuk-heading-m">
-            Suitability for open conditions
-          </div>
-          <div class="side-filter__body__info-box">
-            Filter the category reviews list to see prisoners who may be suitable to move to open conditions.
-          </div>
-          <button
-            id="selectAllSuitabilityForOpenConditionsFilter"
-            type="submit"
-            class="linkStyledButton govuk-!-font-size-16 govuk-!-margin-bottom-3"
-            data-target="suitabilityForOpenConditionsFilter"
-          >
-            Select all
-          </button>
-          {{ govukCheckboxes({
-            name: "suitabilityForOpenConditionsFilter",
-            id: "suitabilityForOpenConditionsFilter",
-            classes: "govuk-checkboxes--small",
-            fieldset: {
-              legend: {
-                text: "Filter based on suitability for open conditions",
-                classes: "govuk-visually-hidden"
-              }
-            },
-            items: [
-              {
-                value: "lowRiskOfEscape",
-                text: "Low risk of escape"
-              },
-              {
-                value: "lowRosh",
-                text: "Low RoSH"
-              },
-              {
-                value: "noCurrentTerrorismOffences",
-                text: "No current terrorism offences"
-              },
-              {
-                value: "noRotlRestrictionsOrSuspensions",
-                text: "No ROTL restrictions or suspensions"
-              },
-              {
-                value: "noAdjudicationsInTheLastThreeMonths",
-                text: "No adjudications in the last 3 months"
-              },
-              {
-                value: "notMarkedAsNotForRelease",
-                text: "Not marked as not for release"
-              },
-              {
-                value: "standardOrEnhancedIncentiveLevel",
-                text: "Standard or enhanced incentive level"
-              },
-              {
-                value: "timeLeftToServeBetween12WeeksAndThreeYears",
-                text: "Time left to serve is between 12 weeks and 3 years"
-              }
-            ]
-          }) }}
-        </div>
-      </div>
+      </form>
     {% endif %}
 
     <div class="govuk-grid-column-two-thirds">

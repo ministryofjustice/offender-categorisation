@@ -945,12 +945,12 @@ module.exports = function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, transactionalDbClient) {
-    const agencyId = context.user.activeCaseLoad.caseLoadId
+  async function getRecategoriseOffenders(user, transactionalDbClient) {
+    const agencyId = user.activeCaseLoad.caseLoadId
     try {
-      const nomisClient = nomisClientBuilder(context)
-      const allocationClient = allocationClientBuilder(context)
-      const prisonerSearchClient = prisonerSearchClientBuilder(context)
+      const nomisClient = nomisClientBuilder({ user })
+      const allocationClient = allocationClientBuilder({ user })
+      const prisonerSearchClient = prisonerSearchClientBuilder({ user })
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
         getDueRecats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),

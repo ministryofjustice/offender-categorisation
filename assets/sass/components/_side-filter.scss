@@ -17,6 +17,30 @@
       justify-content: space-between;
       align-content: center;
     }
+
+    &__filter-chip-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-content: center;
+
+      .filter-chip {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        border: black 1px solid;
+        padding: 6px 5px 4px 5px;
+        margin-right: 10px;
+
+        .remove-filter {
+          font-size: 24px;
+          cursor: pointer;
+          margin-left: 5px;
+        }
+      }
+    }
   }
 
   &__body {

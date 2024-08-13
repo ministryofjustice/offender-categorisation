@@ -9,10 +9,23 @@ const { inProgress, extractNextReviewDate } = require('../utils/functionalHelper
 const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
-const conf = require("../config");
+const conf = require('../config')
 
 const formConfig = {
   security: securityConfig,
+}
+
+const recategorisationHomeFilters = {
+  suitabilityForOpenConditions: {
+    lowRiskOfEscape: 'Low risk of escape',
+    lowRosh: 'Low RoSH',
+    noCurrentTerrorismOffences: 'No current terrorism offences',
+    noRotlRestrictionsOrSuspensions: 'No ROTL restrictions or suspensions',
+    noAdjudicationsInTheLastThreeMonths: 'No adjudications in the last 3 months',
+    notMarkedAsNotForRelease: 'Not marked as not for release',
+    standardOrEnhancedIncentiveLevel: 'Standard or enhanced incentive level',
+    timeLeftToServeBetween12WeeksAndThreeYears: 'Time left to serve is between 12 weeks and 3 years',
+  },
 }
 
 const calculateLandingTarget = referer => {
@@ -139,26 +152,62 @@ module.exports = function Index({
     })
   )
 
+  async function recategoriserHome(user, transactionalDbClient, filters = []) {
+    let showRecategorisationPrioritisationFilter = false
+    if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
+      showRecategorisationPrioritisationFilter = true
+    }
+
+    const offenders =
+      user.activeCaseLoad && false ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient) : []
+
+    const riskChangeCount = await formService.getRiskChangeCount(user.activeCaseLoad.caseLoadId, transactionalDbClient)
+
+    return { offenders, riskChangeCount, showRecategorisationPrioritisationFilter }
+  }
+
   router.get(
     '/recategoriserHome',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-
-      let showRecategorisationPrioritisationFilter = false
-      if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
-        showRecategorisationPrioritisationFilter = true
-      }
-
-      const offenders = res.locals.user.activeCaseLoad && false
-        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient)
-        : []
-
-      const riskChangeCount = await formService.getRiskChangeCount(
-        res.locals.user.activeCaseLoad.caseLoadId,
+      const { offenders, riskChangeCount, showRecategorisationPrioritisationFilter } = await recategoriserHome(
+        res.locals.user,
         transactionalDbClient
       )
-      res.render('pages/recategoriserHome', { offenders, riskChangeCount, showRecategorisationPrioritisationFilter })
+      res.render('pages/recategoriserHome', {
+        offenders,
+        riskChangeCount,
+        showRecategorisationPrioritisationFilter,
+        filters: [],
+        allFilters: recategorisationHomeFilters,
+        allFiltersFlattened: Object.assign({}, ...Object.values(recategorisationHomeFilters)),
+      })
+    })
+  )
+
+  router.post(
+    '/recategoriserHome',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const { offenders, riskChangeCount, showRecategorisationPrioritisationFilter } = await recategoriserHome(
+        res.locals.user,
+        transactionalDbClient
+      )
+      const filters =
+        typeof req.body.suitabilityForOpenConditionsFilter === 'string'
+          ? [req.body.suitabilityForOpenConditionsFilter]
+          : req.body.suitabilityForOpenConditionsFilter || []
+
+      res.render('pages/recategoriserHome', {
+        offenders,
+        riskChangeCount,
+        showRecategorisationPrioritisationFilter,
+        filters,
+        allFilters: recategorisationHomeFilters,
+        allFiltersFlattened: Object.assign({}, ...Object.values(recategorisationHomeFilters)),
+      })
     })
   )
 

@@ -29,7 +29,6 @@ function setSelectAllButtonTextBasedOnSelectedCheckboxes(selectAllButtonId, chec
   document.getElementById(selectAllButtonId).innerText = allCheckboxesAreChecked(checkboxesIdPrefix) ? 'Deselect all' : 'Select all'
 }
 
-
 document
   .getElementById('selectAllSuitabilityForOpenConditionsFilter')
   .addEventListener(
@@ -53,3 +52,15 @@ getAllCheckboxesWithIdPrefix('suitabilityForOpenConditionsFilter').forEach(check
       }
     )
 })
+
+const removeFilterButtons = document.getElementsByClassName('remove-filter')
+for (const removeFilterButton of removeFilterButtons) {
+  console.log(removeFilterButton)
+  removeFilterButton.addEventListener(
+    'click',
+    () => {
+      document.getElementById(`filterCheckbox_${removeFilterButton.getAttribute('data-target')}`).checked = false
+      document.getElementById('recategorisationPrioritisationFilter').submit()
+    }
+  )
+}
