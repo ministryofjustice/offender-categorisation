@@ -47,7 +47,7 @@
 
   <div class="govuk-grid-row">
     {% if showRecategorisationPrioritisationFilter %}
-      <div class="side-filter govuk-grid-column-one-third govuk-!-padding-right-0">
+      <div id="filterContainer" class="side-filter govuk-grid-column-one-third govuk-!-padding-right-0">
         <form method="get">
           {% set filterCheckboxes = [] %}
             {% for key, displayName in allFilters.suitabilityForOpenConditions %}
@@ -61,7 +61,7 @@
             <div class="govuk-heading-m">
               Suitability for open conditions
             </div>
-            <div class="side-filter__body__info-box">
+            <div class="filterInfoBox">
               Filter the category reviews list to see prisoners who may be suitable to move to open conditions.
             </div>
             <div
@@ -129,7 +129,19 @@
       </div>
     {% endif %}
 
-    <div class="govuk-grid-column-two-thirds">
+    {% set tableContainerClass = 'govuk-grid-column-two-thirds' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else '' %}
+
+    <div id="tableContainer" class="{{ tableContainerClass }}">
+      {% if showRecategorisationPrioritisationFilter %}
+        <div class="filterControls">
+          {{ govukButton({
+            id: "hideFilterButton",
+            text: "Hide filter",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0"
+          }) }}
+          <div class="govuk-!-margin-left-2">You have <b>{{ filters.suitabilityForOpenConditions|length }}</b> filters applied</div>
+        </div>
+      {% endif %}
       {% if offenders | length > 0 %}
       <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
         <thead class="govuk-table__head">
@@ -212,5 +224,6 @@
 {% endblock %}
 
 {% block bodyEnd %}
-<script src="/assets/js/recategoriserHome.js"></script>
+<meta name="csrf-token" content="{{ csrfToken }}">
+<script type="module" src="/assets/js/recategoriserHome.js"></script>
 {% endblock %}

@@ -11,6 +11,7 @@ const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 const conf = require('../config')
+const logger = require('../../log')
 
 const formConfig = {
   security: securityConfig,
@@ -33,7 +34,12 @@ const recategorisationHomeSchemaFilters = {}
 Object.keys(recategorisationHomeFilters).forEach(key => {
   recategorisationHomeSchemaFilters[key] = joi
     .array()
-    .items(joi.string().valid(...Object.keys(recategorisationHomeFilters[key])))
+    .items(
+      joi
+        .string()
+        .valid(...Object.keys(recategorisationHomeFilters[key]))
+        .required()
+    )
     .optional()
 })
 const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters)
@@ -168,8 +174,9 @@ module.exports = function Index({
       showRecategorisationPrioritisationFilter = true
     }
 
-    const offenders =
-      user.activeCaseLoad && false ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient) : []
+    const offenders = user.activeCaseLoad
+      ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient)
+      : []
 
     const riskChangeCount = await formService.getRiskChangeCount(user.activeCaseLoad.caseLoadId, transactionalDbClient)
 
@@ -186,19 +193,37 @@ module.exports = function Index({
         transactionalDbClient
       )
 
-      const validation = recategorisationHomeSchema.validate(req.query)
-      if (validation.errors) {
-        console.log(validation.errors)
+      const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
+      if (validation.error) {
+        logger.error('Recategoriser home page submitted with invalid filters.', validation.error)
+        return res.render('pages/error', {
+          message: 'Invalid recategoriser home filters',
+        })
       }
 
-      res.render('pages/recategoriserHome', {
+      return res.render('pages/recategoriserHome', {
         offenders,
         riskChangeCount,
         showRecategorisationPrioritisationFilter,
         filters: validation.value,
         allFilters: recategorisationHomeFilters,
         fullUrl: req.url,
+        hideRecategoriserHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
       })
+    })
+  )
+
+  router.post(
+    '/recategoriserHome/hide-filter',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const validation = joi.object({ hideFilter: joi.bool().required() }).validate(req.body)
+      if (validation.error) {
+        logger.error('Recategoriser home page hide filter endpoint passed invalid value.', validation.error)
+      } else {
+        req.session.hideRecategoriserHomeFilter = true
+      }
     })
   )
 

@@ -52,3 +52,26 @@ getAllCheckboxesWithIdPrefix('suitabilityForOpenConditions[]').forEach(checkbox 
       }
     )
 })
+
+document.getElementById('hideFilterButton').addEventListener('click', async (event) => {
+  let hideFilter = false
+  if (event.target.innerText === 'Hide filter') {
+    document.getElementById('filterContainer').classList.add('govuk-visually-hidden')
+    document.getElementById('tableContainer').classList.remove("govuk-grid-column-two-thirds")
+    event.target.innerText = 'Show filter'
+    hideFilter = true
+  } else {
+    document.getElementById('tableContainer').classList.add('govuk-grid-column-two-thirds')
+    document.getElementById('filterContainer').classList.remove('govuk-visually-hidden')
+    event.target.innerText = 'Hide filter'
+  }
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+  await fetch('/recategoriserHome/hide-filter', {
+    method: 'POST',
+    body: JSON.stringify({ hideFilter }),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': csrfToken,
+    },
+  });
+})
