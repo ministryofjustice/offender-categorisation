@@ -1,6 +1,7 @@
 const moment = require('moment')
 const express = require('express')
 const flash = require('connect-flash')
+const joi = require('joi')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
@@ -27,6 +28,15 @@ const recategorisationHomeFilters = {
     timeLeftToServeBetween12WeeksAndThreeYears: 'Time left to serve is between 12 weeks and 3 years',
   },
 }
+
+const recategorisationHomeSchemaFilters = {}
+Object.keys(recategorisationHomeFilters).forEach(key => {
+  recategorisationHomeSchemaFilters[key] = joi
+    .array()
+    .items(joi.string().valid(...Object.keys(recategorisationHomeFilters[key])))
+    .optional()
+})
+const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters)
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -175,38 +185,19 @@ module.exports = function Index({
         res.locals.user,
         transactionalDbClient
       )
-      res.render('pages/recategoriserHome', {
-        offenders,
-        riskChangeCount,
-        showRecategorisationPrioritisationFilter,
-        filters: [],
-        allFilters: recategorisationHomeFilters,
-        allFiltersFlattened: Object.assign({}, ...Object.values(recategorisationHomeFilters)),
-      })
-    })
-  )
 
-  router.post(
-    '/recategoriserHome',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      const { offenders, riskChangeCount, showRecategorisationPrioritisationFilter } = await recategoriserHome(
-        res.locals.user,
-        transactionalDbClient
-      )
-      const filters =
-        typeof req.body.suitabilityForOpenConditionsFilter === 'string'
-          ? [req.body.suitabilityForOpenConditionsFilter]
-          : req.body.suitabilityForOpenConditionsFilter || []
+      const validation = recategorisationHomeSchema.validate(req.query)
+      if (validation.errors) {
+        console.log(validation.errors)
+      }
 
       res.render('pages/recategoriserHome', {
         offenders,
         riskChangeCount,
         showRecategorisationPrioritisationFilter,
-        filters,
+        filters: validation.value,
         allFilters: recategorisationHomeFilters,
-        allFiltersFlattened: Object.assign({}, ...Object.values(recategorisationHomeFilters)),
+        fullUrl: req.url,
       })
     })
   )

@@ -5,7 +5,7 @@
     "start": "node server.js",
     "start:dev": "npm run build && DEBUG=gov-starter-server* nodemon --inspect server.js | bunyan -o short",
     "start:debug": "node --inspect server.js",
-    "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend/dist ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
+    "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend/dist --load-path=node_modules/@ministryofjustice ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
     "watch-sass": "npm run compile-sass -- --watch",
     "build": "npm run compile-sass",
     "clean": "rm -rf assets/stylesheets/* .port.tmp *.log dist build/* uploads/* test-results.xml",
@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@joi/date": "^2.1.0",
+    "@ministryofjustice/frontend": "^2.1.0",
     "@snyk/protect": "^1.1206.0",
     "agentkeepalive": "^4.2.1",
     "applicationinsights": "^2.5.1",

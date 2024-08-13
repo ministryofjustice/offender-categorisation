@@ -33,7 +33,9 @@ module.exports = (app, path) => {
     [
       path.join(__dirname, '../../server/views'),
       'node_modules/govuk-frontend/dist/govuk/',
+      'node_modules/govuk-frontend/dist',
       'node_modules/govuk-frontend/dist/govuk/components/',
+      'node_modules/@ministryofjustice/frontend/',
     ],
     {
       autoescape: true,

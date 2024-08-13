@@ -34,33 +34,21 @@ document
   .addEventListener(
     'click',
     () => toggleAllCheckboxes(
-      'suitabilityForOpenConditionsFilter',
-      !allCheckboxesAreChecked('suitabilityForOpenConditionsFilter'),
+      'suitabilityForOpenConditions[]',
+      !allCheckboxesAreChecked('suitabilityForOpenConditions[]'),
       'selectAllSuitabilityForOpenConditionsFilter'
     )
   )
 
-getAllCheckboxesWithIdPrefix('suitabilityForOpenConditionsFilter').forEach(checkbox => {
+getAllCheckboxesWithIdPrefix('suitabilityForOpenConditions[]').forEach(checkbox => {
   checkbox
     .addEventListener(
       'change',
       () => {
         setSelectAllButtonTextBasedOnSelectedCheckboxes(
           'selectAllSuitabilityForOpenConditionsFilter',
-          'suitabilityForOpenConditionsFilter'
+          'suitabilityForOpenConditions[]'
         )
       }
     )
 })
-
-const removeFilterButtons = document.getElementsByClassName('remove-filter')
-for (const removeFilterButton of removeFilterButtons) {
-  console.log(removeFilterButton)
-  removeFilterButton.addEventListener(
-    'click',
-    () => {
-      document.getElementById(`filterCheckbox_${removeFilterButton.getAttribute('data-target')}`).checked = false
-      document.getElementById('recategorisationPrioritisationFilter').submit()
-    }
-  )
-}
