@@ -12,22 +12,10 @@ const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 const conf = require('../config')
 const logger = require('../../log')
+const { recategorisationHomeFilters } = require('../services/recategorisationFilterer')
 
 const formConfig = {
   security: securityConfig,
-}
-
-const recategorisationHomeFilters = {
-  suitabilityForOpenConditions: {
-    lowRiskOfEscape: 'Low risk of escape',
-    lowRosh: 'Low RoSH',
-    noCurrentTerrorismOffences: 'No current terrorism offences',
-    noRotlRestrictionsOrSuspensions: 'No ROTL restrictions or suspensions',
-    noAdjudicationsInTheLastThreeMonths: 'No adjudications in the last 3 months',
-    notMarkedAsNotForRelease: 'Not marked as not for release',
-    standardOrEnhancedIncentiveLevel: 'Standard or enhanced incentive level',
-    timeLeftToServeBetween12WeeksAndThreeYears: 'Time left to serve is between 12 weeks and 3 years',
-  },
 }
 
 const recategorisationHomeSchemaFilters = {}
@@ -175,7 +163,7 @@ module.exports = function Index({
     }
 
     const offenders = user.activeCaseLoad
-      ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient)
+      ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient, filters)
       : []
 
     const riskChangeCount = await formService.getRiskChangeCount(user.activeCaseLoad.caseLoadId, transactionalDbClient)
@@ -188,11 +176,6 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const { offenders, riskChangeCount, showRecategorisationPrioritisationFilter } = await recategoriserHome(
-        res.locals.user,
-        transactionalDbClient
-      )
-
       const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
       if (validation.error) {
         logger.error('Recategoriser home page submitted with invalid filters.', validation.error)
@@ -200,6 +183,12 @@ module.exports = function Index({
           message: 'Invalid recategoriser home filters',
         })
       }
+
+      const { offenders, riskChangeCount, showRecategorisationPrioritisationFilter } = await recategoriserHome(
+        res.locals.user,
+        transactionalDbClient,
+        validation.value
+      )
 
       return res.render('pages/recategoriserHome', {
         offenders,
