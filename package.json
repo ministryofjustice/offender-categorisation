@@ -20,7 +20,7 @@
     "int-test": "export $(cat feature.env) && cypress run --config video=false",
     "int-test-ui": "export $(cat feature.env) && cypress open",
     "watch-node-feature": "export $(cat feature.env) && npm run start:dev",
-    "start-feature": "export $(cat feature.env) && node $NODE_DEBUG_OPTION server.js | bunyan -o short",
+    "start-feature": "export $(cat feature.env) && npm run build && node $NODE_DEBUG_OPTION server.js | bunyan -o short",
     "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-node-feature\" \"npm run watch-sass\""
   },
   "engines": {

@@ -47,7 +47,8 @@
 
   <div class="govuk-grid-row">
     {% if showRecategorisationPrioritisationFilter %}
-      <div id="filterContainer" class="side-filter govuk-grid-column-one-third govuk-!-padding-right-0">
+      {% set filterContainerClass = 'govuk-visually-hidden' if hideRecategoriserHomeFilter else '' %}
+      <div id="filterContainer" class="side-filter govuk-grid-column-one-third govuk-!-padding-right-0 {{ filterContainerClass }}">
         <form method="get">
           {% set filterCheckboxes = [] %}
             {% for key, displayName in allFilters.suitabilityForOpenConditions %}
@@ -80,6 +81,12 @@
                 }
               },
               items: filterCheckboxes
+            }) }}
+
+            {{ govukButton({
+              type: 'submit',
+              text: "Apply filter",
+              classes: "govuk-!-margin-top-3"
             }) }}
           {% endset -%}
 
@@ -121,7 +128,7 @@
             submit: {
               attributes: {
                 "data-test-id": "submit-button",
-                classes: "govuk-visually-hidden"
+                style: "display: none;"
               }
             }
           }) }}
@@ -136,7 +143,7 @@
         <div class="filterControls">
           {{ govukButton({
             id: "hideFilterButton",
-            text: "Hide filter",
+            text: "Show filter" if hideRecategoriserHomeFilter else "Hide filter",
             classes: "govuk-button--secondary govuk-!-margin-bottom-0"
           }) }}
           <div class="govuk-!-margin-left-2">You have <b>{{ filters.suitabilityForOpenConditions|length }}</b> filters applied</div>
