@@ -221,9 +221,11 @@ module.exports = function Index({
       const validation = joi.object({ hideFilter: joi.bool().required() }).validate(req.body)
       if (validation.error) {
         logger.error('Recategoriser home page hide filter endpoint passed invalid value.', validation.error)
-      } else {
-        req.session.hideRecategoriserHomeFilter = true
+        res.sendStatus(400)
+        return
       }
+      req.session.hideRecategoriserHomeFilter = validation.value.hideFilter
+      res.sendStatus(200)
     })
   )
 
