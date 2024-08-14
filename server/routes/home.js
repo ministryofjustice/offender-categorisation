@@ -168,7 +168,7 @@ module.exports = function Index({
     })
   )
 
-  async function recategoriserHome(user, transactionalDbClient, filters = []) {
+  async function recategoriserHome(user, transactionalDbClient) {
     let showRecategorisationPrioritisationFilter = false
     if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
       showRecategorisationPrioritisationFilter = true
