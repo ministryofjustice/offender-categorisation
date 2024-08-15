@@ -55,6 +55,8 @@ module.exports = (app, path) => {
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
     .addGlobal('googleTagManagerKey', config.googleTagManagerTag)
+    .addGlobal('googleTagManagerEnv', config.googleTagManagerEnv)
+    .addGlobal('googleTagManagerAuth', config.googleTagManagerAuth)
     .addGlobal('catMappings', catMappings)
     .addGlobal('catLabel', catLabel)
     .addGlobal('displayIcon', displayIcon)
