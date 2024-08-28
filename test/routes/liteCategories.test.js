@@ -70,9 +70,13 @@ describe('assessment', () => {
         expect(res.text).toContain('Other category assessment</h1>')
         expect(res.text).toContain('<option value="RECP">Reception</option>')
         expect(res.text).toContain('<option value="SECUR">Security</option>')
-        expect(res.text).toContain(
-          `<input class="govuk-input govuk-!-width-full" id="nextReviewDate" name="nextReviewDate" type="text" value="${sixMonths}">`
+        expect(res.text).toMatch(
+          new RegExp(
+            `<input\\s+class="govuk-input govuk-!-width-full"\\s+id="nextReviewDate"\\s+name="nextReviewDate"\\s+type="text"\\s+value="${sixMonths}"\\s*>`,
+            's'
+          )
         )
+
         expect(res.text).toContain('<option value="SYI">Shrewsbury (HMP)</option>')
         expect(res.text).toContain('<option value="MDI">Moorland</option>')
       })
