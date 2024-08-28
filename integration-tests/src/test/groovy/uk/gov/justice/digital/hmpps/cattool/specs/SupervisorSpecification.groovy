@@ -340,7 +340,9 @@ class SupervisorSpecification extends AbstractSpecification {
     then: 'the review page is displayed with an error'
     at SupervisorReviewPage
 
-    errorSummaries*.text() == ['Please select yes or no']
+    waitFor {
+      errorSummaries*.text() == ['Please select yes or no']
+    }
 
     and: 'the supervisor selects no and submits'
     appropriateNo.click()
