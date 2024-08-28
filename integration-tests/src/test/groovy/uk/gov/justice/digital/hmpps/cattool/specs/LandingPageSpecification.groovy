@@ -397,9 +397,7 @@ class LandingPageSpecification extends AbstractSpecification {
     at SecurityReferralSubmittedPage
 
     when: 'A re-categoriser starts a recat which is automatically referred'
-    waitFor {
-      fixture.logout()
-    }
+    fixture.logout()
     elite2Api.stubRecategorise()
     prisonerSearchApi.stubGetPrisonerSearchPrisoners()
     prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
