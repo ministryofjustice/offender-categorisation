@@ -4,6 +4,7 @@ const NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS = 'noRotlRestrictionsOrSuspensions'
 const NOT_MARKED_AS_NOT_FOR_RELEASE = 'notMarkedAsNotForRelease'
 const STANDARD_OR_ENHANCED_INCENTIVE_LEVEL = 'standardOrEnhancedIncentiveLevel'
 const TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS = 'timeLeftToServeBetween12WeeksAnd3Years'
+const NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS = 'noAdjudicationsInTheLastThreeMonths'
 
 const recategorisationHomeFilters = {
   suitabilityForOpenConditions: {
@@ -11,7 +12,7 @@ const recategorisationHomeFilters = {
     lowRosh: 'Low RoSH',
     [NO_CURRENT_TERRORISM_OFFENCES]: 'No current terrorism offences',
     [NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS]: 'No ROTL restrictions or suspensions',
-    noAdjudicationsInTheLastThreeMonths: 'No adjudications in the last 3 months',
+    [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS]: 'No adjudications in the last 3 months',
     [NOT_MARKED_AS_NOT_FOR_RELEASE]: 'Not marked as not for release',
     [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL]: 'Standard or enhanced incentive level',
     [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS]: 'Time left to serve is between 12 weeks and 3 years',
@@ -26,8 +27,25 @@ const dateIsNotBetween12WeeksAnd3Years = dateString => {
   )
 }
 
-const filterListOfPrisoners = (filters, prisoners, prisonerSearchData) => {
+const loadAdjudicationsData = (prisoners, nomisClient, agencyId) => {
+  const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
+  const dateThreeMonthsAgo = new Date().setMonth(new Date().getMonth() - 3)
+  return nomisClient.getOffenderAdjudications(
+    prisonerNumbers,
+    dateThreeMonthsAgo.toDateString(),
+    new Date().toDateString(),
+    agencyId
+  )
+}
+
+const filterListOfPrisoners = (filters, prisoners, prisonerSearchData, nomisClient, agencyId) => {
   const allFilters = Object.values(filters).flat()
+  let offenderNumbersWithAdjudications = []
+  if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
+    offenderNumbersWithAdjudications = loadAdjudicationsData(prisoners, nomisClient, agencyId).map(
+      adjudicationsDatum => adjudicationsDatum.offenderNo
+    )
+  }
   return prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
     const alertCodes = currentPrisonerSearchData?.alerts.map(alert => alert.alertCode) || []
@@ -46,6 +64,11 @@ const filterListOfPrisoners = (filters, prisoners, prisonerSearchData) => {
           break
         case NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS:
           if (alertCodes.includes('RROTL') || alertCodes.includes('ROTL')) {
+            return false
+          }
+          break
+        case NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS:
+          if (offenderNumbersWithAdjudications.includes(prisoner.offenderNo)) {
             return false
           }
           break
