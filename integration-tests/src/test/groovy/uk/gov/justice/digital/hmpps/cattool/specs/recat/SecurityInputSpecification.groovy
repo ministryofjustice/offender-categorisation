@@ -31,8 +31,10 @@ class SecurityInputSpecification extends AbstractSpecification {
     saveButton.click()
 
     then: 'there is a validation error'
-    errorSummaries*.text() == ['Select yes if you want to include a note to security']
-    errors*.text() == ['Error:\nSelect yes if you want to include a note to security']
+    waitFor {
+      errorSummaries*.text() == ['Select yes if you want to include a note to security']
+      errors*.text() == ['Error:\nSelect yes if you want to include a note to security']
+    }
 
     when: 'No note is selected on the security page'
     securityRadio = 'No'

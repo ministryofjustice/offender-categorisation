@@ -109,8 +109,10 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
-    errorSummaries*.text() == ['Select yes if you think this category is appropriate']
-    errors.text().toString().equals("Error:\nSelect yes if you think this category is appropriate")
+    waitFor {
+      errorSummaries*.text() == ['Select yes if you think this category is appropriate']
+      errors.text().toString().equals("Error:\nSelect yes if you think this category is appropriate")
+    }
 
     when: 'I just select appropriate "No"'
     appropriateNo.click()
