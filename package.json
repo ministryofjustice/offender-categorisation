@@ -2,7 +2,7 @@
   "name": "offender-categorisation",
   "version": "0.0.1",
   "scripts": {
-    "start": "node server.js",
+    "start": "npm run build && node server.js",
     "start:dev": "npm run build && DEBUG=gov-starter-server* nodemon --inspect server.js | bunyan -o short",
     "start:debug": "node --inspect server.js",
     "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend/dist --load-path=node_modules/@ministryofjustice ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
