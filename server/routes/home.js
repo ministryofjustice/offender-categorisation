@@ -156,30 +156,11 @@ module.exports = function Index({
     })
   )
 
-  async function recategoriserHome(user, transactionalDbClient) {
-    let showRecategorisationPrioritisationFilter = false
-    if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
-      showRecategorisationPrioritisationFilter = true
-    }
-
-    const offenders = user.activeCaseLoad
-      ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient)
-      : []
-
-    const riskChangeCount = await formService.getRiskChangeCount(user.activeCaseLoad.caseLoadId, transactionalDbClient)
-
-    return { offenders, riskChangeCount, showRecategorisationPrioritisationFilter }
-  }
-
   router.get(
     '/recategoriserHome',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const { offenders, riskChangeCount, showRecategorisationPrioritisationFilter } = await recategoriserHome(
-        res.locals.user,
-        transactionalDbClient
-      )
 
       const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
       if (validation.error) {
@@ -188,6 +169,17 @@ module.exports = function Index({
           message: 'Invalid recategoriser home filters',
         })
       }
+
+      let showRecategorisationPrioritisationFilter = false
+      if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
+        showRecategorisationPrioritisationFilter = true
+      }
+
+      const offenders = user.activeCaseLoad
+        ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient)
+        : []
+
+      const riskChangeCount = await formService.getRiskChangeCount(user.activeCaseLoad.caseLoadId, transactionalDbClient)
 
       return res.render('pages/recategoriserHome', {
         offenders,
