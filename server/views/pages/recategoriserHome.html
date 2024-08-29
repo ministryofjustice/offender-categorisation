@@ -84,12 +84,14 @@
               items: filterCheckboxes
             }) }}
 
-            {{ govukButton({
-              id: 'applyFilters',
-              type: 'submit',
-              text: "Apply filter",
-              classes: "govuk-!-margin-top-3"
-            }) }}
+            <div class="replacementApplyFilterButtonContainer">
+              {{ govukButton({
+                id: 'applyFilters',
+                type: 'submit',
+                text: "Apply filters",
+                classes: "govuk-!-margin-top-3"
+              }) }}
+            </div>
           {% endset -%}
 
           {% set filterCategories = [] %}
@@ -125,7 +127,7 @@
                 href: '.'
               },
               categories: filterCategories
-            },
+            } if filterCategories.length > 0,
             optionsHtml: filterOptionsHtml,
             submit: {
               attributes: {
