@@ -52,7 +52,7 @@ describe('Categoriser Home page', () => {
       categoriserHomePage.noResultsDiv().should('be.visible')
     })
 
-    it.only('should show upcoming categorisations', () => {
+    it('should show upcoming categorisations', () => {
       dbSeeder(initialCategorisation)
 
       const offenderNumbers = [
