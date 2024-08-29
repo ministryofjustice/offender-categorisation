@@ -179,7 +179,10 @@ module.exports = function Index({
         ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient)
         : []
 
-      const riskChangeCount = await formService.getRiskChangeCount(user.activeCaseLoad.caseLoadId, transactionalDbClient)
+      const riskChangeCount = await formService.getRiskChangeCount(
+        user.activeCaseLoad.caseLoadId,
+        transactionalDbClient
+      )
 
       return res.render('pages/recategoriserHome', {
         offenders,
