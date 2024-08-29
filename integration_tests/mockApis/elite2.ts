@@ -512,6 +512,7 @@ const stubGetOffenderDetails = ({
   category = 'C',
   multipleSentences = false,
   nextReviewDate = '2020-01-16',
+  basicInfo = false,
 }: {
   bookingId: number
   offenderNo?: string
@@ -520,12 +521,13 @@ const stubGetOffenderDetails = ({
   category?: string
   multipleSentences?: boolean
   nextReviewDate?: string
+  basicInfo?: boolean
 }): Promise<Response[]> => {
   const stubBasicInfo = () =>
     stubFor({
       request: {
         method: 'GET',
-        url: `/elite2/api/bookings/${bookingId}?basicInfo=false`,
+        url: `/elite2/api/bookings/${bookingId}?basicInfo=${basicInfo}`,
       },
       response: {
         status: 200,
@@ -644,6 +646,34 @@ const stubGetOffenderDetails = ({
 
   return Promise.all([stubBasicInfo(), stubSentenceDetail(), stubSentenceTerms(), stubMainOffence()])
 }
+
+const stubGetOffenderDetailsBasic = ({
+  bookingId,
+  offenderNo = 'B2345YZ',
+}: {
+  bookingId: number
+  offenderNo?: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/bookings/${bookingId}?basicInfo=true`,
+    },
+    response: {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        bookingId,
+        offenderNo,
+        agencyId: 'LEI',
+        firstName: 'ANT',
+        lastName: 'HILLMOB',
+        dateOfBirth: '1970-02-17',
+      }),
+    },
+  })
 
 const stubGetOffenderDetailsByOffenderNoList = ({
   bookingId = [13, 14],
@@ -1167,6 +1197,92 @@ const stubUncategorised = (): SuperAgentRequest =>
     },
   })
 
+const stubUncategorisedFull = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 31,
+          offenderNo: 'B0031AA',
+          firstName: 'AWAITING',
+          lastName: 'MISSING',
+          status: 'AWAITING_APPROVAL',
+          category: 'B',
+        },
+        {
+          bookingId: 32,
+          offenderNo: 'B0032AA',
+          firstName: 'AWAITING',
+          lastName: 'STARTED',
+          status: 'AWAITING_APPROVAL',
+          category: 'C',
+        },
+        {
+          bookingId: 33,
+          offenderNo: 'B0033AA',
+          firstName: 'AWAITING',
+          lastName: 'AWAITING',
+          status: 'AWAITING_APPROVAL',
+          category: 'B',
+        },
+        {
+          bookingId: 34,
+          offenderNo: 'B0034AA',
+          firstName: 'AWAITING',
+          lastName: 'APPROVED',
+          status: 'AWAITING_APPROVAL',
+          category: 'C',
+        },
+        {
+          bookingId: 35,
+          offenderNo: 'B0035AA',
+          firstName: 'UNCATEGORISED',
+          lastName: 'MISSING',
+          status: 'UNCATEGORISED',
+          category: 'B',
+        },
+        {
+          bookingId: 36,
+          offenderNo: 'B0036AA',
+          firstName: 'UNCATEGORISED',
+          lastName: 'STARTED',
+          status: 'UNCATEGORISED',
+          category: 'C',
+        },
+        {
+          bookingId: 37,
+          offenderNo: 'B0037AA',
+          firstName: 'UNCATEGORISED',
+          lastName: 'AWAITING',
+          status: 'UNCATEGORISED',
+          category: 'B',
+        },
+        {
+          bookingId: 38,
+          offenderNo: 'B0038AA',
+          firstName: 'UNCATEGORISED',
+          lastName: 'APPROVED',
+          status: 'UNCATEGORISED',
+          category: 'C',
+        },
+        {
+          bookingId: 39,
+          offenderNo: 'B0039AA',
+          firstName: 'AWAITING',
+          lastName: 'SUPERVISOR_BACK',
+          status: 'AWAITING_APPROVAL',
+          category: 'C',
+        },
+      ],
+    },
+  })
+
 const stubUncategorisedAwaitingApproval = (
   { emptyResponse }: { emptyResponse: boolean } = { emptyResponse: false }
 ): SuperAgentRequest =>
@@ -1366,7 +1482,6 @@ const stubRecategorise = (
   }
   const twoMonthsFromToday = moment().add(2, 'months').format('yyyy-MM-DD')
 
-  console.log('url?', `/elite2/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=${twoMonthsFromToday}`)
   const recategorisationsStub = () =>
     stubFor({
       request: {
@@ -1428,6 +1543,7 @@ export default {
   stubGetMyCaseloads,
   stubGetMyDetails,
   stubGetOffenderDetails,
+  stubGetOffenderDetailsBasic,
   stubGetOffenderDetailsByOffenderNoList,
   stubGetOffenderDetailsWomen,
   stubGetOffenderDetailsWomenYOI,
@@ -1439,6 +1555,7 @@ export default {
   stubSupervisorApproveNoPendingAssessmentError,
   stubSupervisorReject,
   stubUncategorised,
+  stubUncategorisedFull,
   stubUncategorisedAwaitingApproval,
   stubUncategorisedAwaitingApprovalForWomenYOI,
   stubUncategorisedAwaitingApprovalWithLocation,

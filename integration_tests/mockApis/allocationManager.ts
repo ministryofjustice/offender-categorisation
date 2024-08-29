@@ -21,7 +21,7 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/api/allocation/\\w+',
+        urlPattern: '/allocation-manager/api/allocation/\\w+',
       },
       response: {
         status: 200,
