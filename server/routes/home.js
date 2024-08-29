@@ -12,22 +12,10 @@ const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 const conf = require('../config')
 const logger = require('../../log')
+const { recategorisationHomeFilters } = require('../services/recategorisationFilter')
 
 const formConfig = {
   security: securityConfig,
-}
-
-const recategorisationHomeFilters = {
-  suitabilityForOpenConditions: {
-    lowRiskOfEscape: 'Low risk of escape',
-    lowRosh: 'Low RoSH',
-    noCurrentTerrorismOffences: 'No current terrorism offences',
-    noRotlRestrictionsOrSuspensions: 'No ROTL restrictions or suspensions',
-    noAdjudicationsInTheLastThreeMonths: 'No adjudications in the last 3 months',
-    notMarkedAsNotForRelease: 'Not marked as not for release',
-    standardOrEnhancedIncentiveLevel: 'Standard or enhanced incentive level',
-    timeLeftToServeBetween12WeeksAndThreeYears: 'Time left to serve is between 12 weeks and 3 years',
-  },
 }
 
 const recategorisationHomeSchemaFilters = {}

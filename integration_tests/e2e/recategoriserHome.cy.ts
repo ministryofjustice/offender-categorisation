@@ -8,7 +8,6 @@ import Page from '../pages/page'
 import RecategoriserHomePage from '../pages/recategoriser/home'
 import { AGENCY_LOCATION } from '../factory/agencyLocation'
 import { CASELOAD } from '../factory/caseload'
-import config from '../../server/config'
 
 const commonOffenderData = {
   offenderNo: 'dummy',
@@ -141,10 +140,6 @@ describe('Recategoriser Home page', () => {
       it('should show the side filter by default', () => {
         const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
         recategoriserHomePage.filterContainer().should('be.visible')
-      })
-      it('should not show the side filter when the feature flag is disabled', () => {
-        // config.featureFlags.recategorisationPrioritisation.show_filter = 'false'
-        cy.contains('Filter')
       })
       it('should hide the filter when hide filter button is pressed and keep hidden until show filter is pressed', () => {
         const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
