@@ -122,7 +122,7 @@ describe('Recategoriser Home page', () => {
           recat.offenderNo,
           'Review due',
           'Awaiting approval',
-          '',
+          'Engelbert Humperdinck',
           'View',
         ],
       ])
