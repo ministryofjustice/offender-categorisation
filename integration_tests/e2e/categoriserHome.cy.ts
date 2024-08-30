@@ -112,11 +112,11 @@ describe('Categoriser Home page', () => {
         ],
         ['OVERDUE', 'Hillmob, Ant', 'B0040AA', '70', 'Started (Api User)', '', 'Edit'],
         ['OVERDUE', 'Missing, Awaiting', 'B0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
-        ['OVERDUE', 'Started, Awaiting', 'B0032AA', '50', 'Started', 'Engelbert Humperdinck', 'PNOMIS'],
+        ['OVERDUE', 'Started, Awaiting', 'B0032AA', '50', 'Started (Api User)', 'Engelbert Humperdinck', 'PNOMIS'],
         ['OVERDUE', 'Awaiting, Awaiting', 'B0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
         ['OVERDUE', 'Approved, Awaiting', 'B0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
         ['OVERDUE', 'Missing, Uncategorised', 'B0035AA', '39', 'Not categorised', 'Engelbert Humperdinck', 'Start'],
-        ['OVERDUE', 'Started, Uncategorised', 'B0036AA', '19', 'Started', 'Engelbert Humperdinck', 'Edit'],
+        ['OVERDUE', 'Started, Uncategorised', 'B0036AA', '19', 'Started (Api User)', 'Engelbert Humperdinck', 'Edit'],
         [
           moment(startDates[6]).add(get10BusinessDays(startDates[6]), 'days').format('DD/MM/yyyy'),
           'Awaiting, Uncategorised',

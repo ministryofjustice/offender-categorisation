@@ -1,7 +1,7 @@
 const common = {
   form_response: {},
   user_id: 'null',
-  assigned_user_id: null,
+  assigned_user_id: 'CATEGORISER_USER',
   referred_date: null,
   referred_by: 'null',
   sequence_no: 1,
@@ -71,8 +71,6 @@ export default [
     id: -10,
     booking_id: 40,
     status: 'STARTED',
-    user_id: 'CATEGORISER_USER',
-    assigned_user_id: 'CATEGORISER_USER',
     review_reason: 'MANUAL',
   },
 ]
