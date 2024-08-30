@@ -647,34 +647,6 @@ const stubGetOffenderDetails = ({
   return Promise.all([stubBasicInfo(), stubSentenceDetail(), stubSentenceTerms(), stubMainOffence()])
 }
 
-const stubGetOffenderDetailsBasic = ({
-  bookingId,
-  offenderNo = 'B2345YZ',
-}: {
-  bookingId: number
-  offenderNo?: string
-}): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'GET',
-      url: `/elite2/api/bookings/${bookingId}?basicInfo=true`,
-    },
-    response: {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        bookingId,
-        offenderNo,
-        agencyId: 'LEI',
-        firstName: 'ANT',
-        lastName: 'HILLMOB',
-        dateOfBirth: '1970-02-17',
-      }),
-    },
-  })
-
 const stubGetOffenderDetailsByOffenderNoList = ({
   bookingId = [13, 14],
   offenderNumbers,
@@ -1543,7 +1515,6 @@ export default {
   stubGetMyCaseloads,
   stubGetMyDetails,
   stubGetOffenderDetails,
-  stubGetOffenderDetailsBasic,
   stubGetOffenderDetailsByOffenderNoList,
   stubGetOffenderDetailsWomen,
   stubGetOffenderDetailsWomenYOI,

@@ -89,7 +89,8 @@ describe('Categoriser Home page', () => {
         startDates,
       })
 
-      cy.task('stubGetOffenderDetailsBasic', {
+      cy.task('stubGetOffenderDetails', {
+        basicInfo: true,
         bookingId: 40,
         offenderNo: 'B0040AA',
       })
