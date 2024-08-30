@@ -140,7 +140,7 @@
       </div>
     {% endif %}
 
-    {% set tableContainerClass = 'govuk-grid-column-two-thirds' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else '' %}
+    {% set tableContainerClass = 'govuk-grid-column-two-thirds' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else 'govuk-grid-column-full' %}
 
     <div id="tableContainer" class="{{ tableContainerClass }}">
       {% if showRecategorisationPrioritisationFilter %}
