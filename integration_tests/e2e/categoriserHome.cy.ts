@@ -2,6 +2,7 @@ import moment from 'moment'
 import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
 import Page from '../pages/page'
 import CategoriserHomePage from '../pages/categoriser/home'
+import CategoriserHomePageV2 from '../pages/categoriser/homeV2'
 import { CASELOAD } from '../factory/caseload'
 import dbSeeder from '../fixtures/db-seeder'
 import initialCategorisation from '../fixtures/categoriser/home'
@@ -136,6 +137,76 @@ describe('Categoriser Home page', () => {
           'Engelbert Humperdinck',
           'PNOMIS',
         ],
+      ])
+    })
+
+    it('should show upcoming categorisations v2', () => {
+      dbSeeder(initialCategorisation)
+
+      const offenderNumbers = [
+        'B0031AA',
+        'B0032AA',
+        'B0033AA',
+        'B0034AA',
+        'B0035AA',
+        'B0036AA',
+        'B0037AA',
+        'B0038AA',
+        'B0039AA',
+        'B0040AA',
+      ]
+      const bookingIds = [31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+      const startDates = [
+        moment().subtract(55, 'days'),
+        moment().subtract(50, 'days'),
+        moment().subtract(47, 'days'),
+        moment().subtract(43, 'days'),
+        moment().subtract(39, 'days'),
+        moment().subtract(19, 'days'),
+        moment().subtract(14, 'days'),
+        moment().subtract(5, 'days'),
+        moment().subtract(1, 'days'),
+        moment().subtract(70, 'days'),
+      ]
+      const legalStatus = [
+        'RECALL',
+        'DEAD',
+        'INDETERMINATE_SENTENCE',
+        'SENTENCED',
+        'CONVICTED_UNSENTENCED',
+        'CIVIL_PRISONER',
+        'IMMIGRATION_DETAINEE',
+        'REMAND',
+        'UNKNOWN',
+        'OTHER',
+      ]
+
+      cy.task('stubUncategorisedFull')
+      cy.task('stubGetPrisonerSearchPrisoners')
+      cy.task('stubSentenceData', {
+        offenderNumbers,
+        bookingIds,
+        startDates,
+        legalStatus,
+      })
+
+      cy.task('stubGetOffenderDetails', {
+        basicInfo: true,
+        bookingId: 40,
+        offenderNo: 'B0040AA',
+      })
+
+      cy.stubLogin({
+        user: CATEGORISER_USER,
+      })
+      cy.signIn()
+      cy.visit(CategoriserHomePageV2.baseUrl)
+
+      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.validateToDoTableData([
+        ['OVERDUE', 'Missing, Awaiting', 'B0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
+        ['OVERDUE', 'Awaiting, Awaiting', 'B0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+        ['OVERDUE', 'Approved, Awaiting', 'B0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
       ])
     })
   })

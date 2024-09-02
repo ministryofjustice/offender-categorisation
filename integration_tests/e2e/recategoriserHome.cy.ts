@@ -8,6 +8,7 @@ import Page from '../pages/page'
 import RecategoriserHomePage from '../pages/recategoriser/home'
 import { AGENCY_LOCATION } from '../factory/agencyLocation'
 import { CASELOAD } from '../factory/caseload'
+import RecategoriserHomePageV2 from '../pages/recategoriser/homeV2'
 
 const commonOffenderData = {
   offenderNo: 'dummy',
@@ -125,6 +126,41 @@ describe('Recategoriser Home page', () => {
           'Engelbert Humperdinck',
           'View',
         ],
+      ])
+    })
+
+    it('should show upcoming recategorisations v2', () => {
+      const sentenceStartDates = {
+        A1234XY: new Date('2019-01-01'),
+        B1234ZX: new Date('2019-02-02'),
+        C1994YO: new Date('2019-03-03'),
+      }
+
+      cy.task('stubSentenceData', {
+        offenderNumbers: ['A1234XY', 'B1234ZX', 'C1994YO'],
+        bookingIds: [2199988, 2286755, 1010998],
+        startDates: [sentenceStartDates.A1234XY, sentenceStartDates.B1234ZX, sentenceStartDates.C1994YO],
+        legalStatus: [undefined, 'REMAND', 'SENTENCED'],
+      })
+
+      const reviewTo = moment().add(2, 'months').format('YYYY-MM-DD')
+      cy.task('stubRecategoriseV2', { agencyId: 'LEI', cutoff: reviewTo })
+
+      cy.task('stubGetPrisonerSearchPrisoners', {
+        agencyId: 'LEI',
+        content: [],
+      })
+
+      cy.stubLogin({
+        user: RECATEGORISER_USER,
+      })
+      cy.signIn()
+      cy.visit(RecategoriserHomePageV2.baseUrl)
+
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePageV2)
+      recategoriserHomePage.validateToDoTableData([
+        ['OVERDUE', 'Smith, John', 'A1234XY', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['OVERDUE', 'Grimes, Peter', 'C1994YO', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
       ])
     })
   })

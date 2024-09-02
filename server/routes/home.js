@@ -61,6 +61,21 @@ module.exports = function Index({
   )
 
   router.get(
+    '/categoriserHomeV2',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+
+      validateIsTestUser(user.email)
+
+      const offenders = res.locals.user.activeCaseLoad
+        ? await offendersService.getUncategorisedOffendersV2(res.locals, user, transactionalDbClient)
+        : []
+      res.render('pages/categoriserHomeV2', { offenders })
+    })
+  )
+
+  router.get(
     '/categoriserDone',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
@@ -153,6 +168,26 @@ module.exports = function Index({
         transactionalDbClient
       )
       res.render('pages/recategoriserHome', { offenders, riskChangeCount })
+    })
+  )
+
+  router.get(
+    '/recategoriserHomeV2',
+    asyncMiddleware(async (req, res, transactionalDbClient) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+
+      validateIsTestUser(user.email)
+
+      const offenders = res.locals.user.activeCaseLoad
+        ? await offendersService.getRecategoriseOffendersV2(res.locals, user, transactionalDbClient)
+        : []
+
+      const riskChangeCount = await formService.getRiskChangeCount(
+        res.locals.user.activeCaseLoad.caseLoadId,
+        transactionalDbClient
+      )
+      res.render('pages/recategoriserHomeV2', { offenders, riskChangeCount })
     })
   )
 
@@ -511,4 +546,16 @@ module.exports = function Index({
   )
 
   return router
+}
+
+const validateIsTestUser = email => {
+  const allowedUsers = [
+    'itaguser@syscon.net',
+    'christopher.moss@digital.justice.gov.uk',
+    'leah.patterson@digital.justice.gov.uk',
+    'martha.hunston@digital.justice.gov.uk',
+  ]
+  if (allowedUsers.includes(email) === false) {
+    throw new Error('You are not allowed to access this page.')
+  }
 }

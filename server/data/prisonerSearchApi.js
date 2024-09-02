@@ -55,6 +55,8 @@ module.exports = context => {
             releaseDate: r.releaseDate,
             sentenceStartDate: r.sentenceStartDate,
             status: r.status,
+            legalStatus: r.legalStatus,
+            offenderNo: r.prisonerNumber,
           })
         )
       }

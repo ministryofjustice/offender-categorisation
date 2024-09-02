@@ -1502,6 +1502,56 @@ const stubRecategorise = (
   return Promise.all([recategorisationsStub(), latestOnlyStub()])
 }
 
+const stubRecategoriseV2 = ({ agencyId, cutoff }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS&date=${cutoff}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          offenderNo: 'A1234XY',
+          bookingId: 2199988,
+          firstName: 'JOHN',
+          lastName: 'SMITH',
+          assessmentDate: '2023-03-04',
+          approvalDate: '2023-03-04',
+          assessmentSeq: 9,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-04',
+        },
+        {
+          offenderNo: 'B1234ZX',
+          bookingId: 2286755,
+          firstName: 'ALAN',
+          lastName: 'JOHNSON',
+          assessmentDate: '2023-03-05',
+          approvalDate: '2023-03-05',
+          assessmentSeq: 3,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-05',
+        },
+        {
+          offenderNo: 'C1994YO',
+          bookingId: 1010998,
+          firstName: 'PETER',
+          lastName: 'GRIMES',
+          assessmentDate: '2023-03-06',
+          approvalDate: '2023-03-06',
+          assessmentSeq: 99,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-06',
+        },
+      ],
+    },
+  })
+
 export default {
   stubAgencyDetails,
   stubAgenciesPrison,
@@ -1536,4 +1586,5 @@ export default {
   verifySupervisorApprove,
   verifyUpdateNextReviewDate,
   stubRecategorise,
+  stubRecategoriseV2,
 }

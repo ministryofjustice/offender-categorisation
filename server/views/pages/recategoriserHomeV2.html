@@ -1,0 +1,127 @@
+{% extends "../partials/layout.html" %}
+
+{% from "button/macro.njk" import govukButton %}
+{% from "tag/macro.njk" import govukTag %}
+{% from "../macros/breadCrumb.html" import breadCrumb %}
+{% from "tag/macro.njk" import govukTag %}
+{% from "details/macro.njk" import govukDetails %}
+
+{% set pageTitle = "Category reviews for prisoners" %}
+
+{% block beforeContent %}
+
+{{ breadCrumb(breadCrumbList) }}
+
+{% endblock %}
+
+{% block content %}
+
+<div >
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+</div>
+
+<div class="govuk-tabs" data-module="govuk-tabs-disabled">
+
+  <ul class="govuk-tabs__list">
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" id="todo-tab" href="/recategoriserHome">
+        Category reviews
+      </a>
+    </li>
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" id="check-tab" href="/recategoriserCheck">
+        Potential reviews{% if riskChangeCount > 0 %}<div class="tabTotal"><span class="adjustCount">{{ riskChangeCount }}</span></div>{% endif %}
+      </a>
+    </li>
+    <li class="govuk-tabs__list-item">
+      <a class="govuk-tabs__tab" id="done-tab" href="/recategoriserDone">
+        Finished reviews
+      </a>
+    </li>
+    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+      <a class="govuk-tabs__tab" id="recat-home-v2-tab">
+        Category reviews (v2)
+      </a>
+    </li>
+  </ul>
+
+  <section class="govuk-tabs__panel">
+
+  {% if offenders | length > 0 %}
+  <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
+    <thead class="govuk-table__head">
+
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Due date</th>
+      <th class="govuk-table__header" scope="col">Name</th>
+      <th class="govuk-table__header" scope="col">Prison no</th>
+      <th class="govuk-table__header" scope="col">Reason for review</th>
+      <th class="govuk-table__header" scope="col">Status</th>
+      <th class="govuk-table__header" scope="col">POM</th>
+      <th class="govuk-table__header" scope="col"></th>
+    </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+    {% for row in offenders %}
+    <tr class="govuk-table__row ">
+      <td class="govuk-table__cell">
+        {% if row.overdue %}
+        {{ govukTag({
+            text: 'OVERDUE',
+            classes: 'moj-tag--red'
+          }) }} <!-- {{ row.nextReviewDateDisplay }} -->
+        {% else %}
+          {{ row.nextReviewDateDisplay }}
+        {% endif %}
+      </td>
+      <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
+        {% if row.securityReferred %}
+          {{ govukDetails({
+          summaryText: 'Security referred',
+          text: 'Security have flagged this person as being of interest. They will be automatically referred to security when the categorisation starts.',
+          classes: 'govuk-body govuk-!-font-size-14 govuk-!-margin-bottom-0'
+          }) }}
+        {% endif %}
+      </td>
+      <td class="govuk-table__cell">{{ row.offenderNo }}</td>
+      <td class="govuk-table__cell">{{ row.reason.value }}</td>
+      <td class="govuk-table__cell">
+        {% if row.displayStatus == 'Back from Supervisor' %}
+          {{ govukTag({
+            html: 'Rejected by<br/>supervisor'
+          }) }}
+        {% else %}
+          {{ row.displayStatus }}
+        {% endif %}
+      </td>
+      <td class="govuk-table__cell">{{ row.pom }}</td>
+      <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+        {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
+        {% set href = ("/form/awaitingApprovalView/" + row.bookingId) if row.displayStatus == 'Awaiting approval'
+                 else ("/tasklistRecat/" + row.bookingId + '?reason=' + row.reason.name) %}
+        {% set classes = basicClasses if row.buttonText == 'Start' else basicClasses + " grey-button" %}
+        {% if row.pnomis %}
+          <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ row.pnomis }}</div>
+        {% else %}
+          {{ govukButton({
+            text: row.buttonText,
+            href: href if not locked,
+            attributes: { 'data-prevent-double-click': 'true' },
+            classes: classes
+          }) }}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+  {% else %}
+    <div class="govuk-!-padding-top-4">
+      <div id="no-results-message">No prisoners found.</div>
+    </div>
+  {% endif %}
+  </section>
+</div>
+
+{% endblock %}
