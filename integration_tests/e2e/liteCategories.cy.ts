@@ -220,7 +220,7 @@ describe('Lite Categories', () => {
             'B2345XY',
             moment().diff(new Date(sentenceStartDates['B2345YZ']), 'days').toString(),
             'Not categorised',
-            '',
+            'Engelbert Humperdinck',
             'OTHER',
           ],
           [
@@ -229,7 +229,7 @@ describe('Lite Categories', () => {
             'B2345YZ',
             moment().diff(new Date(sentenceStartDates['B2345XY']), 'days').toString(),
             'Awaiting approval',
-            '',
+            'Engelbert Humperdinck',
             'PNOMIS',
           ],
         ])

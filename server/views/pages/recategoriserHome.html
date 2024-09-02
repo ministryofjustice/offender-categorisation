@@ -128,13 +128,7 @@
               },
               categories: filterCategories
             } if filterCategories.length > 0,
-            optionsHtml: filterOptionsHtml,
-            submit: {
-              attributes: {
-                "data-test-id": "submit-button",
-                style: "display: none;"
-              }
-            }
+            optionsHtml: filterOptionsHtml
           }) }}
         </form>
       </div>
@@ -235,6 +229,8 @@
 {% endblock %}
 
 {% block bodyEnd %}
-<meta name="csrf-token" content="{{ csrfToken }}">
-<script type="module" src="/assets/js/recategoriserHome.js"></script>
+  {% if showRecategorisationPrioritisationFilter %}
+    <meta name="csrf-token" content="{{ csrfToken }}">
+    <script type="module" src="/assets/js/recategoriserHome.js"></script>
+  {% endif %}
 {% endblock %}
