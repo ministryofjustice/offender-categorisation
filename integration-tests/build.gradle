@@ -5,7 +5,7 @@ plugins {
 ext {
     drivers = ['chrome', 'chromeHeadless']
     ext {
-      groovyVersion = '2.5.18'
+      groovyVersion = '2.5.23'
       gebVersion = '4.1'
       seleniumVersion = '3.141.59'
     }
@@ -24,13 +24,13 @@ dependencies {
     testImplementation "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
 
     testImplementation 'io.github.http-builder-ng:http-builder-ng-apache:1.0.4'
-    testImplementation 'org.postgresql:postgresql:42.2.26'
+    testImplementation 'org.postgresql:postgresql:42.7.4'
 
-    testImplementation 'com.github.tomakehurst:wiremock-jre8-standalone:2.34.0'
+    testImplementation 'com.github.tomakehurst:wiremock-jre8-standalone:2.35.2'
     testImplementation 'org.slf4j:slf4j-api:1.7.32'
-    testImplementation 'ch.qos.logback:logback-classic:1.2.9'
+    testImplementation 'ch.qos.logback:logback-classic:1.5.7'
     testImplementation 'com.auth0:java-jwt:3.18.1'
-    testImplementation 'com.amazonaws:aws-java-sdk-sqs:1.12.588'
+    testImplementation 'com.amazonaws:aws-java-sdk-sqs:1.12.770'
 }
 
 drivers.each { driver ->
