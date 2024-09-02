@@ -306,7 +306,7 @@ describe('getRecategoriseOffenders', () => {
       }
     })
 
-    const result = await service.getRecategoriseOffenders(context.user, mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
@@ -349,7 +349,7 @@ describe('getRecategoriseOffenders', () => {
 
     formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.SECURITY_MANUAL.name })
 
-    const result = await service.getRecategoriseOffenders(context.user, mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getOffenderDetails).not.toBeCalled()
     expect(formService.getCategorisationRecord).toBeCalledTimes(1)
@@ -401,7 +401,7 @@ describe('getRecategoriseOffenders', () => {
     formService.getCategorisationRecords.mockResolvedValue([])
     formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
 
-    const result = await service.getRecategoriseOffenders(context.user, mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
@@ -414,7 +414,7 @@ describe('getRecategoriseOffenders', () => {
     prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
     formService.getCategorisationRecords.mockResolvedValue([])
 
-    const result = await service.getRecategoriseOffenders(context.user, mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })
 
@@ -463,7 +463,7 @@ describe('getRecategoriseOffenders', () => {
     nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
     formService.getCategorisationRecords.mockResolvedValue([])
 
-    const result = await service.getRecategoriseOffenders(context.user, mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
 
     expect(result).toHaveLength(0)
     expect(formService.getCategorisationRecord).toBeCalledTimes(2)

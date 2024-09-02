@@ -121,7 +121,7 @@ jobs:
             aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
       - run:
           name: Run the node app.
-          command: npm run start-feature
+          command: npm start
           background: true
       - hmpps/wait_till_ready:
           # Wait for node app to start

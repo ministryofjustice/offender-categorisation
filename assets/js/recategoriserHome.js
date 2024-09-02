@@ -58,9 +58,11 @@ document.getElementById('hideFilterButton').addEventListener('click', async (eve
   if (event.target.innerText === 'Hide filter') {
     document.getElementById('filterContainer').classList.add('govuk-visually-hidden')
     document.getElementById('tableContainer').classList.remove("govuk-grid-column-two-thirds")
+    document.getElementById('tableContainer').classList.add("govuk-grid-column-full")
     event.target.innerText = 'Show filter'
     hideFilter = true
   } else {
+    document.getElementById('tableContainer').classList.remove('govuk-grid-column-full')
     document.getElementById('tableContainer').classList.add('govuk-grid-column-two-thirds')
     document.getElementById('filterContainer').classList.remove('govuk-visually-hidden')
     event.target.innerText = 'Hide filter'

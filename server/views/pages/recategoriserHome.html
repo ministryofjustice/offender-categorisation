@@ -55,7 +55,8 @@
               {% set filterCheckboxes = (filterCheckboxes.push({
                 value: key,
                 text: displayName,
-                checked:  key in filters.suitabilityForOpenConditions if filters.suitabilityForOpenConditions else false
+                checked:  key in filters.suitabilityForOpenConditions if filters.suitabilityForOpenConditions else false,
+                attributes: { 'data-qa': key + '_checkbox' }
               }), filterCheckboxes) %}
             {% endfor %}
           {%- set filterOptionsHtml %}
@@ -69,7 +70,7 @@
               id="selectAllSuitabilityForOpenConditionsFilter"
               class="linkStyledButton govuk-!-font-size-16 govuk-!-margin-bottom-3"
             >
-              Select all
+              {{ 'Select all' if filters.suitabilityForOpenConditions|length < allFilters.suitabilityForOpenConditions|length else 'Deselect all' }}
             </div>
             {{ govukCheckboxes({
               name: 'suitabilityForOpenConditions[]',
@@ -83,11 +84,14 @@
               items: filterCheckboxes
             }) }}
 
-            {{ govukButton({
-              type: 'submit',
-              text: "Apply filter",
-              classes: "govuk-!-margin-top-3"
-            }) }}
+            <div class="replacementApplyFilterButtonContainer">
+              {{ govukButton({
+                id: 'applyFilters',
+                type: 'submit',
+                text: "Apply filters",
+                classes: "govuk-!-margin-top-3"
+              }) }}
+            </div>
           {% endset -%}
 
           {% set filterCategories = [] %}
@@ -120,10 +124,10 @@
               },
               clearLink: {
                 text: 'Clear filters',
-                href: '.'
+                href: '/recategoriserHome'
               },
               categories: filterCategories
-            },
+            } if filterCategories.length > 0,
             optionsHtml: filterOptionsHtml,
             submit: {
               attributes: {
@@ -136,7 +140,7 @@
       </div>
     {% endif %}
 
-    {% set tableContainerClass = 'govuk-grid-column-two-thirds' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else '' %}
+    {% set tableContainerClass = 'govuk-grid-column-two-thirds' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else 'govuk-grid-column-full' %}
 
     <div id="tableContainer" class="{{ tableContainerClass }}">
       {% if showRecategorisationPrioritisationFilter %}
@@ -146,7 +150,7 @@
             text: "Show filter" if hideRecategoriserHomeFilter else "Hide filter",
             classes: "govuk-button--secondary govuk-!-margin-bottom-0"
           }) }}
-          <div class="govuk-!-margin-left-2">You have <b>{{ filters.suitabilityForOpenConditions|length }}</b> filters applied</div>
+          <div class="govuk-!-margin-left-2">You have <b>{{ filters.suitabilityForOpenConditions|length }}</b> filter{{ 's' if filters.suitabilityForOpenConditions|length != 1 }} applied</div>
         </div>
       {% endif %}
       {% if offenders | length > 0 %}

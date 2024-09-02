@@ -156,26 +156,12 @@ module.exports = function Index({
     })
   )
 
-  async function recategoriserHome(user, transactionalDbClient, filters = []) {
-    let showRecategorisationPrioritisationFilter = false
-    if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
-      showRecategorisationPrioritisationFilter = true
-    }
-
-    const offenders = user.activeCaseLoad
-      ? await offendersService.getRecategoriseOffenders(user, transactionalDbClient, filters)
-      : []
-
-    const riskChangeCount = await formService.getRiskChangeCount(user.activeCaseLoad.caseLoadId, transactionalDbClient)
-
-    return { offenders, riskChangeCount, showRecategorisationPrioritisationFilter }
-  }
-
   router.get(
     '/recategoriserHome',
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+
       const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
       if (validation.error) {
         logger.error('Recategoriser home page submitted with invalid filters.', validation.error)
@@ -184,10 +170,18 @@ module.exports = function Index({
         })
       }
 
-      const { offenders, riskChangeCount, showRecategorisationPrioritisationFilter } = await recategoriserHome(
-        res.locals.user,
-        transactionalDbClient,
-        validation.value
+      let showRecategorisationPrioritisationFilter = false
+      if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
+        showRecategorisationPrioritisationFilter = true
+      }
+
+      const offenders = user.activeCaseLoad
+        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient, validation.value)
+        : []
+
+      const riskChangeCount = await formService.getRiskChangeCount(
+        res.locals.user.activeCaseLoad.caseLoadId,
+        transactionalDbClient
       )
 
       return res.render('pages/recategoriserHome', {

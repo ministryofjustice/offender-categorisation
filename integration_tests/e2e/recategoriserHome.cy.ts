@@ -127,5 +127,66 @@ describe('Recategoriser Home page', () => {
         ],
       ])
     })
+    describe('side filters', () => {
+      beforeEach(() => {
+        cy.task('stubRecategorise', { recategorisations: [], latestOnly: [] })
+        cy.task('stubGetPrisonerSearchPrisoners')
+
+        cy.stubLogin({
+          user: RECATEGORISER_USER,
+        })
+        cy.signIn()
+      })
+      it('should show the side filter by default', () => {
+        const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+        recategoriserHomePage.filterContainer().should('be.visible')
+      })
+      it('should hide the filter when hide filter button is pressed and keep hidden until show filter is pressed', () => {
+        const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+        recategoriserHomePage.filterContainer().should('be.visible')
+        recategoriserHomePage.hideFilterButton().should('contain', 'Hide filter')
+        recategoriserHomePage.hideFilterButton().click()
+        cy.contains('Filters').should('not.exist')
+        cy.reload()
+        cy.contains('Filters').should('not.exist')
+        recategoriserHomePage.hideFilterButton().should('contain', 'Show filter')
+        recategoriserHomePage.hideFilterButton().click()
+        recategoriserHomePage.filterContainer().should('be.visible')
+        cy.reload()
+        recategoriserHomePage.filterContainer().should('be.visible')
+        recategoriserHomePage.hideFilterButton().should('contain', 'Hide filter')
+      })
+      it('should apply the filters that are selected', () => {
+        const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+        recategoriserHomePage.lowRiskOfEscapeFilterCheckbox().should('not.be.checked')
+        recategoriserHomePage.lowRiskOfEscapeFilterCheckbox().click()
+        recategoriserHomePage.applyFiltersButton().click()
+        recategoriserHomePage.lowRiskOfEscapeFilterCheckbox().should('be.checked')
+        cy.contains('You have 1 filter applied')
+      })
+      it('should check all inputs when select all is clicked and update the button to deselect all', () => {
+        const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+        recategoriserHomePage.selectAllFiltersButton().should('contain', 'Select all')
+        recategoriserHomePage.selectAllFiltersButton().click()
+        recategoriserHomePage.selectAllFiltersButton().should('contain', 'Deselect all')
+        recategoriserHomePage.lowRiskOfEscapeFilterCheckbox().click()
+        recategoriserHomePage.selectAllFiltersButton().should('contain', 'Select all')
+      })
+      it('should change select all to deselct all when all are selected manually', () => {
+        const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+        recategoriserHomePage.selectAllFiltersButton().should('contain', 'Select all')
+        cy.get('input[name="suitabilityForOpenConditions[]"]').each(input => {
+          cy.wrap(input).click()
+        })
+        recategoriserHomePage.selectAllFiltersButton().should('contain', 'Deselect all')
+      })
+      it('should show deselect all initially when page is submitted with all filters selected', () => {
+        const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+        recategoriserHomePage.selectAllFiltersButton().should('contain', 'Select all')
+        recategoriserHomePage.selectAllFiltersButton().click()
+        recategoriserHomePage.applyFiltersButton().click()
+        recategoriserHomePage.selectAllFiltersButton().should('contain', 'Deselect all')
+      })
+    })
   })
 })
