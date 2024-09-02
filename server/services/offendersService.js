@@ -17,7 +17,7 @@ const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
-const { filterListOfPrisoners } = require('./recategorisationFilterer')
+const { filterListOfPrisoners } = require('./recategorisationFilter')
 
 const dirname = process.cwd()
 
@@ -746,7 +746,7 @@ module.exports = function createOffendersService(
       getPomMap(allOffenders, allocationClient),
     ])
 
-    const filteredPrisoners = filterListOfPrisoners(filters, allOffenders, prisonerSearchData)
+    const filteredPrisoners = filterListOfPrisoners(filters, allOffenders, prisonerSearchData, nomisClient, agencyId)
 
     return Promise.all(
       filteredPrisoners.map(async raw => {
@@ -916,7 +916,9 @@ module.exports = function createOffendersService(
     const filteredEliteCategorisationResultsU21 = filterListOfPrisoners(
       filters,
       eliteCategorisationResultsU21,
-      resultsU21
+      resultsU21,
+      nomisClient,
+      agencyId
     )
 
     return Promise.all(

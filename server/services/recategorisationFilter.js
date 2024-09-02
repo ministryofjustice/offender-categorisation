@@ -20,7 +20,89 @@ const recategorisationHomeFilters = {
   },
 }
 
+const dateIsNotBetween12WeeksAnd3Years = dateString => {
+  const today = new Date()
+  return (
+    new Date(dateString) > new Date(new Date().setFullYear(new Date().getFullYear() + 3)) ||
+    new Date(dateString) < new Date(today.getFullYear(), today.getMonth(), today.getDate() + 84)
+  )
+}
+
+const loadAdjudicationsData = (prisoners, nomisClient, agencyId) => {
+  const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
+  const dateThreeMonthsAgo = new Date().setMonth(new Date().getMonth() - 3)
+  return nomisClient.getOffenderAdjudications(
+    prisonerNumbers,
+    dateThreeMonthsAgo.toDateString(),
+    new Date().toDateString(),
+    agencyId
+  )
+}
+
+const filterListOfPrisoners = (filters, prisoners, prisonerSearchData, nomisClient, agencyId) => {
+  const allFilters = Object.values(filters).flat()
+  let offenderNumbersWithAdjudications = []
+  if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
+    offenderNumbersWithAdjudications = loadAdjudicationsData(prisoners, nomisClient, agencyId).map(
+      adjudicationsDatum => adjudicationsDatum.offenderNo
+    )
+  }
+  return prisoners.filter(prisoner => {
+    const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
+    const alertCodes = currentPrisonerSearchData?.alerts.map(alert => alert.alertCode) || []
+    const incentiveLevelCode = currentPrisonerSearchData?.currentIncentive.level.code
+    for (let i = 0; i < allFilters.length; i += 1) {
+      switch (allFilters[i]) {
+        case LOW_RISK_OF_ESCAPE:
+          if (alertCodes.includes('XER') || alertCodes.includes('XEL') || alertCodes.includes('XELH')) {
+            return false
+          }
+          break
+        case NO_CURRENT_TERRORISM_OFFENCES:
+          if (alertCodes.includes('XTACT')) {
+            return false
+          }
+          break
+        case NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS:
+          if (alertCodes.includes('RROTL') || alertCodes.includes('ROTL')) {
+            return false
+          }
+          break
+        case NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS:
+          if (offenderNumbersWithAdjudications.includes(prisoner.offenderNo)) {
+            return false
+          }
+          break
+        case NOT_MARKED_AS_NOT_FOR_RELEASE:
+          if (alertCodes.includes('XNR')) {
+            return false
+          }
+          break
+        case STANDARD_OR_ENHANCED_INCENTIVE_LEVEL:
+          if (
+            incentiveLevelCode !== 'STD' &&
+            incentiveLevelCode !== 'ENH' &&
+            incentiveLevelCode !== 'EN2' &&
+            incentiveLevelCode !== 'EN3'
+          ) {
+            return false
+          }
+          break
+        case TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS:
+          if (dateIsNotBetween12WeeksAnd3Years(currentPrisonerSearchData?.releaseDate)) {
+            return false
+          }
+          break
+        default:
+          throw new Error(`Invalid filter type: ${allFilters[i]}`)
+      }
+    }
+    return true
+  })
+}
+
 module.exports = {
   LOW_RISK_OF_ESCAPE,
+  filterListOfPrisoners,
   recategorisationHomeFilters,
 }

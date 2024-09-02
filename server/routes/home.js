@@ -12,7 +12,7 @@ const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 const conf = require('../config')
 const logger = require('../../log')
-const { recategorisationHomeFilters } = require('../services/recategorisationFilterer')
+const { recategorisationHomeFilters } = require('../services/recategorisationFilter')
 
 const formConfig = {
   security: securityConfig,
