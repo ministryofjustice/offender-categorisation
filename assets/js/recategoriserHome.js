@@ -1,23 +1,12 @@
-function getAllCheckboxesWithIdPrefix(checkboxesIdPrefix) {
-  const checkboxes = []
-  let checkbox = null
-  let i = 1
-  while ((checkbox = document.getElementById(checkboxesIdPrefix + (i > 1 ? `-${i}` : ''))) !== null) {
-    checkboxes.push(checkbox)
-    i++
-  }
-  return checkboxes
-}
-
-function toggleAllCheckboxes(checkboxesIdPrefix, setToTrue, selectAllButtonId) {
-  getAllCheckboxesWithIdPrefix(checkboxesIdPrefix).forEach(checkbox => {
+function toggleAllCheckboxes(checkboxesName, setToTrue, selectAllButtonId) {
+  document.getElementsByName(checkboxesName).forEach(checkbox => {
     checkbox.checked = setToTrue
   })
-  setSelectAllButtonTextBasedOnSelectedCheckboxes(selectAllButtonId, checkboxesIdPrefix)
+  setSelectAllButtonTextBasedOnSelectedCheckboxes(selectAllButtonId, checkboxesName)
 }
 
-function allCheckboxesAreChecked(checkboxesIdPrefix) {
-  for (let checkbox of getAllCheckboxesWithIdPrefix(checkboxesIdPrefix)) {
+function allCheckboxesAreChecked(checkboxesName) {
+  for (let checkbox of document.getElementsByName(checkboxesName)) {
     if (!checkbox.checked) {
       return false
     }
@@ -25,8 +14,8 @@ function allCheckboxesAreChecked(checkboxesIdPrefix) {
   return true
 }
 
-function setSelectAllButtonTextBasedOnSelectedCheckboxes(selectAllButtonId, checkboxesIdPrefix) {
-  document.getElementById(selectAllButtonId).innerText = allCheckboxesAreChecked(checkboxesIdPrefix) ? 'Deselect all' : 'Select all'
+function setSelectAllButtonTextBasedOnSelectedCheckboxes(selectAllButtonId, checkboxesName) {
+  document.getElementById(selectAllButtonId).innerText = allCheckboxesAreChecked(checkboxesName) ? 'Deselect all' : 'Select all'
 }
 
 document
@@ -40,7 +29,7 @@ document
     )
   )
 
-getAllCheckboxesWithIdPrefix('suitabilityForOpenConditions[]').forEach(checkbox => {
+document.getElementsByName('suitabilityForOpenConditions[]').forEach(checkbox => {
   checkbox
     .addEventListener(
       'change',
@@ -55,16 +44,18 @@ getAllCheckboxesWithIdPrefix('suitabilityForOpenConditions[]').forEach(checkbox 
 
 document.getElementById('hideFilterButton').addEventListener('click', async (event) => {
   let hideFilter = false
+  const filterContainer = document.getElementById('filterContainer');
+  const tableContainer = document.getElementById('tableContainer');
   if (event.target.innerText === 'Hide filter') {
-    document.getElementById('filterContainer').classList.add('govuk-visually-hidden')
-    document.getElementById('tableContainer').classList.remove("govuk-grid-column-two-thirds")
-    document.getElementById('tableContainer').classList.add("govuk-grid-column-full")
+    filterContainer.classList.add('govuk-visually-hidden')
+    tableContainer.classList.remove("govuk-grid-column-two-thirds")
+    tableContainer.classList.add("govuk-grid-column-full")
     event.target.innerText = 'Show filter'
     hideFilter = true
   } else {
-    document.getElementById('tableContainer').classList.remove('govuk-grid-column-full')
-    document.getElementById('tableContainer').classList.add('govuk-grid-column-two-thirds')
-    document.getElementById('filterContainer').classList.remove('govuk-visually-hidden')
+    tableContainer.classList.remove('govuk-grid-column-full')
+    tableContainer.classList.add('govuk-grid-column-two-thirds')
+    filterContainer.classList.remove('govuk-visually-hidden')
     event.target.innerText = 'Hide filter'
   }
   const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
