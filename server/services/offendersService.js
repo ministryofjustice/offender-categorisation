@@ -708,7 +708,7 @@ module.exports = function createOffendersService(
     allocationClient,
     prisonerSearchClient,
     transactionalDbClient,
-    filters
+    filters = {}
   ) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
@@ -746,7 +746,13 @@ module.exports = function createOffendersService(
       getPomMap(allOffenders, allocationClient),
     ])
 
-    const filteredPrisoners = filterListOfPrisoners(filters, allOffenders, prisonerSearchData, nomisClient, agencyId)
+    const filteredPrisoners = await filterListOfPrisoners(
+      filters,
+      allOffenders,
+      prisonerSearchData,
+      nomisClient,
+      agencyId
+    )
 
     return Promise.all(
       filteredPrisoners.map(async raw => {
@@ -760,7 +766,7 @@ module.exports = function createOffendersService(
 
         const releaseDateForDecidingIfRecordShouldBeIncluded =
           !raw.dbRecord || !raw.dbRecord.catType || raw.dbRecord.catType === CatType.RECAT.name
-            ? prisonerSearchData[raw.bookingId]?.releaseDate || null
+            ? prisonerSearchData.get(raw.bookingId)?.releaseDate || null
             : null
 
         if (
@@ -978,7 +984,7 @@ module.exports = function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, transactionalDbClient, filters) {
+  async function getRecategoriseOffenders(context, user, transactionalDbClient, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)

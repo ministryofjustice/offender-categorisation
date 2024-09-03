@@ -4,13 +4,13 @@
   "scripts": {
     "start": "npm run build && node dist/server.js",
     "start:dev": "npm run build && DEBUG=gov-starter-server* TOKEN_VERIFICATION_API_ENABLED=false && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-sass\"",
-    "start:debug": "node --inspect server.js",
-    "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend/dist --load-path=node_modules/@ministryofjustice ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
+    "start:debug": "node --inspect dist/server.js",
+    "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend/dist  --load-path=node_modules/@ministryofjustice ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
     "watch-node": "nodemon --watch dist/ dist/server.js | bunyan -o short",
     "watch-sass": "npm run compile-sass -- --watch",
     "watch-views": "nodemon --watch server/views -e html,njk -x npm run copy-views",
     "watch-ts": "tsc -w",
-    "build": "npm run compile-sass && tsc && npm run copy-views",
+    "build": "npm run compile-sass && tsc && npm run copy-views && npm run copy-assets",
     "clean": "rm -rf assets/stylesheets/* .port.tmp *.log dist build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
     "test": "jest",
@@ -20,10 +20,11 @@
     "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect",
     "copy-views": "cp -R server/views dist/server/",
+    "copy-assets": "cp -R assets/ dist/assets",
     "int-test": "export $(cat feature.env) && cypress run --config video=false",
     "int-test-ui": "export $(cat feature.env) && cypress open",
     "watch-node-feature": "export $(cat feature.env) && npm run start:dev",
-    "start-feature": "export $(cat feature.env) && npm run build && node $NODE_DEBUG_OPTION server.js | bunyan -o short",
+    "start-feature": "export $(cat feature.env) && npm run build && node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
     "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-node-feature\" \"npm run watch-sass\"",
     "typecheck": "tsc --noEmit"
   },
@@ -32,6 +33,10 @@
     "collectCoverageFrom": [
       "server/**/*.{ts,js,jsx,mjs}",
       "jobs/**/*.{ts,js,jsx,mjs}"
+    ],
+    "testMatch": [
+      "<rootDir>/test/**/*.(spec|test).{ts,js,jsx,mjs}",
+      "<rootDir>/server/**/*.(spec|test).{ts,js,jsx,mjs}"
     ],
     "testEnvironment": "node",
     "reporters": [

@@ -30,7 +30,7 @@ Object.keys(recategorisationHomeFilters).forEach(key => {
     )
     .optional()
 })
-const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters)
+const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters).optional()
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname

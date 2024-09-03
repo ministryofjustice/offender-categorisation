@@ -1,5 +1,5 @@
-import { filterListOfPrisoners } from '../../server/services/recategorisationFilter'
-import makeTestPrisoner from '../factories/prisoner.test.factory'
+import makeTestPrisoner from '../../test/factories/prisoner.test.factory'
+import { filterListOfPrisoners } from "./recategorisationFilter";
 
 const nomisClient = {}
 

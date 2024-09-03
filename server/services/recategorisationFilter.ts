@@ -65,10 +65,8 @@ export const filterListOfPrisoners = (
   nomisClient,
   agencyId: string
 ) => {
+  return prisoners
   const allFilters = Object.values(filters)?.flat() || []
-  if (allFilters.length <= 0) {
-    return prisoners
-  }
   let offenderNumbersWithAdjudications = []
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
     offenderNumbersWithAdjudications = loadAdjudicationsData(prisoners, nomisClient, agencyId).map(
