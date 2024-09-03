@@ -229,6 +229,7 @@
 {% endblock %}
 
 {% block bodyEnd %}
+  {{ super() }}
   {% if showRecategorisationPrioritisationFilter %}
     <meta name="csrf-token" content="{{ csrfToken }}">
     <script type="module" src="/assets/js/recategoriserHome.js"></script>
