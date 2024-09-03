@@ -172,5 +172,10 @@ module.exports = {
         }),
       },
     },
+    recategorisationPrioritisation: {
+      show_filter: get('FEATURE_FLAG__SHOW_RECATEGORISATION_PRIORITISATION_FILTER', 'false', true, {
+        requireInProduction: false,
+      }),
+    },
   },
 }

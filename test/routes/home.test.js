@@ -4,6 +4,7 @@ const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const db = require('../../server/data/dataAccess/db')
 const Status = require('../../server/utils/statusEnum')
+const config = require('../../server/config')
 
 let roles
 // This needs mocking early, before 'requiring' jwt-decode
@@ -118,6 +119,7 @@ beforeEach(() => {
   userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI' })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
+  config.featureFlags.recategorisationPrioritisation.show_filter = 'true'
 })
 
 afterEach(() => {
@@ -524,6 +526,34 @@ describe('Recategoriser home', () => {
       .expect(res => {
         expect(res.text).toContain('Security referred')
         expect(offendersService.getRecategoriseOffenders).toBeCalledTimes(1)
+      })
+  })
+  test('shows filter based on the environment variable', () => {
+    return request(app)
+      .get('/recategoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Filters')
+      })
+  })
+  test('does not show filter based on the environment variable', () => {
+    config.featureFlags.recategorisationPrioritisation.show_filter = 'false'
+    return request(app)
+      .get('/recategoriserHome')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('Filters')
+      })
+  })
+  test('rejects invalid filter options', () => {
+    return request(app)
+      .get('/recategoriserHome?suitabilityForOpenConditions%5B%5D=something')
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Invalid recategoriser home filters')
       })
   })
 })
