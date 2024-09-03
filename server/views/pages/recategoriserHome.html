@@ -228,7 +228,7 @@
 
 {% endblock %}
 
-{% block bodyEnd %}
+{% block afterBodyEnd %}
   {% if showRecategorisationPrioritisationFilter %}
     <meta name="csrf-token" content="{{ csrfToken }}">
     <script type="module" src="/assets/js/recategoriserHome.js"></script>
