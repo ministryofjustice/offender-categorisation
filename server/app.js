@@ -122,6 +122,8 @@ module.exports = function createApp({
     '../assets/stylesheets',
     '../node_modules/govuk-frontend/dist/govuk/assets',
     '../node_modules/govuk-frontend/dist',
+    '../node_modules/@ministryofjustice/frontend/moj/assets',
+    '../node_modules/@ministryofjustice/frontend',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(__dirname, dir), cacheControl))
   })
@@ -311,6 +313,11 @@ module.exports = function createApp({
   app.use((req, res, next) => {
     next(new Error('Not found'))
   })
+
+  app.use(
+    '/assets/moj-frontend/moj/all.js',
+    express.static(path.join(process.cwd(), '../node_modules/@ministryofjustice/frontend/moj/all.js'), cacheControl)
+  )
 
   app.use(errorHandler(production))
 
