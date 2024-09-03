@@ -1,0 +1,28 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "module": "commonjs",                                /* Specify what module code is generated. */
+    "outDir": "./dist",
+    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
+    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
+    "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
+    "allowJs": true
+  },
+  "exclude": [
+    "node_modules",
+    "assets/**/*.js",
+    "integration-tests",
+    "integration_tests",
+    "dist",
+    "coverage",
+    "**/__mocks__/*",
+    "./cypress.config.ts",
+    "cypress",
+    "**/*.cy.tsx"
+  ],
+  "include": [
+    "**/*.js",
+    "**/*.ts"
+  ]
+}

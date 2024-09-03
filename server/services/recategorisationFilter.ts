@@ -1,4 +1,4 @@
-const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
+export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
 const LOW_ROSH = 'lowRosh'
 const NO_CURRENT_TERRORISM_OFFENCES = 'noCurrentTerrorismOffences'
 const NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS = 'noRotlRestrictionsOrSuspensions'
@@ -7,7 +7,20 @@ const STANDARD_OR_ENHANCED_INCENTIVE_LEVEL = 'standardOrEnhancedIncentiveLevel'
 const TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS = 'timeLeftToServeBetween12WeeksAnd3Years'
 const NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS = 'noAdjudicationsInTheLastThreeMonths'
 
-const recategorisationHomeFilters = {
+interface RecategorisationHomeFilters {
+  suitabilityForOpenConditions: Array<
+    | typeof LOW_RISK_OF_ESCAPE
+    | typeof LOW_ROSH
+    | typeof NO_CURRENT_TERRORISM_OFFENCES
+    | typeof NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS
+    | typeof NOT_MARKED_AS_NOT_FOR_RELEASE
+    | typeof STANDARD_OR_ENHANCED_INCENTIVE_LEVEL
+    | typeof TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS
+    | typeof NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS
+  >
+}
+
+export const recategorisationHomeFilters = {
   suitabilityForOpenConditions: {
     [LOW_ROSH]: 'Low RoSH',
     [LOW_RISK_OF_ESCAPE]: 'Low risk of escape',
@@ -20,7 +33,7 @@ const recategorisationHomeFilters = {
   },
 }
 
-const dateIsNotBetween12WeeksAnd3Years = dateString => {
+const dateIsNotBetween12WeeksAnd3Years = (dateString: string): boolean => {
   const today = new Date()
   return (
     new Date(dateString) > new Date(new Date().setFullYear(new Date().getFullYear() + 3)) ||
@@ -28,9 +41,15 @@ const dateIsNotBetween12WeeksAnd3Years = dateString => {
   )
 }
 
-const loadAdjudicationsData = (prisoners, nomisClient, agencyId) => {
+const getDateThreeMonthsAgo = () => {
+  const date = new Date()
+  date.setMonth(date.getMonth() - 3)
+  return date
+}
+
+const loadAdjudicationsData = (prisoners, nomisClient, agencyId: string) => {
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
-  const dateThreeMonthsAgo = new Date().setMonth(new Date().getMonth() - 3)
+  const dateThreeMonthsAgo = getDateThreeMonthsAgo()
   return nomisClient.getOffenderAdjudications(
     prisonerNumbers,
     dateThreeMonthsAgo.toDateString(),
@@ -39,8 +58,17 @@ const loadAdjudicationsData = (prisoners, nomisClient, agencyId) => {
   )
 }
 
-const filterListOfPrisoners = (filters, prisoners, prisonerSearchData, nomisClient, agencyId) => {
-  const allFilters = Object.values(filters).flat()
+export const filterListOfPrisoners = (
+  filters: RecategorisationHomeFilters,
+  prisoners,
+  prisonerSearchData,
+  nomisClient,
+  agencyId: string
+) => {
+  const allFilters = Object.values(filters)?.flat() || []
+  if (allFilters.length <= 0) {
+    return prisoners
+  }
   let offenderNumbersWithAdjudications = []
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
     offenderNumbersWithAdjudications = loadAdjudicationsData(prisoners, nomisClient, agencyId).map(
@@ -99,10 +127,4 @@ const filterListOfPrisoners = (filters, prisoners, prisonerSearchData, nomisClie
     }
     return true
   })
-}
-
-module.exports = {
-  LOW_RISK_OF_ESCAPE,
-  filterListOfPrisoners,
-  recategorisationHomeFilters,
 }

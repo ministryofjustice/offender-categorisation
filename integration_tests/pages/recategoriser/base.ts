@@ -1,5 +1,5 @@
 import Page, { PageElement } from '../page'
-import { LOW_RISK_OF_ESCAPE } from '../../../server/services/recategorisationFilter.js'
+import { LOW_RISK_OF_ESCAPE } from '../../../server/services/recategorisationFilter'
 
 export default abstract class BaseRecategoriserPage extends Page {
   noResultsDiv = (): PageElement => cy.get('#no-results-message')
