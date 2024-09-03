@@ -116,7 +116,8 @@ module.exports = function createOffendersService(
   nomisClientBuilder,
   allocationClientBuilder,
   formService,
-  prisonerSearchClientBuilder
+  prisonerSearchClientBuilder,
+  risksAndNeedsClientBuilder
 ) {
   async function getUncategorisedOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -951,6 +952,7 @@ module.exports = function createOffendersService(
       const nomisClient = nomisClientBuilder(context)
       const allocationClient = allocationClientBuilder(context)
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
+      const risksAndNeedsClient = risksAndNeedsClientBuilder(context)
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
         getDueRecats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
@@ -974,6 +976,10 @@ module.exports = function createOffendersService(
             securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
+
+      console.log('TTTTTTEEEEEEESSSSSSSSSTTTTTTT')
+      const value = await risksAndNeedsClient.getRisksSummary('X181002')
+      console.log(value)
 
       logger.info({
         key: 'RecategoriserHome getRecategoriseOffenders investigation',
