@@ -14,6 +14,7 @@ const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
 const allocationClientBuilder = require('./data/allocationManagerApi')
 const prisonerSearchClientBuilder = require('./data/prisonerSearchApi')
 const dpsFeComponentsClientBuilder = require('./data/dpsFeComponentsClientBuilder')
+const risksAndNeedsClientBuilder = require('./data/risksAndNeedsApi')
 
 const createFormService = require('./services/formService')
 const createStatsService = require('./services/statsService')
@@ -31,7 +32,8 @@ const offendersService = createOffendersService(
   nomisClientBuilder,
   allocationClientBuilder,
   formService,
-  prisonerSearchClientBuilder
+  prisonerSearchClientBuilder,
+  risksAndNeedsClientBuilder
 )
 const userService = createUserService(nomisClientBuilder)
 const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
