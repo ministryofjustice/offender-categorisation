@@ -1427,7 +1427,11 @@ const verifyUpdateNextReviewDate = ({ date }: { date: string }) =>
   })
 
 const stubRecategorise = (
-  { recategorisations, latestOnly } = { recategorisations: undefined, latestOnly: undefined }
+  { recategorisations, latestOnly, agencyId = 'LEI' } = {
+    recategorisations: undefined,
+    latestOnly: undefined,
+    agencyId: undefined,
+  }
 ) => {
   let recategorisationsResponse = recategorisations
   if (typeof recategorisations === 'undefined' || !Array.isArray(recategorisations)) {
@@ -1454,11 +1458,11 @@ const stubRecategorise = (
   }
   const twoMonthsFromToday = moment().add(2, 'months').format('yyyy-MM-DD')
 
-  const recategorisationsStub = () =>
+  const recategorisationsStub = agencyId =>
     stubFor({
       request: {
         method: 'GET',
-        url: `/elite2/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=${twoMonthsFromToday}`,
+        url: `/elite2/api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS&date=${twoMonthsFromToday}`,
       },
       response: {
         status: 200,
@@ -1499,10 +1503,10 @@ const stubRecategorise = (
       },
     })
 
-  return Promise.all([recategorisationsStub(), latestOnlyStub()])
+  return Promise.all([recategorisationsStub(agencyId), latestOnlyStub()])
 }
 
-const stubRecategoriseV2 = ({ agencyId, cutoff }): SuperAgentRequest =>
+const stubRecategoriseSI607 = ({ agencyId, cutoff }): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
@@ -1548,6 +1552,30 @@ const stubRecategoriseV2 = ({ agencyId, cutoff }): SuperAgentRequest =>
           category: 'C',
           nextReviewDate: '2023-09-06',
         },
+        {
+          offenderNo: 'D7654HP',
+          bookingId: 1020304,
+          firstName: 'MATHEW',
+          lastName: 'ALAN',
+          assessmentDate: '2023-03-07',
+          approvalDate: '2023-03-07',
+          assessmentSeq: 34,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-07',
+        },
+        {
+          offenderNo: 'E3333WE',
+          bookingId: 4098987,
+          firstName: 'HARRY',
+          lastName: 'WEASLEY',
+          assessmentDate: '2023-03-08',
+          approvalDate: '2023-03-08',
+          assessmentSeq: 6,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-08',
+        },
       ],
     },
   })
@@ -1586,5 +1614,5 @@ export default {
   verifySupervisorApprove,
   verifyUpdateNextReviewDate,
   stubRecategorise,
-  stubRecategoriseV2,
+  stubRecategoriseSI607,
 }

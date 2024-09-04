@@ -198,139 +198,14 @@ module.exports = function createOffendersService(
             return null
           }
 
-          const assessmentData = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
-          const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
-          const nomisStatusAwaitingApproval = nomisRecord.status === Status.AWAITING_APPROVAL.name
-          const nomisStatusUncategorised = nomisRecord.status === Status.UNCATEGORISED.name
-          const pomData = pomMap.get(nomisRecord.offenderNo)
-          const inconsistent =
-            (nomisStatusAwaitingApproval && localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord)) ||
-            (nomisStatusUncategorised &&
-              (dbRecord.status === Status.AWAITING_APPROVAL.name || dbRecord.status === Status.APPROVED.name))
-
-          const pnomis = liteInProgress
-            ? 'OTHER'
-            : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
-
-          const sentence = sentenceMap.get(nomisRecord.bookingId)
-          const row = {
-            ...nomisRecord,
-            displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
-            ...buildSentenceData(sentence && sentence.sentenceDate),
-            ...(await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)),
-            pnomis,
-            pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
-          }
-          if (inconsistent && !liteInProgress) {
-            logger.warn(
-              `getUncategorisedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`
-            )
-          }
-          return row
-        })
-      )
-
-      return decoratedResults
-        .filter(o => o) // ignore recats (which were set to null)
-        .sort((a, b) => {
-          const status = sortByStatus(b.dbStatus, a.dbStatus)
-          return status === 0 ? sortByDateTime(b.dateRequired, a.dateRequired) : status
-        })
-        .map(o => {
-          return {
-            ...o,
-            securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
-          }
-        })
-    } catch (error) {
-      logger.error(error, 'Error during getUncategorisedOffenders')
-      throw error
-    }
-  }
-
-  async function getUncategorisedOffendersV2(context, user, transactionalDbClient) {
-    const agencyId = context.user.activeCaseLoad.caseLoadId
-    try {
-      const nomisClient = nomisClientBuilder(context)
-      const allocationClient = allocationClientBuilder(context)
-      const prisonerSearchClient = prisonerSearchClientBuilder(context)
-      const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
-
-      const dbManualInProgress = await formService.getCategorisationRecords(
-        agencyId,
-        [
-          Status.STARTED.name,
-          Status.SECURITY_BACK.name,
-          Status.SUPERVISOR_BACK.name,
-          Status.SECURITY_AUTO.name,
-          Status.SECURITY_FLAGGED.name,
-          Status.SECURITY_MANUAL.name,
-        ],
-        CatType.INITIAL.name,
-        ReviewReason.MANUAL.name,
-        transactionalDbClient
-      )
-
-      if (isNilOrEmpty(uncategorisedResult)) {
-        logger.info(`No uncategorised offenders found for ${agencyId}`)
-        return []
-      }
-
-      const combined = [...uncategorisedResult, ...dbManualInProgress]
-
-      const bookingIds = combined
-        .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
-        .map(o => o.bookingId)
-
-      const [prisoners, securityReferredOffenders] = await Promise.all([
-        prisonerSearchClient.getPrisonersByBookingIds(bookingIds),
-        formService.getSecurityReferrals(agencyId, transactionalDbClient),
-      ])
-
-      const prisonerMap = new Map(prisoners.map(prisoner => [prisoner.bookingId, prisoner]))
-
-      const sentenceMap = new Map(
-        prisoners
-          .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
-          .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
-      )
-
-      const filterIS91s = o => {
-        const offence = prisonerMap.get(o.bookingId)
-        if (!offence) {
-          return true
-        }
-        if (offence.mostSeriousOffence === 'ILLEGAL IMMIGRANT/DETAINEE') {
-          logger.info(`Filtered out IS91 prisoner: bookingId = ${offence.bookingId}`)
-          return false
-        }
-        return true
-      }
-
-      const nomisFiltered = uncategorisedResult
-        .filter(o => sentenceMap.get(o.bookingId)) // filter out offenders without sentence
-        .filter(filterIS91s)
-
-      // trim db results to only those not in the Nomis-derived list
-      const dbInProgressFiltered = dbManualInProgress.filter(d => !nomisFiltered.some(n => d.bookingId === n.bookingId))
-
-      const allRecords = [...nomisFiltered, ...dbInProgressFiltered]
-      const pomMap = await getPomMap(allRecords, allocationClient)
-
-      const decoratedResults = await Promise.all(
-        allRecords.map(async raw => {
-          const nomisRecord = raw.lastName ? raw : await nomisClient.getBasicOffenderDetails(raw.bookingId)
-          const dbRecord = raw.lastName
-            ? await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
-            : raw
-
-          if (dbRecord.catType === 'RECAT') {
-            return null
-          }
-
-          const prisoner = prisonerMap.get(raw.bookingId)
-          if (['RECALL', 'INDETERMINATE_SENTENCE', 'SENTENCED'].includes(prisoner.legalStatus) === false) {
-            return null
+          if (context.si607Enabled) {
+            const prisoner = prisonerMap.get(raw.bookingId)
+            if (
+              ['RECALL', 'INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) ===
+              false
+            ) {
+              return null
+            }
           }
 
           const assessmentData = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
@@ -824,107 +699,8 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
-    transactionalDbClient
-  ) {
-    const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
-
-    const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
-    const dbManualInProgress = await formService.getCategorisationRecords(
-      agencyId,
-      [
-        Status.STARTED.name,
-        Status.SECURITY_BACK.name,
-        Status.SUPERVISOR_BACK.name,
-        Status.SECURITY_AUTO.name,
-        Status.SECURITY_FLAGGED.name,
-        Status.SECURITY_MANUAL.name,
-      ],
-      CatType.RECAT.name,
-      ReviewReason.MANUAL.name,
-      transactionalDbClient
-    )
-
-    // trim db results to only those not in the Nomis-derived list
-
-    const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
-
-    logger.info({
-      key: 'RecategoriserHome getDueRecats investigation',
-      agencyId,
-      numberFromNomis: resultsReview.length,
-      numberFromDb: dbManualInProgress.length,
-      intersectionOfNomisAndDb: dbManualInProgress.length - dbInProgressFiltered.length,
-    })
-
-    const allOffenders = [...resultsReview, ...dbInProgressFiltered]
-    const [releaseDateMap, pomMap] = await Promise.all([
-      getReleaseDateMap(allOffenders, prisonerSearchClient),
-      getPomMap(allOffenders, allocationClient),
-    ])
-
-    return Promise.all(
-      allOffenders.map(async raw => {
-        const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
-        const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
-        const pomData = pomMap.get(nomisRecord.offenderNo)
-
-        if (isInitialInProgress(dbRecord)) {
-          return null
-        }
-
-        const releaseDate = releaseDateMap.get(raw.bookingId)
-
-        if (
-          isNextReviewAfterRelease(nomisRecord, releaseDate) &&
-          !isAwaitingApproval(dbRecord.status) &&
-          !isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate)
-        ) {
-          return null
-        }
-
-        const liteDbRecord = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
-        const liteInProgress = liteDbRecord.bookingId && !liteDbRecord.approvedDate
-        const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(
-          dbRecord,
-          nomisRecord.assessStatus,
-          liteInProgress
-        )
-        if (requiresWarning) {
-          logger.warn(
-            `getDueRecats: Detected status inconsistency for booking id=${nomisRecord.bookingId}, offenderNo=${nomisRecord.offenderNo}, Nomis assessment status=${nomisRecord.assessStatus}, PG status=${dbRecord.status}`
-          )
-        }
-
-        const decorated = await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)
-        const buttonText = calculateButtonStatus(dbRecord, nomisRecord.assessStatus)
-        // if this review hasn't been started the reason is always 'Review Due', for started reviews, use the persisted reason
-        const reason =
-          (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
-          ReviewReason.DUE
-        return {
-          ...nomisRecord,
-          displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
-          displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
-          dbStatus: decorated.dbStatus,
-          reason,
-          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isOverdue(nomisRecord.nextReviewDate),
-          dbRecordExists: decorated.dbRecordExists,
-          pnomis,
-          buttonText,
-          pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
-        }
-      })
-    )
-  }
-
-  async function getDueRecatsV2(
-    agencyId,
-    user,
-    nomisClient,
-    allocationClient,
-    prisonerSearchClient,
-    transactionalDbClient
+    transactionalDbClient,
+    featureFlags = {}
   ) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
@@ -1012,10 +788,12 @@ module.exports = function createOffendersService(
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.DUE
 
-        const prisonerKey = getKeyForBooking(raw)
-        const prisoner = prisonersByBookingId.get(prisonerKey)
-        if (['INDETERMINATE_SENTENCE', 'SENTENCED'].includes(prisoner.legalStatus) === false) {
-          return null
+        if (featureFlags.si607Enabled) {
+          const prisonerKey = getKeyForBooking(raw)
+          const prisoner = prisonersByBookingId.get(prisonerKey)
+          if (['INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) === false) {
+            return null
+          }
         }
 
         return {
@@ -1205,52 +983,9 @@ module.exports = function createOffendersService(
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
-        getDueRecats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
-        getU21Recats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
-        formService.getSecurityReferrals(agencyId, transactionalDbClient),
-      ])
-
-      if (isNilOrEmpty(decoratedResultsReview) && isNilOrEmpty(decoratedResultsU21)) {
-        logger.info(`No recat offenders found for ${agencyId}`)
-        return []
-      }
-
-      const offenders = mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
-        .sort((a, b) => {
-          const status = sortByStatus(b.dbStatus, a.dbStatus)
-          return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
-        })
-        .map(o => {
-          return {
-            ...o,
-            securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
-          }
-        })
-
-      logger.info({
-        key: 'RecategoriserHome getRecategoriseOffenders investigation',
-        agencyId,
-        numberOfOffenders: offenders.length,
-        numberOfDueRecats: decoratedResultsReview.length,
-        numberOfU21Recats: decoratedResultsU21.length,
-      })
-
-      return offenders
-    } catch (error) {
-      logger.error(error, 'Error during getRecategoriseOffenders')
-      throw error
-    }
-  }
-
-  async function getRecategoriseOffendersV2(context, user, transactionalDbClient) {
-    const agencyId = context.user.activeCaseLoad.caseLoadId
-    try {
-      const nomisClient = nomisClientBuilder(context)
-      const allocationClient = allocationClientBuilder(context)
-      const prisonerSearchClient = prisonerSearchClientBuilder(context)
-
-      const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
-        getDueRecatsV2(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
+        getDueRecats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient, {
+          si607Enabled: context.si607Enabled,
+        }),
         getU21Recats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
@@ -1959,13 +1694,11 @@ module.exports = function createOffendersService(
 
   return {
     getUncategorisedOffenders,
-    getUncategorisedOffendersV2,
     getUnapprovedOffenders,
     getUnapprovedLite,
     getReferredOffenders,
     getUpcomingReferredOffenders,
     getRecategoriseOffenders,
-    getRecategoriseOffendersV2,
     getOffenderDetails,
     getBasicOffenderDetails,
     getImage,

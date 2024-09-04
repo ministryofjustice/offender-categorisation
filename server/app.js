@@ -31,6 +31,7 @@ const createRecatRouter = require('./routes/recat')
 const createNextReviewDateRouter = require('./routes/nextReviewDate')
 const createLiteCategoriesRouter = require('./routes/liteCategories')
 const errorHandler = require('./errorHandler')
+const featureFlagMiddleware = require('./middleware/featureFlagMiddleware')
 
 const { authenticationMiddleware } = auth
 
@@ -208,6 +209,7 @@ module.exports = function createApp({
   })
 
   app.use(cookieParser())
+  app.use(featureFlagMiddleware)
 
   const authLogoutUrl = `${config.apis.oauth2.externalUrl}/logout?client_id=${config.apis.oauth2.apiClientId}&redirect_uri=${config.domain}`
 

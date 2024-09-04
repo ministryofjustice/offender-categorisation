@@ -2,7 +2,6 @@ import moment from 'moment'
 import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
 import Page from '../pages/page'
 import CategoriserHomePage from '../pages/categoriser/home'
-import CategoriserHomePageV2 from '../pages/categoriser/homeV2'
 import { CASELOAD } from '../factory/caseload'
 import dbSeeder from '../fixtures/db-seeder'
 import initialCategorisation from '../fixtures/categoriser/home'
@@ -140,7 +139,7 @@ describe('Categoriser Home page', () => {
       ])
     })
 
-    it('should show upcoming categorisations v2', () => {
+    it('should show upcoming categorisations with SI-607 filters applied', () => {
       dbSeeder(initialCategorisation)
 
       const offenderNumbers = [
@@ -200,13 +199,13 @@ describe('Categoriser Home page', () => {
         user: CATEGORISER_USER,
       })
       cy.signIn()
-      cy.visit(CategoriserHomePageV2.baseUrl)
 
       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
       categoriserHomePage.validateToDoTableData([
         ['OVERDUE', 'Missing, Awaiting', 'B0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
         ['OVERDUE', 'Awaiting, Awaiting', 'B0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
         ['OVERDUE', 'Approved, Awaiting', 'B0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
+        ['OVERDUE', 'Started, Uncategorised', 'B0036AA', '19', 'Started (Api User)', 'Engelbert Humperdinck', 'Edit'],
       ])
     })
   })
