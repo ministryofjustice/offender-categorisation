@@ -5,6 +5,9 @@
 {% from "../macros/breadCrumb.html" import breadCrumb %}
 {% from "tag/macro.njk" import govukTag %}
 {% from "details/macro.njk" import govukDetails %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "button/macro.njk" import govukButton %}
+{%- from "moj/components/filter/macro.njk" import mojFilter -%}
 
 {% set pageTitle = "Category reviews for prisoners" %}
 
@@ -42,81 +45,193 @@
 
   <section class="govuk-tabs__panel">
 
-  {% if offenders | length > 0 %}
-  <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
-    <thead class="govuk-table__head">
+  <div class="govuk-grid-row">
+    {% if showRecategorisationPrioritisationFilter %}
+      {% set filterContainerClass = 'govuk-visually-hidden' if hideRecategoriserHomeFilter else '' %}
+      <div id="filterContainer" class="side-filter govuk-grid-column-one-third govuk-!-padding-right-0 {{ filterContainerClass }}">
+        <form method="get">
+          {% set filterCheckboxes = [] %}
+            {% for key, displayName in allFilters.suitabilityForOpenConditions %}
+              {% set filterCheckboxes = (filterCheckboxes.push({
+                value: key,
+                text: displayName,
+                checked:  key in filters.suitabilityForOpenConditions if filters.suitabilityForOpenConditions else false,
+                attributes: { 'data-qa': key + '_checkbox' }
+              }), filterCheckboxes) %}
+            {% endfor %}
+          {%- set filterOptionsHtml %}
+            <div class="govuk-heading-m">
+              Suitability for open conditions
+            </div>
+            <div class="filterInfoBox">
+              Filter the category reviews list to see prisoners who may be suitable to move to open conditions.
+            </div>
+            <div
+              id="selectAllSuitabilityForOpenConditionsFilter"
+              class="linkStyledButton govuk-!-font-size-16 govuk-!-margin-bottom-3"
+            >
+              {{ 'Select all' if filters.suitabilityForOpenConditions|length < allFilters.suitabilityForOpenConditions|length else 'Deselect all' }}
+            </div>
+            {{ govukCheckboxes({
+              name: 'suitabilityForOpenConditions[]',
+              classes: "govuk-checkboxes--small",
+              fieldset: {
+                legend: {
+                  text: "Filter based on suitability for open conditions",
+                  classes: "govuk-visually-hidden"
+                }
+              },
+              items: filterCheckboxes
+            }) }}
 
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Due date</th>
-      <th class="govuk-table__header" scope="col">Name</th>
-      <th class="govuk-table__header" scope="col">Prison no</th>
-      <th class="govuk-table__header" scope="col">Reason for review</th>
-      <th class="govuk-table__header" scope="col">Status</th>
-      <th class="govuk-table__header" scope="col">POM</th>
-      <th class="govuk-table__header" scope="col"></th>
-    </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-    {% for row in offenders %}
-    <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">
-        {% if row.overdue %}
-        {{ govukTag({
-            text: 'OVERDUE',
-            classes: 'moj-tag--red'
-          }) }} <!-- {{ row.nextReviewDateDisplay }} -->
-        {% else %}
-          {{ row.nextReviewDateDisplay }}
-        {% endif %}
-      </td>
-      <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
-        {% if row.securityReferred %}
-          {{ govukDetails({
-          summaryText: 'Security referred',
-          text: 'Security have flagged this person as being of interest. They will be automatically referred to security when the categorisation starts.',
-          classes: 'govuk-body govuk-!-font-size-14 govuk-!-margin-bottom-0'
+            <div class="replacementApplyFilterButtonContainer">
+              {{ govukButton({
+                id: 'applyFilters',
+                type: 'submit',
+                text: "Apply filters",
+                classes: "govuk-!-margin-top-3"
+              }) }}
+            </div>
+          {% endset -%}
+
+          {% set filterCategories = [] %}
+          {% if filters.suitabilityForOpenConditions.length > 0 %}
+            {% set selectedItems = [] %}
+            {% for filter in filters.suitabilityForOpenConditions %}
+              {% set startPositionOfFilterInUrl = fullUrl.indexOf(filter) - (28 + 7) %}
+              {% set removalHref = fullUrl.substring(0, (startPositionOfFilterInUrl - 1) if fullUrl[startPositionOfFilterInUrl - 1] == '&' or filters.suitabilityForOpenConditions.length == 1 else startPositionOfFilterInUrl) + fullUrl.substr(fullUrl.indexOf(filter) + filter.length + (0 if fullUrl[startPositionOfFilterInUrl - 1] == '&' else 1), fullUrl.length) %}
+              {% set selectedItems = (selectedItems.push({
+                href: removalHref,
+                text: allFilters['suitabilityForOpenConditions'][filter]
+              }), selectedItems) %}
+            {% endfor %}
+
+            {% set filterCategories = (filterCategories.push({
+              heading: {
+                text: 'Suitability for open conditions'
+              },
+              items: selectedItems
+          }), filterCategories) %}
+          {% endif %}
+
+          {{ mojFilter({
+            heading: {
+              text: 'Filter'
+            },
+            selectedFilters: {
+              heading: {
+                text: 'Selected filters'
+              },
+              clearLink: {
+                text: 'Clear filters',
+                href: '/recategoriserHome'
+              },
+              categories: filterCategories
+            } if filterCategories.length > 0,
+            optionsHtml: filterOptionsHtml
           }) }}
-        {% endif %}
-      </td>
-      <td class="govuk-table__cell">{{ row.offenderNo }}</td>
-      <td class="govuk-table__cell">{{ row.reason.value }}</td>
-      <td class="govuk-table__cell">
-        {% if row.displayStatus == 'Back from Supervisor' %}
-          {{ govukTag({
-            html: 'Rejected by<br/>supervisor'
-          }) }}
-        {% else %}
-          {{ row.displayStatus }}
-        {% endif %}
-      </td>
-      <td class="govuk-table__cell">{{ row.pom }}</td>
-      <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
-        {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
-        {% set href = ("/form/awaitingApprovalView/" + row.bookingId) if row.displayStatus == 'Awaiting approval'
-                 else ("/tasklistRecat/" + row.bookingId + '?reason=' + row.reason.name) %}
-        {% set classes = basicClasses if row.buttonText == 'Start' else basicClasses + " grey-button" %}
-        {% if row.pnomis %}
-          <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ row.pnomis }}</div>
-        {% else %}
+        </form>
+      </div>
+    {% endif %}
+
+    {% set tableContainerClass = 'govuk-grid-column-two-thirds' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else 'govuk-grid-column-full' %}
+
+    <div id="tableContainer" class="{{ tableContainerClass }}">
+      {% if showRecategorisationPrioritisationFilter %}
+        <div class="filterControls">
           {{ govukButton({
-            text: row.buttonText,
-            href: href if not locked,
-            attributes: { 'data-prevent-double-click': 'true' },
-            classes: classes
+            id: "hideFilterButton",
+            text: "Show filter" if hideRecategoriserHomeFilter else "Hide filter",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0"
           }) }}
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
+          <div class="govuk-!-margin-left-2">You have <b>{{ filters.suitabilityForOpenConditions|length }}</b> filter{{ 's' if filters.suitabilityForOpenConditions|length != 1 }} applied</div>
+        </div>
+      {% endif %}
+      {% if offenders | length > 0 %}
+      <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
+        <thead class="govuk-table__head">
 
-    </tbody>
-  </table>
-  {% else %}
-    <div class="govuk-!-padding-top-4">
-      <div id="no-results-message">No prisoners found.</div>
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Due date</th>
+          <th class="govuk-table__header" scope="col">Name</th>
+          <th class="govuk-table__header" scope="col">Prison no</th>
+          <th class="govuk-table__header" scope="col">Reason for review</th>
+          <th class="govuk-table__header" scope="col">Status</th>
+          <th class="govuk-table__header" scope="col">POM</th>
+          <th class="govuk-table__header" scope="col"></th>
+        </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+        {% for row in offenders %}
+        <tr class="govuk-table__row ">
+          <td class="govuk-table__cell">
+            {% if row.overdue %}
+            {{ govukTag({
+                text: 'OVERDUE',
+                classes: 'moj-tag--red'
+              }) }} <!-- {{ row.nextReviewDateDisplay }} -->
+            {% else %}
+              {{ row.nextReviewDateDisplay }}
+            {% endif %}
+          </td>
+          <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
+            {% if row.securityReferred %}
+              {{ govukDetails({
+              summaryText: 'Security referred',
+              text: 'Security have flagged this person as being of interest. They will be automatically referred to security when the categorisation starts.',
+              classes: 'govuk-body govuk-!-font-size-14 govuk-!-margin-bottom-0'
+              }) }}
+            {% endif %}
+          </td>
+          <td class="govuk-table__cell">{{ row.offenderNo }}</td>
+          <td class="govuk-table__cell">{{ row.reason.value }}</td>
+          <td class="govuk-table__cell">
+            {% if row.displayStatus == 'Back from Supervisor' %}
+              {{ govukTag({
+                html: 'Rejected by<br/>supervisor'
+              }) }}
+            {% else %}
+              {{ row.displayStatus }}
+            {% endif %}
+          </td>
+          <td class="govuk-table__cell">{{ row.pom }}</td>
+          <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+            {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
+            {% set href = ("/form/awaitingApprovalView/" + row.bookingId) if row.displayStatus == 'Awaiting approval'
+                     else ("/tasklistRecat/" + row.bookingId + '?reason=' + row.reason.name) %}
+            {% set classes = basicClasses if row.buttonText == 'Start' else basicClasses + " grey-button" %}
+            {% if row.pnomis %}
+              <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ row.pnomis }}</div>
+            {% else %}
+              {{ govukButton({
+                text: row.buttonText,
+                href: href if not locked,
+                attributes: { 'data-prevent-double-click': 'true' },
+                classes: classes
+              }) }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+      </table>
+      {% else %}
+        <div class="govuk-!-padding-top-4">
+          <div id="no-results-message">No prisoners found.</div>
+        </div>
+      {% endif %}
+      </div>
     </div>
-  {% endif %}
   </section>
 </div>
 
+{% endblock %}
+
+{% block bodyEnd %}
+  {{ super() }}
+  {% if showRecategorisationPrioritisationFilter %}
+    <meta name="csrf-token" content="{{ csrfToken }}">
+    <script type="module" src="/assets/js/recategoriserHome.js"></script>
+  {% endif %}
 {% endblock %}
