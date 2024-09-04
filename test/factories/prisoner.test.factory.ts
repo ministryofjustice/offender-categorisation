@@ -1,8 +1,8 @@
-const makeTestPrisoner = (offenderNo: string = 'G12345') => ({
-  offenderNo,
+const makeTestPrisoner = (bookingId: number = 12345) => ({
+  bookingId,
+  offenderNo: 'G12345',
   firstName: 'PETER',
   lastName: 'PAN',
-  bookingId: 123,
   category: 'C',
   nextReviewDate: '2019-04-20',
   assessStatus: 'P',

@@ -1,9 +1,26 @@
+import { RecategorisationPrisonerSearchDto } from './recategorisation/recategorisationPrisonerSearch.dto'
+import {
+  ESCAPE_LIST_ALERT_CODE,
+  ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
+  ESCAPE_RISK_ALERT_CODE,
+  NOT_FOR_RELEASE_ALERT_CODE,
+  RESTRICTED_ROTL_ALERT_CODE,
+  ROTL_SUSPENSION_ALERT_CODE,
+  TERRORIST_ACT_ALERT_CODE,
+} from '../data/prisonerSearch/alert/prisonerSearchAlert.dto'
+import {
+  INCENTIVE_LEVEL_ENHANCED,
+  INCENTIVE_LEVEL_ENHANCED_THREE,
+  INCENTIVE_LEVEL_ENHANCED_TWO,
+  INCENTIVE_LEVEL_STANDARD,
+} from '../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
+
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
 const LOW_ROSH = 'lowRosh'
-const NO_CURRENT_TERRORISM_OFFENCES = 'noCurrentTerrorismOffences'
-const NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS = 'noRotlRestrictionsOrSuspensions'
-const NOT_MARKED_AS_NOT_FOR_RELEASE = 'notMarkedAsNotForRelease'
-const STANDARD_OR_ENHANCED_INCENTIVE_LEVEL = 'standardOrEnhancedIncentiveLevel'
+export const NO_CURRENT_TERRORISM_OFFENCES = 'noCurrentTerrorismOffences'
+export const NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS = 'noRotlRestrictionsOrSuspensions'
+export const NOT_MARKED_AS_NOT_FOR_RELEASE = 'notMarkedAsNotForRelease'
+export const STANDARD_OR_ENHANCED_INCENTIVE_LEVEL = 'standardOrEnhancedIncentiveLevel'
 const TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS = 'timeLeftToServeBetween12WeeksAnd3Years'
 const NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS = 'noAdjudicationsInTheLastThreeMonths'
 
@@ -61,12 +78,14 @@ const loadAdjudicationsData = (prisoners, nomisClient, agencyId: string) => {
 export const filterListOfPrisoners = (
   filters: RecategorisationHomeFilters,
   prisoners,
-  prisonerSearchData,
+  prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
   nomisClient,
   agencyId: string
 ) => {
-  return prisoners
   const allFilters = Object.values(filters)?.flat() || []
+  if (allFilters.length <= 0) {
+    return prisoners
+  }
   let offenderNumbersWithAdjudications = []
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
     offenderNumbersWithAdjudications = loadAdjudicationsData(prisoners, nomisClient, agencyId).map(
@@ -75,22 +94,31 @@ export const filterListOfPrisoners = (
   }
   return prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
-    const alertCodes = currentPrisonerSearchData?.alerts.map(alert => alert.alertCode) || []
-    const incentiveLevelCode = currentPrisonerSearchData?.currentIncentive.level.code
+    const activeNonExpiredAlertCodes =
+      currentPrisonerSearchData.alerts?.filter(alert => alert.active && !alert.expired).map(alert => alert.alertCode) ||
+      []
+    const incentiveLevelCode = currentPrisonerSearchData.currentIncentive?.level.code
     for (let i = 0; i < allFilters.length; i += 1) {
       switch (allFilters[i]) {
         case LOW_RISK_OF_ESCAPE:
-          if (alertCodes.includes('XER') || alertCodes.includes('XEL') || alertCodes.includes('XELH')) {
+          if (
+            activeNonExpiredAlertCodes.includes(ESCAPE_RISK_ALERT_CODE) ||
+            activeNonExpiredAlertCodes.includes(ESCAPE_LIST_ALERT_CODE) ||
+            activeNonExpiredAlertCodes.includes(ESCAPE_LIST_HEIGHTENED_ALERT_CODE)
+          ) {
             return false
           }
           break
         case NO_CURRENT_TERRORISM_OFFENCES:
-          if (alertCodes.includes('XTACT')) {
+          if (activeNonExpiredAlertCodes.includes(TERRORIST_ACT_ALERT_CODE)) {
             return false
           }
           break
         case NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS:
-          if (alertCodes.includes('RROTL') || alertCodes.includes('ROTL')) {
+          if (
+            activeNonExpiredAlertCodes.includes(RESTRICTED_ROTL_ALERT_CODE) ||
+            activeNonExpiredAlertCodes.includes(ROTL_SUSPENSION_ALERT_CODE)
+          ) {
             return false
           }
           break
@@ -100,16 +128,16 @@ export const filterListOfPrisoners = (
           }
           break
         case NOT_MARKED_AS_NOT_FOR_RELEASE:
-          if (alertCodes.includes('XNR')) {
+          if (activeNonExpiredAlertCodes.includes(NOT_FOR_RELEASE_ALERT_CODE)) {
             return false
           }
           break
         case STANDARD_OR_ENHANCED_INCENTIVE_LEVEL:
           if (
-            incentiveLevelCode !== 'STD' &&
-            incentiveLevelCode !== 'ENH' &&
-            incentiveLevelCode !== 'EN2' &&
-            incentiveLevelCode !== 'EN3'
+            incentiveLevelCode !== INCENTIVE_LEVEL_STANDARD &&
+            incentiveLevelCode !== INCENTIVE_LEVEL_ENHANCED &&
+            incentiveLevelCode !== INCENTIVE_LEVEL_ENHANCED_TWO &&
+            incentiveLevelCode !== INCENTIVE_LEVEL_ENHANCED_THREE
           ) {
             return false
           }

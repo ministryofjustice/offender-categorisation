@@ -18,6 +18,7 @@ const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
 const { filterListOfPrisoners } = require('./recategorisationFilter')
+const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = require('./recategorisation/recategorisationPrisonerSearch.mapper')
 
 const dirname = process.cwd()
 
@@ -55,19 +56,9 @@ async function getSentenceMap(offenderList, prisonerSearchClient) {
 
 async function getPrisonerSearchData(offenderList, prisonerSearchClient) {
   const bookingIds = offenderList.map(offender => offender.bookingId)
-
   const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
 
-  return new Map(
-    prisoners.map(s => [
-      s.bookingId,
-      {
-        releaseDate: s.releaseDate,
-        alerts: s.alerts,
-        currentIncentive: s.currentIncentive,
-      },
-    ])
-  )
+  return new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]))
 }
 
 async function getReleaseDateMap(offenderList, prisonerSearchClient) {

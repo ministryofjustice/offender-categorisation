@@ -74,6 +74,17 @@
     ],
     "no-use-before-define": 0,
     "semi": 0,
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "mjs": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
     "comma-dangle": [
       "error",
       {
