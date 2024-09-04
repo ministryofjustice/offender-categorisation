@@ -14,6 +14,7 @@ import {
   INCENTIVE_LEVEL_ENHANCED_TWO,
   INCENTIVE_LEVEL_STANDARD,
 } from '../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
+import { NomisAdjudicationHearingDto } from '../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
 
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
 const LOW_ROSH = 'lowRosh'
@@ -21,8 +22,8 @@ export const NO_CURRENT_TERRORISM_OFFENCES = 'noCurrentTerrorismOffences'
 export const NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS = 'noRotlRestrictionsOrSuspensions'
 export const NOT_MARKED_AS_NOT_FOR_RELEASE = 'notMarkedAsNotForRelease'
 export const STANDARD_OR_ENHANCED_INCENTIVE_LEVEL = 'standardOrEnhancedIncentiveLevel'
-const TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS = 'timeLeftToServeBetween12WeeksAnd3Years'
-const NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS = 'noAdjudicationsInTheLastThreeMonths'
+export const TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS = 'timeLeftToServeBetween12WeeksAnd3Years'
+export const NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS = 'noAdjudicationsInTheLastThreeMonths'
 
 interface RecategorisationHomeFilters {
   suitabilityForOpenConditions: Array<
@@ -64,7 +65,11 @@ const getDateThreeMonthsAgo = () => {
   return date
 }
 
-const loadAdjudicationsData = (prisoners, nomisClient, agencyId: string) => {
+const loadAdjudicationsData = async (
+  prisoners,
+  nomisClient,
+  agencyId: string
+): Promise<NomisAdjudicationHearingDto[]> => {
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
   const dateThreeMonthsAgo = getDateThreeMonthsAgo()
   return nomisClient.getOffenderAdjudications(
@@ -75,7 +80,7 @@ const loadAdjudicationsData = (prisoners, nomisClient, agencyId: string) => {
   )
 }
 
-export const filterListOfPrisoners = (
+export const filterListOfPrisoners = async (
   filters: RecategorisationHomeFilters,
   prisoners,
   prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
@@ -88,16 +93,18 @@ export const filterListOfPrisoners = (
   }
   let offenderNumbersWithAdjudications = []
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
-    offenderNumbersWithAdjudications = loadAdjudicationsData(prisoners, nomisClient, agencyId).map(
-      adjudicationsDatum => adjudicationsDatum.offenderNo
-    )
+    const adjudicationsData = await loadAdjudicationsData(prisoners, nomisClient, agencyId)
+    offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
   }
   return prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
     const activeNonExpiredAlertCodes =
-      currentPrisonerSearchData.alerts?.filter(alert => alert.active && !alert.expired).map(alert => alert.alertCode) ||
+      (currentPrisonerSearchData &&
+        currentPrisonerSearchData.alerts
+          ?.filter(alert => alert.active && !alert.expired)
+          .map(alert => alert.alertCode)) ||
       []
-    const incentiveLevelCode = currentPrisonerSearchData.currentIncentive?.level.code
+    const incentiveLevelCode = currentPrisonerSearchData?.currentIncentive?.level.code
     for (let i = 0; i < allFilters.length; i += 1) {
       switch (allFilters[i]) {
         case LOW_RISK_OF_ESCAPE:

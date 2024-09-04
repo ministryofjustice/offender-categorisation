@@ -2,10 +2,12 @@ import makeTestPrisoner from '../../test/factories/prisoner.test.factory'
 import {
   filterListOfPrisoners,
   LOW_RISK_OF_ESCAPE,
+  NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS,
   NO_CURRENT_TERRORISM_OFFENCES,
   NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS,
   NOT_MARKED_AS_NOT_FOR_RELEASE,
   STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
+  TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS,
 } from './recategorisationFilter'
 import makeTestRecategorisationPrisonerSearchDto from './recategorisation/recategorisationPrisonerSearch.dto.test-factory'
 import makeTestPrisonerSearchAlertDto from '../data/prisonerSearch/alert/prisonerSearchAlert.dto.test-factory'
@@ -20,18 +22,22 @@ import {
   INCENTIVE_LEVEL_BASIC,
   INCENTIVE_LEVEL_STANDARD,
 } from '../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
+import makeTestNomisAdjudicationHearingDto from '../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto.test-factory'
 
-const nomisClient = {}
+const nomisClient = {
+  getOffenderAdjudications: jest.fn(),
+}
 
+const testOffenderNumber = 'ABC123'
 const testBookingId = 12345
-const testPrisoners = [makeTestPrisoner(testBookingId)]
+const testPrisoners = [makeTestPrisoner(testBookingId, testOffenderNumber)]
 const testAgencyId = 'ABC'
 
 jest.useFakeTimers().setSystemTime(new Date('2020-01-01'))
 
 describe('filterListOfPrisoners', () => {
   test('it should return the original list if no filters are set', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [] },
       testPrisoners,
       new Map([[testBookingId, makeTestRecategorisationPrisonerSearchDto()]]),
@@ -42,7 +48,7 @@ describe('filterListOfPrisoners', () => {
     expect(result).toEqual(testPrisoners)
   })
   test('it should filter out based on low risk of escape', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] },
       testPrisoners,
       new Map([
@@ -62,7 +68,7 @@ describe('filterListOfPrisoners', () => {
     expect(result.length).toBe(0)
   })
   test('it should not filter out based on low risk of escape when it is not an active alert', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] },
       testPrisoners,
       new Map([
@@ -82,7 +88,7 @@ describe('filterListOfPrisoners', () => {
     expect(result).toEqual(testPrisoners)
   })
   test('it should not filter out based on low risk of escape when it is an expired alert', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] },
       testPrisoners,
       new Map([
@@ -102,7 +108,7 @@ describe('filterListOfPrisoners', () => {
     expect(result).toEqual(testPrisoners)
   })
   test('it should filter out based on terrorist act alert', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [NO_CURRENT_TERRORISM_OFFENCES] },
       testPrisoners,
       new Map([
@@ -122,7 +128,7 @@ describe('filterListOfPrisoners', () => {
     expect(result.length).toBe(0)
   })
   test('it should filter out based on ROTL alert', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS] },
       testPrisoners,
       new Map([
@@ -142,7 +148,7 @@ describe('filterListOfPrisoners', () => {
     expect(result.length).toBe(0)
   })
   test('it should filter out based on not for release alert', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [NOT_MARKED_AS_NOT_FOR_RELEASE] },
       testPrisoners,
       new Map([
@@ -162,7 +168,7 @@ describe('filterListOfPrisoners', () => {
     expect(result.length).toBe(0)
   })
   test('it should filter out based on incentive level', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL] },
       testPrisoners,
       new Map([
@@ -182,7 +188,7 @@ describe('filterListOfPrisoners', () => {
     expect(result.length).toBe(0)
   })
   test('it should not filter out standard incentive level', async () => {
-    const result = filterListOfPrisoners(
+    const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL] },
       testPrisoners,
       new Map([
@@ -199,6 +205,110 @@ describe('filterListOfPrisoners', () => {
       testAgencyId
     )
 
+    expect(result).toEqual(testPrisoners)
+  })
+  test('it should filter out time left to serve being too soon', async () => {
+    const date = new Date()
+    const dateElevenWeeksFromNow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 83).toDateString()
+    const result = await filterListOfPrisoners(
+      { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
+      testPrisoners,
+      new Map([
+        [
+          testBookingId,
+          makeTestRecategorisationPrisonerSearchDto({
+            releaseDate: dateElevenWeeksFromNow,
+          }),
+        ],
+      ]),
+      nomisClient,
+      testAgencyId
+    )
+
+    expect(result.length).toBe(0)
+  })
+  test('it should filter out time left to serve being too far away', async () => {
+    const date = new Date()
+    const dateElevenWeeksFromNow = new Date(date.getFullYear() + 3, date.getMonth(), date.getDate() + 1).toDateString()
+    const result = await filterListOfPrisoners(
+      { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
+      testPrisoners,
+      new Map([
+        [
+          testBookingId,
+          makeTestRecategorisationPrisonerSearchDto({
+            releaseDate: dateElevenWeeksFromNow,
+          }),
+        ],
+      ]),
+      nomisClient,
+      testAgencyId
+    )
+
+    expect(result.length).toBe(0)
+  })
+  test('it should not filter out prisoner with time left to serve within period', async () => {
+    const date = new Date()
+    const dateElevenWeeksFromNow = new Date(date.getFullYear() + 2, date.getMonth(), date.getDate()).toDateString()
+    const result = await filterListOfPrisoners(
+      { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
+      testPrisoners,
+      new Map([
+        [
+          testBookingId,
+          makeTestRecategorisationPrisonerSearchDto({
+            releaseDate: dateElevenWeeksFromNow,
+          }),
+        ],
+      ]),
+      nomisClient,
+      testAgencyId
+    )
+
+    expect(result).toEqual(testPrisoners)
+  })
+  test('it should filter out prisoner with adjudications', async () => {
+    nomisClient.getOffenderAdjudications.mockResolvedValue([
+      makeTestNomisAdjudicationHearingDto({ offenderNo: testOffenderNumber }),
+    ])
+    const date = new Date()
+    date.setMonth(date.getMonth() - 3)
+    const result = await filterListOfPrisoners(
+      { suitabilityForOpenConditions: [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS] },
+      testPrisoners,
+      new Map(),
+      nomisClient,
+      testAgencyId
+    )
+
+    expect(nomisClient.getOffenderAdjudications).toBeCalledWith(
+      [testOffenderNumber],
+      date.toDateString(),
+      new Date().toDateString(),
+      testAgencyId
+    )
+    expect(result.length).toBe(0)
+  })
+  test('it should not filter out prisoner with no adjudications', async () => {
+    nomisClient.getOffenderAdjudications.mockResolvedValue([
+      makeTestNomisAdjudicationHearingDto({ offenderNo: 'TEST' }),
+    ])
+    const date = new Date()
+    date.setMonth(date.getMonth() - 3)
+    const result = await filterListOfPrisoners(
+      { suitabilityForOpenConditions: [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS] },
+      testPrisoners,
+      new Map(),
+      nomisClient,
+      testAgencyId
+    )
+
+    expect(nomisClient.getOffenderAdjudications).toBeCalledWith(
+      [testOffenderNumber],
+      date.toDateString(),
+      new Date().toDateString(),
+      testAgencyId
+    )
     expect(result).toEqual(testPrisoners)
   })
 })

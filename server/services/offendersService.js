@@ -910,7 +910,7 @@ module.exports = function createOffendersService(
       getPomMap(resultsU21IJ, allocationClient),
     ])
 
-    const filteredEliteCategorisationResultsU21 = filterListOfPrisoners(
+    const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
       filters,
       eliteCategorisationResultsU21,
       resultsU21,

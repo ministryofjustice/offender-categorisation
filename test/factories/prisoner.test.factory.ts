@@ -1,6 +1,6 @@
-const makeTestPrisoner = (bookingId: number = 12345) => ({
+const makeTestPrisoner = (bookingId: number = 12345, offenderNumber: string = 'G12345') => ({
   bookingId,
-  offenderNo: 'G12345',
+  offenderNo: offenderNumber,
   firstName: 'PETER',
   lastName: 'PAN',
   category: 'C',
