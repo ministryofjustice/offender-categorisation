@@ -18,7 +18,9 @@ const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
 const { filterListOfPrisoners } = require('./recategorisationFilter')
-const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = require('./recategorisation/recategorisationPrisonerSearch.mapper')
+const {
+  mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
+} = require('./recategorisation/recategorisationPrisonerSearch.dto')
 
 const dirname = process.cwd()
 
