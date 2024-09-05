@@ -1,13 +1,23 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    "module": "commonjs",                                /* Specify what module code is generated. */
+    "baseUrl": "./",
+    "target": "es2019",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "./dist",
-    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
-    "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
-    "allowJs": true
+    "skipLibCheck": true,
+    "noEmit": false,
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "typeRoots": [
+      "./server/@types",
+      "./node_modules/@types"
+    ]
   },
   "exclude": [
     "node_modules",

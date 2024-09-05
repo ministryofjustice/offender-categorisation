@@ -36,6 +36,25 @@ RUN rm -rf /root/.cache
 
 ENV PORT=3000
 ENV NODE_ENV='production'
+
+COPY --from=build --chown=appuser:appgroup \
+    /app/package.json \
+    /app/package-lock.json \
+    /app/log.js \
+    ./
+
+COPY --from=build --chown=appuser:appgroup \
+    /app/build-info.json ./dist/build-info.json
+
+COPY --from=build --chown=appuser:appgroup \
+    /app/assets ./assets
+
+COPY --from=build --chown=appuser:appgroup \
+    /app/dist ./dist
+
+COPY --from=build --chown=appuser:appgroup \
+    /app/node_modules ./node_modules
+
 EXPOSE 3000
 
 RUN chown -R appuser:appgroup /app
