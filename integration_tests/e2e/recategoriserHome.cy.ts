@@ -181,6 +181,21 @@ describe('Recategoriser Home page', () => {
         recategoriserHomePage.selectAllFiltersButton().should('contain', 'Deselect all')
       })
       it('should show deselect all initially when page is submitted with all filters selected', () => {
+        cy.task('stubAdjudicationHearings', {
+          agencyId: 'LEI',
+          fromDate: moment().subtract(3, 'months').format('YYYY-MM-DD'),
+          toDate: moment().subtract(2, 'months').format('YYYY-MM-DD'),
+        })
+        cy.task('stubAdjudicationHearings', {
+          agencyId: 'LEI',
+          fromDate: moment().subtract(2, 'months').format('YYYY-MM-DD'),
+          toDate: moment().subtract(1, 'months').format('YYYY-MM-DD'),
+        })
+        cy.task('stubAdjudicationHearings', {
+          agencyId: 'LEI',
+          fromDate: moment().subtract(1, 'months').format('YYYY-MM-DD'),
+          toDate: moment().format('YYYY-MM-DD'),
+        })
         const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
         recategoriserHomePage.selectAllFiltersButton().should('contain', 'Select all')
         recategoriserHomePage.selectAllFiltersButton().click()

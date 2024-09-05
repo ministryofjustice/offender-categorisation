@@ -69,7 +69,6 @@ const loadAdjudicationsData = async (
   nomisClient,
   agencyId: string
 ): Promise<NomisAdjudicationHearingDto[]> => {
-  return []
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
   const dateThreeMonthsAgo = getDateNMonthsAgo(3)
   const dateTwoMonthsAgo = getDateNMonthsAgo(2)
