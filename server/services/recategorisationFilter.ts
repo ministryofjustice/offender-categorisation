@@ -16,7 +16,6 @@ import {
   INCENTIVE_LEVEL_STANDARD,
 } from '../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
 import { NomisAdjudicationHearingDto } from '../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
-import { convertDateObjectToIsoDateString } from '../utils/utils'
 
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
 const LOW_ROSH = 'lowRosh'
