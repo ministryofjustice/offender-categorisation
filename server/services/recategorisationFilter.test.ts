@@ -1,4 +1,4 @@
-import makeTestPrisoner from '../../test/factories/prisoner.test.factory'
+import makeTestPrisoner from '../../test/factories/prisoner.test-factory'
 import {
   filterListOfPrisoners,
   LOW_RISK_OF_ESCAPE,
@@ -212,8 +212,7 @@ describe('filterListOfPrisoners', () => {
     expect(result).toEqual(testPrisoners)
   })
   test('it should filter out time left to serve being too soon', async () => {
-    const date = new Date()
-    const dateElevenWeeksFromNow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 83).toDateString()
+    const date = '2024-03-24'
     const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
       testPrisoners,
@@ -221,7 +220,7 @@ describe('filterListOfPrisoners', () => {
         [
           testBookingId,
           makeTestRecategorisationPrisonerSearchDto({
-            releaseDate: dateElevenWeeksFromNow,
+            releaseDate: date,
           }),
         ],
       ]),
@@ -232,8 +231,7 @@ describe('filterListOfPrisoners', () => {
     expect(result.length).toBe(0)
   })
   test('it should filter out time left to serve being too far away', async () => {
-    const date = new Date()
-    const dateElevenWeeksFromNow = new Date(date.getFullYear() + 3, date.getMonth(), date.getDate() + 1).toDateString()
+    const date = '2027-01-02'
     const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
       testPrisoners,
@@ -241,7 +239,7 @@ describe('filterListOfPrisoners', () => {
         [
           testBookingId,
           makeTestRecategorisationPrisonerSearchDto({
-            releaseDate: dateElevenWeeksFromNow,
+            releaseDate: date,
           }),
         ],
       ]),
@@ -252,8 +250,7 @@ describe('filterListOfPrisoners', () => {
     expect(result.length).toBe(0)
   })
   test('it should not filter out prisoner with time left to serve within period', async () => {
-    const date = new Date()
-    const dateElevenWeeksFromNow = new Date(date.getFullYear() + 2, date.getMonth(), date.getDate()).toDateString()
+    const dateElevenWeeksFromNow = '2024-03-25'
     const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
       testPrisoners,

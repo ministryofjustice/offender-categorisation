@@ -52,13 +52,8 @@ export const recategorisationHomeFilters = {
   },
 }
 
-const dateIsNotBetween12WeeksAnd3Years = (dateString: string): boolean => {
-  const today = new Date()
-  return (
-    new Date(dateString) > new Date(new Date().setFullYear(new Date().getFullYear() + 3)) ||
-    new Date(dateString) < new Date(today.getFullYear(), today.getMonth(), today.getDate() + 84)
-  )
-}
+const dateIsNotBetween12WeeksAnd3Years = (dateString: string): boolean =>
+  moment(dateString).isAfter(moment().add(3, 'years')) || moment(dateString).isBefore(moment().add(12, 'weeks'))
 
 const getDateNMonthsAgo = (n: number) => {
   return moment().subtract(n, 'month').format('YYYY-MM-DD')

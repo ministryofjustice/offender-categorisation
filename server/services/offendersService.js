@@ -891,7 +891,7 @@ module.exports = function createOffendersService(
     allocationClient,
     prisonerSearchClient,
     transactionalDbClient,
-    filters
+    filters = {}
   ) {
     const u21From = moment()
       .subtract(22, 'years') // allow up to a year overdue
@@ -915,7 +915,7 @@ module.exports = function createOffendersService(
     const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
       filters,
       eliteCategorisationResultsU21,
-      resultsU21,
+      new Map(resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])),
       nomisClient,
       agencyId
     )
