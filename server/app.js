@@ -126,12 +126,12 @@ module.exports = function createApp({
     '/node_modules/@ministryofjustice/frontend/moj/assets',
     '/node_modules/@ministryofjustice/frontend',
   ].forEach(dir => {
-    app.use('/assets', express.static(path.join(__dirname, dir), cacheControl))
+    app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
   ;['/node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
-    app.use('/assets/images/icons', express.static(path.join(__dirname, dir), cacheControl))
+    app.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
   })
-  app.use('/favicon.ico', express.static(path.join(__dirname, '/assets/images/favicon.ico'), cacheControl))
+  app.use('/favicon.ico', express.static(path.join(process.cwd(), '/assets/images/favicon.ico'), cacheControl))
 
   const health = healthFactory(
     config.apis.oauth2.url,
