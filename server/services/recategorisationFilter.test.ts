@@ -33,7 +33,11 @@ const testBookingId = 12345
 const testPrisoners = [makeTestPrisoner(testBookingId, testOffenderNumber)]
 const testAgencyId = 'ABC'
 
-jest.useFakeTimers().setSystemTime(new Date('2020-01-01'))
+jest.useFakeTimers().setSystemTime(new Date('2024-01-01'))
+
+afterEach(() => {
+  nomisClient.getOffenderAdjudications.mockReset()
+})
 
 describe('filterListOfPrisoners', () => {
   test('it should return the original list if no filters are set', async () => {
@@ -271,8 +275,6 @@ describe('filterListOfPrisoners', () => {
     nomisClient.getOffenderAdjudications.mockResolvedValue([
       makeTestNomisAdjudicationHearingDto({ offenderNo: testOffenderNumber }),
     ])
-    const date = new Date()
-    date.setMonth(date.getMonth() - 3)
     const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS] },
       testPrisoners,
@@ -281,20 +283,17 @@ describe('filterListOfPrisoners', () => {
       testAgencyId
     )
 
-    expect(nomisClient.getOffenderAdjudications).toBeCalledWith(
-      [testOffenderNumber],
-      date.toDateString(),
-      new Date().toDateString(),
-      testAgencyId
-    )
+    expect(nomisClient.getOffenderAdjudications.mock.calls).toEqual([
+      [[testOffenderNumber], '2023-10-01', '2023-11-01', testAgencyId],
+      [[testOffenderNumber], '2023-11-01', '2023-12-01', testAgencyId],
+      [[testOffenderNumber], '2023-12-01', '2024-01-01', testAgencyId],
+    ])
     expect(result.length).toBe(0)
   })
   test('it should not filter out prisoner with no adjudications', async () => {
     nomisClient.getOffenderAdjudications.mockResolvedValue([
       makeTestNomisAdjudicationHearingDto({ offenderNo: 'TEST' }),
     ])
-    const date = new Date()
-    date.setMonth(date.getMonth() - 3)
     const result = await filterListOfPrisoners(
       { suitabilityForOpenConditions: [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS] },
       testPrisoners,
@@ -303,12 +302,11 @@ describe('filterListOfPrisoners', () => {
       testAgencyId
     )
 
-    expect(nomisClient.getOffenderAdjudications).toBeCalledWith(
-      [testOffenderNumber],
-      date.toDateString(),
-      new Date().toDateString(),
-      testAgencyId
-    )
+    expect(nomisClient.getOffenderAdjudications.mock.calls).toEqual([
+      [[testOffenderNumber], '2023-10-01', '2023-11-01', testAgencyId],
+      [[testOffenderNumber], '2023-11-01', '2023-12-01', testAgencyId],
+      [[testOffenderNumber], '2023-12-01', '2024-01-01', testAgencyId],
+    ])
     expect(result).toEqual(testPrisoners)
   })
 })
