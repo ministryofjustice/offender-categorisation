@@ -2,12 +2,15 @@
   "name": "offender-categorisation",
   "version": "0.0.1",
   "scripts": {
-    "start": "npm run build && node server.js",
-    "start:dev": "npm run build && DEBUG=gov-starter-server* nodemon --inspect server.js | bunyan -o short",
-    "start:debug": "node --inspect server.js",
-    "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend/dist --load-path=node_modules/@ministryofjustice ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
+    "start": "node dist/server.js | bunyan -o short",
+    "start:dev": "npm run build && DEBUG=gov-starter-server* TOKEN_VERIFICATION_API_ENABLED=false && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-sass\"",
+    "start:debug": "node --inspect dist/server.js",
+    "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend/dist  --load-path=node_modules/@ministryofjustice ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
+    "watch-node": "nodemon --watch dist/ dist/server.js | bunyan -o short",
     "watch-sass": "npm run compile-sass -- --watch",
-    "build": "npm run compile-sass",
+    "watch-views": "nodemon --watch server/views -e html,njk -x npm run copy-views",
+    "watch-ts": "tsc -w",
+    "build": "npm run compile-sass && tsc && npm run copy-views",
     "clean": "rm -rf assets/stylesheets/* .port.tmp *.log dist build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
     "test": "jest",
@@ -20,8 +23,46 @@
     "int-test": "export $(cat feature.env) && cypress run --config video=false",
     "int-test-ui": "export $(cat feature.env) && cypress open",
     "watch-node-feature": "export $(cat feature.env) && npm run start:dev",
-    "start-feature": "export $(cat feature.env) && npm run build && node $NODE_DEBUG_OPTION server.js | bunyan -o short",
-    "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-node-feature\" \"npm run watch-sass\""
+    "start-feature": "export $(cat feature.env) && npm run build && node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
+    "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-node-feature\" \"npm run watch-sass\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "collectCoverageFrom": [
+      "server/**/*.{ts,js,jsx,mjs}",
+      "jobs/**/*.{ts,js,jsx,mjs}"
+    ],
+    "testMatch": [
+      "<rootDir>/test/**/*.(spec|test).{ts,js,jsx,mjs}",
+      "<rootDir>/server/**/*.(spec|test).{ts,js,jsx,mjs}"
+    ],
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test-results/jest/"
+        }
+      ],
+      [
+        "./node_modules/jest-html-reporter",
+        {
+          "outputPath": "test-results/unit-test-reports.html"
+        }
+      ]
+    ],
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "json",
+      "ts",
+      "web.jsx",
+      "jsx",
+      "node",
+      "mjs"
+    ]
   },
   "engines": {
     "node": ">= 20.11.0",
@@ -80,6 +121,7 @@
     "sass": "^1.77.8",
     "sqs-consumer": "^5.8.0",
     "superagent": "^9.0.1",
+    "typescript": "^5.5.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -89,6 +131,8 @@
     "@types/connect-flash": "0.0.40",
     "@types/cookie-session": "^2.0.49",
     "@types/csurf": "^1.11.5",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
     "@types/express-session": "^1.18.0",
     "@types/http-errors": "^2.0.4",
     "@types/jest": "^29.5.12",
@@ -106,7 +150,7 @@
     "audit-ci": "^6.6.1",
     "concurrently": "^8.2.2",
     "cookie-session": "^2.0.0",
-    "cypress": "^13.14.0",
+    "cypress": "^13.14.1",
     "cypress-multi-reporters": "^1.6.4",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -128,8 +172,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-jinja-template": "^1.5.0",
     "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
-    "typescript": "^5.5.4"
+    "ts-jest": "^29.2.5"
   },
   "snyk": true
 }
