@@ -59,6 +59,14 @@ const getDateNMonthsAgo = (n: number) => {
   return moment().subtract(n, 'month').format('YYYY-MM-DD')
 }
 
+/**
+ * The adjudications endpoint only allows requests for 31 days or less, therefore, to load all 3 weeks, we have to make
+ * three calls to the endpoint and concatenate the data.
+ *
+ * @param prisoners
+ * @param nomisClient
+ * @param agencyId
+ */
 const loadAdjudicationsData = async (
   prisoners,
   nomisClient,
@@ -83,7 +91,8 @@ export const filterListOfPrisoners = async (
   nomisClient,
   agencyId: string
 ) => {
-  const allFilters = Object.values(filters)?.flat() || []
+  const allFilterArrays = Object.values(filters)
+  const allFilters = allFilterArrays.flat() || []
   if (allFilters.length <= 0) {
     return prisoners
   }

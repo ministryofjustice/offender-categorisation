@@ -33,7 +33,14 @@ const testBookingId = 12345
 const testPrisoners = [makeTestPrisoner(testBookingId, testOffenderNumber)]
 const testAgencyId = 'ABC'
 
-jest.useFakeTimers().setSystemTime(new Date('2024-01-01'))
+beforeAll(() => {
+  jest.useFakeTimers().setSystemTime(new Date('2024-01-01'))
+})
+
+afterAll(() => {
+  jest.runOnlyPendingTimers()
+  jest.useRealTimers()
+})
 
 afterEach(() => {
   nomisClient.getOffenderAdjudications.mockReset()
