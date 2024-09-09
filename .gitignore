@@ -26,3 +26,5 @@ integration_tests/screenshots/*
 volume/cache
 test_results/*
 lib/
+dist
+test-results

@@ -118,19 +118,20 @@ module.exports = function createApp({
   const cacheControl = { maxAge: config.staticResourceCacheDuration * 1000 }
 
   ;[
-    '../assets',
-    '../assets/stylesheets',
-    '../node_modules/govuk-frontend/dist/govuk/assets',
-    '../node_modules/govuk-frontend/dist',
-    '../node_modules/@ministryofjustice/frontend/moj/assets',
-    '../node_modules/@ministryofjustice/frontend',
+    '/assets',
+    '/assets/stylesheets',
+    '/assets/js',
+    '/node_modules/govuk-frontend/dist/govuk/assets',
+    '/node_modules/govuk-frontend/dist',
+    '/node_modules/@ministryofjustice/frontend/moj/assets',
+    '/node_modules/@ministryofjustice/frontend',
   ].forEach(dir => {
-    app.use('/assets', express.static(path.join(__dirname, dir), cacheControl))
+    app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
-  ;['../node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
-    app.use('/assets/images/icons', express.static(path.join(__dirname, dir), cacheControl))
+  ;['/node_modules/govuk_frontend_toolkit/images'].forEach(dir => {
+    app.use('/assets/images/icons', express.static(path.join(process.cwd(), dir), cacheControl))
   })
-  app.use('/favicon.ico', express.static(path.join(__dirname, '../assets/images/favicon.ico'), cacheControl))
+  app.use('/favicon.ico', express.static(path.join(process.cwd(), '/assets/images/favicon.ico'), cacheControl))
 
   const health = healthFactory(
     config.apis.oauth2.url,
@@ -153,7 +154,7 @@ module.exports = function createApp({
   })
 
   // GovUK Template Configuration
-  app.locals.asset_path = '/assets/'
+  app.locals.asset_path = '/dist/assets/'
 
   function addTemplateVariables(req, res, next) {
     res.locals.user = req.user
@@ -316,7 +317,7 @@ module.exports = function createApp({
 
   app.use(
     '/assets/moj-frontend/moj/all.js',
-    express.static(path.join(process.cwd(), '../node_modules/@ministryofjustice/frontend/moj/all.js'), cacheControl)
+    express.static(path.join(process.cwd(), '/node_modules/@ministryofjustice/frontend/moj/all.js'), cacheControl)
   )
 
   app.use(errorHandler(production))
