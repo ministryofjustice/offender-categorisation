@@ -684,8 +684,13 @@ module.exports = function createOffendersService(
     return nextReviewDate && releaseDate && moment(nextReviewDate).isAfter(moment(releaseDate))
   }
 
-  function isAwaitingApproval(status) {
-    return [Status.AWAITING_APPROVAL.name].includes(status)
+  function isAwaitingApprovalOrSecurity(status) {
+    return [
+      Status.AWAITING_APPROVAL.name,
+      Status.SECURITY_BACK.name,
+      Status.SECURITY_MANUAL.name,
+      Status.SECURITY_AUTO.name,
+    ].includes(status)
   }
 
   function isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate) {
@@ -764,7 +769,7 @@ module.exports = function createOffendersService(
 
         if (
           isNextReviewAfterRelease(nomisRecord, releaseDateForDecidingIfRecordShouldBeIncluded) &&
-          !isAwaitingApproval(dbRecord.status) &&
+          !isAwaitingApprovalOrSecurity(dbRecord.status) &&
           !isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDateForDecidingIfRecordShouldBeIncluded)
         ) {
           return null
@@ -1758,7 +1763,7 @@ module.exports = function createOffendersService(
     calculateRecatDisplayStatus,
     decorateWithCategorisationData,
     getDueRecats,
-    isAwaitingApproval,
+    isAwaitingApprovalOrSecurity,
     isRejectedBySupervisorSuitableForDisplay,
   }
 }

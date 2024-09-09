@@ -2,7 +2,7 @@
   "name": "offender-categorisation",
   "version": "0.0.1",
   "scripts": {
-    "start": "npm run build && node dist/server.js",
+    "start": "node dist/server.js | bunyan -o short",
     "start:dev": "npm run build && DEBUG=gov-starter-server* TOKEN_VERIFICATION_API_ENABLED=false && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-sass\"",
     "start:debug": "node --inspect dist/server.js",
     "compile-sass": "sass --no-source-map --load-path=node_modules/govuk-frontend/dist  --load-path=node_modules/@ministryofjustice ./assets/sass/application.sass:./assets/stylesheets/application.css --style compressed",
@@ -118,7 +118,6 @@
     "querystring": "^0.2.1",
     "ramda": "^0.28.0",
     "redis": "^3.1.2",
-    "sass": "^1.77.8",
     "sqs-consumer": "^5.8.0",
     "superagent": "^9.0.1",
     "uuid": "^8.3.2"
@@ -149,7 +148,7 @@
     "audit-ci": "^6.6.1",
     "concurrently": "^8.2.2",
     "cookie-session": "^2.0.0",
-    "cypress": "^13.14.0",
+    "cypress": "^13.14.1",
     "cypress-multi-reporters": "^1.6.4",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -170,6 +169,7 @@
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "prettier-plugin-jinja-template": "^1.5.0",
+    "sass": "^1.77.8",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.5.4"
