@@ -202,6 +202,12 @@ describe('Recategoriser Home page', () => {
         recategoriserHomePage.applyFiltersButton().click()
         recategoriserHomePage.selectAllFiltersButton().should('contain', 'Deselect all')
       })
+      it('should show correct message when no results and filters are applied', () => {
+        const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+        recategoriserHomePage.lowRiskOfEscapeFilterCheckbox().click()
+        recategoriserHomePage.applyFiltersButton().click()
+        recategoriserHomePage.noResultsDueToFiltersDiv().should('be.visible')
+      })
     })
   })
 })

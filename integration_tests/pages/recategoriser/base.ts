@@ -3,6 +3,7 @@ import { LOW_RISK_OF_ESCAPE } from '../../../server/services/recategorisationFil
 
 export default abstract class BaseRecategoriserPage extends Page {
   noResultsDiv = (): PageElement => cy.get('#no-results-message')
+  noResultsDueToFiltersDiv = (): PageElement => cy.get('#no-results-due-to-filters-message')
   hideFilterButton = (): PageElement => cy.get('#hideFilterButton')
   filterContainer = (): PageElement => cy.get('#filterContainer')
   applyFiltersButton = (): PageElement => cy.get('#applyFilters')
