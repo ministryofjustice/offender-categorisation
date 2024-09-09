@@ -17,10 +17,11 @@ const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
-const { filterListOfPrisoners } = require('./recategorisationFilter')
+const { filterListOfPrisoners } = require('./recategorisation/filter/recategorisationFilter')
 const {
   mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
-} = require('./recategorisation/recategorisationPrisonerSearch.dto')
+} = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
+const { isReviewOverdue } = require('./reviewStatusCalculator')
 
 const dirname = process.cwd()
 
@@ -38,8 +39,7 @@ function getYear(isoDate) {
 }
 
 function isOverdue(dbDate) {
-  const date = moment(dbDate, 'YYYY-MM-DD')
-  return date.isBefore(moment(0, 'HH'))
+  return isReviewOverdue(dbDate)
 }
 
 async function getSentenceMap(offenderList, prisonerSearchClient) {
