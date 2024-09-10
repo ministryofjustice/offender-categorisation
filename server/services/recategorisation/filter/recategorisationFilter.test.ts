@@ -7,6 +7,7 @@ import {
   NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS,
   NOT_MARKED_AS_NOT_FOR_RELEASE,
   OVERDUE,
+  REVIEWS_ASSIGNED_TO_ME,
   STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
   TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS,
 } from './recategorisationFilter'
@@ -25,6 +26,8 @@ import {
 } from '../../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
 import makeTestNomisAdjudicationHearingDto from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto.test-factory'
 import makeTestRecategorisationHomeFiltersFilter from './recategorisationHomeFilter.test-factory'
+import makeTestPrisonerAllocationDto from '../../../data/allocationManager/prisonerAllocation.dto.test-factory'
+import makeTestAllocatedPomDto from '../../../data/allocationManager/allocatedPom.dto.test-factory'
 
 const nomisClient = {
   getOffenderAdjudications: jest.fn(),
@@ -34,6 +37,7 @@ const testOffenderNumber = 'ABC123'
 const testBookingId = 12345
 const testPrisoners = [makeTestPrisoner(testBookingId, testOffenderNumber)]
 const testAgencyId = 'ABC'
+const testUserStaffId = 123
 
 beforeAll(() => {
   jest.useFakeTimers().setSystemTime(new Date('2024-01-01'))
@@ -55,7 +59,9 @@ describe('filterListOfPrisoners', () => {
       testPrisoners,
       new Map([[testBookingId, makeTestRecategorisationPrisonerSearchDto()]]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result).toEqual(testPrisoners)
@@ -75,7 +81,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result.length).toBe(0)
@@ -95,7 +103,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result).toEqual(testPrisoners)
@@ -115,7 +125,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result).toEqual(testPrisoners)
@@ -135,7 +147,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result.length).toBe(0)
@@ -157,7 +171,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result.length).toBe(0)
@@ -177,7 +193,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result.length).toBe(0)
@@ -199,7 +217,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result.length).toBe(0)
@@ -221,7 +241,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result).toEqual(testPrisoners)
@@ -242,7 +264,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result.length).toBe(0)
@@ -263,7 +287,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result.length).toBe(0)
@@ -284,7 +310,9 @@ describe('filterListOfPrisoners', () => {
         ],
       ]),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result).toEqual(testPrisoners)
@@ -300,7 +328,9 @@ describe('filterListOfPrisoners', () => {
       testPrisoners,
       new Map(),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(nomisClient.getOffenderAdjudications.mock.calls).toEqual([
@@ -321,7 +351,9 @@ describe('filterListOfPrisoners', () => {
       testPrisoners,
       new Map(),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(nomisClient.getOffenderAdjudications.mock.calls).toEqual([
@@ -344,10 +376,44 @@ describe('filterListOfPrisoners', () => {
       [overduePrisoner, nonOverduePrisoner],
       new Map(),
       nomisClient,
-      testAgencyId
+      testAgencyId,
+      new Map(),
+      testUserStaffId
     )
 
     expect(result.length).toBe(1)
     expect(result).toEqual([overduePrisoner])
+  })
+  test('it should filter out offenders not assigned to current POM user', async () => {
+    const prisonerAssignedToCurrentUser = makeTestPrisoner(testBookingId, testOffenderNumber, '2023-12-01')
+    const prisonerAssignedToAnotherPom = makeTestPrisoner(56789, 'DEF456', '2024-02-01')
+    const prisonerNotAssigned = makeTestPrisoner(98765, '123DEF', '2024-02-01')
+    const result = await filterListOfPrisoners(
+      makeTestRecategorisationHomeFiltersFilter({
+        pom: [REVIEWS_ASSIGNED_TO_ME],
+      }),
+      [prisonerAssignedToCurrentUser, prisonerAssignedToAnotherPom, prisonerNotAssigned],
+      new Map(),
+      nomisClient,
+      testAgencyId,
+      new Map([
+        [
+          testOffenderNumber,
+          makeTestPrisonerAllocationDto({
+            primary_pom: makeTestAllocatedPomDto({ staff_id: testUserStaffId }),
+          }),
+        ],
+        [
+          prisonerAssignedToAnotherPom.offenderNo,
+          makeTestPrisonerAllocationDto({
+            primary_pom: makeTestAllocatedPomDto({ staff_id: 5678 }),
+          }),
+        ],
+      ]),
+      testUserStaffId
+    )
+
+    expect(result.length).toBe(1)
+    expect(result).toEqual([prisonerAssignedToCurrentUser])
   })
 })

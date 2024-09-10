@@ -106,6 +106,28 @@
             ]
           }) }}
 
+          <div class="govuk-heading-m">
+            POM
+          </div>
+          {{ govukCheckboxes({
+            name: 'pom[]',
+            classes: "govuk-checkboxes--small",
+            fieldset: {
+              legend: {
+                text: "Filter based on POM",
+                classes: "govuk-visually-hidden"
+              }
+            },
+            items: [
+              {
+                value: 'reviewsAssignedToMe',
+                text: allFilters.pom.reviewsAssignedToMe,
+                checked:  'reviewsAssignedToMe' in filters.pom if filters.pom else false,
+                attributes: { 'data-qa': 'reviewsAssignedToMe_checkbox' }
+              }
+            ]
+          }) }}
+
             <div class="replacementApplyFilterButtonContainer">
               {{ govukButton({
                 id: 'applyFilters',

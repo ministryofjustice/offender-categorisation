@@ -749,7 +749,9 @@ module.exports = function createOffendersService(
       allOffenders,
       prisonerSearchData,
       nomisClient,
-      agencyId
+      agencyId,
+      pomMap,
+      user.staffId
     )
 
     return Promise.all(
@@ -922,7 +924,9 @@ module.exports = function createOffendersService(
       eliteCategorisationResultsU21,
       new Map(resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])),
       nomisClient,
-      agencyId
+      agencyId,
+      pomMap,
+      user.staffId
     )
 
     return Promise.all(

@@ -17,6 +17,7 @@ import {
 } from '../../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
 import { NomisAdjudicationHearingDto } from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
 import { isReviewOverdue } from '../../reviewStatusCalculator'
+import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
 
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
 const LOW_ROSH = 'lowRosh'
@@ -27,6 +28,7 @@ export const STANDARD_OR_ENHANCED_INCENTIVE_LEVEL = 'standardOrEnhancedIncentive
 export const TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS = 'timeLeftToServeBetween12WeeksAnd3Years'
 export const NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS = 'noAdjudicationsInTheLastThreeMonths'
 export const OVERDUE = 'overdue'
+export const REVIEWS_ASSIGNED_TO_ME = 'reviewsAssignedToMe'
 
 export interface RecategorisationHomeFilters {
   suitabilityForOpenConditions: Array<
@@ -40,6 +42,7 @@ export interface RecategorisationHomeFilters {
     | typeof NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS
   >
   dueDate: Array<typeof OVERDUE>
+  pom: Array<typeof REVIEWS_ASSIGNED_TO_ME>
 }
 
 export const recategorisationHomeFilters = {
@@ -54,6 +57,7 @@ export const recategorisationHomeFilters = {
     [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS]: 'Time left to serve is between 12 weeks and 3 years',
   },
   dueDate: { [OVERDUE]: 'Overdue reviews' },
+  pom: { [REVIEWS_ASSIGNED_TO_ME]: 'Reviews assigned to me' },
 }
 
 const dateIsNotBetween12WeeksAnd3Years = (dateString: string): boolean =>
@@ -93,7 +97,9 @@ export const filterListOfPrisoners = async (
   prisoners,
   prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
   nomisClient,
-  agencyId: string
+  agencyId: string,
+  pomMap: Map<string, PrisonerAllocationDto>,
+  userStaffId
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
@@ -167,6 +173,11 @@ export const filterListOfPrisoners = async (
           return true
         case OVERDUE:
           if (!isReviewOverdue(prisoner.nextReviewDate)) {
+            return false
+          }
+          break
+        case REVIEWS_ASSIGNED_TO_ME:
+          if (pomMap.get(prisoner.offenderNo)?.primary_pom.staff_id !== userStaffId) {
             return false
           }
           break
