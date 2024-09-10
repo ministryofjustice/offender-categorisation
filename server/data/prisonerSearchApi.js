@@ -32,8 +32,6 @@ module.exports = context => {
       return response.content.map(r => ({
         ...r,
         bookingId: Number(r.bookingId),
-        releaseDate: r.releaseDate,
-        sentenceStartDate: r.sentenceStartDate,
       }))
     },
 
@@ -55,6 +53,8 @@ module.exports = context => {
             releaseDate: r.releaseDate,
             sentenceStartDate: r.sentenceStartDate,
             status: r.status,
+            alerts: r.alerts,
+            currentIncentive: r.currentIncentive,
             legalStatus: r.legalStatus,
             offenderNo: r.prisonerNumber,
           })

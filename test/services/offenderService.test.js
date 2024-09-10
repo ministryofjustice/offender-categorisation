@@ -414,7 +414,7 @@ describe('getRecategoriseOffenders', () => {
     prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
     formService.getCategorisationRecords.mockResolvedValue([])
 
-    const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })
 
@@ -463,7 +463,7 @@ describe('getRecategoriseOffenders', () => {
     nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
     formService.getCategorisationRecords.mockResolvedValue([])
 
-    const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
     expect(result).toHaveLength(0)
     expect(formService.getCategorisationRecord).toBeCalledTimes(2)
@@ -3100,7 +3100,7 @@ describe('getDueRecats', () => {
           offenderNo: 'G9285UP',
           sequence: 1,
           userId: 'CMOSS_GEN',
-          status: Status.SECURITY_BACK.name,
+          status: Status.STARTED.name,
           formObject: {
             // removed for brevity
           },
@@ -3139,93 +3139,97 @@ describe('getDueRecats', () => {
     expect(result).toEqual([null])
   })
 
-  it('it should show an offender who has a release date AFTER their next review date, AND they are currently in review', async () => {
-    const releaseDate = '2017-09-23'
-    const nextReviewDate = '2017-10-23'
-    nomisClient.getRecategoriseOffenders.mockResolvedValue([
-      {
-        offenderNo: 'G9285UP',
-        bookingId: 1186272,
-        firstName: 'OBININS',
-        lastName: 'KHALIAM',
-        assessmentDate: '2017-03-27',
-        approvalDate: '2017-03-28',
-        assessmentSeq: 3,
-        assessStatus: 'A',
-        category: 'D',
-        nextReviewDate,
-      },
-    ])
-    formService.getCategorisationRecords.mockResolvedValue([])
-    formService.getCategorisationRecord.mockImplementation(bookingId => {
-      if (bookingId === 1186272) {
-        return {
-          id: 36,
-          bookingId: 1133213,
+  test.each([Status.AWAITING_APPROVAL, Status.SECURITY_MANUAL, Status.SECURITY_BACK])(
+    'it should show an offender who has a release date AFTER their next review date, AND they are currently in review with status %s',
+    async status => {
+      const releaseDate = '2017-09-23'
+      const nextReviewDate = '2017-10-23'
+      nomisClient.getRecategoriseOffenders.mockResolvedValue([
+        {
           offenderNo: 'G9285UP',
-          sequence: 1,
-          userId: 'CMOSS_GEN',
-          status: Status.AWAITING_APPROVAL.name,
-          formObject: {
-            // removed for brevity
-          },
-          riskProfile: {},
-          assignedUserId: 'CMOSS_GEN',
-          securityReferredDate: '2023-04-24T11:36:38.426Z',
-          securityReferredBy: 'CMOSS_GEN',
-          securityReviewedDate: '2023-04-24T11:37:07.424Z',
-          securityReviewedBy: 'CMOSS_GEN',
-          approvalDate: null,
-          prisonId: 'DMI',
-          catType: 'RECAT',
-          reviewReason: 'DUE',
-          nomisSeq: 5,
+          bookingId: 1186272,
+          firstName: 'OBININS',
+          lastName: 'KHALIAM',
+          assessmentDate: '2017-03-27',
+          approvalDate: '2017-03-28',
+          assessmentSeq: 3,
+          assessStatus: 'A',
+          category: 'D',
+          nextReviewDate,
+        },
+      ])
+      formService.getCategorisationRecords.mockResolvedValue([])
+      formService.getCategorisationRecord.mockImplementation(bookingId => {
+        if (bookingId === 1186272) {
+          return {
+            id: 36,
+            bookingId: 1133213,
+            offenderNo: 'G9285UP',
+            sequence: 1,
+            userId: 'CMOSS_GEN',
+            status: status.name,
+            formObject: {
+              // removed for brevity
+            },
+            riskProfile: {},
+            assignedUserId: 'CMOSS_GEN',
+            securityReferredDate: '2023-04-24T11:36:38.426Z',
+            securityReferredBy: 'CMOSS_GEN',
+            securityReviewedDate: '2023-04-24T11:37:07.424Z',
+            securityReviewedBy: 'CMOSS_GEN',
+            approvalDate: null,
+            prisonId: 'DMI',
+            catType: 'RECAT',
+            reviewReason: 'DUE',
+            nomisSeq: 5,
+          }
         }
-      }
-      return {}
-    })
-    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
-      {
-        bookingId: 1186272,
-        releaseDate,
-        sentenceStartDate: '2017-04-01',
-      },
-    ])
+        return {}
+      })
+      prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+        {
+          bookingId: 1186272,
+          releaseDate,
+          sentenceStartDate: '2017-04-01',
+        },
+      ])
 
-    const result = await service.getDueRecats(
-      'A1234AA',
-      {},
-      nomisClient,
-      allocationClient,
-      prisonerSearchClient,
-      mockTransactionalClient
-    )
+      const result = await service.getDueRecats(
+        'A1234AA',
+        {},
+        nomisClient,
+        allocationClient,
+        prisonerSearchClient,
+        mockTransactionalClient
+      )
 
-    expect(result).toEqual([
-      {
-        offenderNo: 'G9285UP',
-        bookingId: 1186272,
-        firstName: 'OBININS',
-        lastName: 'KHALIAM',
-        assessmentDate: '2017-03-27',
-        approvalDate: '2017-03-28',
-        assessmentSeq: 3,
-        assessStatus: 'A',
-        category: 'D',
-        nextReviewDate: '2017-10-23',
-        displayName: 'Khaliam, Obinins',
-        displayStatus: 'Awaiting approval',
-        dbStatus: 'AWAITING_APPROVAL',
-        reason: { name: 'DUE', value: 'Review due' },
-        nextReviewDateDisplay: '23/10/2017',
-        overdue: true,
-        dbRecordExists: true,
-        pnomis: 'PNOMIS',
-        buttonText: 'Start',
-        pom: 'Steve Rendell',
-      },
-    ])
-  })
+      expect(result).toEqual([
+        {
+          offenderNo: 'G9285UP',
+          bookingId: 1186272,
+          firstName: 'OBININS',
+          lastName: 'KHALIAM',
+          assessmentDate: '2017-03-27',
+          approvalDate: '2017-03-28',
+          assessmentSeq: 3,
+          assessStatus: 'A',
+          category: 'D',
+          nextReviewDate: '2017-10-23',
+          displayName: 'Khaliam, Obinins',
+          displayStatus: status.value,
+          dbStatus: status.name,
+          reason: { name: 'DUE', value: 'Review due' },
+          nextReviewDateDisplay: '23/10/2017',
+          overdue: true,
+          dbRecordExists: true,
+          pnomis: status.name === Status.AWAITING_APPROVAL.name ? 'PNOMIS' : false,
+          buttonText: status.name === Status.AWAITING_APPROVAL.name ? 'Start' : 'Edit',
+          pom: 'Steve Rendell',
+        },
+      ])
+    },
+    10000
+  )
 
   it('it should show an offender who has a release date AFTER their next review date, AND they are currently in Rejected By Supervisor', async () => {
     const releaseDate = moment().add(7, 'months')
@@ -3639,15 +3643,33 @@ describe('decorateWithCategorisationData', () => {
 })
 
 describe('statusTextDisplay', () => {
-  it('returns false for everything except Awaiting Approval', () => {
-    ;[null, undefined, 1, 2, {}, false, true, ...Object.values(Status).map(({ name }) => name)]
-      .filter(status => status !== Status.AWAITING_APPROVAL.name)
-      .forEach(status => expect(service.isAwaitingApproval(status)).toEqual(false))
-  })
+  test.each([
+    Status.AWAITING_APPROVAL.name,
+    Status.SECURITY_MANUAL.name,
+    Status.SECURITY_AUTO.name,
+    Status.SECURITY_BACK.name,
+  ])(
+    'returns true for status',
+    async status => {
+      expect(service.isAwaitingApprovalOrSecurity(status)).toBeTruthy()
+    },
+    10000
+  )
 
-  it('returns true for Awaiting Approval', () => {
-    expect(service.isAwaitingApproval(Status.AWAITING_APPROVAL.name)).toBeTruthy()
-  })
+  test.each([
+    Status.UNCATEGORISED.name,
+    Status.STARTED.name,
+    Status.SECURITY_FLAGGED.name,
+    Status.APPROVED.name,
+    Status.SUPERVISOR_BACK.name,
+    Status.CANCELLED.name,
+  ])(
+    'returns false for status',
+    async status => {
+      expect(service.isAwaitingApprovalOrSecurity(status)).toBeFalsy()
+    },
+    10000
+  )
 })
 
 describe('isNextReviewAfterRelease', () => {

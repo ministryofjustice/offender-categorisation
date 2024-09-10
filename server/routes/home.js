@@ -30,7 +30,7 @@ Object.keys(recategorisationHomeFilters).forEach(key => {
     )
     .optional()
 })
-const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters)
+const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters).optional()
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -183,7 +183,7 @@ module.exports = function Index({
       }
 
       const offenders = user.activeCaseLoad
-        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient)
+        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient, validation.value)
         : []
 
       const riskChangeCount = await formService.getRiskChangeCount(
