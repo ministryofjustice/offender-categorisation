@@ -166,10 +166,11 @@
         <tr class="govuk-table__row ">
           <td class="govuk-table__cell">
             {% if row.overdue %}
-            {{ govukTag({
-                text: 'OVERDUE',
-                classes: 'moj-tag--red'
-              }) }} <!-- {{ row.nextReviewDateDisplay }} -->
+              {{ govukTag({
+                text: 'Overdue',
+                classes: 'govuk-tag--red',
+                attributes: { 'title': 'Due date: ' + row.nextReviewDateDisplay }
+              }) }}
             {% else %}
               {{ row.nextReviewDateDisplay }}
             {% endif %}
