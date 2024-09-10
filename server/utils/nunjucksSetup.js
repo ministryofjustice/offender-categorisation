@@ -54,7 +54,7 @@ module.exports = (app, path) => {
     .addGlobal('getVerboseDateFormat', getVerboseDateFormat)
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
-    .addGlobal('googleTagManagerKey', config.googleTagManagerTag)
+    .addGlobal('googleTagManagerKey', config.googleTagManagerKey)
     .addGlobal('googleTagManagerEnv', config.googleTagManagerEnv)
     .addGlobal('googleTagManagerAuth', config.googleTagManagerAuth)
     .addGlobal('catMappings', catMappings)
