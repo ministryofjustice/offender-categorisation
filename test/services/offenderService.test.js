@@ -414,7 +414,7 @@ describe('getRecategoriseOffenders', () => {
     prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
     formService.getCategorisationRecords.mockResolvedValue([])
 
-    const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
     expect(result).toHaveLength(0)
   })
 
@@ -463,7 +463,7 @@ describe('getRecategoriseOffenders', () => {
     nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
     formService.getCategorisationRecords.mockResolvedValue([])
 
-    const result = await service.getRecategoriseOffenders(context, 'LEI', 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
 
     expect(result).toHaveLength(0)
     expect(formService.getCategorisationRecord).toBeCalledTimes(2)
