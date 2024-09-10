@@ -154,7 +154,7 @@ module.exports = {
   dpsUrl: `${get('DPS_URL', 'http://localhost:3000/', true)}`,
   supportUrl: `${get('SUPPORT_URL', 'http://localhost:3000/', true)}`,
   googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', ' ', true)}`,
-  googleTagManagerTag: `${get('GOOGLE_TAG_MANAGER_TAG', ' ', true)}`,
+  googleTagManagerKey: `${get('GOOGLE_TAG_MANAGER_KEY', ' ', true)}`,
   googleTagManagerEnv: `${get('GOOGLE_TAG_MANAGER_ENV', ' ', true)}`,
   googleTagManagerAuth: `${get('GOOGLE_TAG_MANAGER_AUTH', ' ', true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 6, true)}`,
