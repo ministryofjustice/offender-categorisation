@@ -937,10 +937,14 @@ module.exports = function createOffendersService(
       getPomMap(resultsU21IJ, allocationClient),
     ])
 
+    const u21map = new Map(
+      resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])
+    )
+
     const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
       filters,
       eliteCategorisationResultsU21,
-      new Map(resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])),
+      u21map,
       nomisClient,
       agencyId
     )
@@ -973,7 +977,7 @@ module.exports = function createOffendersService(
           ReviewReason.AGE
 
         if (featureFlags.si607Enabled) {
-          const prisoner = resultsU21.get(o.bookingId)
+          const prisoner = u21map.get(o.bookingId)
           if (['INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) === false) {
             return null
           }
