@@ -804,7 +804,6 @@ module.exports = function createOffendersService(
 
         if (featureFlags.si607Enabled) {
           const prisoner = prisonerSearchData.get(raw.bookingId)
-          console.log(prisoner.legalStatus)
           if (['INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) === false) {
             return null
           }
