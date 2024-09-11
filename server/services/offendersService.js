@@ -38,10 +38,6 @@ function getYear(isoDate) {
   return isoDate && isoDate.substring(0, 4)
 }
 
-function isOverdue(dbDate) {
-  return isReviewOverdue(dbDate)
-}
-
 async function getSentenceMap(offenderList, prisonerSearchClient) {
   const bookingIds = offenderList
     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
@@ -801,7 +797,7 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isOverdue(nomisRecord.nextReviewDate),
+          overdue: isReviewOverdue(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -958,7 +954,7 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay,
-          overdue: isOverdue(nextReviewDate),
+          overdue: isReviewOverdue(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -1759,7 +1755,6 @@ module.exports = function createOffendersService(
     getPomMap,
     isInitialInProgress,
     statusTextDisplay,
-    isOverdue,
     calculateRecatDisplayStatus,
     decorateWithCategorisationData,
     getDueRecats,
