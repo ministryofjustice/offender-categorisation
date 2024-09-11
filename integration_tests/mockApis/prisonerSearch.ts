@@ -117,6 +117,7 @@ const stubSentenceData = ({
   emptyResponse = false,
   releaseDates = [],
   status = [],
+  legalStatus = [],
 }: {
   offenderNumbers: OffenderNumber[]
   bookingIds: BookingId[]
@@ -124,6 +125,7 @@ const stubSentenceData = ({
   emptyResponse: boolean
   releaseDates: string[]
   status: string[]
+  legalStatus: string[]
 }): SuperAgentRequest => {
   let index = 0
   const response: SentenceData[] = emptyResponse
@@ -141,6 +143,7 @@ const stubSentenceData = ({
         statuteCode: `ST${offenderNumber}`,
         mostSeriousOffence: 'Robbery',
         status: status[idx] ? status[idx] : 'ACTIVE IN',
+        legalStatus: legalStatus[idx] ? legalStatus[idx] : 'SENTENCED',
       }))
 
   return stubFor({
