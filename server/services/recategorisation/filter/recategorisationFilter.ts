@@ -19,6 +19,10 @@ import { NomisAdjudicationHearingDto } from '../../../data/nomis/adjudicationHea
 import { isReviewOverdue } from '../../reviewStatusCalculator'
 import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
 
+const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
+const DUE_DATE = 'dueDate'
+const POM = 'pom'
+
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
 const LOW_ROSH = 'lowRosh'
 export const NO_CURRENT_TERRORISM_OFFENCES = 'noCurrentTerrorismOffences'
@@ -31,7 +35,7 @@ export const OVERDUE = 'overdue'
 export const REVIEWS_ASSIGNED_TO_ME = 'reviewsAssignedToMe'
 
 export interface RecategorisationHomeFilters {
-  suitabilityForOpenConditions: Array<
+  [SUITABILIGY_FOR_OPEN_CONDITIONS]: Array<
     | typeof LOW_RISK_OF_ESCAPE
     | typeof LOW_ROSH
     | typeof NO_CURRENT_TERRORISM_OFFENCES
@@ -41,12 +45,12 @@ export interface RecategorisationHomeFilters {
     | typeof TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS
     | typeof NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS
   >
-  dueDate: Array<typeof OVERDUE>
-  pom: Array<typeof REVIEWS_ASSIGNED_TO_ME>
+  [DUE_DATE]: Array<typeof OVERDUE>
+  [POM]: Array<typeof REVIEWS_ASSIGNED_TO_ME>
 }
 
 export const recategorisationHomeFilters = {
-  suitabilityForOpenConditions: {
+  [SUITABILIGY_FOR_OPEN_CONDITIONS]: {
     [LOW_ROSH]: 'Low RoSH',
     [LOW_RISK_OF_ESCAPE]: 'Low risk of escape',
     [NO_CURRENT_TERRORISM_OFFENCES]: 'No current terrorism offences',
@@ -56,8 +60,14 @@ export const recategorisationHomeFilters = {
     [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL]: 'Standard or Enhanced incentive level',
     [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS]: 'Time left to serve is between 12 weeks and 3 years',
   },
-  dueDate: { [OVERDUE]: 'Overdue reviews' },
-  pom: { [REVIEWS_ASSIGNED_TO_ME]: 'Reviews assigned to me' },
+  [DUE_DATE]: { [OVERDUE]: 'Overdue reviews' },
+  [POM]: { [REVIEWS_ASSIGNED_TO_ME]: 'Reviews assigned to me' },
+}
+
+export const recategorisationHomeFilterKeys = {
+  [SUITABILIGY_FOR_OPEN_CONDITIONS]: 'Suitability for open conditions',
+  [DUE_DATE]: 'Due date',
+  [POM]: 'POM',
 }
 
 const dateIsNotBetween12WeeksAnd3Years = (dateString: string): boolean =>

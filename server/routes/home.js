@@ -12,7 +12,10 @@ const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 const conf = require('../config')
 const logger = require('../../log')
-const { recategorisationHomeFilters } = require('../services/recategorisation/filter/recategorisationFilter')
+const {
+  recategorisationHomeFilters,
+  recategorisationHomeFilterKeys,
+} = require('../services/recategorisation/filter/recategorisationFilter')
 
 const formConfig = {
   security: securityConfig,
@@ -190,6 +193,7 @@ module.exports = function Index({
         showRecategorisationPrioritisationFilter,
         filters: validation.value,
         allFilters: recategorisationHomeFilters,
+        filterKeys: recategorisationHomeFilterKeys,
         numberOfFiltersApplied: Object.values(validation.value).flat().length,
         fullUrl: req.url,
         hideRecategoriserHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,

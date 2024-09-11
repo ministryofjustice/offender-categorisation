@@ -50,83 +50,44 @@
       {% set filterContainerClass = 'govuk-visually-hidden' if hideRecategoriserHomeFilter else '' %}
       <div id="filterContainer" class="side-filter govuk-grid-column-one-third govuk-!-padding-right-0 {{ filterContainerClass }}">
         <form method="get">
-          {% set filterCheckboxes = [] %}
-            {% for key, displayName in allFilters.suitabilityForOpenConditions %}
-              {% set filterCheckboxes = (filterCheckboxes.push({
-                value: key,
-                text: displayName,
-                checked:  key in filters.suitabilityForOpenConditions if filters.suitabilityForOpenConditions else false,
-                attributes: { 'data-qa': key + '_checkbox' }
-              }), filterCheckboxes) %}
-            {% endfor %}
           {%- set filterOptionsHtml %}
-            <div class="govuk-heading-m">
-              Suitability for open conditions
-            </div>
-            <div class="filterInfoBox">
-              Filter the category reviews list to see prisoners who may be suitable to move to open conditions.
-            </div>
-            <div
-              id="selectAllSuitabilityForOpenConditionsFilter"
-              class="linkStyledButton govuk-!-font-size-16 govuk-!-margin-bottom-3"
-            >
-              {{ 'Select all' if filters.suitabilityForOpenConditions|length < allFilters.suitabilityForOpenConditions|length else 'Deselect all' }}
-            </div>
-            {{ govukCheckboxes({
-              name: 'suitabilityForOpenConditions[]',
-              classes: "govuk-checkboxes--small",
-              fieldset: {
-                legend: {
-                  text: "Filter based on suitability for open conditions",
-                  classes: "govuk-visually-hidden"
-                }
-              },
-              items: filterCheckboxes
-            }) }}
+            {% for key, filterNames in allFilters %}
+              {% set filterCheckboxes = [] %}
+              {% for filterKey, displayName in allFilters[key] %}
+                {% set filterCheckboxes = (filterCheckboxes.push({
+                value: filterKey,
+                text: displayName,
+                checked:  filterKey in filters[key] if filters[key] else false,
+                attributes: { 'data-qa': filterKey + '_checkbox' }
+                }), filterCheckboxes) %}
+              {% endfor %}
+              <div class="govuk-heading-m">
+                {{ filterKeys[key] }}
+              </div>
+              {% if key == 'suitabilityForOpenConditions' %}
+                <div class="filterInfoBox">
+                  Filter the category reviews list to see prisoners who may be suitable to move to open conditions.
+                </div>
+                <div
+                  id="selectAllSuitabilityForOpenConditionsFilter"
+                  class="linkStyledButton govuk-!-font-size-16 govuk-!-margin-bottom-3"
+                >
+                  {{ 'Select all' if filters.suitabilityForOpenConditions|length < allFilters.suitabilityForOpenConditions|length else 'Deselect all' }}
+                </div>
+              {% endif %}
+              {{ govukCheckboxes({
+                name: key + '[]',
+                classes: "govuk-checkboxes--small",
+                fieldset: {
+                  legend: {
+                    text: "Filter based on " + filterKeys[key],
+                    classes: "govuk-visually-hidden"
+                  }
+                },
+                items: filterCheckboxes
+              }) }}
 
-          <div class="govuk-heading-m">
-            Due date
-          </div>
-          {{ govukCheckboxes({
-            name: 'dueDate[]',
-            classes: "govuk-checkboxes--small",
-            fieldset: {
-              legend: {
-                text: "Filter based on review due date",
-                classes: "govuk-visually-hidden"
-              }
-            },
-            items: [
-              {
-                value: 'overdue',
-                text: allFilters.dueDate.overdue,
-                checked:  'overdue' in filters.dueDate if filters.dueDate else false,
-                attributes: { 'data-qa': 'overdue_checkbox' }
-              }
-            ]
-          }) }}
-
-          <div class="govuk-heading-m">
-            POM
-          </div>
-          {{ govukCheckboxes({
-            name: 'pom[]',
-            classes: "govuk-checkboxes--small",
-            fieldset: {
-              legend: {
-                text: "Filter based on POM",
-                classes: "govuk-visually-hidden"
-              }
-            },
-            items: [
-              {
-                value: 'reviewsAssignedToMe',
-                text: allFilters.pom.reviewsAssignedToMe,
-                checked:  'reviewsAssignedToMe' in filters.pom if filters.pom else false,
-                attributes: { 'data-qa': 'reviewsAssignedToMe_checkbox' }
-              }
-            ]
-          }) }}
+            {% endfor %}
 
             <div class="replacementApplyFilterButtonContainer">
               {{ govukButton({
@@ -139,24 +100,24 @@
           {% endset -%}
 
           {% set filterCategories = [] %}
-          {% if filters.suitabilityForOpenConditions.length > 0 %}
+          {% for key, filterNames in filters %}
             {% set selectedItems = [] %}
-            {% for filter in filters.suitabilityForOpenConditions %}
-              {% set startPositionOfFilterInUrl = fullUrl.indexOf(filter) - (28 + 7) %}
-              {% set removalHref = fullUrl.substring(0, (startPositionOfFilterInUrl - 1) if fullUrl[startPositionOfFilterInUrl - 1] == '&' or filters.suitabilityForOpenConditions.length == 1 else startPositionOfFilterInUrl) + fullUrl.substr(fullUrl.indexOf(filter) + filter.length + (0 if fullUrl[startPositionOfFilterInUrl - 1] == '&' else 1), fullUrl.length) %}
+            {% for filter in filterNames %}
+              {% set startPositionOfFilterInUrl = fullUrl.indexOf(filter) - (key.length + 7) %}
+              {% set removalHref = fullUrl.substring(0, (startPositionOfFilterInUrl - 1) if fullUrl[startPositionOfFilterInUrl - 1] == '&' or numberOfFiltersApplied == 1 else startPositionOfFilterInUrl) + fullUrl.substr(fullUrl.indexOf(filter) + filter.length + (0 if fullUrl[startPositionOfFilterInUrl - 1] == '&' else 1), fullUrl.length) %}
               {% set selectedItems = (selectedItems.push({
                 href: removalHref,
-                text: allFilters['suitabilityForOpenConditions'][filter]
+                text: allFilters[key][filter]
               }), selectedItems) %}
             {% endfor %}
 
             {% set filterCategories = (filterCategories.push({
               heading: {
-                text: 'Suitability for open conditions'
+                text: filterKeys[key]
               },
               items: selectedItems
-          }), filterCategories) %}
-          {% endif %}
+            }), filterCategories) %}
+          {% endfor %}
 
           {{ mojFilter({
             heading: {
