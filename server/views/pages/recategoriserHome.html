@@ -188,7 +188,7 @@
             text: "Show filter" if hideRecategoriserHomeFilter else "Hide filter",
             classes: "govuk-button--secondary govuk-!-margin-bottom-0"
           }) }}
-          <div class="govuk-!-margin-left-2">You have <b>{{ filters.suitabilityForOpenConditions|length }}</b> filter{{ 's' if filters.suitabilityForOpenConditions|length != 1 }} applied</div>
+          <div class="govuk-!-margin-left-2">You have <b>{{ numberOfFiltersApplied }}</b> filter{{ 's' if numberOfFiltersApplied != 1 }} applied</div>
         </div>
       {% endif %}
       {% if offenders | length > 0 %}

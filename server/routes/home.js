@@ -190,6 +190,7 @@ module.exports = function Index({
         showRecategorisationPrioritisationFilter,
         filters: validation.value,
         allFilters: recategorisationHomeFilters,
+        numberOfFiltersApplied: Object.values(validation.value).flat().length,
         fullUrl: req.url,
         hideRecategoriserHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
       })

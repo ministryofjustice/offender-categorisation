@@ -99,7 +99,7 @@ export const filterListOfPrisoners = async (
   nomisClient,
   agencyId: string,
   pomMap: Map<string, PrisonerAllocationDto>,
-  userStaffId
+  userStaffId: number
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
@@ -177,7 +177,7 @@ export const filterListOfPrisoners = async (
           }
           break
         case REVIEWS_ASSIGNED_TO_ME:
-          if (pomMap.get(prisoner.offenderNo)?.primary_pom.staff_id !== userStaffId) {
+          if (pomMap.get(prisoner.offenderNo)?.primary_pom?.staff_id !== userStaffId) {
             return false
           }
           break
