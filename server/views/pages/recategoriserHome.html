@@ -84,28 +84,6 @@
               items: filterCheckboxes
             }) }}
 
-          <div class="govuk-heading-m">
-            Due date
-          </div>
-          {{ govukCheckboxes({
-            name: 'dueDate[]',
-            classes: "govuk-checkboxes--small",
-            fieldset: {
-              legend: {
-                text: "Filter based on review due date",
-                classes: "govuk-visually-hidden"
-              }
-            },
-            items: [
-              {
-                value: 'overdue',
-                text: allFilters.dueDate.overdue,
-                checked:  'overdue' in filters.dueDate if filters.dueDate else false,
-                attributes: { 'data-qa': 'overdue_checkbox' }
-              }
-            ]
-          }) }}
-
             <div class="replacementApplyFilterButtonContainer">
               {{ govukButton({
                 id: 'applyFilters',
