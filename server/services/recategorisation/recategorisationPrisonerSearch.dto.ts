@@ -6,6 +6,7 @@ export interface RecategorisationPrisonerSearchDto {
   releaseDate: string | undefined
   alerts: PrisonerSearchAlertDto[] | undefined
   currentIncentive: PrisonerSearchIncentiveLevelDto | undefined
+  legalStatus: PrisonerSearchDto['legalStatus']
 }
 
 export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
@@ -14,4 +15,5 @@ export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
   releaseDate: prisonerSearchDto.releaseDate,
   alerts: prisonerSearchDto.alerts,
   currentIncentive: prisonerSearchDto.currentIncentive,
+  legalStatus: prisonerSearchDto.legalStatus,
 })
