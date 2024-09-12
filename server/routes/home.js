@@ -30,7 +30,7 @@ Object.keys(recategorisationHomeFilters).forEach(key => {
     )
     .optional()
 })
-const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters)
+const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters).optional()
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -70,11 +70,16 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+      res.locals.si607Enabled =
+        res.locals?.featureFlags?.si607EnabledPrisons.includes(user.activeCaseLoad.caseLoadId) || false
 
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUncategorisedOffenders(res.locals, user, transactionalDbClient)
         : []
-      res.render('pages/categoriserHome', { offenders })
+
+      res.render('pages/categoriserHome', {
+        offenders,
+      })
     })
   )
 
@@ -161,6 +166,8 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+      res.locals.si607Enabled =
+        res.locals?.featureFlags?.si607EnabledPrisons.includes(user.activeCaseLoad.caseLoadId) || false
 
       const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
       if (validation.error) {
@@ -176,7 +183,7 @@ module.exports = function Index({
       }
 
       const offenders = user.activeCaseLoad
-        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient)
+        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient, validation.value)
         : []
 
       const riskChangeCount = await formService.getRiskChangeCount(
