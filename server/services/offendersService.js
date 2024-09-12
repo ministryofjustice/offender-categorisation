@@ -1799,6 +1799,7 @@ module.exports = function createOffendersService(
     calculateRecatDisplayStatus,
     decorateWithCategorisationData,
     getDueRecats,
+    getU21Recats,
     isAwaitingApprovalOrSecurity,
     isRejectedBySupervisorSuitableForDisplay,
   }
