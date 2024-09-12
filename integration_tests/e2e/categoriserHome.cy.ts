@@ -202,10 +202,10 @@ describe('Categoriser Home page', () => {
 
       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
       categoriserHomePage.validateToDoTableData([
-        ['OVERDUE', 'Missing, Awaiting', 'B0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
-        ['OVERDUE', 'Awaiting, Awaiting', 'B0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
-        ['OVERDUE', 'Approved, Awaiting', 'B0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
-        ['OVERDUE', 'Started, Uncategorised', 'B0036AA', '19', 'Started (Api User)', 'Engelbert Humperdinck', 'Edit'],
+        ['Overdue', 'Missing, Awaiting', 'B0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
+        ['Overdue', 'Awaiting, Awaiting', 'B0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+        ['Overdue', 'Approved, Awaiting', 'B0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
+        ['Overdue', 'Started, Uncategorised', 'B0036AA', '19', 'Started (Api User)', 'Engelbert Humperdinck', 'Edit'],
       ])
     })
   })
