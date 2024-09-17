@@ -79,6 +79,10 @@ COPY --from=build --chown=appuser:appgroup \
 COPY --from=build --chown=appuser:appgroup \
     /app/migrations ./migrations
 
+RUN mkdir -p /app/dist/scripts/tprs-data-extract
+COPY --from=build --chown=appuser:appgroup \
+    /app/scripts/tprs-data-extract ./dist/scripts/tprs-data-extract
+
 EXPOSE 3000
 ENV NODE_ENV='production'
 USER 2000
