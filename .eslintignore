@@ -3,3 +3,6 @@ public
 assets
 integration-tests/build
 *.html
+reporter-config.json
+audit-ci.json
+dist
