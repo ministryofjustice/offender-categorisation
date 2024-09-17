@@ -66,17 +66,14 @@ const getPrisonerSearchData = async ({ username, bookingIds }) => {
 
 const updateBookingMapWithSearchResult = ({ bookingMap, prisonerSearchData }) => {
   prisonerSearchData.forEach(result => {
-    // console.log('111', result)
     // ensure consistent key format
     const bookingIdStr = result.bookingId.toString()
     const existingBooking = bookingMap.get(bookingIdStr)
-    // console.log('222', existingBooking)
     const updatedBooking = {
       ...existingBooking,
       ...result,
       releaseDateObject: new Date(result.releaseDate),
     }
-    // console.log('updatedBooking', updatedBooking)
     bookingMap.set(bookingIdStr, updatedBooking)
   })
 
