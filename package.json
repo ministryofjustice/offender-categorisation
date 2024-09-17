@@ -18,7 +18,7 @@
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
     "snyk-protect": "snyk-protect",
-    "prepare": "npm run snyk-protect",
+    "prepare": "npm run snyk-protect && husky install",
     "copy-views": "cp -R server/views dist/server/",
     "int-test": "export $(cat feature.env) && cypress run --config video=false",
     "int-test-ui": "export $(cat feature.env) && cypress open",
@@ -77,6 +77,21 @@
       "test/*"
     ],
     "delay": 2500
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && tsc && npm test"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js,css}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@joi/date": "^2.1.1",
