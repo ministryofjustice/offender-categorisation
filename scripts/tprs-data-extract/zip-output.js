@@ -18,12 +18,10 @@ async function zipFiles(inputFilenames, outputFilename) {
 
 async function cleanUp(inputFilenames) {
   return new Promise((resolve, reject) => {
-    return (
-      Promise.all(inputFilenames.map(filename => fs.promises.unlink(filename)))
-        .then(() => resolve('All deleted'))
-        // eslint-disable-next-line prefer-promise-reject-errors
-        .catch(unlinkErr => reject(`Error deleting files: ${unlinkErr.message}`))
-    )
+    Promise.all(inputFilenames.map(filename => fs.promises.unlink(filename)))
+      .then(() => resolve('All deleted'))
+      // eslint-disable-next-line prefer-promise-reject-errors
+      .catch(unlinkErr => reject(`Error deleting files: ${unlinkErr.message}`))
   })
 }
 

@@ -1,5 +1,7 @@
-const { defaults } = require('./tprs-stats-helpers')
+/* eslint-disable no-console */
+/* eslint-disable import/newline-after-import */
 
+const { defaults } = require('./tprs-stats-helpers')
 const { getInitialCategoryBreakdowns } = require('./1207-initial-cat-breakdown')
 const { getTprsTotalsNationalInitial, getTprsTotalsNationalRecat } = require('./1207-tprs-national-totals')
 const { getTprsReviewsOutput } = require('./1208-tprs-reviews-output')
@@ -20,10 +22,6 @@ const { createMetaFile } = require('./meta-output')
 
   const startDate = startDateArg || defaults.startDate
   const endDate = endDateArg || defaults.endDate
-
-  function formatDateForFilename(dateStr) {
-    return dateStr.replace(/-/g, '')
-  }
 
   const toExtract = [
     {
@@ -234,21 +232,16 @@ const { createMetaFile } = require('./meta-output')
 
   console.log('all csv files created.')
 
-  const fmtStart = formatDateForFilename(startDate)
-  const fmtEnd = formatDateForFilename(endDate)
-
   console.log('creating meta file...')
   const metaFile = await createMetaFile({
     fileName: 'readme.txt',
-    contents: `Data extract stats from: ${fmtStart}, to: ${fmtEnd}`,
+    contents: `Data extract stats from: ${startDate}, to: ${endDate}`,
   })
   console.log('created meta file')
 
-  const exportFileName = `tprs_export__from_${fmtStart}__to_${fmtEnd}`
-
-  console.log('beginning export...', { exportFileName })
+  console.log('beginning export...')
 
   await createExport([...csvFiles, metaFile])
 
-  console.log('export complete', { exportFileName })
+  console.log('export complete')
 })()
