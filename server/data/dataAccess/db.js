@@ -14,7 +14,7 @@ const pool = new Pool({
   ssl:
     config.db.sslEnabled === 'true'
       ? {
-          ca: fs.readFileSync('root.cert'),
+          ca: fs.readFileSync('/app/root.cert'),
           rejectUnauthorized: true,
         }
       : false,
