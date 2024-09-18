@@ -134,21 +134,23 @@
       </div>
     {% endif %}
 
-    {% set tableContainerClass = 'filterable-table-body-container' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else 'govuk-grid-column-full' %}
+    {% set tableContainerClass = 'filterable-table-body-container' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else 'govuk-grid-column-full govuk-!-padding-0' %}
 
     <div id="tableContainer" class="{{ tableContainerClass }}">
       {% if showRecategorisationPrioritisationFilter %}
         <div class="filterControls">
-          {{ govukButton({
-            id: "hideFilterButton",
-            text: "Show filter" if hideRecategoriserHomeFilter else "Hide filter",
-            classes: "govuk-button--secondary govuk-!-margin-bottom-0"
-          }) }}
+          <div>
+            {{ govukButton({
+              id: "hideFilterButton",
+              text: "Show filter" if hideRecategoriserHomeFilter else "Hide filter",
+              classes: "govuk-button--secondary govuk-!-margin-bottom-0"
+            }) }}
+          </div>
           <div class="govuk-!-margin-left-2">You have <b>{{ filters.suitabilityForOpenConditions|length }}</b> filter{{ 's' if filters.suitabilityForOpenConditions|length != 1 }} applied</div>
         </div>
       {% endif %}
       {% if offenders | length > 0 %}
-      <div style="width: 100%">
+      <div class="moj-scrollable-pane" style="width: 100%">
         <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
           <thead class="govuk-table__head">
 
