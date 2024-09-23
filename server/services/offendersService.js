@@ -17,10 +17,11 @@ const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
-const { filterListOfPrisoners } = require('./recategorisationFilter')
+const { filterListOfPrisoners } = require('./recategorisation/filter/recategorisationFilter')
 const {
   mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
-} = require('./recategorisation/recategorisationPrisonerSearch.dto')
+} = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
+const { isReviewOverdue } = require('./reviewStatusCalculator')
 
 const dirname = process.cwd()
 
@@ -35,11 +36,6 @@ function isCatA(c) {
 
 function getYear(isoDate) {
   return isoDate && isoDate.substring(0, 4)
-}
-
-function isOverdue(dbDate) {
-  const date = moment(dbDate, 'YYYY-MM-DD')
-  return date.isBefore(moment(0, 'HH'))
 }
 
 async function getSentenceMap(offenderList, prisonerSearchClient) {
@@ -820,7 +816,7 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isOverdue(nomisRecord.nextReviewDate),
+          overdue: isReviewOverdue(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -990,7 +986,7 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay,
-          overdue: isOverdue(nextReviewDate),
+          overdue: isReviewOverdue(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -1795,7 +1791,6 @@ module.exports = function createOffendersService(
     getPomMap,
     isInitialInProgress,
     statusTextDisplay,
-    isOverdue,
     calculateRecatDisplayStatus,
     decorateWithCategorisationData,
     getDueRecats,

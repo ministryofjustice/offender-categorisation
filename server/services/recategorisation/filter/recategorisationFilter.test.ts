@@ -1,4 +1,4 @@
-import makeTestPrisoner from '../../test/factories/prisoner.test-factory'
+import makeTestPrisoner from '../../../../test/factories/prisoner.test-factory'
 import {
   filterListOfPrisoners,
   LOW_RISK_OF_ESCAPE,
@@ -6,23 +6,25 @@ import {
   NO_CURRENT_TERRORISM_OFFENCES,
   NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS,
   NOT_MARKED_AS_NOT_FOR_RELEASE,
+  OVERDUE,
   STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
   TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS,
 } from './recategorisationFilter'
-import makeTestRecategorisationPrisonerSearchDto from './recategorisation/recategorisationPrisonerSearch.dto.test-factory'
-import makeTestPrisonerSearchAlertDto from '../data/prisonerSearch/alert/prisonerSearchAlert.dto.test-factory'
+import makeTestRecategorisationPrisonerSearchDto from '../prisonerSearch/recategorisationPrisonerSearch.dto.test-factory'
+import makeTestPrisonerSearchAlertDto from '../../../data/prisonerSearch/alert/prisonerSearchAlert.dto.test-factory'
 import {
   ESCAPE_RISK_ALERT_CODE,
   NOT_FOR_RELEASE_ALERT_CODE,
   ROTL_SUSPENSION_ALERT_CODE,
   TERRORIST_ACT_ALERT_CODE,
-} from '../data/prisonerSearch/alert/prisonerSearchAlert.dto'
-import makeTestPrisonerSearchIncentiveLevelDto from '../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto.test-factory'
+} from '../../../data/prisonerSearch/alert/prisonerSearchAlert.dto'
+import makeTestPrisonerSearchIncentiveLevelDto from '../../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto.test-factory'
 import {
   INCENTIVE_LEVEL_BASIC,
   INCENTIVE_LEVEL_STANDARD,
-} from '../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
-import makeTestNomisAdjudicationHearingDto from '../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto.test-factory'
+} from '../../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
+import makeTestNomisAdjudicationHearingDto from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto.test-factory'
+import makeTestRecategorisationHomeFiltersFilter from './recategorisationHomeFilter.test-factory'
 
 const nomisClient = {
   getOffenderAdjudications: jest.fn(),
@@ -49,7 +51,7 @@ afterEach(() => {
 describe('filterListOfPrisoners', () => {
   test('it should return the original list if no filters are set', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [] },
+      makeTestRecategorisationHomeFiltersFilter(),
       testPrisoners,
       new Map([[testBookingId, makeTestRecategorisationPrisonerSearchDto()]]),
       nomisClient,
@@ -60,7 +62,7 @@ describe('filterListOfPrisoners', () => {
   })
   test('it should filter out based on low risk of escape', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] },
+      makeTestRecategorisationHomeFiltersFilter({ suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] }),
       testPrisoners,
       new Map([
         [
@@ -80,7 +82,7 @@ describe('filterListOfPrisoners', () => {
   })
   test('it should not filter out based on low risk of escape when it is not an active alert', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] },
+      makeTestRecategorisationHomeFiltersFilter({ suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] }),
       testPrisoners,
       new Map([
         [
@@ -100,7 +102,7 @@ describe('filterListOfPrisoners', () => {
   })
   test('it should not filter out based on low risk of escape when it is an expired alert', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] },
+      makeTestRecategorisationHomeFiltersFilter({ suitabilityForOpenConditions: [LOW_RISK_OF_ESCAPE] }),
       testPrisoners,
       new Map([
         [
@@ -120,7 +122,7 @@ describe('filterListOfPrisoners', () => {
   })
   test('it should filter out based on terrorist act alert', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [NO_CURRENT_TERRORISM_OFFENCES] },
+      makeTestRecategorisationHomeFiltersFilter({ suitabilityForOpenConditions: [NO_CURRENT_TERRORISM_OFFENCES] }),
       testPrisoners,
       new Map([
         [
@@ -140,7 +142,9 @@ describe('filterListOfPrisoners', () => {
   })
   test('it should filter out based on ROTL alert', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS] },
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS],
+      }),
       testPrisoners,
       new Map([
         [
@@ -160,7 +164,7 @@ describe('filterListOfPrisoners', () => {
   })
   test('it should filter out based on not for release alert', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [NOT_MARKED_AS_NOT_FOR_RELEASE] },
+      makeTestRecategorisationHomeFiltersFilter({ suitabilityForOpenConditions: [NOT_MARKED_AS_NOT_FOR_RELEASE] }),
       testPrisoners,
       new Map([
         [
@@ -180,7 +184,9 @@ describe('filterListOfPrisoners', () => {
   })
   test('it should filter out based on incentive level', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL] },
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL],
+      }),
       testPrisoners,
       new Map([
         [
@@ -200,7 +206,9 @@ describe('filterListOfPrisoners', () => {
   })
   test('it should not filter out standard incentive level', async () => {
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL] },
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL],
+      }),
       testPrisoners,
       new Map([
         [
@@ -221,7 +229,9 @@ describe('filterListOfPrisoners', () => {
   test('it should filter out time left to serve being too soon', async () => {
     const date = '2024-03-24'
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS],
+      }),
       testPrisoners,
       new Map([
         [
@@ -240,7 +250,9 @@ describe('filterListOfPrisoners', () => {
   test('it should filter out time left to serve being too far away', async () => {
     const date = '2027-01-02'
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS],
+      }),
       testPrisoners,
       new Map([
         [
@@ -259,7 +271,9 @@ describe('filterListOfPrisoners', () => {
   test('it should not filter out prisoner with time left to serve within period', async () => {
     const dateElevenWeeksFromNow = '2024-03-25'
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS] },
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS],
+      }),
       testPrisoners,
       new Map([
         [
@@ -280,7 +294,9 @@ describe('filterListOfPrisoners', () => {
       makeTestNomisAdjudicationHearingDto({ offenderNo: testOffenderNumber }),
     ])
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS] },
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS],
+      }),
       testPrisoners,
       new Map(),
       nomisClient,
@@ -299,7 +315,9 @@ describe('filterListOfPrisoners', () => {
       makeTestNomisAdjudicationHearingDto({ offenderNo: 'TEST' }),
     ])
     const result = await filterListOfPrisoners(
-      { suitabilityForOpenConditions: [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS] },
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS],
+      }),
       testPrisoners,
       new Map(),
       nomisClient,
@@ -312,5 +330,24 @@ describe('filterListOfPrisoners', () => {
       [[testOffenderNumber], '2023-12-01', '2024-01-01', testAgencyId],
     ])
     expect(result).toEqual(testPrisoners)
+  })
+  test('it should filter out non overdue prisoners and leave overdue ones', async () => {
+    nomisClient.getOffenderAdjudications.mockResolvedValue([
+      makeTestNomisAdjudicationHearingDto({ offenderNo: 'TEST' }),
+    ])
+    const overduePrisoner = makeTestPrisoner(testBookingId, testOffenderNumber, '2023-12-01')
+    const nonOverduePrisoner = makeTestPrisoner(56789, 'DEF456', '2024-02-01')
+    const result = await filterListOfPrisoners(
+      makeTestRecategorisationHomeFiltersFilter({
+        dueDate: [OVERDUE],
+      }),
+      [overduePrisoner, nonOverduePrisoner],
+      new Map(),
+      nomisClient,
+      testAgencyId
+    )
+
+    expect(result.length).toBe(1)
+    expect(result).toEqual([overduePrisoner])
   })
 })
