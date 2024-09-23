@@ -1,7 +1,7 @@
 import { PrisonerSearchAlertDto } from './alert/prisonerSearchAlert.dto'
 import { PrisonerSearchIncentiveLevelDto } from './incentiveLevel/prisonerSearchIncentiveLevel.dto'
 
-type LegalStatus =
+export type LegalStatus =
   | 'RECALL'
   | 'DEAD'
   | 'INDETERMINATE_SENTENCE'
