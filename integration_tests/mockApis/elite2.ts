@@ -1427,7 +1427,11 @@ const verifyUpdateNextReviewDate = ({ date }: { date: string }) =>
   })
 
 const stubRecategorise = (
-  { recategorisations, latestOnly } = { recategorisations: undefined, latestOnly: undefined }
+  { recategorisations, latestOnly, agencyId = 'LEI' } = {
+    recategorisations: undefined,
+    latestOnly: undefined,
+    agencyId: undefined,
+  }
 ) => {
   let recategorisationsResponse = recategorisations
   if (typeof recategorisations === 'undefined' || !Array.isArray(recategorisations)) {
@@ -1454,11 +1458,11 @@ const stubRecategorise = (
   }
   const twoMonthsFromToday = moment().add(2, 'months').format('yyyy-MM-DD')
 
-  const recategorisationsStub = () =>
+  const recategorisationsStub = agencyId =>
     stubFor({
       request: {
         method: 'GET',
-        url: `/elite2/api/offender-assessments/category/LEI?type=RECATEGORISATIONS&date=${twoMonthsFromToday}`,
+        url: `/elite2/api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS&date=${twoMonthsFromToday}`,
       },
       response: {
         status: 200,
@@ -1499,8 +1503,82 @@ const stubRecategorise = (
       },
     })
 
-  return Promise.all([recategorisationsStub(), latestOnlyStub()])
+  return Promise.all([recategorisationsStub(agencyId), latestOnlyStub()])
 }
+
+const stubRecategoriseSI607 = ({ agencyId, cutoff }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/${agencyId}?type=RECATEGORISATIONS&date=${cutoff}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          offenderNo: 'A1234XY',
+          bookingId: 2199988,
+          firstName: 'JOHN',
+          lastName: 'SMITH',
+          assessmentDate: '2023-03-04',
+          approvalDate: '2023-03-04',
+          assessmentSeq: 9,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-04',
+        },
+        {
+          offenderNo: 'B1234ZX',
+          bookingId: 2286755,
+          firstName: 'ALAN',
+          lastName: 'JOHNSON',
+          assessmentDate: '2023-03-05',
+          approvalDate: '2023-03-05',
+          assessmentSeq: 3,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-05',
+        },
+        {
+          offenderNo: 'C1994YO',
+          bookingId: 1010998,
+          firstName: 'PETER',
+          lastName: 'GRIMES',
+          assessmentDate: '2023-03-06',
+          approvalDate: '2023-03-06',
+          assessmentSeq: 99,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-06',
+        },
+        {
+          offenderNo: 'D7654HP',
+          bookingId: 1020304,
+          firstName: 'MATHEW',
+          lastName: 'ALAN',
+          assessmentDate: '2023-03-07',
+          approvalDate: '2023-03-07',
+          assessmentSeq: 34,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-07',
+        },
+        {
+          offenderNo: 'E3333WE',
+          bookingId: 4098987,
+          firstName: 'HARRY',
+          lastName: 'WEASLEY',
+          assessmentDate: '2023-03-08',
+          approvalDate: '2023-03-08',
+          assessmentSeq: 6,
+          assessStatus: 'A',
+          category: 'C',
+          nextReviewDate: '2023-09-08',
+        },
+      ],
+    },
+  })
 
 const stubAdjudicationHearings = ({ agencyId, fromDate, toDate }: { agencyId: string, fromDate: string, toDate: string }): SuperAgentRequest =>
   stubFor({
@@ -1549,5 +1627,6 @@ export default {
   verifySupervisorApprove,
   verifyUpdateNextReviewDate,
   stubRecategorise,
+  stubRecategoriseSI607,
   stubAdjudicationHearings,
 }
