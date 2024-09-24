@@ -19,9 +19,9 @@ import { NomisAdjudicationHearingDto } from '../../../data/nomis/adjudicationHea
 import { isReviewOverdue } from '../../reviewStatusCalculator'
 import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
 
-const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
-const DUE_DATE = 'dueDate'
-const POM = 'pom'
+export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
+export const DUE_DATE = 'dueDate'
+export const POM = 'pom'
 
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
 const LOW_ROSH = 'lowRosh'

@@ -103,10 +103,8 @@
           {% for key, filterNames in filters %}
             {% set selectedItems = [] %}
             {% for filter in filterNames %}
-              {% set startPositionOfFilterInUrl = fullUrl.indexOf(filter) - (key.length + 7) %}
-              {% set removalHref = fullUrl.substring(0, (startPositionOfFilterInUrl - 1) if fullUrl[startPositionOfFilterInUrl - 1] == '&' or numberOfFiltersApplied == 1 else startPositionOfFilterInUrl) + fullUrl.substr(fullUrl.indexOf(filter) + filter.length + (0 if fullUrl[startPositionOfFilterInUrl - 1] == '&' else 1), fullUrl.length) %}
               {% set selectedItems = (selectedItems.push({
-                href: removalHref,
+                href: removeFilterFromFullUrl(filter, key, fullUrl, numberOfFiltersApplied),
                 text: allFilters[key][filter]
               }), selectedItems) %}
             {% endfor %}
