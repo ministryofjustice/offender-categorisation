@@ -52,13 +52,15 @@ if (hideFilterButton) {
     const tableContainer = document.getElementById('tableContainer');
     if (event.target.innerText === 'Hide filter') {
       filterContainer.classList.add('govuk-visually-hidden')
-      tableContainer.classList.remove("govuk-grid-column-two-thirds")
+      tableContainer.classList.remove("filterable-table-body-container")
       tableContainer.classList.add("govuk-grid-column-full")
+      tableContainer.classList.add("govuk-!-padding-0")
       event.target.innerText = 'Show filter'
       hideFilter = true
     } else {
       tableContainer.classList.remove('govuk-grid-column-full')
-      tableContainer.classList.add('govuk-grid-column-two-thirds')
+      tableContainer.classList.remove('govuk-!-padding-0')
+      tableContainer.classList.add('filterable-table-body-container')
       filterContainer.classList.remove('govuk-visually-hidden')
       event.target.innerText = 'Hide filter'
     }
