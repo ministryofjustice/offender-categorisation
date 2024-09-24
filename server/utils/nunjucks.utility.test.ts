@@ -15,7 +15,7 @@ import {
 } from '../services/recategorisation/filter/recategorisationFilter'
 
 describe('removeFilterFromFullUrl', () => {
-  test('it should remove filter when there is only one filter applied', async () => {
+  test('it should remove filter when there is only one filter applied', () => {
     const result = removeFilterFromFullUrl(
       LOW_RISK_OF_ESCAPE,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
@@ -53,7 +53,7 @@ describe('removeFilterFromFullUrl', () => {
     ],
   ])(
     'It should remove %s filter correctly with %s key when there are multiple filters applied',
-    async (
+    (
       filter:
         | RecategorisationHomeFilterSuitabilityForOpenConditionsValue
         | RecategorisationHomeFilterDueDateValue
