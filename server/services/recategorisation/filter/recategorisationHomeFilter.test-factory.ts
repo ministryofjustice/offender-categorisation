@@ -5,6 +5,7 @@ const makeTestRecategorisationHomeFiltersFilter = (
 ): RecategorisationHomeFilters => ({
   suitabilityForOpenConditions: recategorisationHomeFilters.suitabilityForOpenConditions ?? [],
   dueDate: recategorisationHomeFilters.dueDate ?? [],
+  pom: recategorisationHomeFilters.pom ?? [],
 })
 
 export default makeTestRecategorisationHomeFiltersFilter

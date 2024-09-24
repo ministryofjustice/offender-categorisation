@@ -135,6 +135,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks()
+  userService.getUser.mockReset()
 })
 
 describe('recat', () => {

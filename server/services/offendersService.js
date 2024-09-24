@@ -756,7 +756,9 @@ module.exports = function createOffendersService(
       allOffenders,
       prisonerSearchData,
       nomisClient,
-      agencyId
+      agencyId,
+      pomMap,
+      user.staffId
     )
 
     return Promise.all(
@@ -942,7 +944,9 @@ module.exports = function createOffendersService(
       eliteCategorisationResultsU21,
       u21map,
       nomisClient,
-      agencyId
+      agencyId,
+      pomMap,
+      user.staffId
     )
 
     return Promise.all(
