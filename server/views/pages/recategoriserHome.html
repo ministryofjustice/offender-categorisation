@@ -153,72 +153,6 @@
       <div class="moj-scrollable-pane" style="width: 100%">
         <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
           <thead class="govuk-table__head">
-
-<<<<<<< Updated upstream
-          <tr class="govuk-table__row">
-            <th class="govuk-table__header" scope="col">Due date</th>
-            <th class="govuk-table__header" scope="col">Name</th>
-            <th class="govuk-table__header" scope="col">Prison no</th>
-            <th class="govuk-table__header" scope="col">Reason for review</th>
-            <th class="govuk-table__header" scope="col">Status</th>
-            <th class="govuk-table__header" scope="col">POM</th>
-            <th class="govuk-table__header" scope="col"></th>
-          </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-          {% for row in offenders %}
-          <tr class="govuk-table__row ">
-            <td class="govuk-table__cell">
-              {% if row.overdue %}
-                {{ govukTag({
-                  text: 'Overdue',
-                  classes: 'govuk-tag--red',
-                  attributes: { 'title': 'Due date: ' + row.nextReviewDateDisplay }
-                }) }}
-              {% else %}
-                {{ row.nextReviewDateDisplay }}
-              {% endif %}
-            </td>
-            <td class="govuk-table__cell"><a class="govuk-!-text-break-word" target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
-              {% if row.securityReferred %}
-                {{ govukDetails({
-                summaryText: 'Security referred',
-                text: 'Security have flagged this person as being of interest. They will be automatically referred to security when the categorisation starts.',
-                classes: 'govuk-body govuk-!-font-size-14 govuk-!-margin-bottom-0'
-                }) }}
-              {% endif %}
-            </td>
-            <td class="govuk-table__cell">{{ row.offenderNo }}</td>
-            <td class="govuk-table__cell">{{ row.reason.value }}</td>
-            <td class="govuk-table__cell">
-              {% if row.displayStatus == 'Back from Supervisor' %}
-                {{ govukTag({
-                  html: 'Rejected by<br/>supervisor'
-                }) }}
-              {% else %}
-                {{ row.displayStatus }}
-              {% endif %}
-            </td>
-            <td class="govuk-table__cell govuk-!-text-break-word">{{ row.pom }}</td>
-            <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
-              {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
-              {% set href = ("/form/awaitingApprovalView/" + row.bookingId) if row.displayStatus == 'Awaiting approval'
-                       else ("/tasklistRecat/" + row.bookingId + '?reason=' + row.reason.name) %}
-              {% set classes = basicClasses if row.buttonText == 'Start' else basicClasses + " grey-button" %}
-              {% if row.pnomis %}
-                <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ row.pnomis }}</div>
-              {% else %}
-                {{ govukButton({
-                  text: row.buttonText,
-                  href: href if not locked,
-                  attributes: { 'data-prevent-double-click': 'true' },
-                  classes: classes
-                }) }}
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-=======
         <tr class="govuk-table__row">
           <th class="govuk-table__header" scope="col">Due date</th>
           <th class="govuk-table__header" scope="col">Name</th>
@@ -242,7 +176,7 @@
               {{ row.nextReviewDateDisplay }}
             {% endif %}
           </td>
-          <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
+          <td class="govuk-table__cell"><a class="govuk-!-text-break-word" target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
             {% if row.securityReferred %}
               {{ govukDetails({
               summaryText: 'Security referred',
@@ -262,7 +196,7 @@
               {{ row.displayStatus }}
             {% endif %}
           </td>
-          <td class="govuk-table__cell">{{ row.pom }}</td>
+          <td class="govuk-table__cell govuk-!-text-break-word">{{ row.pom }}</td>
           <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
             {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
             {% set href = ("/form/awaitingApprovalView/" + row.bookingId) if row.displayStatus == 'Awaiting approval'
@@ -281,8 +215,6 @@
           </td>
         </tr>
         {% endfor %}
->>>>>>> Stashed changes
-
           </tbody>
         </table>
       </div>
