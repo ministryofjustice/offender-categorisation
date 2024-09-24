@@ -1,4 +1,19 @@
-export const removeFilterFromFullUrl = (filter, key, fullUrl, numberOfFiltersApplied) => {
+import { RecategorisationHomeFilters } from '../services/recategorisation/filter/recategorisationFilter'
+import type {
+  RecategorisationHomeFilterDueDateValue,
+  RecategorisationHomeFilterPomValue,
+  RecategorisationHomeFilterSuitabilityForOpenConditionsValue,
+} from '../services/recategorisation/filter/recategorisationFilter'
+
+export const removeFilterFromFullUrl = (
+  filter:
+    | RecategorisationHomeFilterSuitabilityForOpenConditionsValue
+    | RecategorisationHomeFilterDueDateValue
+    | RecategorisationHomeFilterPomValue,
+  key: keyof RecategorisationHomeFilters,
+  fullUrl: string,
+  numberOfFiltersApplied: number
+) => {
   const startPositionOfFilterInUrl = fullUrl.indexOf(filter) - (key.length + 7)
   return (
     fullUrl.substring(

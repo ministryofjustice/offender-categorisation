@@ -5,10 +5,13 @@ import {
   NOT_MARKED_AS_NOT_FOR_RELEASE,
   OVERDUE,
   POM,
+  RecategorisationHomeFilterDueDateValue,
+  RecategorisationHomeFilterPomValue, RecategorisationHomeFilters,
+  RecategorisationHomeFilterSuitabilityForOpenConditionsValue,
   REVIEWS_ASSIGNED_TO_ME,
   STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
-  SUITABILIGY_FOR_OPEN_CONDITIONS,
-} from '../services/recategorisation/filter/recategorisationFilter'
+  SUITABILIGY_FOR_OPEN_CONDITIONS
+} from "../services/recategorisation/filter/recategorisationFilter";
 
 describe('removeFilterFromFullUrl', () => {
   test('it should remove filter when there is only one filter applied', async () => {
@@ -49,7 +52,14 @@ describe('removeFilterFromFullUrl', () => {
     ],
   ])(
     'It should remove %s filter correctly with %s key when there are multiple filters applied',
-    async (filter, key, expectedResult) => {
+    async (
+      filter:
+        | RecategorisationHomeFilterSuitabilityForOpenConditionsValue
+        | RecategorisationHomeFilterDueDateValue
+        | RecategorisationHomeFilterPomValue,
+      key: keyof RecategorisationHomeFilters,
+      expectedResult: string
+    ) => {
       const result = removeFilterFromFullUrl(
         filter,
         key,

@@ -34,19 +34,22 @@ export const NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS = 'noAdjudicationsInTheLastTh
 export const OVERDUE = 'overdue'
 export const REVIEWS_ASSIGNED_TO_ME = 'reviewsAssignedToMe'
 
+export type RecategorisationHomeFilterSuitabilityForOpenConditionsValue =
+  | typeof LOW_RISK_OF_ESCAPE
+  | typeof LOW_ROSH
+  | typeof NO_CURRENT_TERRORISM_OFFENCES
+  | typeof NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS
+  | typeof NOT_MARKED_AS_NOT_FOR_RELEASE
+  | typeof STANDARD_OR_ENHANCED_INCENTIVE_LEVEL
+  | typeof TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS
+  | typeof NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS
+export type RecategorisationHomeFilterDueDateValue = typeof OVERDUE
+export type RecategorisationHomeFilterPomValue = typeof REVIEWS_ASSIGNED_TO_ME
+
 export interface RecategorisationHomeFilters {
-  [SUITABILIGY_FOR_OPEN_CONDITIONS]: Array<
-    | typeof LOW_RISK_OF_ESCAPE
-    | typeof LOW_ROSH
-    | typeof NO_CURRENT_TERRORISM_OFFENCES
-    | typeof NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS
-    | typeof NOT_MARKED_AS_NOT_FOR_RELEASE
-    | typeof STANDARD_OR_ENHANCED_INCENTIVE_LEVEL
-    | typeof TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS
-    | typeof NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS
-  >
-  [DUE_DATE]: Array<typeof OVERDUE>
-  [POM]: Array<typeof REVIEWS_ASSIGNED_TO_ME>
+  [SUITABILIGY_FOR_OPEN_CONDITIONS]: Array<RecategorisationHomeFilterSuitabilityForOpenConditionsValue >
+  [DUE_DATE]: Array<RecategorisationHomeFilterDueDateValue>
+  [POM]: Array<RecategorisationHomeFilterPomValue>
 }
 
 export const recategorisationHomeFilters = {
