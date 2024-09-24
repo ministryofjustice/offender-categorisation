@@ -47,7 +47,7 @@ export type RecategorisationHomeFilterDueDateValue = typeof OVERDUE
 export type RecategorisationHomeFilterPomValue = typeof REVIEWS_ASSIGNED_TO_ME
 
 export interface RecategorisationHomeFilters {
-  [SUITABILIGY_FOR_OPEN_CONDITIONS]: Array<RecategorisationHomeFilterSuitabilityForOpenConditionsValue >
+  [SUITABILIGY_FOR_OPEN_CONDITIONS]: Array<RecategorisationHomeFilterSuitabilityForOpenConditionsValue>
   [DUE_DATE]: Array<RecategorisationHomeFilterDueDateValue>
   [POM]: Array<RecategorisationHomeFilterPomValue>
 }

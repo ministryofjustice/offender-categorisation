@@ -6,12 +6,13 @@ import {
   OVERDUE,
   POM,
   RecategorisationHomeFilterDueDateValue,
-  RecategorisationHomeFilterPomValue, RecategorisationHomeFilters,
+  RecategorisationHomeFilterPomValue,
+  RecategorisationHomeFilters,
   RecategorisationHomeFilterSuitabilityForOpenConditionsValue,
   REVIEWS_ASSIGNED_TO_ME,
   STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
-  SUITABILIGY_FOR_OPEN_CONDITIONS
-} from "../services/recategorisation/filter/recategorisationFilter";
+  SUITABILIGY_FOR_OPEN_CONDITIONS,
+} from '../services/recategorisation/filter/recategorisationFilter'
 
 describe('removeFilterFromFullUrl', () => {
   test('it should remove filter when there is only one filter applied', async () => {
