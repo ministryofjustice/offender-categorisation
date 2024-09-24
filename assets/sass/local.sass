@@ -5,11 +5,6 @@
   @page
     margin-bottom: 0
 
-.moj-tag--red
-  border: 2px solid #b10e1e
-  background-color: #b10e1e
-  color: #ffffff
-
 .header-content
   width: auto
 
@@ -278,9 +273,21 @@ dt.summary-list-title
   -webkit-text-decoration-skip: none
   text-decoration-skip: none
 
+$sideFilterWidth: 350px
+
+.filterable-table-container
+  display: flex
+
+.filterable-table-body-container
+  width: calc(100% - $sideFilterWidth)
+
+.filterable-table-filter-container
+  width: $sideFilterWidth
+  margin-right: 15px
+
 .filterInfoBox
   background: govuk-colour("light-grey")
-  padding: 20px
+  padding: 15px 10px
   font-size: 19px
   margin-bottom: 20px
 
@@ -291,6 +298,11 @@ dt.summary-list-title
   margin-bottom: 10px
 
 .moj-filter__options
+  .govuk-checkboxes__item
+    margin-right: -25px
+  .govuk-label
+    padding-right: 0
+
   .govuk-button
     display: none
   .replacementApplyFilterButtonContainer
