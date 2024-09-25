@@ -1,4 +1,5 @@
 const config = require('../config')
+const logger = require('../../log')
 
 module.exports = async (req, res, next) => {
   const si607EnvVar = config.featureFlags.si607 ?? ''
@@ -7,6 +8,11 @@ module.exports = async (req, res, next) => {
   res.locals.featureFlags = {
     si607EnabledPrisons,
   }
+
+  logger.debug('SI-607', {
+    featureFlags: res.locals.featureFlags,
+    si607EnvVar,
+  })
 
   return next()
 }
