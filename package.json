@@ -13,7 +13,7 @@
     "build": "npm run compile-sass && tsc && npm run copy-views",
     "clean": "rm -rf assets/stylesheets/* .port.tmp *.log dist build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
-    "test": "jest",
+    "test": "jest --detectOpenHandles --runInBand --forceExit",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
@@ -106,7 +106,7 @@
     "joi": "^17.12.0",
     "jwt-decode": "^2.2.0",
     "knex": "^2.4.2",
-    "lru-cache": "^6.0.0",
+    "lru-cache": "^11.0.0",
     "moment": "^2.30.1",
     "morgan": "^1.10.0",
     "nocache": "^3.0.4",
@@ -120,7 +120,8 @@
     "redis": "^3.1.2",
     "sqs-consumer": "^5.8.0",
     "superagent": "^9.0.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@types/bunyan": "^1.8.11",

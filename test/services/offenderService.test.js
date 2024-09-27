@@ -3496,43 +3496,6 @@ describe('isInitialInProgress', () => {
   })
 })
 
-describe('isOverdue', () => {
-  it('returns true if the date is before the current time', () => {
-    const dbDate = '2022-01-01'
-    const now = moment('2022-01-02', 'YYYY-MM-DD')
-    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
-
-    expect(service.isOverdue(dbDate)).toBe(true)
-  })
-
-  it('returns false if the date is after the current time', () => {
-    const dbDate = '2022-01-02'
-    const now = moment('2022-01-01', 'YYYY-MM-DD')
-    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
-
-    expect(service.isOverdue(dbDate)).toBe(false)
-  })
-
-  it('returns false if the date is the same as the current time', () => {
-    const dbDate = '2022-01-01'
-    const now = moment('2022-01-01', 'YYYY-MM-DD')
-    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
-
-    expect(service.isOverdue(dbDate)).toBe(false)
-  })
-
-  it('returns false if the input is null or undefined', () => {
-    expect(service.isOverdue(null)).toBe(false)
-    expect(service.isOverdue(undefined)).toBe(false)
-  })
-
-  it('returns false if the input is not a string in the format of "YYYY-MM-DD"', () => {
-    expect(service.isOverdue('2022-01-01T00:00:00')).toBe(false)
-    expect(service.isOverdue('January 1, 2022')).toBe(false)
-    expect(service.isOverdue('22-01-01')).toBe(false)
-  })
-})
-
 describe('calculateRecatDisplayStatus', () => {
   it('returns "Not started" when given an empty or undefined displayStatus', () => {
     expect(service.calculateRecatDisplayStatus(undefined)).toBe('Not started')
@@ -3869,6 +3832,291 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
     it(description, () => {
       const result = service.isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate)
       expect(result).toBe(expected)
+    })
+  })
+
+  describe('getU21Recats', () => {
+    let peterPan
+
+    beforeEach(() => {
+      peterPan = {
+        bookingId: 123,
+        prisonerNumber: 'G12345',
+        firstName: 'PETER',
+        lastName: 'PAN',
+        dateOfBirth: '1998-05-01',
+        category: 'I',
+        legalStatus: 'SENTENCED',
+      }
+    })
+
+    it('should return an empty array when no data is available', async () => {
+      prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
+
+      const result = await service.getU21Recats(
+        'A1234AA',
+        {},
+        nomisClient,
+        allocationClient,
+        prisonerSearchClient,
+        mockTransactionalClient
+      )
+
+      expect(result).toEqual([])
+    })
+
+    it('it should return the under 21 result when found', async () => {
+      const u21Data = [peterPan]
+
+      const u21CatData = [{ bookingId: 123, assessStatus: 'P' }]
+
+      const expected = [
+        {
+          offenderNo: 'G12345',
+          displayName: 'Pan, Peter',
+          bookingId: 123,
+          displayStatus: 'Awaiting approval',
+          nextReviewDateDisplay: '01/05/2019',
+          reason: ReviewReason.AGE,
+          overdue: true,
+          buttonText: 'View',
+        },
+      ]
+      prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
+      nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+      // no manually started recats
+      formService.getCategorisationRecords.mockResolvedValue([])
+      formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
+
+      const result = await service.getU21Recats(
+        'A1234AA',
+        {},
+        nomisClient,
+        allocationClient,
+        prisonerSearchClient,
+        mockTransactionalClient
+      )
+      expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
+      expect(formService.getCategorisationRecord).toBeCalledTimes(1)
+      expect(result).toMatchObject(expected)
+    })
+
+    it('should return a filtered list of u21 offenders pending recats - keeping nulls for records that have been filtered', async () => {
+      const u21Data = [
+        {
+          bookingId: 456,
+          prisonerNumber: 'G45678',
+          firstName: 'SIMON',
+          lastName: 'SIMPSON',
+          dateOfBirth: '1998-04-02',
+          category: 'I',
+          legalStatus: 'CIVIL_PRISONER',
+        },
+        {
+          bookingId: 123,
+          prisonerNumber: 'G12345',
+          firstName: 'PETER',
+          lastName: 'PAN',
+          dateOfBirth: '1998-05-01',
+          category: 'I',
+          legalStatus: 'SENTENCED',
+        },
+      ]
+
+      const u21CatData = [
+        { bookingId: 123, assessStatus: 'P' },
+        { bookingId: 456, assessStatus: 'P' },
+      ]
+
+      const expected = [
+        null,
+        {
+          offenderNo: 'G12345',
+          bookingId: 123,
+          firstName: 'PETER',
+          lastName: 'PAN',
+          dateOfBirth: '1998-05-01',
+          displayName: 'Pan, Peter',
+          displayStatus: 'Awaiting approval',
+          dbStatus: 'AWAITING_APPROVAL',
+          reason: { name: 'AGE', value: 'Age 21' },
+          nextReviewDateDisplay: '01/05/2019',
+          overdue: true,
+          dbRecordExists: true,
+          pnomis: 'PNOMIS',
+          buttonText: 'View',
+          pom: 'Steve Rendell',
+        },
+      ]
+
+      prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
+      nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+      formService.getCategorisationRecord.mockResolvedValueOnce({
+        bookingId: 456,
+        catType: CatType.INITIAL.name,
+        status: Status.STARTED.name,
+      })
+      formService.getCategorisationRecord.mockResolvedValueOnce({
+        bookingId: 123,
+        status: Status.AWAITING_APPROVAL.name,
+      })
+
+      const result = await service.getU21Recats(
+        'A1234AA',
+        {},
+        nomisClient,
+        allocationClient,
+        prisonerSearchClient,
+        mockTransactionalClient
+      )
+      expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
+      expect(formService.getCategorisationRecord).toBeCalledTimes(2)
+      expect(result).toMatchObject(expected)
+    })
+
+    describe('SI-607 - filter by legal status', () => {
+      describe('pre-change - remove after SI-607 is complete', () => {
+        ;[
+          'RECALL',
+          'DEAD',
+          'INDETERMINATE_SENTENCE',
+          'SENTENCED',
+          'CONVICTED_UNSENTENCED',
+          'CIVIL_PRISONER',
+          'IMMIGRATION_DETAINEE',
+          'REMAND',
+          'UNKNOWN',
+          'OTHER',
+        ].forEach(legalStatus => {
+          it(`should allow the legal status of: ${legalStatus}`, async () => {
+            const u21Data = [peterPan]
+
+            const u21CatData = [{ bookingId: 123, assessStatus: 'P' }]
+
+            const expected = [
+              {
+                offenderNo: 'G12345',
+                bookingId: 123,
+                firstName: 'PETER',
+                lastName: 'PAN',
+                dateOfBirth: '1998-05-01',
+                displayName: 'Pan, Peter',
+                displayStatus: 'Awaiting approval',
+                dbStatus: 'AWAITING_APPROVAL',
+                reason: { name: 'AGE', value: 'Age 21' },
+                nextReviewDateDisplay: '01/05/2019',
+                overdue: true,
+                dbRecordExists: true,
+                pnomis: 'PNOMIS',
+                buttonText: 'View',
+                pom: 'Steve Rendell',
+              },
+            ]
+
+            prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
+            nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+            formService.getCategorisationRecord.mockResolvedValueOnce({
+              bookingId: 123,
+              status: Status.AWAITING_APPROVAL.name,
+            })
+
+            const result = await service.getU21Recats(
+              'A1234AA',
+              {},
+              nomisClient,
+              allocationClient,
+              prisonerSearchClient,
+              mockTransactionalClient
+            )
+            expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
+            expect(formService.getCategorisationRecord).toBeCalledTimes(1)
+            expect(result).toMatchObject(expected)
+          })
+        })
+      })
+
+      describe('with feature flag enabled', () => {
+        ;['RECALL', 'DEAD', 'CONVICTED_UNSENTENCED', 'IMMIGRATION_DETAINEE', 'REMAND', 'UNKNOWN', 'OTHER'].forEach(
+          legalStatus => {
+            it(`should filter the legal status of: ${legalStatus}`, async () => {
+              const u21Data = [{ ...peterPan, legalStatus }]
+
+              const u21CatData = [{ bookingId: 123, assessStatus: 'P' }]
+
+              const expected = [null]
+
+              prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
+              nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+              formService.getCategorisationRecord.mockResolvedValueOnce({
+                bookingId: 123,
+                status: Status.AWAITING_APPROVAL.name,
+              })
+
+              const result = await service.getU21Recats(
+                'A1234AA',
+                {},
+                nomisClient,
+                allocationClient,
+                prisonerSearchClient,
+                mockTransactionalClient,
+                {},
+                { si607Enabled: true }
+              )
+              expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
+              expect(formService.getCategorisationRecord).toBeCalledTimes(1)
+              expect(result).toMatchObject(expected)
+            })
+          }
+        )
+        ;['INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].forEach(legalStatus => {
+          it(`should allow the legal status of: ${legalStatus}`, async () => {
+            const u21Data = [{ ...peterPan, legalStatus }]
+
+            const u21CatData = [{ bookingId: 123, assessStatus: 'P' }]
+
+            const expected = [
+              {
+                offenderNo: 'G12345',
+                bookingId: 123,
+                firstName: 'PETER',
+                lastName: 'PAN',
+                dateOfBirth: '1998-05-01',
+                displayName: 'Pan, Peter',
+                displayStatus: 'Awaiting approval',
+                dbStatus: 'AWAITING_APPROVAL',
+                reason: { name: 'AGE', value: 'Age 21' },
+                nextReviewDateDisplay: '01/05/2019',
+                overdue: true,
+                dbRecordExists: true,
+                pnomis: 'PNOMIS',
+                buttonText: 'View',
+                pom: 'Steve Rendell',
+              },
+            ]
+
+            prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue(u21Data)
+            nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
+            formService.getCategorisationRecord.mockResolvedValueOnce({
+              bookingId: 123,
+              status: Status.AWAITING_APPROVAL.name,
+            })
+
+            const result = await service.getU21Recats(
+              'A1234AA',
+              {},
+              nomisClient,
+              allocationClient,
+              prisonerSearchClient,
+              mockTransactionalClient,
+              {},
+              { si607Enabled: true }
+            )
+            expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
+            expect(formService.getCategorisationRecord).toBeCalledTimes(1)
+            expect(result).toMatchObject(expected)
+          })
+        })
+      })
     })
   })
 })

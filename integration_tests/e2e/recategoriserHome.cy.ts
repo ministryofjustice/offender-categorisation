@@ -167,11 +167,11 @@ describe('Recategoriser Home page', () => {
 
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.validateToDoTableData([
-        ['OVERDUE', 'Smith, John', 'A1234XY', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-        ['OVERDUE', 'Johnson, Alan', 'B1234ZX', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-        ['OVERDUE', 'Grimes, Peter', 'C1994YO', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-        ['OVERDUE', 'Alan, Mathew', 'D7654HP', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-        ['OVERDUE', 'Weasley, Harry', 'E3333WE', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['Overdue', 'Smith, John', 'A1234XY', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['Overdue', 'Johnson, Alan', 'B1234ZX', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['Overdue', 'Grimes, Peter', 'C1994YO', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['Overdue', 'Alan, Mathew', 'D7654HP', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['Overdue', 'Weasley, Harry', 'E3333WE', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
       ])
     })
 
@@ -212,9 +212,9 @@ describe('Recategoriser Home page', () => {
 
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.validateToDoTableData([
-        ['OVERDUE', 'Smith, John', 'A1234XY', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-        ['OVERDUE', 'Grimes, Peter', 'C1994YO', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-        ['OVERDUE', 'Weasley, Harry', 'E3333WE', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['Overdue', 'Smith, John', 'A1234XY', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['Overdue', 'Grimes, Peter', 'C1994YO', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
+        ['Overdue', 'Weasley, Harry', 'E3333WE', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
       ])
     })
 

@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { RecategorisationPrisonerSearchDto } from './recategorisation/recategorisationPrisonerSearch.dto'
+import { RecategorisationPrisonerSearchDto } from '../prisonerSearch/recategorisationPrisonerSearch.dto'
 import {
   ESCAPE_LIST_ALERT_CODE,
   ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
@@ -8,14 +8,20 @@ import {
   RESTRICTED_ROTL_ALERT_CODE,
   ROTL_SUSPENSION_ALERT_CODE,
   TERRORIST_ACT_ALERT_CODE,
-} from '../data/prisonerSearch/alert/prisonerSearchAlert.dto'
+} from '../../../data/prisonerSearch/alert/prisonerSearchAlert.dto'
 import {
   INCENTIVE_LEVEL_ENHANCED,
   INCENTIVE_LEVEL_ENHANCED_THREE,
   INCENTIVE_LEVEL_ENHANCED_TWO,
   INCENTIVE_LEVEL_STANDARD,
-} from '../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
-import { NomisAdjudicationHearingDto } from '../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
+} from '../../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
+import { NomisAdjudicationHearingDto } from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
+import { isReviewOverdue } from '../../reviewStatusCalculator'
+import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
+
+export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
+export const DUE_DATE = 'dueDate'
+export const POM = 'pom'
 
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
 const LOW_ROSH = 'lowRosh'
@@ -25,22 +31,29 @@ export const NOT_MARKED_AS_NOT_FOR_RELEASE = 'notMarkedAsNotForRelease'
 export const STANDARD_OR_ENHANCED_INCENTIVE_LEVEL = 'standardOrEnhancedIncentiveLevel'
 export const TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS = 'timeLeftToServeBetween12WeeksAnd3Years'
 export const NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS = 'noAdjudicationsInTheLastThreeMonths'
+export const OVERDUE = 'overdue'
+export const REVIEWS_ASSIGNED_TO_ME = 'reviewsAssignedToMe'
 
-interface RecategorisationHomeFilters {
-  suitabilityForOpenConditions: Array<
-    | typeof LOW_RISK_OF_ESCAPE
-    | typeof LOW_ROSH
-    | typeof NO_CURRENT_TERRORISM_OFFENCES
-    | typeof NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS
-    | typeof NOT_MARKED_AS_NOT_FOR_RELEASE
-    | typeof STANDARD_OR_ENHANCED_INCENTIVE_LEVEL
-    | typeof TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS
-    | typeof NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS
-  >
+export type RecategorisationHomeFilterSuitabilityForOpenConditionsValue =
+  | typeof LOW_RISK_OF_ESCAPE
+  | typeof LOW_ROSH
+  | typeof NO_CURRENT_TERRORISM_OFFENCES
+  | typeof NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS
+  | typeof NOT_MARKED_AS_NOT_FOR_RELEASE
+  | typeof STANDARD_OR_ENHANCED_INCENTIVE_LEVEL
+  | typeof TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS
+  | typeof NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS
+export type RecategorisationHomeFilterDueDateValue = typeof OVERDUE
+export type RecategorisationHomeFilterPomValue = typeof REVIEWS_ASSIGNED_TO_ME
+
+export interface RecategorisationHomeFilters {
+  [SUITABILIGY_FOR_OPEN_CONDITIONS]: Array<RecategorisationHomeFilterSuitabilityForOpenConditionsValue>
+  [DUE_DATE]: Array<RecategorisationHomeFilterDueDateValue>
+  [POM]: Array<RecategorisationHomeFilterPomValue>
 }
 
 export const recategorisationHomeFilters = {
-  suitabilityForOpenConditions: {
+  [SUITABILIGY_FOR_OPEN_CONDITIONS]: {
     [LOW_ROSH]: 'Low RoSH',
     [LOW_RISK_OF_ESCAPE]: 'Low risk of escape',
     [NO_CURRENT_TERRORISM_OFFENCES]: 'No current terrorism offences',
@@ -50,6 +63,14 @@ export const recategorisationHomeFilters = {
     [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL]: 'Standard or Enhanced incentive level',
     [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS]: 'Time left to serve is between 12 weeks and 3 years',
   },
+  [DUE_DATE]: { [OVERDUE]: 'Overdue reviews' },
+  [POM]: { [REVIEWS_ASSIGNED_TO_ME]: 'Reviews assigned to me' },
+}
+
+export const recategorisationHomeFilterKeys = {
+  [SUITABILIGY_FOR_OPEN_CONDITIONS]: 'Suitability for open conditions',
+  [DUE_DATE]: 'Due date',
+  [POM]: 'POM',
 }
 
 const dateIsNotBetween12WeeksAnd3Years = (dateString: string): boolean =>
@@ -89,7 +110,9 @@ export const filterListOfPrisoners = async (
   prisoners,
   prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
   nomisClient,
-  agencyId: string
+  agencyId: string,
+  pomMap: Map<string, PrisonerAllocationDto>,
+  userStaffId: number
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
@@ -161,6 +184,16 @@ export const filterListOfPrisoners = async (
           break
         case LOW_ROSH:
           return true
+        case OVERDUE:
+          if (!isReviewOverdue(prisoner.nextReviewDate)) {
+            return false
+          }
+          break
+        case REVIEWS_ASSIGNED_TO_ME:
+          if (pomMap.get(prisoner.offenderNo)?.primary_pom?.staff_id !== userStaffId) {
+            return false
+          }
+          break
         default:
           throw new Error(`Invalid filter type: ${allFilters[i]}`)
       }
