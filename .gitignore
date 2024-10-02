@@ -25,4 +25,6 @@ integration_tests/screenshots/*
 .env
 volume/cache
 test_results/*
-lib
+lib/
+dist
+test-results

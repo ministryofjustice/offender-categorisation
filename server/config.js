@@ -177,12 +177,18 @@ module.exports = {
   https: production,
   productId: get('PRODUCT_ID', 'UNASSIGNED', true, { requireInProduction: true }),
   featureFlags: {
+    si607: get('FEATURE_FLAG__SI607', 'PVI', true),
     events: {
       offender_release: {
         enable_pending_categorisation_deletion: get('FEATURE_FLAG__EVENT__DELETE_PENDING_RECATS', 'false', true, {
           requireInProduction: false,
         }),
       },
+    },
+    recategorisationPrioritisation: {
+      show_filter: get('FEATURE_FLAG__SHOW_RECATEGORISATION_PRIORITISATION_FILTER', 'false', true, {
+        requireInProduction: false,
+      }),
     },
   },
 }
