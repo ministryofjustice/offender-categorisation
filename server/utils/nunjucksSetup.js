@@ -17,6 +17,7 @@ const {
 } = require('./utils')
 const config = require('../config')
 const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
+const { removeFilterFromFullUrl } = require('./nunjucks.utility')
 
 const findError = (array, formFieldId) => {
   const item = array.find(error => error.href === `#${formFieldId}`)
@@ -33,7 +34,9 @@ module.exports = (app, path) => {
     [
       path.join(__dirname, '../../server/views'),
       'node_modules/govuk-frontend/dist/govuk/',
+      'node_modules/govuk-frontend/dist',
       'node_modules/govuk-frontend/dist/govuk/components/',
+      'node_modules/@ministryofjustice/frontend/',
     ],
     {
       autoescape: true,
@@ -63,6 +66,7 @@ module.exports = (app, path) => {
     .addGlobal('inProgress', inProgress)
     .addGlobal('extractNextReviewDate', extractNextReviewDate)
     .addGlobal('isOpenCategory', isOpenCategory)
+    .addGlobal('removeFilterFromFullUrl', removeFilterFromFullUrl)
     .addFilter('initialiseName', fullName => {
       // this check is for the authError page
       if (!fullName) {

@@ -66,6 +66,7 @@ jobs:
           paths:
             - node_modules
             - assets/stylesheets
+            - dist
   test:
     executor: builder
     steps:

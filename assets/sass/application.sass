@@ -1,11 +1,14 @@
 // Path to assets for use with the file-url function
 // in the govuk frontend toolkit's url-helpers partial
 $path: "/assets/images/"
+$moj-images-path: "/assets/images/"
 $govuk-global-styles: true
 $govuk-page-width: 1170px
 $govuk-compatibility-govukelements: true
 // Import GOV.UK elements from /govuk-modules/, this will import the frontend toolkit and some base styles.
 // Take a look in /govuk-modules/_govuk-elements.scss to see which files are imported.
 @import 'govuk/all'
+@import 'frontend/moj/components/filter/filter'
+@import 'frontend/moj/objects/all'
 
 @import "common"

@@ -1,3 +1,7 @@
+/* eslint-disable global-require */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/extensions */
+/* eslint-disable import/no-extraneous-dependencies */
 import { defineConfig } from 'cypress'
 import { resetStubs } from './integration_tests/mockApis/wiremock'
 import mockApis from './integration_tests/mockApis'

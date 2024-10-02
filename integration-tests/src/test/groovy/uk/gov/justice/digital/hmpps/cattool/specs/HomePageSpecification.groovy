@@ -60,7 +60,7 @@ class HomePageSpecification extends AbstractSpecification {
               'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised']
     days == ['1', '70', '55', '50', '47', '43', '39', '19', '14', '5']
     dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
-              'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE', 'OVERDUE',
+              'Overdue', 'Overdue', 'Overdue', 'Overdue', 'Overdue', 'Overdue', 'Overdue',
               sentenceStartDate37.plusDays(fixture.get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
               sentenceStartDate38.plusDays(fixture.get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
     statuses == ['REJECTED BY\nSUPERVISOR', 'Started (Api User)', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
@@ -122,7 +122,7 @@ class HomePageSpecification extends AbstractSpecification {
     at RecategoriserHomePage
     prisonNos == ['B2345XY', 'C0001AA', 'B2345YZ', 'C0002AA']
     names == ['Pitstop, Penelope', 'Tim, Tiny', 'Hillmob, Ant', 'Mole, Adrian']
-    dates == ['OVERDUE', 'OVERDUE', 'OVERDUE', TODAY.plusDays(17).format('dd/MM/yyyy')]
+    dates == ['Overdue', 'Overdue', 'Overdue', TODAY.plusDays(17).format('dd/MM/yyyy')]
     reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     poms == ['Engelbert Humperdinck', 'Engelbert Humperdinck', 'Engelbert Humperdinck', 'Engelbert Humperdinck']

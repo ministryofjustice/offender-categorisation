@@ -1,6 +1,7 @@
 const moment = require('moment')
 const express = require('express')
 const flash = require('connect-flash')
+const joi = require('joi')
 const asyncMiddleware = require('../middleware/asyncMiddleware')
 const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
@@ -9,10 +10,30 @@ const { inProgress, extractNextReviewDate } = require('../utils/functionalHelper
 const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
+const conf = require('../config')
+const logger = require('../../log')
+const {
+  recategorisationHomeFilters,
+  recategorisationHomeFilterKeys,
+} = require('../services/recategorisation/filter/recategorisationFilter')
 
 const formConfig = {
   security: securityConfig,
 }
+
+const recategorisationHomeSchemaFilters = {}
+Object.keys(recategorisationHomeFilters).forEach(key => {
+  recategorisationHomeSchemaFilters[key] = joi
+    .array()
+    .items(
+      joi
+        .string()
+        .valid(...Object.keys(recategorisationHomeFilters[key]))
+        .required()
+    )
+    .optional()
+})
+const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters).optional()
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -52,11 +73,16 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+      res.locals.si607Enabled =
+        res.locals?.featureFlags?.si607EnabledPrisons.includes(user.activeCaseLoad.caseLoadId) || false
 
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUncategorisedOffenders(res.locals, user, transactionalDbClient)
         : []
-      res.render('pages/categoriserHome', { offenders })
+
+      res.render('pages/categoriserHome', {
+        offenders,
+      })
     })
   )
 
@@ -143,16 +169,58 @@ module.exports = function Index({
     asyncMiddleware(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+      res.locals.si607Enabled =
+        res.locals?.featureFlags?.si607EnabledPrisons.includes(user.activeCaseLoad.caseLoadId) || false
 
-      const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient)
+      const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
+      if (validation.error) {
+        logger.error('Recategoriser home page submitted with invalid filters.', validation.error)
+        return res.render('pages/error', {
+          message: 'Invalid recategoriser home filters',
+        })
+      }
+
+      let showRecategorisationPrioritisationFilter = false
+      if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
+        showRecategorisationPrioritisationFilter = true
+      }
+
+      const offenders = user.activeCaseLoad
+        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient, validation.value)
         : []
 
       const riskChangeCount = await formService.getRiskChangeCount(
         res.locals.user.activeCaseLoad.caseLoadId,
         transactionalDbClient
       )
-      res.render('pages/recategoriserHome', { offenders, riskChangeCount })
+
+      return res.render('pages/recategoriserHome', {
+        offenders,
+        riskChangeCount,
+        showRecategorisationPrioritisationFilter,
+        filters: validation.value,
+        allFilters: recategorisationHomeFilters,
+        filterKeys: recategorisationHomeFilterKeys,
+        numberOfFiltersApplied: Object.values(validation.value).flat().length,
+        fullUrl: req.url,
+        hideRecategoriserHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
+      })
+    })
+  )
+
+  router.post(
+    '/recategoriserHome/hide-filter',
+    asyncMiddleware(async (req, res) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const validation = joi.object({ hideFilter: joi.bool().required() }).validate(req.body)
+      if (validation.error) {
+        logger.error('Recategoriser home page hide filter endpoint passed invalid value.', validation.error)
+        res.sendStatus(400)
+        return
+      }
+      req.session.hideRecategoriserHomeFilter = validation.value.hideFilter
+      res.sendStatus(200)
     })
   )
 

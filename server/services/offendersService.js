@@ -17,6 +17,11 @@ const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
+const { filterListOfPrisoners } = require('./recategorisation/filter/recategorisationFilter')
+const {
+  mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
+} = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
+const { isReviewOverdue } = require('./reviewStatusCalculator')
 
 const dirname = process.cwd()
 
@@ -33,11 +38,6 @@ function getYear(isoDate) {
   return isoDate && isoDate.substring(0, 4)
 }
 
-function isOverdue(dbDate) {
-  const date = moment(dbDate, 'YYYY-MM-DD')
-  return date.isBefore(moment(0, 'HH'))
-}
-
 async function getSentenceMap(offenderList, prisonerSearchClient) {
   const bookingIds = offenderList
     .filter(o => !o.dbRecord || !o.dbRecord.catType || o.dbRecord.catType === CatType.INITIAL.name)
@@ -50,6 +50,13 @@ async function getSentenceMap(offenderList, prisonerSearchClient) {
       .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
       .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
   )
+}
+
+async function getPrisonerSearchData(offenderList, prisonerSearchClient) {
+  const bookingIds = offenderList.map(offender => offender.bookingId)
+  const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
+
+  return new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]))
 }
 
 async function getReleaseDateMap(offenderList, prisonerSearchClient) {
@@ -197,6 +204,16 @@ module.exports = function createOffendersService(
 
           if (dbRecord.catType === 'RECAT') {
             return null
+          }
+
+          if (context.si607Enabled) {
+            const prisoner = prisonerMap.get(raw.bookingId)
+            if (
+              ['RECALL', 'INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) ===
+              false
+            ) {
+              return null
+            }
           }
 
           const assessmentData = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
@@ -674,8 +691,13 @@ module.exports = function createOffendersService(
     return nextReviewDate && releaseDate && moment(nextReviewDate).isAfter(moment(releaseDate))
   }
 
-  function isAwaitingApproval(status) {
-    return [Status.AWAITING_APPROVAL.name].includes(status)
+  function isAwaitingApprovalOrSecurity(status) {
+    return [
+      Status.AWAITING_APPROVAL.name,
+      Status.SECURITY_BACK.name,
+      Status.SECURITY_MANUAL.name,
+      Status.SECURITY_AUTO.name,
+    ].includes(status)
   }
 
   function isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate) {
@@ -690,7 +712,9 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
-    transactionalDbClient
+    transactionalDbClient,
+    filters = {},
+    featureFlags = {}
   ) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
@@ -723,13 +747,23 @@ module.exports = function createOffendersService(
     })
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
-    const [releaseDateMap, pomMap] = await Promise.all([
-      getReleaseDateMap(allOffenders, prisonerSearchClient),
+    const [prisonerSearchData, pomMap] = await Promise.all([
+      getPrisonerSearchData(allOffenders, prisonerSearchClient),
       getPomMap(allOffenders, allocationClient),
     ])
 
+    const filteredPrisoners = await filterListOfPrisoners(
+      filters,
+      allOffenders,
+      prisonerSearchData,
+      nomisClient,
+      agencyId,
+      pomMap,
+      user.staffId
+    )
+
     return Promise.all(
-      allOffenders.map(async raw => {
+      filteredPrisoners.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
         const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
         const pomData = pomMap.get(nomisRecord.offenderNo)
@@ -738,12 +772,15 @@ module.exports = function createOffendersService(
           return null
         }
 
-        const releaseDate = releaseDateMap.get(raw.bookingId)
+        const releaseDateForDecidingIfRecordShouldBeIncluded =
+          !raw.dbRecord || !raw.dbRecord.catType || raw.dbRecord.catType === CatType.RECAT.name
+            ? prisonerSearchData.get(raw.bookingId)?.releaseDate || null
+            : null
 
         if (
-          isNextReviewAfterRelease(nomisRecord, releaseDate) &&
-          !isAwaitingApproval(dbRecord.status) &&
-          !isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate)
+          isNextReviewAfterRelease(nomisRecord, releaseDateForDecidingIfRecordShouldBeIncluded) &&
+          !isAwaitingApprovalOrSecurity(dbRecord.status) &&
+          !isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDateForDecidingIfRecordShouldBeIncluded)
         ) {
           return null
         }
@@ -767,6 +804,14 @@ module.exports = function createOffendersService(
         const reason =
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.DUE
+
+        if (featureFlags.si607Enabled) {
+          const prisoner = prisonerSearchData.get(raw.bookingId)
+          if (['INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) === false) {
+            return null
+          }
+        }
+
         return {
           ...nomisRecord,
           displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
@@ -774,7 +819,7 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isOverdue(nomisRecord.nextReviewDate),
+          overdue: isReviewOverdue(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -868,7 +913,9 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
-    transactionalDbClient
+    transactionalDbClient,
+    filters = {},
+    featureFlags = {}
   ) {
     const u21From = moment()
       .subtract(22, 'years') // allow up to a year overdue
@@ -889,8 +936,22 @@ module.exports = function createOffendersService(
       getPomMap(resultsU21IJ, allocationClient),
     ])
 
+    const u21map = new Map(
+      resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])
+    )
+
+    const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
+      filters,
+      eliteCategorisationResultsU21,
+      u21map,
+      nomisClient,
+      agencyId,
+      pomMap,
+      user.staffId
+    )
+
     return Promise.all(
-      eliteCategorisationResultsU21.map(async o => {
+      filteredEliteCategorisationResultsU21.map(async o => {
         const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
         const assessmentData = await formService.getLiteCategorisation(o.bookingId, transactionalDbClient)
         const pomData = pomMap.get(o.offenderNo)
@@ -915,6 +976,14 @@ module.exports = function createOffendersService(
         const reason =
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.AGE
+
+        if (featureFlags.si607Enabled) {
+          const prisoner = u21map.get(o.bookingId)
+          if (['INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) === false) {
+            return null
+          }
+        }
+
         return {
           ...o,
           displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
@@ -922,7 +991,7 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay,
-          overdue: isOverdue(nextReviewDate),
+          overdue: isReviewOverdue(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -946,7 +1015,7 @@ module.exports = function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, transactionalDbClient) {
+  async function getRecategoriseOffenders(context, user, transactionalDbClient, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
@@ -954,9 +1023,29 @@ module.exports = function createOffendersService(
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
       const risksAndNeedsClient = risksAndNeedsClientBuilder(context)
 
+      const featureFlags = { si607Enabled: context.si607Enabled }
+
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
-        getDueRecats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
-        getU21Recats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, transactionalDbClient),
+        getDueRecats(
+          agencyId,
+          user,
+          nomisClient,
+          allocationClient,
+          prisonerSearchClient,
+          transactionalDbClient,
+          filters,
+          featureFlags
+        ),
+        getU21Recats(
+          agencyId,
+          user,
+          nomisClient,
+          allocationClient,
+          prisonerSearchClient,
+          transactionalDbClient,
+          filters,
+          featureFlags
+        ),
         formService.getSecurityReferrals(agencyId, transactionalDbClient),
       ])
 
@@ -1712,11 +1801,11 @@ module.exports = function createOffendersService(
     getPomMap,
     isInitialInProgress,
     statusTextDisplay,
-    isOverdue,
     calculateRecatDisplayStatus,
     decorateWithCategorisationData,
     getDueRecats,
-    isAwaitingApproval,
+    getU21Recats,
+    isAwaitingApprovalOrSecurity,
     isRejectedBySupervisorSuitableForDisplay,
   }
 }

@@ -215,7 +215,7 @@ describe('Lite Categories', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         categoriserHomePage.validateToDoTableData([
           [
-            'OVERDUE',
+            'Overdue',
             'Pitstop, Penelope',
             'B2345XY',
             moment().diff(new Date(sentenceStartDates['B2345YZ']), 'days').toString(),
@@ -224,7 +224,7 @@ describe('Lite Categories', () => {
             'OTHER',
           ],
           [
-            'OVERDUE',
+            'Overdue',
             'Hillmob, Ant',
             'B2345YZ',
             moment().diff(new Date(sentenceStartDates['B2345XY']), 'days').toString(),

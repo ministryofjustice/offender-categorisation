@@ -1,0 +1,38 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "target": "es2019",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "noEmit": false,
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "typeRoots": [
+      "./server/@types",
+      "./node_modules/@types"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "assets/**/*.js",
+    "integration-tests",
+    "integration_tests",
+    "dist",
+    "coverage",
+    "**/__mocks__/*",
+    "./cypress.config.ts",
+    "cypress",
+    "**/*.cy.tsx"
+  ],
+  "include": [
+    "**/*.js",
+    "**/*.ts"
+  ]
+}

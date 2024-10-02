@@ -140,8 +140,10 @@ class OpenConditionsSpecification extends AbstractSpecification {
 ////////////////////////////////////////////////////////////////////////////
     then: 'I am diverted to the not recommended page'
     at NotRecommendedPage
-    reasons*.text() == ['They have further charges which pose an increased risk in open conditions',
-                        'They are likely to abscond or otherwise abuse the lower security of open conditions']
+    waitFor {
+      reasons*.text() == ['They have further charges which pose an increased risk in open conditions',
+                          'They are likely to abscond or otherwise abuse the lower security of open conditions']
+    }
 
     when: 'No is selected, and submit button is clicked'
     stillReferNo.click()

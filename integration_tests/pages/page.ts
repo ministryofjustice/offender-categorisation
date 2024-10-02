@@ -3,12 +3,17 @@ import { cleanString } from '../support/utilities'
 
 export type PageElement = Cypress.Chainable<JQuery>
 
+type ToDoTableData = [string, string, string, string, string, string, string][]
+
 export default abstract class Page {
   static verifyOnPage<T>(constructor: new () => T): T {
     return new constructor()
   }
 
-  constructor(private readonly title: string, private readonly config = { checkOnPage: { tag: 'h1' } }) {
+  constructor(
+    private readonly title: string,
+    private readonly config = { checkOnPage: { tag: 'h1' } }
+  ) {
     this.checkOnPage(config.checkOnPage.tag)
   }
 
@@ -51,6 +56,12 @@ export default abstract class Page {
       cy.get(selector).should('contain.text', text)
     })
   }
+
+  validateToDoTableData = (expectedValues: ToDoTableData) =>
+    cy.checkTableRowData<ToDoTableData>({
+      tableRowsSelector: 'table#offenderTable > tbody > tr',
+      expectedValues,
+    })
 
   fallbackHeader = (): PageElement => cy.get('[data-qa=cat-tool-fallback-header]')
   fallbackFooter = (): PageElement => cy.get('[data-qa=cat-tool-fallback-footer]')
