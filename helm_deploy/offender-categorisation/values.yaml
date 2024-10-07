@@ -41,6 +41,7 @@ generic-service:
   env:
     DB_SSL_ENABLED: "true"
     REDIS_TLS_ENABLED: "true"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY);IngestionEndpoint=https://northeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/"
 
   namespace_secrets:
     dps-rds-instance-output:
