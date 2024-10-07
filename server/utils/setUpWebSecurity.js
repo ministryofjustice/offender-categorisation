@@ -15,12 +15,13 @@ module.exports = function setUpWebSecurity() {
   })
 
   const googleDomains = ['*.google-analytics.com', '*.analytics.google.com', '*.googletagmanager.com']
+  const azureUrls = ['https://northeurope-0.in.applicationinsights.azure.com', '*.monitor.azure.com']
   const nonceFn = (_req, res) => `'nonce-${res.locals.cspNonce}'`
 
-  const scriptSrc = ["'self'", ...googleDomains, nonceFn]
-  const styleSrc = ["'self'", ...googleDomains, 'fonts.googleapis.com', nonceFn]
+  const scriptSrc = ["'self'", ...googleDomains, ...azureUrls, nonceFn]
+  const styleSrc = ["'self'", ...googleDomains, ...azureUrls, 'fonts.googleapis.com', nonceFn]
   const formAction = [`'self' ${config.apis.oauth2.externalUrl} ${config.dpsUrl}`]
-  const imgSrc = ["'self'", 'data:', ...googleDomains]
+  const imgSrc = ["'self'", 'data:', ...googleDomains, ...azureUrls]
   const fontSrc = ["'self'"]
 
   if (config.apis.frontendComponents.url) {
@@ -34,7 +35,7 @@ module.exports = function setUpWebSecurity() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        connectSrc: ["'self'", ...googleDomains, nonceFn],
+        connectSrc: ["'self'", ...googleDomains, ...azureUrls, nonceFn],
         formAction,
         scriptSrc,
         styleSrc,
