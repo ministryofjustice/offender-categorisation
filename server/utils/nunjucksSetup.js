@@ -19,7 +19,6 @@ const {
 const config = require('../config')
 const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
 const { removeFilterFromFullUrl } = require('./nunjucks.utility')
-const { applicationInfo } = require('../applicationInfo')
 
 const findError = (array, formFieldId) => {
   const item = array.find(error => error.href === `#${formFieldId}`)
@@ -47,7 +46,7 @@ module.exports = (app, path) => {
   )
 
   app.locals.appInsightsConnectionString = config.appInsightsConnectionString
-  app.locals.appInsightsApplicationName = applicationInfo.applicationName
+  app.locals.appInsightsApplicationName = 'Offender Categorisation'
   app.locals.buildNumber = config.buildNumber
 
   njkEnv
