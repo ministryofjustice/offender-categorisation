@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const nunjucks = require('nunjucks')
 const Status = require('./statusEnum')
 const ReviewReason = require('./reviewReasonEnum')
@@ -18,6 +19,7 @@ const {
 const config = require('../config')
 const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
 const { removeFilterFromFullUrl } = require('./nunjucks.utility')
+const { applicationInfo } = require('../applicationInfo')
 
 const findError = (array, formFieldId) => {
   const item = array.find(error => error.href === `#${formFieldId}`)
@@ -43,6 +45,10 @@ module.exports = (app, path) => {
       express: app,
     }
   )
+
+  app.locals.appInsightsConnectionString = config.appInsightsConnectionString
+  app.locals.appInsightsApplicationName = applicationInfo.applicationName
+  app.locals.buildNumber = config.buildNumber
 
   njkEnv
     .addFilter('findError', findError)

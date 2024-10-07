@@ -34,7 +34,7 @@ module.exports = function setUpWebSecurity() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        connectSrc: ["'self'", ...googleDomains, nonceFn],
+        connectSrc: ["'self' https://northeurope-0.in.applicationinsights.azure.com", ...googleDomains, nonceFn],
         formAction,
         scriptSrc,
         styleSrc,
