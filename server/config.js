@@ -179,5 +179,4 @@ module.exports = {
       }),
     },
   },
-  appInsightsConnectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', '', { requiredInProduction: true }),
 }
