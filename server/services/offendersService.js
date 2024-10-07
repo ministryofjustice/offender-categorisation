@@ -713,6 +713,7 @@ module.exports = function createOffendersService(
     allocationClient,
     prisonerSearchClient,
     transactionalDbClient,
+    risksAndNeedsClient,
     filters = {},
     featureFlags = {}
   ) {
@@ -759,7 +760,8 @@ module.exports = function createOffendersService(
       nomisClient,
       agencyId,
       pomMap,
-      user.staffId
+      user.staffId,
+      risksAndNeedsClient
     )
 
     return Promise.all(
@@ -914,6 +916,7 @@ module.exports = function createOffendersService(
     allocationClient,
     prisonerSearchClient,
     transactionalDbClient,
+    risksAndNeedsClient,
     filters = {},
     featureFlags = {}
   ) {
@@ -947,7 +950,8 @@ module.exports = function createOffendersService(
       nomisClient,
       agencyId,
       pomMap,
-      user.staffId
+      user.staffId,
+      risksAndNeedsClient
     )
 
     return Promise.all(
@@ -1033,6 +1037,7 @@ module.exports = function createOffendersService(
           allocationClient,
           prisonerSearchClient,
           transactionalDbClient,
+          risksAndNeedsClient,
           filters,
           featureFlags
         ),
@@ -1043,6 +1048,7 @@ module.exports = function createOffendersService(
           allocationClient,
           prisonerSearchClient,
           transactionalDbClient,
+          risksAndNeedsClient,
           filters,
           featureFlags
         ),
@@ -1065,10 +1071,6 @@ module.exports = function createOffendersService(
             securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
-
-      console.log('TTTTTTEEEEEEESSSSSSSSSTTTTTTT')
-      const value = await risksAndNeedsClient.getRisksSummary('X181002')
-      console.log(value)
 
       logger.info({
         key: 'RecategoriserHome getRecategoriseOffenders investigation',

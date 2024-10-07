@@ -105,6 +105,28 @@ const loadAdjudicationsData = async (
   return [...adjudicationsThreeMonthsAgo, ...adjudicationsTwoMonthsAgo, ...adjudicationsLastMonth]
 }
 
+const getOffenderNumbersWithLowRoshScore = async (prisoners, risksAndNeedsClient) => {
+  const offenderNumbers = []
+  const prisonersWithCrns = prisoners.filter(prisoner => typeof prisoner.crn !== 'undefined')
+  const crnsToOffenderNumbers = Object.fromEntries(
+    prisonersWithCrns.map(prisoner => [prisoner.crn, prisoner.offenderNo])
+  )
+  const BATCH_SIZE = 20
+  for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
+    const crnBatch = Object.keys(crnsToOffenderNumbers).slice(range, range + BATCH_SIZE)
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      crnBatch.map(async crn => {
+        const risksSummary = await risksAndNeedsClient.getRisksSummary(crn)
+        if (risksSummary.overallRiskLevel === 'LOW') {
+          offenderNumbers.push(crnsToOffenderNumbers[crn])
+        }
+      })
+    )
+  }
+  return offenderNumbers
+}
+
 export const filterListOfPrisoners = async (
   filters: RecategorisationHomeFilters,
   prisoners,
@@ -112,7 +134,8 @@ export const filterListOfPrisoners = async (
   nomisClient,
   agencyId: string,
   pomMap: Map<string, PrisonerAllocationDto>,
-  userStaffId: number
+  userStaffId: number,
+  risksAndNeedsClient
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
@@ -123,6 +146,10 @@ export const filterListOfPrisoners = async (
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
     const adjudicationsData = await loadAdjudicationsData(prisoners, nomisClient, agencyId)
     offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
+  }
+  let offenderNumbersWithLowRoshScore = []
+  if (allFilters.includes(LOW_ROSH)) {
+    offenderNumbersWithLowRoshScore = await getOffenderNumbersWithLowRoshScore(prisoners, risksAndNeedsClient)
   }
   return prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
@@ -183,7 +210,10 @@ export const filterListOfPrisoners = async (
           }
           break
         case LOW_ROSH:
-          return true
+          if (!offenderNumbersWithLowRoshScore.includes(prisoner.offenderNo)) {
+            return false
+          }
+          break
         case OVERDUE:
           if (!isReviewOverdue(prisoner.nextReviewDate)) {
             return false
