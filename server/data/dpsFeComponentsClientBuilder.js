@@ -45,8 +45,6 @@ function dpsFeClientGetBuilder(token) {
         .responseType(responseType)
         .timeout(timeoutSpec)
 
-      const durationMillis = moment().diff(time)
-      logger.debug({ path, query, durationMillis }, 'DPS Front End Components GET using clientId credentials')
       return raw ? result : result.body
     } catch (error) {
       const sanitisedError = getSanitisedError(error)
