@@ -2,7 +2,6 @@ const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 
-const moment = require('moment')
 const logger = require('../../log')
 const config = require('../config')
 const getSanitisedError = require('../sanitisedError')
@@ -34,7 +33,6 @@ module.exports = token => {
 function dpsFeClientGetBuilder(token) {
   // eslint-disable-next-line consistent-return
   return async ({ path, query = '', headers = {}, responseType = '', raw = false } = {}) => {
-    const time = moment()
     try {
       const result = await superagent
         .get(path)
@@ -45,8 +43,6 @@ function dpsFeClientGetBuilder(token) {
         .responseType(responseType)
         .timeout(timeoutSpec)
 
-      const durationMillis = moment().diff(time)
-      logger.debug({ path, query, durationMillis }, 'DPS Front End Components GET using clientId credentials')
       return raw ? result : result.body
     } catch (error) {
       const sanitisedError = getSanitisedError(error)
