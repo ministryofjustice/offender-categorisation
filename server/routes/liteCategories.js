@@ -6,7 +6,7 @@ const dateExtend = require('@joi/date')
 const { properCaseName, calculateNextReviewDate, sanitisePrisonName } = require('../utils/utils')
 const { handleCsrf } = require('../utils/routes')
 const validation = require('../utils/fieldValidation')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
+const asyncMiddlewareInDatabaseTransactionInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransactionInDatabaseTransaction')
 
 const joi = baseJoi.extend(dateExtend)
 
@@ -57,7 +57,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/approveList',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const offenders = await offendersService.getUnapprovedLite(res.locals, transactionalDbClient)
@@ -67,7 +67,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
@@ -99,7 +99,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/confirmed/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
       res.render(`pages/liteCategoriesConfirmed`, { bookingId })
     })
@@ -107,7 +107,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/approve/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
@@ -163,7 +163,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const bookingIdInt = parseInt(bookingId, 10)
       const { category, authority, nextReviewDate, placement, comment } = req.body
@@ -228,7 +228,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/approve/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const bookingIdInt = parseInt(bookingId, 10)
       const {
@@ -332,7 +332,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/alreadyApproved/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
