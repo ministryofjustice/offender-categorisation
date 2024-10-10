@@ -6,7 +6,19 @@ const db = require('./dataAccess/db')
 const getSanitisedError = require('../sanitisedError')
 
 function dbCheck() {
-  return db.query('SELECT 1 AS ok')
+  const MAX_WAIT = 30 * 1000 // 30 seconds
+  const timeout = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error('Database Connection test timed out'))
+    }, MAX_WAIT)
+  })
+  return Promise.race([db.query('SELECT 1 AS ok'), timeout])
+    .then(() => {
+      return true // The connection is working
+    })
+    .catch(e => {
+      throw e
+    })
 }
 
 const agentOptions = {
