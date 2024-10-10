@@ -13,7 +13,7 @@ function dbCheck() {
     }, MAX_WAIT)
   })
   return Promise.race([db.query('SELECT 1 AS ok'), timeout])
-    .then(success => {
+    .then(() => {
       return true // The connection is working
     })
     .catch(e => {
