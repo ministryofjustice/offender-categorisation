@@ -6,7 +6,7 @@ const dateExtend = require('@joi/date')
 const { properCaseName, calculateNextReviewDate, sanitisePrisonName } = require('../utils/utils')
 const { handleCsrf } = require('../utils/routes')
 const validation = require('../utils/fieldValidation')
-const asyncMiddlewareInDatabaseTransactionInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransactionInDatabaseTransaction')
+const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 
 const joi = baseJoi.extend(dateExtend)
 
