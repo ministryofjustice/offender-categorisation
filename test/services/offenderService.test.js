@@ -290,8 +290,7 @@ describe('getRecategoriseOffenders', () => {
         },
       ],
     })
-    formService.getCategorisationRecord.mockImplementation((bookingId, transactionalClient) => {
-      expect(transactionalClient).toEqual(mockTransactionalClient)
+    formService.getCategorisationRecord.mockImplementation(bookingId => {
       switch (bookingId) {
         case 22:
           return { bookingId, status: Status.APPROVED.name, reviewReason: 'MANUAL' }
@@ -306,7 +305,7 @@ describe('getRecategoriseOffenders', () => {
       }
     })
 
-    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1')
 
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
@@ -349,7 +348,7 @@ describe('getRecategoriseOffenders', () => {
 
     formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.SECURITY_MANUAL.name })
 
-    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1')
 
     expect(nomisClient.getOffenderDetails).not.toBeCalled()
     expect(formService.getCategorisationRecord).toBeCalledTimes(1)
@@ -401,7 +400,7 @@ describe('getRecategoriseOffenders', () => {
     formService.getCategorisationRecords.mockResolvedValue([])
     formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
 
-    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1')
 
     expect(nomisClient.getRecategoriseOffenders.mock.calls[0][0]).toEqual('LEI')
     expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
@@ -414,7 +413,7 @@ describe('getRecategoriseOffenders', () => {
     prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
     formService.getCategorisationRecords.mockResolvedValue([])
 
-    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1')
     expect(result).toHaveLength(0)
   })
 
@@ -463,7 +462,7 @@ describe('getRecategoriseOffenders', () => {
     nomisClient.getLatestCategorisationForOffenders.mockResolvedValue(u21CatData)
     formService.getCategorisationRecords.mockResolvedValue([])
 
-    const result = await service.getRecategoriseOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getRecategoriseOffenders(context, 'user1')
 
     expect(result).toHaveLength(0)
     expect(formService.getCategorisationRecord).toBeCalledTimes(2)
@@ -2874,14 +2873,7 @@ describe('getDueRecats', () => {
     formService.getCategorisationRecords.mockResolvedValue([])
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([])
 
-    const result = await service.getDueRecats(
-      'A1234AA',
-      {},
-      nomisClient,
-      allocationClient,
-      prisonerSearchClient,
-      mockTransactionalClient
-    )
+    const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 
     expect(result).toEqual([])
   })
@@ -2944,14 +2936,7 @@ describe('getDueRecats', () => {
       },
     ])
 
-    const result = await service.getDueRecats(
-      'A1234AA',
-      {},
-      nomisClient,
-      allocationClient,
-      prisonerSearchClient,
-      mockTransactionalClient
-    )
+    const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 
     expect(result).toEqual([
       null,
@@ -3003,14 +2988,7 @@ describe('getDueRecats', () => {
       },
     ])
 
-    const result = await service.getDueRecats(
-      'A1234AA',
-      {},
-      nomisClient,
-      allocationClient,
-      prisonerSearchClient,
-      mockTransactionalClient
-    )
+    const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 
     expect(result).toEqual([
       {
@@ -3062,14 +3040,7 @@ describe('getDueRecats', () => {
       },
     ])
 
-    const result = await service.getDueRecats(
-      'A1234AA',
-      {},
-      nomisClient,
-      allocationClient,
-      prisonerSearchClient,
-      mockTransactionalClient
-    )
+    const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 
     expect(result).toEqual([null])
   })
@@ -3127,14 +3098,7 @@ describe('getDueRecats', () => {
       },
     ])
 
-    const result = await service.getDueRecats(
-      'A1234AA',
-      {},
-      nomisClient,
-      allocationClient,
-      prisonerSearchClient,
-      mockTransactionalClient
-    )
+    const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 
     expect(result).toEqual([null])
   })
@@ -3194,14 +3158,7 @@ describe('getDueRecats', () => {
         },
       ])
 
-      const result = await service.getDueRecats(
-        'A1234AA',
-        {},
-        nomisClient,
-        allocationClient,
-        prisonerSearchClient,
-        mockTransactionalClient
-      )
+      const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 
       expect(result).toEqual([
         {
@@ -3284,14 +3241,7 @@ describe('getDueRecats', () => {
       },
     ])
 
-    const result = await service.getDueRecats(
-      'A1234AA',
-      {},
-      nomisClient,
-      allocationClient,
-      prisonerSearchClient,
-      mockTransactionalClient
-    )
+    const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 
     expect(result).toEqual([
       {
@@ -3853,14 +3803,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
     it('should return an empty array when no data is available', async () => {
       prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
 
-      const result = await service.getU21Recats(
-        'A1234AA',
-        {},
-        nomisClient,
-        allocationClient,
-        prisonerSearchClient,
-        mockTransactionalClient
-      )
+      const result = await service.getU21Recats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 
       expect(result).toEqual([])
     })
@@ -3888,14 +3831,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       formService.getCategorisationRecords.mockResolvedValue([])
       formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
 
-      const result = await service.getU21Recats(
-        'A1234AA',
-        {},
-        nomisClient,
-        allocationClient,
-        prisonerSearchClient,
-        mockTransactionalClient
-      )
+      const result = await service.getU21Recats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
       expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
       expect(formService.getCategorisationRecord).toBeCalledTimes(1)
       expect(result).toMatchObject(expected)
@@ -3961,14 +3897,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
         status: Status.AWAITING_APPROVAL.name,
       })
 
-      const result = await service.getU21Recats(
-        'A1234AA',
-        {},
-        nomisClient,
-        allocationClient,
-        prisonerSearchClient,
-        mockTransactionalClient
-      )
+      const result = await service.getU21Recats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
       expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
       expect(formService.getCategorisationRecord).toBeCalledTimes(2)
       expect(result).toMatchObject(expected)
@@ -4025,8 +3954,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
               {},
               nomisClient,
               allocationClient,
-              prisonerSearchClient,
-              mockTransactionalClient
+              prisonerSearchClient
             )
             expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
             expect(formService.getCategorisationRecord).toBeCalledTimes(1)
@@ -4058,7 +3986,6 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
                 nomisClient,
                 allocationClient,
                 prisonerSearchClient,
-                mockTransactionalClient,
                 {},
                 { si607Enabled: true }
               )
@@ -4107,7 +4034,6 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
               nomisClient,
               allocationClient,
               prisonerSearchClient,
-              mockTransactionalClient,
               {},
               { si607Enabled: true }
             )

@@ -3,7 +3,7 @@ const flash = require('connect-flash')
 const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
 const { handleCsrf, getPathFor } = require('../utils/routes')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
+const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
 const log = require('../../log')
@@ -23,7 +23,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/furtherCharges/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'furtherCharges'
       let result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
@@ -53,7 +53,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/provisionalCategory/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const { bookingId } = req.params
@@ -72,7 +72,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/openConditionsNotSuitable/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'openConditions'
       const form = 'openConditionsNotSuitable'
       const { bookingId } = req.params
@@ -125,7 +125,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/:form/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
       res.render(`formPages/openConditions/${form}`, result)
@@ -218,7 +218,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/riskLevels/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'riskLevels'
       const section = 'openConditions'
@@ -262,7 +262,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/notRecommended/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'openConditions'
       const form = 'notRecommended'
@@ -294,7 +294,7 @@ module.exports = function Index({ formService, offendersService, userService, au
    * cat data being stored in separate locations */
   router.post(
     '/provisionalCategory/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'categoriser' // persisting the categorisation data in one place
       const form = 'provisionalCategory'
@@ -355,7 +355,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/:form/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const userId = req.user.username
       const section = 'openConditions'

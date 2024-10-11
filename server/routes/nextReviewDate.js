@@ -3,7 +3,7 @@ const flash = require('connect-flash')
 const { firstItem, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { calculateNextReviewDate, dateConverter, dateConverterToISO } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
+const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const nextReviewDate = require('../config/nextReviewDate')
 const Status = require('../utils/statusEnum')
 
@@ -20,7 +20,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/nextReviewDate/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const { nextDateChoice } = req.query
       const form = 'nextReviewDate'
@@ -31,7 +31,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/nextReviewDateStandalone/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'nextReviewDateStandalone'
       const result = await buildFormData(res, req, true, form, bookingId, false, transactionalDbClient)
@@ -48,7 +48,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/nextReviewDateStandaloneConfirmed/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'nextReviewDateStandaloneConfirmed'
       const result = await buildFormData(res, req, true, form, bookingId, false, transactionalDbClient)
@@ -58,7 +58,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/:form/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
       res.render(`formPages/nextReviewDate/${form}`, result)
@@ -112,7 +112,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/nextReviewDateQuestion/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
       const section = 'nextReviewDate'
       const form = 'nextReviewDateQuestion'
@@ -131,14 +131,14 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.post(
     '/nextReviewDateEditing/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       res.redirect(`/tasklistRecat/${req.params.bookingId}`)
     })
   )
 
   router.post(
     '/:form/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const section = 'nextReviewDate'
       const formPageConfig = formConfig[section][form]
