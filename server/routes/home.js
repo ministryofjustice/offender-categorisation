@@ -71,14 +71,14 @@ module.exports = function Index({
 
   router.get(
     '/categoriserHome',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.locals.si607Enabled =
         res.locals?.featureFlags?.si607EnabledPrisons.includes(user.activeCaseLoad.caseLoadId) || false
 
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getUncategorisedOffenders(res.locals, user, transactionalDbClient)
+        ? await offendersService.getUncategorisedOffenders(res.locals, user)
         : []
 
       res.render('pages/categoriserHome', {
@@ -128,26 +128,22 @@ module.exports = function Index({
 
   router.get(
     '/supervisorHome',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getUnapprovedOffenders(res.locals, transactionalDbClient)
-        : []
+      const offenders = res.locals.user.activeCaseLoad ? await offendersService.getUnapprovedOffenders(res.locals) : []
       res.render('pages/supervisorHome', { offenders })
     })
   )
 
   router.get(
     '/securityHome',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getReferredOffenders(res.locals, transactionalDbClient)
-        : []
+      const offenders = res.locals.user.activeCaseLoad ? await offendersService.getReferredOffenders(res.locals) : []
       res.render('pages/securityHome', { offenders })
     })
   )
@@ -167,7 +163,7 @@ module.exports = function Index({
 
   router.get(
     '/recategoriserHome',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.locals.si607Enabled =
@@ -187,13 +183,10 @@ module.exports = function Index({
       }
 
       const offenders = user.activeCaseLoad
-        ? await offendersService.getRecategoriseOffenders(res.locals, user, transactionalDbClient, validation.value)
+        ? await offendersService.getRecategoriseOffenders(res.locals, user, validation.value)
         : []
 
-      const riskChangeCount = await formService.getRiskChangeCount(
-        res.locals.user.activeCaseLoad.caseLoadId,
-        transactionalDbClient
-      )
+      const riskChangeCount = await formService.getRiskChangeCount(res.locals.user.activeCaseLoad.caseLoadId)
 
       return res.render('pages/recategoriserHome', {
         offenders,

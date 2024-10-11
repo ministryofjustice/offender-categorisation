@@ -711,7 +711,6 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
-    transactionalDbClient,
     filters = {},
     featureFlags = {}
   ) {
@@ -729,8 +728,7 @@ module.exports = function createOffendersService(
         Status.SECURITY_MANUAL.name,
       ],
       CatType.RECAT.name,
-      ReviewReason.MANUAL.name,
-      transactionalDbClient
+      ReviewReason.MANUAL.name
     )
 
     // trim db results to only those not in the Nomis-derived list
@@ -764,7 +762,7 @@ module.exports = function createOffendersService(
     return Promise.all(
       filteredPrisoners.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
-        const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
+        const dbRecord = await formService.getCategorisationRecord(raw.bookingId)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
         if (isInitialInProgress(dbRecord)) {
@@ -784,7 +782,7 @@ module.exports = function createOffendersService(
           return null
         }
 
-        const liteDbRecord = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
+        const liteDbRecord = await formService.getLiteCategorisation(nomisRecord.bookingId)
         const liteInProgress = liteDbRecord.bookingId && !liteDbRecord.approvedDate
         const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(
           dbRecord,
@@ -912,7 +910,6 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
-    transactionalDbClient,
     filters = {},
     featureFlags = {}
   ) {
@@ -951,8 +948,8 @@ module.exports = function createOffendersService(
 
     return Promise.all(
       filteredEliteCategorisationResultsU21.map(async o => {
-        const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-        const assessmentData = await formService.getLiteCategorisation(o.bookingId, transactionalDbClient)
+        const dbRecord = await formService.getCategorisationRecord(o.bookingId)
+        const assessmentData = await formService.getLiteCategorisation(o.bookingId)
         const pomData = pomMap.get(o.offenderNo)
 
         if (isInitialInProgress(dbRecord)) {
@@ -1014,7 +1011,7 @@ module.exports = function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, transactionalDbClient, filters = {}) {
+  async function getRecategoriseOffenders(context, user, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
@@ -1024,27 +1021,9 @@ module.exports = function createOffendersService(
       const featureFlags = { si607Enabled: context.si607Enabled }
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
-        getDueRecats(
-          agencyId,
-          user,
-          nomisClient,
-          allocationClient,
-          prisonerSearchClient,
-          transactionalDbClient,
-          filters,
-          featureFlags
-        ),
-        getU21Recats(
-          agencyId,
-          user,
-          nomisClient,
-          allocationClient,
-          prisonerSearchClient,
-          transactionalDbClient,
-          filters,
-          featureFlags
-        ),
-        formService.getSecurityReferrals(agencyId, transactionalDbClient),
+        getDueRecats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, filters, featureFlags),
+        getU21Recats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, filters, featureFlags),
+        formService.getSecurityReferrals(agencyId),
       ])
 
       if (isNilOrEmpty(decoratedResultsReview) && isNilOrEmpty(decoratedResultsU21)) {
