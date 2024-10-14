@@ -1,5 +1,6 @@
 const logger = require('../../log')
 const Status = require('../utils/statusEnum')
+const db = require('./dataAccess/db')
 
 const selectClause = `select id,
                     booking_id             as "bookingId",
@@ -27,7 +28,7 @@ const sequenceClause = `and f.sequence_no = (select max(f2.sequence_no) from for
 const sequenceClauseIncludeCancelled = `and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`
 
 module.exports = {
-  getFormDataForUser(bookingId, transactionalClient) {
+  getFormDataForUser(bookingId, transactionalClient = db) {
     const query = {
       text: `${selectClause} from form f where f.booking_id = $1 ${sequenceClause}`,
       values: [bookingId],
@@ -63,7 +64,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getCategorisationRecordsByStatus(agencyId, statusList, transactionalClient) {
+  getCategorisationRecordsByStatus(agencyId, statusList, transactionalClient = db) {
     logger.debug(`getCategorisationRecordsByStatus called for ${agencyId}, status ${statusList}`)
     const query = {
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType", prison_id as prisonId
@@ -73,7 +74,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getCategorisationRecords(agencyId, statusList, catType, reviewReason, transactionalClient) {
+  getCategorisationRecords(agencyId, statusList, catType, reviewReason, transactionalClient = db) {
     logger.debug(`getCategorisationRecords called for ${agencyId}, status ${statusList}, type ${catType}`)
     const query = {
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", offender_no as "offenderNo", cat_type as "catType", prison_id as prisonId
@@ -103,7 +104,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getRiskChangeByStatus(agencyId, status, transactionalClient) {
+  getRiskChangeByStatus(agencyId, status, transactionalClient = db) {
     logger.debug(`getRiskChangeByStatus called with status ${status} and agencyId ${agencyId}`)
     const query = {
       text: `select offender_no as "offenderNo", user_id as "userId", status, raised_date as "raisedDate" from risk_change f where f.prison_id= $1 and f.status = $2`,
@@ -317,7 +318,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getSecurityReferrals(agencyId, transactionalClient) {
+  getSecurityReferrals(agencyId, transactionalClient = db) {
     logger.debug(`getSecurityReferrals called with agencyId ${agencyId}`)
     const query = {
       text: `select prison_id   as "prisonId",
@@ -464,7 +465,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getLiteCategorisation(bookingId, transactionalClient) {
+  getLiteCategorisation(bookingId, transactionalClient = db) {
     const query = {
       text: `select booking_id           as "bookingId",
                     sequence,
@@ -488,7 +489,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  getUnapprovedLite(prisonId, transactionalClient) {
+  getUnapprovedLite(prisonId, transactionalClient = db) {
     const query = {
       text: `select booking_id          as "bookingId",
                     sequence,
