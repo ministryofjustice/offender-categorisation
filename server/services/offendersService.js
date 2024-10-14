@@ -124,7 +124,8 @@ module.exports = function createOffendersService(
   allocationClientBuilder,
   formService,
   prisonerSearchClientBuilder,
-  risksAndNeedsClientBuilder
+  risksAndNeedsClientBuilder,
+  probationOffenderSearchClientBuilder
 ) {
   async function getUncategorisedOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -714,6 +715,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     transactionalDbClient,
     risksAndNeedsClient,
+    probationOffenderSearchClient,
     filters = {},
     featureFlags = {}
   ) {
@@ -761,7 +763,8 @@ module.exports = function createOffendersService(
       agencyId,
       pomMap,
       user.staffId,
-      risksAndNeedsClient
+      risksAndNeedsClient,
+      probationOffenderSearchClient
     )
 
     return Promise.all(
@@ -917,6 +920,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     transactionalDbClient,
     risksAndNeedsClient,
+    probationOffenderSearchClient,
     filters = {},
     featureFlags = {}
   ) {
@@ -951,7 +955,8 @@ module.exports = function createOffendersService(
       agencyId,
       pomMap,
       user.staffId,
-      risksAndNeedsClient
+      risksAndNeedsClient,
+      probationOffenderSearchClient
     )
 
     return Promise.all(
@@ -1025,7 +1030,8 @@ module.exports = function createOffendersService(
       const nomisClient = nomisClientBuilder(context)
       const allocationClient = allocationClientBuilder(context)
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
-      const risksAndNeedsClient = risksAndNeedsClientBuilder(context)
+      const risksAndNeedsClient = risksAndNeedsClientBuilder(context.user)
+      const probationOffenderSearchClient = probationOffenderSearchClientBuilder(context.user)
 
       const featureFlags = { si607Enabled: context.si607Enabled }
 
@@ -1038,6 +1044,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           transactionalDbClient,
           risksAndNeedsClient,
+          probationOffenderSearchClient,
           filters,
           featureFlags
         ),
@@ -1049,6 +1056,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           transactionalDbClient,
           risksAndNeedsClient,
+          probationOffenderSearchClient,
           filters,
           featureFlags
         ),
