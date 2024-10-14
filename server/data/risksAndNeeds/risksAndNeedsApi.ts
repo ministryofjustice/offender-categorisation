@@ -1,11 +1,18 @@
-const superagent = require('superagent')
-const Agent = require('agentkeepalive')
-const { HttpsAgent } = require('agentkeepalive')
-const LRU = require('lru-cache')
-const logger = require('../../log')
-const config = require('../config')
-const { getApiClientToken } = require('../authentication/clientCredentials')
-const getSanitisedError = require('../sanitisedError')
+import Agent, { HttpsAgent } from 'agentkeepalive'
+import superagent from 'superagent'
+import LRU from 'lru-cache'
+import config from '../../config'
+import { getApiClientToken } from '../../authentication/clientCredentials'
+import getSanitisedError from '../../sanitisedError'
+import logger from '../../../log'
+import { User } from '../user'
+import { RiskSummaryDto } from './riskSummary.dto'
+
+export type RisksAndNeedsApiClientBuilder = (user: User) => RisksAndNeedsApiClient
+
+export interface RisksAndNeedsApiClient {
+  getRisksSummary: (crn) => Promise<RiskSummaryDto>
+}
 
 // there are about 80000 prisoner altogether but they wont all be due for categorisation
 // 4 hour TTL is fine for slowly changing POM data but should give good hit ratio
@@ -24,11 +31,11 @@ const agentOptions = {
 const apiUrl = `${config.apis.risksAndNeeds.url}/`
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
-module.exports = context => {
-  const apiGet = risksAndNeedsApiGetBuilder(context.user.username)
+const builder: RisksAndNeedsApiClientBuilder = user => {
+  const apiGet = risksAndNeedsApiGetBuilder(user.username)
 
   return {
-    async getRisksSummary(crn) {
+    async getRisksSummary(crn): Promise<RiskSummaryDto> {
       const cached = cache.get(crn)
       if (cached) {
         return cached
@@ -43,8 +50,10 @@ module.exports = context => {
   }
 }
 
+export default builder
+
 function risksAndNeedsApiGetBuilder(username) {
-  return async ({ path, query = '', headers = {}, responseType = '' } = {}) => {
+  return async ({ path, query = '', headers = {}, responseType = '' }) => {
     try {
       const oauthResult = await getApiClientToken(username)
       const result = await superagent
@@ -63,10 +72,6 @@ function risksAndNeedsApiGetBuilder(username) {
       }
       const sanitisedError = getSanitisedError(error)
       logger.error({ sanitisedError, path, query }, 'Error calling risks and needs api')
-      if (error.response?.status === 500) {
-        // Possible bug is causing occasional 500 errors in preprod
-        return {}
-      }
       throw sanitisedError
     }
   }

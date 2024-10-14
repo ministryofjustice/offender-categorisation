@@ -18,6 +18,9 @@ import {
 import { NomisAdjudicationHearingDto } from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
 import { isReviewOverdue } from '../../reviewStatusCalculator'
 import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
+import { ProbationOffenderSearchApiClient } from '../../../data/probationOffenderSearch/probationOffenderSearchApiClient'
+import { RisksAndNeedsApiClient } from '../../../data/risksAndNeeds/risksAndNeedsApi'
+import { OVERALL_RISK_LEVEL_LOW } from '../../../data/risksAndNeeds/riskSummary.dto'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
@@ -105,11 +108,19 @@ const loadAdjudicationsData = async (
   return [...adjudicationsThreeMonthsAgo, ...adjudicationsTwoMonthsAgo, ...adjudicationsLastMonth]
 }
 
-const getOffenderNumbersWithLowRoshScore = async (prisoners, risksAndNeedsClient) => {
-  const offenderNumbers = []
-  const prisonersWithCrns = prisoners.filter(prisoner => typeof prisoner.crn !== 'undefined')
+const getOffenderNumbersWithLowRoshScore = async (
+  prisoners,
+  risksAndNeedsClient: RisksAndNeedsApiClient,
+  probationOffenderSearchClient: ProbationOffenderSearchApiClient
+) => {
+  const prisonerNumbersWithLowRoshScore = []
+  const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
+  const probationOffenderSearchOffenders = await probationOffenderSearchClient.matchPrisoners(prisonerNumbers)
   const crnsToOffenderNumbers = Object.fromEntries(
-    prisonersWithCrns.map(prisoner => [prisoner.crn, prisoner.offenderNo])
+    probationOffenderSearchOffenders.map(probationOffenderSearchOffender => [
+      probationOffenderSearchOffender.otherIds.crn,
+      probationOffenderSearchOffender.otherIds.nomsNumber,
+    ])
   )
   const BATCH_SIZE = 20
   for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
@@ -118,13 +129,13 @@ const getOffenderNumbersWithLowRoshScore = async (prisoners, risksAndNeedsClient
     await Promise.all(
       crnBatch.map(async crn => {
         const risksSummary = await risksAndNeedsClient.getRisksSummary(crn)
-        if (risksSummary.overallRiskLevel === 'LOW') {
-          offenderNumbers.push(crnsToOffenderNumbers[crn])
+        if (risksSummary.overallRiskLevel === OVERALL_RISK_LEVEL_LOW) {
+          prisonerNumbersWithLowRoshScore.push(crnsToOffenderNumbers[crn])
         }
       })
     )
   }
-  return offenderNumbers
+  return prisonerNumbersWithLowRoshScore
 }
 
 export const filterListOfPrisoners = async (
@@ -135,7 +146,8 @@ export const filterListOfPrisoners = async (
   agencyId: string,
   pomMap: Map<string, PrisonerAllocationDto>,
   userStaffId: number,
-  risksAndNeedsClient
+  risksAndNeedsClient: RisksAndNeedsApiClient,
+  probationOffenderSearchClient: ProbationOffenderSearchApiClient
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
@@ -149,7 +161,11 @@ export const filterListOfPrisoners = async (
   }
   let offenderNumbersWithLowRoshScore = []
   if (allFilters.includes(LOW_ROSH)) {
-    offenderNumbersWithLowRoshScore = await getOffenderNumbersWithLowRoshScore(prisoners, risksAndNeedsClient)
+    offenderNumbersWithLowRoshScore = await getOffenderNumbersWithLowRoshScore(
+      prisoners,
+      risksAndNeedsClient,
+      probationOffenderSearchClient
+    )
   }
   return prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
