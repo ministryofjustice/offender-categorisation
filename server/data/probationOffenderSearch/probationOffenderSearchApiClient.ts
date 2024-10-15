@@ -23,7 +23,7 @@ const agentOptions = {
   freeSocketTimeout: config.apis.probationOffenderSearch.agent.freeSocketTimeout,
 }
 
-const apiUrl = `${config.apis.probationOffenderSearch.url}/`
+const apiUrl = `${config.apis.probationOffenderSearch.url}`
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
 const builder: ProbationOffenderSearchApiClientBuilder = user => {

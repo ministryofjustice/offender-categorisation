@@ -28,7 +28,7 @@ const agentOptions = {
   freeSocketTimeout: config.apis.risksAndNeeds.agent.freeSocketTimeout,
 }
 
-const apiUrl = `${config.apis.risksAndNeeds.url}/`
+const apiUrl = `${config.apis.risksAndNeeds.url}`
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
 const builder: RisksAndNeedsApiClientBuilder = user => {
