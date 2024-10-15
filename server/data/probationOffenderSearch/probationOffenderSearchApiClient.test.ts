@@ -45,7 +45,7 @@ describe('probationOffenderSearchApiClient', () => {
       fakeApi.get('/nomsNumbers').reply(404, {})
 
       const output = await client.matchPrisoners(['AN1235'])
-      return expect(output).toEqual({})
+      return expect(output).toEqual(undefined)
     })
   })
 })
