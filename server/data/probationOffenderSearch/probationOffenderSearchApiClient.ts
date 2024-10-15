@@ -55,7 +55,7 @@ function probationOffenderSearchPostBuilder(username: string) {
       return result.body
     } catch (error) {
       if (error?.status === 404) {
-        return {}
+        return undefined
       }
       const sanitisedError = getSanitisedError(error)
       logger.error({ ...sanitisedError, path }, 'Error in Nomis POST')
