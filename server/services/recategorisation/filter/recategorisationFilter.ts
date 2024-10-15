@@ -116,6 +116,9 @@ const getOffenderNumbersWithLowRoshScore = async (
   const prisonerNumbersWithLowRoshScore = []
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
   const probationOffenderSearchOffenders = await probationOffenderSearchClient.matchPrisoners(prisonerNumbers)
+  if (typeof probationOffenderSearchOffenders === 'undefined') {
+    return []
+  }
   const crnsToOffenderNumbers = Object.fromEntries(
     probationOffenderSearchOffenders.map(probationOffenderSearchOffender => [
       probationOffenderSearchOffender.otherIds.crn,
