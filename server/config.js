@@ -138,7 +138,7 @@ module.exports = {
       },
     },
     risksAndNeeds: {
-      url: get('RISKS_AND_NEEDS_ENDPOINT_URL', 'http://localhost:9092/', true),
+      url: get('RISKS_AND_NEEDS_ENDPOINT_URL', 'http://localhost:8086/', true),
       timeout: {
         response: get('RISKS_AND_NEEDS_ENDPOINT_URL_RESPONSE', 30000, true),
         deadline: get('RISKS_AND_NEEDS_ENDPOINT_URL_DEADLINE', 35000, true),
@@ -150,7 +150,7 @@ module.exports = {
       },
     },
     probationOffenderSearch: {
-      url: get('PROBATION_OFFENDER_SEARCH_ENDPOINT_URL', 'http://localhost:9092/', true),
+      url: get('PROBATION_OFFENDER_SEARCH_ENDPOINT_URL', 'http://localhost:8087/', true),
       timeout: {
         response: get('PROBATION_OFFENDER_SEARCH_ENDPOINT_URL_RESPONSE', 30000, true),
         deadline: get('PROBATION_OFFENDER_SEARCH_ENDPOINT_URL_DEADLINE', 35000, true),
