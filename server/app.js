@@ -126,6 +126,8 @@ module.exports = function createApp({
     '/node_modules/govuk-frontend/dist',
     '/node_modules/@ministryofjustice/frontend/moj/assets',
     '/node_modules/@ministryofjustice/frontend',
+    '/node_modules/@microsoft/applicationinsights-web/dist/es5',
+    '/node_modules/@microsoft/applicationinsights-clickanalytics-js/dist/es5',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })

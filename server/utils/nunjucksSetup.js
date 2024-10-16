@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const nunjucks = require('nunjucks')
 const Status = require('./statusEnum')
 const ReviewReason = require('./reviewReasonEnum')
@@ -43,6 +44,10 @@ module.exports = (app, path) => {
       express: app,
     }
   )
+
+  app.locals.appInsightsConnectionString = config.appInsightsConnectionString
+  app.locals.appInsightsApplicationName = 'Offender Categorisation'
+  app.locals.buildNumber = config.buildNumber
 
   njkEnv
     .addFilter('findError', findError)
