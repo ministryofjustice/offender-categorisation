@@ -27,7 +27,7 @@ export const DUE_DATE = 'dueDate'
 export const POM = 'pom'
 
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
-const LOW_ROSH = 'lowRosh'
+export const LOW_ROSH = 'lowRosh'
 export const NO_CURRENT_TERRORISM_OFFENCES = 'noCurrentTerrorismOffences'
 export const NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS = 'noRotlRestrictionsOrSuspensions'
 export const NOT_MARKED_AS_NOT_FOR_RELEASE = 'notMarkedAsNotForRelease'
