@@ -79,6 +79,9 @@ COPY --from=build --chown=appuser:appgroup \
 COPY --from=build --chown=appuser:appgroup \
     /app/migrations ./migrations
 
+COPY --from=build --chown=appuser:appgroup \
+    /app/jobs ./jobs
+
 EXPOSE 3000
 ENV NODE_ENV='production'
 USER 2000
