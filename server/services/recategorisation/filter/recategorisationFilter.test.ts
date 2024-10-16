@@ -2,6 +2,7 @@ import makeTestPrisoner from '../../../../test/factories/prisoner.test-factory'
 import {
   filterListOfPrisoners,
   LOW_RISK_OF_ESCAPE,
+  LOW_ROSH,
   NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS,
   NO_CURRENT_TERRORISM_OFFENCES,
   NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS,
@@ -28,6 +29,9 @@ import makeTestNomisAdjudicationHearingDto from '../../../data/nomis/adjudicatio
 import makeTestRecategorisationHomeFiltersFilter from './recategorisationHomeFilter.test-factory'
 import makeTestPrisonerAllocationDto from '../../../data/allocationManager/prisonerAllocation.dto.test-factory'
 import makeTestAllocatedPomDto from '../../../data/allocationManager/allocatedPom.dto.test-factory'
+import { makeTestProbationOffenderSearchOffenderDto } from '../../../data/probationOffenderSearch/probationOffenderSearchOffender.dto.test-factory'
+import { makeTestRiskSummaryDto } from '../../../data/risksAndNeeds/riskSummary.dto.test-factory'
+import { OVERALL_RISK_LEVEL_HIGH, OVERALL_RISK_LEVEL_LOW } from '../../../data/risksAndNeeds/riskSummary.dto'
 
 const nomisClient = {
   getOffenderAdjudications: jest.fn(),
@@ -400,6 +404,97 @@ describe('filterListOfPrisoners', () => {
       [[testOffenderNumber], '2023-12-01', '2024-01-01', testAgencyId],
     ])
     expect(result).toEqual(testPrisoners)
+  })
+  test('it should filter out prisoner with high ROSH score', async () => {
+    const testCrn = 'DEF456'
+    probationOffenderSearchApiClient.matchPrisoners.mockResolvedValue([
+      makeTestProbationOffenderSearchOffenderDto({
+        otherIds: {
+          crn: testCrn,
+          nomsNumber: testOffenderNumber,
+        },
+      }),
+    ])
+    risksAndNeedsClient.getRisksSummary.mockResolvedValue(
+      makeTestRiskSummaryDto({ overallRiskLevel: OVERALL_RISK_LEVEL_HIGH })
+    )
+    const result = await filterListOfPrisoners(
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [LOW_ROSH],
+      }),
+      testPrisoners,
+      new Map(),
+      nomisClient,
+      testAgencyId,
+      new Map(),
+      testUserStaffId,
+      risksAndNeedsClient,
+      probationOffenderSearchApiClient
+    )
+
+    expect(probationOffenderSearchApiClient.matchPrisoners.mock.calls).toEqual([[[testOffenderNumber]]])
+    expect(risksAndNeedsClient.getRisksSummary.mock.calls).toEqual([[testCrn]])
+    expect(result.length).toBe(0)
+  })
+  test('it should not filter out prisoner with low ROSH score', async () => {
+    const testCrn = 'DEF456'
+    probationOffenderSearchApiClient.matchPrisoners.mockResolvedValue([
+      makeTestProbationOffenderSearchOffenderDto({
+        otherIds: {
+          crn: testCrn,
+          nomsNumber: testOffenderNumber,
+        },
+      }),
+    ])
+    risksAndNeedsClient.getRisksSummary.mockResolvedValue(
+      makeTestRiskSummaryDto({ overallRiskLevel: OVERALL_RISK_LEVEL_LOW })
+    )
+    const result = await filterListOfPrisoners(
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [LOW_ROSH],
+      }),
+      testPrisoners,
+      new Map(),
+      nomisClient,
+      testAgencyId,
+      new Map(),
+      testUserStaffId,
+      risksAndNeedsClient,
+      probationOffenderSearchApiClient
+    )
+
+    expect(probationOffenderSearchApiClient.matchPrisoners.mock.calls).toEqual([[[testOffenderNumber]]])
+    expect(risksAndNeedsClient.getRisksSummary.mock.calls).toEqual([[testCrn]])
+    expect(result).toEqual(testPrisoners)
+  })
+  test('it should filter out prisoner without a ROSH score', async () => {
+    const testCrn = 'DEF456'
+    probationOffenderSearchApiClient.matchPrisoners.mockResolvedValue([
+      makeTestProbationOffenderSearchOffenderDto({
+        otherIds: {
+          crn: testCrn,
+          nomsNumber: testOffenderNumber,
+        },
+      }),
+    ])
+    risksAndNeedsClient.getRisksSummary.mockResolvedValue({})
+    const result = await filterListOfPrisoners(
+      makeTestRecategorisationHomeFiltersFilter({
+        suitabilityForOpenConditions: [LOW_ROSH],
+      }),
+      testPrisoners,
+      new Map(),
+      nomisClient,
+      testAgencyId,
+      new Map(),
+      testUserStaffId,
+      risksAndNeedsClient,
+      probationOffenderSearchApiClient
+    )
+
+    expect(probationOffenderSearchApiClient.matchPrisoners.mock.calls).toEqual([[[testOffenderNumber]]])
+    expect(risksAndNeedsClient.getRisksSummary.mock.calls).toEqual([[testCrn]])
+    expect(result.length).toBe(0)
   })
   test('it should filter out non overdue prisoners and leave overdue ones', async () => {
     nomisClient.getOffenderAdjudications.mockResolvedValue([
