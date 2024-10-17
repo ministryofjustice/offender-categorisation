@@ -6,7 +6,7 @@ export default {
     stubFor({
       request: {
         method: 'POST',
-        urlPattern: `nomsNumbers`,
+        url: '/probation-offender-search/nomsNumbers',
         bodyPatterns: [
           {
             equalToJson: JSON.stringify({ prisonerNumbers }),

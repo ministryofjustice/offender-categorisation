@@ -31,7 +31,7 @@ import makeTestPrisonerAllocationDto from '../../../data/allocationManager/priso
 import makeTestAllocatedPomDto from '../../../data/allocationManager/allocatedPom.dto.test-factory'
 import { makeTestProbationOffenderSearchOffenderDto } from '../../../data/probationOffenderSearch/probationOffenderSearchOffender.dto.test-factory'
 import { makeTestRiskSummaryDto } from '../../../data/risksAndNeeds/riskSummary.dto.test-factory'
-import { OVERALL_RISK_LEVEL_HIGH, OVERALL_RISK_LEVEL_LOW } from '../../../data/risksAndNeeds/riskSummary.dto'
+import { OverallRiskLevel } from '../../../data/risksAndNeeds/riskSummary.dto'
 
 const nomisClient = {
   getOffenderAdjudications: jest.fn(),
@@ -416,7 +416,7 @@ describe('filterListOfPrisoners', () => {
       }),
     ])
     risksAndNeedsClient.getRisksSummary.mockResolvedValue(
-      makeTestRiskSummaryDto({ overallRiskLevel: OVERALL_RISK_LEVEL_HIGH })
+      makeTestRiskSummaryDto({ overallRiskLevel: OverallRiskLevel.high })
     )
     const result = await filterListOfPrisoners(
       makeTestRecategorisationHomeFiltersFilter({
@@ -447,7 +447,7 @@ describe('filterListOfPrisoners', () => {
       }),
     ])
     risksAndNeedsClient.getRisksSummary.mockResolvedValue(
-      makeTestRiskSummaryDto({ overallRiskLevel: OVERALL_RISK_LEVEL_LOW })
+      makeTestRiskSummaryDto({ overallRiskLevel: OverallRiskLevel.low })
     )
     const result = await filterListOfPrisoners(
       makeTestRecategorisationHomeFiltersFilter({

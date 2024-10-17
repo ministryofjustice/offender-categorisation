@@ -25,7 +25,7 @@ describe('risksAndNeedsApi Client', () => {
   let client
 
   beforeEach(() => {
-    fakeApi = nock(`${config.apis.risksAndNeeds.url}`)
+    fakeApi = nock(config.apis.risksAndNeeds.url)
     client = clientBuilder(makeTestUser({ username: 'username' }))
   })
 
