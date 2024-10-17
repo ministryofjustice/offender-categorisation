@@ -24,7 +24,7 @@ spec:
             image: "{{ with index .Values "generic-service" }}{{ .image.repository }}:{{ .image.tag }}{{ end }}"
             args:
             - node
-            - jobs/dead-letter/clearDeadLetterQueuesWithExit
+            - /app/dist/jobs/dead-letter/clearDeadLetterQueuesWithExit
 {{- include "deployment.envs" (index .Values "generic-service") | nindent 12 }}
           restartPolicy: Never
           activeDeadlineSeconds: 1200
