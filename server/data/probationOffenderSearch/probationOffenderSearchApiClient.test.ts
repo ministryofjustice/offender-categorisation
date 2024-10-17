@@ -24,7 +24,7 @@ describe('probationOffenderSearchApiClient', () => {
   let client
 
   beforeEach(() => {
-    fakeApi = nock(`${config.apis.probationOffenderSearch.url}`)
+    fakeApi = nock(config.apis.probationOffenderSearch.url)
     client = clientBuilder(makeTestUser({ username: 'username' }))
   })
 

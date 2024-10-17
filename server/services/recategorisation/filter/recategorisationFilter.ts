@@ -20,7 +20,7 @@ import { isReviewOverdue } from '../../reviewStatusCalculator'
 import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
 import { ProbationOffenderSearchApiClient } from '../../../data/probationOffenderSearch/probationOffenderSearchApiClient'
 import { RisksAndNeedsApiClient } from '../../../data/risksAndNeeds/risksAndNeedsApi'
-import { OVERALL_RISK_LEVEL_LOW } from '../../../data/risksAndNeeds/riskSummary.dto'
+import { OverallRiskLevel } from '../../../data/risksAndNeeds/riskSummary.dto'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
@@ -132,7 +132,7 @@ const getOffenderNumbersWithLowRoshScore = async (
     await Promise.all(
       crnBatch.map(async crn => {
         const risksSummary = await risksAndNeedsClient.getRisksSummary(crn)
-        if (risksSummary.overallRiskLevel === OVERALL_RISK_LEVEL_LOW) {
+        if (risksSummary.overallRiskLevel === OverallRiskLevel.low) {
           prisonerNumbersWithLowRoshScore.push(crnsToOffenderNumbers[crn])
         }
       })

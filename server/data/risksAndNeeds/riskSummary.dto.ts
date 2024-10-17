@@ -1,6 +1,10 @@
-export const OVERALL_RISK_LEVEL_LOW = 'LOW'
-export const OVERALL_RISK_LEVEL_HIGH = 'HIGH'
+export enum OverallRiskLevel {
+  low = 'LOW',
+  medium = 'MEDIUM',
+  high = 'HIGH',
+  veryHigh = 'VERY_HIGH',
+}
 
 export interface RiskSummaryDto {
-  overallRiskLevel: string
+  overallRiskLevel: OverallRiskLevel
 }
