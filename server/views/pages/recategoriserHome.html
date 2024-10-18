@@ -153,15 +153,15 @@
         </div>
       {% endif %}
       {% if offenders | length > 0 %}
-      <div class="moj-scrollable-pane" style="width: 100%">
-        <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
+      <div class="recategorisation-scrollable-pane">
+        <table class="govuk-table tablesorter sortcolumns recategorisation-table" id="offenderTable">
           <thead class="govuk-table__head">
 
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">Due date</th>
             <th class="govuk-table__header" scope="col">Name</th>
             <th class="govuk-table__header" scope="col">Prison no</th>
-            <th class="govuk-table__header" style="min-width: 82px" scope="col">Reason for review</th>
+            <th class="govuk-table__header" scope="col">Reason for review</th>
             <th class="govuk-table__header" scope="col">Status</th>
             <th class="govuk-table__header" scope="col">POM</th>
             <th class="govuk-table__header" scope="col"></th>
@@ -191,7 +191,7 @@
               {% endif %}
             </td>
             <td class="govuk-table__cell">{{ row.offenderNo }}</td>
-            <td class="govuk-table__cell">{{ row.reason.value }}</td>
+            <td class="govuk-table__cell recategorisation-reason-for-review-column">{{ row.reason.value }}</td>
             <td class="govuk-table__cell">
               {% if row.displayStatus == 'Back from Supervisor' %}
                 {{ govukTag({

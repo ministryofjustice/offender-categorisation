@@ -287,6 +287,7 @@ describe('Recategoriser Home page', () => {
           fromDate: moment().subtract(1, 'months').format('YYYY-MM-DD'),
           toDate: moment().format('YYYY-MM-DD'),
         })
+        cy.task('stubMatchPrisoners')
         const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
         recategoriserHomePage.selectAllFiltersButton().should('contain', 'Select all')
         recategoriserHomePage.selectAllFiltersButton().click()

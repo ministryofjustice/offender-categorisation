@@ -20,6 +20,8 @@ generic-service:
     RISK_PROFILER_ENDPOINT_URL: http://offender-risk-profiler/
     ALLOCATION_MANAGER_ENDPOINT_URL: https://moic.service.justice.gov.uk/
     PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-search.prison.service.justice.gov.uk/
+    RISKS_AND_NEEDS_ENDPOINT_URL: https://assess-risks-and-needs.hmpps.service.justice.gov.uk/
+    PROBATION_OFFENDER_SEARCH_ENDPOINT_URL: https://probation-offender-search.hmpps.service.justice.gov.uk/
     DPS_URL: https://digital.prison.service.justice.gov.uk/
     SUPPORT_URL: https://support.hmpps.service.justice.gov.uk/
     COMPONENT_API_URL: https://frontend-components.hmpps.service.justice.gov.uk
