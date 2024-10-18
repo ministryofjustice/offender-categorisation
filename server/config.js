@@ -137,6 +137,30 @@ module.exports = {
         freeSocketTimeout: 30000,
       },
     },
+    risksAndNeeds: {
+      url: get('RISKS_AND_NEEDS_ENDPOINT_URL', 'http://localhost:8086/', true),
+      timeout: {
+        response: get('RISKS_AND_NEEDS_ENDPOINT_URL_RESPONSE', 30000, true),
+        deadline: get('RISKS_AND_NEEDS_ENDPOINT_URL_DEADLINE', 35000, true),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
+    probationOffenderSearch: {
+      url: get('PROBATION_OFFENDER_SEARCH_ENDPOINT_URL', 'http://localhost:8087/', true),
+      timeout: {
+        response: get('PROBATION_OFFENDER_SEARCH_ENDPOINT_URL_RESPONSE', 30000, true),
+        deadline: get('PROBATION_OFFENDER_SEARCH_ENDPOINT_URL_DEADLINE', 35000, true),
+      },
+      agent: {
+        maxSockets: 100,
+        maxFreeSockets: 10,
+        freeSocketTimeout: 30000,
+      },
+    },
     frontendComponents: {
       url: get('COMPONENT_API_URL', 'http://localhost:8085/components', true),
       timeout: {

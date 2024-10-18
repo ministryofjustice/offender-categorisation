@@ -1,3 +1,5 @@
+$xlBreakpoint: 1280px
+
 
 // Not worth using moj-frontend just for this tag class (and anyway the colour has changed recently too in
 // moj-frontend): so define it here
@@ -309,3 +311,24 @@ $sideFilterWidth: 350px
     .govuk-button
       display: block
       margin-bottom: 15px
+
+.recategorisation-scrollable-pane
+  background-size: 100% 100%, .75em 100%, 100% 100%, .75em 100%
+
+.recategorisation-table
+  table-layout: fixed
+
+.recategorisation-reason-for-review-column
+  min-width: 85px
+
+@media only screen and (max-width: $xlBreakpoint)
+  .recategorisation-scrollable-pane
+    overflow-x: scroll
+    background: #fff linear-gradient(to right, white, white, rgba(255, 255, 255, 0) calc(0.75em * 2)) no-repeat local, scroll, local, scroll
+
+  .recategorisation-table
+    table-layout: auto
+
+  .recategorisation-reason-for-review-column
+    min-width: auto
+
