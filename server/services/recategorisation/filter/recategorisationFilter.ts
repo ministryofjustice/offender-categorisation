@@ -18,13 +18,16 @@ import {
 import { NomisAdjudicationHearingDto } from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
 import { isReviewOverdue } from '../../reviewStatusCalculator'
 import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
+import { ProbationOffenderSearchApiClient } from '../../../data/probationOffenderSearch/probationOffenderSearchApiClient'
+import { RisksAndNeedsApiClient } from '../../../data/risksAndNeeds/risksAndNeedsApi'
+import { OverallRiskLevel } from '../../../data/risksAndNeeds/riskSummary.dto'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
 export const POM = 'pom'
 
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
-const LOW_ROSH = 'lowRosh'
+export const LOW_ROSH = 'lowRosh'
 export const NO_CURRENT_TERRORISM_OFFENCES = 'noCurrentTerrorismOffences'
 export const NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS = 'noRotlRestrictionsOrSuspensions'
 export const NOT_MARKED_AS_NOT_FOR_RELEASE = 'notMarkedAsNotForRelease'
@@ -105,6 +108,39 @@ const loadAdjudicationsData = async (
   return [...adjudicationsThreeMonthsAgo, ...adjudicationsTwoMonthsAgo, ...adjudicationsLastMonth]
 }
 
+const getOffenderNumbersWithLowRoshScore = async (
+  prisoners,
+  risksAndNeedsClient: RisksAndNeedsApiClient,
+  probationOffenderSearchClient: ProbationOffenderSearchApiClient
+) => {
+  const prisonerNumbersWithLowRoshScore = []
+  const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
+  const probationOffenderSearchOffenders = await probationOffenderSearchClient.matchPrisoners(prisonerNumbers)
+  if (typeof probationOffenderSearchOffenders === 'undefined') {
+    return []
+  }
+  const crnsToOffenderNumbers = Object.fromEntries(
+    probationOffenderSearchOffenders.map(probationOffenderSearchOffender => [
+      probationOffenderSearchOffender.otherIds.crn,
+      probationOffenderSearchOffender.otherIds.nomsNumber,
+    ])
+  )
+  const BATCH_SIZE = 20
+  for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
+    const crnBatch = Object.keys(crnsToOffenderNumbers).slice(range, range + BATCH_SIZE)
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      crnBatch.map(async crn => {
+        const risksSummary = await risksAndNeedsClient.getRisksSummary(crn)
+        if (risksSummary.overallRiskLevel === OverallRiskLevel.low) {
+          prisonerNumbersWithLowRoshScore.push(crnsToOffenderNumbers[crn])
+        }
+      })
+    )
+  }
+  return prisonerNumbersWithLowRoshScore
+}
+
 export const filterListOfPrisoners = async (
   filters: RecategorisationHomeFilters,
   prisoners,
@@ -112,7 +148,9 @@ export const filterListOfPrisoners = async (
   nomisClient,
   agencyId: string,
   pomMap: Map<string, PrisonerAllocationDto>,
-  userStaffId: number
+  userStaffId: number,
+  risksAndNeedsClient: RisksAndNeedsApiClient,
+  probationOffenderSearchClient: ProbationOffenderSearchApiClient
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
@@ -123,6 +161,14 @@ export const filterListOfPrisoners = async (
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
     const adjudicationsData = await loadAdjudicationsData(prisoners, nomisClient, agencyId)
     offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
+  }
+  let offenderNumbersWithLowRoshScore = []
+  if (allFilters.includes(LOW_ROSH)) {
+    offenderNumbersWithLowRoshScore = await getOffenderNumbersWithLowRoshScore(
+      prisoners,
+      risksAndNeedsClient,
+      probationOffenderSearchClient
+    )
   }
   return prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
@@ -183,7 +229,10 @@ export const filterListOfPrisoners = async (
           }
           break
         case LOW_ROSH:
-          return true
+          if (!offenderNumbersWithLowRoshScore.includes(prisoner.offenderNo)) {
+            return false
+          }
+          break
         case OVERDUE:
           if (!isReviewOverdue(prisoner.nextReviewDate)) {
             return false
