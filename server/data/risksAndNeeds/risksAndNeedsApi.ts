@@ -70,6 +70,11 @@ function risksAndNeedsApiGetBuilder(username) {
       if (error.response?.status === 404) {
         return {}
       }
+      // 403 errors are returned for crns of restricted access people, we will record how many these occur for but continue as if they do not have a rosh score
+      if (error.response?.status === 403) {
+        logger.info('Risks and needs API: restricted crn requested')
+        return {}
+      }
       const sanitisedError = getSanitisedError(error)
       logger.error({ sanitisedError, path, query }, 'Error calling risks and needs api')
       throw sanitisedError
