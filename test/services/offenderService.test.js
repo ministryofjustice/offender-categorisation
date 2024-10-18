@@ -43,6 +43,14 @@ const allocationClient = {
   getPomByOffenderNo: jest.fn(),
 }
 
+const risksAndNeedsClient = {
+  getRisksSummary: jest.fn(),
+}
+
+const probationOffenderSearchApiClient = {
+  matchPrisoners: jest.fn(),
+}
+
 const formService = {
   getCategorisationRecord: jest.fn(),
   getSecurityReferredOffenders: jest.fn(),
@@ -68,11 +76,20 @@ const formService = {
 const nomisClientBuilder = () => nomisClient
 const allocationClientBuilder = () => allocationClient
 const prisonerSearchClientBuilder = () => prisonerSearchClient
+const risksAndNeedsClientBuilder = () => risksAndNeedsClient
+const probationOffenderSearchClientBuilder = () => probationOffenderSearchApiClient
 
 let service
 
 beforeEach(() => {
-  service = serviceCreator(nomisClientBuilder, allocationClientBuilder, formService, prisonerSearchClientBuilder)
+  service = serviceCreator(
+    nomisClientBuilder,
+    allocationClientBuilder,
+    formService,
+    prisonerSearchClientBuilder,
+    risksAndNeedsClientBuilder,
+    probationOffenderSearchClientBuilder
+  )
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
   formService.getSecurityReferrals.mockResolvedValue([])
@@ -109,6 +126,8 @@ afterEach(() => {
   formService.updatePrisonForm.mockReset()
   formService.updatePrisonRiskChange.mockReset()
   formService.updatePrisonSecurityReferral.mockReset()
+  risksAndNeedsClient.getRisksSummary.mockReset()
+  probationOffenderSearchApiClient.matchPrisoners.mockReset()
 })
 
 moment.now = jest.fn()
@@ -3803,7 +3822,15 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
     it('should return an empty array when no data is available', async () => {
       prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
 
-      const result = await service.getU21Recats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
+      const result = await service.getU21Recats(
+        'A1234AA',
+        {},
+        nomisClient,
+        allocationClient,
+        prisonerSearchClient,
+        risksAndNeedsClient,
+        probationOffenderSearchApiClient
+      )
 
       expect(result).toEqual([])
     })
@@ -3831,7 +3858,15 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       formService.getCategorisationRecords.mockResolvedValue([])
       formService.getCategorisationRecord.mockResolvedValue({ bookingId: 123, status: Status.AWAITING_APPROVAL.name })
 
-      const result = await service.getU21Recats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
+      const result = await service.getU21Recats(
+        'A1234AA',
+        {},
+        nomisClient,
+        allocationClient,
+        prisonerSearchClient,
+        risksAndNeedsClient,
+        probationOffenderSearchApiClient
+      )
       expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
       expect(formService.getCategorisationRecord).toBeCalledTimes(1)
       expect(result).toMatchObject(expected)
@@ -3897,7 +3932,15 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
         status: Status.AWAITING_APPROVAL.name,
       })
 
-      const result = await service.getU21Recats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
+      const result = await service.getU21Recats(
+        'A1234AA',
+        {},
+        nomisClient,
+        allocationClient,
+        prisonerSearchClient,
+        risksAndNeedsClient,
+        probationOffenderSearchApiClient
+      )
       expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
       expect(formService.getCategorisationRecord).toBeCalledTimes(2)
       expect(result).toMatchObject(expected)
@@ -3954,7 +3997,9 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
               {},
               nomisClient,
               allocationClient,
-              prisonerSearchClient
+              prisonerSearchClient,
+              risksAndNeedsClient,
+              probationOffenderSearchApiClient
             )
             expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
             expect(formService.getCategorisationRecord).toBeCalledTimes(1)
@@ -3986,6 +4031,8 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
                 nomisClient,
                 allocationClient,
                 prisonerSearchClient,
+                risksAndNeedsClient,
+                probationOffenderSearchApiClient,
                 {},
                 { si607Enabled: true }
               )
@@ -4034,6 +4081,8 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
               nomisClient,
               allocationClient,
               prisonerSearchClient,
+              risksAndNeedsClient,
+              probationOffenderSearchApiClient,
               {},
               { si607Enabled: true }
             )
