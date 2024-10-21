@@ -21,7 +21,7 @@ import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerA
 import { ProbationOffenderSearchApiClient } from '../../../data/probationOffenderSearch/probationOffenderSearchApiClient'
 import { RisksAndNeedsApiClient } from '../../../data/risksAndNeeds/risksAndNeedsApi'
 import { OverallRiskLevel } from '../../../data/risksAndNeeds/riskSummary.dto'
-import logger from "../../../../log";
+import logger from '../../../../log'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
@@ -116,9 +116,9 @@ const getOffenderNumbersWithLowRoshScore = async (
 ) => {
   const prisonerNumbersWithLowRoshScore = []
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
-  let timeNow = new Date()
+  let startTime = Date.now()
   const probationOffenderSearchOffenders = await probationOffenderSearchClient.matchPrisoners(prisonerNumbers)
-  logger.info(`CAT prioritisation filter investigation: fetching crns took ${new Date() - timeNow}ms`)
+  logger.info(`CAT prioritisation filter investigation: fetching crns took ${Date.now() - startTime}ms`)
   if (typeof probationOffenderSearchOffenders === 'undefined') {
     return []
   }
@@ -128,7 +128,7 @@ const getOffenderNumbersWithLowRoshScore = async (
       probationOffenderSearchOffender.otherIds.nomsNumber,
     ])
   )
-  timeNow = new Date()
+  startTime = Date.now()
   let crnsWithNoRoshLevel = 0
   const BATCH_SIZE = 50
   for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
@@ -147,7 +147,7 @@ const getOffenderNumbersWithLowRoshScore = async (
       })
     )
   }
-  logger.info(`CAT prioritisation filter investigation: fetching RoSH took ${new Date() - timeNow}ms`)
+  logger.info(`CAT prioritisation filter investigation: fetching RoSH took ${Date.now() - startTime}ms`)
   logger.info(`CAT prioritisation filter investigation: ${crnsWithNoRoshLevel} crns without RoSH level`)
   return prisonerNumbersWithLowRoshScore
 }
@@ -169,8 +169,8 @@ export const filterListOfPrisoners = async (
     return prisoners
   }
   // in order to improve load time we should apply any filters which don't require further data to be loaded first
-  const allFiltersWhichDoNotRequireFurtherDataToBeLoaded = allFilters.filter(filter =>
-    [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS, LOW_ROSH].includes(filter)
+  const allFiltersWhichDoNotRequireFurtherDataToBeLoaded = allFilters.filter(
+    filter => ![NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS, LOW_ROSH].includes(filter)
   )
   let filteredPrisoners = prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
@@ -236,7 +236,7 @@ export const filterListOfPrisoners = async (
           }
           break
         default:
-          throw new Error(`Invalid filter type: ${allFilters[i]}`)
+          throw new Error(`Invalid filter type: ${allFiltersWhichDoNotRequireFurtherDataToBeLoaded[i]}`)
       }
     }
     return true
