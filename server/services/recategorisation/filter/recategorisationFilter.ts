@@ -244,7 +244,7 @@ export const filterListOfPrisoners = async (
 
   let offenderNumbersWithAdjudications = []
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
-    const adjudicationsData = await loadAdjudicationsData(prisoners, nomisClient, agencyId)
+    const adjudicationsData = await loadAdjudicationsData(filteredPrisoners, nomisClient, agencyId)
     offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
     filteredPrisoners = filteredPrisoners.filter(prisoner => {
       return !offenderNumbersWithAdjudications.includes(prisoner.offenderNo)
@@ -253,7 +253,7 @@ export const filterListOfPrisoners = async (
   let offenderNumbersWithLowRoshScore = []
   if (allFilters.includes(LOW_ROSH)) {
     offenderNumbersWithLowRoshScore = await getOffenderNumbersWithLowRoshScore(
-      prisoners,
+      filteredPrisoners,
       risksAndNeedsClient,
       probationOffenderSearchClient
     )
