@@ -38,6 +38,7 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
     async getRisksSummary(crn): Promise<RiskSummaryDto> {
       const cached = cache.get(crn)
       if (cached) {
+        logger.info('Risks and needs API: returned from cache')
         return cached
       }
 
