@@ -1,6 +1,7 @@
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import superagent from 'superagent'
 import redis from 'redis'
+import { promisify } from 'util'
 import config from '../../config'
 import { getApiClientToken } from '../../authentication/clientCredentials'
 import getSanitisedError from '../../sanitisedError'
@@ -17,25 +18,19 @@ export interface RisksAndNeedsApiClient {
   getRisksSummary: (crn) => Promise<RiskSummaryDto>
 }
 
-const redisClient = redis.createClient({
-  legacyMode: true, // connect-redis only supports legacy mode for redis v4
-  socket: {
-    port: config.redis.port,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true',
-  },
+const client = redis.createClient({
+  port: config.redis.port,
   password: config.redis.auth_token,
+  host: config.redis.host,
+  tls: config.redis.tls_enabled === 'true' ? {} : false,
 })
 
-redisClient
-  .connect()
-  .then(() => logger.info('hmppsAuthService Redis connected'))
-  .catch((error: Error) => {
-    logger.error({ err: error }, 'hmppsAuthService Redis connect error')
-  })
-redisClient.on('error', error => {
-  logger.error({ err: error }, 'hmppsAuthService Redis error')
+client.on('error', error => {
+  logger.error(error, `Redis error`)
 })
+
+const getRedisAsync = promisify(client.get).bind(client)
+const setRedisAsync = promisify(client.set).bind(client)
 
 const timeoutSpec = {
   response: config.apis.risksAndNeeds.timeout.response,
@@ -56,7 +51,7 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
   return {
     async getRisksSummary(crn): Promise<RiskSummaryDto> {
       const redisKey = `${REDIS_KEY_PREFIX}_${crn}`
-      const cached = await redisClient.v4.get(redisKey)
+      const cached = await getRedisAsync(redisKey)
       if (cached) {
         return cached
       }
@@ -64,7 +59,7 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
       const path = `${apiUrl}risks/crn/${crn}/summary`
       const value = await apiGet({ path })
 
-      await redisClient.v4.set(redisKey, value, { EX: REDIS_EXPIRY })
+      await setRedisAsync(redisKey, value, 'EX', REDIS_EXPIRY)
       return value
     },
   }
