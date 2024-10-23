@@ -21,6 +21,7 @@ generic-service:
     ALLOCATION_MANAGER_ENDPOINT_URL: https://preprod.moic.service.justice.gov.uk/
     PRISONER_SEARCH_ENDPOINT_URL: https://prisoner-search-preprod.prison.service.justice.gov.uk/
     RISKS_AND_NEEDS_ENDPOINT_URL: https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk/
+    RISKS_AND_NEEDS_ENDPOINT_URL_RESPONSE: 45000
     PROBATION_OFFENDER_SEARCH_ENDPOINT_URL: https://probation-offender-search-preprod.hmpps.service.justice.gov.uk/
     DPS_URL: https://digital-preprod.prison.service.justice.gov.uk/
     SUPPORT_URL: https://support-preprod.hmpps.service.justice.gov.uk/

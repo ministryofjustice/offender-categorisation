@@ -130,7 +130,7 @@ const getOffenderNumbersWithLowRoshScore = async (
   )
   startTime = Date.now()
   let crnsWithNoRoshLevel = 0
-  const BATCH_SIZE = 50
+  const BATCH_SIZE = 20
   for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
     const crnBatch = Object.keys(crnsToOffenderNumbers).slice(range, range + BATCH_SIZE)
     // eslint-disable-next-line no-await-in-loop
@@ -241,22 +241,30 @@ export const filterListOfPrisoners = async (
     }
     return true
   })
-
-  let offenderNumbersWithAdjudications = []
+  let adjudicationsDataPromise
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
-    const adjudicationsData = await loadAdjudicationsData(filteredPrisoners, nomisClient, agencyId)
-    offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
-    filteredPrisoners = filteredPrisoners.filter(prisoner => {
-      return !offenderNumbersWithAdjudications.includes(prisoner.offenderNo)
-    })
+    adjudicationsDataPromise = loadAdjudicationsData(filteredPrisoners, nomisClient, agencyId)
   }
-  let offenderNumbersWithLowRoshScore = []
+  let offenderNumbersWithLowRoshScorePromise
   if (allFilters.includes(LOW_ROSH)) {
-    offenderNumbersWithLowRoshScore = await getOffenderNumbersWithLowRoshScore(
+    offenderNumbersWithLowRoshScorePromise = getOffenderNumbersWithLowRoshScore(
       filteredPrisoners,
       risksAndNeedsClient,
       probationOffenderSearchClient
     )
+  }
+  const [adjudicationsData, offenderNumbersWithLowRoshScore] = await Promise.all([
+    adjudicationsDataPromise,
+    offenderNumbersWithLowRoshScorePromise,
+  ])
+
+  if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
+    const offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
+    filteredPrisoners = filteredPrisoners.filter(prisoner => {
+      return !offenderNumbersWithAdjudications.includes(prisoner.offenderNo)
+    })
+  }
+  if (allFilters.includes(LOW_ROSH)) {
     filteredPrisoners = filteredPrisoners.filter(prisoner => {
       return offenderNumbersWithLowRoshScore.includes(prisoner.offenderNo)
     })
