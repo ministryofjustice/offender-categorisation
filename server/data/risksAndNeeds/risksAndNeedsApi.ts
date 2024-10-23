@@ -16,7 +16,7 @@ export interface RisksAndNeedsApiClient {
 
 // there are about 80000 prisoner altogether but they wont all be due for categorisation
 // 4 hour TTL is fine for slowly changing POM data but should give good hit ratio
-const cache = new LRU({ max: 30000, maxAge: 1000 * 60 * 60 * 4 })
+const cache = new LRU({ max: 50000, maxAge: 1000 * 60 * 60 * 24 })
 
 const timeoutSpec = {
   response: config.apis.risksAndNeeds.timeout.response,
@@ -38,7 +38,6 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
     async getRisksSummary(crn): Promise<RiskSummaryDto> {
       const cached = cache.get(crn)
       if (cached) {
-        logger.info('Risks and needs API: returned from cache')
         return cached
       }
 
