@@ -1,6 +1,7 @@
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import superagent from 'superagent'
-import LRU from 'lru-cache'
+import redis from 'redis'
+import { promisify } from 'util'
 import config from '../../config'
 import { getApiClientToken } from '../../authentication/clientCredentials'
 import getSanitisedError from '../../sanitisedError'
@@ -8,15 +9,28 @@ import logger from '../../../log'
 import { User } from '../user'
 import { RiskSummaryDto } from './riskSummary.dto'
 
+const REDIS_KEY_PREFIX = 'riskSummary'
+const REDIS_EXPIRY = 1000 * 60 * 60 * 24
+
 export type RisksAndNeedsApiClientBuilder = (user: User) => RisksAndNeedsApiClient
 
 export interface RisksAndNeedsApiClient {
   getRisksSummary: (crn) => Promise<RiskSummaryDto>
 }
 
-// there are about 80000 prisoner altogether but they wont all be due for categorisation
-// 4 hour TTL is fine for slowly changing POM data but should give good hit ratio
-const cache = new LRU({ max: 50000, maxAge: 1000 * 60 * 60 * 24 })
+const client = redis.createClient({
+  port: config.redis.port,
+  password: config.redis.auth_token,
+  host: config.redis.host,
+  tls: config.redis.tls_enabled === 'true' ? {} : false,
+})
+
+client.on('error', error => {
+  logger.error(error, `Redis error`)
+})
+
+const getRedisAsync = promisify(client.get).bind(client)
+const setRedisAsync = promisify(client.set).bind(client)
 
 const timeoutSpec = {
   response: config.apis.risksAndNeeds.timeout.response,
@@ -36,7 +50,8 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
 
   return {
     async getRisksSummary(crn): Promise<RiskSummaryDto> {
-      const cached = cache.get(crn)
+      const redisKey = `${REDIS_KEY_PREFIX}_${crn}`
+      const cached = await getRedisAsync(redisKey)
       if (cached) {
         return cached
       }
@@ -44,7 +59,7 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
       const path = `${apiUrl}risks/crn/${crn}/summary`
       const value = await apiGet({ path })
 
-      cache.set(crn, value)
+      await setRedisAsync(redisKey, value, 'EX', REDIS_EXPIRY)
       return value
     },
   }
