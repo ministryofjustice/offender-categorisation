@@ -3,12 +3,14 @@ const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const db = require('../../server/data/dataAccess/db')
+const config = require('../../server/config')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 const mockContext = {
   featureFlags: {
-    show_recategorisation_prioritisation_filter: true,
-    si607EnabledPrisons: ['LEI'],
+    show_recategorisation_prioritisation_filter:
+      config.featureFlags.recategorisationPrioritisation.show_filter === 'true',
+    si607EnabledPrisons: [config.featureFlags.si607],
   },
   user: { username: 'me', token: 'ABCDEF' },
 }

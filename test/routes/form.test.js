@@ -9,12 +9,14 @@ const ratings = require('../../server/config/ratings')
 const supervisor = require('../../server/config/supervisor')
 const categoriser = require('../../server/config/categoriser')
 const security = require('../../server/config/security')
+const config = require('../../server/config')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 const context = {
   featureFlags: {
-    show_recategorisation_prioritisation_filter: true,
-    si607EnabledPrisons: ['LEI'],
+    show_recategorisation_prioritisation_filter:
+      config.featureFlags.recategorisationPrioritisation.show_filter === 'true',
+    si607EnabledPrisons: [config.featureFlags.si607],
   },
   user: { token: 'ABCDEF', username: 'me' },
 }
@@ -1804,8 +1806,9 @@ describe('Submit provisionalCategory page', () => {
           bookingId: 12345,
           context: {
             featureFlags: {
-              show_recategorisation_prioritisation_filter: true,
-              si607EnabledPrisons: ['LEI'],
+              show_recategorisation_prioritisation_filter:
+                config.featureFlags.recategorisationPrioritisation.show_filter === 'true',
+              si607EnabledPrisons: [config.featureFlags.si607],
             },
             user: {
               token: 'ABCDEF',
@@ -1959,8 +1962,9 @@ describe('Submit provisionalCategory page', () => {
           bookingId: 12345,
           context: {
             featureFlags: {
-              show_recategorisation_prioritisation_filter: true,
-              si607EnabledPrisons: ['LEI'],
+              show_recategorisation_prioritisation_filter:
+                config.featureFlags.recategorisationPrioritisation.show_filter === 'true',
+              si607EnabledPrisons: [config.featureFlags.si607],
             },
             user: {
               activeCaseLoad: {
