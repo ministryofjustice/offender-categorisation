@@ -53,13 +53,13 @@ const builder: RisksAndNeedsApiClientBuilder = user => {
       const redisKey = `${REDIS_KEY_PREFIX}_${crn}`
       const cached = await getRedisAsync(redisKey)
       if (cached) {
-        return cached
+        return JSON.parse(cached)
       }
 
       const path = `${apiUrl}risks/crn/${crn}/summary`
       const value = await apiGet({ path })
 
-      await setRedisAsync(redisKey, value, 'EX', REDIS_EXPIRY)
+      await setRedisAsync(redisKey, JSON.stringify(value), 'EX', REDIS_EXPIRY)
       return value
     },
   }
