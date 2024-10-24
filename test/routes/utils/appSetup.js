@@ -2,10 +2,12 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const path = require('path')
+const cookieParser = require('cookie-parser')
 const nunjucksSetup = require('../../../server/utils/nunjucksSetup')
 const errorHandler = require('../../../server/errorHandler')
+const featureFlagMiddleware = require('../../../server/middleware/featureFlagMiddleware')
 
-module.exports = (route, production = false) => {
+module.exports = (route, production = false, cookieKeys = ['']) => {
   const app = express()
 
   app.set('view engine', 'html')
@@ -23,9 +25,11 @@ module.exports = (route, production = false) => {
     res.locals.user = { token: 'ABCDEF', username: 'me' }
     next()
   })
-  app.use(cookieSession({ keys: [''] }))
+  app.use(cookieSession({ keys: cookieKeys }))
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(cookieParser())
+  app.use(featureFlagMiddleware)
   app.use('/', route)
   // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => {
