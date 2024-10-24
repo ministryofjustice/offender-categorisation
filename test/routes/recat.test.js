@@ -608,7 +608,13 @@ describe('POST /form/recat/review', () => {
       .expect(() => {
         expect(formService.update).toBeCalledTimes(0)
         expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
-          context: { user: { token: 'ABCDEF', username: 'me' } },
+          context: {
+            featureFlags: {
+              show_recategorisation_prioritisation_filter: true,
+              si607EnabledPrisons: ['LEI'],
+            },
+            user: { token: 'ABCDEF', username: 'me' },
+          },
           bookingId: 12345,
           overriddenCategoryText: 'Cat-tool Recat',
           suggestedCategory: 'B',

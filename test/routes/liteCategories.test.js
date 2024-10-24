@@ -5,7 +5,13 @@ const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const db = require('../../server/data/dataAccess/db')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
-const mockContext = { user: { username: 'me', token: 'ABCDEF' } }
+const mockContext = {
+  featureFlags: {
+    show_recategorisation_prioritisation_filter: true,
+    si607EnabledPrisons: ['LEI'],
+  },
+  user: { username: 'me', token: 'ABCDEF' },
+}
 
 const createRouter = require('../../server/routes/liteCategories')
 
