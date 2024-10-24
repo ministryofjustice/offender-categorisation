@@ -6,7 +6,7 @@ import { makeTestUser } from '../user.test-factory'
 
 import { makeTestRiskSummaryDto } from './riskSummary.dto.test-factory'
 
-const testResponseFromRedis = makeTestRiskSummaryDto()
+const testResponseFromRedis = JSON.stringify(makeTestRiskSummaryDto())
 
 jest.mock('redis', () => ({
   createClient: jest.fn().mockImplementation(() => ({
@@ -48,7 +48,7 @@ describe('risksAndNeedsApi Client', () => {
   describe('getRisksSummary', () => {
     it('should return data from redis', async () => {
       const output = await client.getRisksSummary('AN1234')
-      return expect(output).toEqual(testResponseFromRedis)
+      return expect(output).toEqual(JSON.parse(testResponseFromRedis))
     })
 
     it('should return data from api', async () => {
