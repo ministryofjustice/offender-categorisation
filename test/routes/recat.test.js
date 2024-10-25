@@ -14,6 +14,7 @@ let roles
 jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
 
 const createRouter = require('../../server/routes/recat')
+const config = require('../../server/config')
 
 const formConfig = {
   recat,
@@ -608,7 +609,14 @@ describe('POST /form/recat/review', () => {
       .expect(() => {
         expect(formService.update).toBeCalledTimes(0)
         expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
-          context: { user: { token: 'ABCDEF', username: 'me' } },
+          context: {
+            featureFlags: {
+              show_recategorisation_prioritisation_filter:
+                config.featureFlags.recategorisationPrioritisation.show_filter === 'true',
+              si607EnabledPrisons: [config.featureFlags.si607],
+            },
+            user: { token: 'ABCDEF', username: 'me' },
+          },
           bookingId: 12345,
           overriddenCategoryText: 'Cat-tool Recat',
           suggestedCategory: 'B',

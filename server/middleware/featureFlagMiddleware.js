@@ -6,6 +6,9 @@ module.exports = async (req, res, next) => {
 
   res.locals.featureFlags = {
     si607EnabledPrisons,
+    show_recategorisation_prioritisation_filter:
+      config.featureFlags?.recategorisationPrioritisation?.show_filter === 'true' ||
+      req.cookies.show_recategorisation_prioritisation_filter === 'true',
   }
 
   return next()
