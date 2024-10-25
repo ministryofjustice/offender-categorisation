@@ -7,7 +7,7 @@ const nunjucksSetup = require('../../../server/utils/nunjucksSetup')
 const errorHandler = require('../../../server/errorHandler')
 const featureFlagMiddleware = require('../../../server/middleware/featureFlagMiddleware')
 
-module.exports = (route, production = false, cookieKeys = ['']) => {
+module.exports = (route, production = false) => {
   const app = express()
 
   app.set('view engine', 'html')
@@ -25,7 +25,7 @@ module.exports = (route, production = false, cookieKeys = ['']) => {
     res.locals.user = { token: 'ABCDEF', username: 'me' }
     next()
   })
-  app.use(cookieSession({ keys: cookieKeys }))
+  app.use(cookieSession({ keys: [''] }))
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(cookieParser())
