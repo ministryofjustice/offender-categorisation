@@ -10,7 +10,7 @@ import { User } from '../user'
 import { RiskSummaryDto } from './riskSummary.dto'
 
 const REDIS_KEY_PREFIX = 'riskSummary'
-const REDIS_EXPIRY = 1000 * 60 * 60 * 24
+const REDIS_EXPIRY = 1000 * 60 * 60 * 4
 
 export type RisksAndNeedsApiClientBuilder = (user: User) => RisksAndNeedsApiClient
 

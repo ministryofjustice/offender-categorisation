@@ -60,4 +60,31 @@ describe('Feature Flag Middleware', () => {
       expect(res.locals.featureFlags.si607EnabledPrisons).toEqual(['prison1', 'prison2', 'prison3'])
     })
   })
+
+  describe('Recategorisation prioritisation filter', () => {
+    test('should set show_recategorisation_prioritisation_filter in res.locals.featureFlags from config', async () => {
+      config.featureFlags = { recategorisationPrioritisation: { show_filter: 'true' } }
+
+      await featureFlagMiddleware(req, res, next)
+
+      expect(res.locals.featureFlags).toBeDefined()
+      expect(res.locals.featureFlags.show_recategorisation_prioritisation_filter).toBeTruthy()
+    })
+    test('should set show_recategorisation_prioritisation_filter in res.locals.featureFlags from cookies', async () => {
+      config.featureFlags = { recategorisationPrioritisation: { show_filter: 'false' } }
+
+      await featureFlagMiddleware({ cookies: { show_recategorisation_prioritisation_filter: 'true' } }, res, next)
+
+      expect(res.locals.featureFlags).toBeDefined()
+      expect(res.locals.featureFlags.show_recategorisation_prioritisation_filter).toBeTruthy()
+    })
+    test('should set show_recategorisation_prioritisation_filter to false in res.locals.featureFlags with no cookie or config', async () => {
+      config.featureFlags = { recategorisationPrioritisation: { show_filter: 'false' } }
+
+      await featureFlagMiddleware(req, res, next)
+
+      expect(res.locals.featureFlags).toBeDefined()
+      expect(res.locals.featureFlags.show_recategorisation_prioritisation_filter).toBeFalsy()
+    })
+  })
 })

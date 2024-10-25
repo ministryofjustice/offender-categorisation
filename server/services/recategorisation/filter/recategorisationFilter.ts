@@ -130,7 +130,7 @@ const getOffenderNumbersWithLowRoshScore = async (
   )
   startTime = Date.now()
   let crnsWithNoRoshLevel = 0
-  const BATCH_SIZE = 20
+  const BATCH_SIZE = 50
   for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
     const crnBatch = Object.keys(crnsToOffenderNumbers).slice(range, range + BATCH_SIZE)
     // eslint-disable-next-line no-await-in-loop
