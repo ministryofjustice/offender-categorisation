@@ -25,6 +25,16 @@ describe('removeFilterFromFullUrl', () => {
 
     expect(result).toEqual('/recategoriserHome?filterRemoved=lowRiskOfEscape')
   })
+  test('it should remove filter correctly after another filter has been removed', () => {
+    const result = removeFilterFromFullUrl(
+      LOW_RISK_OF_ESCAPE,
+      SUITABILIGY_FOR_OPEN_CONDITIONS,
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&filterRemoved=notMarkedAsNotForRelease',
+      1
+    )
+
+    expect(result).toEqual('/recategoriserHome?filterRemoved=lowRiskOfEscape')
+  })
   test.each([
     [
       LOW_RISK_OF_ESCAPE,
