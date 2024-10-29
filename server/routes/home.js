@@ -191,7 +191,7 @@ module.exports = function Index({
         )
         delete validation.value.filterRemoved
       }
-      
+
       let showRecategorisationPrioritisationFilter = false
       if (
         res.locals?.featureFlags?.recategorisationPrioritisationEnabledPrisons.includes(
