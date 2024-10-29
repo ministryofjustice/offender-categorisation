@@ -23,33 +23,33 @@ describe('removeFilterFromFullUrl', () => {
       1
     )
 
-    expect(result).toEqual('/recategoriserHome')
+    expect(result).toEqual('/recategoriserHome?filterRemoved=lowRiskOfEscape')
   })
   test.each([
     [
       LOW_RISK_OF_ESCAPE,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe&filterRemoved=lowRiskOfEscape',
     ],
     [
       NOT_MARKED_AS_NOT_FOR_RELEASE,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe&filterRemoved=notMarkedAsNotForRelease',
     ],
     [
       STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe&filterRemoved=standardOrEnhancedIncentiveLevel',
     ],
     [
       OVERDUE,
       DUE_DATE,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&pom%5B%5D=reviewsAssignedToMe',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&pom%5B%5D=reviewsAssignedToMe&filterRemoved=overdue',
     ],
     [
       REVIEWS_ASSIGNED_TO_ME,
       POM,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&filterRemoved=reviewsAssignedToMe',
     ],
   ])(
     'It should remove %s filter correctly with %s key when there are multiple filters applied',

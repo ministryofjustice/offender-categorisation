@@ -32,7 +32,12 @@ Object.keys(recategorisationHomeFilters).forEach(key => {
     )
     .optional()
 })
-const recategorisationHomeSchema = joi.object(recategorisationHomeSchemaFilters).optional()
+const recategorisationHomeSchema = joi
+  .object({
+    ...recategorisationHomeSchemaFilters,
+    filterRemoved: joi.string().optional(),
+  })
+  .optional()
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -179,8 +184,21 @@ module.exports = function Index({
         })
       }
 
+      // Can be removed after pilot of recategorisation prioritisation filter
+      if (validation.value.filterRemoved) {
+        logger.debug(
+          `Recategorisation Prioritisation Filter: filter removed using chips: ${validation.value.filterRemoved}`
+        )
+        delete validation.value.filterRemoved
+      }
+      
       let showRecategorisationPrioritisationFilter = false
-      if (res.locals?.featureFlags?.show_recategorisation_prioritisation_filter) {
+      if (
+        res.locals?.featureFlags?.recategorisationPrioritisationEnabledPrisons.includes(
+          user.activeCaseLoad.caseLoadId
+        ) ||
+        res.locals?.featureFlags?.show_recategorisation_prioritisation_filter
+      ) {
         showRecategorisationPrioritisationFilter = true
       }
 
@@ -192,6 +210,13 @@ module.exports = function Index({
         res.locals.user.activeCaseLoad.caseLoadId,
         transactionalDbClient
       )
+
+      // Can be removed after pilot of recategorisation prioritisation filter
+      if (validation.value.length > 0) {
+        logger.debug(
+          `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}`
+        )
+      }
 
       return res.render('pages/recategoriserHome', {
         offenders,

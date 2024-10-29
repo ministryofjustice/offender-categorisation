@@ -197,11 +197,7 @@ module.exports = {
         }),
       },
     },
-    recategorisationPrioritisation: {
-      show_filter: get('FEATURE_FLAG__SHOW_RECATEGORISATION_PRIORITISATION_FILTER', 'false', true, {
-        requireInProduction: false,
-      }),
-    },
+    recategorisationPrioritisation: get('FEATURE_FLAG__SHOW_RECATEGORISATION_PRIORITISATION_FILTER', 'PVI', true),
   },
   appInsightsConnectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', '', { requiredInProduction: true }),
 }

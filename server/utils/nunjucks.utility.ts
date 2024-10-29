@@ -15,7 +15,7 @@ export const removeFilterFromFullUrl = (
   numberOfFiltersApplied: number
 ) => {
   const startPositionOfFilterInUrl = fullUrl.indexOf(filter) - (key.length + 7)
-  return (
+  return `${
     fullUrl.substring(
       0,
       fullUrl[startPositionOfFilterInUrl - 1] === '&' || numberOfFiltersApplied === 1
@@ -25,8 +25,9 @@ export const removeFilterFromFullUrl = (
     fullUrl.substring(
       fullUrl.indexOf(filter) + filter.length + (fullUrl[startPositionOfFilterInUrl - 1] === '&' ? 0 : 1),
       fullUrl.length
-    )
-  )
+    ) +
+    (numberOfFiltersApplied > 1 ? '&' : '?')
+  }filterRemoved=${filter}`
 }
 
 export default removeFilterFromFullUrl
