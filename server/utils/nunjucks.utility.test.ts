@@ -19,8 +19,7 @@ describe('removeFilterFromFullUrl', () => {
     const result = removeFilterFromFullUrl(
       LOW_RISK_OF_ESCAPE,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape',
-      1
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape'
     )
 
     expect(result).toEqual('/recategoriserHome?filterRemoved=lowRiskOfEscape')
@@ -29,8 +28,7 @@ describe('removeFilterFromFullUrl', () => {
     const result = removeFilterFromFullUrl(
       LOW_RISK_OF_ESCAPE,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&filterRemoved=notMarkedAsNotForRelease',
-      1
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&filterRemoved=notMarkedAsNotForRelease'
     )
 
     expect(result).toEqual('/recategoriserHome?filterRemoved=lowRiskOfEscape')
@@ -74,8 +72,7 @@ describe('removeFilterFromFullUrl', () => {
       const result = removeFilterFromFullUrl(
         filter,
         key,
-        '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe',
-        5
+        '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe'
       )
 
       expect(result).toEqual(expectedResult)

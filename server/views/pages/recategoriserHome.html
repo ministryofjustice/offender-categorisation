@@ -104,7 +104,7 @@
             {% set selectedItems = [] %}
             {% for filter in filterNames %}
               {% set selectedItems = (selectedItems.push({
-                href: removeFilterFromFullUrl(filter, key, fullUrl, numberOfFiltersApplied),
+                href: removeFilterFromFullUrl(filter, key, fullUrl),
                 text: allFilters[key][filter]
               }), selectedItems) %}
             {% endfor %}
