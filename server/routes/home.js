@@ -214,7 +214,7 @@ module.exports = function Index({
       // Can be removed after pilot of recategorisation prioritisation filter
       if (validation.value.length > 0) {
         logger.debug(
-          `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}`
+          `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}, prisonId = ${user.activeCaseLoad.caseLoadId}`
         )
       }
 
