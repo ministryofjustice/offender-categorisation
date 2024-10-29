@@ -820,7 +820,7 @@ module.exports = function createOffendersService(
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
-          pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
+          pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name) || 'Timothy Ness',
         }
       })
     )
