@@ -7,7 +7,7 @@ const log = require('../../log')
 const { firstItem } = require('../utils/functionalHelpers')
 const { getLongDateFormat } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
+const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const Status = require('../utils/statusEnum')
 
 const ratings = require('../config/ratings')
@@ -44,7 +44,7 @@ module.exports = function Index({
 
   router.get(
     '/ratings/offendingHistory/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'ratings'
       const form = 'offendingHistory'
       const { bookingId } = req.params
@@ -58,7 +58,7 @@ module.exports = function Index({
 
   router.get(
     '/ratings/securityInput/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'ratings', 'securityInput', bookingId, transactionalDbClient)
 
@@ -76,7 +76,7 @@ module.exports = function Index({
 
   router.get(
     '/ratings/violenceRating/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'ratings'
       const form = 'violenceRating'
       const { bookingId } = req.params
@@ -89,7 +89,7 @@ module.exports = function Index({
 
   router.get(
     '/ratings/escapeRating/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'ratings'
       const form = 'escapeRating'
       const { bookingId } = req.params
@@ -102,7 +102,7 @@ module.exports = function Index({
 
   router.get(
     '/ratings/extremismRating/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'ratings'
       const form = 'extremismRating'
       const { bookingId } = req.params
@@ -119,7 +119,7 @@ module.exports = function Index({
 
   router.get(
     '/categoriser/provisionalCategory/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'categoriser'
       const form = 'provisionalCategory'
       const { bookingId } = req.params
@@ -137,7 +137,7 @@ module.exports = function Index({
 
   router.get(
     '/categoriser/review/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'categoriser', 'review', bookingId, transactionalDbClient)
 
@@ -180,7 +180,7 @@ module.exports = function Index({
 
   router.get(
     '/supervisor/review/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'supervisor'
       const result = await buildFormData(res, req, section, 'review', bookingId, transactionalDbClient)
@@ -197,7 +197,7 @@ module.exports = function Index({
 
   router.get(
     '/security/review/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'security'
       const result = await buildFormData(res, req, section, 'review', bookingId, transactionalDbClient)
@@ -240,7 +240,7 @@ module.exports = function Index({
 
   router.get(
     '/:section/:form/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { section, form, bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
       res.render(`formPages/${section}/${form}`, result)
@@ -249,7 +249,7 @@ module.exports = function Index({
 
   router.get(
     '/awaitingApprovalView/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient)
 
@@ -265,7 +265,7 @@ module.exports = function Index({
 
   router.get(
     '/approvedView/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const { sequenceNo } = req.query
       const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient, sequenceNo)
@@ -290,7 +290,7 @@ module.exports = function Index({
 
   router.get(
     '/cancel/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'dummy1', 'cancel', bookingId, transactionalDbClient)
       const { referer } = req.headers
@@ -305,7 +305,7 @@ module.exports = function Index({
 
   router.get(
     '/cancelConfirmed/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
@@ -410,7 +410,7 @@ module.exports = function Index({
 
   router.post(
     '/ratings/securityInput/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'ratings'
       const form = 'securityInput'
       const { bookingId } = req.params
@@ -444,7 +444,7 @@ module.exports = function Index({
 
   router.post(
     '/ratings/securityBack/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'ratings'
       const form = 'securityBack'
       const { bookingId } = req.params
@@ -479,7 +479,7 @@ module.exports = function Index({
 
   router.post(
     '/supervisor/confirmBack/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'supervisor'
       const form = 'confirmBack'
@@ -513,7 +513,7 @@ module.exports = function Index({
 
   router.post(
     '/supervisor/supervisorMessage/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const categorisationRecord = await formService.backToCategoriserMessageRead(bookingId, transactionalDbClient)
 
@@ -525,7 +525,7 @@ module.exports = function Index({
 
   router.post(
     '/security/review/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'security'
       const form = 'review'
       const { bookingId } = req.params
@@ -555,7 +555,7 @@ module.exports = function Index({
 
   router.post(
     '/categoriser/provisionalCategory/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'categoriser'
       const form = 'provisionalCategory'
@@ -620,7 +620,7 @@ module.exports = function Index({
 
   router.post(
     '/supervisor/review/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'supervisor'
       const form = 'review'
@@ -726,7 +726,7 @@ module.exports = function Index({
 
   router.post(
     '/cancel/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const formPageConfig = formConfig.cancel
       const userInput = clearConditionalFields(req.body)
@@ -756,7 +756,7 @@ module.exports = function Index({
 
   router.post(
     '/ratings/decision/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
@@ -794,7 +794,7 @@ module.exports = function Index({
   )
   router.post(
     '/categoriser/review/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'categoriser'
       const form = 'review'
@@ -863,7 +863,7 @@ module.exports = function Index({
 
   router.post(
     '/:section/:form/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { section, form, bookingId } = req.params
       const formPageConfig = formConfig[section][form]
       const userInput = clearConditionalFields(req.body)

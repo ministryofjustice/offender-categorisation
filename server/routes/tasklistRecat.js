@@ -1,6 +1,6 @@
 const moment = require('moment')
 const express = require('express')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
+const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
@@ -46,7 +46,7 @@ module.exports = function Index({
 
   router.get(
     '/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
@@ -175,7 +175,7 @@ module.exports = function Index({
 
   router.get(
     '/recategoriserSubmitted/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.render('pages/recategoriserSubmitted', {

@@ -10,7 +10,7 @@ const {
   offenderAdjudicationLink,
 } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
-const asyncMiddleware = require('../middleware/asyncMiddleware')
+const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const recat = require('../config/recat')
 const Status = require('../utils/statusEnum')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
@@ -36,7 +36,7 @@ module.exports = function Index({
 
   router.get(
     '/securityInput/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'securityInput', bookingId, transactionalDbClient)
 
@@ -54,7 +54,7 @@ module.exports = function Index({
 
   router.get(
     '/prisonerBackground/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
@@ -88,7 +88,7 @@ module.exports = function Index({
 
   router.get(
     '/review/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
@@ -125,7 +125,7 @@ module.exports = function Index({
 
   router.get(
     '/riskProfileChangeDetail/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
@@ -139,7 +139,7 @@ module.exports = function Index({
 
   router.get(
     '/fasttrackConfirmation/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
@@ -149,7 +149,7 @@ module.exports = function Index({
 
   router.get(
     '/fasttrackCancelled/:bookingId',
-    asyncMiddleware(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
@@ -159,7 +159,7 @@ module.exports = function Index({
 
   router.get(
     '/:form/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const section = 'recat'
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
@@ -216,7 +216,7 @@ module.exports = function Index({
 
   router.post(
     '/securityInput/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'recat'
       const form = 'securityInput'
       const { bookingId } = req.params
@@ -250,7 +250,7 @@ module.exports = function Index({
 
   router.post(
     '/riskProfileChangeDetail/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const section = 'recat'
       const form = 'riskProfileChangeDetail'
       const { bookingId } = req.params
@@ -286,7 +286,7 @@ module.exports = function Index({
 
   router.post(
     '/decision/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
@@ -348,7 +348,7 @@ module.exports = function Index({
 
   router.post(
     '/higherSecurityReview/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'recat'
       const form = 'higherSecurityReview'
@@ -384,7 +384,7 @@ module.exports = function Index({
 
   router.post(
     '/miniHigherSecurityReview/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'recat'
       const form = 'miniHigherSecurityReview'
@@ -420,7 +420,7 @@ module.exports = function Index({
 
   router.post(
     '/review/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const section = 'recat'
       const form = 'review'
@@ -456,7 +456,7 @@ module.exports = function Index({
 
   router.post(
     '/fasttrackEligibility/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'fasttrackEligibility'
       const section = 'recat'
@@ -489,7 +489,7 @@ module.exports = function Index({
 
   router.post(
     '/fasttrackProgress/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const form = 'fasttrackProgress'
       const section = 'recat'
@@ -559,7 +559,7 @@ module.exports = function Index({
 
   router.post(
     '/:form/:bookingId',
-    asyncMiddleware(async (req, res, transactionalDbClient) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
       const section = 'recat'
       const formPageConfig = formConfig[section][form]
