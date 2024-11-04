@@ -18,13 +18,17 @@ import {
 import { NomisAdjudicationHearingDto } from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
 import { isReviewOverdue } from '../../reviewStatusCalculator'
 import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
+import { ProbationOffenderSearchApiClient } from '../../../data/probationOffenderSearch/probationOffenderSearchApiClient'
+import { RisksAndNeedsApiClient } from '../../../data/risksAndNeeds/risksAndNeedsApi'
+import { OverallRiskLevel } from '../../../data/risksAndNeeds/riskSummary.dto'
+import logger from '../../../../log'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
 export const POM = 'pom'
 
 export const LOW_RISK_OF_ESCAPE = 'lowRiskOfEscape'
-const LOW_ROSH = 'lowRosh'
+export const LOW_ROSH = 'lowRosh'
 export const NO_CURRENT_TERRORISM_OFFENCES = 'noCurrentTerrorismOffences'
 export const NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS = 'noRotlRestrictionsOrSuspensions'
 export const NOT_MARKED_AS_NOT_FOR_RELEASE = 'notMarkedAsNotForRelease'
@@ -56,15 +60,15 @@ export const recategorisationHomeFilters = {
   [SUITABILIGY_FOR_OPEN_CONDITIONS]: {
     [LOW_ROSH]: 'Low RoSH',
     [LOW_RISK_OF_ESCAPE]: 'Low risk of escape',
+    [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS]: 'No adjudications in the last 3 months',
     [NO_CURRENT_TERRORISM_OFFENCES]: 'No current terrorism offences',
     [NO_ROTL_RESTRICTIONS_OR_SUSPENSIONS]: 'No ROTL restrictions or suspensions',
-    [NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS]: 'No adjudications in the last 3 months',
     [NOT_MARKED_AS_NOT_FOR_RELEASE]: "Not marked as 'Not for release'",
     [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL]: 'Standard or Enhanced incentive level',
     [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS]: 'Time left to serve is between 12 weeks and 3 years',
   },
-  [DUE_DATE]: { [OVERDUE]: 'Overdue reviews' },
   [POM]: { [REVIEWS_ASSIGNED_TO_ME]: 'Reviews assigned to me' },
+  [DUE_DATE]: { [OVERDUE]: 'Overdue reviews' },
 }
 
 export const recategorisationHomeFilterKeys = {
@@ -105,6 +109,49 @@ const loadAdjudicationsData = async (
   return [...adjudicationsThreeMonthsAgo, ...adjudicationsTwoMonthsAgo, ...adjudicationsLastMonth]
 }
 
+const getOffenderNumbersWithLowRoshScore = async (
+  prisoners,
+  risksAndNeedsClient: RisksAndNeedsApiClient,
+  probationOffenderSearchClient: ProbationOffenderSearchApiClient
+) => {
+  const prisonerNumbersWithLowRoshScore = []
+  const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
+  let startTime = Date.now()
+  const probationOffenderSearchOffenders = await probationOffenderSearchClient.matchPrisoners(prisonerNumbers)
+  logger.info(`CAT prioritisation filter investigation: fetching crns took ${Date.now() - startTime}ms`)
+  if (typeof probationOffenderSearchOffenders === 'undefined') {
+    return []
+  }
+  const crnsToOffenderNumbers = Object.fromEntries(
+    probationOffenderSearchOffenders.map(probationOffenderSearchOffender => [
+      probationOffenderSearchOffender.otherIds.crn,
+      probationOffenderSearchOffender.otherIds.nomsNumber,
+    ])
+  )
+  startTime = Date.now()
+  let crnsWithNoRoshLevel = 0
+  const BATCH_SIZE = 50
+  for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
+    const crnBatch = Object.keys(crnsToOffenderNumbers).slice(range, range + BATCH_SIZE)
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      // eslint-disable-next-line no-loop-func
+      crnBatch.map(async crn => {
+        const risksSummary = await risksAndNeedsClient.getRisksSummary(crn)
+        if (typeof risksSummary.overallRiskLevel === 'undefined') {
+          crnsWithNoRoshLevel += 1
+        }
+        if (risksSummary.overallRiskLevel === OverallRiskLevel.low) {
+          prisonerNumbersWithLowRoshScore.push(crnsToOffenderNumbers[crn])
+        }
+      })
+    )
+  }
+  logger.info(`CAT prioritisation filter investigation: fetching RoSH took ${Date.now() - startTime}ms`)
+  logger.info(`CAT prioritisation filter investigation: ${crnsWithNoRoshLevel} crns without RoSH level`)
+  return prisonerNumbersWithLowRoshScore
+}
+
 export const filterListOfPrisoners = async (
   filters: RecategorisationHomeFilters,
   prisoners,
@@ -112,19 +159,20 @@ export const filterListOfPrisoners = async (
   nomisClient,
   agencyId: string,
   pomMap: Map<string, PrisonerAllocationDto>,
-  userStaffId: number
+  userStaffId: number,
+  risksAndNeedsClient: RisksAndNeedsApiClient,
+  probationOffenderSearchClient: ProbationOffenderSearchApiClient
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
   if (allFilters.length <= 0) {
     return prisoners
   }
-  let offenderNumbersWithAdjudications = []
-  if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
-    const adjudicationsData = await loadAdjudicationsData(prisoners, nomisClient, agencyId)
-    offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
-  }
-  return prisoners.filter(prisoner => {
+  // in order to improve load time we should apply any filters which don't require further data to be loaded first
+  const allFiltersWhichDoNotRequireFurtherDataToBeLoaded = allFilters.filter(
+    filter => ![NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS, LOW_ROSH].includes(filter)
+  )
+  let filteredPrisoners = prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
     const activeNonExpiredAlertCodes =
       (currentPrisonerSearchData &&
@@ -133,8 +181,8 @@ export const filterListOfPrisoners = async (
           .map(alert => alert.alertCode)) ||
       []
     const incentiveLevelCode = currentPrisonerSearchData?.currentIncentive?.level.code
-    for (let i = 0; i < allFilters.length; i += 1) {
-      switch (allFilters[i]) {
+    for (let i = 0; i < allFiltersWhichDoNotRequireFurtherDataToBeLoaded.length; i += 1) {
+      switch (allFiltersWhichDoNotRequireFurtherDataToBeLoaded[i]) {
         case LOW_RISK_OF_ESCAPE:
           if (
             activeNonExpiredAlertCodes.includes(ESCAPE_RISK_ALERT_CODE) ||
@@ -154,11 +202,6 @@ export const filterListOfPrisoners = async (
             activeNonExpiredAlertCodes.includes(RESTRICTED_ROTL_ALERT_CODE) ||
             activeNonExpiredAlertCodes.includes(ROTL_SUSPENSION_ALERT_CODE)
           ) {
-            return false
-          }
-          break
-        case NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS:
-          if (offenderNumbersWithAdjudications.includes(prisoner.offenderNo)) {
             return false
           }
           break
@@ -182,8 +225,6 @@ export const filterListOfPrisoners = async (
             return false
           }
           break
-        case LOW_ROSH:
-          return true
         case OVERDUE:
           if (!isReviewOverdue(prisoner.nextReviewDate)) {
             return false
@@ -195,9 +236,39 @@ export const filterListOfPrisoners = async (
           }
           break
         default:
-          throw new Error(`Invalid filter type: ${allFilters[i]}`)
+          throw new Error(`Invalid filter type: ${allFiltersWhichDoNotRequireFurtherDataToBeLoaded[i]}`)
       }
     }
     return true
   })
+  let adjudicationsDataPromise
+  if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
+    adjudicationsDataPromise = loadAdjudicationsData(filteredPrisoners, nomisClient, agencyId)
+  }
+  let offenderNumbersWithLowRoshScorePromise
+  if (allFilters.includes(LOW_ROSH)) {
+    offenderNumbersWithLowRoshScorePromise = getOffenderNumbersWithLowRoshScore(
+      filteredPrisoners,
+      risksAndNeedsClient,
+      probationOffenderSearchClient
+    )
+  }
+  const [adjudicationsData, offenderNumbersWithLowRoshScore] = await Promise.all([
+    adjudicationsDataPromise,
+    offenderNumbersWithLowRoshScorePromise,
+  ])
+
+  if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
+    const offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
+    filteredPrisoners = filteredPrisoners.filter(prisoner => {
+      return !offenderNumbersWithAdjudications.includes(prisoner.offenderNo)
+    })
+  }
+  if (allFilters.includes(LOW_ROSH)) {
+    filteredPrisoners = filteredPrisoners.filter(prisoner => {
+      return offenderNumbersWithLowRoshScore.includes(prisoner.offenderNo)
+    })
+  }
+
+  return filteredPrisoners
 }

@@ -123,7 +123,9 @@ module.exports = function createOffendersService(
   nomisClientBuilder,
   allocationClientBuilder,
   formService,
-  prisonerSearchClientBuilder
+  prisonerSearchClientBuilder,
+  risksAndNeedsClientBuilder,
+  probationOffenderSearchClientBuilder
 ) {
   async function getUncategorisedOffenders(context, user, transactionalDbClient) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -711,6 +713,8 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
+    risksAndNeedsClient,
+    probationOffenderSearchClient,
     filters = {},
     featureFlags = {}
   ) {
@@ -756,7 +760,9 @@ module.exports = function createOffendersService(
       nomisClient,
       agencyId,
       pomMap,
-      user.staffId
+      user.staffId,
+      risksAndNeedsClient,
+      probationOffenderSearchClient
     )
 
     return Promise.all(
@@ -910,6 +916,8 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
+    risksAndNeedsClient,
+    probationOffenderSearchClient,
     filters = {},
     featureFlags = {}
   ) {
@@ -943,7 +951,9 @@ module.exports = function createOffendersService(
       nomisClient,
       agencyId,
       pomMap,
-      user.staffId
+      user.staffId,
+      risksAndNeedsClient,
+      probationOffenderSearchClient
     )
 
     return Promise.all(
@@ -1017,12 +1027,34 @@ module.exports = function createOffendersService(
       const nomisClient = nomisClientBuilder(context)
       const allocationClient = allocationClientBuilder(context)
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
+      const risksAndNeedsClient = risksAndNeedsClientBuilder(context.user)
+      const probationOffenderSearchClient = probationOffenderSearchClientBuilder(context.user)
 
       const featureFlags = { si607Enabled: context.si607Enabled }
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
-        getDueRecats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, filters, featureFlags),
-        getU21Recats(agencyId, user, nomisClient, allocationClient, prisonerSearchClient, filters, featureFlags),
+        getDueRecats(
+          agencyId,
+          user,
+          nomisClient,
+          allocationClient,
+          prisonerSearchClient,
+          risksAndNeedsClient,
+          probationOffenderSearchClient,
+          filters,
+          featureFlags
+        ),
+        getU21Recats(
+          agencyId,
+          user,
+          nomisClient,
+          allocationClient,
+          prisonerSearchClient,
+          risksAndNeedsClient,
+          probationOffenderSearchClient,
+          filters,
+          featureFlags
+        ),
         formService.getSecurityReferrals(agencyId),
       ])
 

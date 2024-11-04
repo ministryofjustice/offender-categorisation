@@ -11,7 +11,6 @@ const { inProgress, extractNextReviewDate } = require('../utils/functionalHelper
 const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
-const conf = require('../config')
 const logger = require('../../log')
 const {
   recategorisationHomeFilters,
@@ -178,7 +177,7 @@ module.exports = function Index({
       }
 
       let showRecategorisationPrioritisationFilter = false
-      if (conf.featureFlags.recategorisationPrioritisation.show_filter === 'true') {
+      if (res.locals?.featureFlags?.show_recategorisation_prioritisation_filter) {
         showRecategorisationPrioritisationFilter = true
       }
 

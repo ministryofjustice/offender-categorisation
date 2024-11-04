@@ -547,6 +547,17 @@ describe('Recategoriser home', () => {
         expect(res.text).not.toContain('Filters')
       })
   })
+  test('show filter based on cookie', () => {
+    config.featureFlags.recategorisationPrioritisation.show_filter = 'false'
+    return request(app)
+      .get('/recategoriserHome')
+      .set('Cookie', ['show_recategorisation_prioritisation_filter=true'])
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Filters')
+      })
+  })
   test('rejects invalid filter options', () => {
     return request(app)
       .get('/recategoriserHome?suitabilityForOpenConditions%5B%5D=something')
