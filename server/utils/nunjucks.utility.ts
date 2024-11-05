@@ -4,6 +4,7 @@ import type {
   RecategorisationHomeFilterPomValue,
   RecategorisationHomeFilterSuitabilityForOpenConditionsValue,
 } from '../services/recategorisation/filter/recategorisationFilter'
+import config from '../config'
 
 export const removeFilterFromFullUrl = (
   filter:
@@ -11,22 +12,15 @@ export const removeFilterFromFullUrl = (
     | RecategorisationHomeFilterDueDateValue
     | RecategorisationHomeFilterPomValue,
   key: keyof RecategorisationHomeFilters,
-  fullUrl: string,
-  numberOfFiltersApplied: number
+  fullUrl: string
 ) => {
-  const startPositionOfFilterInUrl = fullUrl.indexOf(filter) - (key.length + 7)
-  return (
-    fullUrl.substring(
-      0,
-      fullUrl[startPositionOfFilterInUrl - 1] === '&' || numberOfFiltersApplied === 1
-        ? startPositionOfFilterInUrl - 1
-        : startPositionOfFilterInUrl
-    ) +
-    fullUrl.substring(
-      fullUrl.indexOf(filter) + filter.length + (fullUrl[startPositionOfFilterInUrl - 1] === '&' ? 0 : 1),
-      fullUrl.length
-    )
-  )
+  const url = new URL(fullUrl, config.domain)
+  if (url.searchParams.has('filterRemoved')) {
+    url.searchParams.delete('filterRemoved')
+  }
+  url.searchParams.delete(`${key}[]`, filter)
+  url.searchParams.append('filterRemoved', filter)
+  return url.toString().substring(config.domain.length)
 }
 
 export default removeFilterFromFullUrl

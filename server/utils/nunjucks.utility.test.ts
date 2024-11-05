@@ -19,37 +19,45 @@ describe('removeFilterFromFullUrl', () => {
     const result = removeFilterFromFullUrl(
       LOW_RISK_OF_ESCAPE,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape',
-      1
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape'
     )
 
-    expect(result).toEqual('/recategoriserHome')
+    expect(result).toEqual('/recategoriserHome?filterRemoved=lowRiskOfEscape')
+  })
+  test('it should remove filter correctly after another filter has been removed', () => {
+    const result = removeFilterFromFullUrl(
+      LOW_RISK_OF_ESCAPE,
+      SUITABILIGY_FOR_OPEN_CONDITIONS,
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&filterRemoved=notMarkedAsNotForRelease'
+    )
+
+    expect(result).toEqual('/recategoriserHome?filterRemoved=lowRiskOfEscape')
   })
   test.each([
     [
       LOW_RISK_OF_ESCAPE,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe&filterRemoved=lowRiskOfEscape',
     ],
     [
       NOT_MARKED_AS_NOT_FOR_RELEASE,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe&filterRemoved=notMarkedAsNotForRelease',
     ],
     [
       STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
       SUITABILIGY_FOR_OPEN_CONDITIONS,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe&filterRemoved=standardOrEnhancedIncentiveLevel',
     ],
     [
       OVERDUE,
       DUE_DATE,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&pom%5B%5D=reviewsAssignedToMe',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&pom%5B%5D=reviewsAssignedToMe&filterRemoved=overdue',
     ],
     [
       REVIEWS_ASSIGNED_TO_ME,
       POM,
-      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue',
+      '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&filterRemoved=reviewsAssignedToMe',
     ],
   ])(
     'It should remove %s filter correctly with %s key when there are multiple filters applied',
@@ -64,8 +72,7 @@ describe('removeFilterFromFullUrl', () => {
       const result = removeFilterFromFullUrl(
         filter,
         key,
-        '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe',
-        5
+        '/recategoriserHome?suitabilityForOpenConditions%5B%5D=lowRiskOfEscape&suitabilityForOpenConditions%5B%5D=notMarkedAsNotForRelease&suitabilityForOpenConditions%5B%5D=standardOrEnhancedIncentiveLevel&dueDate%5B%5D=overdue&pom%5B%5D=reviewsAssignedToMe'
       )
 
       expect(result).toEqual(expectedResult)
