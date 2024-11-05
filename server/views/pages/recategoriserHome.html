@@ -104,7 +104,7 @@
             {% set selectedItems = [] %}
             {% for filter in filterNames %}
               {% set selectedItems = (selectedItems.push({
-                href: removeFilterFromFullUrl(filter, key, fullUrl, numberOfFiltersApplied),
+                href: removeFilterFromFullUrl(filter, key, fullUrl),
                 text: allFilters[key][filter]
               }), selectedItems) %}
             {% endfor %}
@@ -192,10 +192,10 @@
             </td>
             <td class="govuk-table__cell">{{ row.offenderNo }}</td>
             <td class="govuk-table__cell recategorisation-reason-for-review-column">{{ row.reason.value }}</td>
-            <td class="govuk-table__cell">
+            <td class="govuk-table__cell text-break-word">
               {% if row.displayStatus == 'Back from Supervisor' %}
                 {{ govukTag({
-                  html: 'Rejected by<br/>supervisor'
+                  html: 'Rejected by supervisor'
                 }) }}
               {% else %}
                 {{ row.displayStatus }}
