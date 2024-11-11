@@ -15,9 +15,9 @@ const recat = require('../config/recat')
 const Status = require('../utils/statusEnum')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
-const {
-  offendersPrisonMatchesActiveCaseloadMiddleware,
-} = require('../middleware/offendersPrisonMatchesActiveCaseloadMiddleware')
+// const {
+//   offendersPrisonMatchesActiveCaseloadMiddleware,
+// } = require('../middleware/offendersPrisonMatchesActiveCaseloadMiddleware')
 
 const formConfig = {
   recat,
@@ -33,7 +33,7 @@ module.exports = function Index({
   const router = express.Router()
 
   router.use(authenticationMiddleware())
-  router.use(offendersPrisonMatchesActiveCaseloadMiddleware(offendersService, userService))
+  // router.use(offendersPrisonMatchesActiveCaseloadMiddleware(offendersService, userService))
   router.use(flash())
 
   router.use(handleCsrf)
