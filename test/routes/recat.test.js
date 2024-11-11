@@ -586,7 +586,7 @@ describe('POST /form/recat/decision', () => {
           formName,
           transactionalClient: mockTransactionalClient,
         })
-        expect(userService.getUser).toBeCalledTimes(1)
+        expect(userService.getUser).toBeCalledTimes(2)
       })
   })
 })
