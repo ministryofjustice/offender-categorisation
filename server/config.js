@@ -177,7 +177,6 @@ module.exports = {
   domain: `${get('INGRESS_URL', 'http://localhost:3000', true)}`,
   dpsUrl: `${get('DPS_URL', 'http://localhost:3000/', true)}`,
   supportUrl: `${get('SUPPORT_URL', 'http://localhost:3000/', true)}`,
-  googleAnalyticsId: `${get('GOOGLE_ANALYTICS_ID', ' ', true)}`,
   googleTagManagerTag: `${get('GOOGLE_TAG_MANAGER_TAG', ' ', true)}`,
   approvedDisplayMonths: `${get('APPROVED_DISPLAY_MONTHS', 6, true)}`,
   recatMarginMonths: `${get('RECAT_MARGIN_MONTHS', 2, true)}`,
