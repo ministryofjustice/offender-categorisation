@@ -61,7 +61,6 @@ module.exports = (app, path) => {
     .addGlobal('getLongDateFormat', getLongDateFormat)
     .addGlobal('getVerboseDateFormat', getVerboseDateFormat)
     .addGlobal('formatLength', formatLength)
-    .addGlobal('googleAnalyticsKey', config.googleAnalyticsId)
     .addGlobal('googleTagManagerKey', config.googleTagManagerTag)
     .addGlobal('catMappings', catMappings)
     .addGlobal('catLabel', catLabel)
