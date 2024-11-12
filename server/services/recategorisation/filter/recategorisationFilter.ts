@@ -98,6 +98,9 @@ const loadAdjudicationsData = async (
   agencyId: string
 ): Promise<NomisAdjudicationHearingDto[]> => {
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
+  if (prisonerNumbers.length <= 0) {
+    return []
+  }
   const dateThreeMonthsAgo = getDateNMonthsAgo(3)
   const dateTwoMonthsAgo = getDateNMonthsAgo(2)
   const dateOneMonthAgo = getDateNMonthsAgo(1)
