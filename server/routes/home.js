@@ -206,7 +206,7 @@ module.exports = function Index({
       const riskChangeCount = await formService.getRiskChangeCount(res.locals.user.activeCaseLoad.caseLoadId)
 
       // Can be removed after pilot of recategorisation prioritisation filter
-      if (validation.value.length > 0) {
+      if (Object.keys(validation.value).length > 0) {
         logger.info(
           `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}, prisonId = ${user.activeCaseLoad.caseLoadId}`
         )
