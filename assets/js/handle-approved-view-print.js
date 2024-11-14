@@ -5,7 +5,7 @@ function handlePrint() {
   window.print()
 }
 
-var handlePrintAnchorElement = document.getElementById('handlePrint')
+const handlePrintAnchorElement = document.getElementById('handlePrint')
 
 if (handlePrintAnchorElement) {
   handlePrintAnchorElement.addEventListener('click', function () {

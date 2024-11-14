@@ -4,11 +4,11 @@
  * @param {HTMLSelectElement} selectElement
  */
 function handleRoleSwitch(selectElement) {
-  var selectedValue = selectElement.value
-  window.location = '/switchRole/' + selectedValue
+  const selectedValue = selectElement.value
+  window.location = `/switchRole/${selectedValue}`
 }
 
-var selectElement = document.getElementById('roleSwitch')
+const selectElement = document.getElementById('roleSwitch')
 if (selectElement) {
   selectElement.addEventListener('change', function () {
     handleRoleSwitch(this)
