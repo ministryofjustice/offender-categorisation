@@ -12,7 +12,7 @@ const pool = new Pool({
   database: config.db.database,
   password: config.db.password,
   port: 5432,
-  application_name: `offender-categorisation_${hostname()}`,
+  application_name: hostname(),
   ssl:
     config.db.sslEnabled === 'true'
       ? {
