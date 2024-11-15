@@ -6,22 +6,23 @@
  * We are expected to replace the [source_value] with the current host and path.
  */
 function updateFeedbackFooterLinkHref() {
-  var footer = document.querySelector('footer')
+  const footer = document.querySelector('footer')
 
   if (!footer) {
+    // eslint-disable-next-line no-console
     console.error('Unable to locate the footer element. Survey link replacement aborted.')
     return
   }
 
-  var surveyMonkeyPlaceholderUrl = 'https://eu.surveymonkey.com/r/FRZYGVQ?source=[source_value]'
-  var anchorElements = footer.querySelectorAll('a')
+  const surveyMonkeyPlaceholderUrl = 'https://eu.surveymonkey.com/r/FRZYGVQ?source=[source_value]'
+  const anchorElements = footer.querySelectorAll('a')
 
-  anchorElements.forEach(function (element) {
-    var currentHref = element.getAttribute('href')
+  anchorElements.forEach(element => {
+    const currentHref = element.getAttribute('href')
 
     if (currentHref && currentHref === surveyMonkeyPlaceholderUrl) {
-      var currentPage = window.location.hostname + window.location.pathname
-      var newHref = surveyMonkeyPlaceholderUrl.replace('[source_value]', currentPage)
+      const currentPage = window.location.hostname + window.location.pathname
+      const newHref = surveyMonkeyPlaceholderUrl.replace('[source_value]', currentPage)
 
       element.setAttribute('href', newHref)
     }

@@ -10,7 +10,7 @@ function handleRoleSwitch(selectElement) {
 
 const selectElement = document.getElementById('roleSwitch')
 if (selectElement) {
-  selectElement.addEventListener('change', function () {
-    handleRoleSwitch(this)
+  selectElement.addEventListener('change', event => {
+    handleRoleSwitch(event.target)
   })
 }

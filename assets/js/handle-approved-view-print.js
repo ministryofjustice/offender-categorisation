@@ -8,7 +8,7 @@ function handlePrint() {
 const handlePrintAnchorElement = document.getElementById('handlePrint')
 
 if (handlePrintAnchorElement) {
-  handlePrintAnchorElement.addEventListener('click', function () {
+  handlePrintAnchorElement.addEventListener('click', () => {
     handlePrint()
   })
 }
