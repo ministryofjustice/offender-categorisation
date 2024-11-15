@@ -1,5 +1,6 @@
 const { Pool, types } = require('pg')
 const fs = require('fs')
+const { hostname } = require('os')
 const logger = require('../../../log')
 const config = require('../../config')
 
@@ -11,6 +12,7 @@ const pool = new Pool({
   database: config.db.database,
   password: config.db.password,
   port: 5432,
+  application_name: `offender-categorisation_${hostname()}`,
   ssl:
     config.db.sslEnabled === 'true'
       ? {
