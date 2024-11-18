@@ -15,6 +15,10 @@ jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
 
 const createRouter = require('../../server/routes/recat')
 const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
+const { makeTestUserDto } = require('../../server/services/user/user.dto.test-factory')
+const {
+  makeTestBasicOffenderDetailsDto,
+} = require('../../server/services/offender/basicOffenderDetails.dto.test-factory')
 
 const formConfig = {
   recat,
@@ -57,6 +61,7 @@ const offendersService = {
   createOrUpdateCategorisation: jest.fn(),
   getPrisonerBackground: jest.fn(),
   getRiskChangeForOffender: jest.fn(),
+  getBasicOffenderDetails: jest.fn(),
 }
 
 const userService = {
@@ -571,6 +576,18 @@ describe('POST /form/recat/decision', () => {
       displayName: 'Tim Handle',
       displayStatus: 'Any other status',
     })
+    offendersService.getBasicOffenderDetails.mockResolvedValue(
+      makeTestBasicOffenderDetailsDto({
+        agencyId: 'TEST',
+      })
+    )
+    userService.getUser.mockResolvedValue(
+      makeTestUserDto({
+        activeCaseLoad: {
+          caseLoadId: 'TEST',
+        },
+      })
+    )
     return request(app)
       .post(`/${formName}/12345`)
       .send(userInput)

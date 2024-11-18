@@ -79,9 +79,9 @@
     "delay": 2500
   },
   "dependencies": {
+    "@joi/date": "^2.1.1",
     "@microsoft/applicationinsights-clickanalytics-js": "^3.1.0",
     "@microsoft/applicationinsights-web": "^3.1.0",
-    "@joi/date": "^2.1.1",
     "@ministryofjustice/frontend": "^2.1.0",
     "@snyk/protect": "^1.1293.0",
     "agentkeepalive": "^4.2.1",
@@ -126,6 +126,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
+    "@jest-mock/express": "^2.1.0",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
     "@types/compression": "^1.7.5",
