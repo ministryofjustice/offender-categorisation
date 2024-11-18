@@ -94,6 +94,7 @@
         "exports": "never",
         "functions": "never"
       }
-    ]
+    ],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
   }
 }
