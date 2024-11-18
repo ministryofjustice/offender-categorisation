@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import nock from 'nock'
 import config from '../../config'
 import clientBuilder from './probationOffenderSearchApiClient'
