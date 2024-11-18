@@ -95,6 +95,6 @@
         "functions": "never"
       }
     ],
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.js", "**/*.test.ts", "/test/**/*"] }]
   }
 }
