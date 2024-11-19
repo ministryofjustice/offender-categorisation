@@ -942,12 +942,12 @@ class Elite2Api extends WireMockRule {
   }
 
 
-  def stubGetBasicOffenderDetails(int bookingId, offenderNo = 'B2345YZ') {
+  def stubGetBasicOffenderDetails(int bookingId, offenderNo = 'B2345YZ', String caseloadId = 'LEI') {
     this.stubFor(get("/api/bookings/$bookingId?basicInfo=true")
       .willReturn(aResponse()
         .withBody(JsonOutput.toJson([bookingId  : bookingId,
                                      offenderNo : offenderNo,
-                                     agencyId   : 'PFI',
+                                     agencyId   : caseloadId,
                                      firstName  : 'ANT',
                                      lastName   : 'HILLMOB',
                                      dateOfBirth: '1970-02-17',]))
