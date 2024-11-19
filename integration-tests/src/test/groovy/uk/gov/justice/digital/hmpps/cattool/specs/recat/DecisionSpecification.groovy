@@ -70,7 +70,7 @@ class DecisionSpecification extends AbstractSpecification {
     when: 'I go to the Mini Higher Security Review page'
     fixture.gotoTasklistRecatForCatI(false)
     at TasklistRecatPage
-    elite2Api.stubGetBasicOffenderDetails(12)
+    elite2Api.stubGetBasicOffenderDetails(21)
     decisionButton.click()
 
     then: 'The page is displayed'
