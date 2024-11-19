@@ -20,6 +20,7 @@ class DecisionSpecification extends AbstractSpecification {
     when: 'I go to the Decision page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
+    elite2Api.stubGetBasicOffenderDetails(700)
     decisionButton.click()
 
     then: 'The page is displayed'
@@ -55,6 +56,7 @@ class DecisionSpecification extends AbstractSpecification {
     when: 'I go to the decision page'
     fixture.gotoTasklistRecatForCatIIndeterminate(false)
     at TasklistRecatPage
+    elite2Api.stubGetBasicOffenderDetails(700)
     decisionButton.click()
 
     then: 'The page is displayed without open condition options'
@@ -67,6 +69,7 @@ class DecisionSpecification extends AbstractSpecification {
     when: 'I go to the Mini Higher Security Review page'
     fixture.gotoTasklistRecatForCatI(false)
     at TasklistRecatPage
+    elite2Api.stubGetBasicOffenderDetails(700)
     decisionButton.click()
 
     then: 'The page is displayed'
@@ -123,6 +126,7 @@ class DecisionSpecification extends AbstractSpecification {
     when: 'I go to the Decision page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
+    elite2Api.stubGetBasicOffenderDetails(700)
     decisionButton.click()
 
     then: 'The page is displayed'
@@ -199,6 +203,7 @@ class DecisionSpecification extends AbstractSpecification {
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
     decisionButton.click()
+    elite2Api.stubGetBasicOffenderDetails(700)
     to DecisionPage, '12'
 
     at DecisionPage
@@ -222,6 +227,7 @@ class DecisionSpecification extends AbstractSpecification {
     riskProfilerApi.stubForTasklists('C0001AA', 'YOI Closed', false)
     browser.selectSecondPrisoner()
     at TasklistRecatPage
+    elite2Api.stubGetBasicOffenderDetails(700)
     decisionButton.click()
 
     when: 'I dont select anything'
@@ -265,6 +271,7 @@ class DecisionSpecification extends AbstractSpecification {
     riskProfilerApi.stubForTasklists('C0001AA', 'YOI Closed', false)
     browser.selectSecondPrisoner()
     at TasklistRecatPage
+    elite2Api.stubGetBasicOffenderDetails(700)
     decisionButton.click()
 
     when: 'Open option is submitted'
