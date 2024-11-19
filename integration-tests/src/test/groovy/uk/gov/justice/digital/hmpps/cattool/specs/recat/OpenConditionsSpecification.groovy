@@ -37,7 +37,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     at TasklistRecatPage
 
     elite2Api.stubGetOffenderDetails(12)
-    elite2Api.stubGetBasicOffenderDetails(700)
+    elite2Api.stubGetBasicOffenderDetails(12)
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
@@ -212,7 +212,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    elite2Api.stubGetBasicOffenderDetails(700)
+    elite2Api.stubGetBasicOffenderDetails(12)
     decisionButton.click()
     at DecisionPage
     assert !indeterminateWarning.displayed
@@ -374,7 +374,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    elite2Api.stubGetBasicOffenderDetails(700)
+    elite2Api.stubGetBasicOffenderDetails(12)
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
@@ -536,7 +536,7 @@ class OpenConditionsSpecification extends AbstractSpecification {
     when: 'the recategoriser chooses cat D instead of C'
     submitButton.click()
     at TasklistRecatPage
-    elite2Api.stubGetBasicOffenderDetails(700)
+    elite2Api.stubGetBasicOffenderDetails(12)
     decisionButton.click()
     at DecisionPage
     categoryDOption.click()
