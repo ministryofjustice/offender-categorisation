@@ -947,7 +947,7 @@ class Elite2Api extends WireMockRule {
       .willReturn(aResponse()
         .withBody(JsonOutput.toJson([bookingId  : bookingId,
                                      offenderNo : offenderNo,
-                                     agencyId   : 'LEI',
+                                     agencyId   : 'PFI',
                                      firstName  : 'ANT',
                                      lastName   : 'HILLMOB',
                                      dateOfBirth: '1970-02-17',]))

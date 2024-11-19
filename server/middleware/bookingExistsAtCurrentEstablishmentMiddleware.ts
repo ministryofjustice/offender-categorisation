@@ -17,7 +17,7 @@ export const bookingExistsAtCurrentEstablishmentMiddleware =
     res.locals.basicOffenderDetails = basicOffenderDetails
     if (user?.activeCaseLoad?.caseLoadId !== basicOffenderDetails?.agencyId) {
       const error = new Error(
-        'bookingExistsAtCurrentEstablishmentMiddleware: booking agency ID does not match to the active caseload'
+        `bookingExistsAtCurrentEstablishmentMiddleware: booking agency ID does not match to the active caseload`
       )
       log.error(error.message)
       next(error)

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cattool.specs.recat
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import uk.gov.justice.digital.hmpps.cattool.model.Caseload
 import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.DecisionPage
@@ -15,6 +16,8 @@ import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
 import java.time.LocalDate
 
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_SECURITY_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.WOMEN_SUPERVISOR_USER
 
@@ -123,6 +126,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     and: 'I go to category decision page'
     at TasklistRecatPage
+    elite2Api.stubGetBasicOffenderDetails(700)
     decisionButton.click()
     at DecisionPage
     headerValue*.text() == fixture.MINI_HEADER1
