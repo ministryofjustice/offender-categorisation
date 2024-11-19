@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
 import java.time.LocalDate
+import java.util.concurrent.TimeUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_RECAT_USER
 
@@ -69,7 +70,7 @@ class DecisionSpecification extends AbstractSpecification {
     when: 'I go to the Mini Higher Security Review page'
     fixture.gotoTasklistRecatForCatI(false)
     at TasklistRecatPage
-    elite2Api.stubGetBasicOffenderDetails(21)
+    elite2Api.stubGetBasicOffenderDetails(12)
     decisionButton.click()
 
     then: 'The page is displayed'
@@ -227,7 +228,7 @@ class DecisionSpecification extends AbstractSpecification {
     riskProfilerApi.stubForTasklists('C0001AA', 'YOI Closed', false)
     browser.selectSecondPrisoner()
     at TasklistRecatPage
-    elite2Api.stubGetBasicOffenderDetails(21)
+    elite2Api.stubGetBasicOffenderDetails(21, '', 'PFI')
     decisionButton.click()
 
     when: 'I dont select anything'
@@ -271,7 +272,7 @@ class DecisionSpecification extends AbstractSpecification {
     riskProfilerApi.stubForTasklists('C0001AA', 'YOI Closed', false)
     browser.selectSecondPrisoner()
     at TasklistRecatPage
-    elite2Api.stubGetBasicOffenderDetails(21)
+    elite2Api.stubGetBasicOffenderDetails(21, '', 'PFI')
     decisionButton.click()
 
     when: 'Open option is submitted'
