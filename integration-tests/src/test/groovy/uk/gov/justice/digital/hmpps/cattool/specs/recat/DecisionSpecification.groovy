@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.specs.AbstractSpecification
 
 import java.time.LocalDate
-import java.util.concurrent.TimeUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_RECAT_USER
 
