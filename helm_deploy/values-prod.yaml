@@ -31,6 +31,7 @@ generic-service:
       - internal
       - prisons
       - private_prisons
-  # determine which slack channel alerts are sent to, via the correct Alert Manager receiver
+
+# determine which slack channel alerts are sent to, via the correct Alert Manager receiver
 generic-prometheus-alerts:
-  alertSeverity: digital-prison-service
+  alertSeverity: dps-sed-alerts-prod

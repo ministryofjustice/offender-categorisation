@@ -123,6 +123,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     and: 'I go to category decision page'
     at TasklistRecatPage
+    elite2Api.stubGetBasicOffenderDetails(700, '', 'PFI')
     decisionButton.click()
     at DecisionPage
     headerValue*.text() == fixture.MINI_HEADER1

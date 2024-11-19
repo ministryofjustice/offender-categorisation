@@ -15,9 +15,9 @@ const recat = require('../config/recat')
 const Status = require('../utils/statusEnum')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
-// const {
-//   offendersPrisonMatchesActiveCaseloadMiddleware,
-// } = require('../middleware/offendersPrisonMatchesActiveCaseloadMiddleware')
+const {
+  bookingExistsAtCurrentEstablishmentMiddleware,
+} = require('../middleware/bookingExistsAtCurrentEstablishmentMiddleware')
 
 const formConfig = {
   recat,
@@ -290,9 +290,12 @@ module.exports = function Index({
 
   router.post(
     '/decision/:bookingId',
+    bookingExistsAtCurrentEstablishmentMiddleware(userService, offendersService),
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
+      if (!res.locals.user) {
+        const user = await userService.getUser(res.locals)
+        res.locals.user = { ...user, ...res.locals.user }
+      }
       const { bookingId } = req.params
       const section = 'recat'
       const form = 'decision'
