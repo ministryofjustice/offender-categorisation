@@ -35,7 +35,3 @@ generic-service:
     groups:
       - internal
       - prisons
-
-# determine which slack channel alerts are sent to, via the correct Alert Manager receiver
-generic-prometheus-alerts:
-  alertSeverity: dps-sed-alerts-nonprod
