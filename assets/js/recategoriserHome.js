@@ -1,6 +1,8 @@
 function toggleAllCheckboxes(checkboxesName, setToTrue, selectAllButtonId) {
   document.getElementsByName(checkboxesName).forEach(checkbox => {
-    checkbox.click()
+    if ((setToTrue && !checkbox.checked) || (!setToTrue && checkbox.checked)) {
+      checkbox.click()
+    }
   })
   setSelectAllButtonTextBasedOnSelectedCheckboxes(selectAllButtonId, checkboxesName)
 }
