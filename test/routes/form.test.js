@@ -9,9 +9,13 @@ const ratings = require('../../server/config/ratings')
 const supervisor = require('../../server/config/supervisor')
 const categoriser = require('../../server/config/categoriser')
 const security = require('../../server/config/security')
+const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
-const context = { user: { token: 'ABCDEF', username: 'me' } }
+const context = {
+  featureFlags: makeTestFeatureFlagDto(),
+  user: { token: 'ABCDEF', username: 'me' },
+}
 
 const formConfig = {
   ratings,
@@ -1797,6 +1801,7 @@ describe('Submit provisionalCategory page', () => {
         expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
           bookingId: 12345,
           context: {
+            featureFlags: makeTestFeatureFlagDto(),
             user: {
               token: 'ABCDEF',
               username: 'me',
@@ -1948,6 +1953,7 @@ describe('Submit provisionalCategory page', () => {
         expect(offendersService.createOrUpdateCategorisation).toBeCalledWith({
           bookingId: 12345,
           context: {
+            featureFlags: makeTestFeatureFlagDto(),
             user: {
               activeCaseLoad: {
                 caseLoadId: 'PFI',

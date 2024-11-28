@@ -98,6 +98,9 @@ const loadAdjudicationsData = async (
   agencyId: string
 ): Promise<NomisAdjudicationHearingDto[]> => {
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
+  if (prisonerNumbers.length <= 0) {
+    return []
+  }
   const dateThreeMonthsAgo = getDateNMonthsAgo(3)
   const dateTwoMonthsAgo = getDateNMonthsAgo(2)
   const dateOneMonthAgo = getDateNMonthsAgo(1)
@@ -241,22 +244,30 @@ export const filterListOfPrisoners = async (
     }
     return true
   })
-
-  let offenderNumbersWithAdjudications = []
+  let adjudicationsDataPromise
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
-    const adjudicationsData = await loadAdjudicationsData(filteredPrisoners, nomisClient, agencyId)
-    offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
-    filteredPrisoners = filteredPrisoners.filter(prisoner => {
-      return !offenderNumbersWithAdjudications.includes(prisoner.offenderNo)
-    })
+    adjudicationsDataPromise = loadAdjudicationsData(filteredPrisoners, nomisClient, agencyId)
   }
-  let offenderNumbersWithLowRoshScore = []
+  let offenderNumbersWithLowRoshScorePromise
   if (allFilters.includes(LOW_ROSH)) {
-    offenderNumbersWithLowRoshScore = await getOffenderNumbersWithLowRoshScore(
+    offenderNumbersWithLowRoshScorePromise = getOffenderNumbersWithLowRoshScore(
       filteredPrisoners,
       risksAndNeedsClient,
       probationOffenderSearchClient
     )
+  }
+  const [adjudicationsData, offenderNumbersWithLowRoshScore] = await Promise.all([
+    adjudicationsDataPromise,
+    offenderNumbersWithLowRoshScorePromise,
+  ])
+
+  if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
+    const offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
+    filteredPrisoners = filteredPrisoners.filter(prisoner => {
+      return !offenderNumbersWithAdjudications.includes(prisoner.offenderNo)
+    })
+  }
+  if (allFilters.includes(LOW_ROSH)) {
     filteredPrisoners = filteredPrisoners.filter(prisoner => {
       return offenderNumbersWithLowRoshScore.includes(prisoner.offenderNo)
     })

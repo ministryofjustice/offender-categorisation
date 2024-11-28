@@ -119,7 +119,7 @@ beforeEach(() => {
   userService.getUser.mockResolvedValue({ activeCaseLoad: 'LEI' })
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
-  config.featureFlags.recategorisationPrioritisation.show_filter = 'true'
+  config.featureFlags.recategorisationPrioritisation = 'LEI'
 })
 
 afterEach(() => {
@@ -529,6 +529,7 @@ describe('Recategoriser home', () => {
       })
   })
   test('shows filter based on the environment variable', () => {
+    userService.getUser.mockResolvedValue({ activeCaseLoad: { caseLoadId: 'LEI' } })
     return request(app)
       .get('/recategoriserHome')
       .expect(200)
@@ -538,13 +539,24 @@ describe('Recategoriser home', () => {
       })
   })
   test('does not show filter based on the environment variable', () => {
-    config.featureFlags.recategorisationPrioritisation.show_filter = 'false'
+    config.featureFlags.recategorisationPrioritisation = 'ABC'
     return request(app)
       .get('/recategoriserHome')
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).not.toContain('Filters')
+      })
+  })
+  test('show filter based on cookie', () => {
+    config.featureFlags.recategorisationPrioritisation = 'ABC'
+    return request(app)
+      .get('/recategoriserHome')
+      .set('Cookie', ['show_recategorisation_prioritisation_filter=true'])
+      .expect(200)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('Filters')
       })
   })
   test('rejects invalid filter options', () => {

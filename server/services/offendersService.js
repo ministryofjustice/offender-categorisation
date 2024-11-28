@@ -713,7 +713,6 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
-    transactionalDbClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
     filters = {},
@@ -733,21 +732,12 @@ module.exports = function createOffendersService(
         Status.SECURITY_MANUAL.name,
       ],
       CatType.RECAT.name,
-      ReviewReason.MANUAL.name,
-      transactionalDbClient
+      ReviewReason.MANUAL.name
     )
 
     // trim db results to only those not in the Nomis-derived list
 
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
-
-    logger.info({
-      key: 'RecategoriserHome getDueRecats investigation',
-      agencyId,
-      numberFromNomis: resultsReview.length,
-      numberFromDb: dbManualInProgress.length,
-      intersectionOfNomisAndDb: dbManualInProgress.length - dbInProgressFiltered.length,
-    })
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [prisonerSearchData, pomMap] = await Promise.all([
@@ -770,7 +760,7 @@ module.exports = function createOffendersService(
     return Promise.all(
       filteredPrisoners.map(async raw => {
         const nomisRecord = raw.lastName ? raw : await getOffenderDetailsWithNextReviewDate(nomisClient, raw.bookingId)
-        const dbRecord = await formService.getCategorisationRecord(raw.bookingId, transactionalDbClient)
+        const dbRecord = await formService.getCategorisationRecord(raw.bookingId)
         const pomData = pomMap.get(nomisRecord.offenderNo)
 
         if (isInitialInProgress(dbRecord)) {
@@ -790,7 +780,7 @@ module.exports = function createOffendersService(
           return null
         }
 
-        const liteDbRecord = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
+        const liteDbRecord = await formService.getLiteCategorisation(nomisRecord.bookingId)
         const liteInProgress = liteDbRecord.bookingId && !liteDbRecord.approvedDate
         const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(
           dbRecord,
@@ -918,7 +908,6 @@ module.exports = function createOffendersService(
     nomisClient,
     allocationClient,
     prisonerSearchClient,
-    transactionalDbClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
     filters = {},
@@ -961,8 +950,8 @@ module.exports = function createOffendersService(
 
     return Promise.all(
       filteredEliteCategorisationResultsU21.map(async o => {
-        const dbRecord = await formService.getCategorisationRecord(o.bookingId, transactionalDbClient)
-        const assessmentData = await formService.getLiteCategorisation(o.bookingId, transactionalDbClient)
+        const dbRecord = await formService.getCategorisationRecord(o.bookingId)
+        const assessmentData = await formService.getLiteCategorisation(o.bookingId)
         const pomData = pomMap.get(o.offenderNo)
 
         if (isInitialInProgress(dbRecord)) {
@@ -1024,7 +1013,7 @@ module.exports = function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, transactionalDbClient, filters = {}) {
+  async function getRecategoriseOffenders(context, user, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
@@ -1042,7 +1031,6 @@ module.exports = function createOffendersService(
           nomisClient,
           allocationClient,
           prisonerSearchClient,
-          transactionalDbClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
           filters,
@@ -1054,13 +1042,12 @@ module.exports = function createOffendersService(
           nomisClient,
           allocationClient,
           prisonerSearchClient,
-          transactionalDbClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
           filters,
           featureFlags
         ),
-        formService.getSecurityReferrals(agencyId, transactionalDbClient),
+        formService.getSecurityReferrals(agencyId),
       ])
 
       if (isNilOrEmpty(decoratedResultsReview) && isNilOrEmpty(decoratedResultsU21)) {
@@ -1068,7 +1055,7 @@ module.exports = function createOffendersService(
         return []
       }
 
-      const offenders = mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
+      return mergeOffenderListsRemovingNulls(decoratedResultsU21, decoratedResultsReview) // ignore initial cats (which were set to null)
         .sort((a, b) => {
           const status = sortByStatus(b.dbStatus, a.dbStatus)
           return status === 0 ? sortByDateTime(b.nextReviewDateDisplay, a.nextReviewDateDisplay) : status
@@ -1079,16 +1066,6 @@ module.exports = function createOffendersService(
             securityReferred: isNewSecurityReferred(o.offenderNo, securityReferredOffenders),
           }
         })
-
-      logger.info({
-        key: 'RecategoriserHome getRecategoriseOffenders investigation',
-        agencyId,
-        numberOfOffenders: offenders.length,
-        numberOfDueRecats: decoratedResultsReview.length,
-        numberOfU21Recats: decoratedResultsU21.length,
-      })
-
-      return offenders
     } catch (error) {
       logger.error(error, 'Error during getRecategoriseOffenders')
       throw error

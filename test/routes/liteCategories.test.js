@@ -3,9 +3,13 @@ const request = require('supertest')
 const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const db = require('../../server/data/dataAccess/db')
+const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
-const mockContext = { user: { username: 'me', token: 'ABCDEF' } }
+const mockContext = {
+  featureFlags: makeTestFeatureFlagDto(),
+  user: { username: 'me', token: 'ABCDEF' },
+}
 
 const createRouter = require('../../server/routes/liteCategories')
 
