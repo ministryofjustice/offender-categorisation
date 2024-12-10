@@ -196,7 +196,6 @@ module.exports = {
         }),
       },
     },
-    recategorisationPrioritisation: get('FEATURE_FLAG__SHOW_RECATEGORISATION_PRIORITISATION_FILTER', 'PVI', true),
   },
   appInsightsConnectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', '', { requiredInProduction: true }),
 }
