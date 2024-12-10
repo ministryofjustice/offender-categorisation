@@ -189,16 +189,6 @@ module.exports = function Index({
         delete validation.value.filterRemoved
       }
 
-      let showRecategorisationPrioritisationFilter = false
-      if (
-        res.locals?.featureFlags?.recategorisationPrioritisationEnabledPrisons.includes(
-          user.activeCaseLoad.caseLoadId
-        ) ||
-        res.locals?.featureFlags?.show_recategorisation_prioritisation_filter
-      ) {
-        showRecategorisationPrioritisationFilter = true
-      }
-
       const offenders = user.activeCaseLoad
         ? await offendersService.getRecategoriseOffenders(res.locals, user, validation.value)
         : []
@@ -215,7 +205,6 @@ module.exports = function Index({
       return res.render('pages/recategoriserHome', {
         offenders,
         riskChangeCount,
-        showRecategorisationPrioritisationFilter,
         filters: validation.value,
         allFilters: recategorisationHomeFilters,
         filterKeys: recategorisationHomeFilterKeys,
