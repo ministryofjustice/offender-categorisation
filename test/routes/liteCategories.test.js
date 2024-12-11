@@ -65,7 +65,7 @@ describe('assessment', () => {
   test('get form page', () => {
     formService.getCategorisationRecord.mockResolvedValue({})
     formService.getLiteCategorisation.mockResolvedValue({})
-    const sixMonths = moment().add(6, 'months').format('DD/MM/YYYY')
+    const sixMonths = moment().add(6, 'months').format('D/M/YYYY')
     return request(app)
       .get(`/12`)
       .expect(200)
