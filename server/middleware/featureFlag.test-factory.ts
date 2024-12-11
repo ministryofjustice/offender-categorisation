@@ -6,7 +6,6 @@ export const makeTestFeatureFlagDto = (featureFlagDto: Partial<FeatureFlagDto> =
   recategorisationPrioritisationEnabledPrisons: featureFlagDto.recategorisationPrioritisationEnabledPrisons ?? [
     config.featureFlags.recategorisationPrioritisation,
   ],
-  si607EnabledPrisons: featureFlagDto.si607EnabledPrisons ?? [config.featureFlags.si607],
 })
 
 export default makeTestFeatureFlagDto

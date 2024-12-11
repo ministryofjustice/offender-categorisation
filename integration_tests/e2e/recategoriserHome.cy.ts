@@ -130,7 +130,7 @@ describe('Recategoriser Home page', () => {
       ])
     })
 
-    it('should show upcoming recategorisations without legal status filtering (SI-607)', () => {
+    it('should show upcoming recategorisations', () => {
       const sentenceStartDates = {
         A1234XY: new Date('2019-01-01'),
         B1234ZX: new Date('2019-02-02'),
@@ -151,9 +151,6 @@ describe('Recategoriser Home page', () => {
         ],
         legalStatus: [undefined, 'REMAND', 'SENTENCED', 'RECALL', 'CIVIL_PRISONER'],
       })
-
-      const reviewTo = moment().add(2, 'months').format('YYYY-MM-DD')
-      cy.task('stubRecategoriseSI607', { agencyId: 'PNI', cutoff: reviewTo })
 
       cy.task('stubGetPrisonerSearchPrisoners', {
         agencyId: 'PNI',
@@ -171,49 +168,6 @@ describe('Recategoriser Home page', () => {
         ['Overdue', 'Johnson, Alan', 'B1234ZX', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
         ['Overdue', 'Grimes, Peter', 'C1994YO', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
         ['Overdue', 'Alan, Mathew', 'D7654HP', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-        ['Overdue', 'Weasley, Harry', 'E3333WE', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-      ])
-    })
-
-    it('should show upcoming recategorisations with legal status filtering (SI-607)', () => {
-      const sentenceStartDates = {
-        A1234XY: new Date('2019-01-01'),
-        B1234ZX: new Date('2019-02-02'),
-        C1994YO: new Date('2019-03-03'),
-        D7654HP: new Date('2019-04-04'),
-        E3333WE: new Date('2019-05-05'),
-      }
-
-      cy.task('stubSentenceData', {
-        offenderNumbers: ['A1234XY', 'B1234ZX', 'C1994YO', 'D7654HP', 'E3333WE'],
-        bookingIds: [2199988, 2286755, 1010998, 1020304, 4098987],
-        startDates: [
-          sentenceStartDates.A1234XY,
-          sentenceStartDates.B1234ZX,
-          sentenceStartDates.C1994YO,
-          sentenceStartDates.D7654HP,
-          sentenceStartDates.E3333WE,
-        ],
-        legalStatus: [undefined, 'REMAND', 'SENTENCED', 'RECALL', 'CIVIL_PRISONER'],
-      })
-
-      const reviewTo = moment().add(2, 'months').format('YYYY-MM-DD')
-      cy.task('stubRecategoriseSI607', { agencyId: 'LEI', cutoff: reviewTo })
-
-      cy.task('stubGetPrisonerSearchPrisoners', {
-        agencyId: 'LEI',
-        content: [],
-      })
-
-      cy.stubLogin({
-        user: RECATEGORISER_USER,
-      })
-      cy.signIn()
-
-      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
-      recategoriserHomePage.validateToDoTableData([
-        ['Overdue', 'Smith, John', 'A1234XY', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
-        ['Overdue', 'Grimes, Peter', 'C1994YO', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
         ['Overdue', 'Weasley, Harry', 'E3333WE', 'Review due', 'Not started', 'Engelbert Humperdinck', 'Start'],
       ])
     })
