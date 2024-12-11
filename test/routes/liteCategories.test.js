@@ -111,7 +111,7 @@ describe('assessment', () => {
   })
 
   test('Post form page', () => {
-    const futureDate = moment().add(5, 'months').format('DD/MM/YYYY')
+    const futureDate = moment().add(5, 'months').format('D/M/YYYY')
     const userInput = {
       category: 'R',
       authority: 'RECP',
@@ -192,9 +192,9 @@ describe('approve', () => {
   })
 
   test('Post form page', () => {
-    const futureDate = moment().add(5, 'months').format('DD/MM/YYYY')
+    const futureDate = moment().add(5, 'months').format('D/M/YYYY')
     const userInput = {
-      approvedDate: '15/04/2020',
+      approvedDate: '15/4/2020',
       supervisorCategory: 'E',
       approvedCategoryComment: 'approvedCategoryComment',
       approvedCommittee: 'SECUR',
@@ -222,9 +222,9 @@ describe('approve', () => {
   })
 
   test('Post form page - categorisation not found on nomis will redirect to /alreadyApproved', () => {
-    const futureDate = moment().add(5, 'months').format('DD/MM/YYYY')
+    const futureDate = moment().add(5, 'months').format('D/M/YYYY')
     const userInput = {
-      approvedDate: '15/04/2020',
+      approvedDate: '15/4/2020',
       supervisorCategory: 'E',
       approvedCategoryComment: 'approvedCategoryComment',
       approvedCommittee: 'SECUR',
