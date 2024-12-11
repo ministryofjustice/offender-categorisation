@@ -1553,6 +1553,5 @@ export default {
   verifySupervisorApprove,
   verifyUpdateNextReviewDate,
   stubRecategorise,
-  stubRecategoriseSI607,
   stubAdjudicationHearings,
 }
