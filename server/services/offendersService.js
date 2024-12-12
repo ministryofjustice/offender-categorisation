@@ -207,16 +207,6 @@ module.exports = function createOffendersService(
             return null
           }
 
-          if (context.si607Enabled) {
-            const prisoner = prisonerMap.get(raw.bookingId)
-            if (
-              ['RECALL', 'INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) ===
-              false
-            ) {
-              return null
-            }
-          }
-
           const assessmentData = await formService.getLiteCategorisation(nomisRecord.bookingId, transactionalDbClient)
           const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
           const nomisStatusAwaitingApproval = nomisRecord.status === Status.AWAITING_APPROVAL.name
@@ -715,8 +705,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
-    filters = {},
-    featureFlags = {}
+    filters = {}
   ) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
@@ -799,13 +788,6 @@ module.exports = function createOffendersService(
         const reason =
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.DUE
-
-        if (featureFlags.si607Enabled) {
-          const prisoner = prisonerSearchData.get(raw.bookingId)
-          if (['INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) === false) {
-            return null
-          }
-        }
 
         return {
           ...nomisRecord,
@@ -910,8 +892,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
-    filters = {},
-    featureFlags = {}
+    filters = {}
   ) {
     const u21From = moment()
       .subtract(22, 'years') // allow up to a year overdue
@@ -975,13 +956,6 @@ module.exports = function createOffendersService(
           (buttonText !== 'Start' && dbRecord && dbRecord.reviewReason && ReviewReason[dbRecord.reviewReason]) ||
           ReviewReason.AGE
 
-        if (featureFlags.si607Enabled) {
-          const prisoner = u21map.get(o.bookingId)
-          if (['INDETERMINATE_SENTENCE', 'SENTENCED', 'CIVIL_PRISONER'].includes(prisoner.legalStatus) === false) {
-            return null
-          }
-        }
-
         return {
           ...o,
           displayName: `${properCaseName(o.lastName)}, ${properCaseName(o.firstName)}`,
@@ -1022,8 +996,6 @@ module.exports = function createOffendersService(
       const risksAndNeedsClient = risksAndNeedsClientBuilder(context.user)
       const probationOffenderSearchClient = probationOffenderSearchClientBuilder(context.user)
 
-      const featureFlags = { si607Enabled: context.si607Enabled }
-
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
         getDueRecats(
           agencyId,
@@ -1033,8 +1005,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
-          filters,
-          featureFlags
+          filters
         ),
         getU21Recats(
           agencyId,
@@ -1044,8 +1015,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
-          filters,
-          featureFlags
+          filters
         ),
         formService.getSecurityReferrals(agencyId),
       ])
