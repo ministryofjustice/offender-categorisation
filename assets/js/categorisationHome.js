@@ -1,6 +1,6 @@
 const hideFilterButton = document.getElementById('hideFilterButton')
 if (hideFilterButton) {
-  hideFilterButton.addEventListener('click', async (event) => {
+  hideFilterButton.addEventListener('click', async event => {
     let hideFilter = false
     const filterContainer = document.getElementById('filterContainer')
     const tableContainer = document.getElementById('tableContainer')

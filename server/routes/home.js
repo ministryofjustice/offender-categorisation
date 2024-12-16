@@ -12,7 +12,11 @@ const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 const logger = require('../../log')
-const { recategorisationHomeFilters, recategorisationHomeFilterKeys, categorisationHomeFilters } = require('../services/filter/homeFilter')
+const {
+  recategorisationHomeFilters,
+  recategorisationHomeFilterKeys,
+  categorisationHomeFilters,
+} = require('../services/filter/homeFilter')
 const {
   categorisationHomeSchema,
   recategorisationHomeSchema,
