@@ -12,33 +12,15 @@ const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 const logger = require('../../log')
+const { recategorisationHomeFilters, recategorisationHomeFilterKeys, categorisationHomeFilters } = require('../services/filter/homeFilter')
 const {
-  recategorisationHomeFilters,
-  recategorisationHomeFilterKeys,
-} = require('../services/recategorisation/filter/recategorisationFilter')
+  categorisationHomeSchema,
+  recategorisationHomeSchema,
+} = require('../services/filter/homeFilterValidationSchema')
 
 const formConfig = {
   security: securityConfig,
 }
-
-const recategorisationHomeSchemaFilters = {}
-Object.keys(recategorisationHomeFilters).forEach(key => {
-  recategorisationHomeSchemaFilters[key] = joi
-    .array()
-    .items(
-      joi
-        .string()
-        .valid(...Object.keys(recategorisationHomeFilters[key]))
-        .required()
-    )
-    .optional()
-})
-const recategorisationHomeSchema = joi
-  .object({
-    ...recategorisationHomeSchemaFilters,
-    filterRemoved: joi.string().optional(),
-  })
-  .optional()
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -79,13 +61,44 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
+      const validation = categorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
+      if (validation.error) {
+        logger.error('Categoriser home page submitted with invalid filters.', validation.error)
+        res.render('pages/error', {
+          message: 'Invalid recategoriser home filters',
+        })
+      }
+
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getUncategorisedOffenders(res.locals, user)
+        ? await offendersService.getUncategorisedOffenders(res.locals, user, validation.value)
         : []
 
       res.render('pages/categoriserHome', {
         offenders,
+        filters: validation.value,
+        allFilters: categorisationHomeFilters,
+        filterKeys: recategorisationHomeFilterKeys,
+        numberOfFiltersApplied: Object.values(validation.value).flat().length,
+        url: 'categoriserHome',
+        fullUrl: req.url,
+        hideHomeFilter: req.session.hideCategoriserHomeFilter ?? false,
       })
+    })
+  )
+
+  router.post(
+    '/categoriserHome/hide-filter',
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const validation = joi.object({ hideFilter: joi.bool().required() }).validate(req.body)
+      if (validation.error) {
+        logger.error('Categoriser home page hide filter endpoint passed invalid value.', validation.error)
+        res.sendStatus(400)
+        return
+      }
+      req.session.hideCategoriserHomeFilter = validation.value.hideFilter
+      res.sendStatus(200)
     })
   )
 
@@ -216,8 +229,9 @@ module.exports = function Index({
         allFilters: recategorisationHomeFilters,
         filterKeys: recategorisationHomeFilterKeys,
         numberOfFiltersApplied: Object.values(validation.value).flat().length,
+        url: '/recategoriserHome',
         fullUrl: req.url,
-        hideRecategoriserHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
+        hideHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
       })
     })
   )

@@ -5,6 +5,7 @@ const ReviewReason = require('../../server/utils/reviewReasonEnum')
 const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
 const CatType = require('../../server/utils/catTypeEnum')
 const { dateConverter } = require('../../server/utils/utils')
+const { DUE_DATE, OVERDUE } = require('../../server/services/filter/homeFilter')
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -792,7 +793,7 @@ describe('getUncategorisedOffenders', () => {
 
     nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
 
-    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getUncategorisedOffenders(context, 'user1')
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
   })
@@ -861,7 +862,7 @@ describe('getUncategorisedOffenders', () => {
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue({})
 
-    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getUncategorisedOffenders(context, 'user1')
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(result).toEqual(expected)
   })
@@ -869,7 +870,7 @@ describe('getUncategorisedOffenders', () => {
   test('it should propagate an error response', async () => {
     nomisClient.getUncategorisedOffenders.mockRejectedValue(new Error('test'))
     try {
-      await service.getUncategorisedOffenders(context, 'MDI', mockTransactionalClient)
+      await service.getUncategorisedOffenders(context, 'MDI')
       expect(service.shouldNotReachHere) // service will rethrow error
     } catch (error) {
       expect(error.message).toEqual('test')
@@ -895,7 +896,7 @@ describe('getUncategorisedOffenders', () => {
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue(dbRecord)
 
-    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getUncategorisedOffenders(context, 'user1')
     expect(result[0].pnomis).toBe('PNOMIS')
   })
 
@@ -928,9 +929,63 @@ describe('getUncategorisedOffenders', () => {
     formService.getCategorisationRecords.mockResolvedValue([])
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
 
-    const results = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+    const results = await service.getUncategorisedOffenders(context, 'user1')
     expect(results).toHaveLength(1)
     expect(results[0].bookingId).toEqual(123)
+  })
+
+  test('it filters out non overdue when the overdue filter is set', async () => {
+    moment.now = jest.fn()
+    moment.now.mockReturnValue(moment('2024-01-10', 'YYYY-MM-DD'))
+    const uncategorised = [
+      {
+        offenderNo: 'H12345',
+        firstName: 'Danny',
+        lastName: 'Doyle',
+        bookingId: 111,
+        status: Status.UNCATEGORISED.name,
+        nextReviewDate: '2024-01-11',
+      },
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+        nextReviewDate: '2024-01-01',
+      },
+    ]
+
+    const sentenceDates = [
+      { bookingId: 123, sentenceStartDate: mockTodaySubtract(4) },
+      { bookingId: 111, sentenceStartDate: mockTodaySubtract(7) },
+    ]
+
+    nomisClient.getUncategorisedOffenders.mockResolvedValue(uncategorised)
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
+
+    const results = await service.getUncategorisedOffenders(context, 'user1', { [DUE_DATE]: [OVERDUE] })
+    expect(results).toHaveLength(1)
+    expect(results).toEqual([
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        displayName: 'Brown, Jane',
+        bookingId: 123,
+        status: Status.UNCATEGORISED.name,
+        displayStatus: Status.UNCATEGORISED.value,
+        daysSinceSentence: 4,
+        dateRequired: '22/01/2024',
+        nextReviewDate: '2024-01-01',
+        overdue: false,
+        pnomis: false,
+        pom: 'Steve Rendell',
+        securityReferred: false,
+        sentenceDate: '2024-01-06',
+      },
+    ])
   })
 
   test('it includes manual cats in progress', async () => {
@@ -985,7 +1040,7 @@ describe('getUncategorisedOffenders', () => {
       lastName: 'Guy',
     })
 
-    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getUncategorisedOffenders(context, 'user1')
 
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
@@ -1073,7 +1128,7 @@ describe('getUncategorisedOffenders', () => {
       { offenderNo: 'G12346', status: 'NOT NEW' },
     ])
 
-    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getUncategorisedOffenders(context, 'user1')
 
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
@@ -1108,7 +1163,7 @@ describe('getUncategorisedOffenders', () => {
       formService.getCategorisationRecords.mockResolvedValue([])
       prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
       formService.getCategorisationRecord.mockResolvedValue(dbRecord)
-      const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+      const result = await service.getUncategorisedOffenders(context, 'user1')
       expect(result[0].pnomis).toBe(pnomis)
     })
   })

@@ -5,9 +5,7 @@
 {% from "../macros/breadCrumb.html" import breadCrumb %}
 {% from "tag/macro.njk" import govukTag %}
 {% from "details/macro.njk" import govukDetails %}
-{% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "button/macro.njk" import govukButton %}
-{%- from "moj/components/filter/macro.njk" import mojFilter -%}
 
 {% set pageTitle = "Category reviews for prisoners" %}
 
@@ -47,97 +45,10 @@
 
   <div class="filterable-table-container">
     {% if showRecategorisationPrioritisationFilter %}
-      {% set filterContainerClass = 'govuk-visually-hidden' if hideRecategoriserHomeFilter else '' %}
-      <div id="filterContainer" class="side-filter filterable-table-filter-container govuk-!-padding-right-0 {{ filterContainerClass }}">
-        <form method="get">
-          {%- set filterOptionsHtml %}
-            {% for key, filterNames in allFilters %}
-              {% set filterCheckboxes = [] %}
-              {% for filterKey, displayName in allFilters[key] %}
-                {% set filterCheckboxes = (filterCheckboxes.push({
-                value: filterKey,
-                text: displayName,
-                checked:  filterKey in filters[key] if filters[key] else false,
-                attributes: { 'data-qa': filterKey + '_checkbox' }
-                }), filterCheckboxes) %}
-              {% endfor %}
-              <div class="govuk-heading-m">
-                {{ filterKeys[key] }}
-              </div>
-              {% if key == 'suitabilityForOpenConditions' %}
-                <div class="filterInfoBox">
-                  Filter the category reviews list to see prisoners who may be suitable to move to open conditions.
-                </div>
-                <div
-                  id="selectAllSuitabilityForOpenConditionsFilter"
-                  class="linkStyledButton govuk-!-font-size-16 govuk-!-margin-bottom-3"
-                >
-                  {{ 'Select all' if filters.suitabilityForOpenConditions|length < allFilters.suitabilityForOpenConditions|length else 'Deselect all' }}
-                </div>
-              {% endif %}
-              {{ govukCheckboxes({
-                name: key + '[]',
-                classes: "govuk-checkboxes--small",
-                fieldset: {
-                  legend: {
-                    text: "Filter based on " + filterKeys[key],
-                    classes: "govuk-visually-hidden"
-                  }
-                },
-                items: filterCheckboxes
-              }) }}
-
-            {% endfor %}
-
-            <div class="replacementApplyFilterButtonContainer">
-              {{ govukButton({
-                id: 'applyFilters',
-                type: 'submit',
-                text: "Apply filters",
-                classes: "govuk-!-margin-top-3"
-              }) }}
-            </div>
-          {% endset -%}
-
-          {% set filterCategories = [] %}
-          {% for key, filterNames in filters %}
-            {% set selectedItems = [] %}
-            {% for filter in filterNames %}
-              {% set selectedItems = (selectedItems.push({
-                href: removeFilterFromFullUrl(filter, key, fullUrl),
-                text: allFilters[key][filter]
-              }), selectedItems) %}
-            {% endfor %}
-
-            {% set filterCategories = (filterCategories.push({
-              heading: {
-                text: filterKeys[key]
-              },
-              items: selectedItems
-            }), filterCategories) %}
-          {% endfor %}
-
-          {{ mojFilter({
-            heading: {
-              text: 'Filter'
-            },
-            selectedFilters: {
-              heading: {
-                text: 'Selected filters'
-              },
-              clearLink: {
-                text: 'Clear filters',
-                href: '/recategoriserHome'
-              },
-              categories: filterCategories
-            } if filterCategories.length > 0,
-            optionsHtml: filterOptionsHtml
-          }) }}
-        </form>
-      </div>
+      {% include "../partials/homeFilter.html" %}
     {% endif %}
 
-    {% set tableContainerClass = 'filterable-table-body-container' if showRecategorisationPrioritisationFilter and not hideRecategoriserHomeFilter else 'govuk-grid-column-full govuk-!-padding-0' %}
+    {% set tableContainerClass = 'filterable-table-body-container' if showRecategorisationPrioritisationFilter and not hideHomeFilter else 'govuk-grid-column-full govuk-!-padding-0' %}
 
     <div id="tableContainer" class="{{ tableContainerClass }}">
       {% if showRecategorisationPrioritisationFilter %}
@@ -145,7 +56,7 @@
           <div>
             {{ govukButton({
               id: "hideFilterButton",
-              text: "Show filter" if hideRecategoriserHomeFilter else "Hide filter",
+              text: "Show filter" if hideHomeFilter else "Hide filter",
               classes: "govuk-button--secondary govuk-!-margin-bottom-0"
             }) }}
           </div>
