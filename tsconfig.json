@@ -13,11 +13,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "typeRoots": [
-      "./server/@types",
-      "./node_modules/@types"
-    ]
+    "experimentalDecorators": true
   },
   "exclude": [
     "node_modules",
@@ -32,7 +28,7 @@
     "**/*.cy.tsx"
   ],
   "include": [
-    "**/*.js",
-    "**/*.ts"
+    "server/**/*.js",
+    "server/**/*.ts"
   ]
 }
