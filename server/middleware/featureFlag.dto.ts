@@ -1,3 +1,1 @@
-export interface FeatureFlagDto {
-  si607EnabledPrisons: string[]
-}
+export interface FeatureFlagDto {}

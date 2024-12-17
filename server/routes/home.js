@@ -78,8 +78,6 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      res.locals.si607Enabled =
-        res.locals?.featureFlags?.si607EnabledPrisons.includes(user.activeCaseLoad.caseLoadId) || false
 
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUncategorisedOffenders(res.locals, user)
@@ -170,8 +168,6 @@ module.exports = function Index({
     asyncMiddleware(async (req, res) => {
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      res.locals.si607Enabled =
-        res.locals?.featureFlags?.si607EnabledPrisons.includes(user.activeCaseLoad.caseLoadId) || false
 
       const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
       if (validation.error) {
