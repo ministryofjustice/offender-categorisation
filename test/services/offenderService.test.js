@@ -964,7 +964,6 @@ describe('getUncategorisedOffenders', () => {
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
 
     const results = await service.getUncategorisedOffenders(context, 'user1', { [DUE_DATE]: [OVERDUE] })
-    console.log(moment.now())
     expect(results).toHaveLength(1)
     expect(results).toEqual([
       {
