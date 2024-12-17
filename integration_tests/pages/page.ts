@@ -5,6 +5,8 @@ export type PageElement = Cypress.Chainable<JQuery>
 
 type ToDoTableData = [string, string, string, string, string, string, string][]
 
+export type DtDlQuestionExpectedAnswerPair = { question: string; expectedAnswer: string }
+
 export default abstract class Page {
   static verifyOnPage<T>(constructor: new () => T): T {
     return new constructor()
@@ -71,4 +73,22 @@ export default abstract class Page {
   mockDpsComponentFooter = (): PageElement => cy.get('.connect-dps-common-footer')
 
   protected _cleanString = cleanString
+
+  validateDescriptionList = (selector: string, expected: DtDlQuestionExpectedAnswerPair[]) => {
+    cy.get(`dl.${selector}`).within(() => {
+      cy.get('dt').each((dt, index) => {
+        const questionText = dt.text().trim()
+
+        cy.wrap(dt)
+          .next('dd')
+          .invoke('text')
+          .then(answerText => {
+            const expectedPair = expected[index]
+
+            expect(questionText).to.eq(expectedPair.question)
+            expect(this._cleanString(answerText)).to.eq(expectedPair.expectedAnswer)
+          })
+      })
+    })
+  }
 }
