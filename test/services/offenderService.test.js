@@ -95,10 +95,6 @@ beforeEach(() => {
   formService.getLiteCategorisation.mockReturnValue({})
   formService.getSecurityReferrals.mockResolvedValue([])
   allocationClient.getPomByOffenderNo.mockResolvedValue({ primary_pom: { name: 'RENDELL, STEVE' } })
-
-  moment.now = jest.fn()
-  // NOTE: mock current date!
-  moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 })
 
 afterEach(() => {
@@ -133,8 +129,11 @@ afterEach(() => {
   formService.updatePrisonSecurityReferral.mockReset()
   risksAndNeedsClient.getRisksSummary.mockReset()
   probationOffenderSearchApiClient.matchPrisoners.mockReset()
-  moment.now.mockReset()
 })
+
+moment.now = jest.fn()
+// NOTE: mock current date!
+moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 
 function mockTodaySubtract(days) {
   return moment().subtract(days, 'day').format('YYYY-MM-DD')
@@ -781,7 +780,7 @@ describe('getUncategorisedOffenders', () => {
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
     formService.getCategorisationRecord.mockResolvedValue({})
 
-    const result = await service.getUncategorisedOffenders(context, 'user1', mockTransactionalClient)
+    const result = await service.getUncategorisedOffenders(context, 'user1')
 
     expect(nomisClient.getUncategorisedOffenders).toBeCalledTimes(1)
     expect(prisonerSearchClient.getPrisonersByBookingIds).toBeCalledTimes(1)
@@ -936,8 +935,6 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it filters out non overdue when the overdue filter is set', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2024-01-10', 'YYYY-MM-DD'))
     const uncategorised = [
       {
         offenderNo: 'H12345',
@@ -945,7 +942,7 @@ describe('getUncategorisedOffenders', () => {
         lastName: 'Doyle',
         bookingId: 111,
         status: Status.UNCATEGORISED.name,
-        nextReviewDate: '2024-01-11',
+        nextReviewDate: '2019-01-30',
       },
       {
         offenderNo: 'G12345',
@@ -953,7 +950,7 @@ describe('getUncategorisedOffenders', () => {
         lastName: 'Brown',
         bookingId: 123,
         status: Status.UNCATEGORISED.name,
-        nextReviewDate: '2024-01-01',
+        nextReviewDate: '2019-01-28',
       },
     ]
 
@@ -967,6 +964,7 @@ describe('getUncategorisedOffenders', () => {
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(sentenceDates)
 
     const results = await service.getUncategorisedOffenders(context, 'user1', { [DUE_DATE]: [OVERDUE] })
+    console.log(moment.now())
     expect(results).toHaveLength(1)
     expect(results).toEqual([
       {
@@ -978,13 +976,13 @@ describe('getUncategorisedOffenders', () => {
         status: Status.UNCATEGORISED.name,
         displayStatus: Status.UNCATEGORISED.value,
         daysSinceSentence: 4,
-        dateRequired: '22/01/2024',
-        nextReviewDate: '2024-01-01',
+        dateRequired: '08/02/2019',
+        nextReviewDate: '2019-01-28',
         overdue: false,
         pnomis: false,
         pom: 'Steve Rendell',
         securityReferred: false,
-        sentenceDate: '2024-01-06',
+        sentenceDate: '2019-01-25',
       },
     ])
   })
