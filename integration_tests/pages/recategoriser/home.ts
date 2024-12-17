@@ -14,4 +14,7 @@ export default class RecategoriserHomePage extends BaseRecategoriserPage {
       tableRowsSelector: 'table#offenderTable > tbody > tr',
       expectedValues,
     })
+
+  continueReviewForPrisoner = (bookingId: number, reviewReason: 'DUE') =>
+    cy.get(`a[href="/tasklistRecat/${bookingId}?reason=${reviewReason}"`).should('contain.text', 'Edit').click()
 }

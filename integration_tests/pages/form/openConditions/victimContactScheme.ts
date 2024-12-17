@@ -10,9 +10,22 @@ type VictimContactSchemeChoiceValues =
   | typeof victimContactSchemeRadioChoiceHtmlSelectors.YES
   | typeof victimContactSchemeRadioChoiceHtmlSelectors.NO
 
+const contactedVictimLiaisonOfficerRadioChoiceHtmlSelectors = {
+  YES: '#contactedVLO',
+  NO: '#contactedVLO-2',
+} as const
+
+type ContactedVictimLiaisonOfficerChoice = keyof typeof contactedVictimLiaisonOfficerRadioChoiceHtmlSelectors
+type ContactedVictimLiaisonOfficerChoiceValues =
+  | typeof contactedVictimLiaisonOfficerRadioChoiceHtmlSelectors.YES
+  | typeof contactedVictimLiaisonOfficerRadioChoiceHtmlSelectors.NO
+
 const SELECTORS = {
   VICTIM_CONTACT_SCHEME: {
     ERROR: '#vcsOptedFor-error',
+  },
+  VICTIM_LIAISON_OFFICER_RESPONSE: {
+    TEXTAREA: '#vloResponseText',
   },
 }
 
@@ -67,4 +80,11 @@ export default class VictimContactSchemePage extends Page {
 
   selectVictimContactSchemeRadioButton = (selectedTextValue: VictimContactSchemeChoice): PageElement =>
     cy.get(victimContactSchemeRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  selectContactedVictimLiaisonOfficerRadioButton = (
+    selectedTextValue: ContactedVictimLiaisonOfficerChoice
+  ): PageElement => cy.get(contactedVictimLiaisonOfficerRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  setVictimLiaisonOfficerResponseTextInput = (justification: string): PageElement =>
+    cy.get(SELECTORS.VICTIM_LIAISON_OFFICER_RESPONSE.TEXTAREA).type(justification, { delay: 0 })
 }

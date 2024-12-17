@@ -14,6 +14,9 @@ const SELECTORS = {
   RISK_LEVELS: {
     ERROR: '#likelyToAbscond-error',
   },
+  RISK_LEVEL_DETAILS: {
+    TEXTAREA: '#likelyToAbscondText',
+  },
 }
 
 export default class RiskLevelsPage extends Page {
@@ -61,4 +64,7 @@ export default class RiskLevelsPage extends Page {
 
   selectRiskLevelsRadioButton = (selectedTextValue: RiskLevelsChoice): PageElement =>
     cy.get(riskLevelsRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  setLikelyToAbscondTextInput = (reason: string): PageElement =>
+    cy.get(SELECTORS.RISK_LEVEL_DETAILS.TEXTAREA).type(reason, { delay: 0 })
 }
