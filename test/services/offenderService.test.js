@@ -95,6 +95,10 @@ beforeEach(() => {
   formService.getLiteCategorisation.mockReturnValue({})
   formService.getSecurityReferrals.mockResolvedValue([])
   allocationClient.getPomByOffenderNo.mockResolvedValue({ primary_pom: { name: 'RENDELL, STEVE' } })
+
+  moment.now = jest.fn()
+  // NOTE: mock current date!
+  moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 })
 
 afterEach(() => {
@@ -129,11 +133,8 @@ afterEach(() => {
   formService.updatePrisonSecurityReferral.mockReset()
   risksAndNeedsClient.getRisksSummary.mockReset()
   probationOffenderSearchApiClient.matchPrisoners.mockReset()
+  moment.now.mockReset()
 })
-
-moment.now = jest.fn()
-// NOTE: mock current date!
-moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 
 function mockTodaySubtract(days) {
   return moment().subtract(days, 'day').format('YYYY-MM-DD')
