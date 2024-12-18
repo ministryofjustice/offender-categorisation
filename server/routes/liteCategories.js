@@ -154,8 +154,8 @@ module.exports = function Index({ formService, offendersService, userService, au
         cats,
         committees,
         prisonList,
-        approvedDate: moment().format('DD/MM/YYYY'),
-        nextReviewDate: assessmentData.displayNextReviewDate,
+        approvedDate: moment().format('D/M/YYYY'),
+        nextReviewDate: assessmentData.inputNextReviewDate,
         data: { details },
       })
     })
@@ -174,7 +174,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
 
       const fieldOptions = {
-        nextReviewDate: joi.date().format('DD/MM/YYYY').min(tomorrow).required(),
+        nextReviewDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
       }
 
       const schema = joi.object(fieldOptions)
@@ -246,12 +246,12 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const assessmentData = await formService.getLiteCategorisation(bookingId, transactionalDbClient)
 
-      const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
-      const today = moment().format('MM/DD/YYYY')
+      const tomorrow = moment().add(1, 'd').format('M/D/YYYY')
+      const today = moment().format('M/D/YYYY')
 
       const fieldOptions = {
-        nextReviewDate: joi.date().format('DD/MM/YYYY').min(tomorrow).required(),
-        approvedDate: joi.date().format('DD/MM/YYYY').max(today).required(),
+        nextReviewDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
+        approvedDate: joi.date().format('D/M/YYYY').max(today).required(),
       }
 
       const schema = joi.object(fieldOptions)

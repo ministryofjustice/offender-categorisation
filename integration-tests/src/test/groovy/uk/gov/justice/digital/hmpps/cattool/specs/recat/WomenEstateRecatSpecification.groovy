@@ -48,7 +48,7 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
     oasysInputButton.click()
     at OasysInputPage
     headerValue*.text() == fixture.MINI_HEADER1
-    reviewDate << '17/06/2020'
+    reviewDate << '17/6/2020'
     oasysRelevantInfoNo.click()
     submitButton.click()
     at TasklistRecatPage
