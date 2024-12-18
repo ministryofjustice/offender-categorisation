@@ -10,10 +10,41 @@ type ForeignNationalChoiceValues =
   | typeof foreignNationalRadioChoiceHtmlSelectors.YES
   | typeof foreignNationalRadioChoiceHtmlSelectors.NO
 
+const homeOfficeImmigrationStatusRadioChoiceHtmlSelectors = {
+  YES: '#formCompleted',
+  NO: '#formCompleted-2',
+} as const
+
+type HomeOfficeImmigrationStatusChoice = keyof typeof homeOfficeImmigrationStatusRadioChoiceHtmlSelectors
+type HomeOfficeImmigrationStatusChoiceValues =
+  | typeof homeOfficeImmigrationStatusRadioChoiceHtmlSelectors.YES
+  | typeof homeOfficeImmigrationStatusRadioChoiceHtmlSelectors.NO
+
+const liabilityToBeDeportedRadioChoiceHtmlSelectors = {
+  YES: '#dueDeported',
+  NO: '#dueDeported-2',
+} as const
+
+type LiabilityToBeDeportedChoice = keyof typeof liabilityToBeDeportedRadioChoiceHtmlSelectors
+type LiabilityToBeDeportedChoiceValues =
+  | typeof liabilityToBeDeportedRadioChoiceHtmlSelectors.YES
+  | typeof liabilityToBeDeportedRadioChoiceHtmlSelectors.NO
+
+const exhaustedAppealRadioChoiceHtmlSelectors = {
+  YES: '#exhaustedAppeal',
+  NO: '#exhaustedAppeal-2',
+} as const
+
+type ExhaustedAppealChoice = keyof typeof exhaustedAppealRadioChoiceHtmlSelectors
+type ExhaustedAppealChoiceValues =
+  | typeof exhaustedAppealRadioChoiceHtmlSelectors.YES
+  | typeof exhaustedAppealRadioChoiceHtmlSelectors.NO
+
 const SELECTORS = {
-  FOREIGNNATIONAL: {
+  FOREIGN_NATIONAL: {
     ERROR: '#isForeignNational-error',
   },
+  HOME_OFFICE_IMMIGRATION_STATUS: {},
 }
 
 export default class ForeignNationalPage extends Page {
@@ -46,7 +77,7 @@ export default class ForeignNationalPage extends Page {
 
   validateErrorMessages(
     errorMessages: {
-      selector: typeof SELECTORS.FOREIGNNATIONAL.ERROR
+      selector: typeof SELECTORS.FOREIGN_NATIONAL.ERROR
       text: string
     }[]
   ) {
@@ -67,4 +98,13 @@ export default class ForeignNationalPage extends Page {
 
   selectForeignNationalRadioButton = (selectedTextValue: ForeignNationalChoice): PageElement =>
     cy.get(foreignNationalRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  selectHomeOfficeImmigrationStatusRadioButton = (selectedTextValue: HomeOfficeImmigrationStatusChoice): PageElement =>
+    cy.get(homeOfficeImmigrationStatusRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  selectLiabilityToBeDeportedRadioButton = (selectedTextValue: LiabilityToBeDeportedChoice): PageElement =>
+    cy.get(liabilityToBeDeportedRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  selectExhaustedAppealRadioButton = (selectedTextValue: ExhaustedAppealChoice): PageElement =>
+    cy.get(exhaustedAppealRadioChoiceHtmlSelectors[selectedTextValue]).click()
 }

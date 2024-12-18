@@ -7,4 +7,7 @@ export default class OpenConditionsAdded extends Page {
 
   returnToTasklistButton = (bookingId: number): PageElement =>
     cy.contains(`a[href="/tasklist/${bookingId}"]`, 'Return to task list')
+
+  returnToRecatTasklistButton = (bookingId: number): PageElement =>
+    cy.contains(`a[href="/tasklistRecat/${bookingId}"]`, 'Return to task list')
 }
