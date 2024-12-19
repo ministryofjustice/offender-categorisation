@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { RecategorisationPrisonerSearchDto } from '../prisonerSearch/recategorisationPrisonerSearch.dto'
+import { RecategorisationPrisonerSearchDto } from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
 import {
   ESCAPE_LIST_ALERT_CODE,
   ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
@@ -8,20 +8,20 @@ import {
   RESTRICTED_ROTL_ALERT_CODE,
   ROTL_SUSPENSION_ALERT_CODE,
   TERRORIST_ACT_ALERT_CODE,
-} from '../../../data/prisonerSearch/alert/prisonerSearchAlert.dto'
+} from '../../data/prisonerSearch/alert/prisonerSearchAlert.dto'
 import {
   INCENTIVE_LEVEL_ENHANCED,
   INCENTIVE_LEVEL_ENHANCED_THREE,
   INCENTIVE_LEVEL_ENHANCED_TWO,
   INCENTIVE_LEVEL_STANDARD,
-} from '../../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
-import { NomisAdjudicationHearingDto } from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
-import { isReviewOverdue } from '../../reviewStatusCalculator'
-import { PrisonerAllocationDto } from '../../../data/allocationManager/prisonerAllocation.dto'
-import { ProbationOffenderSearchApiClient } from '../../../data/probationOffenderSearch/probationOffenderSearchApiClient'
-import { RisksAndNeedsApiClient } from '../../../data/risksAndNeeds/risksAndNeedsApi'
-import { OverallRiskLevel } from '../../../data/risksAndNeeds/riskSummary.dto'
-import logger from '../../../../log'
+} from '../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
+import { NomisAdjudicationHearingDto } from '../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto'
+import { isReviewOverdue } from '../reviewStatusCalculator'
+import { PrisonerAllocationDto } from '../../data/allocationManager/prisonerAllocation.dto'
+import { ProbationOffenderSearchApiClient } from '../../data/probationOffenderSearch/probationOffenderSearchApiClient'
+import { RisksAndNeedsApiClient } from '../../data/risksAndNeeds/risksAndNeedsApi'
+import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
+import logger from '../../../log'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
@@ -47,13 +47,26 @@ export type RecategorisationHomeFilterSuitabilityForOpenConditionsValue =
   | typeof STANDARD_OR_ENHANCED_INCENTIVE_LEVEL
   | typeof TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS
   | typeof NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS
-export type RecategorisationHomeFilterDueDateValue = typeof OVERDUE
-export type RecategorisationHomeFilterPomValue = typeof REVIEWS_ASSIGNED_TO_ME
+export type HomeFilterDueDateValue = typeof OVERDUE
+export type HomeFilterPomValue = typeof REVIEWS_ASSIGNED_TO_ME
 
-export interface RecategorisationHomeFilters {
+interface CommonHomeFilters {
+  [DUE_DATE]: Array<HomeFilterDueDateValue>
+  [POM]: Array<HomeFilterPomValue>
+}
+export interface RecategorisationHomeFilters extends CommonHomeFilters {
   [SUITABILIGY_FOR_OPEN_CONDITIONS]: Array<RecategorisationHomeFilterSuitabilityForOpenConditionsValue>
-  [DUE_DATE]: Array<RecategorisationHomeFilterDueDateValue>
-  [POM]: Array<RecategorisationHomeFilterPomValue>
+}
+
+export interface CategorisationHomeFilters extends CommonHomeFilters {}
+
+const CommonHomeFilters = {
+  [POM]: { [REVIEWS_ASSIGNED_TO_ME]: 'Reviews assigned to me' },
+  [DUE_DATE]: { [OVERDUE]: 'Overdue reviews' },
+}
+
+export const categorisationHomeFilters = {
+  ...CommonHomeFilters,
 }
 
 export const recategorisationHomeFilters = {
@@ -67,8 +80,7 @@ export const recategorisationHomeFilters = {
     [STANDARD_OR_ENHANCED_INCENTIVE_LEVEL]: 'Standard or Enhanced incentive level',
     [TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS]: 'Time left to serve is between 12 weeks and 3 years',
   },
-  [POM]: { [REVIEWS_ASSIGNED_TO_ME]: 'Reviews assigned to me' },
-  [DUE_DATE]: { [OVERDUE]: 'Overdue reviews' },
+  ...CommonHomeFilters,
 }
 
 export const recategorisationHomeFilterKeys = {
@@ -156,7 +168,7 @@ const getOffenderNumbersWithLowRoshScore = async (
 }
 
 export const filterListOfPrisoners = async (
-  filters: RecategorisationHomeFilters,
+  filters: RecategorisationHomeFilters | CategorisationHomeFilters,
   prisoners,
   prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
   nomisClient,
