@@ -62,16 +62,17 @@ module.exports = function Index({
   router.get(
     '/categoriserHome',
     asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-
       const validation = categorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
       if (validation.error) {
         logger.error('Categoriser home page submitted with invalid filters.', validation.error)
         res.render('pages/error', {
           message: 'Invalid recategoriser home filters',
         })
+        return
       }
+
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
 
       // Can be removed after pilot of categorisation filter
       if (validation.value.filterRemoved) {
