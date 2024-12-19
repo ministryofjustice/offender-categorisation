@@ -73,6 +73,12 @@ module.exports = function Index({
         })
       }
 
+      // Can be removed after pilot of categorisation filter
+      if (validation.value.filterRemoved) {
+        logger.info(`Categorisation Filter: filter removed using chips: ${validation.value.filterRemoved}`)
+        delete validation.value.filterRemoved
+      }
+
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUncategorisedOffenders(res.locals, user, validation.value)
         : []
