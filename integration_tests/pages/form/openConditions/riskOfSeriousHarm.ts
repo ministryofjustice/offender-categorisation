@@ -10,9 +10,22 @@ type RiskOfSeriousHarmChoiceValues =
   | typeof riskOfSeriousHarmRadioChoiceHtmlSelectors.YES
   | typeof riskOfSeriousHarmRadioChoiceHtmlSelectors.NO
 
+const manageInOpenConditionsRadioChoiceHtmlSelectors = {
+  YES: '#harmManaged',
+  NO: '#harmManaged-2',
+} as const
+
+type ManageInOpenConditionsChoice = keyof typeof manageInOpenConditionsRadioChoiceHtmlSelectors
+type ManageInOpenConditionsChoiceValues =
+  | typeof manageInOpenConditionsRadioChoiceHtmlSelectors.YES
+  | typeof manageInOpenConditionsRadioChoiceHtmlSelectors.NO
+
 const SELECTORS = {
   RISK_OF_SERIOUS_HARM: {
     ERROR: '#seriousHarm-error',
+  },
+  RISK_MANAGED_IN_OPEN_CONDITIONS: {
+    TEXTAREA: '#harmManagedText',
   },
 }
 
@@ -67,4 +80,10 @@ export default class RiskOfSeriousHarmPage extends Page {
 
   selectRiskOfSeriousHarmRadioButton = (selectedTextValue: RiskOfSeriousHarmChoice): PageElement =>
     cy.get(riskOfSeriousHarmRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  selectManageInOpenConditionsRadioButton = (selectedTextValue: ManageInOpenConditionsChoice): PageElement =>
+    cy.get(manageInOpenConditionsRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  setManageRiskTextInput = (text: string): PageElement =>
+    cy.get(SELECTORS.RISK_MANAGED_IN_OPEN_CONDITIONS.TEXTAREA).type(text, { delay: 0 })
 }

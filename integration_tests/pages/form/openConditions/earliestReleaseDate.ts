@@ -10,9 +10,22 @@ type EarliestReleaseDateChoiceValues =
   | typeof earliestReleaseDateRadioChoiceHtmlSelectors.YES
   | typeof earliestReleaseDateRadioChoiceHtmlSelectors.NO
 
+const justifyOpenConditionsRadioChoiceHtmlSelectors = {
+  YES: '#justify',
+  NO: '#justify-2',
+} as const
+
+type JustifyOpenConditionsChoice = keyof typeof justifyOpenConditionsRadioChoiceHtmlSelectors
+type JustifyOpenConditionsChoiceValues =
+  | typeof justifyOpenConditionsRadioChoiceHtmlSelectors.YES
+  | typeof justifyOpenConditionsRadioChoiceHtmlSelectors.NO
+
 const SELECTORS = {
   EARLIEST_RELEASE_DATE: {
     ERROR: '#threeOrMoreYears-error',
+  },
+  JUSTIFY_OPEN_CONDITIONS: {
+    TEXTAREA: '#justifyText',
   },
 }
 
@@ -67,4 +80,10 @@ export default class EarliestReleaseDatePage extends Page {
 
   selectEarliestReleaseDateRadioButton = (selectedTextValue: EarliestReleaseDateChoice): PageElement =>
     cy.get(earliestReleaseDateRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  selectJustifyRadioButton = (selectedTextValue: JustifyOpenConditionsChoice): PageElement =>
+    cy.get(justifyOpenConditionsRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  setJustifyOpenConditionsTextInput = (justification: string): PageElement =>
+    cy.get(SELECTORS.JUSTIFY_OPEN_CONDITIONS.TEXTAREA).type(justification, { delay: 0 })
 }

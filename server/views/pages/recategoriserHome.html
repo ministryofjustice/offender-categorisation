@@ -44,25 +44,21 @@
   <section class="govuk-tabs__panel">
 
   <div class="filterable-table-container">
-    {% if showRecategorisationPrioritisationFilter %}
-      {% include "../partials/homeFilter.html" %}
-    {% endif %}
+    {% include "../partials/homeFilter.html" %}
 
-    {% set tableContainerClass = 'filterable-table-body-container' if showRecategorisationPrioritisationFilter and not hideHomeFilter else 'govuk-grid-column-full govuk-!-padding-0' %}
+    {% set tableContainerClass = 'govuk-grid-column-full govuk-!-padding-0' if hideHomeFilter else 'filterable-table-body-container' %}
 
     <div id="tableContainer" class="{{ tableContainerClass }}">
-      {% if showRecategorisationPrioritisationFilter %}
-        <div class="filterControls">
-          <div>
-            {{ govukButton({
-              id: "hideFilterButton",
-              text: "Show filter" if hideHomeFilter else "Hide filter",
-              classes: "govuk-button--secondary govuk-!-margin-bottom-0"
-            }) }}
-          </div>
-          <div class="govuk-!-margin-left-2">You have <b>{{ numberOfFiltersApplied }}</b> filter{{ 's' if numberOfFiltersApplied != 1 }} applied</div>
+      <div class="filterControls">
+        <div>
+          {{ govukButton({
+            id: "hideFilterButton",
+            text: "Show filter" if hideHomeFilter else "Hide filter",
+            classes: "govuk-button--secondary govuk-!-margin-bottom-0"
+          }) }}
         </div>
-      {% endif %}
+        <div class="govuk-!-margin-left-2">You have <b>{{ numberOfFiltersApplied }}</b> filter{{ 's' if numberOfFiltersApplied != 1 }} applied</div>
+      </div>
       {% if offenders | length > 0 %}
       <div class="recategorisation-scrollable-pane">
         <table class="govuk-table tablesorter sortcolumns recategorisation-table" id="offenderTable">
@@ -158,8 +154,6 @@
 
 {% block bodyEnd %}
   {{ super() }}
-  {% if showRecategorisationPrioritisationFilter %}
-    <meta name="csrf-token" content="{{ csrfToken }}">
-    <script type="module" src="/assets/js/recategoriserHome.js"></script>
-  {% endif %}
+  <meta name="csrf-token" content="{{ csrfToken }}">
+  <script type="module" src="/assets/js/recategoriserHome.js"></script>
 {% endblock %}

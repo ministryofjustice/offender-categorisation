@@ -33,7 +33,15 @@ export const calculateDueDate = (sentenceDate: string) => {
   return { daysSinceSentence, dateRequired }
 }
 
+export const isToday = (date: Date): boolean => moment().isSame(date, 'day')
+
+export const compareObjects = (first: object, second: object): boolean => {
+  return JSON.stringify(first) === JSON.stringify(second)
+}
+
 export default {
   cleanString,
   calculateDueDate,
+  isToday,
+  compareObjects,
 }
