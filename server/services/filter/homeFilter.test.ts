@@ -1,4 +1,4 @@
-import makeTestPrisoner from '../../../../test/factories/prisoner.test-factory'
+import makeTestPrisoner from '../../../test/factories/prisoner.test-factory'
 import {
   filterListOfPrisoners,
   LOW_RISK_OF_ESCAPE,
@@ -11,27 +11,27 @@ import {
   REVIEWS_ASSIGNED_TO_ME,
   STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
   TIME_LEFT_TO_SERVE_BETWEEN_12_WEEKS_AND_3_YEARS,
-} from './recategorisationFilter'
-import makeTestRecategorisationPrisonerSearchDto from '../prisonerSearch/recategorisationPrisonerSearch.dto.test-factory'
-import makeTestPrisonerSearchAlertDto from '../../../data/prisonerSearch/alert/prisonerSearchAlert.dto.test-factory'
+} from './homeFilter'
+import makeTestRecategorisationPrisonerSearchDto from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto.test-factory'
+import makeTestPrisonerSearchAlertDto from '../../data/prisonerSearch/alert/prisonerSearchAlert.dto.test-factory'
 import {
   ESCAPE_RISK_ALERT_CODE,
   NOT_FOR_RELEASE_ALERT_CODE,
   ROTL_SUSPENSION_ALERT_CODE,
   TERRORIST_ACT_ALERT_CODE,
-} from '../../../data/prisonerSearch/alert/prisonerSearchAlert.dto'
-import makeTestPrisonerSearchIncentiveLevelDto from '../../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto.test-factory'
+} from '../../data/prisonerSearch/alert/prisonerSearchAlert.dto'
+import makeTestPrisonerSearchIncentiveLevelDto from '../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto.test-factory'
 import {
   INCENTIVE_LEVEL_BASIC,
   INCENTIVE_LEVEL_STANDARD,
-} from '../../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
-import makeTestNomisAdjudicationHearingDto from '../../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto.test-factory'
+} from '../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto'
+import makeTestNomisAdjudicationHearingDto from '../../data/nomis/adjudicationHearings/nomisAdjudicationHearing.dto.test-factory'
 import makeTestRecategorisationHomeFiltersFilter from './recategorisationHomeFilter.test-factory'
-import makeTestPrisonerAllocationDto from '../../../data/allocationManager/prisonerAllocation.dto.test-factory'
-import makeTestAllocatedPomDto from '../../../data/allocationManager/allocatedPom.dto.test-factory'
-import { makeTestProbationOffenderSearchOffenderDto } from '../../../data/probationOffenderSearch/probationOffenderSearchOffender.dto.test-factory'
-import { makeTestRiskSummaryDto } from '../../../data/risksAndNeeds/riskSummary.dto.test-factory'
-import { OverallRiskLevel } from '../../../data/risksAndNeeds/riskSummary.dto'
+import makeTestPrisonerAllocationDto from '../../data/allocationManager/prisonerAllocation.dto.test-factory'
+import makeTestAllocatedPomDto from '../../data/allocationManager/allocatedPom.dto.test-factory'
+import { makeTestProbationOffenderSearchOffenderDto } from '../../data/probationOffenderSearch/probationOffenderSearchOffender.dto.test-factory'
+import { makeTestRiskSummaryDto } from '../../data/risksAndNeeds/riskSummary.dto.test-factory'
+import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
 
 const nomisClient = {
   getOffenderAdjudications: jest.fn(),

@@ -139,4 +139,49 @@ describe('Categoriser Home page', () => {
       ])
     })
   })
+  describe('side filters', () => {
+    beforeEach(() => {
+      cy.task('stubUncategorised')
+      cy.task('stubGetPrisonerSearchPrisoners')
+      cy.task('stubSentenceData', {
+        offenderNumbers: [],
+        bookingIds: [],
+        startDates: [],
+      })
+
+      cy.stubLogin({
+        user: CATEGORISER_USER,
+      })
+      cy.signIn()
+    })
+    it('should hide the filter when hide filter button is pressed and keep hidden until show filter is pressed', () => {
+      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.filterContainer().should('be.visible')
+      categoriserHomePage.hideFilterButton().should('contain', 'Hide filter')
+      categoriserHomePage.hideFilterButton().click()
+      cy.contains('Filters').should('not.exist')
+      cy.reload()
+      cy.contains('Filters').should('not.exist')
+      categoriserHomePage.hideFilterButton().should('contain', 'Show filter')
+      categoriserHomePage.hideFilterButton().click()
+      categoriserHomePage.filterContainer().should('be.visible')
+      cy.reload()
+      categoriserHomePage.filterContainer().should('be.visible')
+      categoriserHomePage.hideFilterButton().should('contain', 'Hide filter')
+    })
+    it('should apply the filters that are selected', () => {
+      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.overdueCheckbox().should('not.be.checked')
+      categoriserHomePage.overdueCheckbox().click()
+      categoriserHomePage.applyFiltersButton().click()
+      categoriserHomePage.overdueCheckbox().should('be.checked')
+      cy.contains('You have 1 filter applied')
+    })
+    it('should show correct message when no results and filters are applied', () => {
+      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.overdueCheckbox().click()
+      categoriserHomePage.applyFiltersButton().click()
+      categoriserHomePage.noResultsDueToFiltersDiv().should('be.visible')
+    })
+  })
 })
