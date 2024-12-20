@@ -1,4 +1,4 @@
-import { RecategorisationHomeFilters } from './recategorisationFilter'
+import { RecategorisationHomeFilters } from './homeFilter'
 
 const makeTestRecategorisationHomeFiltersFilter = (
   recategorisationHomeFilters: Partial<RecategorisationHomeFilters> = {}

@@ -5,14 +5,15 @@ import {
   NOT_MARKED_AS_NOT_FOR_RELEASE,
   OVERDUE,
   POM,
-  RecategorisationHomeFilterDueDateValue,
-  RecategorisationHomeFilterPomValue,
+  HomeFilterDueDateValue,
+  HomeFilterPomValue,
   RecategorisationHomeFilters,
   RecategorisationHomeFilterSuitabilityForOpenConditionsValue,
   REVIEWS_ASSIGNED_TO_ME,
   STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
   SUITABILIGY_FOR_OPEN_CONDITIONS,
-} from '../services/recategorisation/filter/recategorisationFilter'
+  CategorisationHomeFilters,
+} from '../services/filter/homeFilter'
 
 describe('removeFilterFromFullUrl', () => {
   test('it should remove filter when there is only one filter applied', () => {
@@ -62,11 +63,8 @@ describe('removeFilterFromFullUrl', () => {
   ])(
     'It should remove %s filter correctly with %s key when there are multiple filters applied',
     (
-      filter:
-        | RecategorisationHomeFilterSuitabilityForOpenConditionsValue
-        | RecategorisationHomeFilterDueDateValue
-        | RecategorisationHomeFilterPomValue,
-      key: keyof RecategorisationHomeFilters,
+      filter: RecategorisationHomeFilterSuitabilityForOpenConditionsValue | HomeFilterDueDateValue | HomeFilterPomValue,
+      key: keyof RecategorisationHomeFilters | keyof CategorisationHomeFilters,
       expectedResult: string
     ) => {
       const result = removeFilterFromFullUrl(
