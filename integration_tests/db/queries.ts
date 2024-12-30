@@ -301,6 +301,11 @@ async function updateRiskProfile({
   return await db.query(`update form set risk_profile = $1::JSON where booking_id = $2`, [riskProfile, bookingId])
 }
 
+const updateFormRecord = async ({ bookingId, status, formRecord }: { bookingId: number, status: string, formResponse: any }) => {
+  const existingFormResponse = db.query(`select form_response from form where booking_id = $1`, [bookingId])
+  return await db.query(`update form set status = $1 form_response = $2 where booking_id = $3`, [status, JSON.stringify({...JSON.parse(existingFormResponse), ...formRecord}), bookingId])
+}
+
 export default {
   insertFormTableDbRow,
   insertLiteCategoryTableDbRow,
@@ -310,4 +315,5 @@ export default {
   selectLiteCategoryTableDbRow,
   selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
+  updateFormRecord
 }

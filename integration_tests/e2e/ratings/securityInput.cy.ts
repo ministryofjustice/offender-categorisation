@@ -148,6 +148,7 @@ describe('Security Input', () => {
         })
 
         it('should allow a security user to complete their assessment', () => {
+          cy.task('stubSubmitSecurityReview', { bookingId })
           cy.task('stubGetStaffDetailsByUsernameList', {
             usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
           })
@@ -183,6 +184,7 @@ describe('Security Input', () => {
           })
           securityReviewPage.setSecurityInformationText('security info text')
           securityReviewPage.saveAndSubmitButton().click()
+          cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: {security: {review: 'security info text' }} })
 
           securityHomePage.validateNoReferralsToReview()
         })
@@ -209,6 +211,7 @@ describe('Security Input', () => {
             const securityReviewPage = SecurityReviewPage.createForBookingId(bookingId)
             securityReviewPage.setSecurityInformationText('security info text')
             securityReviewPage.saveAndSubmitButton().click()
+            cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: {security: {review: 'security info text'}} })
 
             cy.stubLogin({
               user: CATEGORISER_USER,
