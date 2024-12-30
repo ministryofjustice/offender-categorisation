@@ -33,7 +33,7 @@ export default function formApiClientBuilder(username: string): FormApiClient {
       submitted: boolean,
       securityReview: string | undefined = undefined
     ) => {
-      const path = `${apiUrl}//security/review/${bookingId}`
+      const path = `${apiUrl}/security/review/${bookingId}`
       return clientPost({
         path,
         data: {
