@@ -41,12 +41,12 @@
       name: "confirm",
       errorMessage: { text: "Please select yes or no" } if (errors | findError('confirm')),
       items: [
-        { value: "Yes", text: "Yes" },
-        { value: "No",  text: "No" }
+        { value: "Yes", text: "Yes", attributes: { 'data-qa': 'cancel-referral-yes' } },
+        { value: "No",  text: "No", attributes: { 'data-qa': 'cancel-referral-no' } }
       ]
     }) }}
 
-    {{ govukButton({ text: 'Submit', attributes: {  } }) }}
+    {{ govukButton({ text: 'Submit', attributes: { 'data-qa': 'submit-cancel-referral' } }) }}
   </form>
 
 {% endblock %}

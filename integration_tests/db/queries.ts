@@ -92,6 +92,14 @@ const defaultRowData: Partial<FormDbRow> = {
   cancelledBy: null,
 }
 
+export interface SecurityReferralDbRow {
+  offender_no: string
+  status: string
+  prison_id: string
+  user_id: string
+  raised_date: string
+}
+
 async function insertFormTableDbRow(rowData: MandatoryRowData & Partial<FormDbRow>) {
   const {
     id,
@@ -312,6 +320,10 @@ const updateFormRecord = async ({ bookingId, status, formResponse }: { bookingId
 
 const deleteRows = table => db.query({ text: format('truncate %I cascade', table) })
 
+const getSecurityReferral = async ({ offenderNumber }: {offenderNumber: string}) => {
+  return db.query({ text: format('select * from security_referral where offender_no = \'%s\'', offenderNumber) })
+}
+
 export default {
   insertFormTableDbRow,
   insertLiteCategoryTableDbRow,
@@ -322,5 +334,6 @@ export default {
   selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
   updateFormRecord,
-  deleteRows
+  deleteRows,
+  getSecurityReferral
 }

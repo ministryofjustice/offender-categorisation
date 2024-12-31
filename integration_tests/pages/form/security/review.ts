@@ -30,6 +30,7 @@ export default class SecurityReviewPage extends Page {
   }
 
   saveAndSubmitButton = (): PageElement => cy.get('button[type="submit"]').contains('Save and submit')
+  saveButton = (): PageElement => cy.get('[data-qa="save-review"]').contains('Save')
 
   validateHeaderInitialNote = ({ isVisible, expectedText }: { isVisible: boolean; expectedText?: string }) => {
     this.validateSelectorExists(SELECTORS.HEADER.INITIAL_NOTE, isVisible)
