@@ -554,12 +554,18 @@ module.exports = function Index({
       }
       const userInput = clearConditionalFields(req.body.securityReview)
 
-      await formService.securityReviewed(
-        bookingId,
-        req.user.username,
-        userInput.button === SECURITY_BUTTON_SUBMIT,
-        userInput
-      )
+      try {
+        await formService.securityReviewed(
+          bookingId,
+          req.user.username,
+          userInput.button === SECURITY_BUTTON_SUBMIT,
+          userInput
+        )
+      } catch (error) {
+        res.render('pages/error', {
+          message: 'Failed to submit security review',
+        })
+      }
       res.redirect('/')
     })
   )

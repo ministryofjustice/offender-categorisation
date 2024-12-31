@@ -1,6 +1,7 @@
-import { mergeRight } from 'ramda'
-import db from '../../server/data/dataAccess/db'
-import { QueryArrayResult } from 'pg'
+import { mergeRight } from "ramda";
+import db from "../../server/data/dataAccess/db";
+import { QueryArrayResult } from "pg";
+import format from "pg-format";
 
 export type CatType = 'INITIAL' | 'RECAT'
 export type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
@@ -301,10 +302,15 @@ async function updateRiskProfile({
   return await db.query(`update form set risk_profile = $1::JSON where booking_id = $2`, [riskProfile, bookingId])
 }
 
-const updateFormRecord = async ({ bookingId, status, formRecord }: { bookingId: number, status: string, formResponse: any }) => {
-  const existingFormResponse = db.query(`select form_response from form where booking_id = $1`, [bookingId])
-  return await db.query(`update form set status = $1 form_response = $2 where booking_id = $3`, [status, JSON.stringify({...JSON.parse(existingFormResponse), ...formRecord}), bookingId])
+const updateFormRecord = async ({ bookingId, status, formResponse }: { bookingId: number, status: string, formResponse: any }) => {
+  const existingFormResponse = await db.query(`select form_response from form where booking_id = $1`, [bookingId])
+  return await db.query(
+    `update form set status = $1, form_response = $2 where booking_id = $3`,
+    [status, JSON.stringify({ ...existingFormResponse.rows[0]?.form_response, ...formResponse }), bookingId]
+  )
 }
+
+const deleteRows = table => db.query({ text: format('truncate %I cascade', table) })
 
 export default {
   insertFormTableDbRow,
@@ -315,5 +321,6 @@ export default {
   selectLiteCategoryTableDbRow,
   selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
-  updateFormRecord
+  updateFormRecord,
+  deleteRows
 }
