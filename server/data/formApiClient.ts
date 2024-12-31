@@ -24,7 +24,7 @@ const agentOptions = {
 const apiUrl = config.apis.offenderCategorisationApi.url
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
-export default function formApiClientBuilder(username: string): FormApiClient {
+export const formApiClientBuilder = (username: string): FormApiClient => {
   const clientPost = clientPostBuilder(username)
 
   return {
@@ -33,7 +33,7 @@ export default function formApiClientBuilder(username: string): FormApiClient {
       submitted: boolean,
       securityReview: string | undefined = undefined
     ) => {
-      const path = `${apiUrl}/security/review/${bookingId}`
+      const path = `${apiUrl}security/review/${bookingId}`
       return clientPost({
         path,
         data: {
