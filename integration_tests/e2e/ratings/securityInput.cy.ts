@@ -126,6 +126,28 @@ describe('Security Input', () => {
         })
       })
 
+      it('should display error if no security input text is given', () => {
+        cy.task('stubGetExtremismProfile', {
+          offenderNo: 'B2345YZ',
+          category: 'C',
+          increasedRisk: true,
+          notifyRegionalCTLead: false,
+        })
+        stubLoginAndBrowseToCategoriserSecurityInputPage()
+
+        categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
+        categoriserSecurityInputPage.selectSecurityInputRadioButton('YES')
+        categoriserSecurityInputPage.saveAndReturnButton().click()
+
+        categoriserSecurityInputPage.validateErrorSummaryMessages([
+          { index: 0, href: '#securityInputNeededText', text: 'Please enter the reason why referral is needed' },
+        ])
+
+        categoriserSecurityInputPage.validateErrorMessages([
+          { selector: '#securityInputNeededText-error', text: 'Please enter details' },
+        ])
+      })
+
       describe("it should record a 'yes' decision", () => {
         beforeEach(() => {
           cy.task('stubGetExtremismProfile', {
