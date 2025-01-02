@@ -149,7 +149,7 @@ describe('Security Input', () => {
 
         const securityReviewPage = SecurityReviewPage.createForBookingId(bookingId)
         securityReviewPage.validateHeaderRecatNote({ isVisible: true, expectedText: 'Note from categoriser' })
-        securityReviewPage.validateNoParagraphRecatNote({ isVisible: true, expectedText: 'A note was not added' })
+        securityReviewPage.validateNoParagraphRecatNote()
       })
 
       it('should display error if no security input text is given', () => {

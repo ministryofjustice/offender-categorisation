@@ -690,7 +690,7 @@ const stubGetOffenderDetailsWomen = ({
   offenderNo = 'ON700',
   youngOffender = false,
   indeterminateSentence = false,
-  category = 'C',
+  category = 'R',
   multipleSentences = false,
   nextReviewDate = '2020-01-16',
 }: {

@@ -67,8 +67,8 @@ export default class SecurityReviewPage extends Page {
     this.validateParagraphNote(SELECTORS.PARAGRAPH.RECAT_NOTE, isVisible, expectedText)
   }
 
-  validateNoParagraphRecatNote = ({ isVisible, expectedText }: { isVisible: boolean; expectedText?: string }) => {
-    this.validateParagraphNote(SELECTORS.PARAGRAPH.RECAT_NO_NOTE, isVisible, expectedText)
+  validateNoParagraphRecatNote = () => {
+    this.validateParagraphNote(SELECTORS.PARAGRAPH.RECAT_NO_NOTE, true, 'A note was not added')
   }
 
   validateParagraphInitialManual = ({ isVisible, expectedText }: { isVisible: boolean; expectedText?: string }) => {
