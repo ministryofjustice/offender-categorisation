@@ -42,4 +42,9 @@ export default class TasklistRecatPage extends Page {
   validateSecurityCompletedDate = (date: Date) => {
     cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
   }
+
+  validateSummarySection = () => {
+    cy.get('#review').contains('Check and submit')
+    cy.get('#review').contains('All tasks completed')
+  }
 }

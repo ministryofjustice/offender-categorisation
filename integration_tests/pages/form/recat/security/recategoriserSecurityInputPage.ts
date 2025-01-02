@@ -38,6 +38,10 @@ export default class RecategoriserSecurityInputPage extends Page {
 
   submitButton = (): PageElement => cy.get('button[type="submit"]').contains('Refer to security')
 
+  validateSecurityIsRequired() {
+    cy.get('.govuk-warning-text').contains('All recategorisations must have a security review.')
+  }
+
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
