@@ -1,4 +1,5 @@
 import Page, { PageElement } from '../page'
+import moment from "moment/moment";
 
 export default class TasklistRecatPage extends Page {
   private static _bookingId: number
@@ -26,4 +27,19 @@ export default class TasklistRecatPage extends Page {
 
   checkAndSubmitButton = (bookingId: number, expectedButtonText = 'Continue') =>
     cy.contains(`a[href="/form/recat/review/${bookingId}"]`, expectedButtonText)
+
+  validateButtonState({ buttonSelector, isDisabled }: { buttonSelector: () => PageElement; isDisabled: boolean }) {
+    buttonSelector().should(isDisabled ? 'be.disabled' : 'not.be.disabled')
+  }
+
+  validateSecurityReferralDate = (date: Date) => {
+    cy.get('#securitySection').should(
+      'contain.text',
+      `Manually referred to Security (${moment(date).format('DD/MM/yyyy')})`
+    )
+  }
+
+  validateSecurityCompletedDate = (date: Date) => {
+    cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
+  }
 }
