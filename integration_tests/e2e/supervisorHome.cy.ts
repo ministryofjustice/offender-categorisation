@@ -1,4 +1,3 @@
-import moment from 'moment'
 import { RECATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
 import SupervisorHomePage from '../pages/supervisor/home'
 import Page from '../pages/page'
@@ -6,8 +5,6 @@ import { CASELOAD } from '../factory/caseload'
 import { calculateDueDate } from '../support/utilities'
 
 describe('Supervisor Home page', () => {
-  const testNextReviewDate = moment().add(1, 'week').format('DD/MM/YYYY')
-
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
@@ -40,7 +37,7 @@ describe('Supervisor Home page', () => {
 
     beforeEach(() => {
       cy.task('stubCategorisedMultiple')
-      cy.task('stubUncategorisedAwaitingApproval', { nextReviewDate: testNextReviewDate })
+      cy.task('stubUncategorisedAwaitingApproval')
       cy.task('stubSentenceData', {
         offenderNumbers: [offender1.offenderNo, offender2.offenderNo],
         bookingIds: [offender1.bookingId, offender2.bookingId],
@@ -78,7 +75,7 @@ describe('Supervisor Home page', () => {
           offender1.offenderNo,
           calculateDueDate(offender1.startDate).daysSinceSentence.toString(),
           calculateDueDate(offender1.startDate).dateRequired,
-          testNextReviewDate,
+          '01/01/2025',
           'Roger Rabbit',
           'B',
           '',
@@ -89,7 +86,7 @@ describe('Supervisor Home page', () => {
           offender2.offenderNo,
           calculateDueDate(offender2.startDate).daysSinceSentence.toString(),
           calculateDueDate(offender2.startDate).dateRequired,
-          testNextReviewDate,
+          '02/02/2025',
           'Bugs Bunny',
           'C',
           '',
