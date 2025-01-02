@@ -1256,7 +1256,7 @@ const stubUncategorisedFull = (): SuperAgentRequest =>
   })
 
 const stubUncategorisedAwaitingApproval = (
-  { emptyResponse }: { emptyResponse: boolean } = { emptyResponse: false }
+  { emptyResponse, nextReviewDate }: { emptyResponse: boolean, nextReviewDate: string } = { emptyResponse: false, nextReviewDate: '2025-01-01' }
 ): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1279,7 +1279,7 @@ const stubUncategorisedAwaitingApproval = (
               categoriserFirstName: 'ROGER',
               categoriserLastName: 'RABBIT',
               assessmentSeq: 4,
-              nextReviewDate: '2025-01-01',
+              nextReviewDate: nextReviewDate,
             },
             {
               bookingId: 12,
@@ -1291,7 +1291,7 @@ const stubUncategorisedAwaitingApproval = (
               categoriserFirstName: 'BUGS',
               categoriserLastName: 'BUNNY',
               assessmentSeq: 5,
-              nextReviewDate: '2025-02-02',
+              nextReviewDate: nextReviewDate,
             },
           ],
     },
