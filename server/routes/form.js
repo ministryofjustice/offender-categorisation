@@ -205,7 +205,6 @@ module.exports = function Index({
       const { bookingId } = req.params
       const section = 'security'
       const result = await buildFormData(res, req, section, 'review', bookingId, transactionalDbClient)
-      console.log(result)
       const securityReferral = await getSecurityReferral(
         res.locals,
         result.data.details.offenderNo,
