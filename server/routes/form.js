@@ -205,6 +205,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const section = 'security'
       const result = await buildFormData(res, req, section, 'review', bookingId, transactionalDbClient)
+      console.log(result)
       const securityReferral = await getSecurityReferral(
         res.locals,
         result.data.details.offenderNo,
@@ -552,14 +553,13 @@ module.exports = function Index({
         res.redirect(`/form/security/review/${bookingId}`)
         return
       }
-      const userInput = clearConditionalFields(req.body.securityReview)
 
       try {
         await formService.securityReviewed(
           bookingId,
           req.user.username,
-          userInput.button === SECURITY_BUTTON_SUBMIT,
-          userInput
+          validation.value.button === SECURITY_BUTTON_SUBMIT,
+          validation.value.securityReview
         )
       } catch (error) {
         res.render('pages/error', {
