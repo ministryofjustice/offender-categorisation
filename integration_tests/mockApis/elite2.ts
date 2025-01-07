@@ -990,7 +990,7 @@ const stubGetUserDetails = ({ user, caseloadId }: { user: UserAccount; caseloadI
     },
   })
 
-const stubGetStaffDetailsByUsernameList = ({ usernames = [] }): SuperAgentRequest =>
+const stubGetStaffDetailsByUsernameList = ({ usernames } = { usernames: [] }): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'POST',
@@ -1506,7 +1506,15 @@ const stubRecategorise = (
   return Promise.all([recategorisationsStub(agencyId), latestOnlyStub()])
 }
 
-const stubAdjudicationHearings = ({ agencyId, fromDate, toDate }: { agencyId: string, fromDate: string, toDate: string }): SuperAgentRequest =>
+const stubAdjudicationHearings = ({
+  agencyId,
+  fromDate,
+  toDate,
+}: {
+  agencyId: string
+  fromDate: string
+  toDate: string
+}): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'POST',

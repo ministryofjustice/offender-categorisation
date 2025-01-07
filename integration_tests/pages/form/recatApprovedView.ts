@@ -1,10 +1,10 @@
 import Page from '../page'
 import BaseApprovedViewPage from './baseApprovedView'
 
-export default class ApprovedViewPage extends BaseApprovedViewPage {
+export default class RecatApprovedViewPage extends BaseApprovedViewPage {
   static baseUrl: string = '/form/approvedView'
 
   constructor() {
-    super('Categorisation outcome')
+    super('Categorisation review outcome')
   }
 }
