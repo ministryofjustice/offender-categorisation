@@ -12,6 +12,12 @@ export default abstract class BaseApprovedViewPage extends Page {
     cy.get('.forms-comments-text').should(areVisible ? 'exist' : 'not.exist')
   }
 
+  validateComments(comments: string[]) {
+    comments.forEach((comment, index) => {
+      cy.get(`.govuk-warning-text:eq(${index})`).should('contain.text', warning)
+    })
+  }
+
   validateOpenConditionsHeadingVisibility({ isVisible }: { isVisible: boolean }) {
     cy.get('.openConditionsHeader').should(isVisible ? 'exist' : 'not.exist')
   }
@@ -22,6 +28,10 @@ export default abstract class BaseApprovedViewPage extends Page {
 
   validateSupervisorComments({ expectedComments }: { expectedComments: string }) {
     cy.get('#overriddenText-2').should('contain.text', expectedComments)
+  }
+
+  validateOtherSupervisorComments({ expectedComments }: { expectedComments: string }) {
+    cy.get('#other-text-supervisor').should('contain.text', expectedComments)
   }
 
   getBackToCaseListButton() {
