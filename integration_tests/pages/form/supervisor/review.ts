@@ -31,6 +31,10 @@ const SELECTORS = {
     TEXT_ERROR: '#otherInformationText-error',
     TEXTAREA: '#otherInformationText',
   },
+  OVERRIDE_CATEGORY: {
+    CAT_C_RADIO_BUTTON: '#overriddenCategoryC',
+    REASON_TEXTAREA: '#supervisorOverriddenCategoryText',
+  },
   OVERRIDE_CATEGORY_J: {
     ERROR: '#supervisorOverriddenCategoryText-error',
     TEXT_ERROR: '#supervisorOverriddenCategoryText-error',
@@ -150,4 +154,14 @@ export default class SupervisorReviewPage extends Page {
   validateCategorisersRecommendedCategory(expectedMessage: string) {
     cy.get(SELECTORS.CATEGORISER_RECOMMENDED_CATEGORY).should('contain.text', expectedMessage)
   }
+
+  overrideCatC(): PageElement {
+    return cy.get(SELECTORS.OVERRIDE_CATEGORY.CAT_C_RADIO_BUTTON)
+  }
+
+  enterOverrideReason(reason: string): PageElement {
+    return cy.get(SELECTORS.OVERRIDE_CATEGORY.REASON_TEXTAREA).type(reason)
+  }
+
+  enterOtherInformationText = (text: string) => cy.get(SELECTORS.OTHER_INFORMATION.TEXTAREA).type(text)
 }
