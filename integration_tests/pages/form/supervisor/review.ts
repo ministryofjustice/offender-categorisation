@@ -21,6 +21,7 @@ type WhichCategoryIsMoreAppropriateChoiceValues =
   | typeof whichCategoryIsMoreAppropriateRadioChoiceHtmlSelectors.CONSIDER_FOR_CLOSED
 
 const SELECTORS = {
+  CATEGORISER_RECOMMENDED_CATEGORY: '#categoriser-recommended-category',
   INDETERMINATE_WARNING: '#indeterminateWarning',
   OPEN_CONDITIONS: {
     INFO_MESSAGE: '#openConditionsInfoMessage',
@@ -144,5 +145,9 @@ export default class SupervisorReviewPage extends Page {
     }[]
   ) {
     super.validateErrorMessages(errorMessages)
+  }
+
+  validateCategorisersRecommendedCategory(expectedMessage: string) {
+    cy.get(SELECTORS.CATEGORISER_RECOMMENDED_CATEGORY).should('contain.text', expectedMessage)
   }
 }
