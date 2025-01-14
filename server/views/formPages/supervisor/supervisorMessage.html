@@ -19,6 +19,7 @@
   </div>
 
   {{ govukSummaryList({
+    classes: 'supervisorMessage',
     rows: [
       { key: { text: "Supervisor" }, value: { text: data.supervisor.confirmBack.supervisorName } },
       { key: { text: "Message" },    value: { text: data.supervisor.confirmBack.messageText | striptags(true) | escape | nl2br } }
