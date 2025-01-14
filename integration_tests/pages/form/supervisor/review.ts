@@ -33,6 +33,7 @@ const SELECTORS = {
   },
   OVERRIDE_CATEGORY: {
     CAT_C_RADIO_BUTTON: '#overriddenCategoryC',
+    CAT_D_RADIO_BUTTON: '#overriddenCategoryD',
     REASON_TEXTAREA: '#supervisorOverriddenCategoryText',
   },
   OVERRIDE_CATEGORY_J: {
@@ -157,6 +158,10 @@ export default class SupervisorReviewPage extends Page {
 
   overrideCatC(): PageElement {
     return cy.get(SELECTORS.OVERRIDE_CATEGORY.CAT_C_RADIO_BUTTON)
+  }
+
+  overrideCatD(): PageElement {
+    return cy.get(SELECTORS.OVERRIDE_CATEGORY.CAT_D_RADIO_BUTTON)
   }
 
   enterOverrideReason(reason: string): PageElement {

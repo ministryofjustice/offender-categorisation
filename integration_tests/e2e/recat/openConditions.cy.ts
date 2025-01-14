@@ -23,6 +23,7 @@ import RecatAwaitingApprovalPage from '../../pages/recatAwaitingSupervisorApprov
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorReviewPage from '../../pages/form/supervisor/review'
 import SupervisorReviewOutcomePage from '../../pages/form/supervisor/outcome'
+import SupervisorMessagePage from '../../pages/form/supervisor/message'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import ApprovedViewPage from '../../pages/form/approvedView'
 import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
@@ -1302,6 +1303,627 @@ describe('Open Conditions', () => {
     })
     approvedViewRecatPage.validateOtherSupervisorComments({
       expectedComments: 'super other info',
+    })
+  })
+
+  it('The happy path is correct for supervisor overriding to D', () => {
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      bookingId: 12,
+      // nomisSequenceNumber: 1,
+      catType: CATEGORISATION_TYPE.RECAT,
+      offenderNo: 'B2345YZ',
+      sequenceNumber: 1,
+      status: STATUS.STARTED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: new Date(),
+      formResponse: {
+        recat: {
+          decision: { category: 'C' },
+          oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
+          securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
+          nextReviewDate: { date: '14/12/2019' },
+          prisonerBackground: { offenceDetails: 'offence Details text' },
+          riskAssessment: {
+            lowerCategory: 'lower security category text',
+            otherRelevant: 'Yes',
+            higherCategory: 'higher security category text',
+            otherRelevantText: 'other relevant information',
+          },
+        },
+      },
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      assignedUserId: null,
+      approvedBy: null,
+    })
+
+    // when: 'The categoriser submits cat C'
+    cy.task('stubRecategorise')
+    cy.task('stubGetPrisonerSearchPrisoners')
+    cy.task('stubSentenceData', {
+      offenderNumbers: ['B2345XY', 'B2345YZ'],
+      bookingIds: [11, 12],
+      startDates: [today, today],
+    })
+    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
+    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
+    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
+    cy.task('stubGetOffenderDetails', {
+      bookingId: 12,
+      offenderNo: 'B2345YZ',
+      youngOffender: false,
+      indeterminateSentence: false,
+    })
+    cy.task('stubGetSocProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      transferToSecurity: false,
+    })
+    cy.task('stubGetExtremismProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      increasedRisk: true,
+      notifyRegionalCTLead: false,
+    })
+    cy.task('stubGetEscapeProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      onEscapeList: true,
+      activeOnEscapeList: true,
+    })
+    cy.task('stubGetViolenceProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      veryHighRiskViolentOffender: true,
+      notifySafetyCustodyLead: true,
+      displayAssaults: false,
+    })
+    cy.task('stubAgencyDetails', { agency: 'LPI' })
+
+    cy.stubLogin({
+      user: RECATEGORISER_USER,
+    })
+    cy.signIn()
+
+    const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+    recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+    const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+    tasklistRecatPage.decisionButton().click()
+
+    const decisionPage = Page.verifyOnPage(DecisionPage)
+    decisionPage.indeterminateWarning().should('not.exist')
+    decisionPage.catCOption().click()
+    decisionPage.submitButton().click()
+
+    tasklistRecatPage.checkAndSubmitButton(12).click()
+
+    // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
+    const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
+    reviewRecatPage.changeLinks().should('have.length', 6)
+    reviewRecatPage.validateCategoryDecisionSummary([
+      { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+    ])
+
+    // 'I confirm the cat C category'
+    cy.task('stubCategorise', {
+      bookingId: 12,
+      category: 'C',
+      committee: 'OCA',
+      nextReviewDate: '2019-12-14',
+      comment: 'comment',
+      placementAgencyId: 'LEI',
+      sequenceNumber: 5,
+    })
+    reviewRecatPage.saveAndSubmitButton().click()
+
+    cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
+      const dbRecord = data.rows[0]
+      delete dbRecord.start_date
+
+      cy.log('dbRecord', JSON.stringify(dbRecord))
+
+      const expected = {
+        id: -1,
+        form_response: {
+          recat: {
+            decision: { category: 'C' },
+            oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
+            securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
+            nextReviewDate: { date: '14/12/2019' },
+            riskAssessment: {
+              lowerCategory: 'lower security category text',
+              otherRelevant: 'Yes',
+              higherCategory: 'higher security category text',
+              otherRelevantText: 'other relevant information',
+            },
+            prisonerBackground: { offenceDetails: 'offence Details text' },
+          },
+          openConditionsRequested: false,
+        },
+        booking_id: 12,
+        user_id: null,
+        status: 'AWAITING_APPROVAL',
+        assigned_user_id: null,
+        referred_date: null,
+        referred_by: null,
+        sequence_no: 1,
+        risk_profile: {
+          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          escapeProfile: {
+            nomsId: 'B2345YZ',
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: true,
+            escapeListAlerts: [
+              {
+                active: true,
+                comment: 'First xel comment',
+                expired: false,
+                alertCode: 'XEL',
+                dateCreated: '2016-09-14',
+                alertCodeDescription: 'Escape List',
+              },
+              {
+                active: false,
+                comment:
+                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
+                expired: true,
+                alertCode: 'XEL',
+                dateCreated: '2016-09-15',
+                alertCodeDescription: 'Escape List',
+              },
+            ],
+            escapeRiskAlerts: [
+              {
+                active: true,
+                comment: 'First xer comment',
+                expired: false,
+                alertCode: 'XER',
+                dateCreated: '2016-09-16',
+                alertCodeDescription: 'Escape Risk',
+              },
+            ],
+            provisionalCategorisation: 'C',
+          },
+          violenceProfile: {
+            nomsId: 'B2345YZ',
+            riskType: 'VIOLENCE',
+            displayAssaults: false,
+            numberOfAssaults: 5,
+            notifySafetyCustodyLead: true,
+            numberOfSeriousAssaults: 2,
+            provisionalCategorisation: 'C',
+            numberOfNonSeriousAssaults: 3,
+            veryHighRiskViolentOffender: true,
+          },
+          extremismProfile: {
+            nomsId: 'B2345YZ',
+            riskType: 'EXTREMISM',
+            notifyRegionalCTLead: false,
+            increasedRiskOfExtremism: true,
+            provisionalCategorisation: 'C',
+          },
+        },
+        prison_id: 'LEI',
+        offender_no: 'B2345YZ',
+        security_reviewed_by: null,
+        security_reviewed_date: null,
+        approval_date: null,
+        cat_type: 'RECAT',
+        nomis_sequence_no: 5,
+        assessment_date: '2025-01-14T00:00:00.000Z',
+        approved_by: null,
+        assessed_by: 'RECATEGORISER_USER',
+        review_reason: 'DUE',
+        due_by_date: null,
+        cancelled_date: null,
+        cancelled_by: null,
+      }
+
+      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
+      return dbRecordMatchesExpected
+    })
+
+    // 'the category is submitted'
+    const categoriserSubmittedPage = Page.verifyOnPage(CategoriserSubmittedPage)
+    cy.task('stubRecategorise', {
+      recategorisations: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345XY',
+          firstName: 'PENELOPE',
+          lastName: 'PITSTOP',
+          category: 'C',
+          nextReviewDate: moment(today).subtract(4, 'days').format('yyyy-MM-dd'),
+          assessStatus: 'P',
+        },
+        {
+          bookingId: 11,
+          offenderNo: 'B2345YZ',
+          firstName: 'ANT',
+          lastName: 'HILLMOB',
+          category: 'C',
+          nextReviewDate: moment(today).subtract(2, 'days').format('yyyy-MM-dd'),
+          assessStatus: 'A',
+        },
+      ],
+    })
+
+    // 'the supervisor reviews and overrides to cat D'
+    categoriserSubmittedPage.signOut().click()
+
+    cy.task('stubUncategorisedAwaitingApproval')
+    cy.task('stubSentenceData', {
+      offenderNumbers: ['B2345XY'],
+      bookingIds: [11],
+      startDates: [sentenceStartDates.B2345XY],
+    })
+    cy.task('stubAssessments', {
+      offenderNumber: 'dummy',
+    })
+
+    cy.stubLogin({
+      user: SUPERVISOR_USER,
+    })
+    cy.signIn()
+
+    const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+    supervisorHomePage.startReviewForPrisoner(12)
+
+    cy.task('stubSupervisorReject')
+
+    const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
+    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends Category C')
+    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
+    supervisorReviewPage.overrideCatD().click()
+    supervisorReviewPage.enterOverrideReason('super overriding C to D reason text')
+    supervisorReviewPage.enterOtherInformationText('super other info 1')
+    supervisorReviewPage.submitButton().click()
+
+    // 'supervisor is returned to home'
+    Page.verifyOnPage(SupervisorHomePage)
+    supervisorHomePage.signOut().click()
+
+    cy.stubLogin({
+      user: RECATEGORISER_USER,
+    })
+    cy.signIn()
+
+    Page.verifyOnPage(RecategoriserHomePage)
+    recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+    // 'the categoriser looks at the supervisor message'
+    tasklistRecatPage.supervisorMessageButton().click()
+
+    // 'the supervisor message is available'
+    const supervisorMessagePage = Page.verifyOnPage(SupervisorMessagePage)
+    supervisorMessagePage.validateMessages([
+      { question: 'Supervisor', expectedAnswer: 'Test User' },
+      { question: 'Message', expectedAnswer: 'super overriding C to D reason text' },
+    ])
+    supervisorMessagePage.saveAndReturnButton().click()
+
+    // 'the recategoriser chooses cat D instead of C'
+    Page.verifyOnPage(TasklistRecatPage)
+    tasklistRecatPage.decisionButton().click()
+
+    Page.verifyOnPage(DecisionPage)
+    decisionPage.indeterminateWarning().should('not.exist')
+    decisionPage.catDOption().click()
+    decisionPage.submitButton().click()
+
+    // Open Conditions Added Page
+    const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
+    openConditionsAddedPage.returnToRecatTasklistButton(12).click()
+
+    // 'open conditions forms are accessed by categoriser'
+    tasklistRecatPage.openConditionsButton().should('exist')
+    tasklistRecatPage.openConditionsButton().click()
+
+    const tprsPage = Page.verifyOnPage(TprsPage)
+    tprsPage.selectTprsRadioButton('NO')
+    tprsPage.continueButton().click()
+
+    const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
+    earliestReleasePage.selectEarliestReleaseDateRadioButton('NO')
+    earliestReleasePage.continueButton().click()
+
+    const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
+    victimContactSchemaPage.selectVictimContactSchemeRadioButton('NO')
+    victimContactSchemaPage.continueButton().click()
+
+    const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.selectForeignNationalRadioButton('NO')
+    foreignNationalPage.continueButton().click()
+
+    const riskOfHarmPage = Page.verifyOnPage(RiskOfSeriousHarmPage)
+    riskOfHarmPage.selectRiskOfSeriousHarmRadioButton('NO')
+    riskOfHarmPage.continueButton().click()
+
+    const furtherChargesPage = Page.verifyOnPage(FurtherChargesPage)
+    furtherChargesPage.selectFurtherChargesRadioButton('NO')
+    furtherChargesPage.continueButton().click()
+
+    const riskOfEscapingOrAbscondingPage = Page.verifyOnPage(RiskLevelsPage)
+    riskOfEscapingOrAbscondingPage.selectRiskLevelsRadioButton('NO')
+    riskOfEscapingOrAbscondingPage.continueButton().click()
+
+    tasklistRecatPage.checkAndSubmitButton(12).click()
+
+    // 'the review page is displayed'
+    Page.verifyOnPage(ReviewRecatPage)
+    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.validateCategoryDecisionSummary([
+      { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category D' },
+    ])
+
+    // 'I confirm the cat D category'
+    cy.task('stubCategoriseUpdate', {
+      bookingId: 12,
+      category: 'D',
+      nextReviewDate: '2019-12-14',
+      sequenceNumber: 5,
+    })
+    reviewRecatPage.saveAndSubmitButton().click()
+
+    // 'the category is submitted'
+    Page.verifyOnPage(CategoriserSubmittedPage)
+
+    // 'The record is viewed by the recategoriser'
+    cy.task('stubRecategorise', {
+      recategorisations: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345XY',
+          firstName: 'PENELOPE',
+          lastName: 'PITSTOP',
+          category: 'C',
+          nextReviewDate: moment(today).subtract(4, 'days').format('yyyy-MM-dd'),
+          assessStatus: 'P',
+        },
+        {
+          bookingId: 11,
+          offenderNo: 'B2345YZ',
+          firstName: 'ANT',
+          lastName: 'HILLMOB',
+          category: 'C',
+          nextReviewDate: moment(today).subtract(2, 'days').format('yyyy-MM-dd'),
+          assessStatus: 'A',
+        },
+      ],
+    })
+    cy.task('stubGetPrisonerSearchPrisoners')
+    cy.task('stubSentenceData', {
+      offenderNumbers: ['B2345XY', 'B2345YZ'],
+      bookingIds: [11, 12],
+      startDates: [today, today],
+    })
+
+    categoriserSubmittedPage.signOut().click()
+
+    // 'the supervisor reviews and accepts the cat D'
+    cy.task('stubUncategorisedAwaitingApproval')
+    cy.task('stubSentenceData', {
+      offenderNumbers: ['B2345XY'],
+      bookingIds: [11],
+      startDates: [sentenceStartDates.B2345XY],
+    })
+    cy.task('stubAssessments', {
+      offenderNumber: 'dummy',
+    })
+
+    cy.stubLogin({
+      user: SUPERVISOR_USER,
+    })
+    cy.signIn()
+
+    Page.verifyOnPage(SupervisorHomePage)
+    supervisorHomePage.startReviewForPrisoner(12)
+
+    cy.task('stubSupervisorApprove')
+
+    Page.verifyOnPage(SupervisorReviewPage)
+    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends open category')
+    supervisorReviewPage.enterOtherInformationText('super other info 1 + 2')
+    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+    supervisorReviewPage.submitButton().click()
+
+    const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.finishButton().click()
+
+    // 'Data is stored correctly'
+    cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
+      const dbRecord = data.rows[0]
+      delete dbRecord.start_date
+      delete dbRecord.approval_date
+      delete dbRecord.assessment_date
+
+      cy.log(JSON.stringify(dbRecord))
+
+      const expected = {
+        id: -1,
+        form_response: {
+          recat: {
+            decision: { category: 'D' },
+            oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
+            securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
+            nextReviewDate: { date: '14/12/2019' },
+            riskAssessment: {
+              lowerCategory: 'lower security category text',
+              otherRelevant: 'Yes',
+              higherCategory: 'higher security category text',
+              otherRelevantText: 'other relevant information',
+            },
+            prisonerBackground: { offenceDetails: 'offence Details text' },
+          },
+          supervisor: {
+            review: {
+              proposedCategory: 'D',
+              otherInformationText: 'super other info 1super other info 1 + 2',
+              previousOverrideCategoryText: 'super overriding C to D reason text',
+              supervisorCategoryAppropriate: 'Yes',
+            },
+            confirmBack: {
+              isRead: true,
+              messageText: 'super overriding C to D reason text',
+              supervisorName: 'Test User',
+            },
+          },
+          openConditions: {
+            tprs: { tprsSelected: 'No' },
+            riskLevels: { likelyToAbscond: 'No' },
+            riskOfHarm: { seriousHarm: 'No' },
+            furtherCharges: { furtherCharges: 'No' },
+            foreignNational: { isForeignNational: 'No' },
+            earliestReleaseDate: { threeOrMoreYears: 'No' },
+            victimContactScheme: { vcsOptedFor: 'No' },
+          },
+          openConditionsRequested: true,
+        },
+        booking_id: 12,
+        user_id: null,
+        status: 'APPROVED',
+        assigned_user_id: null,
+        referred_date: null,
+        referred_by: null,
+        sequence_no: 1,
+        risk_profile: {
+          catHistory: [
+            {
+              bookingId: -45,
+              offenderNo: 'B2345YZ',
+              approvalDate: '2013-03-24',
+              assessmentCode: 'CATEGORY',
+              assessmentDate: '2013-03-24',
+              classification: 'Cat B',
+              nextReviewDate: '2013-09-17',
+              assessmentStatus: 'I',
+              agencyDescription: 'LPI prison',
+              assessmentAgencyId: 'LPI',
+              classificationCode: 'B',
+              approvalDateDisplay: '24/03/2013',
+              cellSharingAlertFlag: false,
+              assessmentDescription: 'Categorisation',
+            },
+            {
+              bookingId: -45,
+              offenderNo: 'B2345YZ',
+              approvalDate: '2012-06-08',
+              assessmentCode: 'CATEGORY',
+              assessmentDate: '2012-04-04',
+              classification: 'Cat A',
+              nextReviewDate: '2012-06-07',
+              assessmentStatus: 'A',
+              agencyDescription: 'LPI prison',
+              assessmentAgencyId: 'LPI',
+              classificationCode: 'A',
+              approvalDateDisplay: '08/06/2012',
+              cellSharingAlertFlag: false,
+              assessmentDescription: 'Categorisation',
+            },
+          ],
+          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          escapeProfile: {
+            nomsId: 'B2345YZ',
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: true,
+            escapeListAlerts: [
+              {
+                active: true,
+                comment: 'First xel comment',
+                expired: false,
+                alertCode: 'XEL',
+                dateCreated: '2016-09-14',
+                alertCodeDescription: 'Escape List',
+              },
+              {
+                active: false,
+                comment:
+                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
+                expired: true,
+                alertCode: 'XEL',
+                dateCreated: '2016-09-15',
+                alertCodeDescription: 'Escape List',
+              },
+            ],
+            escapeRiskAlerts: [
+              {
+                active: true,
+                comment: 'First xer comment',
+                expired: false,
+                alertCode: 'XER',
+                dateCreated: '2016-09-16',
+                alertCodeDescription: 'Escape Risk',
+              },
+            ],
+            provisionalCategorisation: 'C',
+          },
+          violenceProfile: {
+            nomsId: 'B2345YZ',
+            riskType: 'VIOLENCE',
+            displayAssaults: false,
+            numberOfAssaults: 5,
+            notifySafetyCustodyLead: true,
+            numberOfSeriousAssaults: 2,
+            provisionalCategorisation: 'C',
+            numberOfNonSeriousAssaults: 3,
+            veryHighRiskViolentOffender: true,
+          },
+          extremismProfile: {
+            nomsId: 'B2345YZ',
+            riskType: 'EXTREMISM',
+            notifyRegionalCTLead: false,
+            increasedRiskOfExtremism: true,
+            provisionalCategorisation: 'C',
+          },
+        },
+        prison_id: 'LEI',
+        offender_no: 'B2345YZ',
+        security_reviewed_by: null,
+        security_reviewed_date: null,
+        cat_type: 'RECAT',
+        nomis_sequence_no: 5,
+        approved_by: 'SUPERVISOR_USER',
+        assessed_by: 'RECATEGORISER_USER',
+        review_reason: 'DUE',
+        due_by_date: null,
+        cancelled_date: null,
+        cancelled_by: null,
+      }
+
+      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
+      return dbRecordMatchesExpected
+    })
+
+    // 'the approved view page is shown'
+
+    cy.task('stubCategorised', {
+      bookingIds: [12],
+    })
+    cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+
+    supervisorHomePage.doneTabLink().click()
+
+    cy.task('stubAgencyDetails', { agency: 'LEI' })
+
+    const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
+    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1 }).click()
+
+    const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
+    approvedViewRecatPage.validateCategorisationWarnings([
+      'Open category',
+      'The categoriser recommends open category',
+      'The supervisor also recommends open category',
+    ])
+    approvedViewRecatPage.validateCommentsVisibility({ areVisible: true })
+    approvedViewRecatPage.validatePreviousSupervisorComments({
+      expectedComments: 'super overriding C to D reason text',
+    })
+    approvedViewRecatPage.validateOtherSupervisorComments({
+      expectedComments: 'super other info 1 + 2',
     })
   })
 })
