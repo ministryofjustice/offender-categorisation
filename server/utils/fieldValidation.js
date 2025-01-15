@@ -45,8 +45,8 @@ function createSchemaFromConfig(pageConfig) {
     requiredDay: joi.date().format('DD').required(),
     requiredMonth: joi.date().format('MM').required(),
     requiredYear: joi.date().format('YYYY').required(),
-    futureDate: joi.date().format('DD/MM/YYYY').min(tomorrow).required(),
-    pastDate: joi.date().allow('').format('DD/MM/YYYY').max(yesterday).optional(),
+    futureDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
+    pastDate: joi.date().allow('').format('D/M/YYYY').max(yesterday).optional(),
     requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
@@ -63,18 +63,18 @@ function createSchemaFromConfig(pageConfig) {
     indeterminateCheck: (requiredItem = 'indeterminate', requiredAnswer = 'true') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi.date().format('DD/MM/YYYY').min(today).max(threeYears).required().messages({
+        then: joi.date().format('D/M/YYYY').min(today).max(threeYears).required().messages({
           'date.format': 'The review date must be a real date',
           'date.max': 'The date that they are reviewed by must be within 3 years',
           'date.min': 'The review date must be today or in the future',
         }),
-        otherwise: joi.date().format('DD/MM/YYYY').min(today).max(oneYear).required().messages({
+        otherwise: joi.date().format('D/M/YYYY').min(today).max(oneYear).required().messages({
           'date.format': 'The review date must be a real date',
           'date.max': 'The date that they are reviewed must be within the next 12 months',
           'date.min': 'The review date must be today or in the future',
         }),
       }),
-    todayOrPastDate: joi.date().format('DD/MM/YYYY').max(today).required().messages({
+    todayOrPastDate: joi.date().format('D/M/YYYY').max(today).required().messages({
       'date.format': 'must be a real date',
       'date.max': 'must be today or in the past',
     }),
