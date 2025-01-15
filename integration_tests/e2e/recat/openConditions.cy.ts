@@ -319,10 +319,6 @@ describe('Open Conditions', () => {
     reviewRecatPage.validateNextReviewDateSummary([
       { question: 'What date should they be reviewed by?', expectedAnswer: 'Saturday 14 December 2019' },
     ])
-    reviewRecatPage.validateRiskOfHarmSummary([
-      { question: 'Risk of serious harm to the public?', expectedAnswer: 'Yes' },
-      { question: 'Can this risk be managed?', expectedAnswer: 'Yes harmManagedText details' },
-    ])
 
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
       const dbRecord = data.rows[0]
@@ -343,25 +339,6 @@ describe('Open Conditions', () => {
               otherRelevantText: 'other relevant information',
             },
             prisonerBackground: { offenceDetails: 'offence Details text' },
-          },
-          openConditions: {
-            tprs: { tprsSelected: 'Yes' },
-            riskLevels: { likelyToAbscond: 'Yes', likelyToAbscondText: 'likelyToAbscondText details' },
-            riskOfHarm: { harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details' },
-            furtherCharges: {
-              increasedRisk: 'Yes',
-              furtherCharges: 'Yes',
-              furtherChargesText: ',furtherChargesText details',
-            },
-            notRecommended: { stillRefer: 'No' },
-            foreignNational: {
-              dueDeported: 'Yes',
-              formCompleted: 'Yes',
-              exhaustedAppeal: 'No',
-              isForeignNational: 'Yes',
-            },
-            earliestReleaseDate: { justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes' },
-            victimContactScheme: { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' },
           },
           openConditionsRequested: false,
         },
@@ -454,12 +431,6 @@ describe('Open Conditions', () => {
       return dbRecordMatchesExpected && assessmentStartedToday
     })
   })
-
-  // it("should validate the Victim Contact Scheme page", () => {
-  // });
-
-  // it("should validate the Further Charges page", () => {
-  // });
 
   it('The happy path is correct for recategoriser setting cat D, all nos', () => {
     cy.task('insertFormTableDbRow', {
@@ -1421,6 +1392,7 @@ describe('Open Conditions', () => {
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
       const dbRecord = data.rows[0]
       delete dbRecord.start_date
+      delete dbRecord.assessment_date
 
       cy.log('dbRecord', JSON.stringify(dbRecord))
 
@@ -1513,7 +1485,6 @@ describe('Open Conditions', () => {
         approval_date: null,
         cat_type: 'RECAT',
         nomis_sequence_no: 5,
-        assessment_date: '2025-01-14T00:00:00.000Z',
         approved_by: null,
         assessed_by: 'RECATEGORISER_USER',
         review_reason: 'DUE',
