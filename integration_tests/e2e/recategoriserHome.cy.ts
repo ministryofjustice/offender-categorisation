@@ -75,7 +75,7 @@ describe('Recategoriser Home page', () => {
         assessmentSeq: 18,
         assessStatus: 'P',
         category: 'C',
-        nextReviewDate: '2025-01-01',
+        nextReviewDate: '2045-01-01',
       }
 
       const sentenceStartDates = {
