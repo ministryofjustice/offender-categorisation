@@ -13,23 +13,18 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "typeRoots": [
-      "./server/@types",
-      "./node_modules/@types"
-    ]
+    "experimentalDecorators": true
   },
   "exclude": [
     "node_modules",
-    "assets/**/*.js",
+    "assets",
     "integration-tests",
     "integration_tests",
     "dist",
     "coverage",
     "**/__mocks__/*",
     "./cypress.config.ts",
-    "cypress",
-    "**/*.cy.tsx"
+    "cypress"
   ],
   "include": [
     "**/*.js",

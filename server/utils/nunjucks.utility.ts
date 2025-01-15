@@ -1,17 +1,14 @@
-import { RecategorisationHomeFilters } from '../services/recategorisation/filter/recategorisationFilter'
+import { CategorisationHomeFilters, RecategorisationHomeFilters } from '../services/filter/homeFilter'
 import type {
-  RecategorisationHomeFilterDueDateValue,
-  RecategorisationHomeFilterPomValue,
+  HomeFilterDueDateValue,
+  HomeFilterPomValue,
   RecategorisationHomeFilterSuitabilityForOpenConditionsValue,
-} from '../services/recategorisation/filter/recategorisationFilter'
+} from '../services/filter/homeFilter'
 import config from '../config'
 
 export const removeFilterFromFullUrl = (
-  filter:
-    | RecategorisationHomeFilterSuitabilityForOpenConditionsValue
-    | RecategorisationHomeFilterDueDateValue
-    | RecategorisationHomeFilterPomValue,
-  key: keyof RecategorisationHomeFilters,
+  filter: RecategorisationHomeFilterSuitabilityForOpenConditionsValue | HomeFilterDueDateValue | HomeFilterPomValue,
+  key: keyof RecategorisationHomeFilters | keyof CategorisationHomeFilters,
   fullUrl: string
 ) => {
   const url = new URL(fullUrl, config.domain)

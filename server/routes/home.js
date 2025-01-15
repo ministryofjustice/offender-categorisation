@@ -15,30 +15,16 @@ const logger = require('../../log')
 const {
   recategorisationHomeFilters,
   recategorisationHomeFilterKeys,
-} = require('../services/recategorisation/filter/recategorisationFilter')
+  categorisationHomeFilters,
+} = require('../services/filter/homeFilter')
+const {
+  categorisationHomeSchema,
+  recategorisationHomeSchema,
+} = require('../services/filter/homeFilterValidationSchema')
 
 const formConfig = {
   security: securityConfig,
 }
-
-const recategorisationHomeSchemaFilters = {}
-Object.keys(recategorisationHomeFilters).forEach(key => {
-  recategorisationHomeSchemaFilters[key] = joi
-    .array()
-    .items(
-      joi
-        .string()
-        .valid(...Object.keys(recategorisationHomeFilters[key]))
-        .required()
-    )
-    .optional()
-})
-const recategorisationHomeSchema = joi
-  .object({
-    ...recategorisationHomeSchemaFilters,
-    filterRemoved: joi.string().optional(),
-  })
-  .optional()
 
 const calculateLandingTarget = referer => {
   const pathname = referer && new URL(referer).pathname
@@ -76,16 +62,54 @@ module.exports = function Index({
   router.get(
     '/categoriserHome',
     asyncMiddleware(async (req, res) => {
+      const validation = categorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
+      if (validation.error) {
+        logger.error('Categoriser home page submitted with invalid filters.', validation.error)
+        res.render('pages/error', {
+          message: 'Invalid recategoriser home filters',
+        })
+        return
+      }
+
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
+      // Can be removed after pilot of categorisation filter
+      if (validation.value.filterRemoved) {
+        logger.info(`Categorisation Filter: filter removed using chips: ${validation.value.filterRemoved}`)
+        delete validation.value.filterRemoved
+      }
+
       const offenders = res.locals.user.activeCaseLoad
-        ? await offendersService.getUncategorisedOffenders(res.locals, user)
+        ? await offendersService.getUncategorisedOffenders(res.locals, user, validation.value)
         : []
 
       res.render('pages/categoriserHome', {
         offenders,
+        filters: validation.value,
+        allFilters: categorisationHomeFilters,
+        filterKeys: recategorisationHomeFilterKeys,
+        numberOfFiltersApplied: Object.values(validation.value).flat().length,
+        url: 'categoriserHome',
+        fullUrl: req.url,
+        hideHomeFilter: req.session.hideCategoriserHomeFilter ?? false,
       })
+    })
+  )
+
+  router.post(
+    '/categoriserHome/hide-filter',
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const validation = joi.object({ hideFilter: joi.bool().required() }).validate(req.body)
+      if (validation.error) {
+        logger.error('Categoriser home page hide filter endpoint passed invalid value.', validation.error)
+        res.sendStatus(400)
+        return
+      }
+      req.session.hideCategoriserHomeFilter = validation.value.hideFilter
+      res.sendStatus(200)
     })
   )
 
@@ -185,16 +209,6 @@ module.exports = function Index({
         delete validation.value.filterRemoved
       }
 
-      let showRecategorisationPrioritisationFilter = false
-      if (
-        res.locals?.featureFlags?.recategorisationPrioritisationEnabledPrisons.includes(
-          user.activeCaseLoad.caseLoadId
-        ) ||
-        res.locals?.featureFlags?.show_recategorisation_prioritisation_filter
-      ) {
-        showRecategorisationPrioritisationFilter = true
-      }
-
       const offenders = user.activeCaseLoad
         ? await offendersService.getRecategoriseOffenders(res.locals, user, validation.value)
         : []
@@ -211,13 +225,13 @@ module.exports = function Index({
       return res.render('pages/recategoriserHome', {
         offenders,
         riskChangeCount,
-        showRecategorisationPrioritisationFilter,
         filters: validation.value,
         allFilters: recategorisationHomeFilters,
         filterKeys: recategorisationHomeFilterKeys,
         numberOfFiltersApplied: Object.values(validation.value).flat().length,
+        url: '/recategoriserHome',
         fullUrl: req.url,
-        hideRecategoriserHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
+        hideHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
       })
     })
   )
