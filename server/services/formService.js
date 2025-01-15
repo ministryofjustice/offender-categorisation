@@ -319,9 +319,11 @@ module.exports = function createFormService(formClient) {
     if (data.rows.length === 0) {
       return {}
     }
+    const nextReviewDate = moment(data.rows[0].nextReviewDate)
     return {
       ...data.rows[0],
-      displayNextReviewDate: moment(data.rows[0].nextReviewDate).format('DD/MM/YYYY'),
+      displayNextReviewDate: nextReviewDate.format('DD/MM/YYYY'),
+      inputNextReviewDate: nextReviewDate.format('D/M/YYYY'),
       displayCreatedDate: moment(data.rows[0].createdDate).format('DD/MM/YYYY'),
     }
   }
