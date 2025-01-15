@@ -1281,7 +1281,6 @@ describe('Open Conditions', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
-      // nomisSequenceNumber: 1,
       catType: CATEGORISATION_TYPE.RECAT,
       offenderNo: 'B2345YZ',
       sequenceNumber: 1,
