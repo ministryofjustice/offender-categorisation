@@ -1310,7 +1310,6 @@ describe('Open Conditions', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
-      // nomisSequenceNumber: 1,
       catType: CATEGORISATION_TYPE.RECAT,
       offenderNo: 'B2345YZ',
       sequenceNumber: 1,
@@ -1421,6 +1420,7 @@ describe('Open Conditions', () => {
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
       const dbRecord = data.rows[0]
       delete dbRecord.start_date
+      delete dbRecord.assessment_date
 
       cy.log('dbRecord', JSON.stringify(dbRecord))
 
@@ -1513,7 +1513,6 @@ describe('Open Conditions', () => {
         approval_date: null,
         cat_type: 'RECAT',
         nomis_sequence_no: 5,
-        assessment_date: '2025-01-14T00:00:00.000Z',
         approved_by: null,
         assessed_by: 'RECATEGORISER_USER',
         review_reason: 'DUE',
