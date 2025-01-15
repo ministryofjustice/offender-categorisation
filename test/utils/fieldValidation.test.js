@@ -2,13 +2,13 @@ const moment = require('moment/moment')
 const fieldValidation = require('../../server/utils/fieldValidation')
 const pageConfig = require('../../server/config/nextReviewDate')
 
-const overThreeYearsDate = moment().add(3, 'years').add(1, 'days').format('DD/MM/YYYY')
-const validFutureDate = moment().add(12, 'months').format('DD/MM/YYYY')
-const overOneYearsDate = moment().add(12, 'months').add(1, 'days').format('DD/MM/YYYY')
-const todaysDate = moment().format('DD/MM/YYYY')
-const pastDate = moment().subtract(1, 'days').format('DD/MM/YYYY')
+const overThreeYearsDate = moment().add(3, 'years').add(1, 'days').format('D/M/YYYY')
+const validFutureDate = moment().add(12, 'months').format('D/M/YYYY')
+const overOneYearsDate = moment().add(12, 'months').add(1, 'days').format('D/M/YYYY')
+const todaysDate = moment().format('D/M/YYYY')
+const pastDate = moment().subtract(1, 'days').format('D/M/YYYY')
 const invalidDate = '78/13/3043'
-const tomorrow = moment().add(1, 'days').format('DD/MM/YYYY')
+const tomorrow = moment().add(1, 'days').format('D/M/YYYY')
 
 describe('Validating next review date for indeterminate', () => {
   it('Validation should return the correct error message for indeterminate over 3 years', () => {

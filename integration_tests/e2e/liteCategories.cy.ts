@@ -16,7 +16,7 @@ import { unapprovedLiteCategorisation } from '../fixtures/liteCategoriser/unappr
 import SupervisorLiteListPage from '../pages/liteCategories/approveList'
 import LiteCategoriesAlreadyApprovedPage from '../pages/liteCategories/alreadyApproved'
 
-const SHORT_DATE_FORMAT = 'DD/MM/YYYY'
+const SHORT_DATE_FORMAT = 'D/M/YYYY'
 
 describe('Lite Categories', () => {
   let categoriserLandingPage: CategoriserLandingPage
@@ -359,7 +359,7 @@ describe('Lite Categories', () => {
     })
 
     it('should handle a valid form submission', () => {
-      liteApprovalPage.setApprovalDate('29/04/2020')
+      liteApprovalPage.setApprovalDate('29/4/2020')
       liteApprovalPage.setApprovedCategory('A')
       liteApprovalPage.setApprovedCategoryComment('approved category comment')
       liteApprovalPage.setDepartment('GOV')

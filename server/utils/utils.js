@@ -154,8 +154,8 @@ const displayIcon = cat => {
 
 // R.cond is like a switch statement
 const calculateNextReviewDate = R.cond([
-  [R.equals('6'), () => moment().add(6, 'months').format('DD/MM/YYYY')],
-  [R.equals('12'), () => moment().add(1, 'years').format('DD/MM/YYYY')],
+  [R.equals('6'), () => moment().add(6, 'months').format('D/M/YYYY')],
+  [R.equals('12'), () => moment().add(1, 'years').format('D/M/YYYY')],
   [R.T, R.always('')],
 ])
 
