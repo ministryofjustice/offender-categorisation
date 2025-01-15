@@ -21,7 +21,7 @@ describe('Dashboard - Womens', () => {
     cy.task('stubSentenceData', {
       offenderNumbers: ['ON700'],
       bookingIds: [700],
-      startDates: ['28/01/2019'],
+      startDates: ['28/1/2019'],
     })
 
     cy.task('stubGetOffenderDetailsWomen', { bookingId: 700, category: 'ON700' })
@@ -219,7 +219,7 @@ describe('Dashboard - Womens', () => {
 
       it('should allow filtering to an end date', () => {
         dashboardRecategorisationPage.dateFromInput().clear()
-        dashboardRecategorisationPage.dateToInput().type('14/08/2019')
+        dashboardRecategorisationPage.dateToInput().type('14/8/2019')
         dashboardRecategorisationPage.submitSearchButton().click()
 
         dashboardRecategorisationPage.validateReviewNumbersTableData([
@@ -232,8 +232,8 @@ describe('Dashboard - Womens', () => {
       })
 
       it('should allow filtering from a start date to an end date', () => {
-        dashboardRecategorisationPage.dateFromInput().type('16/08/2017')
-        dashboardRecategorisationPage.dateToInput().type('14/08/2019')
+        dashboardRecategorisationPage.dateFromInput().type('16/8/2017')
+        dashboardRecategorisationPage.dateToInput().type('14/8/2019')
         dashboardRecategorisationPage.submitSearchButton().click()
 
         dashboardRecategorisationPage.validateReviewNumbersTableData([
@@ -246,8 +246,8 @@ describe('Dashboard - Womens', () => {
       })
 
       it('should filter a period when initial R was recategorised as T', () => {
-        dashboardRecategorisationPage.dateFromInput().type('15/08/2016')
-        dashboardRecategorisationPage.dateToInput().type('15/08/2016')
+        dashboardRecategorisationPage.dateFromInput().type('15/8/2016')
+        dashboardRecategorisationPage.dateToInput().type('15/8/2016')
         dashboardRecategorisationPage.submitSearchButton().click()
 
         dashboardRecategorisationPage.validateReviewNumbersTableData([
