@@ -1513,7 +1513,6 @@ describe('Open Conditions', () => {
         approval_date: null,
         cat_type: 'RECAT',
         nomis_sequence_no: 5,
-        assessment_date: '2025-01-14T00:00:00.000Z',
         approved_by: null,
         assessed_by: 'RECATEGORISER_USER',
         review_reason: 'DUE',
