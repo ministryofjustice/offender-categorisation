@@ -12,12 +12,12 @@ describe('Security Landing', () => {
   const testOffenderNumber = 'B2345YZ'
 
   beforeEach(() => {
-    cy.task('deleteRows', 'form')
-    cy.task('deleteRows', 'security_referral')
+    cy.task('deleteRowsFromForm')
+    cy.task('deleteRowsFromSecurityReferral')
     cy.task('reset')
     cy.task('setUpDb')
 
-    cy.task('latestOnlyForOffenderStub', { offenderNumber: testOffenderNumber })
+    cy.task('getOffenderStub', { offenderNumber: testOffenderNumber })
     cy.task('stubSentenceData', {
       offenderNumbers: [testOffenderNumber],
       bookingIds: [testBookingId],

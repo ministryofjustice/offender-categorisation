@@ -20,7 +20,7 @@ describe('Security Input', () => {
   let bookingId: number
 
   beforeEach(() => {
-    cy.task('deleteRows', 'form')
+    cy.task('deleteRowsFromForm')
     cy.task('reset')
     cy.task('setUpDb')
   })
