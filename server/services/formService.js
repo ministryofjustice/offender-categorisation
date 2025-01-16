@@ -762,6 +762,9 @@ module.exports = function createFormService(formClient) {
       delete updated.recat.decision.category
       delete updated.recat.decision
     }
+
+    delete updated.openConditions
+
     updated.openConditionsRequested = false
 
     log.info(
