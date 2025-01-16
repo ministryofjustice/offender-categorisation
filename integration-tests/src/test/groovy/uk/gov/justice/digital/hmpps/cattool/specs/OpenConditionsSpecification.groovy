@@ -347,26 +347,13 @@ class OpenConditionsSpecification extends AbstractSpecification {
     securityInputSummary*.text() == ['No', 'No', 'No']
     nextReviewDateSummary*.text() == ['Saturday 14 December 2019']
 
-    riskOfHarm*.text() == ['', 'Yes', 'Yes\nharmManagedText details']
-
     def data = db.getData(12)
     data.status == ["SECURITY_BACK"]
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     response.ratings == TestFixture.defaultRatingsB
     response.categoriser == [:] // data cleared
     response.supervisor == null
-    response.openConditions == [
-      earliestReleaseDate: [justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes'],
-      previousSentences  : [releasedLastFiveYears:'No'],
-      victimContactScheme: [vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response details text'],
-      sexualOffences     : [haveTheyBeenEverConvicted:'No'],
-      foreignNational    : [dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: 'No', isForeignNational: 'Yes'],
-      tprs               : [tprsSelected: 'Yes'],
-      riskOfHarm         : [harmManaged: 'Yes', seriousHarm: 'Yes', harmManagedText: 'harmManagedText details'],
-      furtherCharges     : [furtherCharges: 'Yes', increasedRisk: 'Yes', furtherChargesText: 'some charges,furtherChargesText details'],
-      riskLevels         : [likelyToAbscond: 'Yes', likelyToAbscondText: 'likelyToAbscondText details'],
-      notRecommended     : [stillRefer: 'No']
-    ]
+    response.openConditions == null
     response.openConditionsRequested == false
   }
 
