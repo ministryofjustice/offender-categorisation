@@ -1,7 +1,6 @@
 import { mergeRight } from "ramda";
 import db from "../../server/data/dataAccess/db";
 import { QueryArrayResult } from "pg";
-import format from "pg-format";
 
 export type CatType = 'INITIAL' | 'RECAT'
 export type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
@@ -314,14 +313,18 @@ const updateFormRecord = async ({ bookingId, status, formResponse }: { bookingId
   const existingFormResponse = await db.query(`select form_response from form where booking_id = $1`, [bookingId])
   return await db.query(
     `update form set status = $1, form_response = $2 where booking_id = $3`,
-    [status, JSON.stringify({ ...existingFormResponse.rows[0]?.form_response, ...formResponse }), bookingId]
+    [status, mergeRight(existingFormResponse.rows[0]?.form_response, formResponse), bookingId]
   )
 }
 
-const deleteRows = table => db.query({ text: format('truncate %I cascade', table) })
+const deleteRowsFromForm = () => db.query({ text: 'truncate form cascade' })
+const deleteRowsFromSecurityReferral = () => db.query({ text: 'truncate security_referral cascade' })
 
 const getSecurityReferral = async ({ offenderNumber }: {offenderNumber: string}) => {
-  return db.query({ text: format('select * from security_referral where offender_no = \'%s\'', offenderNumber) })
+  return await db.query(
+    `select * from security_referral where offender_no = $1`,
+    [offenderNumber]
+  )
 }
 
 export default {
@@ -334,6 +337,7 @@ export default {
   selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
   updateFormRecord,
-  deleteRows,
+  deleteRowsFromForm,
+  deleteRowsFromSecurityReferral,
   getSecurityReferral
 }

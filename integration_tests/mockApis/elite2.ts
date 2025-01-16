@@ -1506,7 +1506,7 @@ const stubRecategorise = (
   return Promise.all([recategorisationsStub(agencyId), latestOnlyStub()])
 }
 
-const latestOnlyForOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
+const getOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
   stubFor({
     request: {
       method: 'GET',
@@ -1575,5 +1575,5 @@ export default {
   verifyUpdateNextReviewDate,
   stubRecategorise,
   stubAdjudicationHearings,
-  latestOnlyForOffenderStub,
+  getOffenderStub,
 }

@@ -25,8 +25,8 @@ describe("Women's estate recategorisation", () => {
   const nextReviewDate = moment().subtract(4, 'days').format('yyyy-MM-DD')
 
   beforeEach(() => {
-    cy.task('deleteRows', 'form')
-    cy.task('deleteRows', 'security_referral')
+    cy.task('deleteRowsFromForm')
+    cy.task('deleteRowsFromSecurityReferral')
     cy.task('reset')
     cy.task('setUpDb')
 
