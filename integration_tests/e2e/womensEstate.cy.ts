@@ -69,6 +69,7 @@ describe("Women's Estate", () => {
   let sixMonthsFromNow: moment.Moment
 
   beforeEach(() => {
+    cy.task('deleteRowsFromForm')
     cy.task('reset')
     cy.task('setUpDb')
   })
