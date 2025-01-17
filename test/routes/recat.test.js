@@ -643,7 +643,7 @@ describe('POST /form/recat/fasttrackProgress', () => {
           {
             recat: {
               decision: { category: 'C' },
-              nextReviewDate: { date: '05/06/2020' },
+              nextReviewDate: { date: '5/6/2020' },
               riskAssessment: {
                 higherCategory:
                   'They pose no additional risks. There’s no reason to consider them for higher security conditions.',

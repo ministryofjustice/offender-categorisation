@@ -19,6 +19,7 @@ export default class TasklistRecatPage extends Page {
   decisionButton = (): PageElement => cy.get('#decisionButton')
   nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
   openConditionsButton = (): PageElement => cy.get('#openConditionsButton')
+  supervisorMessageButton = (): PageElement => cy.get('#supervisorMessageButton')
 
   static createForBookingId = (bookingId: number) => {
     this._bookingId = bookingId

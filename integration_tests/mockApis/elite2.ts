@@ -260,6 +260,35 @@ const stubCategorise = ({
     },
   })
 
+const stubCategoriseUpdate = ({
+  expectedCat,
+  nextReviewDate,
+  bookingId,
+  sequenceNumber,
+}: {
+  expectedCat: string
+  nextReviewDate: string
+  bookingId: number
+  sequenceNumber: number
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      url: '/elite2/api/offender-assessments/category/categorise',
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      jsonBody: {
+        expectedCat,
+        nextReviewDate,
+        bookingId,
+        committee: 'OCA',
+        sequenceNumber,
+      },
+    },
+  })
+
 const stubCategorised = ({ bookingIds }: { bookingIds: number[] }): SuperAgentRequest => {
   const response = []
   if (bookingIds.includes(10)) {
@@ -1555,6 +1584,7 @@ export default {
   stubAssessmentsWithCurrent,
   stubAssessmentsWomen,
   stubCategorise,
+  stubCategoriseUpdate,
   stubCategorised,
   stubCategorisedMultiple,
   stubElite2Ping,

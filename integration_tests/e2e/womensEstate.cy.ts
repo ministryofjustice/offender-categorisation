@@ -36,7 +36,7 @@ import FurtherChargesPage from '../pages/form/openConditions/furtherCharges'
 import RiskLevelsPage from '../pages/form/openConditions/riskLevels'
 import SupervisorConfirmBackPage from '../pages/form/supervisor/confirmBack'
 
-const SHORT_DATE_FORMAT = 'DD/MM/YYYY'
+const SHORT_DATE_FORMAT = 'D/M/YYYY'
 const LONG_DATE_FORMAT = 'dddd D MMMM YYYY'
 
 const commonColumn2 = [
