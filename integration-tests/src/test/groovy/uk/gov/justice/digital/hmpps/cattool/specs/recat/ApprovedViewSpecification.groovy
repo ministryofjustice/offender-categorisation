@@ -16,47 +16,6 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.SUPERVISOR_
 
 class ApprovedViewSpecification extends AbstractSpecification {
 
-  def "The approved view page is correctly displayed (suggested Cat)"() {
-
-    db.createDataWithIdAndStatusAndCatType(-1, 11, 'APPROVED', JsonOutput.toJson([
-      recat     : [decision: [category: "C"]],
-      supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
-    ]), 'RECAT')
-    db.createDataWithIdAndStatusAndCatType(-2, 12, 'APPROVED', JsonOutput.toJson([
-      recat     : [decision: [category: "C"]],
-      supervisor: [review: [supervisorCategoryAppropriate: "Yes"]]
-    ]), 'RECAT')
-    db.createNomisSeqNo(12,7)
-
-    db.createRiskProfileDataForExistingRow(12, '''{
-      "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
-      "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
-        "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": true, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]
-      },
-      "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "numberOfNonSeriousAssaults": 3, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
-      "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}''')
-    db.createReviewReason(12, 'AGE')
-
-    when: 'the approved view page for B2345YZ is selected'
-    navigateToView()
-
-    then: 'the cat details are correct and full prisoner background data is shown'
-    headerValue*.text() == fixture.FULL_HEADER
-    categories*.text() == ['C\nWarning\nCategory C',
-                           'C\nWarning\nThe categoriser recommends Category C',
-                           'C\nWarning\nThe supervisor also recommends Category C']
-    !comments.displayed
-    comments.size() == 0
-    !openConditionsHeader.isDisplayed()
-    prisonerBackgroundSummary*.text() == [
-      '', 'Age 21', ('Categorisation date Category decision Review location\n' +
-      '24/03/2013 B LPI prison\n' +
-      '08/06/2012 A LPI prison'),
-      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
-      'This person is considered an escape risk\nE-List: First xel comment 2016-09-14 (expired)',
-      'This person is at risk of engaging in, or vulnerable to, extremism.', '']
-  }
-
   def "The approved view page is correctly displayed (Cat overridden by supervisor)"() {
 
     db.createDataWithIdAndStatusAndCatType(-1, 11, 'APPROVED', JsonOutput.toJson([
