@@ -1,5 +1,5 @@
 import Page, { PageElement } from '../page'
-import { OVERDUE } from "../../../server/services/filter/homeFilter";
+import { OVERDUE } from '../../../server/services/filter/homeFilter'
 
 export default abstract class BaseCategoriserPage extends Page {
   doneTabLink = (): PageElement => cy.get('[id=done-tab]')

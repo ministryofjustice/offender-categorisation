@@ -54,4 +54,32 @@ export default class ReviewRecatPage extends Page {
       ...expected,
     ])
   }
+
+  validateEarliestReleaseDateSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
+    this.validateDescriptionList('earliestReleaseDateSummary', [
+      { question: 'Earliest release date', expectedAnswer: '' },
+      ...expected,
+    ])
+  }
+
+  validateVictimContactSchemeSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
+    this.validateDescriptionList('victimContactSchemeSummary', [
+      { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
+      ...expected,
+    ])
+  }
+
+  validateForeignNationalSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
+    this.validateDescriptionList('foreignNationalSummary', [
+      { question: 'Foreign national', expectedAnswer: '' },
+      ...expected,
+    ])
+  }
+
+  validateRiskLevelSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
+    this.validateDescriptionList('riskLevelSummary', [
+      { question: 'Risk of escaping or absconding', expectedAnswer: '' },
+      ...expected,
+    ])
+  }
 }
