@@ -34,6 +34,10 @@ export default abstract class BaseApprovedViewPage extends Page {
     cy.get('#other-text-supervisor').should('contain.text', expectedComments)
   }
 
+  validatePreviousSupervisorComments({ expectedComments }: { expectedComments: string }) {
+    cy.get('#previous-overriddenText').should('contain.text', expectedComments)
+  }
+
   getBackToCaseListButton() {
     return cy.get(`a[role='button']`).contains('Back to case list')
   }

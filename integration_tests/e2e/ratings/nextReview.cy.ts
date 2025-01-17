@@ -20,7 +20,7 @@ import ErrorPage from '../../pages/error/error'
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorLandingPage from '../../pages/supervisor/landing'
 
-const EXPECTED_DATE_FORMAT_FRONT_END = 'DD/MM/yyyy'
+const EXPECTED_DATE_FORMAT_FRONT_END = 'D/M/yyyy'
 const EXPECTED_DATE_FORMAT_BACK_END = 'yyyy-MM-DD'
 
 describe('Next Review', () => {

@@ -19,7 +19,7 @@ class OasysInputSpecification extends AbstractSpecification{
     headerValue*.text() == fixture.MINI_HEADER
 
     when: 'Details are entered, saved and accessed'
-    reviewDate << '17/06/2020'
+    reviewDate << '17/6/2020'
     oasysRelevantInfoNo.click()
     submitButton.click()
     at TasklistRecatPage
@@ -27,14 +27,14 @@ class OasysInputSpecification extends AbstractSpecification{
     at OasysInputPage
 
     then: "data is correctly retrieved"
-    reviewDate == '17/06/2020'
+    reviewDate == '17/6/2020'
     form.oasysRelevantInfo == "No"
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type == ['RECAT']
-    response.recat == [oasysInput: [date: "17/06/2020", oasysRelevantInfo: "No"]]
+    response.recat == [oasysInput: [date: "17/6/2020", oasysRelevantInfo: "No"]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
   }
@@ -50,7 +50,7 @@ class OasysInputSpecification extends AbstractSpecification{
     headerValue*.text() == fixture.MINI_HEADER
 
     when: 'Details are entered, saved'
-    reviewDate << '17/06/2020'
+    reviewDate << '17/6/2020'
     oasysRelevantInfoNo.click()
     submitButton.click()
 
@@ -58,7 +58,7 @@ class OasysInputSpecification extends AbstractSpecification{
     at TasklistRecatPage
     oasysInputButton.click()
     at OasysInputPage
-    reviewDate == '17/06/2020'
+    reviewDate == '17/6/2020'
     form.oasysRelevantInfo == "No"
 
     when: "Data is edited"
@@ -71,14 +71,14 @@ class OasysInputSpecification extends AbstractSpecification{
     at TasklistRecatPage
     oasysInputButton.click()
     at OasysInputPage
-    reviewDate == '17/06/2020'
+    reviewDate == '17/6/2020'
     form.oasysRelevantInfo == "Yes"
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
     data.status == ['STARTED']
     data.cat_type == ['RECAT']
-    response.recat == [oasysInput: [date: "17/06/2020",oasysInputText: "test", oasysRelevantInfo: "Yes"]]
+    response.recat == [oasysInput: [date: "17/6/2020",oasysInputText: "test", oasysRelevantInfo: "Yes"]]
     data.user_id == ['RECATEGORISER_USER']
     data.assigned_user_id == ['RECATEGORISER_USER']
   }
@@ -103,7 +103,5 @@ class OasysInputSpecification extends AbstractSpecification{
     at OasysInputPage
     errorSummaries[0].text() == 'Completion date of the latest full review must be a real date'
     errorSummaries[1].text() == 'Select yes if there was any information in the review that is relevant to the recategorisation'
-
   }
-
 }

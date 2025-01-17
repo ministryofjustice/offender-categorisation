@@ -358,6 +358,6 @@ class ProvisionalCategorySpecification extends AbstractSpecification {
     response.supervisor == null
     response.categoriser == [:]
     response.openConditionsRequested == false
-    response.openConditions == TestFixture.defaultOpenConditions
+    response.openConditions == null
   }
 }

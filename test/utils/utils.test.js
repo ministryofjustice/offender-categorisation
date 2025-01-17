@@ -45,13 +45,13 @@ describe('formatLength formatting sentence length correctly', () => {
   })
 })
 
-describe('calculateDate', () => {
+describe('calculateNextReviewDate', () => {
   const SIX_MONTHS_AHEAD = moment().add(6, 'months')
   const TWELVE_MONTHS_AHEAD = moment().add(1, 'years')
   test.each`
     nextDateChoice | expectedValue
-    ${'6'}         | ${SIX_MONTHS_AHEAD.format('DD/MM/YYYY')}
-    ${'12'}        | ${TWELVE_MONTHS_AHEAD.format('DD/MM/YYYY')}
+    ${'6'}         | ${SIX_MONTHS_AHEAD.format('D/M/YYYY')}
+    ${'12'}        | ${TWELVE_MONTHS_AHEAD.format('D/M/YYYY')}
     ${'other'}     | ${''}
     ${''}          | ${''}
   `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {

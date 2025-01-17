@@ -202,7 +202,7 @@ describe('Dashboard', () => {
 
       it('should allow filtering to an end date', () => {
         dashboardRecategorisationPage.dateFromInput().clear()
-        dashboardRecategorisationPage.dateToInput().type('14/08/2019')
+        dashboardRecategorisationPage.dateToInput().type('14/8/2019')
         dashboardRecategorisationPage.submitSearchButton().click()
 
         dashboardRecategorisationPage.validateReviewNumbersTableData([
@@ -216,8 +216,8 @@ describe('Dashboard', () => {
       })
 
       it('should allow filtering from a start date to an end date', () => {
-        dashboardRecategorisationPage.dateFromInput().type('16/08/2017')
-        dashboardRecategorisationPage.dateToInput().type('14/08/2019')
+        dashboardRecategorisationPage.dateFromInput().type('16/8/2017')
+        dashboardRecategorisationPage.dateToInput().type('14/8/2019')
         dashboardRecategorisationPage.submitSearchButton().click()
 
         dashboardRecategorisationPage.validateReviewNumbersTableData([
@@ -231,8 +231,8 @@ describe('Dashboard', () => {
       })
 
       it('should filter a period when initial B was recategorised as D', () => {
-        dashboardRecategorisationPage.dateFromInput().type('15/08/2016')
-        dashboardRecategorisationPage.dateToInput().type('15/08/2016')
+        dashboardRecategorisationPage.dateFromInput().type('15/8/2016')
+        dashboardRecategorisationPage.dateToInput().type('15/8/2016')
         dashboardRecategorisationPage.submitSearchButton().click()
 
         dashboardRecategorisationPage.validateReviewNumbersTableData([
