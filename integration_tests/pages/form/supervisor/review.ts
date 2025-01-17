@@ -21,6 +21,7 @@ type WhichCategoryIsMoreAppropriateChoiceValues =
   | typeof whichCategoryIsMoreAppropriateRadioChoiceHtmlSelectors.CONSIDER_FOR_CLOSED
 
 const SELECTORS = {
+  CATEGORISER_RECOMMENDED_CATEGORY: '#categoriser-recommended-category',
   INDETERMINATE_WARNING: '#indeterminateWarning',
   OPEN_CONDITIONS: {
     INFO_MESSAGE: '#openConditionsInfoMessage',
@@ -29,6 +30,10 @@ const SELECTORS = {
     ERROR: '#otherInformationText-error',
     TEXT_ERROR: '#otherInformationText-error',
     TEXTAREA: '#otherInformationText',
+  },
+  OVERRIDE_CATEGORY: {
+    CAT_C_RADIO_BUTTON: '#overriddenCategoryC',
+    REASON_TEXTAREA: '#supervisorOverriddenCategoryText',
   },
   OVERRIDE_CATEGORY_J: {
     ERROR: '#supervisorOverriddenCategoryText-error',
@@ -145,4 +150,18 @@ export default class SupervisorReviewPage extends Page {
   ) {
     super.validateErrorMessages(errorMessages)
   }
+
+  validateCategorisersRecommendedCategory(expectedMessage: string) {
+    cy.get(SELECTORS.CATEGORISER_RECOMMENDED_CATEGORY).should('contain.text', expectedMessage)
+  }
+
+  overrideCatC(): PageElement {
+    return cy.get(SELECTORS.OVERRIDE_CATEGORY.CAT_C_RADIO_BUTTON)
+  }
+
+  enterOverrideReason(reason: string): PageElement {
+    return cy.get(SELECTORS.OVERRIDE_CATEGORY.REASON_TEXTAREA).type(reason)
+  }
+
+  enterOtherInformationText = (text: string) => cy.get(SELECTORS.OTHER_INFORMATION.TEXTAREA).type(text)
 }

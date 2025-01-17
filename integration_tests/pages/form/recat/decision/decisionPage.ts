@@ -23,4 +23,5 @@ export default class DecisionPage extends Page {
   submitButton = (): PageElement => cy.get('button[type="submit"]')
   errorSummaries = (): PageElement => cy.get('ul.govuk-error-summary__list li')
   errors = (): PageElement => cy.get('.govuk-error-message')
+  indeterminateWarning = (): PageElement => cy.get('#indeterminateWarning')
 }
