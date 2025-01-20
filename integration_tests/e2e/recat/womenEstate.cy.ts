@@ -112,7 +112,7 @@ describe("Women's estate recategorisation", () => {
 
     taskListPage.oasysInputButton().click()
     checkPrisonerHeaderSummary()
-    cy.get('#reviewDate').type('17/06/2020')
+    cy.get('#reviewDate').type('17/6/2020')
     cy.get('#oasysRelevantInfo-2').click()
     cy.get('button[type="submit"]').contains('Save and return').click()
 
@@ -193,7 +193,7 @@ describe("Women's estate recategorisation", () => {
     checkPrisonerHeaderSummary()
     cy.get('#nextDateChoice').click()
     cy.get('button[type="submit"]').contains('Continue').click()
-    cy.get('#reviewDate').should('have.value', moment().add(6, 'months').format('DD/MM/YYYY'))
+    cy.get('#reviewDate').should('have.value', moment().add(6, 'months').format('DD/M/YYYY'))
     cy.get('button[type="submit"]').contains('Save and return').click()
 
     taskListPage.validateSummarySection()
