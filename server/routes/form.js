@@ -2,6 +2,7 @@ const express = require('express')
 const flash = require('connect-flash')
 const R = require('ramda')
 const moment = require('moment')
+const joi = require('joi')
 const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
@@ -18,6 +19,9 @@ const openConditions = require('../config/openConditions')
 const cancel = require('../config/cancel')
 
 const CatType = require('../utils/catTypeEnum')
+
+const SECURITY_BUTTON_SUBMIT = 'submit'
+const SECURITY_BUTTON_RETURN = 'return'
 
 const formConfig = {
   ratings,
@@ -525,29 +529,41 @@ module.exports = function Index({
 
   router.post(
     '/security/review/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const section = 'security'
-      const form = 'review'
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
-      const formPageConfig = formConfig[section][form]
-      const userInput = clearConditionalFields(req.body)
-
-      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
+      const validation = joi
+        .object({
+          button: joi.string().valid(SECURITY_BUTTON_SUBMIT, SECURITY_BUTTON_RETURN).required(),
+          securityReview: joi.string().required().max(50000).messages({
+            'string.empty': 'Enter security information',
+            'string.max': 'Security information must be 50000 characters or less',
+          }),
+        })
+        .validate(req.body, { stripUnknown: true, abortEarly: false })
+      if (validation.error) {
+        req.flash(
+          'errors',
+          validation.error.details.map(error => ({
+            text: error.message,
+            href: `#${error.context.label}`,
+          }))
+        )
+        req.flash('userInput', validation.value)
+        res.redirect(`/form/security/review/${bookingId}`)
         return
       }
 
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        transactionalClient: transactionalDbClient,
-      })
-
-      if (userInput.button === 'submit') {
-        await formService.securityReviewed(bookingId, req.user.username, transactionalDbClient)
+      try {
+        await formService.securityReviewed(
+          bookingId,
+          req.user.username,
+          validation.value.button === SECURITY_BUTTON_SUBMIT,
+          validation.value.securityReview
+        )
+      } catch (error) {
+        res.render('pages/error', {
+          message: 'Failed to submit security review',
+        })
       }
       res.redirect('/')
     })

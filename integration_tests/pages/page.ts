@@ -13,14 +13,16 @@ export default abstract class Page {
   }
 
   constructor(
-    private readonly title: string,
+    private readonly title: string | undefined = undefined,
     private readonly config = { checkOnPage: { tag: 'h1' } }
   ) {
     this.checkOnPage(config.checkOnPage.tag)
   }
 
   checkOnPage(tag = 'h1'): void {
-    cy.get(tag).contains(this.title)
+    if (typeof this.title !== 'undefined') {
+      cy.get(tag).contains(this.title)
+    }
   }
 
   checkPageUrl(url: string): void {

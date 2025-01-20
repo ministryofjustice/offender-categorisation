@@ -14,7 +14,7 @@ function dataIfExists(data) {
   return data.rows[0]
 }
 
-module.exports = function createFormService(formClient) {
+module.exports = function createFormService(formClient, formApiClientBuilder) {
   async function getCategorisationRecord(bookingId, transactionalClient) {
     try {
       const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
@@ -621,18 +621,17 @@ module.exports = function createFormService(formClient) {
     }
   }
 
-  async function securityReviewed(bookingId, userId, transactionalClient) {
-    const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
-    const currentStatus = currentCategorisation.status
-    if (validateStatusIfProvided(currentStatus, Status.SECURITY_BACK.name)) {
-      try {
-        await formClient.securityReviewed(bookingId, Status.SECURITY_BACK.name, userId, transactionalClient)
-      } catch (error) {
-        logger.error(error)
-        throw error
+  async function securityReviewed(bookingId, userId, submitted, securityReview = undefined) {
+    const formApiClient = formApiClientBuilder(userId)
+    try {
+      const result = await formApiClient.submitSecurityReview(bookingId, submitted, securityReview)
+      if (!result) {
+        throw new Error('Failed to submit security review')
       }
+    } catch (error) {
+      logger.error(error)
+      throw error
     }
-    return {}
   }
 
   async function getCategorisedOffenders(agencyId, catType, transactionalClient) {
