@@ -235,7 +235,10 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetailsWomen(700, 'ON700', false, indeterminateSentence, 'R')
     riskProfilerApi.stubForTasklists('ON700', 'R', transferToSecurity)
-    browser.selectFirstPrisoner()
+
+    browser.waitFor {
+      browser.selectFirstPrisoner()
+    }
   }
 
 
