@@ -257,16 +257,6 @@ workflows:
             - hmpps-common-vars
           requires:
             - dev_branch_build_docker
-      - hmpps/deploy_env:
-          <<: *develop_branch
-          name: dev_branch_deploy_preprod
-          env: "preprod"
-          slack_notification: true
-          slack_channel_name: << pipeline.parameters.nonprod-releases-slack-channel >>
-          context:
-            - hmpps-common-vars
-          requires:
-            - dev_branch_build_docker
       - hmpps/build_docker:
           <<: *main_branch
           name: build_docker
