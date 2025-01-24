@@ -8,15 +8,12 @@ export default abstract class BaseApprovedViewPage extends Page {
     })
   }
 
-  validateCommentsVisibility({ areVisible }: { areVisible: boolean }) {
+  validateCommentsVisibility({ areVisible, comments = undefined }: { areVisible: boolean, comments?: string }) {
     cy.get('.forms-comments-text').should(areVisible ? 'exist' : 'not.exist')
+    if (typeof comments !== 'undefined') {
+      cy.get('.forms-comments-text').contains(comments)
+    }
   }
-
-  /*  validateComments(comments: string[]) {
-      comments.forEach((comment, index) => {
-        cy.get(`.govuk-warning-text:eq(${index})`).should('contain.text', warning)
-      })
-    }*/
 
   validateOpenConditionsHeadingVisibility({ isVisible }: { isVisible: boolean }) {
     cy.get('.openConditionsHeader').should(isVisible ? 'exist' : 'not.exist')

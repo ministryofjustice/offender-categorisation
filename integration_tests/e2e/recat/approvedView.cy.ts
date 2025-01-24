@@ -6,7 +6,6 @@ import Page from '../../pages/page'
 import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorDonePage from '../../pages/supervisor/done'
-import ApprovedViewPage from '../../pages/form/approvedView'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
 import RecategoriserDonePage from '../../pages/recategoriser/done'
 
@@ -16,6 +15,7 @@ describe('Approved View', () => {
   let today: Date
 
   beforeEach(() => {
+    cy.task('deleteRowsFromForm')
     cy.task('reset')
     cy.task('setUpDb')
 
@@ -191,7 +191,7 @@ describe('Approved View', () => {
       securityReviewedBy: null,
       securityReviewedDate: null,
       assignedUserId: null,
-      approvedBy: null,
+      approvedBy: SUPERVISOR_USER.username,
       review_reason: 'AGE'
     })
 
@@ -218,26 +218,25 @@ describe('Approved View', () => {
             higherCategory: 'higher security category text',
             otherRelevantText: 'other relevant information',
           },
-          supervisor: {
-            review: {
-              supervisorCategoryAppropriate: 'No',
-              supervisorOverriddenCategory: 'D',
-              supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed",
-              proposedCategory: 'D',
-            }
-          },
-          openConditions: {
-            riskLevels: { likelyToAbscond: 'No' },
-            riskOfHarm: { seriousHarm: 'No' },
-            foreignNational: { isForeignNational: 'No' },
-            earliestReleaseDate: { threeOrMoreYears: 'No' },
+        },
+        supervisor: {
+          review: {
+            supervisorCategoryAppropriate: 'No',
+            supervisorOverriddenCategory: 'D',
+            supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"
           }
         },
+        openConditions: {
+          riskLevels: { likelyToAbscond: 'No' },
+          riskOfHarm: { seriousHarm: 'No' },
+          foreignNational: { isForeignNational: 'No' },
+          earliestReleaseDate: { threeOrMoreYears: 'No' },
+        }
       },
       securityReviewedBy: null,
       securityReviewedDate: null,
       assignedUserId: null,
-      approvedBy: null,
+      approvedBy: SUPERVISOR_USER.username,
       review_reason: 'AGE'
     })
 
@@ -269,18 +268,16 @@ describe('Approved View', () => {
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1}).click()
-    /*
-        const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
-        approvedViewRecatPage.validateCategorisationWarnings([
-          'Open category',
-          'The categoriser recommends Category C',
-          'The recommended category was changed from Category C to open category',
-        ]);
+    const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
+    approvedViewRecatPage.validateCategorisationWarnings([
+      'Open category',
+      'The categoriser recommends Category C',
+      'The recommended category was changed from Category C to open category',
+    ]);
 
-        approvedViewRecatPage.validateOpenConditionsHeadingVisibility({isVisible: true})
-        approvedViewRecatPage.validateCommentsVisibility({areVisible: true})
-       approvedViewRecatPage.validateComments(['Here are the supervisor\'s comments on why the category was changed'])
-        approvedViewRecatPage.submitButton().click()*/
+    approvedViewRecatPage.validateOpenConditionsHeadingVisibility({isVisible: true})
+    approvedViewRecatPage.validateCommentsVisibility({areVisible: true, comments: 'Here are the supervisor\'s comments on why the category was changed'})
+    approvedViewRecatPage.getBackToCaseListButton().click()
   })
 
   it('The approved view page is correctly displayed (recat role)', () => {
@@ -313,7 +310,7 @@ describe('Approved View', () => {
       securityReviewedBy: null,
       securityReviewedDate: null,
       assignedUserId: null,
-      approvedBy: null,
+      approvedBy: SUPERVISOR_USER.username,
       review_reason: 'AGE'
     })
 
@@ -353,19 +350,12 @@ describe('Approved View', () => {
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
     recategoriserHomePage.doneTabLink().click()
 
-    const recategoriserDonePage = Page.verifyOnPage(RecategoriserDonePage)
-/*    recategoriserDonePage.viewApprovedPrisonerButton({ bookingId: 12}).click()
-
-    const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
-    approvedViewRecatPage.validateCategorisationWarnings([
-      'Open category',
-      'The categoriser recommends Category C',
-      'The recommended category was changed from Category C to open category',
-    ]);
-
-    approvedViewRecatPage.validateOpenConditionsHeadingVisibility({isVisible: true})
-    approvedViewRecatPage.validateCommentsVisibility({areVisible: true})
-    approvedViewRecatPage.validateComments(['Here are the supervisor\'s comments on why the category was changed'])
-    approvedViewRecatPage.submitButton().click()*/
+    cy.get('a[href="/form/approvedView/12?sequenceNo=1"]').contains('View').click()
+    cy.get('.govuk-warning-text:eq(0)').should('contain.text', 'Warning')
+    cy.get('.govuk-warning-text:eq(0)').should('contain.text', 'Category C')
+    cy.get('.govuk-warning-text:eq(1)').should('contain.text', 'Warning')
+    cy.get('.govuk-warning-text:eq(1)').should('contain.text', 'The categoriser recommends Category C')
+    cy.get('.govuk-warning-text:eq(2)').should('contain.text', 'Warning')
+    cy.get('.govuk-warning-text:eq(2)').should('contain.text', 'The supervisor also recommends Category C')
   })
 })
