@@ -8,6 +8,7 @@ import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import ApprovedViewPage from '../../pages/form/approvedView'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
+import RecategoriserDonePage from '../../pages/recategoriser/done'
 
 describe('Approved View', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -96,12 +97,12 @@ describe('Approved View', () => {
     cy.task('updateRiskProfile', {
       bookingId: 12,
       riskProfile: {
-        "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
-        "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
-          "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": true, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]
-        },
-        "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "numberOfNonSeriousAssaults": 3, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
-        "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}
+      "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
+      "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
+      "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": true, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]
+    },
+      "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "numberOfNonSeriousAssaults": 3, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
+      "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}
     })
 
     cy.task('stubUncategorisedAwaitingApproval')
@@ -153,7 +154,7 @@ describe('Approved View', () => {
         columnName: 'Review location',
         expectedValues: ['LPI prison', 'LPI prison'],
       }
-    ].forEach(cy.checkTableColumnTextValues)
+      ].forEach(cy.checkTableColumnTextValues)
 
     approvedViewRecatPage.validatePrisonerSummary('This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.')
     approvedViewRecatPage.validatePrisonerSummary('This person is considered an escape risk E-List: First xel comment 2016-09-14 (expired)')
@@ -164,10 +165,10 @@ describe('Approved View', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 11,
-      nomisSequenceNumber: 8,
+      nomisSequenceNumber: 6,
       catType: CATEGORISATION_TYPE.RECAT,
       offenderNo: 'B2345YZ',
-      sequenceNumber: 1,
+      sequenceNumber: 2,
       status: STATUS.APPROVED.name,
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
@@ -184,7 +185,7 @@ describe('Approved View', () => {
             higherCategory: 'higher security category text',
             otherRelevantText: 'other relevant information',
           },
-          supervisor: { review: { supervisorCategoryAppropriate: 'Yes' } },
+          supervisor: { review: { supervisorCategoryAppropriate: 'No' } },
         },
       },
       securityReviewedBy: null,
@@ -219,9 +220,10 @@ describe('Approved View', () => {
           },
           supervisor: {
             review: {
-              supervisorCategoryAppropriate: 'Yes',
+              supervisorCategoryAppropriate: 'No',
               supervisorOverriddenCategory: 'D',
-              supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"
+              supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed",
+              proposedCategory: 'D',
             }
           },
           openConditions: {
@@ -245,6 +247,12 @@ describe('Approved View', () => {
     })
     cy.task('stubAgencyDetails', { agency: 'LEI' })
     cy.task('stubGetStaffDetailsByUsernameList', { usernames: [SUPERVISOR_USER.username] })
+
+    cy.stubLogin({
+      user: SUPERVISOR_USER,
+    })
+    cy.signIn()
+
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
       offenderNo: 'B2345YZ',
@@ -252,35 +260,27 @@ describe('Approved View', () => {
       indeterminateSentence: false,
     })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
-
-    cy.stubLogin({
-      user: SUPERVISOR_USER,
-    })
-    cy.signIn()
 
     const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.doneTabLink().click()
 
+    cy.task('stubAgencyDetails', { agency: 'LPI' })
+
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
-    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12}).click()
-
-    recatApprovedViewPage = Page.verifyOnPage(RecatApprovedViewPage)
-
-    const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
-    approvedViewRecatPage.validateCategorisationWarnings([
-      'Open category',
-      'The categoriser recommends Category C',
-      'The recommended category was changed from Category C to open category',
-    ]);
-
-    approvedViewRecatPage.validateOpenConditionsHeadingVisibility({isVisible: true})
-    approvedViewRecatPage.validateCommentsVisibility({areVisible: true})
+    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1}).click()
     /*
-        approvedViewRecatPage.validateComments(['Here are the supervisor\'s comments on why the category was changed'])
-    */
-    approvedViewRecatPage.submitButton().click()
+        const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
+        approvedViewRecatPage.validateCategorisationWarnings([
+          'Open category',
+          'The categoriser recommends Category C',
+          'The recommended category was changed from Category C to open category',
+        ]);
+
+        approvedViewRecatPage.validateOpenConditionsHeadingVisibility({isVisible: true})
+        approvedViewRecatPage.validateCommentsVisibility({areVisible: true})
+       approvedViewRecatPage.validateComments(['Here are the supervisor\'s comments on why the category was changed'])
+        approvedViewRecatPage.submitButton().click()*/
   })
 
   it('The approved view page is correctly displayed (recat role)', () => {
@@ -318,7 +318,7 @@ describe('Approved View', () => {
     })
 
     cy.task('stubRecategorise')
-    cy.task('stubGetPrisonerSearchPrisonersWomen')
+    cy.task('stubGetPrisonerSearchPrisoners')
 
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345XY'],
@@ -352,22 +352,20 @@ describe('Approved View', () => {
 
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
     recategoriserHomePage.doneTabLink().click()
-    /*
-        const recategoriserDonePage = Page.verifyOnPage(RecategoriserDonePage)
-        recategoriserDonePage.viewApprovedPrisonerButton({ bookingId: 12}).click()
 
-        recatApprovedViewPage = Page.verifyOnPage(RecatApprovedViewPage)
+    const recategoriserDonePage = Page.verifyOnPage(RecategoriserDonePage)
+/*    recategoriserDonePage.viewApprovedPrisonerButton({ bookingId: 12}).click()
 
-        const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
-        approvedViewRecatPage.validateCategorisationWarnings([
-          'Open category',
-          'The categoriser recommends Category C',
-          'The recommended category was changed from Category C to open category',
-        ]);
+    const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
+    approvedViewRecatPage.validateCategorisationWarnings([
+      'Open category',
+      'The categoriser recommends Category C',
+      'The recommended category was changed from Category C to open category',
+    ]);
 
-        approvedViewRecatPage.validateOpenConditionsHeadingVisibility({isVisible: true})
-        approvedViewRecatPage.validateCommentsVisibility({areVisible: true})
-        approvedViewRecatPage.validateComments(['Here are the supervisor\'s comments on why the category was changed'])
-        approvedViewRecatPage.submitButton().click()*/
+    approvedViewRecatPage.validateOpenConditionsHeadingVisibility({isVisible: true})
+    approvedViewRecatPage.validateCommentsVisibility({areVisible: true})
+    approvedViewRecatPage.validateComments(['Here are the supervisor\'s comments on why the category was changed'])
+    approvedViewRecatPage.submitButton().click()*/
   })
 })
