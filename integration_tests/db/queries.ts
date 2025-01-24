@@ -301,6 +301,8 @@ async function updateRiskProfile({
   return await db.query(`update form set risk_profile = $1::JSON where booking_id = $2`, [riskProfile, bookingId])
 }
 
+const deleteRowsFromForm = () => db.query({ text: 'truncate form cascade' })
+
 export default {
   insertFormTableDbRow,
   insertLiteCategoryTableDbRow,
@@ -310,4 +312,5 @@ export default {
   selectLiteCategoryTableDbRow,
   selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
+  deleteRowsFromForm,
 }
