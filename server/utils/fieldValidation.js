@@ -32,7 +32,7 @@ module.exports = {
       const fieldConfigResponseType = getFieldDetail(['responseType'], field)
       const [responseType] = fieldConfigResponseType.split('_')
       if (['futureDate', 'pastDate', 'indeterminateCheck', 'todayOrPastDate'].includes(responseType)) {
-        localFormResponse[fieldName] = localFormResponse[fieldName].replace(/^0+/, '').replace(/\/0/g, '/')
+        localFormResponse[fieldName] = localFormResponse[fieldName]?.replace(/^0+/, '')?.replace(/\/0/g, '/')
       }
     })
 
