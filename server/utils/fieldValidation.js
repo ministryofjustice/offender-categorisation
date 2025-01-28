@@ -32,6 +32,26 @@ module.exports = {
   mapJoiErrors,
 }
 
+const makeDateValidation = (min = undefined, max = undefined, allowEmpty = false) => {
+  const joiAlternatives = []
+  ;['D/M/YYYY', 'DD/M/YYYY', 'D/MM/YYYY', 'DD/MM/YYYY'].forEach(dateFormat => {
+    const validator = joi.date().format(dateFormat)
+    if (typeof min !== 'undefined') {
+      validator.min(min)
+    }
+    if (typeof max !== 'undefined') {
+      validator.max(max)
+    }
+    if (allowEmpty) {
+      validator.allow('').optional()
+    } else {
+      validator.required()
+    }
+    joiAlternatives.push(validator)
+  })
+  return joi.alternatives(joiAlternatives)
+}
+
 function createSchemaFromConfig(pageConfig) {
   const yesterday = moment().subtract(1, 'd').format('MM/DD/YYYY')
   const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
@@ -45,8 +65,8 @@ function createSchemaFromConfig(pageConfig) {
     requiredDay: joi.date().format('DD').required(),
     requiredMonth: joi.date().format('MM').required(),
     requiredYear: joi.date().format('YYYY').required(),
-    futureDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
-    pastDate: joi.date().allow('').format('D/M/YYYY').max(yesterday).optional(),
+    futureDate: makeDateValidation(tomorrow),
+    pastDate: makeDateValidation(undefined, yesterday, true),
     requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
@@ -63,18 +83,18 @@ function createSchemaFromConfig(pageConfig) {
     indeterminateCheck: (requiredItem = 'indeterminate', requiredAnswer = 'true') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi.date().format('D/M/YYYY').min(today).max(threeYears).required().messages({
+        then: makeDateValidation(today, threeYears).messages({
           'date.format': 'The review date must be a real date',
           'date.max': 'The date that they are reviewed by must be within 3 years',
           'date.min': 'The review date must be today or in the future',
         }),
-        otherwise: joi.date().format('D/M/YYYY').min(today).max(oneYear).required().messages({
+        otherwise: makeDateValidation(today, oneYear).messages({
           'date.format': 'The review date must be a real date',
           'date.max': 'The date that they are reviewed must be within the next 12 months',
           'date.min': 'The review date must be today or in the future',
         }),
       }),
-    todayOrPastDate: joi.date().format('D/M/YYYY').max(today).required().messages({
+    todayOrPastDate: makeDateValidation(undefined, today).messages({
       'date.format': 'must be a real date',
       'date.max': 'must be today or in the past',
     }),
