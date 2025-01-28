@@ -7,7 +7,8 @@ const {
   choosingHigherCategory,
   offenderAlertsLink,
   offenderCaseNotesLink,
-  offenderAdjudicationLink, isFemalePrisonId,
+  offenderAdjudicationLink,
+  isFemalePrisonId,
 } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')

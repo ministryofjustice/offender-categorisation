@@ -7,7 +7,7 @@ const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlew
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
 const log = require('../../log')
-const { isFemalePrisonId } = require("../utils/utils");
+const { isFemalePrisonId } = require('../utils/utils')
 
 const formConfig = {
   openConditions,
