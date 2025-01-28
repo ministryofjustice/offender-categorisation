@@ -23,8 +23,20 @@ function mapJoiErrors(joiErrors, fieldsConfig) {
 
 module.exports = {
   validate(formResponse, pageConfig) {
+    const localFormResponse = { ...formResponse }
     const formSchema = createSchemaFromConfig(pageConfig)
-    const joiErrors = formSchema.validate(formResponse, { stripUnknown: false, abortEarly: false })
+
+    // we want to accept dates with or without leading 0s e.g. 01/01/2024 and 1/1/2024, so this removes any leading zeros before running through the validator
+    pageConfig.fields.forEach(field => {
+      const fieldName = getFieldName(field)
+      const fieldConfigResponseType = getFieldDetail(['responseType'], field)
+      const [responseType] = fieldConfigResponseType.split('_')
+      if (['futureDate', 'pastDate', 'indeterminateCheck', 'todayOrPastDate'].includes(responseType)) {
+        localFormResponse[fieldName] = localFormResponse[fieldName]?.replace(/^0+/, '')?.replace(/\/0/g, '/')
+      }
+    })
+
+    const joiErrors = formSchema.validate(localFormResponse, { stripUnknown: false, abortEarly: false })
     const fieldsConfig = getIn(['fields'], pageConfig)
 
     return mapJoiErrors(joiErrors, fieldsConfig)

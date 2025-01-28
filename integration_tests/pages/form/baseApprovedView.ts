@@ -1,4 +1,4 @@
-import Page from '../page'
+import Page, { PageElement } from '../page'
 
 export default abstract class BaseApprovedViewPage extends Page {
   validateCategorisationWarnings(warnings: string[]) {
@@ -8,14 +8,11 @@ export default abstract class BaseApprovedViewPage extends Page {
     })
   }
 
-  validateCommentsVisibility({ areVisible }: { areVisible: boolean }) {
+  validateCommentsVisibility({ areVisible, comments = undefined }: { areVisible: boolean, comments?: string }) {
     cy.get('.forms-comments-text').should(areVisible ? 'exist' : 'not.exist')
-  }
-
-  validateComments(comments: string[]) {
-    comments.forEach((comment, index) => {
-      cy.get(`.govuk-warning-text:eq(${index})`).should('contain.text', warning)
-    })
+    if (typeof comments !== 'undefined') {
+      cy.get('.forms-comments-text').contains(comments)
+    }
   }
 
   validateOpenConditionsHeadingVisibility({ isVisible }: { isVisible: boolean }) {
@@ -41,4 +38,6 @@ export default abstract class BaseApprovedViewPage extends Page {
   getBackToCaseListButton() {
     return cy.get(`a[role='button']`).contains('Back to case list')
   }
+
+  submitButton = (): PageElement => cy.get('button[type="submit"]').contains('Submit')
 }
