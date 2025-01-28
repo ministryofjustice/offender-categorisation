@@ -7,6 +7,7 @@ const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlew
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
 const log = require('../../log')
+const { isFemalePrisonId } = require("../utils/utils");
 
 const formConfig = {
   openConditions,
@@ -59,7 +60,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
       let openConditionsSuggestedCat
-      if (res.locals.user.activeCaseLoad.female) {
+      if (result.isInWomensEstate) {
         openConditionsSuggestedCat = 'T'
       } else {
         openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
@@ -154,6 +155,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
     return {
       data: { ...pageData, details },
+      isInWomensEstate: isFemalePrisonId(details.prisonId),
       formName: form,
       status: formData.status,
       catType: formData.catType,

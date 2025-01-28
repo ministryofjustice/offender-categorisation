@@ -26,10 +26,10 @@
 
   {% set supervisorMessageCompleted = data.supervisor.confirmBack.messageText and data.supervisor.confirmBack.isRead %}
   {% set offendingHistoryCompleted = data.ratings.offendingHistory.previousConvictions %}
-  {% set furtherChargesCompleted = user.activeCaseLoad.female or data.ratings.furtherCharges.furtherCharges %}
+  {% set furtherChargesCompleted = isInWomensEstate or data.ratings.furtherCharges.furtherCharges %}
   {% set locked = data.status === Status.SECURITY_MANUAL.name or data.status === Status.SECURITY_AUTO.name or data.status === Status.SECURITY_FLAGGED.name %}
   {% set securityInputCompleted = (data.ratings.securityInput.securityInputNeeded === 'No')
-     or (user.activeCaseLoad.female and data.ratings.securityBack)
+     or (isInWomensEstate and data.ratings.securityBack)
      or data.ratings.securityBack.catB %}
   {% set violenceRatingCompleted = data.ratings.violenceRating.highRiskOfViolence and data.ratings.violenceRating.seriousThreat %}
   {% set escapeRatingCompleted = data.ratings.escapeRating.escapeOtherEvidence %}
@@ -37,7 +37,7 @@
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
   {% set nextReviewDateCompleted = data.ratings.nextReviewDate.date %}
   {% set openConditionsRequested = data.openConditionsRequested %}
-  {% set decisionCompleted = not user.activeCaseLoad.female or data.ratings.decision.category %}
+  {% set decisionCompleted = not isInWomensEstate or data.ratings.decision.category %}
   {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
      and offendingHistoryCompleted and furtherChargesCompleted and securityInputCompleted and not locked
      and violenceRatingCompleted and escapeRatingCompleted and extremismRatingCompleted and decisionCompleted
@@ -73,7 +73,7 @@
                 <div class="govuk-heading-m">Offending history</div>
                 <div class="govuk-!-margin-top-2">{% if offendingHistoryCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
-            {% if not user.activeCaseLoad.female %}
+            {% if not isInWomensEstate %}
             <li class="app-task-list__item">
               {% set buttonTextFC = "Edit" if furtherChargesCompleted else "Start" %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if furtherChargesCompleted else buttonClassesDefault %}
@@ -139,7 +139,7 @@
               <div class="govuk-!-margin-top-2">{% if locked or backFromSecurity %}{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}{% elseif securityInputCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
 
-            {% if user.activeCaseLoad.female %}
+            {% if isInWomensEstate %}
             <li class="app-task-list__item">
               {% set buttonTextEx = "Edit" if decisionCompleted else "Start" %}
               {% set buttonClasses = buttonClassesDefault + " grey-button" if decisionCompleted else buttonClassesDefault %}

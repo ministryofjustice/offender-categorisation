@@ -39,7 +39,7 @@
   </div>
 {% endif %}
 
-{% if escapeProfileAlert and not user.activeCaseLoad.female %}
+{% if escapeProfileAlert and not isInWomensEstate %}
   {% set escapeCatBTextHtml %}
     {{ govukTextarea({
       name: "escapeCatBText",

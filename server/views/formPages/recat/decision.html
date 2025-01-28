@@ -120,7 +120,7 @@
     }
    } %}
 
-  {% if user.activeCaseLoad.female %}
+  {% if isInWomensEstate %}
     {% set itemList = [ optionI, optionJ, optionR, optionT ] if data.details.youngOffender else [ optionR, optionT ] %}
   {% else %}
     {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
