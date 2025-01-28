@@ -23,33 +23,25 @@ function mapJoiErrors(joiErrors, fieldsConfig) {
 
 module.exports = {
   validate(formResponse, pageConfig) {
+    const localFormResponse = { ...formResponse }
     const formSchema = createSchemaFromConfig(pageConfig)
-    const joiErrors = formSchema.validate(formResponse, { stripUnknown: false, abortEarly: false })
+
+    // we want to accept dates with or without leading 0s e.g. 01/01/2024 and 1/1/2024, so this removes any leading zeros before running through the validator
+    pageConfig.fields.forEach(field => {
+      const fieldName = getFieldName(field)
+      const fieldConfigResponseType = getFieldDetail(['responseType'], field)
+      const [responseType] = fieldConfigResponseType.split('_')
+      if (['futureDate', 'pastDate', 'indeterminateCheck', 'todayOrPastDate'].includes(responseType)) {
+        localFormResponse[fieldName] = localFormResponse[fieldName].replace(/^0+/, '').replace(/\/0/g, '/')
+      }
+    })
+
+    const joiErrors = formSchema.validate(localFormResponse, { stripUnknown: false, abortEarly: false })
     const fieldsConfig = getIn(['fields'], pageConfig)
 
     return mapJoiErrors(joiErrors, fieldsConfig)
   },
   mapJoiErrors,
-}
-
-const makeDateValidation = (min = undefined, max = undefined, allowEmpty = false) => {
-  const joiAlternatives = []
-  ;['D/M/YYYY', 'DD/M/YYYY', 'D/MM/YYYY', 'DD/MM/YYYY'].forEach(dateFormat => {
-    const validator = joi.date().format(dateFormat)
-    if (typeof min !== 'undefined') {
-      validator.min(min)
-    }
-    if (typeof max !== 'undefined') {
-      validator.max(max)
-    }
-    if (allowEmpty) {
-      validator.allow('').optional()
-    } else {
-      validator.required()
-    }
-    joiAlternatives.push(validator)
-  })
-  return joi.alternatives(joiAlternatives)
 }
 
 function createSchemaFromConfig(pageConfig) {
@@ -65,8 +57,8 @@ function createSchemaFromConfig(pageConfig) {
     requiredDay: joi.date().format('DD').required(),
     requiredMonth: joi.date().format('MM').required(),
     requiredYear: joi.date().format('YYYY').required(),
-    futureDate: makeDateValidation(tomorrow),
-    pastDate: makeDateValidation(undefined, yesterday, true),
+    futureDate: joi.date().format('D/M/YYYY').min(tomorrow).required(),
+    pastDate: joi.date().allow('').format('D/M/YYYY').max(yesterday).optional(),
     requiredYesNoIf: (requiredItem = 'decision', requiredAnswer = 'Yes') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
@@ -83,18 +75,18 @@ function createSchemaFromConfig(pageConfig) {
     indeterminateCheck: (requiredItem = 'indeterminate', requiredAnswer = 'true') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: makeDateValidation(today, threeYears).messages({
+        then: joi.date().format('D/M/YYYY').min(today).max(threeYears).required().messages({
           'date.format': 'The review date must be a real date',
           'date.max': 'The date that they are reviewed by must be within 3 years',
           'date.min': 'The review date must be today or in the future',
         }),
-        otherwise: makeDateValidation(today, oneYear).messages({
+        otherwise: joi.date().format('D/M/YYYY').min(today).max(oneYear).required().messages({
           'date.format': 'The review date must be a real date',
           'date.max': 'The date that they are reviewed must be within the next 12 months',
           'date.min': 'The review date must be today or in the future',
         }),
       }),
-    todayOrPastDate: makeDateValidation(undefined, today).messages({
+    todayOrPastDate: joi.date().format('D/M/YYYY').max(today).required().messages({
       'date.format': 'must be a real date',
       'date.max': 'must be today or in the past',
     }),

@@ -6,7 +6,9 @@ const overThreeYearsDate = moment().add(3, 'years').add(1, 'days').format('D/M/Y
 const validFutureDate = moment().add(12, 'months').format('D/M/YYYY')
 const overOneYearsDate = moment().add(12, 'months').add(1, 'days').format('D/M/YYYY')
 const todaysDate = moment().format('D/M/YYYY')
+const todaysDateAlternativeFormat = moment().format('DD/MM/YYYY')
 const pastDate = moment().subtract(1, 'days').format('D/M/YYYY')
+const pastDateAlternativeFormat = moment().subtract(1, 'month').startOf('month').format('DD/MM/YYYY')
 const invalidDate = '78/13/3043'
 const tomorrow = moment().add(1, 'days').format('D/M/YYYY')
 
@@ -29,8 +31,18 @@ describe('Validating next review date for indeterminate', () => {
     const formResponse = { indeterminate: 'true', date: todaysDate }
     expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([])
   })
+  it('Validation should pass for indeterminate with today using alternative format', () => {
+    const formResponse = { indeterminate: 'true', date: todaysDateAlternativeFormat }
+    expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([])
+  })
   it('Validation should return the correct error message for indeterminate past day', () => {
     const formResponse = { indeterminate: 'true', date: pastDate }
+    expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([
+      { href: '#date', text: 'The review date must be today or in the future' },
+    ])
+  })
+  it('Validation should return the correct error message for indeterminate past day when the date has leading 0s', () => {
+    const formResponse = { indeterminate: 'true', date: pastDateAlternativeFormat }
     expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([
       { href: '#date', text: 'The review date must be today or in the future' },
     ])
@@ -64,8 +76,18 @@ describe('Validating next review date for determinate', () => {
     const formResponse = { indeterminate: 'false', date: todaysDate }
     expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([])
   })
+  it('Validation should pass for determinate with today using alternative format', () => {
+    const formResponse = { indeterminate: 'false', date: todaysDateAlternativeFormat }
+    expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([])
+  })
   it('Validation should return the correct error message for determinate past day', () => {
     const formResponse = { indeterminate: 'false', date: pastDate }
+    expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([
+      { href: '#date', text: 'The review date must be today or in the future' },
+    ])
+  })
+  it('Validation should return the correct error message for determinate past day', () => {
+    const formResponse = { indeterminate: 'false', date: pastDateAlternativeFormat }
     expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([
       { href: '#date', text: 'The review date must be today or in the future' },
     ])
@@ -102,6 +124,10 @@ describe('Validating oasys review date for today and past date', () => {
   })
   it('Validation should pass for valid todays date', () => {
     const formResponse = { date: todaysDate }
+    expect(fieldValidation.validate(formResponse, dateConfig)).toEqual([])
+  })
+  it('Validation should pass for valid todays date using alternative format', () => {
+    const formResponse = { date: todaysDateAlternativeFormat }
     expect(fieldValidation.validate(formResponse, dateConfig)).toEqual([])
   })
   it('Validation should pass for valid past date', () => {
