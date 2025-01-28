@@ -6,6 +6,7 @@ import riskProfiler from './riskProfiler'
 import tokenVerification from './tokenVerification'
 import dpsComponents from './dpsComponents'
 import probationOffenderSearchApi from './probationOffenderSearchApi'
+import formApi from './formApi'
 
 export default {
   ...allocationManager,
@@ -16,4 +17,5 @@ export default {
   ...tokenVerification,
   ...dpsComponents,
   ...probationOffenderSearchApi,
+  ...formApi,
 }

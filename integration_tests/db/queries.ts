@@ -1,6 +1,6 @@
-import { mergeRight } from 'ramda'
-import db from '../../server/data/dataAccess/db'
-import { QueryArrayResult } from 'pg'
+import { mergeRight } from "ramda";
+import db from "../../server/data/dataAccess/db";
+import { QueryArrayResult } from "pg";
 
 export type CatType = 'INITIAL' | 'RECAT'
 export type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
@@ -89,6 +89,14 @@ const defaultRowData: Partial<FormDbRow> = {
   dueByDate: null,
   cancelledDate: null,
   cancelledBy: null,
+}
+
+export interface SecurityReferralDbRow {
+  offender_no: string
+  status: string
+  prison_id: string
+  user_id: string
+  raised_date: string
 }
 
 async function insertFormTableDbRow(rowData: MandatoryRowData & Partial<FormDbRow>) {
@@ -301,7 +309,23 @@ async function updateRiskProfile({
   return await db.query(`update form set risk_profile = $1::JSON where booking_id = $2`, [riskProfile, bookingId])
 }
 
+const updateFormRecord = async ({ bookingId, status, formResponse }: { bookingId: number, status: string, formResponse: any }) => {
+  const existingFormResponse = await db.query(`select form_response from form where booking_id = $1`, [bookingId])
+  return await db.query(
+    `update form set status = $1, form_response = $2 where booking_id = $3`,
+    [status, mergeRight(existingFormResponse.rows[0]?.form_response, formResponse), bookingId]
+  )
+}
+
 const deleteRowsFromForm = () => db.query({ text: 'truncate form cascade' })
+const deleteRowsFromSecurityReferral = () => db.query({ text: 'truncate security_referral cascade' })
+
+const getSecurityReferral = async ({ offenderNumber }: {offenderNumber: string}) => {
+  return await db.query(
+    `select * from security_referral where offender_no = $1`,
+    [offenderNumber]
+  )
+}
 
 export default {
   insertFormTableDbRow,
@@ -312,5 +336,8 @@ export default {
   selectLiteCategoryTableDbRow,
   selectNextReviewChangeHistoryTableDbRow,
   updateRiskProfile,
+  updateFormRecord,
   deleteRowsFromForm,
+  deleteRowsFromSecurityReferral,
+  getSecurityReferral
 }

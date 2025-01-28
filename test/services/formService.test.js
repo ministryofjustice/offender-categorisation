@@ -38,10 +38,14 @@ const formClient = {
   getPendingLiteCategorisations: jest.fn(),
   deleteCategorisation: jest.fn(),
 }
+
+const mockFormApiClient = {
+  submitSecurityReview: jest.fn(),
+}
 let service
 
 beforeEach(() => {
-  service = serviceCreator(formClient)
+  service = serviceCreator(formClient, () => mockFormApiClient)
   formClient.getFormDataForUser.mockResolvedValue({ rows: [{ a: 'b' }, { c: 'd' }] })
   formClient.update.mockResolvedValue({})
   formClient.updateFormData.mockResolvedValue({})
@@ -51,6 +55,7 @@ beforeEach(() => {
   formClient.securityReviewed.mockResolvedValue({})
   formClient.getRiskChangeByStatus.mockResolvedValue({ rows: [] })
   formClient.getHistoricalFormData.mockResolvedValue({ rows: [] })
+  mockFormApiClient.submitSecurityReview.mockResolvedValue(true)
 })
 
 afterEach(() => {
@@ -738,11 +743,9 @@ describe('referToSecurityIfFlagged', () => {
 
 describe('securityReviewed', () => {
   test('happy path', async () => {
-    formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'SECURITY_AUTO' }] })
+    await service.securityReviewed(bookingId, userId, true, 'test')
 
-    await service.securityReviewed(bookingId, userId, mockTransactionalClient)
-
-    expect(formClient.securityReviewed).toBeCalledWith(bookingId, 'SECURITY_BACK', userId, mockTransactionalClient)
+    expect(mockFormApiClient.submitSecurityReview).toBeCalledWith(bookingId, true, 'test')
   })
 })
 
