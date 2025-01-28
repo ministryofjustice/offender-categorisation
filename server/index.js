@@ -8,6 +8,7 @@ buildAppInsightsClient()
 const createApp = require('./app')
 
 const formClient = require('./data/formClient')
+const { formApiClientBuilder } = require('./data/formApiClient')
 const statsClient = require('./data/statsClient')
 const nomisClientBuilder = require('./data/nomisClientBuilder')
 const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
@@ -28,7 +29,7 @@ const createSqsService = require('./services/sqsService')
 const createDpsFeComponentService = require('./services/dpsFeComponentService')
 
 // pass in dependencies of service
-const formService = createFormService(formClient)
+const formService = createFormService(formClient, formApiClientBuilder)
 const statsService = createStatsService(statsClient)
 const offendersService = createOffendersService(
   nomisClientBuilder,

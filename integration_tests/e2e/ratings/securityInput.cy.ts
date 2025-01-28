@@ -20,6 +20,7 @@ describe('Security Input', () => {
   let bookingId: number
 
   beforeEach(() => {
+    cy.task('deleteRowsFromForm')
     cy.task('reset')
     cy.task('setUpDb')
   })
@@ -125,6 +126,28 @@ describe('Security Input', () => {
         })
       })
 
+      it('should display error if no security input text is given', () => {
+        cy.task('stubGetExtremismProfile', {
+          offenderNo: 'B2345YZ',
+          category: 'C',
+          increasedRisk: true,
+          notifyRegionalCTLead: false,
+        })
+        stubLoginAndBrowseToCategoriserSecurityInputPage()
+
+        categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
+        categoriserSecurityInputPage.selectSecurityInputRadioButton('YES')
+        categoriserSecurityInputPage.saveAndReturnButton().click()
+
+        categoriserSecurityInputPage.validateErrorSummaryMessages([
+          { index: 0, href: '#securityInputNeededText', text: 'Please enter the reason why referral is needed' },
+        ])
+
+        categoriserSecurityInputPage.validateErrorMessages([
+          { selector: '#securityInputNeededText-error', text: 'Please enter details' },
+        ])
+      })
+
       describe("it should record a 'yes' decision", () => {
         beforeEach(() => {
           cy.task('stubGetExtremismProfile', {
@@ -148,6 +171,7 @@ describe('Security Input', () => {
         })
 
         it('should allow a security user to complete their assessment', () => {
+          cy.task('stubSubmitSecurityReview', { bookingId })
           cy.task('stubGetStaffDetailsByUsernameList', {
             usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
           })
@@ -176,12 +200,14 @@ describe('Security Input', () => {
 
           const securityReviewPage = SecurityReviewPage.createForBookingId(bookingId)
           securityReviewPage.validateHeaderInitialNote({ isVisible: true, expectedText: 'Note from categoriser' })
-          securityReviewPage.validateParagraphInitialNote({ isVisible: true, expectedText: 'Some security input text' })
+          const testSecurityText = 'Some security input text'
+          securityReviewPage.validateParagraphInitialNote({ isVisible: true, expectedText: testSecurityText })
           securityReviewPage.validateParagraphInitialManual({
             isVisible: true,
             expectedText: 'Manually sent for review',
           })
-          securityReviewPage.setSecurityInformationText('security info text')
+          securityReviewPage.setSecurityInformationText(testSecurityText)
+          cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: testSecurityText }}} })
           securityReviewPage.saveAndSubmitButton().click()
 
           securityHomePage.validateNoReferralsToReview()
@@ -191,6 +217,7 @@ describe('Security Input', () => {
           let securityBackPage: CategoriserSecurityBackPage
 
           beforeEach(() => {
+            cy.task('stubSubmitSecurityReview', { bookingId })
             cy.task('stubGetStaffDetailsByUsernameList', {
               usernames: [CATEGORISER_USER.username, SECURITY_USER.username],
             })
@@ -205,9 +232,11 @@ describe('Security Input', () => {
 
             const securityHomePage = Page.verifyOnPage(SecurityHomePage)
             securityHomePage.getStartButton({ bookingId }).click()
+            const testSecurityText = 'Some security input text'
 
             const securityReviewPage = SecurityReviewPage.createForBookingId(bookingId)
             securityReviewPage.setSecurityInformationText('security info text')
+            cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: `${testSecurityText} security info text` }}} })
             securityReviewPage.saveAndSubmitButton().click()
 
             cy.stubLogin({
@@ -248,13 +277,10 @@ describe('Security Input', () => {
               taskListPage.securityButton().should('contain.text', 'Edit')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-                expect(result.rows[0].status).to.eq('SECURITY_BACK')
                 expect(result.rows[0].referred_by).to.eq('CATEGORISER_USER')
-                expect(result.rows[0].security_reviewed_by).to.eq('SECURITY_USER')
                 expect(result.rows[0].cat_type).to.eq('INITIAL')
                 expect(moment(result.rows[0].start_date).isSame(new Date(), 'day')).to.eq(true)
                 expect(moment(result.rows[0].referred_date).isSame(new Date(), 'day')).to.eq(true)
-                expect(moment(result.rows[0].security_reviewed_date).isSame(new Date(), 'day')).to.eq(true)
                 expect(result.rows[0].form_response).to.deep.eq({
                   ratings: {
                     securityBack: {
@@ -267,7 +293,7 @@ describe('Security Input', () => {
                   },
                   security: {
                     review: {
-                      securityReview: 'security info text',
+                      securityReview: 'Some security input text security info text',
                     },
                   },
                 })

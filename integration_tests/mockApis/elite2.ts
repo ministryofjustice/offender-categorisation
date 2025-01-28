@@ -719,7 +719,7 @@ const stubGetOffenderDetailsWomen = ({
   offenderNo = 'ON700',
   youngOffender = false,
   indeterminateSentence = false,
-  category = 'C',
+  category = 'R',
   multipleSentences = false,
   nextReviewDate = '2020-01-16',
 }: {
@@ -1535,6 +1535,27 @@ const stubRecategorise = (
   return Promise.all([recategorisationsStub(agencyId), latestOnlyStub()])
 }
 
+const getOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/CATEGORY?offenderNo=${offenderNumber}&latestOnly=false&activeOnly=false`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 11,
+          offenderNo: offenderNumber,
+          classificationCode: 'C',
+          nextReviewDate: moment().subtract(4, 'days').format('yyyy-MM-DD'),
+          assessmentStatus: 'A',
+        }
+      ],
+    },
+  })
+
 const stubAdjudicationHearings = ({
   agencyId,
   fromDate,
@@ -1592,4 +1613,5 @@ export default {
   verifyUpdateNextReviewDate,
   stubRecategorise,
   stubAdjudicationHearings,
+  getOffenderStub,
 }

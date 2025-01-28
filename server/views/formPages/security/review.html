@@ -2,7 +2,7 @@
 {% from "breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
-{% from "textarea/macro.njk" import govukTextarea %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 
 {% set pageTitle = "Security review" %}
@@ -61,10 +61,12 @@
 
     <h2 id="header-sec-info" class="govuk-heading-s">Security information</h2>
 
-    {{ govukTextarea({
+    {{ govukCharacterCount({
       name: "securityReview",
       type: "securityReview",
       id: "more-detail",
+      maxlength: 50000,
+      threshold: 90,
       attributes: { 'maxlength': 50000 },
       label: {
         text: "Enter details of any security information held on this prisoner, which could be relevant to their security categorisation"
@@ -90,7 +92,8 @@
     text: "Save only",
     name: "button",
     value: 'return',
-    classes: 'rightAlignedButton grey-button'
+    classes: 'rightAlignedButton grey-button',
+    attributes: { 'data-qa': 'save-review' }
   }) }}
 
   </form>
