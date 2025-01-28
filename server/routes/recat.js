@@ -7,7 +7,7 @@ const {
   choosingHigherCategory,
   offenderAlertsLink,
   offenderCaseNotesLink,
-  offenderAdjudicationLink,
+  offenderAdjudicationLink, isFemalePrisonId,
 } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
@@ -192,6 +192,7 @@ module.exports = function Index({
 
     return {
       data: { ...pageData, details: { ...details, youngOffender } },
+      isInWomensEstate: isFemalePrisonId(details.prisonId),
       formName: form,
       status: formData.status,
       reviewReason: formData.reviewReason,
