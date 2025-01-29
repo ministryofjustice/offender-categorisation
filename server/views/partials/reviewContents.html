@@ -32,7 +32,7 @@
       }
     ]
   }) }}
-{% if not user.activeCaseLoad.female %}
+{% if not isInWomensEstate %}
 <h2 class="govuk-heading-m">Further charges</h2>
   {% set further = {
       key: { text: "Further serious charges" },
@@ -44,7 +44,7 @@
           }] if showChangeLinks else []
       }
     } %}
-{% if not user.activeCaseLoad.female %}
+{% if not isInWomensEstate %}
   {% set warrantF = {
       key: { classes: 'no-print', text: "Warrant category B?" },
       value: { classes: 'no-print', text: data.ratings.furtherCharges.furtherChargesCatB },
@@ -166,7 +166,7 @@
     ]
   }) }}
 
-  {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB or (user.activeCaseLoad.female and data.ratings.securityBack)%}
+  {% set wasReferred = data.socProfile.transferToSecurity or data.ratings.securityBack.catB or (isInWomensEstate and data.ratings.securityBack)%}
   <h2 class="govuk-heading-m no-print">Security information</h2>
   {% set auto = {
       classes: 'no-print',
@@ -189,8 +189,8 @@
   {% set flagged = {
       classes: 'no-print',
       key: { text: "Flagged by security team" },
-      value: { text: 'Yes' if ((not user.activeCaseLoad.female and data.ratings.securityBack.catB)
-                      or (user.activeCaseLoad.female and data.ratings.securityBack))
+      value: { text: 'Yes' if ((not isInWomensEstate and data.ratings.securityBack.catB)
+                      or (isInWomensEstate and data.ratings.securityBack))
                       and not data.ratings.securityInput.securityInputNeeded else 'No' },
       actions: { items: [] }
     } %}
@@ -200,7 +200,7 @@
       value: { text: data.security.review.securityReview },
       actions: { items: [] }
     } %}
-{% if not user.activeCaseLoad.female %}
+{% if not isInWomensEstate %}
   {% set warrantS = {
       classes: 'no-print',
       key: { text: "Warrant category B?" },
@@ -219,7 +219,7 @@
     rows: [ auto, manual, flagged, comments, warrantS ] if wasReferred else [ auto, manual, flagged ]
   }) }}
 
-  {% if user.activeCaseLoad.female %}
+  {% if isInWomensEstate %}
     <h2 class="govuk-heading-m">Category decision</h2>
     {{ govukSummaryList({
       classes: 'govuk-!-margin-bottom-9 categoryDecisionSummary no-print',
