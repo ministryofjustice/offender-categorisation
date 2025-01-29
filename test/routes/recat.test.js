@@ -64,15 +64,11 @@ const userService = {
 }
 
 const mockFemalePrison = () => {
-  userService.getUser.mockResolvedValue({
-    activeCaseLoad: {
-      caseLoadId: 'PFI',
-      description: 'Peterborough Female HMP',
-      type: 'INST',
-      caseloadFunction: 'GENERAL',
-      currentlyActive: true,
-      female: true,
-    },
+  offendersService.getOffenderDetails.mockResolvedValue({
+    displayName: 'Claire Dent',
+    bookingId: 12345,
+    offenderNo: 'GH123',
+    prisonId: 'PFI',
   })
 }
 
@@ -119,6 +115,7 @@ beforeEach(() => {
     displayName: 'Claire Dent',
     bookingId: 12345,
     offenderNo: 'GH123',
+    prisonId: 'LEI',
   })
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getPrisonerBackground.mockResolvedValue({})

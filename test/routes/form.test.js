@@ -92,6 +92,7 @@ const mockFemalePrison = () => {
       female: true,
     },
   })
+  offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent', prisonId: 'PFI' })
 }
 const mockMalePrison = () => {
   userService.getUser.mockResolvedValue({
