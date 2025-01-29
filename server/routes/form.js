@@ -6,7 +6,7 @@ const joi = require('joi')
 const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
-const { getLongDateFormat } = require('../utils/utils')
+const { getLongDateFormat, isFemalePrisonId } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const Status = require('../utils/statusEnum')
@@ -348,6 +348,7 @@ module.exports = function Index({
 
     return {
       data: { ...pageData, details: { ...details, youngOffender } },
+      isInWomensEstate: isFemalePrisonId(details.prisonId),
       formName: form,
       status: formData.status,
       catType: formData.catType,
@@ -456,7 +457,9 @@ module.exports = function Index({
 
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const isFemale = res.locals.user.activeCaseLoad.female
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      const isFemale = isFemalePrisonId(details.prisonId)
       const userInput = clearConditionalFields(req.body)
 
       if (
@@ -817,7 +820,8 @@ module.exports = function Index({
       const formPageConfig = formConfig[section][form]
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      const isFemale = res.locals.user.activeCaseLoad.female
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      const isFemale = isFemalePrisonId(details.prisonId)
       if (!isFemale) {
         // if male prison, update data and redirect to provisional category page
         const userInput = clearConditionalFields(req.body)

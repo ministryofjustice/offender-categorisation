@@ -1161,6 +1161,7 @@ module.exports = function createOffendersService(
 
       return {
         ...result,
+        prisonId: result.prisonId ?? result.agencyId, // within prisoner search this is called prisonId
         ...displayName,
         sentence: {
           ...sentenceDetails,

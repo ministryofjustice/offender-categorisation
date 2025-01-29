@@ -247,16 +247,7 @@ describe('open conditions', () => {
   })
 
   test('INITIAL categorisation in a womens prison where only open conditions further charges exist', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PFI',
-        description: 'Peterborough Female HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: true,
-      },
-    })
+    offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent', prisonId: 'PFI' })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
@@ -280,16 +271,7 @@ describe('open conditions', () => {
   })
 
   test('INITIAL categorisation in a womens prison where no open conditions furtherChargesText exist', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PFI',
-        description: 'Peterborough Female HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: true,
-      },
-    })
+    offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent', prisonId: 'PFI' })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
@@ -342,16 +324,7 @@ describe('open conditions', () => {
   })
 
   test('RECAT categorisation in a womens prison where no open conditions further charges', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PFI',
-        description: 'Peterborough Female HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: true,
-      },
-    })
+    offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent', prisonId: 'PFI' })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
@@ -371,16 +344,7 @@ describe('open conditions', () => {
   })
 
   test('RECAT categorisation in a womens prison where open conditions further charges is yes', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PFI',
-        description: 'Peterborough Female HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: true,
-      },
-    })
+    offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent', prisonId: 'PFI' })
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: {
@@ -587,16 +551,7 @@ describe('open conditions', () => {
   })
 
   test('Should have T for openConditionsSuggestedCategory value if female', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PFI',
-        description: 'Peterborough Female HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: true,
-      },
-    })
+    offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent', prisonId: 'PFI' })
 
     return request(app)
       .get('/provisionalCategory/12345')
