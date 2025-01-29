@@ -4,7 +4,7 @@ const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlew
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
-const { get10BusinessDays } = require('../utils/utils')
+const { get10BusinessDays, isFemalePrisonId } = require('../utils/utils')
 
 function add10BusinessDays(isoDate) {
   const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
@@ -95,6 +95,7 @@ module.exports = function Index({
 
       const data = {
         details,
+        isInWomensEstate: isFemalePrisonId(details.prisonId),
         ...res.locals.formObject,
         status: categorisationRecord.status,
         displayStatus: categorisationRecord.status && Status[categorisationRecord.status].value,
