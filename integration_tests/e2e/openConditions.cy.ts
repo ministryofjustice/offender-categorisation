@@ -100,7 +100,7 @@ describe('Open conditions', () => {
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
     })
-    stubs()
+    setUpStubs()
     cy.stubLogin({
       user: CATEGORISER_USER,
     })
@@ -303,26 +303,8 @@ describe('Open conditions', () => {
     const taskListPage1 = Page.verifyOnPage(TaskListPage)
     taskListPage1.openConditionsButton().should('not.exist')
 
-    cy.task('stubGetEscapeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
-    })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
-      previousOffences: true
-    })
+    setUpProfiles()
+
     taskListPage1.continueReviewAndCategorisationButton(12).click()
 
     const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12)
@@ -420,28 +402,10 @@ describe('Open conditions', () => {
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
     })
-    stubs()
+    setUpStubs()
 
-    cy.task('stubGetEscapeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
-    })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
-      previousOffences: true
-    })
+    setUpProfiles()
+
     cy.stubLogin({
       user: CATEGORISER_USER,
     })
@@ -629,28 +593,10 @@ describe('Open conditions', () => {
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
     })
-    stubs()
+    setUpStubs()
 
-    cy.task('stubGetEscapeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
-    })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
-      previousOffences: true
-    })
+    setUpProfiles()
+
     cy.stubLogin({
       user: CATEGORISER_USER,
     })
@@ -808,7 +754,7 @@ describe('Open conditions', () => {
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
     })
-    stubs()
+    setUpStubs()
     cy.task('stubCategorise', {
       bookingId: 12,
       category: 'D',
@@ -875,7 +821,7 @@ describe('Open conditions', () => {
     supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
 */
 
-    const supervisorHomePage3 = Page.verifyOnPage(SupervisorHomePage)
+    Page.verifyOnPage(SupervisorHomePage)
     supervisorReviewPage1.signOut().click()
     cy.task('stubUncategorised')
     cy.stubLogin({
@@ -937,10 +883,10 @@ describe('Open conditions', () => {
     provisionalCategoryPage1.appropriateYes().click()
     provisionalCategoryPage1.submitButton().click()
 
-    const categoriserSubmittedPage = CategoriserSubmittedPage.createForBookingId(12)
+    CategoriserSubmittedPage.createForBookingId(12)
     cy.task('stubUncategorisedAwaitingApproval')
 
-    const categoriserHomePage1 = Page.verifyOnPage(CategoriserHomePage)
+    Page.verifyOnPage(CategoriserHomePage)
     categoriserHomePage.selectPrisonerWithBookingId(12)
 
     const categoriserAwaitingApprovalViewPage = Page.verifyOnPage(CategoriserAwaitingApprovalViewPage)
@@ -995,7 +941,7 @@ describe('Open conditions', () => {
 */
   })
 
-  function stubs() {
+  function setUpStubs() {
     cy.task('stubUncategorised')
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345XY', 'B2345YZ'],
@@ -1027,6 +973,29 @@ describe('Open conditions', () => {
       category: 'C',
     })
     cy.task('stubAgencyDetails', { agency: 'LEI' })
+  }
+
+  function setUpProfiles() {
+    cy.task('stubGetEscapeProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      onEscapeList: true,
+      activeOnEscapeList: true,
+    })
+    cy.task('stubGetViolenceProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      veryHighRiskViolentOffender: true,
+      notifySafetyCustodyLead: true,
+      displayAssaults: false,
+    })
+    cy.task('stubGetExtremismProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      increasedRisk: true,
+      notifyRegionalCTLead: false,
+      previousOffences: true
+    })
   }
 
   function completeOpenConditionsWorkflow(taskListPage: TaskListPage, furtherChanarges: boolean) {
