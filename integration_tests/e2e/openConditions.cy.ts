@@ -303,9 +303,6 @@ describe('Open conditions', () => {
     const taskListPage1 = Page.verifyOnPage(TaskListPage)
     taskListPage1.openConditionsButton().should('not.exist')
 
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
-    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
       category: 'C',
@@ -325,10 +322,6 @@ describe('Open conditions', () => {
       increasedRisk: true,
       notifyRegionalCTLead: false,
       previousOffences: true
-    })
-    cy.task('stubGetLifeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
     })
     taskListPage1.continueReviewAndCategorisationButton(12).click()
 
@@ -428,9 +421,7 @@ describe('Open conditions', () => {
       approvedBy: SUPERVISOR_USER.username,
     })
     stubs()
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
-    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
+
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
       category: 'C',
@@ -450,10 +441,6 @@ describe('Open conditions', () => {
       increasedRisk: true,
       notifyRegionalCTLead: false,
       previousOffences: true
-    })
-    cy.task('stubGetLifeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
     })
     cy.stubLogin({
       user: CATEGORISER_USER,
@@ -643,9 +630,7 @@ describe('Open conditions', () => {
       approvedBy: SUPERVISOR_USER.username,
     })
     stubs()
-    cy.task('stubAssessments', {offenderNumber: 'B2345YZ'})
-    cy.task('stubSentenceDataGetSingle', {offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23'})
-    cy.task('stubOffenceHistory', {offenderNumber: 'B2345YZ'})
+
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
       category: 'C',
@@ -665,10 +650,6 @@ describe('Open conditions', () => {
       increasedRisk: true,
       notifyRegionalCTLead: false,
       previousOffences: true
-    })
-    cy.task('stubGetLifeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
     })
     cy.stubLogin({
       user: CATEGORISER_USER,
@@ -724,7 +705,6 @@ describe('Open conditions', () => {
     provisionalCategoryOpenPage.appropriateYes().click()
     provisionalCategoryOpenPage.submitButton().click()
 
-    // Failure here
     CategoriserSubmittedPage.createForBookingId(12)
     const categoriserSubmittedPage1 = Page.verifyOnPage(CategoriserSubmittedPage)
 
@@ -759,9 +739,7 @@ describe('Open conditions', () => {
 
     supervisorHomePage1.doneTabLink().click()
 
-
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
     supervisorDonePage.viewApprovedPrisonerButton({bookingId: 12, sequenceNumber: 5}).click()
 
     const approvedViewPage = Page.verifyOnPage(ApprovedViewPage)
@@ -851,8 +829,6 @@ describe('Open conditions', () => {
       sequenceNumber: 5,
     })
 
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-
     cy.stubLogin({
       user: CATEGORISER_USER,
     })
@@ -923,9 +899,6 @@ describe('Open conditions', () => {
     const taskListPage2 = TaskListPage.createForBookingId(12)
     completeOpenConditionsWorkflow(taskListPage2, true)
 
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
-    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
       category: 'C',
@@ -946,10 +919,7 @@ describe('Open conditions', () => {
       notifyRegionalCTLead: false,
       previousOffences: false
     })
-    cy.task('stubGetLifeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-    })
+
     taskListPage2.openConditionsButton().should('exist')
     taskListPage2.continueReviewAndCategorisationButton(12).click()
 
@@ -1001,7 +971,6 @@ describe('Open conditions', () => {
     supHomePage1.doneTabLink().click()
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
     supervisorDonePage.viewApprovedPrisonerButton({bookingId: 12, sequenceNumber: 5}).click()
 
     const approvedViewPage = Page.verifyOnPage(ApprovedViewPage)
@@ -1050,6 +1019,14 @@ describe('Open conditions', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
+    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
+    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
+    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
+    cy.task('stubGetLifeProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+    })
+    cy.task('stubAgencyDetails', { agency: 'LEI' })
   }
 
   function completeOpenConditionsWorkflow(taskListPage: TaskListPage, furtherChanarges: boolean) {
