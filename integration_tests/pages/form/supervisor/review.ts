@@ -169,7 +169,7 @@ export default class SupervisorReviewPage extends Page {
   }
 
   enterOverriddenCategoryText(overriddenCategoryText: string): PageElement {
-    return cy.get('#supervisorOverriddenCategoryText').type(overriddenCategoryText)
+    return cy.get(SELECTORS.OVERRIDE_CATEGORY.REASON_TEXTAREA).type(overriddenCategoryText)
   }
 
   enterOtherInformationText = (text: string) => cy.get(SELECTORS.OTHER_INFORMATION.TEXTAREA).type(text)
