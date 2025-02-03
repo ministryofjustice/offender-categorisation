@@ -1,4 +1,4 @@
-import Page, {PageElement} from '../page'
+import {PageElement} from '../page'
 import BaseApprovedViewPage from './baseApprovedView'
 
 export default class ApprovedViewPage extends BaseApprovedViewPage {
@@ -8,12 +8,9 @@ export default class ApprovedViewPage extends BaseApprovedViewPage {
     super('Categorisation outcome')
   }
 
-  otherInformationSummary = (): PageElement => cy.get('.otherInformationSummary .govuk-summary-list__value')
+  comments = (): PageElement => cy.get('.forms-comments-text')
 
   commentLabel = (): PageElement => cy.get('label')
 
-/*
-  commentLabel(required: false) { $('label', text:'Comments')}
-*/
-
+  otherInformationSummary  = (): PageElement => cy.get('.otherInformationSummary .govuk-summary-list__value')
 }
