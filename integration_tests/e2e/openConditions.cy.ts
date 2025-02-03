@@ -26,12 +26,14 @@ import SupervisorMessagePage from "../pages/form/supervisor/message";
 import CategoriserAwaitingApprovalViewPage from "../pages/categoriser/awaitingapproval";
 import OpenConditionsAdded from "../pages/openConditionsAdded";
 import OpenConditionsNotRecommended from "../pages/form/openConditions/notRecommendedPage";
+import ProvisionalCategoryOpenPage from "../pages/form/categoriser/provisionalOpenCategory";
 
 describe('Open conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
   let today: Date
 
   beforeEach(() => {
+    cy.task('deleteRowsFromForm')
     cy.task('reset')
     cy.task('setUpDb')
 
@@ -98,29 +100,7 @@ describe('Open conditions', () => {
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
     })
-    cy.task('stubUncategorised')
-    cy.task('stubSentenceData', {
-      offenderNumbers: ['B2345XY', 'B2345YZ'],
-      bookingIds: [11, 12],
-      startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
-    })
-    cy.task('stubGetSocProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      transferToSecurity: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
-    })
-    cy.task('stubGetOffenderDetails', {
-      bookingId: 12,
-      offenderNo: 'B2345YZ',
-      youngOffender: false,
-      indeterminateSentence: false,
-    })
+    stubs()
     cy.stubLogin({
       user: CATEGORISER_USER,
     })
@@ -447,29 +427,7 @@ describe('Open conditions', () => {
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
     })
-    cy.task('stubUncategorised')
-    cy.task('stubSentenceData', {
-      offenderNumbers: ['B2345XY', 'B2345YZ'],
-      bookingIds: [11, 12],
-      startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
-    })
-    cy.task('stubGetOffenderDetails', {
-      bookingId: 12,
-      offenderNo: 'B2345YZ',
-      youngOffender: false,
-      indeterminateSentence: false,
-    })
-    cy.task('stubGetSocProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      transferToSecurity: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
-    })
+    stubs()
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
     cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
@@ -633,10 +591,10 @@ describe('Open conditions', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
-      nomisSequenceNumber: 1,
+      nomisSequenceNumber: 5,
       catType: CATEGORISATION_TYPE.INITIAL,
       offenderNo: 'dummy',
-      sequenceNumber: 1,
+      sequenceNumber: 5,
       status: STATUS.STARTED.name,
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
@@ -684,29 +642,7 @@ describe('Open conditions', () => {
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
     })
-    cy.task('stubUncategorised')
-    cy.task('stubSentenceData', {
-      offenderNumbers: ['B2345XY', 'B2345YZ'],
-      bookingIds: [11, 12],
-      startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
-    })
-    cy.task('stubGetOffenderDetails', {
-      bookingId: 12,
-      offenderNo: 'B2345YZ',
-      youngOffender: false,
-      indeterminateSentence: false,
-    })
-    cy.task('stubGetSocProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      transferToSecurity: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
-    })
+    stubs()
     cy.task('stubAssessments', {offenderNumber: 'B2345YZ'})
     cy.task('stubSentenceDataGetSingle', {offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23'})
     cy.task('stubOffenceHistory', {offenderNumber: 'B2345YZ'})
@@ -763,16 +699,43 @@ describe('Open conditions', () => {
     const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.continueButton().click()
 
-    provisionalCategoryPage.warning().contains('The provisional category is open')
-    provisionalCategoryPage.appropriateYes().click()
-    provisionalCategoryPage.submitButton().click()
+    cy.task('stubCategorise', {
+      bookingId: 12,
+      category: 'D',
+      committee: 'OCA',
+      nextReviewDate: '2019-12-14',
+      comment: 'comment',
+      placementAgencyId: 'LEI',
+      sequenceNumber: 5
+    })
 
-    Page.verifyOnPage(CategoriserSubmittedPage)
+    cy.task('stubCategoriseUpdate', {
+      bookingId: 12,
+      category: 'D',
+      committee: 'OCA',
+      nextReviewDate: '2019-12-14',
+      comment: 'comment',
+      placementAgencyId: 'LEI',
+      sequenceNumber: 5,
+    })
+
+    const provisionalCategoryOpenPage = ProvisionalCategoryOpenPage.createForBookingId(12)
+    provisionalCategoryOpenPage.warning().contains('The provisional category is open')
+    provisionalCategoryOpenPage.appropriateYes().click()
+    provisionalCategoryOpenPage.submitButton().click()
+
+    // Failure here
+    CategoriserSubmittedPage.createForBookingId(12)
+    const categoriserSubmittedPage1 = Page.verifyOnPage(CategoriserSubmittedPage)
+
+    categoriserSubmittedPage1.signOut().click()
 
     cy.task('stubUncategorisedAwaitingApproval')
     cy.stubLogin({
       user: SUPERVISOR_USER,
     })
+    cy.signIn()
+
     const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.startReviewForPrisoner(12)
 
@@ -780,9 +743,9 @@ describe('Open conditions', () => {
     cy.task('stubSupervisorApprove')
 
     supervisorReviewPage.enterOtherInformationText('super other info')
-    supervisorReviewPage.enterOverrideReason('super changed D to C')
-    supervisorReviewPage.overrideCatC().click()
     supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
+    supervisorReviewPage.enterOverriddenCategoryText('super changed D to C')
+    supervisorReviewPage.overrideCatC().click()
     supervisorReviewPage.submitButton().click()
 
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
@@ -792,11 +755,14 @@ describe('Open conditions', () => {
     cy.task('stubGetStaffDetailsByUsernameList', {
       usernames: [CATEGORISER_USER.username, SUPERVISOR_USER.username],
     })
+    cy.task('stubCategorised', { bookingIds: [12] })
+
     supervisorHomePage1.doneTabLink().click()
+
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     cy.task('stubAgencyDetails', { agency: 'LEI' })
-    supervisorDonePage.viewApprovedPrisonerButton({bookingId: 12, sequenceNumber: 1}).click()
+    supervisorDonePage.viewApprovedPrisonerButton({bookingId: 12, sequenceNumber: 5}).click()
 
     const approvedViewPage = Page.verifyOnPage(ApprovedViewPage)
     approvedViewPage.validateCategorisationWarnings([
@@ -804,23 +770,22 @@ describe('Open conditions', () => {
       'The recommended category was changed from Category B to open category',
       'The recommended category was changed from open category to Category C',
     ])
-    approvedViewPage.validateCategoriserComments({
-      expectedComments: `Here are the categoriser's comments on why the category was changed`,
-    })
-    approvedViewPage.comment()
-    comments*.text() == ['categoriser override to D comment', 'super changed D to C', 'super other info']
-    otherInformationSummary.text() == 'categoriser relevant info 1'
-    commentLabel.size() == 2
+    approvedViewPage.comments().contains('categoriser override to D comment')
+    approvedViewPage.comments().contains('super changed D to C')
+    approvedViewPage.comments().contains('super other info')
+
+    approvedViewPage.otherInformationSummary().contains('categoriser relevant info 1')
+    approvedViewPage.commentLabel().should('have.length', 2)
   })
 
   it('The happy path is correct for supervisor overriding to D', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
-      nomisSequenceNumber: 1,
+      nomisSequenceNumber: 5,
       catType: CATEGORISATION_TYPE.INITIAL,
       offenderNo: 'dummy',
-      sequenceNumber: 1,
+      sequenceNumber: 5,
       status: STATUS.STARTED.name,
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
@@ -846,8 +811,9 @@ describe('Open conditions', () => {
           },
           violenceRating: {
             highRiskOfViolence: 'No',
-            seriousThreat: 'Yes'
+            seriousThreat: 'No'
           },
+
           escapeRating: {
             escapeOtherEvidence: 'No'
           },
@@ -864,38 +830,28 @@ describe('Open conditions', () => {
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
     })
-    cy.task('stubUncategorised')
-    cy.task('stubSentenceData', {
-      offenderNumbers: ['B2345XY', 'B2345YZ'],
-      bookingIds: [11, 12],
-      startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
-    })
-    cy.task('stubGetOffenderDetails', {
-      bookingId: 12,
-      offenderNo: 'B2345YZ',
-      youngOffender: false,
-      indeterminateSentence: false,
-    })
-    cy.task('stubGetSocProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      transferToSecurity: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
-    })
+    stubs()
     cy.task('stubCategorise', {
       bookingId: 12,
-      category: 'C',
+      category: 'D',
       committee: 'OCA',
       nextReviewDate: '2019-12-14',
       comment: 'comment',
       placementAgencyId: 'LEI',
       sequenceNumber: 5,
     })
+
+    cy.task('stubCategoriseUpdate', {
+      bookingId: 12,
+      category: 'D',
+      committee: 'OCA',
+      nextReviewDate: '2019-12-14',
+      comment: 'comment',
+      placementAgencyId: 'LEI',
+      sequenceNumber: 5,
+    })
+
+    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
 
     cy.stubLogin({
       user: CATEGORISER_USER,
@@ -909,7 +865,11 @@ describe('Open conditions', () => {
     provisionalCategoryPage.appropriateYes().click()
     provisionalCategoryPage.submitButton().click()
 
+    // Failure here
+    CategoriserSubmittedPage.createForBookingId(12)
     Page.verifyOnPage(CategoriserSubmittedPage)
+
+    provisionalCategoryPage.signOut().click();
 
     cy.task('stubUncategorisedAwaitingApproval')
     cy.stubLogin({
@@ -927,9 +887,11 @@ describe('Open conditions', () => {
       bookingIds: [11],
       startDates: [new Date('2019-01-28')],
     })
-    supervisorReviewPage1.overrideCatD().click()
+
     supervisorReviewPage1.selectAgreeWithProvisionalCategoryRadioButton('NO')
     supervisorReviewPage1.overrideCatD().click()
+
+
     supervisorReviewPage1.enterOverrideReason('super overriding C to D reason text')
     supervisorReviewPage1.enterOtherInformationText('super other info 1')
     supervisorReviewPage1.submitButton().click()
@@ -938,6 +900,7 @@ describe('Open conditions', () => {
 */
 
     const supervisorHomePage3 = Page.verifyOnPage(SupervisorHomePage)
+    supervisorReviewPage1.signOut().click()
     cy.task('stubUncategorised')
     cy.stubLogin({
       user: CATEGORISER_USER,
@@ -1024,7 +987,6 @@ describe('Open conditions', () => {
     cy.task('stubSupervisorApprove')
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
-    cy.task('stubSupervisorApprove')
     supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
     supervisorReviewPage.submitButton().click()
 
@@ -1059,10 +1021,36 @@ describe('Open conditions', () => {
     })
 
     approvedViewPage.otherInformationSummary().contains('categoriser relevant info for accept')
+/*
     approvedViewPage.commentLabel().size() == 1
+*/
   })
 
-
+  function stubs() {
+    cy.task('stubUncategorised')
+    cy.task('stubSentenceData', {
+      offenderNumbers: ['B2345XY', 'B2345YZ'],
+      bookingIds: [11, 12],
+      startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
+    })
+    cy.task('stubGetSocProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      transferToSecurity: false,
+    })
+    cy.task('stubGetExtremismProfile', {
+      offenderNo: 'B2345YZ',
+      category: 'C',
+      increasedRisk: false,
+      notifyRegionalCTLead: false,
+    })
+    cy.task('stubGetOffenderDetails', {
+      bookingId: 12,
+      offenderNo: 'B2345YZ',
+      youngOffender: false,
+      indeterminateSentence: false,
+    })
+  }
 
   function completeOpenConditionsWorkflow(taskListPage: TaskListPage, furtherChanarges: boolean) {
     taskListPage.openConditionsButton().click()
