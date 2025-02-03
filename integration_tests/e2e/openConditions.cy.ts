@@ -101,6 +101,9 @@ describe('Open conditions', () => {
       approvedBy: SUPERVISOR_USER.username,
     })
     setUpStubs()
+
+    setUpProfiles()
+
     cy.stubLogin({
       user: CATEGORISER_USER,
     })
@@ -302,8 +305,6 @@ describe('Open conditions', () => {
 
     const taskListPage1 = Page.verifyOnPage(TaskListPage)
     taskListPage1.openConditionsButton().should('not.exist')
-
-    setUpProfiles()
 
     taskListPage1.continueReviewAndCategorisationButton(12).click()
 
@@ -787,7 +788,6 @@ describe('Open conditions', () => {
     provisionalCategoryPage.appropriateYes().click()
     provisionalCategoryPage.submitButton().click()
 
-    // Failure here
     CategoriserSubmittedPage.createForBookingId(12)
     Page.verifyOnPage(CategoriserSubmittedPage)
 
@@ -802,7 +802,7 @@ describe('Open conditions', () => {
     const supervisorHomePage2 = Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage2.startReviewForPrisoner(12)
 
-    const supervisorReviewPage1 = Page.verifyOnPage(SupervisorReviewPage)
+    const supervisorReviewPage2 = Page.verifyOnPage(SupervisorReviewPage)
     cy.task('stubSupervisorReject')
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345XY'],
@@ -810,19 +810,17 @@ describe('Open conditions', () => {
       startDates: [new Date('2019-01-28')],
     })
 
-    supervisorReviewPage1.selectAgreeWithProvisionalCategoryRadioButton('NO')
-    supervisorReviewPage1.overrideCatD().click()
-
-
-    supervisorReviewPage1.enterOverrideReason('super overriding C to D reason text')
-    supervisorReviewPage1.enterOtherInformationText('super other info 1')
-    supervisorReviewPage1.submitButton().click()
+    supervisorReviewPage2.selectAgreeWithProvisionalCategoryRadioButton('NO')
+    supervisorReviewPage2.overrideCatD().click()
+    supervisorReviewPage2.enterOverrideReason('super overriding C to D reason text')
+    supervisorReviewPage2.enterOtherInformationText('super other info 1')
+    supervisorReviewPage2.submitButton().click()
 /*
     supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
 */
 
     Page.verifyOnPage(SupervisorHomePage)
-    supervisorReviewPage1.signOut().click()
+    supervisorReviewPage2.signOut().click()
     cy.task('stubUncategorised')
     cy.stubLogin({
       user: CATEGORISER_USER,
@@ -892,7 +890,6 @@ describe('Open conditions', () => {
     const categoriserAwaitingApprovalViewPage = Page.verifyOnPage(CategoriserAwaitingApprovalViewPage)
     categoriserAwaitingApprovalViewPage.warning().contains('Category for approval is open category')
 
-    cy.task('stubUncategorisedAwaitingApproval')
     cy.stubLogin({
       user: SUPERVISOR_USER,
     })
