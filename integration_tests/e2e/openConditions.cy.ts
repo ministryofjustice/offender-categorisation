@@ -819,6 +819,12 @@ describe('Open conditions', () => {
     supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
 */
 
+    cy.task('stubSentenceData', {
+      offenderNumbers: ['B2345XY', 'B2345YZ'],
+      bookingIds: [11, 12],
+      startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
+    })
+
     Page.verifyOnPage(SupervisorHomePage)
     supervisorReviewPage2.signOut().click()
     cy.task('stubUncategorised')
@@ -828,7 +834,7 @@ describe('Open conditions', () => {
     cy.signIn()
 
     const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-    categoriserHomePage.selectPrisonerWithBookingId(12)
+    categoriserHomePage.selectPrisonerWithBookingId(12, 'Edit')
 
     const taskListPage1 = TaskListPage.createForBookingId(12)
     taskListPage1.supervisorMessageButton().click()
@@ -841,7 +847,7 @@ describe('Open conditions', () => {
     supervisorMessagePage.saveAndReturnButton().click()
 
     const taskListPage2 = TaskListPage.createForBookingId(12)
-    completeOpenConditionsWorkflow(taskListPage2, true)
+    completeOpenConditionsWorkflow(taskListPage2, false)
 
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
@@ -878,14 +884,15 @@ describe('Open conditions', () => {
       nextReviewDate: '2019-12-14',
       sequenceNumber: 5,
     })
-    provisionalCategoryPage1.appropriateYes().click()
+    provisionalCategoryPage1.openConditionsAppropriateYes().click()
     provisionalCategoryPage1.submitButton().click()
 
-    CategoriserSubmittedPage.createForBookingId(12)
+    const categoriserSubmittedPage = CategoriserSubmittedPage.createForBookingId(12)
     cy.task('stubUncategorisedAwaitingApproval')
+    categoriserSubmittedPage.finishButton().click()
 
     Page.verifyOnPage(CategoriserHomePage)
-    categoriserHomePage.selectPrisonerWithBookingId(12)
+    categoriserHomePage.selectCompletedPrisonerWithBookingId(12)
 
     const categoriserAwaitingApprovalViewPage = Page.verifyOnPage(CategoriserAwaitingApprovalViewPage)
     categoriserAwaitingApprovalViewPage.warning().contains('Category for approval is open category')
@@ -895,9 +902,9 @@ describe('Open conditions', () => {
     })
     cy.signIn()
 
+    cy.task('stubSupervisorApprove')
     const supHomePage = Page.verifyOnPage(SupervisorHomePage)
     supHomePage.startReviewForPrisoner(12)
-    cy.task('stubSupervisorApprove')
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
     supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
@@ -924,11 +931,11 @@ describe('Open conditions', () => {
       'The supervisor also recommends open category',
     ])
 
-    approvedViewPage.validateCategoriserComments({
+    approvedViewPage.validatePreviousSupervisorComments({
       expectedComments: 'super overriding C to D reason text'
     })
 
-    approvedViewPage.validateCategoriserComments({
+    approvedViewPage.validateOtherSupervisorComments({
       expectedComments: 'super other info 1'
     })
 
@@ -995,7 +1002,7 @@ describe('Open conditions', () => {
     })
   }
 
-  function completeOpenConditionsWorkflow(taskListPage: TaskListPage, furtherChanarges: boolean) {
+  function completeOpenConditionsWorkflow(taskListPage: TaskListPage, furtherChanges: boolean) {
     taskListPage.openConditionsButton().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
@@ -1027,8 +1034,12 @@ describe('Open conditions', () => {
     riskOfSeriousHarmPage.continueButton().click()
 
     const furtherChargesPage = Page.verifyOnPage(FurtherChargesPage)
-    furtherChargesPage.setFurtherChargesCategoryBAppropriateText('furtherChargesText details')
-    furtherChargesPage.selectIncreasedRiskRadioButton('NO')
+    if (furtherChanges) {
+      furtherChargesPage.setFurtherChargesCategoryBAppropriateText('furtherChargesText details')
+      furtherChargesPage.selectIncreasedRiskRadioButton('NO')
+    } else {
+      furtherChargesPage.selectFurtherChargesRadioButton('NO')
+    }
     furtherChargesPage.continue().click()
 
     const riskLevelsPage = Page.verifyOnPage(RiskLevelsPage)
