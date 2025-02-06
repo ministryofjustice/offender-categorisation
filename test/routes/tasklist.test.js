@@ -112,14 +112,21 @@ describe('GET /tasklist/', () => {
   })
 
   test('should render a tasklist for female prison', () => {
-    userService.getUser.mockResolvedValue({
-      activeCaseLoad: {
-        caseLoadId: 'PFI',
-        description: 'Peterborough Female HMP',
-        type: 'INST',
-        caseloadFunction: 'GENERAL',
-        currentlyActive: true,
-        female: true,
+    offendersService.getOffenderDetails.mockResolvedValue({
+      offenderNo: 'GN123',
+      prisonId: 'PFI',
+      sentence: {
+        bookingId: 12345,
+        releaseDate: '2019-01-01',
+        homeDetentionCurfewEligibilityDate: '2020-06-10',
+        automaticReleaseDate: '2020-06-11',
+        conditionalReleaseDate: '2020-02-02',
+        conditionalReleaseOverrideDate: '2020-04-04',
+        paroleEligibilityDate: '2020-06-13',
+        nonParoleDate: '2020-06-14',
+        tariffDate: '2020-06-15',
+        licenceExpiryDate: '2020-06-16',
+        sentenceExpiryDate: '2020-06-17',
       },
     })
     return request(app)

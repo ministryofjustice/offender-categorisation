@@ -1422,6 +1422,7 @@ const stubUncategorisedNoStatus = ({
         {
           bookingId,
           offenderNo: `ON${bookingId}`,
+          prisonId: location,
           firstName: location === 'LEI' ? 'HARRY' : 'WILLIAM',
           lastName: 'BONNET',
           status: 'UNCATEGORISED',
