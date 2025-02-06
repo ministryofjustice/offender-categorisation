@@ -14,6 +14,7 @@ describe('Category Decision', () => {
   let bookingId: number
 
   beforeEach(() => {
+    cy.task('deleteRowsFromForm')
     cy.task('reset')
     cy.task('setUpDb')
   })
