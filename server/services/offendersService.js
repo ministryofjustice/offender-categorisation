@@ -214,7 +214,7 @@ module.exports = function createOffendersService(
           const dbRecord = raw.lastName ? await formService.getCategorisationRecord(raw.bookingId) : raw
 
           if (dbRecord.catType === 'RECAT') {
-            logger.warn(
+            logger.info(
               `Initial cat missing recalls investigation: booking id=${dbRecord.bookingId}, offenderNo=${dbRecord.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`
             )
             return null
