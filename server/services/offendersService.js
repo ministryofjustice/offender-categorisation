@@ -769,6 +769,13 @@ module.exports = function createOffendersService(
           return null
         }
 
+        const sentenceStartDate = prisonerSearchData.get(raw.bookingId)?.sentenceStartDate || null
+        if (sentenceStartDate == null || moment(sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))) {
+          logger.info(
+            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}`
+          )
+        }
+
         const releaseDateForDecidingIfRecordShouldBeIncluded =
           !raw.dbRecord || !raw.dbRecord.catType || raw.dbRecord.catType === CatType.RECAT.name
             ? prisonerSearchData.get(raw.bookingId)?.releaseDate || null
