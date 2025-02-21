@@ -44,8 +44,7 @@
     <thead class="govuk-table__head">
 
     <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Name</th>
-      <th class="govuk-table__header" scope="col">Prison no.</th>
+      <th class="govuk-table__header" scope="col">Name and prison number</th>
       <th class="govuk-table__header" scope="col">Approved on</th>
       <th class="govuk-table__header" scope="col">Categorised by</th>
       <th class="govuk-table__header" scope="col">Approved by</th>
@@ -57,8 +56,10 @@
     {% set regExp = r/referred to security/i %}
     {% for row in offenders %}
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a></td>
-      <td class="govuk-table__cell">{{ row.offenderNo }}</td>
+      <td class="govuk-table__cell">
+        <a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
+        <p>{{ row.offenderNo }}</p>
+      </td>
       <td class="govuk-table__cell">{{ row.displayApprovalDate }}</td>
       <td class="govuk-table__cell">{{ row.displayCategoriserName }}</td>
       <td class="govuk-table__cell">{{ row.displayApproverName }}</td>
