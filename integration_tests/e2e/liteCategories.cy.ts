@@ -216,8 +216,7 @@ describe('Lite Categories', () => {
         categoriserHomePage.validateToDoTableData([
           [
             'Overdue',
-            'Pitstop, Penelope',
-            'B2345XY',
+            'Pitstop, PenelopeB2345XY',
             moment().diff(new Date(sentenceStartDates['B2345YZ']), 'days').toString(),
             'Not categorised',
             'Engelbert Humperdinck',
@@ -225,8 +224,7 @@ describe('Lite Categories', () => {
           ],
           [
             'Overdue',
-            'Hillmob, Ant',
-            'B2345YZ',
+            'Hillmob, AntB2345YZ',
             moment().diff(new Date(sentenceStartDates['B2345XY']), 'days').toString(),
             'Awaiting approval',
             'Engelbert Humperdinck',

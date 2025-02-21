@@ -1,6 +1,7 @@
 import BaseSupervisorPage from './base'
 
-type ToDoTableData = [string, string, string, string, string, string, string, string, string][]
+// FIXME
+type ToDoTableData = (string[])[]
 
 export default class SupervisorHomePage extends BaseSupervisorPage {
   static baseUrl: string = '/supervisorHome'
