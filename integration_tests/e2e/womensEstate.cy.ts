@@ -25,7 +25,6 @@ import femaleYoungOffenders from '../fixtures/womensEstate/femaleYoungOffenders'
 import { FormDbJson } from '../fixtures/db-key-convertor'
 import Status from '../../server/utils/statusEnum'
 import OpenConditionsAdded from '../pages/openConditionsAdded'
-import TprsPage from '../pages/form/openConditions/tprs'
 import EarliestReleaseDatePage from '../pages/form/openConditions/earliestReleaseDate'
 import PreviousSentencesPage from '../pages/form/openConditions/previousSentences'
 import SexualOffencesPage from '../pages/form/openConditions/sexualOffences'
@@ -326,10 +325,6 @@ describe("Women's Estate", () => {
       openConditionsAddedPage.returnToTasklistButton(bookingId).click()
 
       taskListPage.openConditionsButton().click()
-
-      const tprsPage = TprsPage.createForBookingId(bookingId)
-      tprsPage.selectTprsRadioButton('NO')
-      tprsPage.continueButton().click()
 
       const earliestReleaseDatePage = EarliestReleaseDatePage.createForBookingId(bookingId)
       earliestReleaseDatePage.selectEarliestReleaseDateRadioButton('NO')
