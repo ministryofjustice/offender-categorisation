@@ -21,4 +21,5 @@ export interface PrisonerSearchDto {
   alerts: PrisonerSearchAlertDto[] | undefined
   currentIncentive: PrisonerSearchIncentiveLevelDto | undefined
   legalStatus: LegalStatus
+  recall: boolean | undefined
 }
