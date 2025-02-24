@@ -81,7 +81,7 @@ describe('Supervisor Home page', () => {
           'PNOMIS',
         ],
         [
-          `Hillmob, Ant${offender2.offenderNo}`,
+          `Hillmob, Ant\n        ${offender2.offenderNo}`,
           calculateDueDate(offender2.startDate).daysSinceSentence.toString(),
           calculateDueDate(offender2.startDate).dateRequired,
           '02/02/2025',
