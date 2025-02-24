@@ -11,6 +11,7 @@ describe('Categoriser Home page', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   it('should be inaccessible to users without CATEGORISER_USER', () => {

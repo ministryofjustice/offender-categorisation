@@ -146,8 +146,8 @@ describe("Women's estate recategorisation", () => {
     const securityHomePage = Page.verifyOnPage(SecurityHomePage)
     securityHomePage.validateCategorisationReferralsToDoTableColumnData([
       {
-        columnName: 'Prison no.',
-        expectedValues: [testOffenderNumber],
+        columnName: 'Name and prison number',
+        expectedValues: ['Clark, Frank\n        '+testOffenderNumber],
       },
       {
         columnName: 'Referred by',

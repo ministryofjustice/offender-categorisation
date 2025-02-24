@@ -71,8 +71,7 @@ describe('Supervisor Home page', () => {
       const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
       supervisorHomePage.validateToDoTableData([
         [
-          'Pitstop, Penelope',
-          offender1.offenderNo,
+          `Pitstop, Penelope${offender1.offenderNo}`,
           calculateDueDate(offender1.startDate).daysSinceSentence.toString(),
           calculateDueDate(offender1.startDate).dateRequired,
           '01/01/2025',
@@ -82,8 +81,7 @@ describe('Supervisor Home page', () => {
           'PNOMIS',
         ],
         [
-          'Hillmob, Ant',
-          offender2.offenderNo,
+          `Hillmob, Ant${offender2.offenderNo}`,
           calculateDueDate(offender2.startDate).daysSinceSentence.toString(),
           calculateDueDate(offender2.startDate).dateRequired,
           '02/02/2025',

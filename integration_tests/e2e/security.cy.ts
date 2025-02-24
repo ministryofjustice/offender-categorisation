@@ -14,6 +14,7 @@ context('Security', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   beforeEach(() => {
@@ -157,8 +158,7 @@ context('Security', () => {
 
     it(`should display a table containing the expected prisoner categorisation data`, () => {
       ;[
-        { columnName: 'Name', expectedValues: ['Dent, Jane', 'Clark, Frank'] },
-        { columnName: 'Prison no.', expectedValues: ['B2345YZ', 'B2345XY'] },
+        { columnName: 'Name and prison number', expectedValues: ['Dent, Jane\n        B2345YZ', 'Clark, Frank\n        B2345XY'] },
         { columnName: 'Date reviewed', expectedValues: ['31/01/2019', '28/01/2019'] },
         {
           columnName: 'Reviewed by',
@@ -251,8 +251,7 @@ context('Security', () => {
 
     it(`should display a table containing the expected upcoming categorisation referrals`, () => {
       ;[
-        { columnName: 'Name', expectedValues: ['Clark, Frank', 'Dent, Jane'] },
-        { columnName: 'Prison no.', expectedValues: ['B2345XY', 'B2345YZ'] },
+        { columnName: 'Name and prison number', expectedValues: ['Clark, Frank\n        B2345XY', 'Dent, Jane\n        B2345YZ'] },
         {
           columnName: 'Days since sentence',
           expectedValues: ['B2345XY', 'B2345YZ'].map(offenderNo =>
