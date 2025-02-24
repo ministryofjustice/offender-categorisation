@@ -161,7 +161,7 @@
                 {% set buttonClasses = buttonClassesDefault + " grey-button" if openConditionsCompleted else buttonClassesDefault %}
                 {{ govukButton({
                 text: buttonTextSec,
-                href: if data.isInWomensEstate "/form/openConditions/earliestReleaseDate/" + data.details.bookingId else "/form/openConditions/tprs/" + data.details.bookingId,
+                href: "/form/openConditions/earliestReleaseDate/" + data.details.bookingId if data.isInWomensEstate else "/form/openConditions/tprs/" + data.details.bookingId,
                 classes: buttonClasses,
                 attributes: { 'id': 'openConditionsButton' }
                 })
