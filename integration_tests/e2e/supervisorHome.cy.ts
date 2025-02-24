@@ -71,7 +71,7 @@ describe('Supervisor Home page', () => {
       const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
       supervisorHomePage.validateToDoTableData([
         [
-          `Pitstop, Penelope${offender1.offenderNo}`,
+          `Pitstop, Penelope\n        ${offender1.offenderNo}`,
           calculateDueDate(offender1.startDate).daysSinceSentence.toString(),
           calculateDueDate(offender1.startDate).dateRequired,
           '01/01/2025',
