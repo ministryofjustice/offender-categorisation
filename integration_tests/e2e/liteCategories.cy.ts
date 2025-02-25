@@ -289,7 +289,7 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage.otherCategoriesTabLink().click()
 
       supervisorDashboardHomePage.validateOtherCategoriesTableData([
-        ['23/06/2023', 'Dent, Jane\n        B2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
+        ['23/06/2023', 'Dent, JaneB2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
       ])
 
       cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
@@ -512,7 +512,7 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage.otherCategoriesTabLink().click()
 
       supervisorDashboardHomePage.validateOtherCategoriesTableData([
-        ['23/06/2023', 'Dent, Jane\n        B2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
+        ['23/06/2023', 'Dent, JaneB2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
       ])
     })
 
@@ -529,7 +529,7 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage.otherCategoriesTabLink().click()
 
       supervisorDashboardHomePage.validateOtherCategoriesTableData([
-        ['23/06/2023', 'Clark, Frank\n        B2345XY', 'CATEGORISER_USER', 'V', 'Approve'],
+        ['23/06/2023', 'Clark, FrankB2345XY', 'CATEGORISER_USER', 'V', 'Approve'],
       ])
     })
   })

@@ -96,7 +96,7 @@ describe('Categoriser Done page', () => {
       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
       categoriserHomePage.doneTabLink().click()
       ;[
-        { columnName: 'Name and prison number', expectedValues: ['Scramble, Tim\n        B2345XY', 'Hemmel, Sarah\n        B2345YZ'] },
+        { columnName: 'Name and prison number', expectedValues: ['Scramble, TimB2345XY', 'Hemmel, SarahB2345YZ'] },
         {
           columnName: 'Approved on',
           expectedValues: ['20/04/2019', '28/02/2019'],

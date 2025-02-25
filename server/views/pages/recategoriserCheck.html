@@ -56,8 +56,7 @@
     <tr class="govuk-table__row ">
       <td class="govuk-table__cell">{{ row.displayCreatedDate }}</td>
       <td class="govuk-table__cell">
-        <a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
-        <p>{{ row.offenderNo }}</p>
+        <a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a><p class="govuk-!-margin-left-0">{{ row.offenderNo }}</p>
       </td>
       <td class="govuk-table__cell">{{ row.displayNextReviewDate }}</td>
       <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">

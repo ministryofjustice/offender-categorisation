@@ -138,7 +138,7 @@ describe('Security Landing', () => {
     securityHomePage.validateCategorisationReferralsToDoTableColumnData([
       {
         columnName: 'Name and prison number',
-        expectedValues: ['Clark, Frank\n        B2345YZ'],
+        expectedValues: ['Clark, FrankB2345YZ'],
       },
       {
         columnName: 'Referred by',
