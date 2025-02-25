@@ -5,6 +5,7 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
 const RiskChange = require('../utils/riskChangeStatusEnum')
+const { isFemalePrisonId } = require("../utils/utils");
 
 const calculateNextReviewDate = details => {
   // Endpoint only returns the latest assessment for each type
@@ -138,6 +139,7 @@ module.exports = function Index({
         securityReferredDate:
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
+        isInWomensEstate: isFemalePrisonId(details.prisonId),
       }
       return res.render('pages/tasklistRecat', { data, backLink, reason })
     })
