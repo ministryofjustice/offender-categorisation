@@ -121,7 +121,7 @@ describe('Recategoriser Home page', () => {
       recategoriserHomePage.validateCategoryReviewsTableData([
         [
           moment(recat.nextReviewDate).format('DD/MM/yyyy'),
-          `Bethid, Dufeathophe\n              ${recat.offenderNo}`,
+          `Bethid, Dufeathophe${recat.offenderNo}`,
           'Review due',
           'Awaiting approval',
           'Engelbert Humperdinck',
