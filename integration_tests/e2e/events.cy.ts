@@ -9,6 +9,7 @@ describe('Events', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   describe('prisoner-offender-search.prisoner.released', () => {
