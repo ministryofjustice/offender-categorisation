@@ -287,7 +287,9 @@ class HomePageSpecification extends AbstractSpecification {
     at RecategoriserHomePage
     elite2Api.stubAgencyDetails('LPI') // existing assessments
     elite2Api.stubGetOffenderDetails(11, "B2345XY")
-    startButtons[2].click()
+    waitFor {
+      startButtons[2].click()
+    }
 
     then: 'The view page is displayed'
     at RecategoriserAwaitingApprovalViewPage
@@ -357,7 +359,9 @@ class HomePageSpecification extends AbstractSpecification {
 
     elite2Api.stubAgencyDetails('LPI') // existing assessments
     elite2Api.stubGetOffenderDetails(11, "B2345XY")
-    startButtons[2].click()
+    waitFor {
+      startButtons[2].click()
+    }
 
     then: 'The view page is displayed'
     at RecategoriserAwaitingApprovalViewPage

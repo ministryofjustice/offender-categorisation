@@ -193,7 +193,7 @@ describe("Women's estate recategorisation", () => {
     checkPrisonerHeaderSummary()
     cy.get('#nextDateChoice').click()
     cy.get('button[type="submit"]').contains('Continue').click()
-    cy.get('#reviewDate').should('have.value', moment().add(6, 'months').format('DD/M/YYYY'))
+    cy.get('#reviewDate').should('have.value', moment().add(6, 'months').format('D/M/YYYY'))
     cy.get('button[type="submit"]').contains('Save and return').click()
 
     taskListPage.validateSummarySection()

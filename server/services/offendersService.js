@@ -214,6 +214,9 @@ module.exports = function createOffendersService(
           const dbRecord = raw.lastName ? await formService.getCategorisationRecord(raw.bookingId) : raw
 
           if (dbRecord.catType === 'RECAT') {
+            logger.info(
+              `Initial cat missing recalls investigation: booking id=${dbRecord.bookingId}, offenderNo=${dbRecord.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`
+            )
             return null
           }
 
@@ -764,6 +767,13 @@ module.exports = function createOffendersService(
 
         if (isInitialInProgress(dbRecord)) {
           return null
+        }
+
+        const sentenceStartDate = prisonerSearchData.get(raw.bookingId)?.sentenceStartDate || null
+        if (sentenceStartDate == null || moment(sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))) {
+          logger.info(
+            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}`
+          )
         }
 
         const releaseDateForDecidingIfRecordShouldBeIncluded =

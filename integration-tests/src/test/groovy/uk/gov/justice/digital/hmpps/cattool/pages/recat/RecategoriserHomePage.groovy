@@ -26,10 +26,14 @@ class RecategoriserHomePage extends Page {
   }
 
   def selectFirstPrisoner() {
-    startButtons[0].click() // should select 11 / B2345YZ
+    waitFor {
+      startButtons[0].click() // should select 11 / B2345YZ
+    }
   }
 
   def selectSecondPrisoner() {
-    startButtons[1].click() // should select 12 / B2345XY
+    waitFor {
+      startButtons[1].click() // should select 12 / B2345XY
+    }
   }
 }

@@ -21,6 +21,16 @@ type FurtherChargesCategoryBAppropriateChoiceValues =
   | typeof furtherChargesCategoryBAppropriateRadioChoiceHtmlSelectors.YES
   | typeof furtherChargesCategoryBAppropriateRadioChoiceHtmlSelectors.NO
 
+const increasedRiskRadioChoiceHtmlSelectors = {
+  YES: '#increasedRisk',
+  NO: '#increasedRisk-2',
+} as const
+
+type IncreasedRiskChoice = keyof typeof increasedRiskRadioChoiceHtmlSelectors
+type IncreasedRiskChoiceValues =
+  | typeof increasedRiskRadioChoiceHtmlSelectors.YES
+  | typeof increasedRiskRadioChoiceHtmlSelectors.NO
+
 const SELECTORS = {
   FURTHER_CHARGES: {
     ERROR: '#furtherChargesText-error',
@@ -108,6 +118,8 @@ export default class FurtherChargesPage extends Page {
 
   saveAndReturnButton = (): PageElement => cy.get('button[type="submit"]').contains('Save and return')
 
+  continue = (): PageElement => cy.get('button[type="submit"]').contains('Continue')
+
   selectFurtherChargesRadioButton = (selectedTextValue: FurtherChargesChoice): PageElement =>
     cy.get(furtherChargesRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
@@ -116,4 +128,9 @@ export default class FurtherChargesPage extends Page {
   ): PageElement => cy.get(furtherChargesCategoryBAppropriateRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
   setFurtherChargesCategoryBAppropriateText = (text: string) => cy.get(SELECTORS.FURTHER_CHARGES.TEXTAREA).type(text)
+
+  clearFurtherChargesCategoryBAppropriateText = () => cy.get(SELECTORS.FURTHER_CHARGES.TEXTAREA).clear()
+
+  selectIncreasedRiskRadioButton = (selectedTextValue: IncreasedRiskChoice): PageElement =>
+    cy.get(increasedRiskRadioChoiceHtmlSelectors[selectedTextValue]).click()
 }
