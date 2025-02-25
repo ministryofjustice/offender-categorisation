@@ -15,9 +15,8 @@ class RecategoriserPotentialReviewsPage extends Page {
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     raisedDates { bodyRows*.$('td', 0)*.text()  }
     names { bodyRows*.$('td', 1)*.text() }
-    prisonNos { bodyRows*.$('td', 2)*.text()  }
-    dueDate { bodyRows*.$('td', 3)*.text()  }
-    checkButtons { bodyRows*.$('td', 4)*.find('*')  }
+    dueDate { bodyRows*.$('td', 2)*.text()  }
+    checkButtons { bodyRows*.$('td', 3)*.find('*')  }
     todoTabLink { $('a', href: '/recategoriserHome')}
     noResultsDiv { $('#no-results-message') }
     doneTabLink { $('a', href: '/recategoriserDone')}

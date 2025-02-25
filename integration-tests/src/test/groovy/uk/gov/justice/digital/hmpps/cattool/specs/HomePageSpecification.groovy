@@ -55,9 +55,18 @@ class HomePageSpecification extends AbstractSpecification {
 
     then: 'The categoriser home page is displayed'
     at CategoriserHomePage
-    prisonNos == ['B0039AA', 'B0040AA', 'B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA']
-    names == ['Supervisor_back, Awaiting', 'Hillmob, Ant', 'Missing, Awaiting', 'Started, Awaiting', 'Awaiting, Awaiting', 'Approved, Awaiting', 'Missing, Uncategorised',
-              'Started, Uncategorised', 'Awaiting, Uncategorised', 'Approved, Uncategorised']
+    names == ['Supervisor_back, Awaiting\n' +
+                'B0039AA', 'Hillmob, Ant\n' +
+      'B0040AA', 'Missing, Awaiting\n' +
+      'B0031AA', 'Started, Awaiting\n' +
+      'B0032AA', 'Awaiting, Awaiting\n' +
+      'B0033AA', 'Approved, Awaiting\n' +
+      'B0034AA', 'Missing, Uncategorised\n' +
+      'B0035AA',
+              'Started, Uncategorised\n' +
+                'B0036AA', 'Awaiting, Uncategorised\n' +
+                'B0037AA', 'Approved, Uncategorised\n' +
+                'B0038AA']
     days == ['1', '70', '55', '50', '47', '43', '39', '19', '14', '5']
     dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
               'Overdue', 'Overdue', 'Overdue', 'Overdue', 'Overdue', 'Overdue', 'Overdue',
@@ -97,8 +106,7 @@ class HomePageSpecification extends AbstractSpecification {
 
     then: 'The supervisor home page is displayed'
     at SupervisorHomePage
-    prisonNos == ['B0036AA', 'B0034AA', 'B0033AA', 'B0032AA', 'B0031AA']
-    names == ['Recat, Mr', 'Approved, Awaiting', 'Awaiting, Awaiting', 'Started, Awaiting', 'Missing, Awaiting']
+    names == ['Recat, Mr\nB0036AA', 'Approved, Awaiting\nB0034AA', 'Awaiting, Awaiting\nB0033AA', 'Started, Awaiting\nB0032AA', 'Missing, Awaiting\nB0031AA']
     days == ['', daysSinceSentence34, daysSinceSentence33, daysSinceSentence32, daysSinceSentence31]
     dates == ['', '11/02/2019', '14/02/2019', '18/02/2019', '22/02/2019']
     nextReviewDate == ['01/02/2019', '', '', '', '15/01/2019']
@@ -120,8 +128,11 @@ class HomePageSpecification extends AbstractSpecification {
 
     then: 'The recategoriser home page is displayed'
     at RecategoriserHomePage
-    prisonNos == ['B2345XY', 'C0001AA', 'B2345YZ', 'C0002AA']
-    names == ['Pitstop, Penelope', 'Tim, Tiny', 'Hillmob, Ant', 'Mole, Adrian']
+    names == ['Pitstop, Penelope\n' +
+                'B2345XY', 'Tim, Tiny\n' +
+      'C0001AA', 'Hillmob, Ant\n' +
+      'B2345YZ', 'Mole, Adrian\n' +
+      'C0002AA']
     dates == ['Overdue', 'Overdue', 'Overdue', TODAY.plusDays(17).format('dd/MM/yyyy')]
     reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
@@ -264,7 +275,6 @@ class HomePageSpecification extends AbstractSpecification {
 
     then: 'The cancelled record is available to initial categorisation'
     at CategoriserHomePage
-    prisonNos == ['B2345YZ','B2345XY']
     statuses == ['Not categorised', 'Not categorised']
     startButtons*.text() == ['Start', 'Start']
   }
@@ -326,7 +336,6 @@ class HomePageSpecification extends AbstractSpecification {
 
     then: 'The cancelled record is available to recategorise'
     at RecategoriserHomePage
-    prisonNos == ['B2345XY', 'C0001AA', 'B2345YZ', 'C0002AA']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     startButtons*.text() == ['Start', 'Start', 'Start', 'Start']
   }
@@ -385,7 +394,6 @@ class HomePageSpecification extends AbstractSpecification {
 
     then: 'The recategoriser done page is displayed, showing the completed categorisation (prior to the cancellation)'
     at RecategoriserDonePage
-    prisonNos == ['B2345XY']
   }
 
   def "Log out"() {
