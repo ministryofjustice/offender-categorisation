@@ -16,6 +16,7 @@ describe('Further Charges', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   beforeEach(() => {

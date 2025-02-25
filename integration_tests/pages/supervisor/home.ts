@@ -1,6 +1,6 @@
 import BaseSupervisorPage from './base'
 
-type ToDoTableData = [string, string, string, string, string, string, string, string, string][]
+type ToDoTableData = [string, string, string, string, string, string, string, string][]
 
 export default class SupervisorHomePage extends BaseSupervisorPage {
   static baseUrl: string = '/supervisorHome'

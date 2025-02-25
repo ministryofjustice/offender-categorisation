@@ -16,10 +16,9 @@ class SupervisorLiteListPage extends Page {
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     assessmentDates { bodyRows*.$('td', 0)*.text()  }
     names { bodyRows*.$('td', 1)*.text() }
-    prisonNos { bodyRows*.$('td', 2)*.text()  }
-    categorisers { bodyRows*.$('td', 3)*.text()  }
-    categories { bodyRows*.$('td', 4)*.text()  }
-    approveButtons { bodyRows*.$('td', 5)*.find('*')  }
+    categorisers { bodyRows*.$('td', 2)*.text()  }
+    categories { bodyRows*.$('td', 3)*.text()  }
+    approveButtons { bodyRows*.$('td', 4)*.find('*')  }
     todoTabLink { $('a', href: '/supervisorHome')}
     doneTabLink { $('a', href: '/supervisorDone')}
     logoutLink { $('a', href: '/sign-out')}
