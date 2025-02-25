@@ -45,8 +45,7 @@
     <thead class="govuk-table__head">
 
     <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Name</th>
-      <th class="govuk-table__header" scope="col">Prison no.</th>
+      <th class="govuk-table__header" scope="col">Name and prison number</th>
       <th class="govuk-table__header" scope="col">Days since sentence</th>
       <th class="govuk-table__header" scope="col">Date due</th>
       <th class="govuk-table__header" scope="col">Referred by</th>
@@ -57,8 +56,9 @@
     <tbody class="govuk-table__body">
     {% for row in offenders %}
     <tr class="govuk-table__row ">
-      <td class="govuk-table__cell"><a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a></td>
-      <td class="govuk-table__cell">{{ row.offenderNo }}</td>
+      <td class="govuk-table__cell">
+        <a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a><p class="govuk-!-margin-left-0">{{ row.offenderNo }}</p>
+      </td>
       <td class="govuk-table__cell">{{ row.daysSinceSentence }}</td>
       <td class="govuk-table__cell">{{ row.dateRequired }}</td>
       <td class="govuk-table__cell">{{ row.securityReferredBy or 'Automatic' }}</td>

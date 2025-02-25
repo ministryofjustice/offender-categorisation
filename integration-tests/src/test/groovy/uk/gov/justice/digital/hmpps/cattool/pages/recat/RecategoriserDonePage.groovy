@@ -14,12 +14,11 @@ class RecategoriserDonePage extends Page {
     headingText { $('h1').text() }
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     names { bodyRows*.$('td', 0)*.text() }
-    prisonNos { bodyRows*.$('td', 1)*.text()  }
-    approvalDates { bodyRows*.$('td', 2)*.text()  }
-    categorisers { bodyRows*.$('td', 3)*.text()  }
-    approvers { bodyRows*.$('td', 4)*.text()  }
-    categories { bodyRows*.$('td', 5)*.text()  }
-    viewButtons { bodyRows*.$('td', 6)*.find('*')  }
+    approvalDates { bodyRows*.$('td', 1)*.text()  }
+    categorisers { bodyRows*.$('td', 2)*.text()  }
+    approvers { bodyRows*.$('td', 3)*.text()  }
+    categories { bodyRows*.$('td', 4)*.text()  }
+    viewButtons { bodyRows*.$('td', 5)*.find('*')  }
     todoTabLink { $('a', href: '/recategoriserHome')}
     noResultsDiv { $('#no-results-message') }
     checkTabLink { $('a', href: '/recategoriserCheck')}

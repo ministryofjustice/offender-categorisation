@@ -222,7 +222,8 @@ class SupervisorSpecification extends AbstractSpecification {
     at SupervisorHomePage
 
     then: 'offender with booking id 12 has been removed'
-    names == ['Pitstop, Penelope']
+    names == ['Pitstop, Penelope\n' +
+                'B2345XY']
 
     def data = db.getData(12)
     data.status == ["SUPERVISOR_BACK"]
@@ -451,8 +452,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     at SupervisorDonePage
 
-    prisonNos == ['B2345XY', 'B2345YZ']
-    names == ['Scramble, Tim', 'Hemmel, Sarah']
+    names == ['Scramble, Tim\nB2345XY', 'Hemmel, Sarah\nB2345YZ']
     approvalDates == ['20/04/2019', '28/02/2019']
     categorisers == ['Lamb, John', 'Fan, Jane']
     approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
@@ -571,7 +571,8 @@ class SupervisorSpecification extends AbstractSpecification {
     at SupervisorHomePage
 
     then: 'offender with booking id 12 has been removed'
-    names == ['Pitstop, Penelope']
+    names == ['Pitstop, Penelope\n' +
+                'B2345XY']
 
     def data = db.getData(12)
     data.status == ["SUPERVISOR_BACK"]

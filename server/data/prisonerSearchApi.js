@@ -56,6 +56,7 @@ module.exports = context => {
             alerts: r.alerts,
             currentIncentive: r.currentIncentive,
             legalStatus: r.legalStatus,
+            recall: r.recall,
             offenderNo: r.prisonerNumber,
           })
         )

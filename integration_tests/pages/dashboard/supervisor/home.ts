@@ -1,6 +1,6 @@
 import Page, { PageElement } from '../../page'
 
-type OtherCategoriesTableData = [string, string, string, string, string, string][]
+type OtherCategoriesTableData = [string, string, string, string, string][]
 
 export default class SupervisorDashboardHomePage extends Page {
   static baseUrl: string = '/supervisorHome'

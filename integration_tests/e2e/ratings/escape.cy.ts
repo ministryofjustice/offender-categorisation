@@ -16,6 +16,7 @@ describe('Escape Risk', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   beforeEach(() => {

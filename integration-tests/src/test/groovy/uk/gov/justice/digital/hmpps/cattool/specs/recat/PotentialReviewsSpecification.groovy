@@ -65,8 +65,7 @@ class PotentialReviewsSpecification extends AbstractSpecification {
     at RecategoriserPotentialReviewsPage
 
     raisedDates == ['31/01/2019']
-    names == ['Clark, Frank']
-    prisonNos == ['B2345XY']
+    names == ['Clark, Frank\nB2345XY']
     dueDate == ['25/07/2019']
 
   }

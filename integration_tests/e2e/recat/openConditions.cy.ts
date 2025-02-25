@@ -35,6 +35,7 @@ describe('Open Conditions', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
 
     sentenceStartDates = {
       B2345XY: new Date('2019-01-28'),

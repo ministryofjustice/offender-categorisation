@@ -188,8 +188,8 @@ describe('Security Input', () => {
           const securityHomePage = Page.verifyOnPage(SecurityHomePage)
           securityHomePage.validateCategorisationReferralsToDoTableColumnData([
             {
-              columnName: 'Prison no.',
-              expectedValues: ['B2345YZ'],
+              columnName: 'Name and prison number',
+              expectedValues: ['Clark, FrankB2345YZ'],
             },
             {
               columnName: 'Referred by',

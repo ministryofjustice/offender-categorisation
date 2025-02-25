@@ -1,6 +1,6 @@
 import BaseRecategoriserPage from './base'
 
-type CategoryReviewsTableData = [string, string, string, string, string, string, string][]
+type CategoryReviewsTableData = [string, string, string, string, string, string][]
 
 export default class RecategoriserHomePage extends BaseRecategoriserPage {
   static baseUrl: string = '/recategoriserHome'

@@ -25,6 +25,7 @@ describe('Recategoriser Home page', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   it('should be inaccessible to users without RECATEGORISER_USER', () => {
@@ -120,8 +121,7 @@ describe('Recategoriser Home page', () => {
       recategoriserHomePage.validateCategoryReviewsTableData([
         [
           moment(recat.nextReviewDate).format('DD/MM/yyyy'),
-          'Bethid, Dufeathophe',
-          recat.offenderNo,
+          `Bethid, Dufeathophe${recat.offenderNo}`,
           'Review due',
           'Awaiting approval',
           'Engelbert Humperdinck',

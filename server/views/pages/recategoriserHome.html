@@ -66,8 +66,7 @@
 
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">Due date</th>
-            <th class="govuk-table__header" scope="col">Name</th>
-            <th class="govuk-table__header" scope="col">Prison no</th>
+            <th class="govuk-table__header" scope="col">Name and prison number</th>
             <th class="govuk-table__header" scope="col">Reason for review</th>
             <th class="govuk-table__header" scope="col">Status</th>
             <th class="govuk-table__header" scope="col">POM</th>
@@ -88,7 +87,8 @@
                 {{ row.nextReviewDateDisplay }}
               {% endif %}
             </td>
-            <td class="govuk-table__cell"><a class="text-break-word" target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a>
+            <td class="govuk-table__cell">
+              <a class="text-break-word" target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a><p class="govuk-!-margin-left-0">{{ row.offenderNo }}</p>
               {% if row.securityReferred %}
                 {{ govukDetails({
                 summaryText: 'Security referred',
@@ -97,7 +97,6 @@
                 }) }}
               {% endif %}
             </td>
-            <td class="govuk-table__cell">{{ row.offenderNo }}</td>
             <td class="govuk-table__cell recategorisation-reason-for-review-column">{{ row.reason.value }}</td>
             <td class="govuk-table__cell text-break-word">
               {% if row.displayStatus == 'Back from Supervisor' %}

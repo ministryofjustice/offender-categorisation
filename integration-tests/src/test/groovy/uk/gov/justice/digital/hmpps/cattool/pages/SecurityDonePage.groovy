@@ -14,12 +14,11 @@ class SecurityDonePage extends Page {
     headingText { $('h1').text() }
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     names { bodyRows*.$('td', 0)*.text() }
-    prisonNos { bodyRows*.$('td', 1)*.text()  }
-    reviewedDates { bodyRows*.$('td', 2)*.text()  }
-    reviewer { bodyRows*.$('td', 3)*.text()  }
-    catTypes { bodyRows*.$('td', 4)*.text()  }
+    reviewedDates { bodyRows*.$('td', 1)*.text()  }
+    reviewer { bodyRows*.$('td', 2)*.text()  }
+    catTypes { bodyRows*.$('td', 3)*.text()  }
     logoutLink { $('a', href: '/sign-out')}
     homeTabLink { $('a', href: '/securityHome')}
-    viewButtons { bodyRows*.$('td', 5)*.find('*')  }
+    viewButtons { bodyRows*.$('td', 4)*.find('*')  }
   }
 }

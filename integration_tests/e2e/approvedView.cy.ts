@@ -16,6 +16,7 @@ describe('Approved view', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   it('should be inaccessible to users without the role of CATEGORISER_USER', () => {

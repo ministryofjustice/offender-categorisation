@@ -104,7 +104,6 @@ class TasklistSpecification extends AbstractSpecification {
 
     then: 'this prisoner is present with automatic referral'
     at SecurityHomePage
-    prisonNos[0] == 'B2345YZ'
     referredBy[0] == 'Automatic'
 
     when: 'the security user reads the page'
