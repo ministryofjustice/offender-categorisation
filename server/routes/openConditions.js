@@ -59,12 +59,11 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'provisionalCategory'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      let openConditionsSuggestedCat
       if (result.isInWomensEstate) {
-        openConditionsSuggestedCat = 'T'
-      } else {
-        openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
+        res.redirect(`/${result.catType === 'RECAT' ? 'tasklistRecat' : 'tasklist'}/${bookingId}`)
+        return
       }
+      const openConditionsSuggestedCat = formService.isYoungOffender(result.data.details) ? 'J' : 'D'
       const data = { ...result.data, openConditionsSuggestedCat }
 
       res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
