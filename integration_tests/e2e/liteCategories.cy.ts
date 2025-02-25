@@ -27,6 +27,7 @@ describe('Lite Categories', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   beforeEach(() => {
@@ -216,8 +217,7 @@ describe('Lite Categories', () => {
         categoriserHomePage.validateToDoTableData([
           [
             'Overdue',
-            'Pitstop, Penelope',
-            'B2345XY',
+            'Pitstop, PenelopeB2345XY',
             moment().diff(new Date(sentenceStartDates['B2345YZ']), 'days').toString(),
             'Not categorised',
             'Engelbert Humperdinck',
@@ -225,8 +225,7 @@ describe('Lite Categories', () => {
           ],
           [
             'Overdue',
-            'Hillmob, Ant',
-            'B2345YZ',
+            'Hillmob, AntB2345YZ',
             moment().diff(new Date(sentenceStartDates['B2345XY']), 'days').toString(),
             'Awaiting approval',
             'Engelbert Humperdinck',
@@ -290,7 +289,7 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage.otherCategoriesTabLink().click()
 
       supervisorDashboardHomePage.validateOtherCategoriesTableData([
-        ['23/06/2023', 'Dent, Jane', 'B2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
+        ['23/06/2023', 'Dent, JaneB2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
       ])
 
       cy.task('stubGetUserDetails', { user: CATEGORISER_USER, caseloadId: 'SYI' })
@@ -513,7 +512,7 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage.otherCategoriesTabLink().click()
 
       supervisorDashboardHomePage.validateOtherCategoriesTableData([
-        ['23/06/2023', 'Dent, Jane', 'B2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
+        ['23/06/2023', 'Dent, JaneB2345YZ', 'CATEGORISER_USER', 'V', 'Approve'],
       ])
     })
 
@@ -530,7 +529,7 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage.otherCategoriesTabLink().click()
 
       supervisorDashboardHomePage.validateOtherCategoriesTableData([
-        ['23/06/2023', 'Clark, Frank', 'B2345XY', 'CATEGORISER_USER', 'V', 'Approve'],
+        ['23/06/2023', 'Clark, FrankB2345XY', 'CATEGORISER_USER', 'V', 'Approve'],
       ])
     })
   })

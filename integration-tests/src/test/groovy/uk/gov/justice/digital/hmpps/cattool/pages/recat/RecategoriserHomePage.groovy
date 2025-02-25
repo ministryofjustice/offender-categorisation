@@ -15,11 +15,10 @@ class RecategoriserHomePage extends Page {
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     dates { bodyRows*.$('td', 0)*.text()  }
     names { bodyRows*.$('td', 1)*.text() }
-    prisonNos { bodyRows*.$('td', 2)*.text()  }
-    reasons { bodyRows*.$('td', 3)*.text()  }
-    statuses { bodyRows*.$('td', 4)*.text()  }
-    poms { bodyRows*.$('td', 5)*.text()  }
-    startButtons { bodyRows*.$('td', 6)*.find('*')  }
+    reasons { bodyRows*.$('td', 2)*.text()  }
+    statuses { bodyRows*.$('td', 3)*.text()  }
+    poms { bodyRows*.$('td', 4)*.text()  }
+    startButtons { bodyRows*.$('td', 5)*.find('*')  }
     logoutLink { $('a', href: '/sign-out')}
     doneTabLink { $('a', href: '/recategoriserDone')}
     checkTabLink { $('a', href: '/recategoriserCheck')}
