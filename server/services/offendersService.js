@@ -769,10 +769,14 @@ module.exports = function createOffendersService(
           return null
         }
 
-        const sentenceStartDate = prisonerSearchData.get(raw.bookingId)?.sentenceStartDate || null
-        if (sentenceStartDate == null || moment(sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))) {
+        const prisonerSearchRecord = prisonerSearchData.get(raw.bookingId) || null
+        if (
+          prisonerSearchRecord == null ||
+          prisonerSearchRecord.sentenceStartDate == null ||
+          moment(prisonerSearchRecord.sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))
+        ) {
           logger.info(
-            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}`
+            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}`
           )
         }
 

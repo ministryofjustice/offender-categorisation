@@ -43,8 +43,7 @@ class RecategoriserDoneSpecification extends AbstractSpecification {
     then: 'The recategoriser done page is displayed, showing only approved recats'
     at RecategoriserDonePage
 
-    prisonNos == ['B2345XY','B1234AB','B1234AB']
-    names == ['Scramble, Tim','Perfect, Peter','Perfect, Peter']
+    names == ['Scramble, Tim\nB2345XY','Perfect, Peter\nB1234AB','Perfect, Peter\nB1234AB']
     approvalDates == ['20/04/2019','20/03/2019','19/01/2019']
     categorisers == ['Lamb, John','Dastardly, Dick','Table, Simon']
     approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
@@ -64,7 +63,6 @@ class RecategoriserDoneSpecification extends AbstractSpecification {
 
     then: 'The categoriser done page is displayed without the "PNOMIS" categorised offenders'
     at RecategoriserDonePage
-    prisonNos == []
     noResultsDiv.isDisplayed()
   }
 }

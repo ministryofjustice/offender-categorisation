@@ -14,13 +14,12 @@ class SupervisorDonePage extends Page {
     headingText { $('h1').text() }
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     names { bodyRows*.$('td', 0)*.text() }
-    prisonNos { bodyRows*.$('td', 1)*.text()  }
-    approvalDates { bodyRows*.$('td', 2)*.text()  }
-    categorisers { bodyRows*.$('td', 3)*.text()  }
-    approvers { bodyRows*.$('td', 4)*.text()  }
-    outcomes { bodyRows*.$('td', 5)*.text()  }
-    catTypes { bodyRows*.$('td', 6)*.text()  }
-    viewButtons { bodyRows*.$('td', 7)*.find('*')  }
+    approvalDates { bodyRows*.$('td', 1)*.text()  }
+    categorisers { bodyRows*.$('td', 2)*.text()  }
+    approvers { bodyRows*.$('td', 3)*.text()  }
+    outcomes { bodyRows*.$('td', 4)*.text()  }
+    catTypes { bodyRows*.$('td', 5)*.text()  }
+    viewButtons { bodyRows*.$('td', 6)*.find('*')  }
     liteCategoriesTab { $('a', href: '/liteCategories/approveList') }
     logoutLink { $('a', href: '/sign-out')}
   }

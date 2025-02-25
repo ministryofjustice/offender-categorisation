@@ -25,6 +25,7 @@ describe('Categoriser Done page', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
   })
 
   it('should be inaccessible to users without CATEGORISER_USER', () => {
@@ -95,8 +96,7 @@ describe('Categoriser Done page', () => {
       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
       categoriserHomePage.doneTabLink().click()
       ;[
-        { columnName: 'Name', expectedValues: ['Scramble, Tim', 'Hemmel, Sarah'] },
-        { columnName: 'Prison no.', expectedValues: ['B2345XY', 'B2345YZ'] },
+        { columnName: 'Name and prison number', expectedValues: ['Scramble, TimB2345XY', 'Hemmel, SarahB2345YZ'] },
         {
           columnName: 'Approved on',
           expectedValues: ['20/04/2019', '28/02/2019'],

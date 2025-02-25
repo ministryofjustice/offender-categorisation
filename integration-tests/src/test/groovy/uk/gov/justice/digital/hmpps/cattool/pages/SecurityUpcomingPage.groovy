@@ -14,9 +14,8 @@ class SecurityUpcomingPage extends Page {
     headingText { $('h1').text() }
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     names { bodyRows*.$('td', 0)*.text() }
-    prisonNos { bodyRows*.$('td', 1)*.text()  }
-    dueDates { bodyRows*.$('td', 3)*.text()  }
-    referrer { bodyRows*.$('td', 4)*.text()  }
+    dueDates { bodyRows*.$('td', 2)*.text()  }
+    referrer { bodyRows*.$('td', 3)*.text()  }
     logoutLink { $('a', href: '/sign-out')}
     homeTabLink { $('a', href: '/securityHome')}
   }
