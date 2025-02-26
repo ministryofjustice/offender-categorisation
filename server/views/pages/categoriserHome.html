@@ -139,13 +139,15 @@
                   {
                     text: "Date required by",
                     attributes: {
-                      "aria-sort": "none"
+                      "aria-sort": sortDirection if sortAttribute === "date" else "none",
+                      "aria-sort-attribute": "date"
                     }
                   },
                   {
                     text: "Name and prison number",
                     attributes: {
-                      "aria-sort": "none"
+                      "aria-sort": sortDirection if sortAttribute === "name" else "none",
+                      "aria-sort-attribute": "name"
                     }
                   },
                   {
@@ -157,7 +159,8 @@
                   {
                     text: "POM",
                     attributes: {
-                      "aria-sort": "none"
+                      "aria-sort": sortDirection if sortAttribute === "pom" else "none",
+                      "aria-sort-attribute": "pom"
                     }
                   },
                   {
