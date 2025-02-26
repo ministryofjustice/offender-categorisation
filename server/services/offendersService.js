@@ -1127,17 +1127,8 @@ module.exports = function createOffendersService(
 
   function getOverdueText(dateRequired) {
     const diffInDays = moment(0, 'HH').diff(dateRequired, 'days')
-    let overdueText = ''
-    // eslint-disable-next-line default-case
-    switch (true) {
-      case diffInDays > 1:
-        overdueText = `${diffInDays} days overdue`
-        break
-      case diffInDays === 1:
-        overdueText = '1 day overdue'
-        break
-    }
-    return overdueText
+    // eslint-disable-next-line no-nested-ternary
+    return diffInDays > 1 ? `${diffInDays} days overdue` : diffInDays === 1 ? '1 day overdue' : ''
   }
 
   async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {
