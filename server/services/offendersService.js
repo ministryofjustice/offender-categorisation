@@ -821,6 +821,7 @@ module.exports = function createOffendersService(
           reason,
           nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
           overdue: isReviewOverdue(nomisRecord.nextReviewDate),
+          overdueText: getOverdueText(nomisRecord.nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -988,6 +989,7 @@ module.exports = function createOffendersService(
           reason,
           nextReviewDateDisplay,
           overdue: isReviewOverdue(nextReviewDate),
+          overdueText: getOverdueText(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -1117,9 +1119,16 @@ module.exports = function createOffendersService(
     const actualDays = get10BusinessDays(sentenceDateMoment)
     const dateRequiredRaw = sentenceDateMoment.add(actualDays, 'day')
     const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
+    const now = moment(0, 'HH')
+    const overdue = dateRequiredRaw.isBefore(now)
+    const overdueText = getOverdueText(dateRequiredRaw)
+    return { daysSinceSentence, dateRequired, sentenceDate, overdue, overdueText }
+  }
 
-    const overdue = dateRequiredRaw.isBefore(moment(0, 'HH'))
-    return { daysSinceSentence, dateRequired, sentenceDate, overdue }
+  function getOverdueText(dateRequired) {
+    const diffInDays = moment(0, 'HH').diff(dateRequired, 'days')
+    // eslint-disable-next-line no-nested-ternary
+    return diffInDays > 1 ? `${diffInDays} days overdue` : diffInDays === 1 ? '1 day overdue' : ''
   }
 
   async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {
