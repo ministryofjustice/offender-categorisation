@@ -216,7 +216,7 @@ describe('Lite Categories', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         categoriserHomePage.validateToDoTableData([
           [
-            'Overdue',
+            '2207 days overdue',
             'Pitstop, PenelopeB2345XY',
             moment().diff(new Date(sentenceStartDates['B2345YZ']), 'days').toString(),
             'Not categorised',
@@ -224,7 +224,7 @@ describe('Lite Categories', () => {
             'OTHER',
           ],
           [
-            'Overdue',
+            '2204 days overdue',
             'Hillmob, AntB2345YZ',
             moment().diff(new Date(sentenceStartDates['B2345XY']), 'days').toString(),
             'Awaiting approval',

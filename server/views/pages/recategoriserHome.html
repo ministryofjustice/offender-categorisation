@@ -79,7 +79,7 @@
             <td class="govuk-table__cell">
               {% if row.overdue %}
                 {{ govukTag({
-                  text: 'Overdue',
+                  text: row.overdueText,
                   classes: 'govuk-tag--red',
                   attributes: { 'title': 'Due date: ' + row.nextReviewDateDisplay }
                 }) }}
