@@ -159,6 +159,15 @@ module.exports = function createApp({
   // GovUK Template Configuration
   app.locals.asset_path = '/dist/assets/'
 
+  app.use(
+    '/assets/js/jquery.min.js',
+    express.static(path.join(process.cwd(), '/node_modules/jquery/dist/jquery.min.js'), cacheControl)
+  )
+  app.use(
+    '/assets/moj-frontend/moj/all.js',
+    express.static(path.join(process.cwd(), '/node_modules/@ministryofjustice/frontend/moj/all.js'), cacheControl)
+  )
+
   function addTemplateVariables(req, res, next) {
     res.locals.user = req.user
     res.locals.currentRole = req.session && req.session.currentRole
@@ -318,11 +327,6 @@ module.exports = function createApp({
   app.use((req, res, next) => {
     next(new Error('Not found'))
   })
-
-  app.use(
-    '/assets/moj-frontend/moj/all.js',
-    express.static(path.join(process.cwd(), '/node_modules/@ministryofjustice/frontend/moj/all.js'), cacheControl)
-  )
 
   app.use(errorHandler(production))
 
