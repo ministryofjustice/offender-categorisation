@@ -117,7 +117,7 @@
                   },
                   {
                     html: nameColumn,
-                    attributes: { "data-sort-value": review.displayName.toLowerCase() }
+                    attributes: { "data-sort-value": review.displayName.toLowerCase() if review.displayName else '' }
                   }, {
                     text: review.daysSinceSentence
                   }, {
