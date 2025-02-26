@@ -64,59 +64,38 @@ describe('Recategoriser Home page', () => {
       recategoriserHomePage.noResultsDiv().should('be.visible')
     })
 
-    it('should show upcoming recategorisations', () => {
-      cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.PNI] })
+    it('should show upcoming recategorisations which are overdue by more than 1 day', () => {
+      const recat = runRecategoriserHomePage(-10)
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.validateCategoryReviewsTableData([
+        [
+          '10 days overdue',
+          `Bethid, Dufeathophe${recat.offenderNo}`,
+          'Review due',
+          'Awaiting approval',
+          'Engelbert Humperdinck',
+          'View',
+        ],
+      ])
+    })
 
-      const recat = {
-        offenderNo: 'G6707GT',
-        bookingId: 99,
-        firstName: 'DUFEATHOPHE',
-        lastName: 'BETHID',
-        assessmentDate: '2024-04-22',
-        assessmentSeq: 18,
-        assessStatus: 'P',
-        category: 'C',
-        nextReviewDate: moment().add(1, 'week').format('YYYY-MM-DD'),
-      }
+    it('should show upcoming recategorisations which are overdue by 1 day', () => {
+      const recat = runRecategoriserHomePage(-1)
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.validateCategoryReviewsTableData([
+        [
+          '1 day overdue',
+          `Bethid, Dufeathophe${recat.offenderNo}`,
+          'Review due',
+          'Awaiting approval',
+          'Engelbert Humperdinck',
+          'View',
+        ],
+      ])
+    })
 
-      const sentenceStartDates = {
-        [recat.offenderNo]: new Date('2019-01-28'),
-      }
-
-      cy.task('stubSentenceData', {
-        offenderNumbers: [recat.offenderNo],
-        bookingIds: [recat.bookingId],
-        startDates: [sentenceStartDates.G6707GT],
-      })
-
-      cy.task('stubRecategorise', { recategorisations: [recat], latestOnly: [], agencyId: 'PNI' })
-
-      const dueByDate = moment().add(2, 'days')
-      cy.task('insertFormTableDbRow', {
-        ...commonOffenderData,
-        id: -100,
-        bookingId: recat.bookingId,
-        nomisSequenceNumber: 8,
-        catType: CATEGORISATION_TYPE.RECAT,
-        dueByDate: dueByDate.format('yyyy-MM-DD'),
-        status: STATUS.AWAITING_APPROVAL.name,
-        securityReviewedBy: 'FAKE_SECURITY_PERSON',
-        startDate: moment().subtract(4, 'days').format('yyyy-MM-DD'),
-        securityReviewedDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
-        assessmentDate: new Date(),
-        assessedBy: 'RECATEGORISER_USER',
-      })
-
-      cy.task('stubGetPrisonerSearchPrisoners', {
-        agencyId: 'PNI',
-        content: [recat],
-      })
-
-      cy.stubLogin({
-        user: RECATEGORISER_USER_PNI,
-      })
-      cy.signIn()
-
+    it('should show upcoming recategorisations which are not overdue', () => {
+      const recat = runRecategoriserHomePage(10)
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.validateCategoryReviewsTableData([
         [
@@ -213,5 +192,60 @@ describe('Recategoriser Home page', () => {
         recategoriserHomePage.noResultsDueToFiltersDiv().should('be.visible')
       })
     })
+
+    function runRecategoriserHomePage (nextReviewDateDaysToAdd) {
+      cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.PNI] })
+
+      const recat = {
+        offenderNo: 'G6707GT',
+        bookingId: 99,
+        firstName: 'DUFEATHOPHE',
+        lastName: 'BETHID',
+        assessmentDate: '2024-04-22',
+        assessmentSeq: 18,
+        assessStatus: 'P',
+        category: 'C',
+        nextReviewDate: moment().add(nextReviewDateDaysToAdd, 'days').format('YYYY-MM-DD'),
+      }
+
+      const sentenceStartDates = {
+        [recat.offenderNo]: new Date('2019-01-28'),
+      }
+
+      cy.task('stubSentenceData', {
+        offenderNumbers: [recat.offenderNo],
+        bookingIds: [recat.bookingId],
+        startDates: [sentenceStartDates.G6707GT],
+      })
+
+      cy.task('stubRecategorise', { recategorisations: [recat], latestOnly: [], agencyId: 'PNI' })
+
+      const dueByDate = moment().add(2, 'days')
+      cy.task('insertFormTableDbRow', {
+        ...commonOffenderData,
+        id: -100,
+        bookingId: recat.bookingId,
+        nomisSequenceNumber: 8,
+        catType: CATEGORISATION_TYPE.RECAT,
+        dueByDate: dueByDate.format('yyyy-MM-DD'),
+        status: STATUS.AWAITING_APPROVAL.name,
+        securityReviewedBy: 'FAKE_SECURITY_PERSON',
+        startDate: moment().subtract(4, 'days').format('yyyy-MM-DD'),
+        securityReviewedDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
+        assessmentDate: new Date(),
+        assessedBy: 'RECATEGORISER_USER',
+      })
+
+      cy.task('stubGetPrisonerSearchPrisoners', {
+        agencyId: 'PNI',
+        content: [recat],
+      })
+
+      cy.stubLogin({
+        user: RECATEGORISER_USER_PNI,
+      })
+      cy.signIn()
+      return recat
+    }
   })
 })

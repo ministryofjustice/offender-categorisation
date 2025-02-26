@@ -60,9 +60,9 @@
                 {% set dateColumn %}
                   {% if review.overdue %}
                     {{ govukTag({
-                      text: 'Overdue',
+                      text: review.overdueText,
                       classes: 'govuk-tag--red',
-                      attributes: { 'title': 'Due date: ' + review.dateRequired }
+                      attributes: { 'title': 'Due date: ' + row.dateRequired }
                     }) }}
                   {% else %}
                     {{ review.dateRequired }}
