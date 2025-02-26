@@ -18,7 +18,7 @@ export default class CategoriserHomePage extends BaseCategoriserPage {
 
   validateToDoTableData = (expectedValues: ToDoTableData) =>
     cy.checkTableRowData<ToDoTableData>({
-      tableRowsSelector: 'table#offenderTable > tbody > tr',
+      tableRowsSelector: 'table.recategorisation-table > tbody > tr',
       expectedValues,
     })
 }
