@@ -116,7 +116,7 @@ describe('Categoriser Home page', () => {
         ['36 days overdue', 'Started, AwaitingB0032AA', '50', 'Started (Api User)', 'Engelbert Humperdinck', 'PNOMIS'],
         ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
         ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
-        ['25 days overdue', 'Missing, UncategorisedB0035AA', '39', 'Not categorised', 'Engelbert Humperdinck', 'Start'],
+        ['23 days overdue', 'Missing, UncategorisedB0035AA', '39', 'Not categorised', 'Engelbert Humperdinck', 'Start'],
         ['1 day overdue', 'Started, UncategorisedB0036AA', '15', 'Started (Api User)', 'Engelbert Humperdinck', 'Edit'],
         [
           moment(startDates[6]).add(get10BusinessDays(startDates[6]), 'days').format('DD/MM/yyyy'),

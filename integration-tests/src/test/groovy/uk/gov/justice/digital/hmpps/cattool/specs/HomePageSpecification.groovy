@@ -69,7 +69,7 @@ class HomePageSpecification extends AbstractSpecification {
                 'B0038AA']
     days == ['1', '70', '55', '50', '47', '43', '39', '19', '14', '5']
     dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
-              '56 days overdue', '41 days overdue', '36 days overdue', '33 days overdue', '29 days overdue', '25 days overdue', '1 day overdue',
+              '56 days overdue', '41 days overdue', '36 days overdue', '33 days overdue', '29 days overdue', '23 days overdue', '1 day overdue',
               sentenceStartDate37.plusDays(fixture.get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
               sentenceStartDate38.plusDays(fixture.get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
     statuses == ['REJECTED BY\nSUPERVISOR', 'Started (Api User)', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
