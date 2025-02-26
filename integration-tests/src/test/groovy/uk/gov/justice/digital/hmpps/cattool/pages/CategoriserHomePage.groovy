@@ -14,7 +14,7 @@ class CategoriserHomePage extends Page {
     headingText { $('h1').text() }
     bodyRows(required: false) { $('tr.govuk-table__row', 1..-1) }
     dates { bodyRows*.$('td', 0)*.text() }
-    names { bodyRows*.$('td', 1)*.text() }
+    names { bodyRows*.$('td', 1).collect { it.$('a').text().trim() + " " + it.$('p').text().trim() } }
     days { bodyRows*.$('td', 2)*.text() }
     statuses { bodyRows*.$('td', 3)*.text() }
     poms { bodyRows*.$('td', 4)*.text() }
