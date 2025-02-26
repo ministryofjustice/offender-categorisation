@@ -32,3 +32,17 @@ if (hideFilterButton) {
     })
   })
 }
+
+const applyFiltersButton = document.getElementById('applyFilters')
+if (applyFiltersButton) {
+  applyFiltersButton.addEventListener('click', async () => {
+    const headers = document.getElementsByClassName('recategorisation-table')[0].getElementsByTagName('th')
+    Object.values(headers).forEach(header => {
+      const ariaSort = header.getAttribute('aria-sort')
+      if (ariaSort === 'ascending' || ariaSort === 'descending') {
+        document.getElementById('sortDirection').value = ariaSort
+        document.getElementById('sortAttribute').value = header.getAttribute('aria-sort-attribute')
+      }
+    })
+  })
+}
