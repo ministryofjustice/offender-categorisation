@@ -55,18 +55,18 @@ class HomePageSpecification extends AbstractSpecification {
 
     then: 'The categoriser home page is displayed'
     at CategoriserHomePage
-    names == ['Supervisor_back, Awaiting\n' +
-                'B0039AA', 'Hillmob, Ant\n' +
-      'B0040AA', 'Missing, Awaiting\n' +
-      'B0031AA', 'Started, Awaiting\n' +
-      'B0032AA', 'Awaiting, Awaiting\n' +
-      'B0033AA', 'Approved, Awaiting\n' +
-      'B0034AA', 'Missing, Uncategorised\n' +
-      'B0035AA',
-              'Started, Uncategorised\n' +
-                'B0036AA', 'Awaiting, Uncategorised\n' +
-                'B0037AA', 'Approved, Uncategorised\n' +
-                'B0038AA']
+    names == [
+      'Supervisor_back, Awaiting B0039AA',
+      'Hillmob, Ant B0040AA',
+      'Missing, Awaiting B0031AA',
+      'Started, Awaiting B0032AA',
+      'Awaiting, Awaiting B0033AA',
+      'Approved, Awaiting B0034AA',
+      'Missing, Uncategorised B0035AA',
+      'Started, Uncategorised B0036AA',
+      'Awaiting, Uncategorised B0037AA',
+      'Approved, Uncategorised B0038AA'
+    ]
     days == ['1', '70', '55', '50', '47', '43', '39', '15', '14', '5']
     dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
               '56 days overdue', '41 days overdue', '36 days overdue', '33 days overdue', '29 days overdue', '23 days overdue', '1 day overdue',

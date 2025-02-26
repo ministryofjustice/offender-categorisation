@@ -69,7 +69,7 @@
                   {% endif %}
                 {% endset %}
                 {% set nameColumn %}
-                  <a class="text-break-word" target="_blank" href="{{ review.offenderNo | offenderLink }}">{{ review.displayName }}</a><p class="govuk-!-margin-left-0">{{ review.offenderNo }}</p>
+                  <a class="text-break-word" target="_blank" href="{{ review.offenderNo | offenderLink }}">{{ review.displayName }}</a><p>{{ review.offenderNo }}</p>
                   {% if review.securityReferred %}
                     {{ govukDetails({
                       summaryText: 'Security referred',

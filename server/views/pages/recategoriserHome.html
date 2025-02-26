@@ -88,7 +88,7 @@
               {% endif %}
             </td>
             <td class="govuk-table__cell">
-              <a class="text-break-word" target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a><p class="govuk-!-margin-left-0">{{ row.offenderNo }}</p>
+              <a class="text-break-word" target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a><p>{{ row.offenderNo }}</p>
               {% if row.securityReferred %}
                 {{ govukDetails({
                 summaryText: 'Security referred',
