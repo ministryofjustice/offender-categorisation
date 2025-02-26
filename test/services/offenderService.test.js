@@ -806,6 +806,7 @@ describe('getUncategorisedOffenders', () => {
       dateRequired: '28/01/2019',
       sentenceDate: '2019-01-14',
       overdue: false,
+      overdueText: '',
     })
   })
 
@@ -817,6 +818,7 @@ describe('getUncategorisedOffenders', () => {
       dateRequired: '28/01/2019',
       sentenceDate: '2019-01-12',
       overdue: false,
+      overdueText: '',
     })
   })
 
@@ -828,6 +830,7 @@ describe('getUncategorisedOffenders', () => {
       dateRequired: '28/01/2019',
       sentenceDate: '2019-01-13',
       overdue: false,
+      overdueText: '',
     })
   })
 
@@ -839,6 +842,7 @@ describe('getUncategorisedOffenders', () => {
       dateRequired: '28/01/2019',
       sentenceDate: '2019-01-14',
       overdue: true,
+      overdueText: '1 day overdue',
     })
   })
 
@@ -978,6 +982,7 @@ describe('getUncategorisedOffenders', () => {
         dateRequired: '08/02/2019',
         nextReviewDate: '2019-01-28',
         overdue: false,
+        overdueText: '',
         pnomis: false,
         pom: 'Steve Rendell',
         securityReferred: false,
@@ -3028,6 +3033,7 @@ describe('getDueRecats', () => {
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: '20/09/2018',
         overdue: true,
+        overdueText: '253 days overdue',
         pnomis: false,
         buttonText: 'Start',
         pom: 'Steve Rendell',
@@ -3079,6 +3085,7 @@ describe('getDueRecats', () => {
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: '23/09/2017',
         overdue: true,
+        overdueText: '615 days overdue',
         pnomis: false,
         buttonText: 'Start',
         pom: 'Steve Rendell',
@@ -3250,6 +3257,7 @@ describe('getDueRecats', () => {
           reason: { name: 'DUE', value: 'Review due' },
           nextReviewDateDisplay: '23/10/2017',
           overdue: true,
+          overdueText: '585 days overdue',
           dbRecordExists: true,
           pnomis: status.name === Status.AWAITING_APPROVAL.name ? 'PNOMIS' : false,
           buttonText: status.name === Status.AWAITING_APPROVAL.name ? 'Start' : 'Edit',
@@ -3333,6 +3341,7 @@ describe('getDueRecats', () => {
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: dateConverter(nextReviewDate),
         overdue: false,
+        overdueText: '',
         dbRecordExists: true,
         pnomis: false,
         buttonText: 'Edit',
