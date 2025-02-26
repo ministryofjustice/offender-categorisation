@@ -67,7 +67,7 @@ class HomePageSpecification extends AbstractSpecification {
                 'B0036AA', 'Awaiting, Uncategorised\n' +
                 'B0037AA', 'Approved, Uncategorised\n' +
                 'B0038AA']
-    days == ['1', '70', '55', '50', '47', '43', '39', '19', '14', '5']
+    days == ['1', '70', '55', '50', '47', '43', '39', '15', '14', '5']
     dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
               '56 days overdue', '41 days overdue', '36 days overdue', '33 days overdue', '29 days overdue', '23 days overdue', '1 day overdue',
               sentenceStartDate37.plusDays(fixture.get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
@@ -133,7 +133,7 @@ class HomePageSpecification extends AbstractSpecification {
       'C0001AA', 'Hillmob, Ant\n' +
       'B2345YZ', 'Mole, Adrian\n' +
       'C0002AA']
-    dates == ['4 days overdue', '2 days overdue', '3 days overdue', TODAY.plusDays(17).format('dd/MM/yyyy')]
+    dates == ['4 days overdue', '3 days overdue', '2 days overdue', TODAY.plusDays(17).format('dd/MM/yyyy')]
     reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     poms == ['Engelbert Humperdinck', 'Engelbert Humperdinck', 'Engelbert Humperdinck', 'Engelbert Humperdinck']
