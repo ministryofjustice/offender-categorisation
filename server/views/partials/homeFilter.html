@@ -43,6 +43,9 @@
 
       {% endfor %}
 
+    <input type="hidden" id="sortAttribute" name="sortAttribute" value="" />
+    <input type="hidden" id="sortDirection" name="sortDirection" value="" />
+
       <div class="replacementApplyFilterButtonContainer">
         {{ govukButton({
           id: 'applyFilters',

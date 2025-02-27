@@ -28,5 +28,7 @@ export const categorisationHomeSchema = joi
   .object({
     ...buildHomeSchemaFilters(categorisationHomeFilters),
     filterRemoved: joi.string().optional(),
+    sortDirection: joi.string().allow('').valid('ascending', 'descending', '').optional(),
+    sortAttribute: joi.string().allow('').optional(),
   })
   .optional()
