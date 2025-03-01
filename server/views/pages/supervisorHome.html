@@ -2,6 +2,7 @@
 {% extends "../partials/layout.html" %}
 
 {% from "button/macro.njk" import govukButton %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Prisoner Categorisation Approvals" %}
@@ -49,59 +50,96 @@
   </ul>
 
   <section class="govuk-tabs__panel" id="unused">
+    {% if offenders | length > 0 %}
+      {% set tableRows = [] %}
 
-  {% if offenders | length > 0 %}
-  <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
-    <thead class="govuk-table__head">
+      {% for offender in offenders %}
+        {% set nameColumn %}
+          <a class="text-break-word" target="_blank" href="{{ offender.offenderNo | offenderLink }}">{{ offender.displayName }}</a><p>{{ offender.offenderNo }}</p>
+        {% endset %}
 
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Name and prison number</th>
-      <th class="govuk-table__header" scope="col">Days since<br/> sentence</th>
-      <th class="govuk-table__header" scope="col">Date due</th>
-      <th class="govuk-table__header" scope="col">Next review</th>
-      <th class="govuk-table__header" scope="col">Categorised by</th>
-      <th class="govuk-table__header" scope="col">Provisional<br/>category</th>
-      <th class="govuk-table__header" scope="col">Type</th>
-      <th class="govuk-table__header" scope="col"></th>
-    </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-    {% for row in offenders %}
-    <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">
-        <a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a><p class="govuk-!-margin-left-0">{{ row.offenderNo }}</p>
-      </td>
-      <td class="govuk-table__cell">{{ row.daysSinceSentence }}</td>
-      <td class="govuk-table__cell">{{ row.dateRequired }}</td>
-      <td class="govuk-table__cell">{{ row.nextReviewDate }}</td>
-      <td class="govuk-table__cell">{{ row.categoriserDisplayName }}</td>
-      <td class="govuk-table__cell">{{ catMappings(row.category) }}
-        {% if isOpenCategory(row.category) and row.dbRecord.formObject.openConditions.tprs.tprsSelected=='Yes' %}
-        <strong class="govuk-tag govuk-tag--red">TPRS</strong>
-        {% endif %}
-      </td>
-      <td class="govuk-table__cell">{{ row.catType }}</td>
-      <td class="govuk-table__cell">
-        {% if row.pnomis %}
-          <div>PNOMIS</div>
-        {% else %}
-          {{ govukButton({
-            text: "Start",
-            href: "/form/supervisor/review/" + row.bookingId,
-            classes: "tableButton"
-          }) }}
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
+        {% set daysSinceSentence %}
+          {{ offender.daysSinceSentence }}
+        {% endset %}
 
-    </tbody>
-  </table>
-  {% else %}
-    <div class="govuk-!-padding-top-4">
-      <div id="no-results-message">No unapproved prisoners found.</div>
-    </div>
-  {% endif %}
+        {% set offenderCategory %}
+          {{ catMappings(offender.category) }}
+          {% if isOpenCategory(offender.category) and offender.dbRecord.formObject.openConditions.tprs.tprsSelected=='Yes' %}
+            <strong class="govuk-tag govuk-tag--red">TPRS</strong>
+          {% endif %}
+        {% endset %}
+
+        {% set actionColumn %}
+          {% if offender.pnomis %}
+            <div>PNOMIS</div>
+          {% else %}
+            {{ govukButton({
+              text: "Start",
+              href: "/form/supervisor/review/" + offender.bookingId,
+              classes: "tableButton"
+            }) }}
+          {% endif %}
+        {% endset %}
+
+        {% set tableRows = (tableRows.push([
+          {
+            html: nameColumn,
+            attributes: { "data-sort-value": offender.displayName.toLowerCase() if offender.displayName else '' }
+          },
+          {
+            text: offender.daysSinceSentence
+          },
+          {
+            text: offender.dateRequired,
+            attributes: { "data-sort-value": offender.dateRequired | sortDateValue}
+          },
+          {
+            text: offender.nextReviewDate
+          },
+          {
+            text: offender.categoriserDisplayName,
+            attributes: { "data-sort-value": offender.categoriserDisplayName.toLowerCase() if offender.categoriserDisplayName else '' }
+          },
+          {
+            html: offenderCategory
+          },
+          {
+            text: offender.catType
+          },
+          {
+            html: actionColumn
+          }
+        ]), tableRows) %}
+      {% endfor %}
+
+      {{ govukTable({
+        attributes: { "data-module": "moj-sortable-table" , "id": "offenderTable" },
+        head: [
+          {
+            text: "Name and prison number",
+            attributes: { "aria-sort": "none" }
+          },
+          { text: "Days since sentence" },
+          {
+            text: "Date due",
+            attributes: { "aria-sort": "ascending" }
+          },
+          { text: "Next review" },
+          {
+            text: "Categorised by",
+            attributes: { "aria-sort": "none" }
+          },
+          { text: "Provisional category" },
+          { text: "Type" },
+          { text: "" }
+        ],
+        rows: tableRows
+      }) }}
+    {% else %}
+      <div class="govuk-!-padding-top-4">
+        <div id="no-results-message">No unapproved prisoners found.</div>
+      </div>
+    {% endif %}
   </section>
 </div>
 
