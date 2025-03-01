@@ -91,7 +91,7 @@
           },
           {
             text: offender.dateRequired,
-            attributes: { "data-sort-value": offender.dateRequired }
+            attributes: { "data-sort-value": offender.dateRequired | sortDateValue}
           },
           {
             text: offender.nextReviewDate
@@ -122,7 +122,7 @@
           { text: "Days since sentence" },
           {
             text: "Date due",
-            attributes: { "aria-sort": "none" }
+            attributes: { "aria-sort": "ascending" }
           },
           { text: "Next review" },
           {
