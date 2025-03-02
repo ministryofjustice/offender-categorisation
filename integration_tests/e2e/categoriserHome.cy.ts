@@ -111,7 +111,7 @@ describe('Categoriser Home page', () => {
           'Engelbert Humperdinck',
           'Edit',
         ],
-        ['56 days overdue', 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
+        ['55 days overdue', 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
         ['41 days overdue', 'Missing, AwaitingB0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
         ['36 days overdue', 'Started, AwaitingB0032AA', '50', 'Started (Api User)', 'Engelbert Humperdinck', 'PNOMIS'],
         ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
