@@ -56,21 +56,21 @@
           {% if offenders | length > 0 %}
             <div class="recategorisation-scrollable-pane">
               {% set categorisationReviews = [] %}
-              {% for review in offenders %}
+              {% for offender in offenders %}
                 {% set dateColumn %}
-                  {% if review.overdue %}
+                  {% if offender.overdue %}
                     {{ govukTag({
-                      text: review.overdueText,
+                      text: offender.overdueText,
                       classes: 'govuk-tag--red',
                       attributes: { 'title': 'Due date: ' + row.dateRequired }
                     }) }}
                   {% else %}
-                    {{ review.dateRequired }}
+                    {{ offender.dateRequired }}
                   {% endif %}
                 {% endset %}
                 {% set nameColumn %}
-                  <a class="text-break-word" target="_blank" href="{{ review.offenderNo | offenderLink }}">{{ review.displayName }}</a><p>{{ review.offenderNo }}</p>
-                  {% if review.securityReferred %}
+                  <a class="text-break-word" target="_blank" href="{{ offender.offenderNo | offenderLink }}">{{ offender.displayName }}</a><p>{{ offender.offenderNo }}</p>
+                  {% if offender.securityReferred %}
                     {{ govukDetails({
                       summaryText: 'Security referred',
                       text: 'Security have flagged this person as being of interest. They will be automatically referred to security when the categorisation starts.',
@@ -79,31 +79,31 @@
                   {% endif %}
                 {% endset %}
                 {% set statusColumn %}
-                  {% if review.displayStatus == 'Back from Supervisor' %}
+                  {% if offender.displayStatus == 'Back from Supervisor' %}
                     {{ govukTag({
                       html: 'REJECTED BY<br/>SUPERVISOR'
                     }) }}
                   {% else %}
-                    {{ review.displayStatus }}
+                    {{ offender.displayStatus }}
                   {% endif %}
                 {% endset %}
                 {% set actionColumn %}
-                  {% set buttonText = "Edit" if review.dbRecordExists else "Start" %}
+                  {% set buttonText = "Edit" if offender.dbRecordExists else "Start" %}
                   {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
-                  {% set classes = basicClasses + " grey-button" if review.dbRecordExists else basicClasses %}
-                  {% if review.pnomis %}
-                    <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ review.pnomis }}</div>
+                  {% set classes = basicClasses + " grey-button" if offender.dbRecordExists else basicClasses %}
+                  {% if offender.pnomis %}
+                    <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ offender.pnomis }}</div>
                   {% else %}
-                    {% if review.displayStatus == 'Awaiting approval' %}
+                    {% if offender.displayStatus == 'Awaiting approval' %}
                       {{ govukButton({
                         text: "View",
-                        href: "/form/awaitingApprovalView/" + review.bookingId,
+                        href: "/form/awaitingApprovalView/" + offender.bookingId,
                         classes: classes
                       }) }}
                     {% else %}
                       {{ govukButton({
                         text: buttonText,
-                        href: "/tasklist/" + review.bookingId if not locked,
+                        href: "/tasklist/" + offender.bookingId if not locked,
                         attributes: { 'data-prevent-double-click': 'true' },
                         classes: classes + " govuk-!-margin-top-2 govuk-!-margin-bottom-8"
                       }) }}
@@ -113,18 +113,18 @@
                 {% set categorisationReviews = (categorisationReviews.push([
                   {
                     html: dateColumn,
-                    attributes: { "data-sort-value": review.dateRequired }
+                    attributes: { "data-sort-value": offender.dateRequired }
                   },
                   {
                     html: nameColumn,
-                    attributes: { "data-sort-value": review.displayName.toLowerCase() if review.displayName else '' }
+                    attributes: { "data-sort-value": offender.displayName.toLowerCase() if offender.displayName else '' }
                   }, {
-                    text: review.daysSinceSentence
+                    text: offender.daysSinceSentence
                   }, {
                     html: statusColumn
                   }, {
-                    text: review.pom,
-                    attributes: { "data-sort-value": review.pom.toLowerCase() if review.pom else '' }
+                    text: offender.pom,
+                    attributes: { "data-sort-value": offender.pom.toLowerCase() if offender.pom else '' }
                   }, {
                     html: actionColumn
                   }
@@ -133,7 +133,8 @@
               {{ govukTable({
                 classes: "recategorisation-table",
                 attributes: {
-                  'data-module': 'moj-sortable-table'
+                  'data-module': 'moj-sortable-table',
+                  'id': 'offenderTable'
                 },
                 head: [
                   {
