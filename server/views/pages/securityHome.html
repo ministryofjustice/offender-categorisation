@@ -39,7 +39,7 @@
   </ul>
 
   <section class="govuk-tabs__panel">
-    
+
   {% if offenders | length > 0 %}
     {% set securityReviews = [] %}
     {% for offender in offenders %}
@@ -64,7 +64,7 @@
           text: offender.daysSinceSentence
         }, {
           text: offender.dateRequired,
-          attributes: { "data-sort-value": offender.dateRequiredIsoFormat }
+          attributes: { "data-sort-value": offender.dateRequired | sortDateValue }
         }, {
           text: offender.securityReferredBy or 'Automatic',
           attributes: { "data-sort-value": offender.securityReferredBy.toLowerCase() if offender.securityReferredBy else 'automatic' }

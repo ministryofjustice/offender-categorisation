@@ -379,10 +379,7 @@ module.exports = function createOffendersService(
             sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
           } else {
             const nomisCat = nomisCatData.find(record => record.bookingId === o.bookingId)
-            sentenceAndDate = {
-              dateRequired: nomisCat && dateConverter(nomisCat.nextReviewDate),
-              dateRequiredIsoFormat: nomisCat && nomisCat.nextReviewDate,
-            }
+            sentenceAndDate = { dateRequired: nomisCat && dateConverter(nomisCat.nextReviewDate) }
           }
 
           return {
