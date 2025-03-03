@@ -1126,7 +1126,7 @@ module.exports = function createOffendersService(
   }
 
   function getOverdueText(dateRequired) {
-    const diffInDays = moment.utc().startOf('day').diff(moment.utc(dateRequired).startOf('day'), 'days')
+    const diffInDays = moment(0, 'HH').diff(dateRequired, 'days')
     // eslint-disable-next-line no-nested-ternary
     return diffInDays > 1 ? `${diffInDays} days overdue` : diffInDays === 1 ? '1 day overdue' : ''
   }
