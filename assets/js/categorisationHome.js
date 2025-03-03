@@ -36,7 +36,7 @@ if (hideFilterButton) {
 const applyFiltersButton = document.getElementById('applyFilters')
 if (applyFiltersButton) {
   applyFiltersButton.addEventListener('click', async () => {
-    const table = document.getElementsByClassName('recategorisation-table')[0]
+    const table = document.getElementById('offenderTable')
     if (typeof table === 'undefined') {
       return
     }
