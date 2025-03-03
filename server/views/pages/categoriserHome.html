@@ -62,7 +62,7 @@
                     {{ govukTag({
                       text: offender.overdueText,
                       classes: 'govuk-tag--red',
-                      attributes: { 'title': 'Due date: ' + row.dateRequired }
+                      attributes: { 'title': 'Due date: ' + offender.dateRequired }
                     }) }}
                   {% else %}
                     {{ offender.dateRequired }}
@@ -113,7 +113,7 @@
                 {% set categorisationReviews = (categorisationReviews.push([
                   {
                     html: dateColumn,
-                    attributes: { "data-sort-value": offender.dateRequired }
+                    attributes: { "data-sort-value": offender.dateRequired | sortDateValue }
                   },
                   {
                     html: nameColumn,
