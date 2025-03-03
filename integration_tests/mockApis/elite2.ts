@@ -1285,7 +1285,10 @@ const stubUncategorisedFull = (): SuperAgentRequest =>
   })
 
 const stubUncategorisedAwaitingApproval = (
-  { emptyResponse }: { emptyResponse: boolean } = { emptyResponse: false }
+  { emptyResponse = false, bookingIds = [] } = {
+    emptyResponse: false,
+    bookingIds: [],
+  }
 ): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1297,44 +1300,50 @@ const stubUncategorisedAwaitingApproval = (
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: emptyResponse
         ? []
-        : [
-            {
-              bookingId: 11,
-              offenderNo: 'B2345XY',
-              firstName: 'PENELOPE',
-              lastName: 'PITSTOP',
-              status: 'AWAITING_APPROVAL',
-              category: 'B',
-              categoriserFirstName: 'ROGER',
-              categoriserLastName: 'RABBIT',
-              assessmentSeq: 4,
-              nextReviewDate: '2025-01-01',
-            },
-            {
-              bookingId: 12,
-              offenderNo: 'B2345YZ',
-              firstName: 'ANT',
-              lastName: 'HILLMOB',
-              status: 'AWAITING_APPROVAL',
-              category: 'C',
-              categoriserFirstName: 'BUGS',
-              categoriserLastName: 'BUNNY',
-              assessmentSeq: 5,
-              nextReviewDate: '2025-02-02',
-            },
-          {
-            bookingId: 13,
-            offenderNo: 'B2345ZZ',
-            firstName: 'Test',
-            lastName: 'Newcomer',
-            status: 'AWAITING_APPROVAL',
-            category: 'D',
-            categoriserFirstName: 'Daffy',
-            categoriserLastName: 'Duck',
-            assessmentSeq: 5,
-            nextReviewDate: '2025-02-02',
-          },
-        ],
+        : (() => {
+            const allOffenders = [
+              {
+                bookingId: 11,
+                offenderNo: 'B2345XY',
+                firstName: 'PENELOPE',
+                lastName: 'PITSTOP',
+                status: 'AWAITING_APPROVAL',
+                category: 'B',
+                categoriserFirstName: 'ROGER',
+                categoriserLastName: 'RABBIT',
+                assessmentSeq: 4,
+                nextReviewDate: '2025-01-01',
+              },
+              {
+                bookingId: 12,
+                offenderNo: 'B2345YZ',
+                firstName: 'ANT',
+                lastName: 'HILLMOB',
+                status: 'AWAITING_APPROVAL',
+                category: 'C',
+                categoriserFirstName: 'BUGS',
+                categoriserLastName: 'BUNNY',
+                assessmentSeq: 5,
+                nextReviewDate: '2025-02-02',
+              },
+              {
+                bookingId: 13,
+                offenderNo: 'B2345ZZ',
+                firstName: 'Test',
+                lastName: 'Newcomer',
+                status: 'AWAITING_APPROVAL',
+                category: 'D',
+                categoriserFirstName: 'Daffy',
+                categoriserLastName: 'Duck',
+                assessmentSeq: 5,
+                nextReviewDate: '2025-02-02',
+              },
+            ]
+
+            return bookingIds.length > 0
+              ? allOffenders.filter(offender => bookingIds.includes(offender.bookingId))
+              : allOffenders.filter(offender => offender.bookingId !== 13)
+          })(),
     },
   })
 
@@ -1564,7 +1573,7 @@ const getOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
           classificationCode: 'C',
           nextReviewDate: moment().subtract(4, 'days').format('yyyy-MM-DD'),
           assessmentStatus: 'A',
-        }
+        },
       ],
     },
   })

@@ -77,7 +77,7 @@ describe('Supervisor Home page', () => {
     ]
 
     beforeEach(() => {
-      cy.task('stubUncategorisedAwaitingApproval')
+      cy.task('stubUncategorisedAwaitingApproval', { bookingIds: [11, 12, 13] })
       cy.task('stubSentenceData', {
         offenderNumbers: [offender1.offenderNo, offender2.offenderNo, offender3.offenderNo],
         bookingIds: [offender1.bookingId, offender2.bookingId, offender3.bookingId],
