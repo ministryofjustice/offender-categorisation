@@ -106,8 +106,6 @@ describe('Categoriser Home page', () => {
         return acc
       }, {})
 
-      console.table(reviewDatesDict)
-
       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
       categoriserHomePage.validateToDoTableData([
         [
