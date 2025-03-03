@@ -301,4 +301,18 @@ class TestFixture {
     }
     return numberOfDays
   }
+
+  /**
+   * Helper function to calculate the correct review date or overdue text
+   */
+  String calculateReviewDate(LocalDate sentenceStartDate) {
+    def reviewDate = sentenceStartDate.plusDays(get10BusinessDays(sentenceStartDate))
+    def today = LocalDate.now()
+
+    if (reviewDate.isBefore(today)) {
+      def overdueDays = ChronoUnit.DAYS.between(reviewDate, today)
+      return overdueDays == 1 ? "1 day overdue" : "${overdueDays} days overdue"
+    }
+    return reviewDate.format('dd/MM/yyyy')
+  }
 }
