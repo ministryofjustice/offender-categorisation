@@ -5,7 +5,7 @@ import CategoriserHomePage from '../pages/categoriser/home'
 import { CASELOAD } from '../factory/caseload'
 import dbSeeder from '../fixtures/db-seeder'
 import initialCategorisation from '../fixtures/categoriser/home'
-import { get10BusinessDays } from '../support/utilities'
+import { calculateOverdueText } from '../support/utilities'
 
 describe('Categoriser Home page', () => {
   beforeEach(() => {
@@ -93,16 +93,7 @@ describe('Categoriser Home page', () => {
       cy.signIn()
 
       const reviewDatesDict: any = offenderData.reduce((acc, { offenderNo, startDate }) => {
-        const reviewDate = moment(startDate).add(get10BusinessDays(startDate), 'days')
-        const today = moment().startOf('day')
-
-        if (reviewDate.isBefore(today)) {
-          const daysOverdue = today.diff(moment(reviewDate).startOf('day'), 'days')
-          acc[offenderNo] = daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`
-        } else {
-          acc[offenderNo] = reviewDate.format('DD/MM/YYYY')
-        }
-
+        acc[offenderNo] = calculateOverdueText(startDate)
         return acc
       }, {})
 
@@ -116,14 +107,7 @@ describe('Categoriser Home page', () => {
           'Engelbert Humperdinck',
           'Edit',
         ],
-        [
-          reviewDatesDict.B0040AA,
-          'Hillmob, AntB0040AA',
-          '70',
-          'Started (Api User)',
-          '',
-          'Edit',
-        ],
+        [reviewDatesDict.B0040AA, 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
         [
           reviewDatesDict.B0031AA,
           'Missing, AwaitingB0031AA',
@@ -148,14 +132,7 @@ describe('Categoriser Home page', () => {
           'Engelbert Humperdinck',
           'View',
         ],
-        [
-          reviewDatesDict.B0034AA,
-          'Approved, AwaitingB0034AA',
-          '43',
-          'Approved',
-          'Engelbert Humperdinck',
-          'PNOMIS',
-        ],
+        [reviewDatesDict.B0034AA, 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
         [
           reviewDatesDict.B0035AA,
           'Missing, UncategorisedB0035AA',
@@ -180,14 +157,7 @@ describe('Categoriser Home page', () => {
           'Engelbert Humperdinck',
           'PNOMIS',
         ],
-        [
-          reviewDatesDict.B0038AA,
-          'Approved, UncategorisedB0038AA',
-          '5',
-          'Approved',
-          'Engelbert Humperdinck',
-          'PNOMIS',
-        ],
+        [reviewDatesDict.B0038AA, 'Approved, UncategorisedB0038AA', '5', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
       ])
     })
   })
