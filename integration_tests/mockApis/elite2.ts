@@ -1322,7 +1322,19 @@ const stubUncategorisedAwaitingApproval = (
               assessmentSeq: 5,
               nextReviewDate: '2025-02-02',
             },
-          ],
+          {
+            bookingId: 13,
+            offenderNo: 'B2345ZZ',
+            firstName: 'Test',
+            lastName: 'Newcomer',
+            status: 'AWAITING_APPROVAL',
+            category: 'D',
+            categoriserFirstName: 'Daffy',
+            categoriserLastName: 'Duck',
+            assessmentSeq: 5,
+            nextReviewDate: '2025-02-02',
+          },
+        ],
     },
   })
 
