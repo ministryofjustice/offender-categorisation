@@ -3,7 +3,6 @@ import SupervisorHomePage from '../pages/supervisor/home'
 import Page from '../pages/page'
 import { CASELOAD } from '../factory/caseload'
 import { calculateDueDate } from '../support/utilities'
-import prisonerSearch from '../mockApis/prisonerSearch'
 
 describe('Supervisor Home page', () => {
   beforeEach(() => {
@@ -88,17 +87,12 @@ describe('Supervisor Home page', () => {
         releaseDates: [null, null, null],
         status: ['ACTIVE IN', 'ACTIVE IN', 'ACTIVE IN'],
         legalStatus: ['SENTENCED', 'SENTENCED', 'SENTENCED'],
-      }).then(data => {
-        cy.task('log', `✅ Stubbed Sentence Data: ${JSON.stringify(data, null, 2)}`)
       })
       cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.LEI] })
       cy.task('stubGetStaffDetailsByUsernameList', {
         usernames: [RECATEGORISER_USER.username, SUPERVISOR_USER.username],
       })
       cy.task('stubGetPrisonerSearchPrisoners')
-      cy.intercept('POST', '/prisoner-search/prisoner-search/booking-ids').as('prisonerSearch')
-      console.log({prisonerSearch})
-
     })
 
     it('should show the no results message by default', () => {
@@ -128,14 +122,6 @@ describe('Supervisor Home page', () => {
         user: SUPERVISOR_USER,
       })
       cy.signIn()
-
-      it('should log API request and response', () => {
-        cy.wait('@prisonerSearch').then(interception => {
-          cy.task('log', `✅ Actual Request Body: ${JSON.stringify(interception.request.body, null, 2)}`)
-          cy.task('log', `✅ Response Body: ${JSON.stringify(interception.response.body, null, 2)}`)
-          cy.task('log', `✅ Status Code: ${interception.response.status}`)
-        })
-      })
 
       const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
 
