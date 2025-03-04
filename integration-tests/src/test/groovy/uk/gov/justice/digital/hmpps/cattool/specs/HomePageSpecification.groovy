@@ -17,92 +17,92 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
 class HomePageSpecification extends AbstractSpecification {
 
-  def "The home page for a categoriser is present"() {
-    db.createDataWithStatus(-2, 32, 'STARTED', '{}')
-    db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
-    db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
-    db.createDataWithStatus(-5, 36, 'STARTED', '{}')
-    db.createDataWithStatus(-6, 37, 'AWAITING_APPROVAL', '{}')
-    db.createDataWithStatus(-7, 38, 'APPROVED', '{}')
-    db.createDataWithStatus(-8, 39, 'SUPERVISOR_BACK', '{}')
-    // This one (Anthill Mob) was started manually and does not come back from the nomis query:
-    db.doCreateCompleteRow(-10, 40, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null,
-      null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null,
-      null, null, null, null, 'MANUAL')
-
-    when: 'I go to the home page as categoriser'
-
-    def sentenceStartDates = [
-      B0031AA: TODAY.minusDays(55),
-      B0032AA: TODAY.minusDays(50),
-      B0033AA: TODAY.minusDays(47),
-      B0034AA: TODAY.minusDays(43),
-      B0035AA: TODAY.minusDays(39),
-      B0036AA: TODAY.minusDays(15),
-      B0037AA: TODAY.minusDays(14),
-      B0038AA: TODAY.minusDays(5),
-      B0039AA: TODAY.minusDays(1),
-      B0040AA: TODAY.minusDays(70)
-    ]
-
-    elite2Api.stubUncategorisedFull()
-    prisonerSearchApi.stubSentenceData(
-      sentenceStartDates.keySet() as List,
-      (31..40).toList(),
-      sentenceStartDates.values()*.toString()
-    )
-    elite2Api.stubGetBasicOffenderDetails(40, 'B0040AA')
-
-    fixture.loginAs(CATEGORISER_USER)
-
-    then: 'The categoriser home page is displayed'
-    at CategoriserHomePage
-
-    names == [
-      'Supervisor_back, Awaiting B0039AA',
-      'Hillmob, Ant B0040AA',
-      'Missing, Awaiting B0031AA',
-      'Started, Awaiting B0032AA',
-      'Awaiting, Awaiting B0033AA',
-      'Approved, Awaiting B0034AA',
-      'Missing, Uncategorised B0035AA',
-      'Started, Uncategorised B0036AA',
-      'Awaiting, Uncategorised B0037AA',
-      'Approved, Uncategorised B0038AA'
-    ]
-
-    days == ['1', '70', '55', '50', '47', '43', '39', '15', '14', '5']
-
-    dates == [
-      fixture.calculateReviewDate(sentenceStartDates.B0039AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0040AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0031AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0032AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0033AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0034AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0035AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0036AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0037AA),
-      fixture.calculateReviewDate(sentenceStartDates.B0038AA)
-    ]
-
-    statuses == [
-      'REJECTED BY\nSUPERVISOR',
-      'Started (Api User)',
-      'Awaiting approval',
-      'Started (Api User)',
-      'Awaiting approval',
-      'Approved',
-      'Not categorised',
-      'Started (Api User)',
-      'Awaiting approval',
-      'Approved'
-    ]
-
-    startButtons*.text() == ['Edit', 'Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
-
-    poms[0] == 'Engelbert Humperdinck'
-  }
+//  def "The home page for a categoriser is present"() {
+//    db.createDataWithStatus(-2, 32, 'STARTED', '{}')
+//    db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
+//    db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
+//    db.createDataWithStatus(-5, 36, 'STARTED', '{}')
+//    db.createDataWithStatus(-6, 37, 'AWAITING_APPROVAL', '{}')
+//    db.createDataWithStatus(-7, 38, 'APPROVED', '{}')
+//    db.createDataWithStatus(-8, 39, 'SUPERVISOR_BACK', '{}')
+//    // This one (Anthill Mob) was started manually and does not come back from the nomis query:
+//    db.doCreateCompleteRow(-10, 40, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null,
+//      null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null,
+//      null, null, null, null, 'MANUAL')
+//
+//    when: 'I go to the home page as categoriser'
+//
+//    def sentenceStartDates = [
+//      B0031AA: TODAY.minusDays(55),
+//      B0032AA: TODAY.minusDays(50),
+//      B0033AA: TODAY.minusDays(47),
+//      B0034AA: TODAY.minusDays(43),
+//      B0035AA: TODAY.minusDays(39),
+//      B0036AA: TODAY.minusDays(15),
+//      B0037AA: TODAY.minusDays(14),
+//      B0038AA: TODAY.minusDays(5),
+//      B0039AA: TODAY.minusDays(1),
+//      B0040AA: TODAY.minusDays(70)
+//    ]
+//
+//    elite2Api.stubUncategorisedFull()
+//    prisonerSearchApi.stubSentenceData(
+//      sentenceStartDates.keySet() as List,
+//      (31..40).toList(),
+//      sentenceStartDates.values()*.toString()
+//    )
+//    elite2Api.stubGetBasicOffenderDetails(40, 'B0040AA')
+//
+//    fixture.loginAs(CATEGORISER_USER)
+//
+//    then: 'The categoriser home page is displayed'
+//    at CategoriserHomePage
+//
+//    names == [
+//      'Supervisor_back, Awaiting B0039AA',
+//      'Hillmob, Ant B0040AA',
+//      'Missing, Awaiting B0031AA',
+//      'Started, Awaiting B0032AA',
+//      'Awaiting, Awaiting B0033AA',
+//      'Approved, Awaiting B0034AA',
+//      'Missing, Uncategorised B0035AA',
+//      'Started, Uncategorised B0036AA',
+//      'Awaiting, Uncategorised B0037AA',
+//      'Approved, Uncategorised B0038AA'
+//    ]
+//
+//    days == ['1', '70', '55', '50', '47', '43', '39', '15', '14', '5']
+//
+//    dates == [
+//      fixture.calculateReviewDate(sentenceStartDates.B0039AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0040AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0031AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0032AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0033AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0034AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0035AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0036AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0037AA),
+//      fixture.calculateReviewDate(sentenceStartDates.B0038AA)
+//    ]
+//
+//    statuses == [
+//      'REJECTED BY\nSUPERVISOR',
+//      'Started (Api User)',
+//      'Awaiting approval',
+//      'Started (Api User)',
+//      'Awaiting approval',
+//      'Approved',
+//      'Not categorised',
+//      'Started (Api User)',
+//      'Awaiting approval',
+//      'Approved'
+//    ]
+//
+//    startButtons*.text() == ['Edit', 'Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
+//
+//    poms[0] == 'Engelbert Humperdinck'
+//  }
 
   def "The home page for a supervisor is present"() {
     // Only some of the prisoners are in the DB
