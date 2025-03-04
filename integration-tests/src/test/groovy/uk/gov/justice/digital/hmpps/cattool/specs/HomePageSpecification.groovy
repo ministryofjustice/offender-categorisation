@@ -133,7 +133,13 @@ class HomePageSpecification extends AbstractSpecification {
 
     then: 'The supervisor home page is displayed'
     at SupervisorHomePage
-    names == ['Recat, Mr\nB0036AA', 'Approved, Awaiting\nB0034AA', 'Awaiting, Awaiting\nB0033AA', 'Started, Awaiting\nB0032AA', 'Missing, Awaiting\nB0031AA']
+    names == [
+      'Approved, Awaiting\nB0034AA',
+      'Awaiting, Awaiting\nB0033AA',
+      'Started, Awaiting\nB0032AA',
+      'Missing, Awaiting\nB0031AA',
+      'Recat, Mr\nB0036AA'
+    ]
     days == ['', daysSinceSentence34, daysSinceSentence33, daysSinceSentence32, daysSinceSentence31]
     dates == ['', '11/02/2019', '14/02/2019', '18/02/2019', '22/02/2019']
     nextReviewDate == ['01/02/2019', '', '', '', '15/01/2019']
