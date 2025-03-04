@@ -10,12 +10,21 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApp
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
+import java.time.DayOfWeek
+import java.time.Duration
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
 class HomePageSpecification extends AbstractSpecification {
+
+  def diffOfDays(int numberOfDaysBeforeToday) {
+    return ChronoUnit.DAYS.between(
+      TODAY.minusDays(numberOfDaysBeforeToday),
+      TODAY.minusDays(14 + (TODAY.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : TODAY.getDayOfWeek() == DayOfWeek.SUNDAY ? 1 : 0))
+    )
+  }
 
    def "The home page for a categoriser is present"() {
     db.createDataWithStatus(-2, 32, 'STARTED', '{}')
@@ -69,7 +78,7 @@ class HomePageSpecification extends AbstractSpecification {
                 'B0038AA']
     days == ['1', '70', '55', '50', '47', '43', '39', '15', '14', '5']
     dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
-              '56 days overdue', '41 days overdue', '36 days overdue', '33 days overdue', '29 days overdue', '23 days overdue', '1 day overdue',
+              "${diffOfDays(70)} days overdue", "${diffOfDays(55)} days overdue", "${diffOfDays(50)} days overdue", "${diffOfDays(47)} days overdue", "${diffOfDays(43)} days overdue", "${diffOfDays(39)} days overdue", "${diffOfDays(15)} day overdue",
               sentenceStartDate37.plusDays(fixture.get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
               sentenceStartDate38.plusDays(fixture.get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
     statuses == ['REJECTED BY\nSUPERVISOR', 'Started (Api User)', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
