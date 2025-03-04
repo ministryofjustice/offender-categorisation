@@ -37,9 +37,10 @@ const applyFiltersButton = document.getElementById('applyFilters')
 if (applyFiltersButton) {
   applyFiltersButton.addEventListener('click', async () => {
     const table = document.getElementById('offenderTable')
-    if (typeof table === 'undefined') {
+    if (!table) {
       return
     }
+
     const headers = table.getElementsByTagName('th')
     Object.values(headers).forEach(header => {
       const ariaSort = header.getAttribute('aria-sort')
