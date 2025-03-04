@@ -1,4 +1,4 @@
-import { CATEGORISER_USER, RECATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
+import { CATEGORISER_USER, RECATEGORISER_USER, SUPERVISOR_USER } from '../factory/user'
 import LiteCategoriesPage from '../pages/liteCategories/liteCategories'
 import { CASELOAD } from '../factory/caseload'
 import CategoriserLandingPage from '../pages/categoriser/landing'
@@ -15,6 +15,7 @@ import LiteCategoriesApprovalPage from '../pages/liteCategories/approval'
 import { unapprovedLiteCategorisation } from '../fixtures/liteCategoriser/unapprovedLiteCategorisation'
 import SupervisorLiteListPage from '../pages/liteCategories/approveList'
 import LiteCategoriesAlreadyApprovedPage from '../pages/liteCategories/alreadyApproved'
+import { calculateOverdueText } from '../support/utilities'
 
 const SHORT_DATE_FORMAT = 'D/M/YYYY'
 
@@ -216,17 +217,17 @@ describe('Lite Categories', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         categoriserHomePage.validateToDoTableData([
           [
-            '2207 days overdue',
+            calculateOverdueText(sentenceStartDates.B2345YZ),
             'Pitstop, PenelopeB2345XY',
-            moment().diff(new Date(sentenceStartDates['B2345YZ']), 'days').toString(),
+            moment().diff(moment(sentenceStartDates['B2345YZ']).startOf('day'), 'days').toString(),
             'Not categorised',
             'Engelbert Humperdinck',
             'OTHER',
           ],
           [
-            '2204 days overdue',
+            calculateOverdueText(sentenceStartDates.B2345XY),
             'Hillmob, AntB2345YZ',
-            moment().diff(new Date(sentenceStartDates['B2345XY']), 'days').toString(),
+            moment().diff(moment(sentenceStartDates['B2345XY']).startOf('day'), 'days').toString(),
             'Awaiting approval',
             'Engelbert Humperdinck',
             'PNOMIS',

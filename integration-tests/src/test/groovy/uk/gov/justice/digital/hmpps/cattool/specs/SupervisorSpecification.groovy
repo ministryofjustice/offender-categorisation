@@ -452,7 +452,7 @@ class SupervisorSpecification extends AbstractSpecification {
 
     at SupervisorDonePage
 
-    names == ['Scramble, Tim\nB2345XY', 'Hemmel, Sarah\nB2345YZ']
+    names == ['Scramble, TimB2345XY', 'Hemmel, SarahB2345YZ']
     approvalDates == ['20/04/2019', '28/02/2019']
     categorisers == ['Lamb, John', 'Fan, Jane']
     approvers == ['Lastname_supervisor_user, Firstname_supervisor_user', 'Lastname_supervisor_user, Firstname_supervisor_user']
