@@ -37,6 +37,7 @@ const applyFiltersButton = document.getElementById('applyFilters')
 if (applyFiltersButton) {
   applyFiltersButton.addEventListener('click', async () => {
     const table = document.getElementById('offenderTable')
+
     if (!table) {
       return
     }

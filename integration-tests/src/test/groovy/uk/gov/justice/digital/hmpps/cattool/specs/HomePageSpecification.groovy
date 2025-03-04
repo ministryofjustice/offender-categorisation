@@ -10,8 +10,6 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApp
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
-import java.time.DayOfWeek
-import java.time.Duration
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -100,7 +98,7 @@ class HomePageSpecification extends AbstractSpecification {
       'Awaiting approval',
       'Approved'
     ]
-    
+
     startButtons*.text() == ['Edit', 'Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
 
     poms[0] == 'Engelbert Humperdinck'
