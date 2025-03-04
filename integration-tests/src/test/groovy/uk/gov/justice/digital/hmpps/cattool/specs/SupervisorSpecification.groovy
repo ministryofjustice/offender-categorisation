@@ -414,7 +414,7 @@ class SupervisorSpecification extends AbstractSpecification {
       startButtons[1].click()
       at SupervisorReviewPage
     } else {
-      startButtons[1].click()
+      startButtons[0].click()
       at SupervisorRecatReviewPage
     }
   }
