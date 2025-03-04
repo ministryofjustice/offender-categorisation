@@ -10,6 +10,8 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApp
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
+import java.time.DayOfWeek
+import java.time.Duration
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -17,92 +19,72 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
 class HomePageSpecification extends AbstractSpecification {
 
-//  def "The home page for a categoriser is present"() {
-//    db.createDataWithStatus(-2, 32, 'STARTED', '{}')
-//    db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
-//    db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
-//    db.createDataWithStatus(-5, 36, 'STARTED', '{}')
-//    db.createDataWithStatus(-6, 37, 'AWAITING_APPROVAL', '{}')
-//    db.createDataWithStatus(-7, 38, 'APPROVED', '{}')
-//    db.createDataWithStatus(-8, 39, 'SUPERVISOR_BACK', '{}')
-//    // This one (Anthill Mob) was started manually and does not come back from the nomis query:
-//    db.doCreateCompleteRow(-10, 40, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null,
-//      null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null,
-//      null, null, null, null, 'MANUAL')
-//
-//    when: 'I go to the home page as categoriser'
-//
-//    def sentenceStartDates = [
-//      B0031AA: TODAY.minusDays(55),
-//      B0032AA: TODAY.minusDays(50),
-//      B0033AA: TODAY.minusDays(47),
-//      B0034AA: TODAY.minusDays(43),
-//      B0035AA: TODAY.minusDays(39),
-//      B0036AA: TODAY.minusDays(15),
-//      B0037AA: TODAY.minusDays(14),
-//      B0038AA: TODAY.minusDays(5),
-//      B0039AA: TODAY.minusDays(1),
-//      B0040AA: TODAY.minusDays(70)
-//    ]
-//
-//    elite2Api.stubUncategorisedFull()
-//    prisonerSearchApi.stubSentenceData(
-//      sentenceStartDates.keySet() as List,
-//      (31..40).toList(),
-//      sentenceStartDates.values()*.toString()
-//    )
-//    elite2Api.stubGetBasicOffenderDetails(40, 'B0040AA')
-//
-//    fixture.loginAs(CATEGORISER_USER)
-//
-//    then: 'The categoriser home page is displayed'
-//    at CategoriserHomePage
-//
-//    names == [
-//      'Supervisor_back, Awaiting B0039AA',
-//      'Hillmob, Ant B0040AA',
-//      'Missing, Awaiting B0031AA',
-//      'Started, Awaiting B0032AA',
-//      'Awaiting, Awaiting B0033AA',
-//      'Approved, Awaiting B0034AA',
-//      'Missing, Uncategorised B0035AA',
-//      'Started, Uncategorised B0036AA',
-//      'Awaiting, Uncategorised B0037AA',
-//      'Approved, Uncategorised B0038AA'
-//    ]
-//
-//    days == ['1', '70', '55', '50', '47', '43', '39', '15', '14', '5']
-//
-//    dates == [
-//      fixture.calculateReviewDate(sentenceStartDates.B0039AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0040AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0031AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0032AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0033AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0034AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0035AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0036AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0037AA),
-//      fixture.calculateReviewDate(sentenceStartDates.B0038AA)
-//    ]
-//
-//    statuses == [
-//      'REJECTED BY\nSUPERVISOR',
-//      'Started (Api User)',
-//      'Awaiting approval',
-//      'Started (Api User)',
-//      'Awaiting approval',
-//      'Approved',
-//      'Not categorised',
-//      'Started (Api User)',
-//      'Awaiting approval',
-//      'Approved'
-//    ]
-//
-//    startButtons*.text() == ['Edit', 'Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
-//
-//    poms[0] == 'Engelbert Humperdinck'
-//  }
+  def diffOfDays(int numberOfDaysBeforeToday) {
+    return ChronoUnit.DAYS.between(
+      TODAY.minusDays(numberOfDaysBeforeToday),
+      TODAY.minusDays(14 + (TODAY.getDayOfWeek() == DayOfWeek.SATURDAY ? 2 : TODAY.getDayOfWeek() == DayOfWeek.SUNDAY ? 1 : 0))
+    )
+  }
+
+   def "The home page for a categoriser is present"() {
+    db.createDataWithStatus(-2, 32, 'STARTED', '{}')
+    db.createDataWithStatus(-3, 33, 'AWAITING_APPROVAL', '{}')
+    db.createDataWithStatus(-4, 34, 'APPROVED', '{}')
+    db.createDataWithStatus(-5, 36, 'STARTED', '{}')
+    db.createDataWithStatus(-6, 37, 'AWAITING_APPROVAL', '{}')
+    db.createDataWithStatus(-7, 38, 'APPROVED', '{}')
+    db.createDataWithStatus(-8, 39, 'SUPERVISOR_BACK', '{}')
+    // This one (Anthill Mob) was started manually and does not come back from the nomis query:
+    db.doCreateCompleteRow(-10, 40, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null,
+      null, 1, null, 'LEI', 'dummy', 'current_timestamp(2)', null, null,
+      null, null, null, null, 'MANUAL')
+
+    when: 'I go to the home page as categoriser'
+
+    def sentenceStartDate31 = TODAY.minusDays(55)
+    def sentenceStartDate32 = TODAY.minusDays(50)
+    def sentenceStartDate33 = TODAY.minusDays(47)
+    def sentenceStartDate34 = TODAY.minusDays(43)
+    def sentenceStartDate35 = TODAY.minusDays(39)
+    def sentenceStartDate36 = TODAY.minusDays(15)
+    def sentenceStartDate37 = TODAY.minusDays(14)
+    def sentenceStartDate38 = TODAY.minusDays(5)
+    def sentenceStartDate39 = TODAY.minusDays(1)
+    def sentenceStartDate40 = TODAY.minusDays(70)
+    elite2Api.stubUncategorisedFull()
+    prisonerSearchApi.stubSentenceData(['B0031AA', 'B0032AA', 'B0033AA', 'B0034AA', 'B0035AA', 'B0036AA', 'B0037AA', 'B0038AA', 'B0039AA', 'B0040AA'],
+      [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+      [sentenceStartDate31.toString(), sentenceStartDate32.toString(), sentenceStartDate33.toString(), sentenceStartDate34.toString(),
+       sentenceStartDate35.toString(), sentenceStartDate36.toString(), sentenceStartDate37.toString(), sentenceStartDate38.toString(),
+       sentenceStartDate39.toString(), sentenceStartDate40.toString()],
+    )
+    elite2Api.stubGetBasicOffenderDetails(40, 'B0040AA')
+
+    fixture.loginAs(CATEGORISER_USER)
+
+    then: 'The categoriser home page is displayed'
+    at CategoriserHomePage
+    names == ['Supervisor_back, Awaiting\n' +
+                'B0039AA', 'Hillmob, Ant\n' +
+      'B0040AA', 'Missing, Awaiting\n' +
+      'B0031AA', 'Started, Awaiting\n' +
+      'B0032AA', 'Awaiting, Awaiting\n' +
+      'B0033AA', 'Approved, Awaiting\n' +
+      'B0034AA', 'Missing, Uncategorised\n' +
+      'B0035AA',
+              'Started, Uncategorised\n' +
+                'B0036AA', 'Awaiting, Uncategorised\n' +
+                'B0037AA', 'Approved, Uncategorised\n' +
+                'B0038AA']
+    days == ['1', '70', '55', '50', '47', '43', '39', '15', '14', '5']
+    dates == [sentenceStartDate39.plusDays(fixture.get10BusinessDays(sentenceStartDate39)).format('dd/MM/yyyy'),
+              "${diffOfDays(70)} days overdue", "${diffOfDays(55)} days overdue", "${diffOfDays(50)} days overdue", "${diffOfDays(47)} days overdue", "${diffOfDays(43)} days overdue", "${diffOfDays(39)} days overdue", "${diffOfDays(15)} day overdue",
+              sentenceStartDate37.plusDays(fixture.get10BusinessDays(sentenceStartDate37)).format('dd/MM/yyyy'),
+              sentenceStartDate38.plusDays(fixture.get10BusinessDays(sentenceStartDate38)).format('dd/MM/yyyy')]
+    statuses == ['REJECTED BY\nSUPERVISOR', 'Started (Api User)', 'Awaiting approval', 'Started (Api User)', 'Awaiting approval', 'Approved', 'Not categorised', 'Started (Api User)', 'Awaiting approval', 'Approved']
+    startButtons*.text() == ['Edit', 'Edit', 'PNOMIS', 'PNOMIS', 'View', 'PNOMIS', 'Start', 'Edit', 'PNOMIS', 'PNOMIS']
+    poms[0] == 'Engelbert Humperdinck'
+  }
 
   def "The home page for a supervisor is present"() {
     // Only some of the prisoners are in the DB
