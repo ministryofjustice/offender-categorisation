@@ -10,8 +10,6 @@ import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApp
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
-import java.time.DayOfWeek
-import java.time.Duration
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
