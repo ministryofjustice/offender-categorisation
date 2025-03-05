@@ -5,7 +5,7 @@ import CategoriserHomePage from '../pages/categoriser/home'
 import { CASELOAD } from '../factory/caseload'
 import dbSeeder from '../fixtures/db-seeder'
 import initialCategorisation from '../fixtures/categoriser/home'
-import { get10BusinessDays } from '../support/utilities'
+import { calculateOverdueText, get10BusinessDays } from '../support/utilities'
 
 describe('Categoriser Home page', () => {
   beforeEach(() => {
@@ -127,7 +127,7 @@ describe('Categoriser Home page', () => {
           ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
           ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
           [
-            '25 days overdue',
+            calculateOverdueText(startDates[4]),
             'Missing, UncategorisedB0035AA',
             '39',
             'Not categorised',
@@ -177,7 +177,7 @@ describe('Categoriser Home page', () => {
           ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
           ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
           [
-            '25 days overdue',
+            calculateOverdueText(startDates[4]),
             'Missing, UncategorisedB0035AA',
             '39',
             'Not categorised',

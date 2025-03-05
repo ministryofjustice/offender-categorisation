@@ -1,7 +1,7 @@
 {% extends "../partials/layout.html" %}
 
 {% from "button/macro.njk" import govukButton %}
-
+{% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Categorisation referrals" %}
@@ -41,42 +41,76 @@
   <section class="govuk-tabs__panel">
 
   {% if offenders | length > 0 %}
-  <table class="govuk-table tablesorter sortcolumns" id="offenderTable" >
-    <thead class="govuk-table__head">
-
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Name and prison number</th>
-      <th class="govuk-table__header" scope="col">Days since sentence</th>
-      <th class="govuk-table__header" scope="col">Date due</th>
-      <th class="govuk-table__header" scope="col">Referred by</th>
-      <th class="govuk-table__header" scope="col">Type</th>
-      <th class="govuk-table__header" scope="col"></th>
-    </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-    {% for row in offenders %}
-    <tr class="govuk-table__row ">
-      <td class="govuk-table__cell">
-        <a target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a><p>{{ row.offenderNo }}</p>
-      </td>
-      <td class="govuk-table__cell">{{ row.daysSinceSentence }}</td>
-      <td class="govuk-table__cell">{{ row.dateRequired }}</td>
-      <td class="govuk-table__cell">{{ row.securityReferredBy or 'Automatic' }}</td>
-      <td class="govuk-table__cell">{{ row.catTypeDisplay }}</td>
-      <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
+    {% set securityReviews = [] %}
+    {% for offender in offenders %}
+      {% set nameColumn %}
+        <a target="_blank" href="{{ offender.offenderNo | offenderLink }}">{{ offender.displayName }}</a><p>{{ offender.offenderNo }}</p>
+      {% endset %}
+      {% set actionColumn %}
         {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
-        {% set classes = basicClasses if row.buttonText == 'Start' else basicClasses + " grey-button" %}
+        {% set classes = basicClasses if offender.buttonText == 'Start' else basicClasses + " grey-button" %}
         {{ govukButton({
-          text: row.buttonText,
-          href: "/form/security/review/" + row.bookingId,
+          text: offender.buttonText,
+          href: "/form/security/review/" + offender.bookingId,
           classes: classes
         }) }}
-      </td>
-    </tr>
-    {% endfor %}
+      {% endset %}
+      {% set securityReviews = (securityReviews.push([
+        {
+          html: nameColumn,
+          attributes: { "data-sort-value": offender.displayName.toLowerCase() if offender.displayName else '' }
 
-    </tbody>
-  </table>
+        }, {
+          text: offender.daysSinceSentence
+        }, {
+          text: offender.dateRequired,
+          attributes: { "data-sort-value": offender.dateRequired | sortDateValue }
+        }, {
+          text: offender.securityReferredBy or 'Automatic',
+          attributes: { "data-sort-value": offender.securityReferredBy.toLowerCase() if offender.securityReferredBy else 'automatic' }
+        }, {
+          text: offender.catTypeDisplay
+        }, {
+          html: actionColumn
+        }
+      ]), securityReviews) %}
+    {% endfor %}
+    {{ govukTable({
+      attributes: {
+        'data-module': 'moj-sortable-table',
+        'id': 'offenderTable'
+      },
+      head: [
+        {
+          text: "Name and prison number",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Days since sentence"
+        },
+        {
+          text: "Date due",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Referred by",
+          attributes: {
+            "aria-sort": "none"
+          }
+        },
+        {
+          text: "Type"
+        },
+        {
+          text: ""
+        }
+      ],
+      rows: securityReviews
+    }) }}
   {% else %}
     <div class="govuk-!-padding-top-4">
       <div id="no-results-message">There are no referrals to review.</div>

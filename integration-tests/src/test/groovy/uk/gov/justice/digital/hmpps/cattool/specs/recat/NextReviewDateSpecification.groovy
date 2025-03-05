@@ -79,8 +79,10 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDateQuestionPage
 
     then: "Error is displayed"
-    errorSummaries*.text() == ['Please select a choice']
-    errors.text() == 'Error:\nPlease select a choice'
+    waitFor {
+      errorSummaries*.text() == ['Please select a choice']
+      errors.text() == 'Error:\nPlease select a choice'
+    }
 
 
     when: "specific date is selected"
