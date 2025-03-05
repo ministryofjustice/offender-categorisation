@@ -77,7 +77,7 @@ describe('Supervisor Home page', () => {
     ]
 
     beforeEach(() => {
-      cy.task('stubUncategorisedAwaitingApproval', { bookingIds: [11, 12, 13] })
+      cy.task('stubUncategorisedAwaitingApproval', { bookingIds: [12, 11, 13] })
       cy.task('stubSentenceData', {
         offenderNumbers: [offender1.offenderNo, offender2.offenderNo, offender3.offenderNo],
         bookingIds: [offender1.bookingId, offender2.bookingId, offender3.bookingId],
@@ -120,9 +120,9 @@ describe('Supervisor Home page', () => {
 
       supervisorHomePage.validateToDoTableData([offender1TableData, offender2TableData, offender3TableData])
       cy.get('th button[data-index="2"]').click({ force: true })
-      supervisorHomePage.validateToDoTableData([offender3TableData, offender2TableData, offender1TableData])
-      cy.get('th button[data-index="2"]').click({ force: true })
       supervisorHomePage.validateToDoTableData([offender1TableData, offender2TableData, offender3TableData])
+      cy.get('th button[data-index="2"]').click({ force: true })
+      supervisorHomePage.validateToDoTableData([offender3TableData, offender2TableData, offender1TableData])
       cy.get('th button[data-index="0"]').click({ force: true })
       supervisorHomePage.validateToDoTableData([offender2TableData, offender3TableData, offender1TableData])
     })
