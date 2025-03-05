@@ -53,9 +53,7 @@ describe('Categoriser Home page', () => {
       categoriserHomePage.noResultsDiv().should('be.visible')
     })
 
-    it('should show upcoming categorisations', () => {
-      dbSeeder(initialCategorisation)
-
+    describe('when there are many categorisations due', () => {
       const offenderNumbers = [
         'B0031AA',
         'B0032AA',
@@ -82,59 +80,144 @@ describe('Categoriser Home page', () => {
         moment().subtract(70, 'days'),
       ]
 
-      cy.task('stubUncategorisedFull')
-      cy.task('stubGetPrisonerSearchPrisoners')
-      cy.task('stubSentenceData', {
-        offenderNumbers,
-        bookingIds,
-        startDates,
+      beforeEach(() => {
+        dbSeeder(initialCategorisation)
+
+        cy.task('stubUncategorisedFull')
+        cy.task('stubGetPrisonerSearchPrisoners')
+        cy.task('stubSentenceData', {
+          offenderNumbers,
+          bookingIds,
+          startDates,
+        })
+
+        cy.task('stubGetOffenderDetails', {
+          basicInfo: true,
+          bookingId: 40,
+          offenderNo: 'B0040AA',
+        })
+
+        cy.stubLogin({
+          user: CATEGORISER_USER,
+        })
+        cy.signIn()
       })
 
-      cy.task('stubGetOffenderDetails', {
-        basicInfo: true,
-        bookingId: 40,
-        offenderNo: 'B0040AA',
+      it('should show upcoming categorisations', () => {
+        const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+        categoriserHomePage.validateToDoTableData([
+          [
+            moment(startDates[8]).add(get10BusinessDays(startDates[8]), 'days').format('DD/MM/yyyy'),
+            'Supervisor_back, AwaitingB0039AA',
+            '1',
+            'REJECTED BYSUPERVISOR',
+            'Engelbert Humperdinck',
+            'Edit',
+          ],
+          ['56 days overdue', 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
+          ['41 days overdue', 'Missing, AwaitingB0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
+          [
+            '36 days overdue',
+            'Started, AwaitingB0032AA',
+            '50',
+            'Started (Api User)',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+          ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+          ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
+          [
+            '25 days overdue',
+            'Missing, UncategorisedB0035AA',
+            '39',
+            'Not categorised',
+            'Engelbert Humperdinck',
+            'Start',
+          ],
+          [
+            '1 day overdue',
+            'Started, UncategorisedB0036AA',
+            '15',
+            'Started (Api User)',
+            'Engelbert Humperdinck',
+            'Edit',
+          ],
+          [
+            moment(startDates[6]).add(get10BusinessDays(startDates[6]), 'days').format('DD/MM/yyyy'),
+            'Awaiting, UncategorisedB0037AA',
+            '14',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+          [
+            moment(startDates[7]).add(get10BusinessDays(startDates[7]), 'days').format('DD/MM/yyyy'),
+            'Approved, UncategorisedB0038AA',
+            '5',
+            'Approved',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+        ])
       })
-
-      cy.stubLogin({
-        user: CATEGORISER_USER,
+      it('should sort by due date when triggered', () => {
+        const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+        cy.get('th button[data-index="0"]').click({ force: true })
+        categoriserHomePage.validateToDoTableData([
+          ['56 days overdue', 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
+          ['41 days overdue', 'Missing, AwaitingB0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
+          [
+            '36 days overdue',
+            'Started, AwaitingB0032AA',
+            '50',
+            'Started (Api User)',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+          ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+          ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
+          [
+            '25 days overdue',
+            'Missing, UncategorisedB0035AA',
+            '39',
+            'Not categorised',
+            'Engelbert Humperdinck',
+            'Start',
+          ],
+          [
+            '1 day overdue',
+            'Started, UncategorisedB0036AA',
+            '15',
+            'Started (Api User)',
+            'Engelbert Humperdinck',
+            'Edit',
+          ],
+          [
+            moment(startDates[6]).add(get10BusinessDays(startDates[6]), 'days').format('DD/MM/yyyy'),
+            'Awaiting, UncategorisedB0037AA',
+            '14',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+          [
+            moment(startDates[7]).add(get10BusinessDays(startDates[7]), 'days').format('DD/MM/yyyy'),
+            'Approved, UncategorisedB0038AA',
+            '5',
+            'Approved',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+          [
+            moment(startDates[8]).add(get10BusinessDays(startDates[8]), 'days').format('DD/MM/yyyy'),
+            'Supervisor_back, AwaitingB0039AA',
+            '1',
+            'REJECTED BYSUPERVISOR',
+            'Engelbert Humperdinck',
+            'Edit',
+          ],
+        ])
       })
-      cy.signIn()
-
-      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-      categoriserHomePage.validateToDoTableData([
-        [
-          moment(startDates[8]).add(get10BusinessDays(startDates[8]), 'days').format('DD/MM/yyyy'),
-          'Supervisor_back, AwaitingB0039AA',
-          '1',
-          'REJECTED BYSUPERVISOR',
-          'Engelbert Humperdinck',
-          'Edit',
-        ],
-        ['56 days overdue', 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
-        ['41 days overdue', 'Missing, AwaitingB0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
-        ['36 days overdue', 'Started, AwaitingB0032AA', '50', 'Started (Api User)', 'Engelbert Humperdinck', 'PNOMIS'],
-        ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
-        ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
-        ['23 days overdue', 'Missing, UncategorisedB0035AA', '39', 'Not categorised', 'Engelbert Humperdinck', 'Start'],
-        ['1 day overdue', 'Started, UncategorisedB0036AA', '15', 'Started (Api User)', 'Engelbert Humperdinck', 'Edit'],
-        [
-          moment(startDates[6]).add(get10BusinessDays(startDates[6]), 'days').format('DD/MM/yyyy'),
-          'Awaiting, UncategorisedB0037AA',
-          '14',
-          'Awaiting approval',
-          'Engelbert Humperdinck',
-          'PNOMIS',
-        ],
-        [
-          moment(startDates[7]).add(get10BusinessDays(startDates[7]), 'days').format('DD/MM/yyyy'),
-          'Approved, UncategorisedB0038AA',
-          '5',
-          'Approved',
-          'Engelbert Humperdinck',
-          'PNOMIS',
-        ],
-      ])
     })
   })
   describe('side filters', () => {

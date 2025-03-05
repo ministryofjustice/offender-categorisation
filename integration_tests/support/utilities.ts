@@ -33,6 +33,19 @@ export const calculateDueDate = (sentenceDate: string) => {
   return { daysSinceSentence, dateRequired }
 }
 
+export const calculateOverdueText: any = (sentenceDate: string) => {
+  const { daysSinceSentence, dateRequired } = calculateDueDate(sentenceDate)
+  const today = moment().startOf('day')
+  const reviewDate = moment(dateRequired, 'DD/MM/YYYY').startOf('day')
+
+  if (reviewDate.isBefore(today)) {
+    const daysOverdue = today.diff(reviewDate, 'days')
+    return daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`
+  }
+
+  return dateRequired
+}
+
 export const isToday = (date: Date): boolean => moment().isSame(date, 'day')
 
 export const compareObjects = (first: object, second: object): boolean => {
@@ -44,4 +57,5 @@ export default {
   calculateDueDate,
   isToday,
   compareObjects,
+  calculateOverdueText,
 }

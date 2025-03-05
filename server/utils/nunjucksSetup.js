@@ -82,4 +82,21 @@ module.exports = (app, path) => {
     .addFilter('fixed', (num, length) => {
       return num.toFixed(length || 1)
     })
+    .addFilter('sortDateValue', date => {
+      if (!date || date === 'null' || date === 'undefined') {
+        return Infinity
+      }
+
+      const isoMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+      if (isoMatch) {
+        return new Date(date).getTime()
+      }
+
+      const ukMatch = date.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+      if (ukMatch) {
+        return new Date(`${ukMatch[3]}-${ukMatch[2]}-${ukMatch[1]}`).getTime()
+      }
+
+      return date
+    })
 }
