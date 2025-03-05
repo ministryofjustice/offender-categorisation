@@ -98,9 +98,10 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at NextReviewDatePage
 
     then: "Error is displayed"
-    errorSummaries*.text() == ['The review date must be a real date']
-    errors.text().toString() == "Error:\nThe review date must be a real date"
-
+    waitFor {
+      errorSummaries*.text() == ['The review date must be a real date']
+      errors.text().toString() == "Error:\nThe review date must be a real date"
+    }
   }
 
   def "The nextReviewDate Standalone page saves details correctly - in PG"() {
