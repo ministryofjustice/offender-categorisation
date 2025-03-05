@@ -11,7 +11,7 @@ export default class RecategoriserHomePage extends BaseRecategoriserPage {
 
   validateCategoryReviewsTableData = (expectedValues: CategoryReviewsTableData) =>
     cy.checkTableRowData<CategoryReviewsTableData>({
-      tableRowsSelector: 'table#offenderTable > tbody > tr',
+      tableRowsSelector: 'table.recategorisation-table > tbody > tr',
       expectedValues,
     })
 
