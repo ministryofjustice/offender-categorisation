@@ -131,7 +131,7 @@ describe('Approved View', () => {
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.validateToDoTableData([
-      ['B2345YZ', '05/03/2025', '', 'Lastname_supervisor_user, Firstname_supervisor_user', '', 'Recat', 'View'],
+      ['B2345YZ', '06/03/2025', '', 'Lastname_supervisor_user, Firstname_supervisor_user', '', 'Recat', 'View'],
       [
         'Scramble, TimB2345XY',
         '21/02/2019',
