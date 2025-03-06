@@ -216,6 +216,11 @@ module.exports = function Index({
         delete validation.value.filterRemoved
       }
 
+      const { sortAttribute } = validation.value
+      const sortDirection = validation.value.sortDirection ?? 'none'
+      delete validation.value.sortAttribute
+      delete validation.value.sortDirection
+
       const offenders = user.activeCaseLoad
         ? await offendersService.getRecategoriseOffenders(res.locals, user, validation.value)
         : []
@@ -239,6 +244,8 @@ module.exports = function Index({
         url: '/recategoriserHome',
         fullUrl: req.url,
         hideHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
+        sortAttribute,
+        sortDirection,
       })
     })
   )

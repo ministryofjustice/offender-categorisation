@@ -218,6 +218,12 @@ describe('Categoriser Home page', () => {
           ],
         ])
       })
+      it('should maintain sort order when apply filters clicked', () => {
+        const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+        cy.get('th button[data-index="0"]').click({ force: true })
+        categoriserHomePage.applyFiltersButton().click()
+        cy.get('th[aria-sort-attribute="date"]').invoke('attr', 'aria-sort').should('eq', 'ascending')
+      })
     })
   })
   describe('side filters', () => {

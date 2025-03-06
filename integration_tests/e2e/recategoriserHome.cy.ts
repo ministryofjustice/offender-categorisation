@@ -193,6 +193,13 @@ describe('Recategoriser Home page', () => {
         recategoriserHomePage.applyFiltersButton().click()
         recategoriserHomePage.noResultsDueToFiltersDiv().should('be.visible')
       })
+      it('should maintain sort order when apply filters clicked', () => {
+        setUpRecatData()
+        const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+        cy.get('th button[data-index="0"]').click({ force: true })
+        recategoriserHomePage.applyFiltersButton().click()
+        cy.get('th[aria-sort-attribute="date"]').invoke('attr', 'aria-sort').should('eq', 'ascending')
+      })
     })
 
     it('should sort by due date when triggered', () => {
@@ -203,21 +210,49 @@ describe('Recategoriser Home page', () => {
       cy.get('th button[data-index="0"]').click({ force: true })
 
       recategoriserHomePage.validateCategoryReviewsTableData([
-        ['10 days overdue', 'Fleming, AndrewG6707GG', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+        [
+          '10 days overdue',
+          'Fleming, AndrewG6707GG',
+          'Review due',
+          'Awaiting approval',
+          'Engelbert Humperdinck',
+          'View',
+        ],
         ['1 day overdue', 'Symonds, AndrewG6707GH', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
-        [moment(recats[2].nextReviewDate).format('DD/MM/yyyy'), 'Hitchcock, AndrewG6707GI', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+        [
+          moment(recats[2].nextReviewDate).format('DD/MM/yyyy'),
+          'Hitchcock, AndrewG6707GI',
+          'Review due',
+          'Awaiting approval',
+          'Engelbert Humperdinck',
+          'View',
+        ],
       ])
 
       cy.get('th button[data-index="0"]').click({ force: true })
 
       recategoriserHomePage.validateCategoryReviewsTableData([
-        [moment(recats[2].nextReviewDate).format('DD/MM/yyyy'), 'Hitchcock, AndrewG6707GI', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+        [
+          moment(recats[2].nextReviewDate).format('DD/MM/yyyy'),
+          'Hitchcock, AndrewG6707GI',
+          'Review due',
+          'Awaiting approval',
+          'Engelbert Humperdinck',
+          'View',
+        ],
         ['1 day overdue', 'Symonds, AndrewG6707GH', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
-        ['10 days overdue', 'Fleming, AndrewG6707GG', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+        [
+          '10 days overdue',
+          'Fleming, AndrewG6707GG',
+          'Review due',
+          'Awaiting approval',
+          'Engelbert Humperdinck',
+          'View',
+        ],
       ])
     })
 
-    function runRecategoriserHomePage (nextReviewDateDaysToAdd) {
+    function runRecategoriserHomePage(nextReviewDateDaysToAdd) {
       cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.PNI] })
 
       const recat = {
