@@ -33,15 +33,16 @@ if (hideFilterButton) {
   })
 }
 
+// This is to maintain the sort order when the apply filters button is pressed,
+// it will store the sort attribute and sort order in hidden inputs to be included
+// in the apply filter request
 const applyFiltersButton = document.getElementById('applyFilters')
 if (applyFiltersButton) {
   applyFiltersButton.addEventListener('click', async () => {
-    const table = document.getElementById('offenderTable')
-
-    if (!table) {
+    const table = document.getElementsByClassName('recategorisation-table')[0]
+    if (typeof table === 'undefined') {
       return
     }
-
     const headers = table.getElementsByTagName('th')
     Object.values(headers).forEach(header => {
       const ariaSort = header.getAttribute('aria-sort')
