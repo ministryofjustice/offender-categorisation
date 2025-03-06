@@ -124,7 +124,14 @@ describe('Categoriser Home page', () => {
             'Engelbert Humperdinck',
             'PNOMIS',
           ],
-          ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+          [
+            calculateOverdueText(startDates[2]),
+            'Awaiting, AwaitingB0033AA',
+            '47',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'View',
+          ],
           ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
           [
             calculateOverdueText(startDates[4]),
@@ -174,7 +181,14 @@ describe('Categoriser Home page', () => {
             'Engelbert Humperdinck',
             'PNOMIS',
           ],
-          ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+          [
+            calculateOverdueText(startDates[2]),
+            'Awaiting, AwaitingB0033AA',
+            '47',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'View',
+          ],
           ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
           [
             calculateOverdueText(startDates[4]),
