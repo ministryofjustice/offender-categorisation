@@ -130,7 +130,19 @@ describe('Approved View', () => {
     supervisorHomePage.doneTabLink().click()
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
-    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12}).click()
+    supervisorDonePage.validateToDoTableData([
+      ['B2345YZ', '06/03/2025', '', 'Lastname_supervisor_user, Firstname_supervisor_user', '', 'Recat', 'View'],
+      [
+        'Scramble, TimB2345XY',
+        '21/02/2019',
+        'Lamb, John',
+        'Lastname_supervisor_user, Firstname_supervisor_user',
+        'C',
+        'Recat',
+        'View',
+      ],
+    ])
+    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12 }).click()
 
     recatApprovedViewPage = Page.verifyOnPage(RecatApprovedViewPage)
 
