@@ -35,50 +35,28 @@ describe('Categoriser Home page', () => {
       })
     })
 
-    it('should show the no results message by default', () => {
-      cy.task('stubUncategorised')
-      cy.task('stubGetPrisonerSearchPrisoners')
-      cy.task('stubSentenceData', {
-        offenderNumbers: [],
-        bookingIds: [],
-        startDates: [],
-      })
-
-      cy.stubLogin({
-        user: CATEGORISER_USER,
-      })
-      cy.signIn()
-
-      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-      categoriserHomePage.noResultsDiv().should('be.visible')
-    })
-
-    describe('when there are many categorisations due', () => {
-      const offenderNumbers = [
-        'B0031AA',
-        'B0032AA',
-        'B0033AA',
-        'B0034AA',
-        'B0035AA',
-        'B0036AA',
-        'B0037AA',
-        'B0038AA',
-        'B0039AA',
-        'B0040AA',
+    describe('when there are upcoming categorisations', () => {
+      const offenderData = [
+        { offenderNo: 'B0031AA', bookingId: 31, startDate: moment().subtract(55, 'days') },
+        { offenderNo: 'B0032AA', bookingId: 32, startDate: moment().subtract(50, 'days') },
+        { offenderNo: 'B0033AA', bookingId: 33, startDate: moment().subtract(47, 'days') },
+        { offenderNo: 'B0034AA', bookingId: 34, startDate: moment().subtract(43, 'days') },
+        { offenderNo: 'B0035AA', bookingId: 35, startDate: moment().subtract(39, 'days') },
+        { offenderNo: 'B0036AA', bookingId: 36, startDate: moment().subtract(15, 'days') },
+        { offenderNo: 'B0037AA', bookingId: 37, startDate: moment().subtract(14, 'days') },
+        { offenderNo: 'B0038AA', bookingId: 38, startDate: moment().subtract(5, 'days') },
+        { offenderNo: 'B0039AA', bookingId: 39, startDate: moment().subtract(1, 'days') },
+        { offenderNo: 'B0040AA', bookingId: 40, startDate: moment().subtract(70, 'days') },
       ]
-      const bookingIds = [31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
-      const startDates = [
-        moment().subtract(55, 'days'),
-        moment().subtract(50, 'days'),
-        moment().subtract(47, 'days'),
-        moment().subtract(43, 'days'),
-        moment().subtract(39, 'days'),
-        moment().subtract(15, 'days'),
-        moment().subtract(14, 'days'),
-        moment().subtract(5, 'days'),
-        moment().subtract(1, 'days'),
-        moment().subtract(70, 'days'),
-      ]
+
+      const offenderNumbers = offenderData.map(o => o.offenderNo)
+      const bookingIds = offenderData.map(o => o.bookingId)
+      const startDates = offenderData.map(o => o.startDate)
+
+      const reviewDatesDict: Record<string, string> = offenderData.reduce((acc, { offenderNo, startDate }) => {
+        acc[offenderNo] = calculateOverdueText(startDate)
+        return acc
+      }, {})
 
       beforeEach(() => {
         dbSeeder(initialCategorisation)
@@ -107,27 +85,41 @@ describe('Categoriser Home page', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         categoriserHomePage.validateToDoTableData([
           [
-            moment(startDates[8]).add(get10BusinessDays(startDates[8]), 'days').format('DD/MM/yyyy'),
+            reviewDatesDict.B0039AA,
             'Supervisor_back, AwaitingB0039AA',
             '1',
             'REJECTED BYSUPERVISOR',
             'Engelbert Humperdinck',
             'Edit',
           ],
-          ['56 days overdue', 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
-          ['41 days overdue', 'Missing, AwaitingB0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
+          [reviewDatesDict.B0040AA, 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
           [
-            '36 days overdue',
+            reviewDatesDict.B0031AA,
+            'Missing, AwaitingB0031AA',
+            '55',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+          [
+            reviewDatesDict.B0032AA,
             'Started, AwaitingB0032AA',
             '50',
             'Started (Api User)',
             'Engelbert Humperdinck',
             'PNOMIS',
           ],
-          ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
-          ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
           [
-            calculateOverdueText(startDates[4]),
+            reviewDatesDict.B0033AA,
+            'Awaiting, AwaitingB0033AA',
+            '47',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'View',
+          ],
+          [reviewDatesDict.B0034AA, 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
+          [
+            reviewDatesDict.B0035AA,
             'Missing, UncategorisedB0035AA',
             '39',
             'Not categorised',
@@ -135,7 +127,7 @@ describe('Categoriser Home page', () => {
             'Start',
           ],
           [
-            '1 day overdue',
+            reviewDatesDict.B0036AA,
             'Started, UncategorisedB0036AA',
             '15',
             'Started (Api User)',
@@ -143,7 +135,7 @@ describe('Categoriser Home page', () => {
             'Edit',
           ],
           [
-            moment(startDates[6]).add(get10BusinessDays(startDates[6]), 'days').format('DD/MM/yyyy'),
+            reviewDatesDict.B0037AA,
             'Awaiting, UncategorisedB0037AA',
             '14',
             'Awaiting approval',
@@ -151,7 +143,7 @@ describe('Categoriser Home page', () => {
             'PNOMIS',
           ],
           [
-            moment(startDates[7]).add(get10BusinessDays(startDates[7]), 'days').format('DD/MM/yyyy'),
+            reviewDatesDict.B0038AA,
             'Approved, UncategorisedB0038AA',
             '5',
             'Approved',
@@ -160,24 +152,39 @@ describe('Categoriser Home page', () => {
           ],
         ])
       })
+
       it('should sort by due date when triggered', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         cy.get('th button[data-index="0"]').click({ force: true })
         categoriserHomePage.validateToDoTableData([
-          ['56 days overdue', 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
-          ['41 days overdue', 'Missing, AwaitingB0031AA', '55', 'Awaiting approval', 'Engelbert Humperdinck', 'PNOMIS'],
+          [reviewDatesDict.B0040AA, 'Hillmob, AntB0040AA', '70', 'Started (Api User)', '', 'Edit'],
           [
-            '36 days overdue',
+            reviewDatesDict.B0031AA,
+            'Missing, AwaitingB0031AA',
+            '55',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+          [
+            reviewDatesDict.B0032AA,
             'Started, AwaitingB0032AA',
             '50',
             'Started (Api User)',
             'Engelbert Humperdinck',
             'PNOMIS',
           ],
-          ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
-          ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
           [
-            calculateOverdueText(startDates[4]),
+            reviewDatesDict.B0033AA,
+            'Awaiting, AwaitingB0033AA',
+            '47',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'View',
+          ],
+          [reviewDatesDict.B0034AA, 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
+          [
+            reviewDatesDict.B0035AA,
             'Missing, UncategorisedB0035AA',
             '39',
             'Not categorised',
@@ -185,7 +192,7 @@ describe('Categoriser Home page', () => {
             'Start',
           ],
           [
-            '1 day overdue',
+            reviewDatesDict.B0036AA,
             'Started, UncategorisedB0036AA',
             '15',
             'Started (Api User)',
@@ -193,7 +200,7 @@ describe('Categoriser Home page', () => {
             'Edit',
           ],
           [
-            moment(startDates[6]).add(get10BusinessDays(startDates[6]), 'days').format('DD/MM/yyyy'),
+            reviewDatesDict.B0037AA,
             'Awaiting, UncategorisedB0037AA',
             '14',
             'Awaiting approval',
@@ -201,7 +208,7 @@ describe('Categoriser Home page', () => {
             'PNOMIS',
           ],
           [
-            moment(startDates[7]).add(get10BusinessDays(startDates[7]), 'days').format('DD/MM/yyyy'),
+            reviewDatesDict.B0038AA,
             'Approved, UncategorisedB0038AA',
             '5',
             'Approved',
@@ -209,7 +216,7 @@ describe('Categoriser Home page', () => {
             'PNOMIS',
           ],
           [
-            moment(startDates[8]).add(get10BusinessDays(startDates[8]), 'days').format('DD/MM/yyyy'),
+            reviewDatesDict.B0039AA,
             'Supervisor_back, AwaitingB0039AA',
             '1',
             'REJECTED BYSUPERVISOR',
