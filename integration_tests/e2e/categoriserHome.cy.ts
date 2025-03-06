@@ -124,7 +124,14 @@ describe('Categoriser Home page', () => {
             'Engelbert Humperdinck',
             'PNOMIS',
           ],
-          ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+          [
+            calculateOverdueText(startDates[2]),
+            'Awaiting, AwaitingB0033AA',
+            '47',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'View',
+          ],
           ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
           [
             calculateOverdueText(startDates[4]),
@@ -174,7 +181,14 @@ describe('Categoriser Home page', () => {
             'Engelbert Humperdinck',
             'PNOMIS',
           ],
-          ['33 days overdue', 'Awaiting, AwaitingB0033AA', '47', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+          [
+            calculateOverdueText(startDates[2]),
+            'Awaiting, AwaitingB0033AA',
+            '47',
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'View',
+          ],
           ['29 days overdue', 'Approved, AwaitingB0034AA', '43', 'Approved', 'Engelbert Humperdinck', 'PNOMIS'],
           [
             calculateOverdueText(startDates[4]),
@@ -217,6 +231,12 @@ describe('Categoriser Home page', () => {
             'Edit',
           ],
         ])
+      })
+      it('should maintain sort order when apply filters clicked', () => {
+        const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+        cy.get('th button[data-index="0"]').click({ force: true })
+        categoriserHomePage.applyFiltersButton().click()
+        cy.get('th[aria-sort-attribute="date"]').invoke('attr', 'aria-sort').should('eq', 'ascending')
       })
     })
   })
