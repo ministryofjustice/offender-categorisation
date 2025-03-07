@@ -1,6 +1,6 @@
+import moment from 'moment/moment'
 import CategoriserHomePage from '../../pages/categoriser/home'
 import TaskListPage from '../../pages/taskList/taskList'
-import moment from 'moment/moment'
 import { CATEGORISER_USER, SECURITY_USER, UserAccount } from '../../factory/user'
 import Page from '../../pages/page'
 import CategoriserSecurityInputPage from '../../pages/form/ratings/categoriserSecurityInputPage'
@@ -207,7 +207,11 @@ describe('Security Input', () => {
             expectedText: 'Manually sent for review',
           })
           securityReviewPage.setSecurityInformationText(testSecurityText)
-          cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: testSecurityText }}} })
+          cy.task('updateFormRecord', {
+            bookingId,
+            status: Status.SECURITY_BACK.name,
+            formResponse: { security: { review: { securityReview: testSecurityText } } },
+          })
           securityReviewPage.saveAndSubmitButton().click()
 
           securityHomePage.validateNoReferralsToReview()
@@ -236,7 +240,11 @@ describe('Security Input', () => {
 
             const securityReviewPage = SecurityReviewPage.createForBookingId(bookingId)
             securityReviewPage.setSecurityInformationText('security info text')
-            cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: `${testSecurityText} security info text` }}} })
+            cy.task('updateFormRecord', {
+              bookingId,
+              status: Status.SECURITY_BACK.name,
+              formResponse: { security: { review: { securityReview: `${testSecurityText} security info text` } } },
+            })
             securityReviewPage.saveAndSubmitButton().click()
 
             cy.stubLogin({

@@ -1,8 +1,8 @@
+import moment from 'moment'
 import { CATEGORISER_USER, RECATEGORISER_USER, SUPERVISOR_USER } from '../factory/user'
 import LiteCategoriesPage from '../pages/liteCategories/liteCategories'
 import { CASELOAD } from '../factory/caseload'
 import CategoriserLandingPage from '../pages/categoriser/landing'
-import moment from 'moment'
 import LiteCategoriesConfirmedPage from '../pages/liteCategories/confirmed'
 import { LiteCategoryDbRow } from '../db/queries'
 import Page from '../pages/page'
@@ -219,7 +219,7 @@ describe('Lite Categories', () => {
           [
             calculateOverdueText(sentenceStartDates.B2345YZ),
             'Pitstop, PenelopeB2345XY',
-            moment().diff(moment(sentenceStartDates['B2345YZ']).startOf('day'), 'days').toString(),
+            moment().diff(moment(sentenceStartDates.B2345YZ).startOf('day'), 'days').toString(),
             'Not categorised',
             'Engelbert Humperdinck',
             'OTHER',
@@ -227,7 +227,7 @@ describe('Lite Categories', () => {
           [
             calculateOverdueText(sentenceStartDates.B2345XY),
             'Hillmob, AntB2345YZ',
-            moment().diff(moment(sentenceStartDates['B2345XY']).startOf('day'), 'days').toString(),
+            moment().diff(moment(sentenceStartDates.B2345XY).startOf('day'), 'days').toString(),
             'Awaiting approval',
             'Engelbert Humperdinck',
             'PNOMIS',

@@ -9,6 +9,7 @@ type VictimContactSchemeChoice = keyof typeof victimContactSchemeRadioChoiceHtml
 type VictimContactSchemeChoiceValues =
   | typeof victimContactSchemeRadioChoiceHtmlSelectors.YES
   | typeof victimContactSchemeRadioChoiceHtmlSelectors.NO
+  | string // FIXME added due type errors after enabling ts linter, requires investigation
 
 const contactedVictimLiaisonOfficerRadioChoiceHtmlSelectors = {
   YES: '#contactedVLO',

@@ -8,7 +8,7 @@ const knexUnitTestConfig = {
     directory: path.join(__dirname, '/../../migrations'),
   },
 }
-// eslint-disable-next-line import/order
+// eslint-disable-next-line import/order,@typescript-eslint/no-var-requires
 const knex = require('knex')(knexUnitTestConfig)
 
 const migrate = async () => {

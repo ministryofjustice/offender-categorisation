@@ -9,6 +9,7 @@ type RiskOfSeriousHarmChoice = keyof typeof riskOfSeriousHarmRadioChoiceHtmlSele
 type RiskOfSeriousHarmChoiceValues =
   | typeof riskOfSeriousHarmRadioChoiceHtmlSelectors.YES
   | typeof riskOfSeriousHarmRadioChoiceHtmlSelectors.NO
+  | string // FIXME added due type errors after enabling ts linter, requires investigation
 
 const manageInOpenConditionsRadioChoiceHtmlSelectors = {
   YES: '#harmManaged',

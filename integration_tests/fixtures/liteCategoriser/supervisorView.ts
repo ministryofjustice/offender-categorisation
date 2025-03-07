@@ -1,5 +1,5 @@
-import { LiteCategoryDbRow } from '../../db/queries'
 import moment from 'moment'
+import { LiteCategoryDbRow } from '../../db/queries'
 
 export const supervisorViewSeedData: LiteCategoryDbRow[] = [
   {

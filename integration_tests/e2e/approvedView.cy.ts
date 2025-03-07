@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
 import CategoriserHomePage from '../pages/categoriser/home'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
@@ -6,7 +7,6 @@ import SupervisorHomePage from '../pages/supervisor/home'
 import SupervisorDonePage from '../pages/supervisor/done'
 import Page from '../pages/page'
 import ApprovedViewPage from '../pages/form/approvedView'
-import moment from 'moment'
 import { AGENCY_LOCATION } from '../factory/agencyLocation'
 
 describe('Approved view', () => {

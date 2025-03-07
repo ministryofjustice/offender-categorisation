@@ -1,3 +1,4 @@
+import moment from 'moment/moment'
 import CategoriserHomePage from '../../pages/categoriser/home'
 import CategoriserLandingPage from '../../pages/categoriser/landing'
 import NextReviewQuestionPage, { NextReviewChoice } from '../../pages/form/ratings/nextReviewQuestionPage'
@@ -5,7 +6,6 @@ import NextReviewConfirmationPage, { NextDateChoice } from '../../pages/form/rat
 import NextReviewEditingPage from '../../pages/form/ratings/nextReviewEditingPage'
 import NextReviewStandalonePage from '../../pages/form/ratings/nextReviewStandalonePage'
 import TaskListPage from '../../pages/taskList/taskList'
-import moment from 'moment/moment'
 import { CATEGORISER_USER, SUPERVISOR_USER } from '../../factory/user'
 import Page from '../../pages/page'
 import { FormDbJson } from '../../fixtures/db-key-convertor'
