@@ -163,7 +163,7 @@ describe('Approved View', () => {
     supervisorDonePage.validateToDoTableData([
       [
         'B2345YZ',
-        moment().add(1, 'day').format('DD/MM/YYYY'),
+        moment().format('DD/MM/YYYY'),
         '',
         'Lastname_supervisor_user, Firstname_supervisor_user',
         '',
