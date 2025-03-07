@@ -16,7 +16,6 @@ export default class ProvisionalCategoryPage extends Page {
     return new ProvisionalCategoryPage()
   }
 
-
   openConditionsAppropriateYes = (): PageElement => cy.get('#openConditionsCategoryAppropriate')
 
   appropriateYes = (): PageElement => cy.get('#categoryAppropriate')

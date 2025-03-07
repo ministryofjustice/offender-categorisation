@@ -1,5 +1,5 @@
-import Page, { PageElement } from '../page'
 import moment from 'moment'
+import Page, { PageElement } from '../page'
 
 export default class TaskListPage extends Page {
   private static _bookingId: number

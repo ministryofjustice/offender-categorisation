@@ -13,14 +13,34 @@
     "ecmaVersion": 2020,
     "sourceType": "module"
   },
+  // TODO: Establish a preferred set of rules.
+  //       Many rules are currently disabled to prevent excessive refactoring,
+  //       as the linter was previously not working in the test folder.
+  // FIXME: Address the disabled rules and gradually re-enable them where appropriate.
   "rules": {
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-    "no-only-tests/no-only-tests": "error",
-    "@typescript-eslint/no-unused-vars": ["warn"],
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "class-methods-use-this": "warn",
-    "no-underscore-dangle": "warn",
-    "lines-between-class-members": "warn"
+    "@typescript-eslint/no-unused-vars": [
+      0, // 1
+      {
+        "argsIgnorePattern": "res|next|^err|_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "no-only-tests/no-only-tests": 2,
+    "@typescript-eslint/no-explicit-any": 0, // 1
+    "import/prefer-default-export": 0, // 1
+    "no-underscore-dangle": 0, // 1
+    "lines-between-class-members": 0, // 1
+    "@typescript-eslint/no-shadow": 0, // 2
+    "no-shadow": 0, // 0
+    "no-unused-expressions": 0, // 2
+    "cypress/unsafe-to-chain-command": 0, // 2
+    "object-shorthand": 0, // 2
+    "no-plusplus": 0, // 2
+    "prefer-template": 0, // 2
+    "camelcase": 0, // 2
+    "import/no-named-as-default": 0, // 2
+    "no-new": 0, // 2
+    "no-nested-ternary": 0 // 2
   }
 }

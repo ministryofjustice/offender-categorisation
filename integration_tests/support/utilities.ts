@@ -33,7 +33,7 @@ export const calculateDueDate = (sentenceDate: string) => {
   return { daysSinceSentence, dateRequired }
 }
 
-export const calculateOverdueText: any = (sentenceDate: string) => {
+export const calculateOverdueText = (sentenceDate: string) => {
   const { daysSinceSentence, dateRequired } = calculateDueDate(sentenceDate)
   const today = moment().startOf('day')
   const reviewDate = moment(dateRequired, 'DD/MM/YYYY').startOf('day')

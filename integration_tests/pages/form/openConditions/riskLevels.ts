@@ -9,6 +9,7 @@ type RiskLevelsChoice = keyof typeof riskLevelsRadioChoiceHtmlSelectors
 type RiskLevelsChoiceValues =
   | typeof riskLevelsRadioChoiceHtmlSelectors.YES
   | typeof riskLevelsRadioChoiceHtmlSelectors.NO
+  | string // FIXME added due type errors after enabling ts linter, requires investigation
 
 const SELECTORS = {
   RISK_LEVELS: {
