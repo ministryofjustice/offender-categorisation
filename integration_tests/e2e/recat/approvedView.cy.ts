@@ -8,6 +8,7 @@ import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
 import RecategoriserDonePage from '../../pages/recategoriser/done'
+import moment from 'moment/moment'
 
 describe('Approved View', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -161,7 +162,15 @@ describe('Approved View', () => {
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.validateToDoTableData([
-      ['B2345YZ', '06/03/2025', '', 'Lastname_supervisor_user, Firstname_supervisor_user', '', 'Recat', 'View'],
+      [
+        'B2345YZ',
+        moment().add(1, 'day').format('DD/MM/YYYY'),
+        '',
+        'Lastname_supervisor_user, Firstname_supervisor_user',
+        '',
+        'Recat',
+        'View',
+      ],
       [
         'Scramble, TimB2345XY',
         '21/02/2019',
