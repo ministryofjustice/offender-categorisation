@@ -4,6 +4,7 @@
 {% from "tag/macro.njk" import govukTag %}
 {% from "../macros/breadCrumb.html" import breadCrumb %}
 {% from "details/macro.njk" import govukDetails %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% set pageTitle = "Prisoner Categorisation" %}
 
@@ -54,81 +55,120 @@
         </div>
           {% if offenders | length > 0 %}
             <div class="recategorisation-scrollable-pane">
-              <table class="govuk-table tablesorter sortcolumns recategorisation-table" id="offenderTable" >
-                <thead class="govuk-table__head">
-
-                <tr class="govuk-table__row">
-                  <th class="govuk-table__header" scope="col">Date required by</th>
-                  <th class="govuk-table__header" scope="col">Name and prison number</th>
-                  <th class="govuk-table__header" scope="col">Days since<br/>sentence</th>
-                  <th class="govuk-table__header" scope="col">Status</th>
-                  <th class="govuk-table__header" scope="col">POM</th>
-                  <th class="govuk-table__header" scope="col"></th>
-                </tr>
-                </thead>
-                <tbody class="govuk-table__body">
-                {% for row in offenders %}
-                <tr class="govuk-table__row ">
-                  <td class="govuk-table__cell">
-                    {% if row.overdue %}
-                      {{ govukTag({
-                        text: 'Overdue',
-                        classes: 'govuk-tag--red',
-                        attributes: { 'title': 'Due date: ' + row.dateRequired }
-                      }) }}
-                    {% else %}
-                      {{ row.dateRequired }}
-                    {% endif %}
-                  </td>
-                  <td class="govuk-table__cell">
-                    <a class="text-break-word" target="_blank" href="{{ row.offenderNo | offenderLink }}">{{ row.displayName }}</a><p class="govuk-!-margin-left-0">{{ row.offenderNo }}</p>
-                    {% if row.securityReferred %}
-                      {{ govukDetails({
+              {% set categorisationReviews = [] %}
+              {% for offender in offenders %}
+                {% set dateColumn %}
+                  {% if offender.overdue %}
+                    {{ govukTag({
+                      text: offender.overdueText,
+                      classes: 'govuk-tag--red',
+                      attributes: { 'title': 'Due date: ' + offender.dateRequired }
+                    }) }}
+                  {% else %}
+                    {{ offender.dateRequired }}
+                  {% endif %}
+                {% endset %}
+                {% set nameColumn %}
+                  <a class="text-break-word" target="_blank" href="{{ offender.offenderNo | offenderLink }}">{{ offender.displayName }}</a><p>{{ offender.offenderNo }}</p>
+                  {% if offender.securityReferred %}
+                    {{ govukDetails({
                       summaryText: 'Security referred',
                       text: 'Security have flagged this person as being of interest. They will be automatically referred to security when the categorisation starts.',
                       classes: 'govuk-body govuk-!-font-size-14 govuk-!-margin-bottom-0'
-                      }) }}
-                    {% endif %}
-                    </td>
-                  <td class="govuk-table__cell">{{ row.daysSinceSentence }}</td>
-                  <td class="govuk-table__cell">
-                    {% if row.displayStatus == 'Back from Supervisor' %}
-                      {{ govukTag({
-                        html: 'REJECTED BY<br/>SUPERVISOR'
+                    }) }}
+                  {% endif %}
+                {% endset %}
+                {% set statusColumn %}
+                  {% if offender.displayStatus == 'Back from Supervisor' %}
+                    {{ govukTag({
+                      html: 'REJECTED BY<br/>SUPERVISOR'
+                    }) }}
+                  {% else %}
+                    {{ offender.displayStatus }}
+                  {% endif %}
+                {% endset %}
+                {% set actionColumn %}
+                  {% set buttonText = "Edit" if offender.dbRecordExists else "Start" %}
+                  {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
+                  {% set classes = basicClasses + " grey-button" if offender.dbRecordExists else basicClasses %}
+                  {% if offender.pnomis %}
+                    <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ offender.pnomis }}</div>
+                  {% else %}
+                    {% if offender.displayStatus == 'Awaiting approval' %}
+                      {{ govukButton({
+                        text: "View",
+                        href: "/form/awaitingApprovalView/" + offender.bookingId,
+                        classes: classes
                       }) }}
                     {% else %}
-                      {{ row.displayStatus }}
+                      {{ govukButton({
+                        text: buttonText,
+                        href: "/tasklist/" + offender.bookingId if not locked,
+                        attributes: { 'data-prevent-double-click': 'true' },
+                        classes: classes + " govuk-!-margin-top-2 govuk-!-margin-bottom-8"
+                      }) }}
                     {% endif %}
-                  </td>
-                  <td class="govuk-table__cell">{{ row.pom }}</td>
-                  <td class="govuk-table__cell govuk-!-margin-top-2 govuk-!-margin-bottom-8">
-                    {% set buttonText = "Edit" if row.dbRecordExists else "Start" %}
-                    {% set basicClasses = "tableButton govuk-!-padding-left-3 govuk-!-padding-right-3" %}
-                    {% set classes = basicClasses + " grey-button" if row.dbRecordExists else basicClasses %}
-                    {% if row.pnomis %}
-                      <div class="govuk-!-margin-bottom-1 govuk-!-margin-top-1">{{ row.pnomis }}</div>
-                    {% else %}
-                      {% if row.displayStatus == 'Awaiting approval' %}
-                        {{ govukButton({
-                          text: "View",
-                          href: "/form/awaitingApprovalView/" + row.bookingId,
-                          classes: classes
-                        }) }}
-                      {% else %}
-                        {{ govukButton({
-                          text: buttonText,
-                          href: "/tasklist/" + row.bookingId if not locked,
-                          attributes: { 'data-prevent-double-click': 'true' },
-                          classes: classes
-                        }) }}
-                      {% endif %}
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-
-                </tbody>
-              </table>
+                  {% endif %}
+                {% endset %}
+                {% set categorisationReviews = (categorisationReviews.push([
+                  {
+                    html: dateColumn,
+                    attributes: { "data-sort-value": offender.dateRequired | sortDateValue }
+                  },
+                  {
+                    html: nameColumn,
+                    attributes: { "data-sort-value": offender.displayName.toLowerCase() if offender.displayName else '' }
+                  }, {
+                    text: offender.daysSinceSentence
+                  }, {
+                    html: statusColumn
+                  }, {
+                    text: offender.pom,
+                    attributes: { "data-sort-value": offender.pom.toLowerCase() if offender.pom else '' }
+                  }, {
+                    html: actionColumn
+                  }
+                ]), categorisationReviews) %}
+              {% endfor %}
+              {{ govukTable({
+                classes: "recategorisation-table",
+                attributes: {
+                  'data-module': 'moj-sortable-table'
+                },
+                head: [
+                  {
+                    text: "Date required by",
+                    attributes: {
+                      "aria-sort": sortDirection if sortAttribute === "date" else "none",
+                      "aria-sort-attribute": "date"
+                    }
+                  },
+                  {
+                    text: "Name and prison number",
+                    attributes: {
+                      "aria-sort": sortDirection if sortAttribute === "name" else "none",
+                      "aria-sort-attribute": "name"
+                    }
+                  },
+                  {
+                    html: "Days since<br/>sentence"
+                  },
+                  {
+                    text: "Status"
+                  },
+                  {
+                    text: "POM",
+                    attributes: {
+                      "aria-sort": sortDirection if sortAttribute === "pom" else "none",
+                      "aria-sort-attribute": "pom"
+                    }
+                  },
+                  {
+                    text: ""
+                  }
+                ],
+                rows: categorisationReviews
+              }) }}
             </div>
           {% else %}
             <div class="govuk-!-padding-top-4">

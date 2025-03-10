@@ -1,6 +1,9 @@
 import joi from 'joi'
 import { categorisationHomeFilters, recategorisationHomeFilters } from './homeFilter'
 
+const SORT_DIRECTION_ASCENDING = 'ascending'
+const SORT_DIRECTION_DESCENDING = 'descending'
+
 const buildHomeSchemaFilters = filters => {
   const homeSchemaFilters = {}
   Object.keys(filters).forEach(key => {
@@ -21,6 +24,8 @@ export const recategorisationHomeSchema = joi
   .object({
     ...buildHomeSchemaFilters(recategorisationHomeFilters),
     filterRemoved: joi.string().optional(),
+    sortDirection: joi.string().allow('').valid(SORT_DIRECTION_ASCENDING, SORT_DIRECTION_DESCENDING, '').optional(),
+    sortAttribute: joi.string().allow('').optional(),
   })
   .optional()
 
@@ -28,5 +33,7 @@ export const categorisationHomeSchema = joi
   .object({
     ...buildHomeSchemaFilters(categorisationHomeFilters),
     filterRemoved: joi.string().optional(),
+    sortDirection: joi.string().allow('').valid(SORT_DIRECTION_ASCENDING, SORT_DIRECTION_DESCENDING, '').optional(),
+    sortAttribute: joi.string().allow('').optional(),
   })
   .optional()
