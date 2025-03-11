@@ -47,6 +47,14 @@ module.exports = function Index({
 }) {
   const router = express.Router()
 
+  if (process.env.NODE_ENV === 'development') {
+    router.use((req, res, next) => {
+      // eslint-disable-next-line no-console
+      console.table({ method: req.method, originalUrl: req.originalUrl })
+      next()
+    })
+  }
+
   router.use(authenticationMiddleware())
   router.use(flash())
 
