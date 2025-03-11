@@ -18,16 +18,16 @@ module.exports = function Index({ formService, offendersService, userService, au
   router.use(flash())
   router.use(handleCsrf)
 
-  // router.get(
-  //   '/nextReviewDate/:bookingId',
-  //   asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-  //     const { bookingId } = req.params
-  //     const { nextDateChoice } = req.query
-  //     const form = 'nextReviewDate'
-  //     const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
-  //     res.render(`formPages/nextReviewDate/${form}`, { ...result, date: calculateNextReviewDate(nextDateChoice) })
-  //   })
-  // )
+  router.get(
+    '/nextReviewDate/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const { nextDateChoice } = req.query
+      const form = 'nextReviewDate'
+      const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
+      res.render(`formPages/nextReviewDate/${form}`, { ...result, date: calculateNextReviewDate(nextDateChoice) })
+    })
+  )
 
   router.get(
     '/nextReviewDateStandalone/:bookingId',
@@ -112,24 +112,24 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   const clearConditionalFields = body => ({ ...body })
 
-  // router.post(
-  //   '/nextReviewDateQuestion/:bookingId',
-  //   asyncMiddlewareInDatabaseTransaction(async (req, res) => {
-  //     const { bookingId } = req.params
-  //     const section = 'nextReviewDate'
-  //     const form = 'nextReviewDateQuestion'
-  //     const formPageConfig = formConfig[section][form]
-  //     const userInput = clearConditionalFields(req.body)
-  //
-  //     const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
-  //     if (!valid) {
-  //       return
-  //     }
-  //
-  //     const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-  //     res.redirect(`${nextPath}${bookingId}?nextDateChoice=${userInput.nextDateChoice}`)
-  //   })
-  // )
+  router.post(
+    '/nextReviewDateQuestion/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
+      const { bookingId } = req.params
+      const section = 'nextReviewDate'
+      const form = 'nextReviewDateQuestion'
+      const formPageConfig = formConfig[section][form]
+      const userInput = clearConditionalFields(req.body)
+
+      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
+      if (!valid) {
+        return
+      }
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      res.redirect(`${nextPath}${bookingId}?nextDateChoice=${userInput.nextDateChoice}`)
+    })
+  )
 
   router.post(
     '/nextReviewDateEditing/:bookingId',
