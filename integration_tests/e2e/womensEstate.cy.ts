@@ -25,7 +25,6 @@ import femaleYoungOffenders from '../fixtures/womensEstate/femaleYoungOffenders'
 import { FormDbJson } from '../fixtures/db-key-convertor'
 import Status from '../../server/utils/statusEnum'
 import OpenConditionsAdded from '../pages/openConditionsAdded'
-import TprsPage from '../pages/form/openConditions/tprs'
 import EarliestReleaseDatePage from '../pages/form/openConditions/earliestReleaseDate'
 import PreviousSentencesPage from '../pages/form/openConditions/previousSentences'
 import SexualOffencesPage from '../pages/form/openConditions/sexualOffences'
@@ -327,10 +326,6 @@ describe("Women's Estate", () => {
 
       taskListPage.openConditionsButton().click()
 
-      const tprsPage = TprsPage.createForBookingId(bookingId)
-      tprsPage.selectTprsRadioButton('NO')
-      tprsPage.continueButton().click()
-
       const earliestReleaseDatePage = EarliestReleaseDatePage.createForBookingId(bookingId)
       earliestReleaseDatePage.selectEarliestReleaseDateRadioButton('NO')
       earliestReleaseDatePage.continueButton().click()
@@ -380,7 +375,7 @@ describe("Women's Estate", () => {
       })
 
       const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-      categoriserReviewCYAPage.changeLinks().should('have.length', 18)
+      categoriserReviewCYAPage.changeLinks().should('have.length', 17)
       cy.validateCategorisationDetails([
         // column 1
         [
@@ -437,8 +432,6 @@ describe("Women's Estate", () => {
           definition: sixMonthsFromNow.format(LONG_DATE_FORMAT),
         },
         // open conditions
-        // tprs
-        { term: 'Are they eligible for TPRS?', definition: 'No' },
         // earliest release date
         { term: '3 or more years until earliest release date?', definition: 'No' },
         { term: 'Reasons that justify moving to open conditions?', definition: 'Not applicable' },
@@ -509,9 +502,6 @@ describe("Women's Estate", () => {
             },
           },
           openConditions: {
-            tprs: {
-              tprsSelected: 'No',
-            },
             riskLevels: {
               likelyToAbscond: 'No',
             },

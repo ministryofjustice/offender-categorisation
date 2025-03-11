@@ -1,7 +1,6 @@
-import { RECATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
+import { SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
 import SupervisorHomePage from '../pages/supervisor/home'
 import Page from '../pages/page'
-import { CASELOAD } from '../factory/caseload'
 import { calculateDueDate } from '../support/utilities'
 
 describe('Supervisor Home page', () => {
@@ -35,19 +34,58 @@ describe('Supervisor Home page', () => {
       startDate: '2022-12-25',
     }
 
+    const offender3 = {
+      offenderNo: 'B2345ZZ',
+      bookingId: 13,
+      startDate: '2023-08-15',
+      dateRequired: null,
+    }
+
+    type OffenderTableRow = [string, string, string, string, string, string, string, string]
+
+    const offender1TableData: OffenderTableRow = [
+      `Pitstop, Penelope${offender1.offenderNo}`,
+      calculateDueDate(offender1.startDate).daysSinceSentence.toString(),
+      calculateDueDate(offender1.startDate).dateRequired,
+      '01/01/2025',
+      'Roger Rabbit',
+      'B',
+      '',
+      'PNOMIS',
+    ]
+
+    const offender2TableData: OffenderTableRow = [
+      `Hillmob, Ant${offender2.offenderNo}`,
+      calculateDueDate(offender2.startDate).daysSinceSentence.toString(),
+      calculateDueDate(offender2.startDate).dateRequired,
+      '02/02/2025',
+      'Bugs Bunny',
+      'C',
+      '',
+      'PNOMIS',
+    ]
+
+    const offender3TableData: OffenderTableRow = [
+      `Newcomer, Test${offender3.offenderNo}`,
+      calculateDueDate(offender3.startDate).daysSinceSentence.toString(),
+      '29/08/2023',
+      '02/02/2025',
+      'Daffy Duck',
+      'Open',
+      '',
+      'PNOMIS',
+    ]
+
     beforeEach(() => {
-      cy.task('stubCategorisedMultiple')
-      cy.task('stubUncategorisedAwaitingApproval')
+      cy.task('stubUncategorisedAwaitingApproval', { bookingIds: [12, 11, 13] })
       cy.task('stubSentenceData', {
-        offenderNumbers: [offender1.offenderNo, offender2.offenderNo],
-        bookingIds: [offender1.bookingId, offender2.bookingId],
-        startDates: [offender1.startDate, offender2.startDate],
+        offenderNumbers: [offender1.offenderNo, offender2.offenderNo, offender3.offenderNo],
+        bookingIds: [offender1.bookingId, offender2.bookingId, offender3.bookingId],
+        startDates: [offender1.startDate, offender2.startDate, offender3.startDate],
+        releaseDates: [null, null, null],
+        status: ['ACTIVE IN', 'ACTIVE IN', 'ACTIVE IN'],
+        legalStatus: ['SENTENCED', 'SENTENCED', 'SENTENCED'],
       })
-      cy.task('stubGetMyCaseloads', { caseloads: [CASELOAD.LEI] })
-      cy.task('stubGetStaffDetailsByUsernameList', {
-        usernames: [RECATEGORISER_USER.username, SUPERVISOR_USER.username],
-      })
-      cy.task('stubGetPrisonerSearchPrisoners')
     })
 
     it('should show the no results message by default', () => {
@@ -69,28 +107,24 @@ describe('Supervisor Home page', () => {
       cy.signIn()
 
       const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
-      supervisorHomePage.validateToDoTableData([
-        [
-          `Pitstop, Penelope${offender1.offenderNo}`,
-          calculateDueDate(offender1.startDate).daysSinceSentence.toString(),
-          calculateDueDate(offender1.startDate).dateRequired,
-          '01/01/2025',
-          'Roger Rabbit',
-          'B',
-          '',
-          'PNOMIS',
-        ],
-        [
-          `Hillmob, Ant${offender2.offenderNo}`,
-          calculateDueDate(offender2.startDate).daysSinceSentence.toString(),
-          calculateDueDate(offender2.startDate).dateRequired,
-          '02/02/2025',
-          'Bugs Bunny',
-          'C',
-          '',
-          'PNOMIS',
-        ],
-      ])
+      supervisorHomePage.validateToDoTableData([offender1TableData, offender2TableData, offender3TableData])
+    })
+
+    it('should sort by due date when triggered', () => {
+      cy.stubLogin({
+        user: SUPERVISOR_USER,
+      })
+      cy.signIn()
+
+      const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+
+      supervisorHomePage.validateToDoTableData([offender1TableData, offender2TableData, offender3TableData])
+      cy.get('th button[data-index="2"]').click({ force: true })
+      supervisorHomePage.validateToDoTableData([offender1TableData, offender2TableData, offender3TableData])
+      cy.get('th button[data-index="2"]').click({ force: true })
+      supervisorHomePage.validateToDoTableData([offender3TableData, offender2TableData, offender1TableData])
+      cy.get('th button[data-index="0"]').click({ force: true })
+      supervisorHomePage.validateToDoTableData([offender2TableData, offender3TableData, offender1TableData])
     })
   })
 })

@@ -367,7 +367,9 @@ class SupervisorSpecification extends AbstractSpecification {
     then: 'the review page is displayed with an error - reason not provided'
     at SupervisorReviewPage
 
-    errorSummaries*.text() == ['Enter the reason why this category is more appropriate']
+    waitFor {
+      errorSummaries*.text() == ['Enter the reason why this category is more appropriate']
+    }
 
     and: 'the supervisor selects a category, reason and submits'
     elite2Api.stubSupervisorApprove('B')
