@@ -1,8 +1,21 @@
+// @ts-check
+
 require('dotenv').config()
 const logger = require('../log')
 
 const production = process.env.NODE_ENV === 'production'
 
+/**
+ * Retrieves an environment variable value or falls back to a default.
+ *
+ * @param {string} name - The name of the environment variable to retrieve
+ * @param {string | number | string[]} fallback - A fallback value if the environment variable is not set
+ * @param {boolean} [log=false] - Whether to log the retrieval process
+ * @param {Object} [options={}] - Additional options
+ * @param {boolean} [options.requireInProduction=false] - If `true`, requires the variable in production and prevents fallback
+ * @throws {Error} Throws an error if the variable is missing and no fallback is provided
+ * @returns {any} - The environment variable value, the fallback, or an error if neither is available
+ */
 function get(name, fallback, log = false, options = {}) {
   if (process.env[name]) {
     if (log) {
@@ -208,5 +221,5 @@ module.exports = {
       },
     },
   },
-  appInsightsConnectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', '', { requiredInProduction: true }),
+  appInsightsConnectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', '', true, { requireInProduction: true }),
 }
