@@ -58,7 +58,8 @@ describe('Approved View', () => {
       securityReviewedDate: null,
       assignedUserId: null,
       approvedBy: null,
-      review_reason: 'AGE'
+      review_reason: 'AGE',
+      approvalDate: "2025-03-06"
     })
 
     cy.task('insertFormTableDbRow', {
