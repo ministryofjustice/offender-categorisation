@@ -1,4 +1,3 @@
-import moment from 'moment/moment'
 import { CATEGORISATION_TYPE } from '../../support/categorisationType'
 import { AGENCY_LOCATION } from '../../factory/agencyLocation'
 import STATUS from '../../../server/utils/statusEnum'
@@ -8,6 +7,7 @@ import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
+import RecategoriserDonePage from '../../pages/recategoriser/done'
 
 describe('Approved View', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -59,6 +59,7 @@ describe('Approved View', () => {
       assignedUserId: null,
       approvedBy: null,
       review_reason: 'AGE',
+      approvalDate: "2025-03-06"
     })
 
     cy.task('insertFormTableDbRow', {
@@ -91,48 +92,18 @@ describe('Approved View', () => {
       securityReviewedDate: null,
       assignedUserId: null,
       approvedBy: null,
-      review_reason: 'AGE',
+      review_reason: 'AGE'
     })
 
     cy.task('updateRiskProfile', {
       bookingId: 12,
       riskProfile: {
-        socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false },
-        escapeProfile: {
-          nomsId: 'B2345YZ',
-          riskType: 'ESCAPE',
-          activeEscapeList: true,
-          activeEscapeRisk: true,
-          escapeListAlerts: [
-            {
-              active: true,
-              comment: 'First xel comment',
-              expired: true,
-              alertCode: 'XEL',
-              dateCreated: '2016-09-14',
-              alertCodeDescription: 'Escape List',
-            },
-          ],
-        },
-        violenceProfile: {
-          nomsId: 'B2345YZ',
-          riskType: 'VIOLENCE',
-          displayAssaults: true,
-          numberOfAssaults: 5,
-          notifySafetyCustodyLead: true,
-          numberOfSeriousAssaults: 2,
-          numberOfNonSeriousAssaults: 3,
-          provisionalCategorisation: 'C',
-          veryHighRiskViolentOffender: false,
-        },
-        extremismProfile: {
-          nomsId: 'B2345YZ',
-          riskType: 'EXTREMISM',
-          notifyRegionalCTLead: true,
-          increasedRiskOfExtremism: true,
-          provisionalCategorisation: 'C',
-        },
-      },
+      "socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false},
+      "escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,
+      "escapeListAlerts" : [ { "active": true, "comment": "First xel comment", "expired": true, "alertCode": "XEL", "dateCreated": "2016-09-14", "alertCodeDescription": "Escape List"}]
+    },
+      "violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": true, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "numberOfNonSeriousAssaults": 3, "provisionalCategorisation": "C", "veryHighRiskViolentOffender": false},
+      "extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}}
     })
 
     cy.task('stubUncategorisedAwaitingApproval')
@@ -161,15 +132,7 @@ describe('Approved View', () => {
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.validateToDoTableData([
-      [
-        'B2345YZ',
-        moment().format('DD/MM/YYYY'),
-        '',
-        'Lastname_supervisor_user, Firstname_supervisor_user',
-        '',
-        'Recat',
-        'View',
-      ],
+      ['B2345YZ', '06/03/2025', '', 'Lastname_supervisor_user, Firstname_supervisor_user', '', 'Recat', 'View'],
       [
         'Scramble, TimB2345XY',
         '21/02/2019',
@@ -189,8 +152,9 @@ describe('Approved View', () => {
       'Category C',
       'The categoriser recommends Category C',
       'The supervisor also recommends Category C',
-    ])
-    ;[
+    ]);
+
+    [
       {
         columnName: 'Categorisation date',
         expectedValues: ['24/03/2013', '08/06/2012'],
@@ -202,15 +166,11 @@ describe('Approved View', () => {
       {
         columnName: 'Review location',
         expectedValues: ['LPI prison', 'LPI prison'],
-      },
-    ].forEach(cy.checkTableColumnTextValues)
+      }
+      ].forEach(cy.checkTableColumnTextValues)
 
-    approvedViewRecatPage.validatePrisonerSummary(
-      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.'
-    )
-    approvedViewRecatPage.validatePrisonerSummary(
-      'This person is considered an escape risk E-List: First xel comment 2016-09-14 (expired)'
-    )
+    approvedViewRecatPage.validatePrisonerSummary('This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.')
+    approvedViewRecatPage.validatePrisonerSummary('This person is considered an escape risk E-List: First xel comment 2016-09-14 (expired)')
     approvedViewRecatPage.validatePrisonerSummary('This person is at risk of engaging in, or vulnerable to, extremism.')
   })
 
@@ -245,7 +205,7 @@ describe('Approved View', () => {
       securityReviewedDate: null,
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
-      review_reason: 'AGE',
+      review_reason: 'AGE'
     })
 
     cy.task('insertFormTableDbRow', {
@@ -276,21 +236,21 @@ describe('Approved View', () => {
           review: {
             supervisorCategoryAppropriate: 'No',
             supervisorOverriddenCategory: 'D',
-            supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed",
-          },
+            supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed"
+          }
         },
         openConditions: {
           riskLevels: { likelyToAbscond: 'No' },
           riskOfHarm: { seriousHarm: 'No' },
           foreignNational: { isForeignNational: 'No' },
           earliestReleaseDate: { threeOrMoreYears: 'No' },
-        },
+        }
       },
       securityReviewedBy: null,
       securityReviewedDate: null,
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
-      review_reason: 'AGE',
+      review_reason: 'AGE'
     })
 
     cy.task('stubUncategorisedAwaitingApproval')
@@ -320,19 +280,16 @@ describe('Approved View', () => {
     cy.task('stubAgencyDetails', { agency: 'LPI' })
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
-    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1 }).click()
+    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 1}).click()
     const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
     approvedViewRecatPage.validateCategorisationWarnings([
       'Open category',
       'The categoriser recommends Category C',
       'The recommended category was changed from Category C to open category',
-    ])
+    ]);
 
-    approvedViewRecatPage.validateOpenConditionsHeadingVisibility({ isVisible: true })
-    approvedViewRecatPage.validateCommentsVisibility({
-      areVisible: true,
-      comments: "Here are the supervisor's comments on why the category was changed",
-    })
+    approvedViewRecatPage.validateOpenConditionsHeadingVisibility({isVisible: true})
+    approvedViewRecatPage.validateCommentsVisibility({areVisible: true, comments: 'Here are the supervisor\'s comments on why the category was changed'})
     approvedViewRecatPage.getBackToCaseListButton().click()
   })
 
@@ -367,7 +324,7 @@ describe('Approved View', () => {
       securityReviewedDate: null,
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
-      review_reason: 'AGE',
+      review_reason: 'AGE'
     })
 
     cy.task('stubRecategorise')
