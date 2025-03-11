@@ -16,6 +16,8 @@ import Status from '../../../server/utils/statusEnum'
 import CatType from '../../../server/utils/catTypeEnum'
 import SecurityHomePage from "../../pages/security/home";
 import SecurityReviewPage from "../../pages/form/security/review";
+import OpenConditionsAdded from "../../pages/openConditionsAdded";
+import EarliestReleaseDatePage from "../../pages/form/openConditions/earliestReleaseDate";
 
 describe("Women's estate recategorisation", () => {
   let recategoriserHomePage: RecategoriserHomePage
@@ -186,6 +188,17 @@ describe("Women's estate recategorisation", () => {
 
     taskListPage.decisionButton().click()
     checkPrisonerHeaderSummary()
+    cy.get('#openOption').click()
+    cy.get('button[type="submit"]').contains('Save and return').click()
+    const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
+    openConditionsAddedPage.returnToRecatTasklistButton(testBookingId).click()
+
+    taskListPage.openConditionsButton().click()
+
+    EarliestReleaseDatePage.createForBookingId(testBookingId)
+    cy.visit(`/tasklistRecat/${testBookingId}`)
+
+    taskListPage.decisionButton().click()
     cy.get('#closedOption').click()
     cy.get('button[type="submit"]').contains('Save and return').click()
 
