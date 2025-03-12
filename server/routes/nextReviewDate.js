@@ -6,6 +6,7 @@ const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const nextReviewDate = require('../config/nextReviewDate')
 const Status = require('../utils/statusEnum')
+const conf = require('../config')
 
 const formConfig = {
   nextReviewDate,
@@ -56,16 +57,31 @@ module.exports = function Index({ formService, offendersService, userService, au
     })
   )
 
-  // // THIS 1ST
-  // router.get(
-  //   '/:form/:bookingId',
-  //   asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-  //     console.log('server/routes/nextReviewDate.js')
-  //     const { form, bookingId } = req.params
-  //     const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
-  //     res.render(`formPages/nextReviewDate/${form}`, result)
-  //   })
-  // )
+  router.get(
+    '/nextReviewDateQuestion/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+      console.log('server/routes/nextReviewDate.js /nextReviewDate/nextReviewDateQuestion/:bookingId')
+      const { bookingId } = req.params
+      const form = 'nextReviewDateQuestion'
+      const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
+
+      if (conf.featureFlags.events.policy_change.three_to_five === 'true') {
+        return res.render(`formPages/nextReviewDate/policyChange/nextReviewDateQuestion`, result)
+      }
+
+      return res.render(`formPages/nextReviewDate/nextReviewDateQuestion`, result)
+    })
+  )
+
+  router.get(
+    '/:form/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+      console.log('server/routes/nextReviewDate.js /:form/:bookingId')
+      const { form, bookingId } = req.params
+      const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
+      res.render(`formPages/nextReviewDate/${form}`, result)
+    })
+  )
 
   const buildFormData = async (res, req, standalone, form, bookingId, strict, transactionalDbClient) => {
     const user = await userService.getUser(res.locals)
