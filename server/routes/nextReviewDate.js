@@ -60,7 +60,6 @@ module.exports = function Index({ formService, offendersService, userService, au
   router.get(
     '/nextReviewDateQuestion/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      console.log('server/routes/nextReviewDate.js /nextReviewDate/nextReviewDateQuestion/:bookingId')
       const { bookingId } = req.params
       const form = 'nextReviewDateQuestion'
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
@@ -76,7 +75,6 @@ module.exports = function Index({ formService, offendersService, userService, au
   router.get(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      console.log('server/routes/nextReviewDate.js /:form/:bookingId')
       const { form, bookingId } = req.params
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
       res.render(`formPages/nextReviewDate/${form}`, result)
