@@ -1,5 +1,6 @@
 const express = require('express')
 const flash = require('connect-flash')
+const moment = require('moment')
 const { firstItem, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { calculateNextReviewDate, dateConverter, dateConverterToISO } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
@@ -64,8 +65,18 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'nextReviewDateQuestion'
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
 
+      // We need to add a help text with suggested answer based on if sentence end is withing 5 years or not
+      const sentenceExpiryDate = moment(result.data.details.sentence.sentenceExpiryDate, 'YYYY-MM-DD')
+      const isWithinFiveYears = sentenceExpiryDate <= moment().add(5, 'y').format('MM/DD/YYYY')
+      const strings = {
+        inSixMonthsLabel: isWithinFiveYears ? 'In 6 months time (recommended, based on policy)' : 'In 6 months time',
+        inTwelfMonthsLabel: isWithinFiveYears
+          ? 'In 12 months time'
+          : 'In 12 months time (recommended, based on policy)',
+      }
+
       if (conf.featureFlags.events.policy_change.three_to_five === 'true') {
-        return res.render(`formPages/nextReviewDate/policyChange/nextReviewDateQuestion`, result)
+        return res.render(`formPages/nextReviewDate/policyChange/nextReviewDateQuestion`, { ...result, strings })
       }
 
       return res.render(`formPages/nextReviewDate/nextReviewDateQuestion`, result)
