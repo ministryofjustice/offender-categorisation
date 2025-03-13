@@ -358,6 +358,9 @@ describe("Women's Estate", () => {
       riskLevelsPage.selectRiskLevelsRadioButton('NO')
       riskLevelsPage.continueButton().click()
 
+      cy.visit(`/form/openconditions/provisionalCategory/${bookingId}`)
+      cy.url().should('include', `tasklist/${bookingId}`)
+
       cy.task('stubGetLifeProfile', {
         offenderNo,
         category: 'R',
