@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "target": "es2019",
+    "target": "es5",
     "noEmit": true,
-    "lib": ["es2019", "dom"],
+    "lib": ["es5", "dom", "es2015.promise"],
     "types": ["cypress", "express", "express-session"],
     "esModuleInterop": true,
     "skipLibCheck": true,
