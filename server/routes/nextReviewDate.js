@@ -1,15 +1,11 @@
-// @ts-check
-
 const express = require('express')
 const flash = require('connect-flash')
-const moment = require('moment')
 const { firstItem, extractNextReviewDate } = require('../utils/functionalHelpers')
 const { calculateNextReviewDate, dateConverter, dateConverterToISO } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const nextReviewDate = require('../config/nextReviewDate')
 const Status = require('../utils/statusEnum')
-const conf = require('../config')
 
 const formConfig = {
   nextReviewDate,
