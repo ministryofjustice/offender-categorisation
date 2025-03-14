@@ -9,10 +9,6 @@
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2020,
-    "sourceType": "module"
-  },
   // TODO: Establish a preferred set of rules.
   //       Many rules are currently disabled to prevent excessive refactoring,
   //       as the linter was previously not working in the test folder.
