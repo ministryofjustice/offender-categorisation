@@ -1,6 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "radios/macro.njk" import govukRadios %}
-{% from "details/macro.njk" import govukDetails %}
+{% from "../../macros/prisonerReviewGuidance.html" import prisonerReviewGuidance %}
+{% from "../../macros/threeToFivePolicyChangeAlert.html" import threeToFivePolicyChangeAlert %}
 
 {% set greenButtonText = "Continue" %}
 
@@ -18,48 +19,44 @@
 
 {% block formItems %}
 
-<h1 class="govuk-heading-l govuk-radios--inline">{{ pageTitle }}</h1>
-<p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate))
-    if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
+  {% if useThreeToFivePolicy %}
+    {{ threeToFivePolicyChangeAlert() }}
+  {% endif %}
 
-  {{ govukRadios({
-    name: "nextDateChoice",
-    id: "nextDateChoice",
-    errorMessage: {
-      text: "Please select a choice"
-    } if (errors | findError('nextDateChoice')),
-    items: [
+  <h1 class="govuk-heading-l govuk-radios--inline">{{ pageTitle }}</h1>
+  <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
+
+    {% set radioItems = [
       {
-        value: "6",
-        text: "In 6 months time",
-        label: { classes: "govuk-!-font-weight-bold" },
-        hint: { text: 'We will work out the date 6 months from today. You can then edit it.' }
+        "value": "6",
+        "text": strings.inSixMonthsLabel if useThreeToFivePolicy else "In 6 months time",
+        "label": { "classes": "govuk-!-font-weight-bold" },
+        "hint": { "text": "We will work out the date 6 months from today. You can then edit it." }
       },
       {
-        value: "12",
-        text: "In 12 months time",
-        label: { classes: "govuk-!-font-weight-bold" },
-        hint: { text: 'We will work out the date 12 months from today. You can then edit it.' }
+        "value": "12",
+        "text": strings.inTwelfMonthsLabel if useThreeToFivePolicy else "In 12 months time",
+        "label": { "classes": "govuk-!-font-weight-bold" },
+        "hint": { "text": "We will work out the date 12 months from today. You can then edit it." }
       },
       {
-        value: "SPECIFIC",
-        text: "I want to enter a specific date",
-        label: { classes: "govuk-!-font-weight-bold" },
-        hint: { text: 'We won’t work out a date. You can enter whatever date you want.' }
+        "value": "SPECIFIC",
+        "text": "I want to enter a specific date",
+        "label": { "classes": "govuk-!-font-weight-bold" },
+        "hint": {
+          "text": "We will not work out a date. You can enter your own date."
+          if useThreeToFivePolicy else "We won’t work out a date. You can enter whatever date you want."
+        }
       }
-    ]
-  }) }}
+    ] %}
 
- {% set guidance %}
-    <div class="govuk-!-font-weight-bold">Three or more years left in custody</div>
-    <div>They should be reviewed within the next 12 months</div>
-    <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Less than three years left in custody</div>
-    <div>They should be reviewed within the next 6 months</div>
-  {% endset %}
+    {{ govukRadios({
+      name: "nextDateChoice",
+      id: "nextDateChoice",
+      errorMessage: { text: "Please select a choice" } if (errors | findError('nextDateChoice')),
+      items: radioItems
+    }) }}
 
-  {{ govukDetails({
-    summaryText: "How to choose a date for a prisoner",
-    html: guidance
-  }) }}
+  {{ prisonerReviewGuidance(useThreeToFivePolicy=useThreeToFivePolicy, form="nextReviewDateQuestion") }}
 
 {% endblock %}

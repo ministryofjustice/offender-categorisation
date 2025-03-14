@@ -1,8 +1,9 @@
 {% extends "../formTemplate.html" %}
 {% from "input/macro.njk" import govukInput %}
-{% from "details/macro.njk" import govukDetails %}
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
+{% from "../../macros/prisonerReviewGuidance.html" import prisonerReviewGuidance %}
+{% from "../../macros/threeToFivePolicyChangeAlert.html" import threeToFivePolicyChangeAlert %}
 
 {% set pageTitle = "Categorisation is in progress: please use the tasklist to change date" %}
 {% set greenButtonText = "Submit" %}
@@ -15,6 +16,10 @@
 {% endblock %}
 
 {% block formItems %}
+
+  {% if useTh`reeToFivePolicy %}
+    {{ threeToFivePolicyChangeAlert() }}
+  {% endif %}`
 
   <input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}" />
 
@@ -50,19 +55,7 @@
     errorMessage: { text: "Enter reason for date change" } if (errors | findError('reason'))
   }) }}
 
-  {% set guidance %}
-    <div class="govuk-!-font-weight-bold">Determinate prison sentence with three or more years left in custody</div>
-    <div>They should be reviewed within the next 12 months</div>
-    <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Determinate prison sentence with less than three years left in custody</div>
-    <div>They should be reviewed within the next 6 months</div>
-    <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Indeterminate prison sentence</div>
-    <div>They should be reviewed within the next 3 years</div>
-  {% endset %}
-
-{{ govukDetails({
-  summaryText: "How to choose a date for a prisoner",
-  html: guidance
-}) }}
+  {{ prisonerReviewGuidance(useThreeToFivePolicy=useThreeToFivePolicy, form="nextReviewDateStandalone") }}
 
 {% endblock %}
 

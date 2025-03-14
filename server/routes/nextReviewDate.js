@@ -74,12 +74,10 @@ module.exports = function Index({ formService, offendersService, userService, au
           ? 'In 12 months time'
           : 'In 12 months time (recommended, based on policy)',
       }
+      // const useThreeToFivePolicy = conf.featureFlags.events.policy_change.three_to_five === 'true'
+      const useThreeToFivePolicy = true
 
-      if (conf.featureFlags.events.policy_change.three_to_five === 'true') {
-        return res.render(`formPages/nextReviewDate/policyChange/nextReviewDateQuestion`, { ...result, strings })
-      }
-
-      return res.render(`formPages/nextReviewDate/nextReviewDateQuestion`, result)
+      return res.render(`formPages/nextReviewDate/nextReviewDateQuestion`, { ...result, strings, useThreeToFivePolicy })
     })
   )
 
