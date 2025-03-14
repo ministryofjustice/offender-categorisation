@@ -1,5 +1,5 @@
-import { SuperAgentRequest } from "superagent";
-import { stubFor } from "./wiremock";
+import { SuperAgentRequest } from 'superagent'
+import { stubFor } from './wiremock'
 
 export default {
   stubSubmitSecurityReview: ({ bookingId }: { bookingId: number }): SuperAgentRequest =>
@@ -12,6 +12,6 @@ export default {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: true,
-      }
-    })
+      },
+    }),
 }

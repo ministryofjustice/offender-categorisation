@@ -1,6 +1,6 @@
 import { SuperAgentRequest, Response } from 'superagent'
-import { getMatchingRequests, stubFor } from './wiremock'
 import moment from 'moment'
+import { getMatchingRequests, stubFor } from './wiremock'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
 import { AgencyLocation } from '../factory/agencyLocation'

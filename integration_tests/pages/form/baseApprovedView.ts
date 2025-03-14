@@ -8,7 +8,7 @@ export default abstract class BaseApprovedViewPage extends Page {
     })
   }
 
-  validateCommentsVisibility({ areVisible, comments = undefined }: { areVisible: boolean, comments?: string }) {
+  validateCommentsVisibility({ areVisible, comments = undefined }: { areVisible: boolean; comments?: string }) {
     cy.get('.forms-comments-text').should(areVisible ? 'exist' : 'not.exist')
     if (typeof comments !== 'undefined') {
       cy.get('.forms-comments-text').contains(comments)

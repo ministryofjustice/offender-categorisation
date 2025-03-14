@@ -9,6 +9,7 @@ type ForeignNationalChoice = keyof typeof foreignNationalRadioChoiceHtmlSelector
 type ForeignNationalChoiceValues =
   | typeof foreignNationalRadioChoiceHtmlSelectors.YES
   | typeof foreignNationalRadioChoiceHtmlSelectors.NO
+  | string // FIXME added due type errors after enabling ts linter, requires investigation
 
 const homeOfficeImmigrationStatusRadioChoiceHtmlSelectors = {
   YES: '#formCompleted',

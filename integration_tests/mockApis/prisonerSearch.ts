@@ -1,6 +1,6 @@
 import { SuperAgentRequest } from 'superagent'
-import { stubFor } from './wiremock'
 import moment from 'moment'
+import { stubFor } from './wiremock'
 
 type OffenderNumber = string
 type BookingId = number
