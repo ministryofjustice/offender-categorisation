@@ -144,27 +144,6 @@ module.exports = function Index({ formService, offendersService, userService, au
     res.send('Handling nextReviewDate...')
   })
 
-  // FIXME: This route (`/:form/:bookingId`) conflicts with `server/routes/form.js`
-  // because `server/routes/form.js` uses a more general wildcard pattern (`/:section/:form/:bookingId`).
-  //
-  // ⚠️ Wildcard routes (`/:form/:bookingId`) can cause unintended route matching issues
-  // and override more specific routes.
-  //
-  // 🔹 Suggested Fix:
-  // 1️⃣ Investigate how `server/routes/form.js` handles routes and ensure it doesn't conflict.
-  // 2️⃣ Move `nextReviewDate` routes into `server/routes/nextReviewDate.js` and register it as a sub-router in `server/routes/form.js`.
-  // 3️⃣ Instead of a catch-all wildcard, explicitly define routes in `nextReviewDate.js`:
-  //
-  //    router.get('/nextReviewDateQuestion/:bookingId', handler);
-  //    router.get('/nextReviewDate/:bookingId', handler);
-  //
-  // 4️⃣ Add a **fallback route** at the end of `server/routes/form.js` to catch unrecognized URLs:
-  //
-  //    router.use((req, res) => {
-  //      res.status(404).send('Url not recognised');
-  //    });
-  //
-  // This approach **stops overlapping** and ensures each module handles only its relevant routes.
   router.post(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
