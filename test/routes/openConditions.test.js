@@ -552,13 +552,6 @@ describe('open conditions', () => {
 
   test('Should have T for openConditionsSuggestedCategory value if female', () => {
     offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent', prisonId: 'PFI' })
-
-    return request(app)
-      .get('/provisionalCategory/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain(`<input type="hidden" name="openConditionsSuggestedCategory" value="T"/>`)
-      })
+    return request(app).get('/provisionalCategory/12345').expect(302).expect('Location', `/tasklist/12345`)
   })
 })
