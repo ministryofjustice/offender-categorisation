@@ -220,7 +220,7 @@ module.exports = {
         }),
       },
       policy_change: {
-        three_to_five: get('FEATURE_FLAG__EVENT__3_TO_5_POLICY_CHANGE', 'true', true, {
+        three_to_five: get('FEATURE_FLAG__EVENT__3_TO_5_POLICY_CHANGE', 'false', true, {
           requireInProduction: false,
         }),
       },

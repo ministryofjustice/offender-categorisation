@@ -65,7 +65,10 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'nextReviewDateQuestion'
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
 
-      // We need to add a help text with suggested answer based on if sentence end is withing 5 years or not
+      // We need to add a help text with a suggested answer based on whether the sentence ends within 5 years
+      // FIXME: Consider moving this logic to a Nunjucks filter for better separation of concerns.
+      // Keeping context data generation inside views is preferred, but since views need refactoring,
+      // minimizing additional logic here is preferable
       const sentenceExpiryDate = moment(result.data.details.sentence.sentenceExpiryDate, 'YYYY-MM-DD')
       const isWithinFiveYears = sentenceExpiryDate <= moment().add(5, 'y').format('MM/DD/YYYY')
       const strings = {
@@ -75,6 +78,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           : 'In 12 months time (recommended, based on policy)',
       }
       // const useThreeToFivePolicy = conf.featureFlags.events.policy_change.three_to_five === 'true'
+      // FIXME debug
       const useThreeToFivePolicy = true
 
       return res.render(`formPages/nextReviewDate/nextReviewDateQuestion`, { ...result, strings, useThreeToFivePolicy })
