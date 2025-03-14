@@ -19,44 +19,45 @@
 
 {% block formItems %}
 
-  {% if useThreeToFivePolicy %}
+  {% if featurePolicyChangeThreeToFiveEnabled %}
     {{ threeToFivePolicyChangeAlert() }}
   {% endif %}
 
   <h1 class="govuk-heading-l govuk-radios--inline">{{ pageTitle }}</h1>
   <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
 
-    {% set radioItems = [
-      {
-        "value": "6",
-        "text": strings.inSixMonthsLabel if useThreeToFivePolicy else "In 6 months time",
-        "label": { "classes": "govuk-!-font-weight-bold" },
-        "hint": { "text": "We will work out the date 6 months from today. You can then edit it." }
-      },
-      {
-        "value": "12",
-        "text": strings.inTwelfMonthsLabel if useThreeToFivePolicy else "In 12 months time",
-        "label": { "classes": "govuk-!-font-weight-bold" },
-        "hint": { "text": "We will work out the date 12 months from today. You can then edit it." }
-      },
-      {
-        "value": "SPECIFIC",
-        "text": "I want to enter a specific date",
-        "label": { "classes": "govuk-!-font-weight-bold" },
-        "hint": {
-          "text": "We will not work out a date. You can enter your own date."
-          if useThreeToFivePolicy else "We won’t work out a date. You can enter whatever date you want."
-        }
-      }
-    ] %}
+    {% set isWithinFiveYears = data.details.sentence.sentenceExpiryDate | isWithinFiveYears %}
+
+    {% set inSixMonthsLabel = "In 6 months time (recommended, based on policy)" if isWithinFiveYears else "In 6 months time" %}
+    {% set inTwelveMonthsLabel = "In 12 months time" if isWithinFiveYears else "In 12 months time (recommended, based on policy)" %}
+    {% set specificHintText = "We will not work out a date. You can enter your own date." if featurePolicyChangeThreeToFiveEnabled else "We won’t work out a date. You can enter whatever date you want." %}
 
     {{ govukRadios({
       name: "nextDateChoice",
       id: "nextDateChoice",
       errorMessage: { text: "Please select a choice" } if (errors | findError('nextDateChoice')),
-      items: radioItems
+      items: [
+        {
+          value: "6",
+          text: inSixMonthsLabel,
+          label: { classes: "govuk-!-font-weight-bold" },
+          hint: { text: "We will work out the date 6 months from today. You can then edit it." }
+        },
+        {
+          value: "12",
+          text: inTwelveMonthsLabel,
+          label: { classes: "govuk-!-font-weight-bold" },
+          hint: { text: "We will work out the date 12 months from today. You can then edit it." }
+        },
+        {
+          value: "SPECIFIC",
+          text: "I want to enter a specific date",
+          label: { classes: "govuk-!-font-weight-bold" },
+          hint: { text: specificHintText }
+        }
+      ]
     }) }}
 
-  {{ prisonerReviewGuidance(useThreeToFivePolicy=useThreeToFivePolicy, form="nextReviewDateQuestion") }}
+  {{ prisonerReviewGuidance(form="nextReviewDateQuestion") }}
 
 {% endblock %}

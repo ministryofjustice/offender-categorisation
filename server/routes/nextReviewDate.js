@@ -61,34 +61,6 @@ module.exports = function Index({ formService, offendersService, userService, au
   )
 
   router.get(
-    '/nextReviewDateQuestion/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const { bookingId } = req.params
-      const form = 'nextReviewDateQuestion'
-      const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
-
-      // We need to add a help text with a suggested answer based on whether the sentence ends within 5 years
-      // FIXME: Consider moving this logic to a Nunjucks filter for better separation of concerns.
-      // Keeping context data generation inside views is preferred, but since views need refactoring,
-      // minimizing additional logic here is preferable
-      const sentenceExpiryDate = moment(result.data.details.sentence.sentenceExpiryDate, 'YYYY-MM-DD')
-      const isWithinFiveYears = sentenceExpiryDate <= moment().add(5, 'y')
-      const strings = {
-        inSixMonthsLabel: isWithinFiveYears ? 'In 6 months time (recommended, based on policy)' : 'In 6 months time',
-        inTwelfMonthsLabel: isWithinFiveYears
-          ? 'In 12 months time'
-          : 'In 12 months time (recommended, based on policy)',
-      }
-      // const useThreeToFivePolicy = conf.featureFlags.events.policy_change.three_to_five === 'true'
-      // FIXME debug
-      let useThreeToFivePolicy = conf.featureFlags.events.policy_change.three_to_five === 'true'
-      useThreeToFivePolicy = true
-
-      return res.render(`formPages/nextReviewDate/nextReviewDateQuestion`, { ...result, strings, useThreeToFivePolicy })
-    })
-  )
-
-  router.get(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
@@ -168,6 +140,35 @@ module.exports = function Index({ formService, offendersService, userService, au
     })
   )
 
+  router.get('/nextReviewDateQuestion/:bookingId', (req, res) => {
+    res.send('Handling nextReviewDateQuestion...')
+  })
+
+  router.get('/nextReviewDate/:bookingId', (req, res) => {
+    res.send('Handling nextReviewDate...')
+  })
+
+  // FIXME: This route (`/:form/:bookingId`) conflicts with `server/routes/form.js`
+  // because `server/routes/form.js` uses a more general wildcard pattern (`/:section/:form/:bookingId`).
+  //
+  // ⚠️ Wildcard routes (`/:form/:bookingId`) can cause unintended route matching issues
+  // and override more specific routes.
+  //
+  // 🔹 Suggested Fix:
+  // 1️⃣ Investigate how `server/routes/form.js` handles routes and ensure it doesn't conflict.
+  // 2️⃣ Move `nextReviewDate` routes into `server/routes/nextReviewDate.js` and register it as a sub-router in `server/routes/form.js`.
+  // 3️⃣ Instead of a catch-all wildcard, explicitly define routes in `nextReviewDate.js`:
+  //
+  //    router.get('/nextReviewDateQuestion/:bookingId', handler);
+  //    router.get('/nextReviewDate/:bookingId', handler);
+  //
+  // 4️⃣ Add a **fallback route** at the end of `server/routes/form.js` to catch unrecognized URLs:
+  //
+  //    router.use((req, res) => {
+  //      res.status(404).send('Url not recognised');
+  //    });
+  //
+  // This approach **stops overlapping** and ensures each module handles only its relevant routes.
   router.post(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
