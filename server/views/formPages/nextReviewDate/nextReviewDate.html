@@ -1,6 +1,6 @@
 {% extends "../formTemplate.html" %}
 {% from "input/macro.njk" import govukInput %}
-{% from "details/macro.njk" import govukDetails %}
+{% from "../../macros/prisonerReviewGuidance.html" import prisonerReviewGuidance %}
 
 {% set pageTitle = "Confirm the date they should be reviewed by" %}
 
@@ -16,45 +16,33 @@
 
 {% block formItems %}
 
-<input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}" />
+  <input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}" />
 
-<h1 class="govuk-heading-l">{{ pageTitle }}</h1>
-{% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
-  <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}.</p>
-{% elif data.details.sentence.indeterminate %}
-  <p>They have an indeterminate prison sentence.</p>
-{% endif %}
+  <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+  {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
+    <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}.</p>
+  {% elif data.details.sentence.indeterminate %}
+    <p>They have an indeterminate prison sentence.</p>
+  {% endif %}
 
 
-{{ govukInput({
-  id: "reviewDate",
-  name: "date",
-  label: {
-    text: "Review date",
-    classes: "govuk-!-font-weight-bold"
-  },
-  errorMessage: {
-    text: (errors | findError('date')).text
-  } if (errors | findError('date')),
-  hint: {
-    text: "For example, 2/11/2021"
-  },
-  classes: "dateInputWidth",
-  value: date
-}) }}
+  {{ govukInput({
+    id: "reviewDate",
+    name: "date",
+    label: {
+      text: "Review date",
+      classes: "govuk-!-font-weight-bold"
+    },
+    errorMessage: {
+      text: (errors | findError('date')).text
+    } if (errors | findError('date')),
+    hint: {
+      text: "For example, 2/11/2021"
+    },
+    classes: "dateInputWidth",
+    value: date
+  }) }}
 
-{% set guidance %}
-<div class="govuk-!-font-weight-bold">Determinate prison sentence with three or more years left in custody</div>
-<div>They should be reviewed within the next 12 months</div>
-<div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Determinate prison sentence with less than three years left in custody</div>
-<div>They should be reviewed within the next 6 months</div>
-<div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Indeterminate prison sentence</div>
-<div>They should be reviewed within the next 3 years</div>
-{% endset %}
-
-{{ govukDetails({
-summaryText: "How to choose a date for a prisoner",
-html: guidance
-}) }}
+  {{ prisonerReviewGuidance(form="nextReviewDate") }}
 
 {% endblock %}

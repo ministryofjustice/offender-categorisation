@@ -99,4 +99,16 @@ module.exports = (app, path) => {
 
       return date
     })
+    .addFilter('isWithinFiveYears', sentenceExpiryDate => {
+      if (!sentenceExpiryDate) return false
+
+      const expiryDate = new Date(sentenceExpiryDate)
+      const fiveYearsFromNow = new Date()
+      fiveYearsFromNow.setFullYear(fiveYearsFromNow.getFullYear() + 5)
+
+      return expiryDate <= fiveYearsFromNow
+    })
+    .addGlobal('featurePolicyChangeThreeToFiveEnabled', () => {
+      return config.featureFlags.events.policy_change.three_to_five === 'true'
+    })
 }

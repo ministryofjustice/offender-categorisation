@@ -136,6 +136,14 @@ module.exports = function Index({ formService, offendersService, userService, au
     })
   )
 
+  router.get('/nextReviewDateQuestion/:bookingId', (req, res) => {
+    res.send('Handling nextReviewDateQuestion...')
+  })
+
+  router.get('/nextReviewDate/:bookingId', (req, res) => {
+    res.send('Handling nextReviewDate...')
+  })
+
   router.post(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
