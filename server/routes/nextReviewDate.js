@@ -1,3 +1,5 @@
+// @ts-check
+
 const express = require('express')
 const flash = require('connect-flash')
 const moment = require('moment')
@@ -70,7 +72,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       // Keeping context data generation inside views is preferred, but since views need refactoring,
       // minimizing additional logic here is preferable
       const sentenceExpiryDate = moment(result.data.details.sentence.sentenceExpiryDate, 'YYYY-MM-DD')
-      const isWithinFiveYears = sentenceExpiryDate <= moment().add(5, 'y').format('MM/DD/YYYY')
+      const isWithinFiveYears = sentenceExpiryDate <= moment().add(5, 'y')
       const strings = {
         inSixMonthsLabel: isWithinFiveYears ? 'In 6 months time (recommended, based on policy)' : 'In 6 months time',
         inTwelfMonthsLabel: isWithinFiveYears
@@ -79,7 +81,8 @@ module.exports = function Index({ formService, offendersService, userService, au
       }
       // const useThreeToFivePolicy = conf.featureFlags.events.policy_change.three_to_five === 'true'
       // FIXME debug
-      const useThreeToFivePolicy = true
+      let useThreeToFivePolicy = conf.featureFlags.events.policy_change.three_to_five === 'true'
+      useThreeToFivePolicy = true
 
       return res.render(`formPages/nextReviewDate/nextReviewDateQuestion`, { ...result, strings, useThreeToFivePolicy })
     })
