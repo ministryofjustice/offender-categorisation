@@ -9,7 +9,7 @@
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  // TODO: Establish a preferred set of rules.
+  // TODO: Migrate rules to @ministryofjustice/eslint-config-hmpps
   //       Many rules are currently disabled to prevent excessive refactoring,
   //       as the linter was previously not working in the test folder.
   // FIXME: Address the disabled rules and gradually re-enable them where appropriate.
