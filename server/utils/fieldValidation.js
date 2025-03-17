@@ -47,7 +47,8 @@ module.exports = {
 function createSchemaFromConfig(pageConfig) {
   const yesterday = moment().subtract(1, 'd').format('MM/DD/YYYY')
   const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
-  const threeYears = moment().add(3, 'y').format('MM/DD/YYYY')
+  // const threeYears = moment().add(3, 'y').format('MM/DD/YYYY')
+  const fiveYears = moment().add(5, 'y').format('MM/DD/YYYY')
   const oneYear = moment().add(1, 'y').format('MM/DD/YYYY')
   const today = moment().format('MM/DD/YYYY')
 
@@ -75,7 +76,7 @@ function createSchemaFromConfig(pageConfig) {
     indeterminateCheck: (requiredItem = 'indeterminate', requiredAnswer = 'true') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi.date().format('D/M/YYYY').min(today).max(threeYears).required().messages({
+        then: joi.date().format('D/M/YYYY').min(today).max(fiveYears).required().messages({
           'date.format': 'The review date must be a real date',
           'date.max': 'The date that they are reviewed by must be within 3 years',
           'date.min': 'The review date must be today or in the future',
