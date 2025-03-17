@@ -33,7 +33,7 @@
       {% endif %}
 
     <p>You can amend this person's next review date, without creating a new categorisation.</p>
-    <p class="govuk-!-font-weight-bold">Current review date: {{ getLongDateFormat(dateConverter(date)) }}</p>
+    <p class="govuk-!-font-weight-bold"  id="existingDateLong">Current review date: {{ getLongDateFormat(date) }}</p>
 
   {% else %}
     <h1 class="govuk-heading-l">Change the review date</h1>
