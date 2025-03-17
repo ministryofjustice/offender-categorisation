@@ -17,13 +17,13 @@
 
 {% block formItems %}
 
-  {% if featurePolicyChangeThreeToFiveEnabled() %}
+  {% if featurePolicyChangeThreeToFiveEnabled %}
     {{ threeToFivePolicyChangeAlert() }}
   {% endif %}`
 
   <input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}" />
 
-  {% if featurePolicyChangeThreeToFiveEnabled() %}
+  {% if featurePolicyChangeThreeToFiveEnabled %}
     <h1 class="govuk-heading-l">Change the review date</h1>
 
       {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
