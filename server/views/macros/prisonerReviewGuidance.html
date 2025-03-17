@@ -1,7 +1,7 @@
 {% from "details/macro.njk" import govukDetails %}
 
 {% macro prisonerReviewGuidance(form = "default") %}
-  {% if featurePolicyChangeThreeToFiveEnabled() %}
+  {% if featurePolicyChangeThreeToFiveEnabled %}
     {% set guidance %}
       <div>The date you set should be in line with policy guidance.</div>
       <div class="govuk-!-padding-top-2">It depends on the prisoner's sentence type and how long they have left in custody.</div>
