@@ -108,7 +108,4 @@ module.exports = (app, path) => {
 
       return expiryDate <= fiveYearsFromNow
     })
-    .addGlobal('featurePolicyChangeThreeToFiveEnabled', () => {
-      return config.featureFlags.events.policy_change.three_to_five === 'true'
-    })
 }
