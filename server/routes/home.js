@@ -50,7 +50,7 @@ module.exports = function Index({
   if (process.env.NODE_ENV === 'development') {
     router.use((req, res, next) => {
       // eslint-disable-next-line no-console
-      console.table({ method: req.method, originalUrl: req.originalUrl })
+      console.log(req.method, req.originalUrl)
       next()
     })
   }
