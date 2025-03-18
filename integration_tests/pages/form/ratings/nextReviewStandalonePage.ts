@@ -60,6 +60,9 @@ export default class NextReviewStandalonePage extends Page {
   validateExistingDateLongValue = (expectedExistingDate: string): PageElement =>
     cy.get(SELECTORS.EXISTING_DATE_LONG).should('have.text', `Current review date: ${expectedExistingDate}`)
 
+  validateExistingPartialReviewGuidance = (expectedString: string): PageElement =>
+    cy.contains('div', expectedString).should('be.visible')
+
   clearNewReviewDateInput = (): PageElement => cy.get(SELECTORS.REVIEW_DATE).clear()
 
   clearNewReviewReasonTextInput = (): PageElement => cy.get(SELECTORS.REASON).clear()

@@ -271,7 +271,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     const currentRecord = dataIfExists(data)
 
     if (!currentRecord) {
-      return createCategorisationRecord(
+      const record = await createCategorisationRecord(
         bookingId,
         userId,
         prisonId,
@@ -281,6 +281,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         dueByDate,
         transactionalClient
       )
+      return record
     }
     return currentRecord
   }
@@ -707,8 +708,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   function isValid(formPageConfig, req, res, formUrl, userInput) {
     if (formPageConfig.validate && formPageConfig.fields) {
       const inputForExpectedFields = getInputForExpectedFields(formPageConfig, userInput)
-      const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change || false
-      const errors = validate(inputForExpectedFields, formPageConfig, featurePolicyChangeThreeToFiveEnabled)
+      const errors = validate(inputForExpectedFields, formPageConfig)
 
       if (!isNilOrEmpty(errors)) {
         req.flash('errors', errors)
@@ -724,7 +724,8 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   function isValidForGet(formPageConfig, req, res, userInput) {
     if (formPageConfig.validate && formPageConfig.fields) {
       const inputForExpectedFields = getInputForExpectedFields(formPageConfig, userInput)
-      return validate(inputForExpectedFields, formPageConfig)
+      const errors = validate(inputForExpectedFields, formPageConfig)
+      return errors
     }
     return []
   }

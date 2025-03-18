@@ -277,6 +277,9 @@ describe('Next Review', () => {
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
           nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
+          nextReviewStandalonePage.validateExistingPartialReviewGuidance(
+            'Determinate prison sentence with three or more years left in custody'
+          )
         })
 
         it('should reject an empty form submission', () => {
@@ -373,6 +376,9 @@ describe('Next Review', () => {
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
           nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
+          nextReviewStandalonePage.validateExistingPartialReviewGuidance(
+            'Determinate sentence with 5 or more years left in custody'
+          )
         })
 
         it('should reject an empty form submission with 3 to 5 policy feature flag', () => {
@@ -437,6 +443,9 @@ describe('Next Review', () => {
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
           nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
+          nextReviewStandalonePage.validateExistingPartialReviewGuidance(
+            'Determinate prison sentence with three or more years left in custody'
+          )
 
           const newReviewDate = moment().add(1, 'months').add(4, 'days').startOf('day')
           const newReviewReason = 'Another test reason'
@@ -493,6 +502,9 @@ describe('Next Review', () => {
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
           nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
+          nextReviewStandalonePage.validateExistingPartialReviewGuidance(
+            'Determinate sentence with 5 or more years left in custody'
+          )
 
           const newReviewDate = moment().add(1, 'months').add(4, 'days').startOf('day')
           const newReviewReason = 'Another test reason'
@@ -545,6 +557,9 @@ describe('Next Review', () => {
 
         nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
         nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
+        nextReviewStandalonePage.validateExistingPartialReviewGuidance(
+          'Determinate prison sentence with three or more years left in custody'
+        )
       })
 
       it('should reject an empty form submission', () => {
@@ -634,6 +649,9 @@ describe('Next Review', () => {
 
         nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
         nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
+        nextReviewStandalonePage.validateExistingPartialReviewGuidance(
+          'Determinate sentence with 5 or more years left in custody'
+        )
       })
 
       it('should reject an empty form submission with 3 to 5 feature flag', () => {

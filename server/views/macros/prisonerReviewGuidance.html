@@ -1,6 +1,6 @@
 {% from "details/macro.njk" import govukDetails %}
 
-{% macro prisonerReviewGuidance(form = "default") %}
+{% macro prisonerReviewGuidance(form = "default", featurePolicyChangeThreeToFiveEnabled=false) %}
   {% if featurePolicyChangeThreeToFiveEnabled %}
     {% set guidance %}
       <div>The date you set should be in line with policy guidance.</div>
