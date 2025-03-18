@@ -22,9 +22,9 @@ function mapJoiErrors(joiErrors, fieldsConfig) {
 }
 
 module.exports = {
-  validate(formResponse, pageConfig, featurePolicyChangeThreeToFiveEnabled) {
+  validate(formResponse, pageConfig) {
     const localFormResponse = { ...formResponse }
-    const formSchema = createSchemaFromConfig(pageConfig, featurePolicyChangeThreeToFiveEnabled)
+    const formSchema = createSchemaFromConfig(pageConfig)
 
     // we want to accept dates with or without leading 0s e.g. 01/01/2024 and 1/1/2024, so this removes any leading zeros before running through the validator
     pageConfig.fields.forEach(field => {
@@ -44,14 +44,12 @@ module.exports = {
   mapJoiErrors,
 }
 
-function createSchemaFromConfig(pageConfig, featurePolicyChangeThreeToFiveEnabled) {
+function createSchemaFromConfig(pageConfig) {
   const yesterday = moment().subtract(1, 'd').format('MM/DD/YYYY')
   const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
   const threeYears = moment().add(3, 'y').format('MM/DD/YYYY')
-  const fiveYears = moment().add(5, 'y').format('MM/DD/YYYY')
   const oneYear = moment().add(1, 'y').format('MM/DD/YYYY')
   const today = moment().format('MM/DD/YYYY')
-  const maxDate = featurePolicyChangeThreeToFiveEnabled ? fiveYears : threeYears
 
   const fieldOptions = {
     requiredString: joi.string().trim().required(),
@@ -77,17 +75,11 @@ function createSchemaFromConfig(pageConfig, featurePolicyChangeThreeToFiveEnable
     indeterminateCheck: (requiredItem = 'indeterminate', requiredAnswer = 'true') =>
       joi.when(requiredItem, {
         is: requiredAnswer,
-        then: joi
-          .date()
-          .format('D/M/YYYY')
-          .min(today)
-          .max(maxDate)
-          .required()
-          .messages({
-            'date.format': 'The review date must be a real date',
-            'date.max': `The date that they are reviewed by must be within ${featurePolicyChangeThreeToFiveEnabled ? '5' : '3'} years`,
-            'date.min': 'The review date must be today or in the future',
-          }),
+        then: joi.date().format('D/M/YYYY').min(today).max(threeYears).required().messages({
+          'date.format': 'The review date must be a real date',
+          'date.max': 'The date that they are reviewed by must be within 3 years',
+          'date.min': 'The review date must be today or in the future',
+        }),
         otherwise: joi.date().format('D/M/YYYY').min(today).max(oneYear).required().messages({
           'date.format': 'The review date must be a real date',
           'date.max': 'The date that they are reviewed must be within the next 12 months',
