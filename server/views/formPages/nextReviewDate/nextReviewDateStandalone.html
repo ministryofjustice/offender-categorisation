@@ -71,7 +71,7 @@
     errorMessage: { text: "Enter reason for date change" } if (errors | findError('reason'))
   }) }}
 
-  {{ prisonerReviewGuidance(form="nextReviewDateStandalone") }}
+  {{ prisonerReviewGuidance(form="nextReviewDateStandalone", featurePolicyChangeThreeToFiveEnabled=featurePolicyChangeThreeToFiveEnabled) }}
 
 {% endblock %}
 
