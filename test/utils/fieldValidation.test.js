@@ -3,6 +3,7 @@ const fieldValidation = require('../../server/utils/fieldValidation')
 const pageConfig = require('../../server/config/nextReviewDate')
 
 const overThreeYearsDate = moment().add(3, 'years').add(1, 'days').format('D/M/YYYY')
+const overFiveYearsDate = moment().add(5, 'years').add(1, 'days').format('D/M/YYYY')
 const validFutureDate = moment().add(12, 'months').format('D/M/YYYY')
 const overOneYearsDate = moment().add(12, 'months').add(1, 'days').format('D/M/YYYY')
 const todaysDate = moment().format('D/M/YYYY')
@@ -18,6 +19,13 @@ describe('Validating next review date for indeterminate', () => {
     expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([
       { href: '#date', text: 'The date that they are reviewed by must be within 3 years' },
     ])
+  })
+  it('Validation should return the correct error message for indeterminate over 5 years', () => {
+    const formResponse = { indeterminate: 'true', date: overFiveYearsDate }
+    const featurePolicyChangeThreeToFiveEnabled = true
+    expect(
+      fieldValidation.validate(formResponse, pageConfig.nextReviewDate, featurePolicyChangeThreeToFiveEnabled)
+    ).toEqual([{ href: '#date', text: 'The date that they are reviewed by must be within 5 years' }])
   })
   it('Validation should pass for valid future date for indeterminate', () => {
     const formResponse = { indeterminate: 'true', date: validFutureDate }
@@ -61,6 +69,13 @@ describe('Validating next review date for determinate', () => {
     expect(fieldValidation.validate(formResponse, pageConfig.nextReviewDate)).toEqual([
       { href: '#date', text: 'The date that they are reviewed must be within the next 12 months' },
     ])
+  })
+  it('Validation should return the correct error message for determinate over 5 years', () => {
+    const formResponse = { indeterminate: 'false', date: overFiveYearsDate }
+    const featurePolicyChangeThreeToFiveEnabled = true
+    expect(
+      fieldValidation.validate(formResponse, pageConfig.nextReviewDate, featurePolicyChangeThreeToFiveEnabled)
+    ).toEqual([{ href: '#date', text: 'The date that they are reviewed must be within the next 12 months' }])
   })
   it('Validation should pass for valid future date for determinate', () => {
     const formResponse = { indeterminate: 'false', date: validFutureDate }
