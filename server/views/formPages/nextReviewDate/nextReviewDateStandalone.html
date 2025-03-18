@@ -22,9 +22,9 @@
   {% endif %}`
 
   <input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}" />
+  <h1 class="govuk-heading-l">Change the review date</h1>
 
   {% if featurePolicyChangeThreeToFiveEnabled %}
-    <h1 class="govuk-heading-l">Change the review date</h1>
 
       {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
         <p class="govuk-!-font-weight-bold">Their conditional release date is: {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}</p>
@@ -36,7 +36,6 @@
     <p class="govuk-!-font-weight-bold"  id="existingDateLong">Current review date: {{ getLongDateFormat(date) }}</p>
 
   {% else %}
-    <h1 class="govuk-heading-l">Change the review date</h1>
 
       {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
         <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">Their conditional release date is:</p>
