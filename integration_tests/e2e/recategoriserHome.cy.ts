@@ -71,7 +71,7 @@ describe('Recategoriser Home page', () => {
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.validateCategoryReviewsTableData([
         [
-          '10 days overdue',
+          '10 daysoverdue',
           `Bethid, Dufeathophe${recat.offenderNo}`,
           'Review due',
           'Awaiting approval',
@@ -86,7 +86,7 @@ describe('Recategoriser Home page', () => {
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.validateCategoryReviewsTableData([
         [
-          '1 day overdue',
+          '1 dayoverdue',
           `Bethid, Dufeathophe${recat.offenderNo}`,
           'Review due',
           'Awaiting approval',
@@ -211,14 +211,14 @@ describe('Recategoriser Home page', () => {
 
       recategoriserHomePage.validateCategoryReviewsTableData([
         [
-          '10 days overdue',
+          '10 daysoverdue',
           'Fleming, AndrewG6707GG',
           'Review due',
           'Awaiting approval',
           'Engelbert Humperdinck',
           'View',
         ],
-        ['1 day overdue', 'Symonds, AndrewG6707GH', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+        ['1 dayoverdue', 'Symonds, AndrewG6707GH', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
         [
           moment(recats[2].nextReviewDate).format('DD/MM/yyyy'),
           'Hitchcock, AndrewG6707GI',
@@ -240,9 +240,9 @@ describe('Recategoriser Home page', () => {
           'Engelbert Humperdinck',
           'View',
         ],
-        ['1 day overdue', 'Symonds, AndrewG6707GH', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
+        ['1 dayoverdue', 'Symonds, AndrewG6707GH', 'Review due', 'Awaiting approval', 'Engelbert Humperdinck', 'View'],
         [
-          '10 days overdue',
+          '10 daysoverdue',
           'Fleming, AndrewG6707GG',
           'Review due',
           'Awaiting approval',

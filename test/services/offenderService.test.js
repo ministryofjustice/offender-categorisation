@@ -842,7 +842,7 @@ describe('getUncategorisedOffenders', () => {
       dateRequired: '28/01/2019',
       sentenceDate: '2019-01-14',
       overdue: true,
-      overdueText: '1 day overdue',
+      overdueText: '1 day',
     })
   })
 
@@ -3033,7 +3033,7 @@ describe('getDueRecats', () => {
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: '20/09/2018',
         overdue: true,
-        overdueText: '253 days overdue',
+        overdueText: '253 days',
         pnomis: false,
         buttonText: 'Start',
         pom: 'Steve Rendell',
@@ -3085,7 +3085,7 @@ describe('getDueRecats', () => {
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: '23/09/2017',
         overdue: true,
-        overdueText: '615 days overdue',
+        overdueText: '615 days',
         pnomis: false,
         buttonText: 'Start',
         pom: 'Steve Rendell',
@@ -3257,7 +3257,7 @@ describe('getDueRecats', () => {
           reason: { name: 'DUE', value: 'Review due' },
           nextReviewDateDisplay: '23/10/2017',
           overdue: true,
-          overdueText: '585 days overdue',
+          overdueText: '585 days',
           dbRecordExists: true,
           pnomis: status.name === Status.AWAITING_APPROVAL.name ? 'PNOMIS' : false,
           buttonText: status.name === Status.AWAITING_APPROVAL.name ? 'Start' : 'Edit',

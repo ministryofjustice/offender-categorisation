@@ -312,7 +312,7 @@ class TestFixture {
 
     if (reviewDate.isBefore(today)) {
       def overdueDays = ChronoUnit.DAYS.between(reviewDate, today)
-      return overdueDays == 1 ? "1 day overdue" : "${overdueDays} days overdue"
+      return overdueDays == 1 ? "1 day\noverdue" : "${overdueDays} days\noverdue"
     }
     return reviewDate.format('dd/MM/yyyy')
   }
