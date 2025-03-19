@@ -26,10 +26,10 @@
   <h1 class="govuk-heading-l govuk-radios--inline">{{ pageTitle }}</h1>
   <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
 
-    {% set isWithinFiveYears = featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate | isWithinFiveYears %}
+    {% set isFiveOrMoreYearsAway = featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate | isFiveOrMoreYearsAway %}
 
     {% set inSixMonthsLabel %}
-      {% if isWithinFiveYears and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
+      {% if isFiveOrMoreYearsAway and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
         <span class="govuk-!-font-weight-bold">In 6 months</span><span> (recommended, based on policy)</span>
       {% else %}
         <span class="govuk-!-font-weight-bold">In 6 months time</span>
@@ -37,7 +37,7 @@
     {% endset %}
 
     {% set inTwelveMonthsLabel %}
-      {% if not isWithinFiveYears and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
+      {% if not isFiveOrMoreYearsAway and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
         <span class="govuk-!-font-weight-bold">In 12 months</span><span> (recommended, based on policy)</span>
       {% else %}
         <span class="govuk-!-font-weight-bold">In 12 months</span>
