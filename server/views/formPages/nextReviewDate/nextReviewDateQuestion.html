@@ -26,20 +26,28 @@
   <h1 class="govuk-heading-l govuk-radios--inline">{{ pageTitle }}</h1>
   <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) if data.details.sentence.conditionalReleaseDate else '[unavailable]' }}.</p>
 
-    {% set isWithinFiveYears = featurePolicyChangeThreeToFiveEnabled and data.details.sentence.sentenceExpiryDate | isWithinFiveYears %}
+    {% set isWithinFiveYears = featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate | isWithinFiveYears %}
+
+    {% set inSixMonthsLabel %}
+      {% if isWithinFiveYears and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate%}
+        <span class="govuk-!-font-weight-bold">In 6 months</span><span> (recommended, based on policy)</span>
+      {% else %}
+        <span class="govuk-!-font-weight-bold">In 6 months time</span>
+      {% endif %}
+    {% endset %}
+
+    {% set inTwelveMonthsLabel %}
+      {% if not isWithinFiveYears and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
+        <span class="govuk-!-font-weight-bold">In 12 months</span><span> (recommended, based on policy)</span>
+      {% else %}
+        <span class="govuk-!-font-weight-bold">In 12 months</span>
+      {% endif %}
+    {% endset %}
 
     {% if featurePolicyChangeThreeToFiveEnabled %}
-
-      {% set inSixMonthsLabel = "In 6 months (recommended, based on policy)" if isWithinFiveYears else "In 6 months" %}
-      {% set inTwelveMonthsLabel = "In 12 months" if isWithinFiveYears else "In 12 months (recommended, based on policy)" %}
       {% set specificHintText = "We will not work out a date. You can enter your own date." %}
-
     {% else %}
-
-      {% set inSixMonthsLabel = "In 6 months time" %}
-      {% set inTwelveMonthsLabel = "In 12 months time" %}
       {% set specificHintText = "We won’t work out a date. You can enter whatever date you want." %}
-
     {% endif %}
 
     {{ govukRadios({
@@ -49,14 +57,12 @@
       items: [
         {
           value: "6",
-          text: inSixMonthsLabel,
-          label: { classes: "govuk-!-font-weight-bold" },
+          html: inSixMonthsLabel,
           hint: { text: "We will work out the date 6 months from today. You can then edit it." }
         },
         {
           value: "12",
-          text: inTwelveMonthsLabel,
-          label: { classes: "govuk-!-font-weight-bold" },
+          html: inTwelveMonthsLabel,
           hint: { text: "We will work out the date 12 months from today. You can then edit it." }
         },
         {
