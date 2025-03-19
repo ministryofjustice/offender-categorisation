@@ -27,13 +27,13 @@
   {% if featurePolicyChangeThreeToFiveEnabled %}
 
       {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
-        <p class="govuk-!-font-weight-bold">Their conditional release date is: {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}</p>
+        <p><span class="govuk-!-font-weight-bold">Their conditional release date is: </span>{{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}</p>
       {% elif data.details.sentence.indeterminate %}
         <p>They have an indeterminate prison sentence.</p>
       {% endif %}
 
     <p>You can amend this person's next review date, without creating a new categorisation.</p>
-    <p class="govuk-!-font-weight-bold"  id="existingDateLong">Current review date: {{ getLongDateFormat(date) }}</p>
+    <p id="existingDateLong"><span class="govuk-!-font-weight-bold">Current review date: </span>{{ getLongDateFormat(date) }}</p>
 
   {% else %}
 
