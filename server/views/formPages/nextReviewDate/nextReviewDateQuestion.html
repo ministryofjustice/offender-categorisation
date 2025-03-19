@@ -29,7 +29,7 @@
     {% set isFiveOrMoreYearsAway = featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate | isFiveOrMoreYearsAway %}
 
     {% set inSixMonthsLabel %}
-      {% if isFiveOrMoreYearsAway and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
+      {% if not isFiveOrMoreYearsAway and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
         <span class="govuk-!-font-weight-bold">In 6 months</span><span> (recommended, based on policy)</span>
       {% else %}
         <span class="govuk-!-font-weight-bold">In 6 months time</span>
@@ -37,7 +37,7 @@
     {% endset %}
 
     {% set inTwelveMonthsLabel %}
-      {% if not isFiveOrMoreYearsAway and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
+      {% if isFiveOrMoreYearsAway and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
         <span class="govuk-!-font-weight-bold">In 12 months</span><span> (recommended, based on policy)</span>
       {% else %}
         <span class="govuk-!-font-weight-bold">In 12 months</span>
