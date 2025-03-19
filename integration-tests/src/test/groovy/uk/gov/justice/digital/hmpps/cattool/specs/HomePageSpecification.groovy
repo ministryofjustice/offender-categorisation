@@ -156,7 +156,7 @@ class HomePageSpecification extends AbstractSpecification {
     then: 'The recategoriser home page is displayed'
     at RecategoriserHomePage
     names == ['Pitstop, Penelope B2345XY', 'Tim, Tiny C0001AA', 'Hillmob, Ant B2345YZ', 'Mole, Adrian C0002AA']
-    dates == ['4 days overdue', '3 days overdue', '2 days overdue', TODAY.plusDays(17).format('dd/MM/yyyy')]
+    dates == ['4 days\noverdue', '3 days\noverdue', '2 days\noverdue', TODAY.plusDays(17).format('dd/MM/yyyy')]
     reasons == ['Review due', 'Age 21', 'Review due', 'Age 21']
     statuses == ['Not started', 'Not started', 'Not started', 'Not started']
     poms == ['Engelbert Humperdinck', 'Engelbert Humperdinck', 'Engelbert Humperdinck', 'Engelbert Humperdinck']
