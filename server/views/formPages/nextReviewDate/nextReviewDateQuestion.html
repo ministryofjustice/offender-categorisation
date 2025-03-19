@@ -29,7 +29,7 @@
     {% set isWithinFiveYears = featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate | isWithinFiveYears %}
 
     {% set inSixMonthsLabel %}
-      {% if isWithinFiveYears and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate%}
+      {% if isWithinFiveYears and featurePolicyChangeThreeToFiveEnabled and data.details.sentence.conditionalReleaseDate %}
         <span class="govuk-!-font-weight-bold">In 6 months</span><span> (recommended, based on policy)</span>
       {% else %}
         <span class="govuk-!-font-weight-bold">In 6 months time</span>
