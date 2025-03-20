@@ -365,8 +365,6 @@ module.exports = function Index({ formService, offendersService, userService, au
       const formPageConfig = formConfig.openConditions[form]
       const userInput = clearConditionalFields(req.body)
 
-      console.table({ POST: '/:form/:bookingId' })
-
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
       }
