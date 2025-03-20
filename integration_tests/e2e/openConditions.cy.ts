@@ -1,32 +1,32 @@
-import {CATEGORISER_USER, RECATEGORISER_USER, SUPERVISOR_USER} from '../factory/user'
+import { CATEGORISER_USER, RECATEGORISER_USER, SUPERVISOR_USER } from '../factory/user'
 import STATUS from '../../server/utils/statusEnum'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import { AGENCY_LOCATION } from '../factory/agencyLocation'
-import ProvisionalCategoryPage from "../pages/form/categoriser/provisionalCategory";
-import Page from "../pages/page";
-import TaskListPage from "../pages/taskList/taskList";
-import TprsPage from "../pages/form/openConditions/tprs";
-import EarliestReleaseDatePage from "../pages/form/openConditions/earliestReleaseDate";
-import PreviousSentencesPage from "../pages/form/openConditions/previousSentences";
-import VictimContactSchemePage from "../pages/form/openConditions/victimContactScheme";
-import SexualOffencesPage from "../pages/form/openConditions/sexualOffences";
-import ForeignNationalPage from "../pages/form/openConditions/foreignNational";
-import RiskOfSeriousHarmPage from "../pages/form/openConditions/riskOfSeriousHarm";
-import FurtherChargesPage from "../pages/form/ratings/furtherCharges";
-import RiskLevelsPage from "../pages/form/openConditions/riskLevels";
-import CategoriserReviewCYAPage from "../pages/form/categoriser/review";
-import CategoriserSubmittedPage from "../pages/taskList/categoriserSubmitted";
-import SupervisorHomePage from "../pages/supervisor/home";
-import SupervisorReviewPage from "../pages/form/supervisor/review";
-import SupervisorReviewOutcomePage from "../pages/form/supervisor/outcome";
-import SupervisorDonePage from "../pages/supervisor/done";
-import ApprovedViewPage from "../pages/form/approvedView";
-import CategoriserHomePage from "../pages/categoriser/home";
-import SupervisorMessagePage from "../pages/form/supervisor/message";
-import CategoriserAwaitingApprovalViewPage from "../pages/categoriser/awaitingapproval";
-import OpenConditionsAdded from "../pages/openConditionsAdded";
-import OpenConditionsNotRecommended from "../pages/form/openConditions/notRecommendedPage";
-import ProvisionalCategoryOpenPage from "../pages/form/categoriser/provisionalOpenCategory";
+import ProvisionalCategoryPage from '../pages/form/categoriser/provisionalCategory'
+import Page from '../pages/page'
+import TaskListPage from '../pages/taskList/taskList'
+import TprsPage from '../pages/form/openConditions/tprs'
+import EarliestReleaseDatePage from '../pages/form/openConditions/earliestReleaseDate'
+import PreviousSentencesPage from '../pages/form/openConditions/previousSentences'
+import VictimContactSchemePage from '../pages/form/openConditions/victimContactScheme'
+import SexualOffencesPage from '../pages/form/openConditions/sexualOffences'
+import ForeignNationalPage from '../pages/form/openConditions/foreignNational'
+import RiskOfSeriousHarmPage from '../pages/form/openConditions/riskOfSeriousHarm'
+import FurtherChargesPage from '../pages/form/ratings/furtherCharges'
+import RiskLevelsPage from '../pages/form/openConditions/riskLevels'
+import CategoriserReviewCYAPage from '../pages/form/categoriser/review'
+import CategoriserSubmittedPage from '../pages/taskList/categoriserSubmitted'
+import SupervisorHomePage from '../pages/supervisor/home'
+import SupervisorReviewPage from '../pages/form/supervisor/review'
+import SupervisorReviewOutcomePage from '../pages/form/supervisor/outcome'
+import SupervisorDonePage from '../pages/supervisor/done'
+import ApprovedViewPage from '../pages/form/approvedView'
+import CategoriserHomePage from '../pages/categoriser/home'
+import SupervisorMessagePage from '../pages/form/supervisor/message'
+import CategoriserAwaitingApprovalViewPage from '../pages/categoriser/awaitingapproval'
+import OpenConditionsAdded from '../pages/openConditionsAdded'
+import OpenConditionsNotRecommended from '../pages/form/openConditions/notRecommendedPage'
+import ProvisionalCategoryOpenPage from '../pages/form/categoriser/provisionalOpenCategory'
 
 describe('Open conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -75,25 +75,25 @@ describe('Open conditions', () => {
           },
           furtherCharges: {
             furtherCharges: 'Yes',
-            furtherChargesText: 'some charges'
+            furtherChargesText: 'some charges',
           },
           violenceRating: {
             highRiskOfViolence: 'No',
-            seriousThreat: 'Yes'
+            seriousThreat: 'Yes',
           },
           escapeRating: {
             escapeOtherEvidence: 'Yes',
             escapeOtherEvidenceText: 'evidence details',
             escapeCatB: 'Yes',
-            escapeCatBText: 'cat b details'
+            escapeCatBText: 'cat b details',
           },
           extremismRating: {
-            previousTerrorismOffences: 'Yes'
+            previousTerrorismOffences: 'Yes',
           },
           nextReviewDate: {
-            date: '14/12/2019'
-          }
-        }
+            date: '14/12/2019',
+          },
+        },
       },
       securityReviewedBy: null,
       securityReviewedDate: null,
@@ -127,37 +127,50 @@ describe('Open conditions', () => {
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.continueButton().click()
 
-    tprsPage.validateErrorSummaryMessages([
-      { index: 0, href: '#tprsSelected', text: 'Please select yes or no' }
-    ])
+    tprsPage.validateErrorSummaryMessages([{ index: 0, href: '#tprsSelected', text: 'Please select yes or no' }])
 
     tprsPage.validateErrorMessages([{ selector: '#tprsSelected-error', text: 'Please select yes or no' }])
     tprsPage.selectTprsRadioButton('YES')
     tprsPage.continueButton().click()
 
     const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
+
+    cy.intercept('GET', '/form/openConditions/earliestReleaseDate/*', req => {
+      req.query.overrideFeatureFlag = 'false'
+    }).as('earliestReleaseDate')
     earliestReleasePage.continueButton().click()
+    cy.wait('@earliestReleaseDate')
+    earliestReleasePage.assertTextVisibilityOnPage({
+      selector: 'div',
+      text: 'Is it 3 or more years to their earliest release date?',
+    })
+    earliestReleasePage.assertTextVisibilityOnPage({
+      selector: 'div',
+      text: 'If they have 3 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now. In this case:',
+    })
+
+    cy.contains('div', 'break').should('be.visible')
 
     earliestReleasePage.validateErrorSummaryMessages([
-      { index: 0, href: '#threeOrMoreYears', text: 'Please select yes or no' }
+      { index: 0, href: '#threeOrMoreYears', text: 'Please select yes or no' },
     ])
-    earliestReleasePage.validateErrorMessages([{ selector: '#threeOrMoreYears-error', text: 'Please select yes or no' }])
+    earliestReleasePage.validateErrorMessages([
+      { selector: '#threeOrMoreYears-error', text: 'Please select yes or no' },
+    ])
 
     earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
     earliestReleasePage.continueButton().click()
 
-    earliestReleasePage.validateErrorSummaryMessages([
-      { index: 0, href: '#justify', text: 'Please select yes or no' }
-    ])
+    earliestReleasePage.validateErrorSummaryMessages([{ index: 0, href: '#justify', text: 'Please select yes or no' }])
     earliestReleasePage.validateErrorMessages([{ selector: '#justify-error', text: 'Please select yes or no' }])
 
     earliestReleasePage.selectJustifyRadioButton('YES')
     earliestReleasePage.continueButton().click()
 
-    earliestReleasePage.validateErrorSummaryMessages([
-      { index: 0, href: '#justifyText', text: 'Please enter details' }
+    earliestReleasePage.validateErrorSummaryMessages([{ index: 0, href: '#justifyText', text: 'Please enter details' }])
+    earliestReleasePage.validateErrorMessages([
+      { selector: '#justifyText-error', text: '\n        \n        Error: Please enter details\n        \n      ' },
     ])
-    earliestReleasePage.validateErrorMessages([{ selector: '#justifyText-error', text: '\n        \n        Error: Please enter details\n        \n      ' }])
     earliestReleasePage.setJustifyOpenConditionsTextInput('justify details text')
     earliestReleasePage.continueButton().click()
 
@@ -169,23 +182,42 @@ describe('Open conditions', () => {
     victimContactSchemePage.continueButton().click()
 
     victimContactSchemePage.validateErrorSummaryMessages([
-      { index: 0, href: '#vcsOptedFor', text: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme' }
+      {
+        index: 0,
+        href: '#vcsOptedFor',
+        text: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme',
+      },
     ])
-    victimContactSchemePage.validateErrorMessages([{ selector: '#vcsOptedFor-error', text: '\n      \n      Error: Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme\n      \n    ' }])
+    victimContactSchemePage.validateErrorMessages([
+      {
+        selector: '#vcsOptedFor-error',
+        text: '\n      \n      Error: Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme\n      \n    ',
+      },
+    ])
     victimContactSchemePage.selectVictimContactSchemeRadioButton('YES')
     victimContactSchemePage.continueButton().click()
 
     victimContactSchemePage.validateErrorSummaryMessages([
-      { index: 0, href: '#contactedVLO', text: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)' }
+      { index: 0, href: '#contactedVLO', text: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)' },
     ])
-    victimContactSchemePage.validateErrorMessages([{ selector: '#contactedVLO-error', text: '\n        \n        Error: Select Yes if you have contacted the Victim Liaison Officer (VLO)\n        \n      ' }])
+    victimContactSchemePage.validateErrorMessages([
+      {
+        selector: '#contactedVLO-error',
+        text: '\n        \n        Error: Select Yes if you have contacted the Victim Liaison Officer (VLO)\n        \n      ',
+      },
+    ])
     victimContactSchemePage.selectContactedVictimLiaisonOfficerRadioButton('YES')
     victimContactSchemePage.continueButton().click()
 
     victimContactSchemePage.validateErrorSummaryMessages([
-      { index: 0, href: '#vloResponseText', text: 'Enter the response from the Victim Liaison Officer (VLO)' }
+      { index: 0, href: '#vloResponseText', text: 'Enter the response from the Victim Liaison Officer (VLO)' },
     ])
-    victimContactSchemePage.validateErrorMessages([{ selector: '#vloResponseText-error', text: '\n        \n        Error: Enter the response from the Victim Liaison Officer (VLO)\n        \n      ' }])
+    victimContactSchemePage.validateErrorMessages([
+      {
+        selector: '#vloResponseText-error',
+        text: '\n        \n        Error: Enter the response from the Victim Liaison Officer (VLO)\n        \n      ',
+      },
+    ])
     victimContactSchemePage.setVictimLiaisonOfficerResponseTextInput('vlo response details text')
     victimContactSchemePage.continueButton().click()
 
@@ -197,32 +229,49 @@ describe('Open conditions', () => {
     foreignNationalPage.continueButton().click()
 
     foreignNationalPage.validateErrorSummaryMessages([
-      { index: 0, href: '#isForeignNational', text: 'Please select yes or no' }
+      { index: 0, href: '#isForeignNational', text: 'Please select yes or no' },
     ])
-    foreignNationalPage.validateErrorMessages([{ selector: '#isForeignNational-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' }])
+    foreignNationalPage.validateErrorMessages([
+      { selector: '#isForeignNational-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' },
+    ])
     foreignNationalPage.selectForeignNationalRadioButton('YES')
     foreignNationalPage.continueButton().click()
 
     foreignNationalPage.validateErrorSummaryMessages([
-      { index: 0, href: '#formCompleted', text: 'Please select yes or no' }
+      { index: 0, href: '#formCompleted', text: 'Please select yes or no' },
     ])
-    foreignNationalPage.validateErrorMessages([{ selector: '#formCompleted-error', text: '\n        \n        Error: Please select yes or no\n        \n      ' }])
+    foreignNationalPage.validateErrorMessages([
+      {
+        selector: '#formCompleted-error',
+        text: '\n        \n        Error: Please select yes or no\n        \n      ',
+      },
+    ])
 
     foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('YES')
     foreignNationalPage.continueButton().click()
 
     foreignNationalPage.validateErrorSummaryMessages([
-      { index: 0, href: '#dueDeported', text: 'Please select yes or no' }
+      { index: 0, href: '#dueDeported', text: 'Please select yes or no' },
     ])
-        foreignNationalPage.validateErrorMessages([{ selector: '#dueDeported-error', text: '\n          \n          Error: Please select yes or no\n          \n        ' }])
+    foreignNationalPage.validateErrorMessages([
+      {
+        selector: '#dueDeported-error',
+        text: '\n          \n          Error: Please select yes or no\n          \n        ',
+      },
+    ])
 
     foreignNationalPage.selectLiabilityToBeDeportedRadioButton('YES')
     foreignNationalPage.continueButton().click()
 
     foreignNationalPage.validateErrorSummaryMessages([
-      { index: 0, href: '#exhaustedAppeal', text: 'Please select yes or no' }
+      { index: 0, href: '#exhaustedAppeal', text: 'Please select yes or no' },
     ])
-    foreignNationalPage.validateErrorMessages([{ selector: '#exhaustedAppeal-error', text: '\n            \n            Error: Please select yes or no\n            \n          ' }])
+    foreignNationalPage.validateErrorMessages([
+      {
+        selector: '#exhaustedAppeal-error',
+        text: '\n            \n            Error: Please select yes or no\n            \n          ',
+      },
+    ])
 
     foreignNationalPage.selectExhaustedAppealRadioButton('NO')
     foreignNationalPage.continueButton().click()
@@ -230,9 +279,9 @@ describe('Open conditions', () => {
     const riskOfSeriousHarmPage = Page.verifyOnPage(RiskOfSeriousHarmPage)
     riskOfSeriousHarmPage.continueButton().click()
     riskOfSeriousHarmPage.validateErrorSummaryMessages([
-      { index: 0, href: '#seriousHarm', text: 'Please select yes or no' }
+      { index: 0, href: '#seriousHarm', text: 'Please select yes or no' },
     ])
-/*
+    /*
     riskOfSeriousHarmPage.validateErrorMessages([{ selector: '#seriousHarm-error', text: '\n            \n            Error: Please select yes or no\n            \n          ' }])
 */
 
@@ -240,16 +289,18 @@ describe('Open conditions', () => {
     riskOfSeriousHarmPage.continueButton().click()
 
     riskOfSeriousHarmPage.validateErrorSummaryMessages([
-      { index: 0, href: '#harmManaged', text: 'Please select yes or no' }
+      { index: 0, href: '#harmManaged', text: 'Please select yes or no' },
     ])
-    riskOfSeriousHarmPage.validateErrorMessages([{ selector: '#harmManaged-error', text: '\n        \n        Error: Please select yes or no\n        \n      ' }])
+    riskOfSeriousHarmPage.validateErrorMessages([
+      { selector: '#harmManaged-error', text: '\n        \n        Error: Please select yes or no\n        \n      ' },
+    ])
 
     riskOfSeriousHarmPage.selectManageInOpenConditionsRadioButton('YES')
     riskOfSeriousHarmPage.continueButton().click()
     riskOfSeriousHarmPage.validateErrorSummaryMessages([
-      { index: 0, href: '#harmManagedText', text: 'Please enter details' }
+      { index: 0, href: '#harmManagedText', text: 'Please enter details' },
     ])
-/*
+    /*
     riskOfSeriousHarmPage.validateErrorMessages([{ selector: '#harmManagedText-error', text: '\n        \n        Error: Please select yes or no\n        \n      ' }])
 */
     riskOfSeriousHarmPage.setManageRiskTextInput('harmManagedText details')
@@ -261,10 +312,11 @@ describe('Open conditions', () => {
 
     furtherChargesPage.validateErrorSummaryMessages([
       { index: 0, href: '#furtherChargesText', text: 'Please enter details' },
-      { index: 1, href: '#increasedRisk', text: 'Please select yes or no' }
+      { index: 1, href: '#increasedRisk', text: 'Please select yes or no' },
     ])
-    furtherChargesPage.validateErrorMessages([{ selector: '#furtherChargesText-error', text: '\n    \n    Error: Please enter details\n    \n  ' },
-    { selector: '#increasedRisk-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' }
+    furtherChargesPage.validateErrorMessages([
+      { selector: '#furtherChargesText-error', text: '\n    \n    Error: Please enter details\n    \n  ' },
+      { selector: '#increasedRisk-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' },
     ])
     furtherChargesPage.setFurtherChargesCategoryBAppropriateText('furtherChargesText details')
     furtherChargesPage.continue().click()
@@ -276,16 +328,20 @@ describe('Open conditions', () => {
     riskLevelsPage.continueButton().click()
 
     riskLevelsPage.validateErrorSummaryMessages([
-      { index: 0, href: '#likelyToAbscond', text: 'Please select yes or no' }
+      { index: 0, href: '#likelyToAbscond', text: 'Please select yes or no' },
     ])
-    riskOfSeriousHarmPage.validateErrorMessages([{ selector: '#likelyToAbscond-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' }])
+    riskOfSeriousHarmPage.validateErrorMessages([
+      { selector: '#likelyToAbscond-error', text: '\n      \n      Error: Please select yes or no\n      \n    ' },
+    ])
     riskLevelsPage.selectRiskLevelsRadioButton('YES')
     riskLevelsPage.continueButton().click()
 
     riskLevelsPage.validateErrorSummaryMessages([
-      { index: 0, href: '#likelyToAbscondText', text: 'Please enter details' }
+      { index: 0, href: '#likelyToAbscondText', text: 'Please enter details' },
     ])
-    riskOfSeriousHarmPage.validateErrorMessages([{ selector: '#likelyToAbscondText-error', text: '\n      \n      Error: Please enter details\n      \n    ' }])
+    riskOfSeriousHarmPage.validateErrorMessages([
+      { selector: '#likelyToAbscondText-error', text: '\n      \n      Error: Please enter details\n      \n    ' },
+    ])
     riskLevelsPage.setLikelyToAbscondTextInput('likelyToAbscondText details')
     riskLevelsPage.continueButton().click()
 
@@ -300,7 +356,7 @@ describe('Open conditions', () => {
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345XY', 'B2345YZ'],
       bookingIds: [11, 12],
-      startDates: [(new Date()).setDate(new Date().getDate() - 4), (new Date()).setDate(new Date().getDate() - 1)],
+      startDates: [new Date().setDate(new Date().getDate() - 4), new Date().setDate(new Date().getDate() - 1)],
     })
 
     const taskListPage1 = Page.verifyOnPage(TaskListPage)
@@ -313,7 +369,10 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateOffendingHistorySummary([
       { question: 'Previous Cat A, Restricted.', expectedAnswer: 'Cat A (2012)' },
-      { question: 'Previous convictions on NOMIS', expectedAnswer: 'Libel (21/02/2019) Slander (22/02/2019 - 24/02/2019) Undated offence' },
+      {
+        question: 'Previous convictions on NOMIS',
+        expectedAnswer: 'Libel (21/02/2019) Slander (22/02/2019 - 24/02/2019) Undated offence',
+      },
       { question: 'Relevant convictions on PNC', expectedAnswer: 'Yes some convictions' },
     ])
 
@@ -333,19 +392,130 @@ describe('Open conditions', () => {
       { question: 'Escape list', expectedAnswer: 'Yes' },
       { question: 'Escape alerts', expectedAnswer: 'Yes' },
       { question: 'Any other information that they pose an escape risk', expectedAnswer: 'Yes evidence details' },
-      { question: 'Any further details', expectedAnswer: 'Yes cat b details' }])
+      { question: 'Any further details', expectedAnswer: 'Yes cat b details' },
+    ])
 
     categoriserReviewCYAPage.validateExtremismRatingSummary([
       { question: 'Identified at risk of engaging in, or vulnerable to, extremism', expectedAnswer: 'Yes' },
-      { question: 'Offences under terrorism legislation', expectedAnswer: 'Yes' }])
+      { question: 'Offences under terrorism legislation', expectedAnswer: 'Yes' },
+    ])
 
     categoriserReviewCYAPage.validateSecurityInputSummary([
       { question: 'Automatic referral to security team', expectedAnswer: 'No' },
       { question: 'Manual referral to security team', expectedAnswer: 'No' },
-      { question: 'Flagged by security team', expectedAnswer: 'No' }])
+      { question: 'Flagged by security team', expectedAnswer: 'No' },
+    ])
 
     categoriserReviewCYAPage.validateNextReviewDateSummary([
-      { question: 'What date should they be reviewed by?', expectedAnswer: 'Saturday 14 December 2019' }])
+      { question: 'What date should they be reviewed by?', expectedAnswer: 'Saturday 14 December 2019' },
+    ])
+  })
+
+  it('should show correct strings for 3 to 5 policy change', () => {
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      bookingId: 12,
+      nomisSequenceNumber: 1,
+      catType: CATEGORISATION_TYPE.INITIAL,
+      offenderNo: 'dummy',
+      sequenceNumber: 1,
+      status: STATUS.SECURITY_BACK.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: new Date(),
+      formResponse: {
+        categoriser: {
+          provisionalCategory: {
+            suggestedCategory: 'C',
+            overriddenCategory: 'D',
+            categoryAppropriate: 'No',
+            overriddenCategoryText: 'over ridden category text',
+          },
+        },
+        ratings: {
+          offendingHistory: {
+            previousConvictions: 'Yes',
+            previousConvictionsText: 'some convictions',
+          },
+          securityInput: {
+            securityInputNeeded: 'No',
+          },
+          furtherCharges: {
+            furtherCharges: 'Yes',
+            furtherChargesText: 'some charges',
+          },
+          violenceRating: {
+            highRiskOfViolence: 'No',
+            seriousThreat: 'Yes',
+          },
+          escapeRating: {
+            escapeOtherEvidence: 'Yes',
+            escapeOtherEvidenceText: 'evidence details',
+            escapeCatB: 'Yes',
+            escapeCatBText: 'cat b details',
+          },
+          extremismRating: {
+            previousTerrorismOffences: 'Yes',
+          },
+          nextReviewDate: {
+            date: '14/12/2019',
+          },
+        },
+      },
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      assignedUserId: null,
+      approvedBy: SUPERVISOR_USER.username,
+    })
+    setUpStubs()
+
+    setUpProfiles()
+
+    cy.stubLogin({
+      user: CATEGORISER_USER,
+    })
+    cy.signIn()
+    cy.visit(`/${ProvisionalCategoryPage.baseUrl}/12`)
+    const provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
+    provisionalCategoryPage.appropriateNo().click()
+    provisionalCategoryPage.overriddenCategoryD().click()
+    provisionalCategoryPage.setOverriddenCategoryText('categoriser override to D comment')
+    provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
+    provisionalCategoryPage.submitButton().click()
+
+    // Open Conditions Added Page
+    const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
+    openConditionsAddedPage.returnToTasklistButton(12).click()
+
+    const taskListPage = TaskListPage.createForBookingId(12)
+    taskListPage.openConditionsButton().should('exist')
+    taskListPage.openConditionsButton().click()
+
+    const tprsPage = Page.verifyOnPage(TprsPage)
+    tprsPage.continueButton().click()
+
+    tprsPage.validateErrorSummaryMessages([{ index: 0, href: '#tprsSelected', text: 'Please select yes or no' }])
+
+    tprsPage.validateErrorMessages([{ selector: '#tprsSelected-error', text: 'Please select yes or no' }])
+    tprsPage.selectTprsRadioButton('YES')
+    tprsPage.continueButton().click()
+
+    const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
+
+    cy.intercept('GET', '/form/openConditions/earliestReleaseDate/*', req => {
+      req.query.overrideFeatureFlag = 'true'
+    }).as('earliestReleaseDate')
+    earliestReleasePage.continueButton().click()
+    cy.wait('@earliestReleaseDate')
+    earliestReleasePage.assertTextVisibilityOnPage({
+      selector: 'div',
+      text: 'Is it 5 or more years to their earliest release date?',
+    })
+    earliestReleasePage.assertTextVisibilityOnPage({
+      selector: 'div',
+      text: 'If they have 5 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now.',
+    })
+
+    cy.contains('div', 'break').should('be.visible')
   })
 
   it('The happy path is correct for categoriser overriding to D, all no', () => {
@@ -378,25 +548,25 @@ describe('Open conditions', () => {
           },
           furtherCharges: {
             furtherCharges: 'Yes',
-            furtherChargesText: 'some charges'
+            furtherChargesText: 'some charges',
           },
           violenceRating: {
             highRiskOfViolence: 'No',
-            seriousThreat: 'Yes'
+            seriousThreat: 'Yes',
           },
           escapeRating: {
             escapeOtherEvidence: 'Yes',
             escapeOtherEvidenceText: 'evidence details',
             escapeCatB: 'Yes',
-            escapeCatBText: 'cat b details'
+            escapeCatBText: 'cat b details',
           },
           extremismRating: {
-            previousTerrorismOffences: 'Yes'
+            previousTerrorismOffences: 'Yes',
           },
           nextReviewDate: {
-            date: '14/12/2019'
-          }
-        }
+            date: '14/12/2019',
+          },
+        },
       },
       securityReviewedBy: null,
       securityReviewedDate: null,
@@ -434,7 +604,10 @@ describe('Open conditions', () => {
     const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.validateOffendingHistorySummary([
       { question: 'Previous Cat A, Restricted.', expectedAnswer: 'Cat A (2012)' },
-      { question: 'Previous convictions on NOMIS', expectedAnswer: 'Libel (21/02/2019) Slander (22/02/2019 - 24/02/2019) Undated offence' },
+      {
+        question: 'Previous convictions on NOMIS',
+        expectedAnswer: 'Libel (21/02/2019) Slander (22/02/2019 - 24/02/2019) Undated offence',
+      },
       { question: 'Relevant convictions on PNC', expectedAnswer: 'Yes some convictions' },
     ])
 
@@ -454,19 +627,23 @@ describe('Open conditions', () => {
       { question: 'Escape list', expectedAnswer: 'Yes' },
       { question: 'Escape alerts', expectedAnswer: 'Yes' },
       { question: 'Any other information that they pose an escape risk', expectedAnswer: 'Yes evidence details' },
-      { question: 'Any further details', expectedAnswer: 'Yes cat b details' }])
+      { question: 'Any further details', expectedAnswer: 'Yes cat b details' },
+    ])
 
     categoriserReviewCYAPage.validateExtremismRatingSummary([
       { question: 'Identified at risk of engaging in, or vulnerable to, extremism', expectedAnswer: 'Yes' },
-      { question: 'Offences under terrorism legislation', expectedAnswer: 'Yes' }])
+      { question: 'Offences under terrorism legislation', expectedAnswer: 'Yes' },
+    ])
 
     categoriserReviewCYAPage.validateSecurityInputSummary([
       { question: 'Automatic referral to security team', expectedAnswer: 'No' },
       { question: 'Manual referral to security team', expectedAnswer: 'No' },
-      { question: 'Flagged by security team', expectedAnswer: 'No' }])
+      { question: 'Flagged by security team', expectedAnswer: 'No' },
+    ])
 
     categoriserReviewCYAPage.validateNextReviewDateSummary([
-      { question: 'What date should they be reviewed by?', expectedAnswer: 'Saturday 14 December 2019' }])
+      { question: 'What date should they be reviewed by?', expectedAnswer: 'Saturday 14 December 2019' },
+    ])
 
     categoriserReviewCYAPage.validateEarliestReleaseDateSummary([
       { question: 'Earliest release date', expectedAnswer: '' },
@@ -505,7 +682,7 @@ describe('Open conditions', () => {
     categoriserReviewCYAPage.validateRiskOfHarmSummary([
       { question: 'Risk of serious harm', expectedAnswer: '' },
       { question: 'Risk of serious harm to the public?', expectedAnswer: 'No' },
-      { question: 'Can this risk be managed?', expectedAnswer: 'Not applicable' }
+      { question: 'Can this risk be managed?', expectedAnswer: 'Not applicable' },
     ])
 
     categoriserReviewCYAPage.validateFurtherChargesOpenSummary([
@@ -517,11 +694,12 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateRiskLevelSummary([
       { question: 'Risk of escaping or absconding', expectedAnswer: '' },
-      { question: 'Likely to abscond or abuse open conditions?', expectedAnswer: 'No' }])
+      { question: 'Likely to abscond or abuse open conditions?', expectedAnswer: 'No' },
+    ])
 
     categoriserReviewCYAPage.continueButton().click()
 
-    provisionalCategoryPage.indeterminateWarning().should("not.exist")
+    provisionalCategoryPage.indeterminateWarning().should('not.exist')
     provisionalCategoryPage.warning().contains('The provisional category is open')
 
     cy.task('stubCategorise', {
@@ -536,7 +714,6 @@ describe('Open conditions', () => {
 
     provisionalCategoryPage.openConditionsAppropriateYes().click()
     provisionalCategoryPage.submitButton().click()
-
   })
 
   it('categoriser overriding to D, supervisor overrides to C', () => {
@@ -569,25 +746,25 @@ describe('Open conditions', () => {
           },
           furtherCharges: {
             furtherCharges: 'Yes',
-            furtherChargesText: 'some charges'
+            furtherChargesText: 'some charges',
           },
           violenceRating: {
             highRiskOfViolence: 'No',
-            seriousThreat: 'Yes'
+            seriousThreat: 'Yes',
           },
           escapeRating: {
             escapeOtherEvidence: 'Yes',
             escapeOtherEvidenceText: 'evidence details',
             escapeCatB: 'Yes',
-            escapeCatBText: 'cat b details'
+            escapeCatBText: 'cat b details',
           },
           extremismRating: {
-            previousTerrorismOffences: 'Yes'
+            previousTerrorismOffences: 'Yes',
           },
           nextReviewDate: {
-            date: '14/12/2019'
-          }
-        }
+            date: '14/12/2019',
+          },
+        },
       },
       securityReviewedBy: null,
       securityReviewedDate: null,
@@ -634,7 +811,7 @@ describe('Open conditions', () => {
       nextReviewDate: '2019-12-14',
       comment: 'comment',
       placementAgencyId: 'LEI',
-      sequenceNumber: 5
+      sequenceNumber: 5,
     })
 
     cy.task('stubCategoriseUpdate', {
@@ -687,7 +864,7 @@ describe('Open conditions', () => {
     supervisorHomePage1.doneTabLink().click()
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
-    supervisorDonePage.viewApprovedPrisonerButton({bookingId: 12, sequenceNumber: 5}).click()
+    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 5 }).click()
 
     const approvedViewPage = Page.verifyOnPage(ApprovedViewPage)
     approvedViewPage.validateCategorisationWarnings([
@@ -732,23 +909,23 @@ describe('Open conditions', () => {
             securityInputNeeded: 'No',
           },
           furtherCharges: {
-            furtherCharges: 'No'
+            furtherCharges: 'No',
           },
           violenceRating: {
             highRiskOfViolence: 'No',
-            seriousThreat: 'No'
+            seriousThreat: 'No',
           },
 
           escapeRating: {
-            escapeOtherEvidence: 'No'
+            escapeOtherEvidence: 'No',
           },
           extremismRating: {
-            previousTerrorismOffences: 'No'
+            previousTerrorismOffences: 'No',
           },
           nextReviewDate: {
-            date: '14/12/2019'
-          }
-        }
+            date: '14/12/2019',
+          },
+        },
       },
       securityReviewedBy: null,
       securityReviewedDate: null,
@@ -791,7 +968,7 @@ describe('Open conditions', () => {
     CategoriserSubmittedPage.createForBookingId(12)
     Page.verifyOnPage(CategoriserSubmittedPage)
 
-    provisionalCategoryPage.signOut().click();
+    provisionalCategoryPage.signOut().click()
 
     cy.task('stubUncategorisedAwaitingApproval')
     cy.stubLogin({
@@ -815,7 +992,7 @@ describe('Open conditions', () => {
     supervisorReviewPage2.enterOverrideReason('super overriding C to D reason text')
     supervisorReviewPage2.enterOtherInformationText('super other info 1')
     supervisorReviewPage2.submitButton().click()
-/*
+    /*
     supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
 */
 
@@ -867,7 +1044,7 @@ describe('Open conditions', () => {
       category: 'C',
       increasedRisk: false,
       notifyRegionalCTLead: false,
-      previousOffences: false
+      previousOffences: false,
     })
 
     taskListPage2.openConditionsButton().should('exist')
@@ -921,7 +1098,7 @@ describe('Open conditions', () => {
     supHomePage1.doneTabLink().click()
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
-    supervisorDonePage.viewApprovedPrisonerButton({bookingId: 12, sequenceNumber: 5}).click()
+    supervisorDonePage.viewApprovedPrisonerButton({ bookingId: 12, sequenceNumber: 5 }).click()
 
     const approvedViewPage = Page.verifyOnPage(ApprovedViewPage)
 
@@ -932,15 +1109,15 @@ describe('Open conditions', () => {
     ])
 
     approvedViewPage.validatePreviousSupervisorComments({
-      expectedComments: 'super overriding C to D reason text'
+      expectedComments: 'super overriding C to D reason text',
     })
 
     approvedViewPage.validateOtherSupervisorComments({
-      expectedComments: 'super other info 1'
+      expectedComments: 'super other info 1',
     })
 
     approvedViewPage.otherInformationSummary().contains('categoriser relevant info for accept')
-/*
+    /*
     approvedViewPage.commentLabel().size() == 1
 */
   })
@@ -998,7 +1175,7 @@ describe('Open conditions', () => {
       category: 'C',
       increasedRisk: true,
       notifyRegionalCTLead: false,
-      previousOffences: true
+      previousOffences: true,
     })
   }
 
@@ -1046,4 +1223,4 @@ describe('Open conditions', () => {
     riskLevelsPage.selectRiskLevelsRadioButton('NO')
     riskLevelsPage.continueButton().click()
   }
-  })
+})

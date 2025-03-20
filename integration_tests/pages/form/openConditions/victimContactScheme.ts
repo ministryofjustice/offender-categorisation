@@ -50,7 +50,7 @@ export default class VictimContactSchemePage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: VictimContactSchemeChoiceValues
+      href: VictimContactSchemeChoiceValues | string // FIXME
       text: string
     }[]
   ) {
