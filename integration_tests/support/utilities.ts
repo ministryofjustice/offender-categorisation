@@ -40,7 +40,7 @@ export const calculateOverdueText: any = (sentenceDate: string) => {
 
   if (reviewDate.isBefore(today)) {
     const daysOverdue = today.diff(reviewDate, 'days')
-    return daysOverdue === 1 ? '1 day overdue' : `${daysOverdue} days overdue`
+    return daysOverdue === 1 ? '1 dayoverdue' : `${daysOverdue} daysoverdue`
   }
 
   return dateRequired
