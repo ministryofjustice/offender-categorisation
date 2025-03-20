@@ -67,7 +67,7 @@
           {% set dueDateColumn %}
             {% if review.overdue %}
               {{ govukTag({
-              text: review.overdueText,
+              html: review.overdueText + '<br>overdue',
               classes: 'govuk-tag--red',
               attributes: { 'title': 'Due date: ' + review.nextReviewDateDisplay }
               }) }}
@@ -112,8 +112,9 @@
           {% endset %}
           {% set reCategorisationReviews = (reCategorisationReviews.push([
           {
-          html: dueDateColumn,
-          attributes: { "data-sort-value": review.nextReviewDateDisplay | sortDateValue}
+            html: dueDateColumn,
+            attributes: { "data-sort-value": review.nextReviewDateDisplay | sortDateValue},
+            classes: 'text-inline'
           },
           {
           html: nameColumn,
