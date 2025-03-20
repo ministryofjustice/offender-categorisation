@@ -96,7 +96,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         .validate(req.query, { stripUnknown: true, abortEarly: false })
       if (validation.error) {
         logger.error('Invalid reason for open conditions not suitable.', validation.error)
-        return res.render('pages/error', {
+        res.render('pages/error', {
           message: 'Invalid not suitable for open conditions reason',
         })
       }
