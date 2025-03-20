@@ -151,6 +151,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+    const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change
 
     return {
       data: { ...pageData, details },
@@ -160,6 +161,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       catType: formData.catType,
       backLink,
       errors,
+      featurePolicyChangeThreeToFiveEnabled,
     }
   }
 
@@ -362,6 +364,8 @@ module.exports = function Index({ formService, offendersService, userService, au
       const section = 'openConditions'
       const formPageConfig = formConfig.openConditions[form]
       const userInput = clearConditionalFields(req.body)
+
+      console.table({ POST: '/:form/:bookingId' })
 
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return

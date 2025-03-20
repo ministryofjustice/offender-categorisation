@@ -50,7 +50,7 @@ export default class EarliestReleaseDatePage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: EarliestReleaseDateChoiceValues
+      href: EarliestReleaseDateChoiceValues | string // FIXME
       text: string
     }[]
   ) {

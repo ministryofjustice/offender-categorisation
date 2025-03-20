@@ -50,7 +50,7 @@ export default class RiskOfSeriousHarmPage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: RiskOfSeriousHarmChoiceValues
+      href: RiskOfSeriousHarmChoiceValues | string // FIXME
       text: string
     }[]
   ) {

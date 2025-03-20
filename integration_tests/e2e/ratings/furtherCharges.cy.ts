@@ -159,7 +159,7 @@ describe('Further Charges', () => {
       })
 
       describe("it should handle a 'yes' choice", () => {
-        it.only('should handle when Category B is appropriate', () => {
+        it('should handle when Category B is appropriate', () => {
           furtherChargesPage = FurtherChargesPage.createForBookingId(bookingId)
           furtherChargesPage.selectFurtherChargesRadioButton('YES')
           furtherChargesPage.selectFurtherChargesCategoryBAppropriateRadioButton('YES')
