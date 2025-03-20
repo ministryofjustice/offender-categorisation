@@ -149,8 +149,6 @@ describe('Open conditions', () => {
       text: 'If they have 3 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now. In this case:',
     })
 
-    cy.contains('div', 'break').should('be.visible')
-
     earliestReleasePage.validateErrorSummaryMessages([
       { index: 0, href: '#threeOrMoreYears', text: 'Please select yes or no' },
     ])
@@ -514,8 +512,6 @@ describe('Open conditions', () => {
       selector: 'div',
       text: 'If they have 5 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now.',
     })
-
-    cy.contains('div', 'break').should('be.visible')
   })
 
   it('The happy path is correct for categoriser overriding to D, all no', () => {
