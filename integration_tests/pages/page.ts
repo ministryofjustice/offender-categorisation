@@ -75,8 +75,6 @@ export default abstract class Page {
 
   assertTextVisibilityOnPage = (options: TextVisibilityOptions): PageElement => {
     const { selector, text, isVisible = true } = options
-
-    console.table(options)
     const visibilityAssertion = isVisible ? 'be.visible' : 'not.exist'
 
     return cy.contains(selector, text).should(visibilityAssertion)
