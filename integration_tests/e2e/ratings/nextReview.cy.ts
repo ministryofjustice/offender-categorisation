@@ -17,7 +17,6 @@ import supervisorChangeFixture from '../../fixtures/ratings/nextReview/superviso
 import dbSeeder from '../../fixtures/db-seeder'
 import { NextReviewChangeHistoryDbRow } from '../../db/queries'
 import ErrorPage from '../../pages/error/error'
-import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorLandingPage from '../../pages/supervisor/landing'
 
 const EXPECTED_DATE_FORMAT_FRONT_END = 'D/M/yyyy'
@@ -85,9 +84,19 @@ describe('Next Review', () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
+
+      cy.intercept('GET', '/form/nextReviewDate/nextReviewDateQuestion/*', req => {
+        req.query.overrideFeatureFlag = 'false'
+      }).as('nextReviewDateQuestion')
       taskListPage.nextReviewDateButton().click()
+      cy.wait('@nextReviewDateQuestion')
 
       nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
+      nextReviewQuestionPage.assertTextVisibilityOnPage({
+        selector: 'div',
+        text: 'is 5 or more years away, they must be reviewed every 12 months',
+        isVisible: false,
+      })
     })
 
     describe('invalid', () => {
@@ -121,6 +130,44 @@ describe('Next Review', () => {
           nextReviewConfirmationPage.checkOnPage()
           nextReviewConfirmationPage.checkPageUrl(NextReviewConfirmationPage.baseUrl)
         })
+      })
+    })
+  })
+
+  describe('step 1 - when should they next be reviewed? 3 to 5 policy change', () => {
+    beforeEach(() => {
+      cy.stubLogin({ user: CATEGORISER_USER })
+      cy.signIn()
+
+      categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
+
+      taskListPage = TaskListPage.createForBookingId(bookingId)
+
+      cy.intercept('GET', '/form/nextReviewDate/nextReviewDateQuestion/*', req => {
+        req.query.overrideFeatureFlag = 'true'
+      }).as('nextReviewDateQuestion')
+      taskListPage.nextReviewDateButton().click()
+      cy.wait('@nextReviewDateQuestion')
+
+      nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
+      nextReviewQuestionPage.assertTextVisibilityOnPage({
+        selector: 'div',
+        text: 'is 5 or more years away, they must be reviewed every 12 months',
+      })
+    })
+
+    describe('invalid', () => {
+      it('should show a validation error on empty form submission 3 to 5 policy change', () => {
+        nextReviewQuestionPage.continueButton().click()
+
+        nextReviewQuestionPage.validateErrorSummaryMessages([
+          { index: 0, href: '#nextDateChoice', text: 'Please select a choice' },
+        ])
+
+        nextReviewQuestionPage.validateErrorMessages([
+          { selector: '#nextDateChoice-error', text: 'Please select a choice' },
+        ])
       })
     })
   })
@@ -277,9 +324,10 @@ describe('Next Review', () => {
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
           nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
-          nextReviewStandalonePage.validateExistingPartialReviewGuidance(
-            'Determinate prison sentence with three or more years left in custody'
-          )
+          nextReviewStandalonePage.assertTextVisibilityOnPage({
+            selector: 'div',
+            text: 'Determinate prison sentence with three or more years left in custody',
+          })
         })
 
         it('should reject an empty form submission', () => {
@@ -376,9 +424,10 @@ describe('Next Review', () => {
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
           nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
-          nextReviewStandalonePage.validateExistingPartialReviewGuidance(
-            'Determinate sentence with 5 or more years left in custody'
-          )
+          nextReviewStandalonePage.assertTextVisibilityOnPage({
+            selector: 'div',
+            text: 'Determinate sentence with 5 or more years left in custody',
+          })
         })
 
         it('should reject an empty form submission with 3 to 5 policy feature flag', () => {
@@ -423,14 +472,8 @@ describe('Next Review', () => {
           dbSeeder(supervisorChangeFixture)
 
           cy.task('stubUncategorisedAwaitingApproval')
-
-          cy.stubLogin({
-            user: SUPERVISOR_USER,
-          })
+          cy.stubLogin({ user: SUPERVISOR_USER })
           cy.signIn()
-
-          new SupervisorHomePage()
-
           cy.visit(`/${bookingId}`)
 
           const supervisorLandingPage = SupervisorLandingPage.createForBookingId(bookingId)
@@ -443,9 +486,10 @@ describe('Next Review', () => {
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
           nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
-          nextReviewStandalonePage.validateExistingPartialReviewGuidance(
-            'Determinate prison sentence with three or more years left in custody'
-          )
+          nextReviewStandalonePage.assertTextVisibilityOnPage({
+            selector: 'div',
+            text: 'Determinate prison sentence with three or more years left in custody',
+          })
 
           const newReviewDate = moment().add(1, 'months').add(4, 'days').startOf('day')
           const newReviewReason = 'Another test reason'
@@ -482,14 +526,8 @@ describe('Next Review', () => {
           dbSeeder(supervisorChangeFixture)
 
           cy.task('stubUncategorisedAwaitingApproval')
-
-          cy.stubLogin({
-            user: SUPERVISOR_USER,
-          })
+          cy.stubLogin({ user: SUPERVISOR_USER })
           cy.signIn()
-
-          new SupervisorHomePage()
-
           cy.visit(`/${bookingId}`)
 
           const supervisorLandingPage = SupervisorLandingPage.createForBookingId(bookingId)
@@ -502,9 +540,10 @@ describe('Next Review', () => {
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
           nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
-          nextReviewStandalonePage.validateExistingPartialReviewGuidance(
-            'Determinate sentence with 5 or more years left in custody'
-          )
+          nextReviewStandalonePage.assertTextVisibilityOnPage({
+            selector: 'div',
+            text: 'Determinate sentence with 5 or more years left in custody',
+          })
 
           const newReviewDate = moment().add(1, 'months').add(4, 'days').startOf('day')
           const newReviewReason = 'Another test reason'
@@ -557,9 +596,10 @@ describe('Next Review', () => {
 
         nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
         nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
-        nextReviewStandalonePage.validateExistingPartialReviewGuidance(
-          'Determinate prison sentence with three or more years left in custody'
-        )
+        nextReviewStandalonePage.assertTextVisibilityOnPage({
+          selector: 'div',
+          text: 'Determinate prison sentence with three or more years left in custody',
+        })
       })
 
       it('should reject an empty form submission', () => {
@@ -649,9 +689,10 @@ describe('Next Review', () => {
 
         nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
         nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
-        nextReviewStandalonePage.validateExistingPartialReviewGuidance(
-          'Determinate sentence with 5 or more years left in custody'
-        )
+        nextReviewStandalonePage.assertTextVisibilityOnPage({
+          selector: 'div',
+          text: 'Determinate sentence with 5 or more years left in custody',
+        })
       })
 
       it('should reject an empty form submission with 3 to 5 feature flag', () => {
