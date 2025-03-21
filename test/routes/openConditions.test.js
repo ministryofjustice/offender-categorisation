@@ -370,8 +370,8 @@ describe('open conditions', () => {
   test.each`
     formName                 | userInput                                                                                     | updateInfo                                                        | nextPath
     ${'tprs'}                | ${{ tprsSelected: 'No' }}                                                                     | ${{ tprsSelected: 'No' }}                                         | ${'/form/openConditions/earliestReleaseDate/'}
-    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}          | ${{ catType: 'RECAT', threeOrMoreYears: 'No' }}                   | ${'/form/openConditions/victimContactScheme/'}
-    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', threeOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}        | ${{ catType: 'INITIAL', threeOrMoreYears: 'No' }}                 | ${'/form/openConditions/previousSentences/'}
+    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}           | ${{ catType: 'RECAT', fiveOrMoreYears: 'No' }}                    | ${'/form/openConditions/victimContactScheme/'}
+    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}         | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No' }}                  | ${'/form/openConditions/previousSentences/'}
     ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                                                    | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                        | ${'/form/openConditions/foreignNational/'}
     ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No' }}            | ${'/form/openConditions/victimContactScheme/'}
     ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                                                  | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                      | ${'/form/openConditions/sexualOffences/'}
@@ -407,7 +407,7 @@ describe('open conditions', () => {
 
   test.each`
     formName                 | userInput
-    ${'earliestReleaseDate'} | ${{ threeOrMoreYears: 'Yes', justify: 'No' }}
+    ${'earliestReleaseDate'} | ${{ fiveOrMoreYears: 'Yes', justify: 'No' }}
     ${'previousSentences'}   | ${{ releasedLastFiveYears: 'Yes', sevenOrMoreYears: 'Yes' }}
     ${'foreignNational'}     | ${{ formCompleted: 'No' }}
     ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}

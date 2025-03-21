@@ -187,7 +187,7 @@ describe('Approved view', () => {
           riskLevels: { likelyToAbscond: 'No' },
           riskOfHarm: { seriousHarm: 'No' },
           foreignNational: { isForeignNational: 'No' },
-          earliestReleaseDate: { threeOrMoreYears: 'No' },
+          earliestReleaseDate: { fiveOrMoreYears: 'No' },
         },
       },
       securityReviewedBy: null,

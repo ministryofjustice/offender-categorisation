@@ -36,7 +36,7 @@
 
 {% endset %}
 
-{% set threeOrMoreYearsTextHtml %}
+{% set fiveOrMoreYearsTextHtml %}
 
   {{ govukRadios({
     formGroup: { classes: 'govuk-!-margin-bottom-6' },
@@ -78,10 +78,8 @@
     {% set releaseDateHtml =  "Is it 3 or more years to their earliest release date?" %}
   {% endif %}
 
-  <!--  TODO rename threeOrMoreYears to fiveOrMoreYears -->
-
   {{ govukRadios({
-    name: "threeOrMoreYears",
+    name: "fiveOrMoreYears",
     fieldset: {
       legend: {
         text: releaseDateHtml
@@ -89,25 +87,25 @@
     },
     errorMessage: {
       text: "Please select yes or no"
-    } if (errors | findError('threeOrMoreYears')),
+    } if (errors | findError('fiveOrMoreYears')),
     items: [
       {
         value: "Yes",
         text: "Yes",
-        checked: data.openConditions.earliestReleaseDate.threeOrMoreYears === 'Yes',
+        checked: data.openConditions.earliestReleaseDate.fiveOrMoreYears === 'Yes',
         conditional: {
-          html: threeOrMoreYearsTextHtml
+          html: fiveOrMoreYearsTextHtml
         }
       },
       {
         value: "No",
-        checked: data.openConditions.earliestReleaseDate.threeOrMoreYears === 'No',
+        checked: data.openConditions.earliestReleaseDate.fiveOrMoreYears === 'No',
         text: "No"
       }
     ]
   }) }}
 
-  {% set guidanceThreeOrMoreYears %}
+  {% set guidanceFiveOrMoreYears %}
     {% if featurePolicyChangeThreeToFiveEnabled %}
       <div class="govuk-!-margin-bottom-4">If they have 5 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now.</div>
     {% else %}
@@ -128,7 +126,7 @@
 
   {{ govukDetails({
     summaryText: "What information should I consider?",
-    html: guidanceThreeOrMoreYears
+    html: guidanceFiveOrMoreYears
   }) }}
 
 {% endblock %}
