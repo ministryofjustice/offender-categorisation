@@ -80,7 +80,9 @@ module.exports = function Index({ formService, offendersService, userService, au
 
   router.get(
     '/openConditionsNotSuitable/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
       const validation = joi
         .object({
           reason: joi
@@ -133,6 +135,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       res.render('formPages/openConditions/openConditionsNotSuitable', {
         warningText,
+        catType: formData.catType,
       })
     })
   )
