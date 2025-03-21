@@ -593,7 +593,12 @@ describe('Open conditions', () => {
     completeOpenConditionsWorkflow(taskListPage, true)
 
     taskListPage.openConditionsButton().should('exist')
+
+    cy.intercept('GET', '/form/categoriser/review/*', req => {
+      req.query.overrideFeatureFlag = 'false'
+    }).as('review')
     taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
+    cy.wait('@review')
 
     const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.validateOffendingHistorySummary([
@@ -642,6 +647,209 @@ describe('Open conditions', () => {
     categoriserReviewCYAPage.validateEarliestReleaseDateSummary([
       { question: 'Earliest release date', expectedAnswer: '' },
       { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
+    ])
+
+    categoriserReviewCYAPage.victimContactSchemeDl().should('exist')
+
+    categoriserReviewCYAPage.validateVictimContactSchemeSummary([
+      { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
+      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
+      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+    ])
+
+    categoriserReviewCYAPage.validatePreviousSentencesSummary([
+      { question: 'Previous sentences', expectedAnswer: '' },
+      { question: 'Have they been released from a previous sentence in the last 5 years?', expectedAnswer: 'No' },
+      { question: 'Was that previous sentence for 7 years or more?', expectedAnswer: 'Not applicable' },
+    ])
+
+    categoriserReviewCYAPage.validateSexualOffencesSummarySummary([
+      { question: 'Sexual offences', expectedAnswer: '' },
+      { question: 'Have they ever been convicted of a sexual offence?', expectedAnswer: 'No' },
+      { question: 'Can the risk to the public be managed in open conditions?', expectedAnswer: 'Not applicable' },
+    ])
+
+    categoriserReviewCYAPage.validateForeignNationalSummary([
+      { question: 'Foreign national', expectedAnswer: '' },
+      { question: 'Are they a foreign national?', expectedAnswer: 'No' },
+      { question: 'Have the Home Office confirmed their immigration status?', expectedAnswer: 'Not applicable' },
+      { question: 'Do they have a liability for deportation?', expectedAnswer: 'Not applicable' },
+      { question: 'Have they been through all appeals process in the UK?', expectedAnswer: 'Not applicable' },
+    ])
+
+    categoriserReviewCYAPage.validateRiskOfHarmSummary([
+      { question: 'Risk of serious harm', expectedAnswer: '' },
+      { question: 'Risk of serious harm to the public?', expectedAnswer: 'No' },
+      { question: 'Can this risk be managed?', expectedAnswer: 'Not applicable' },
+    ])
+
+    categoriserReviewCYAPage.validateFurtherChargesOpenSummary([
+      { question: 'Further charges', expectedAnswer: '' },
+      { question: 'Are they facing any further charges?', expectedAnswer: 'Yes' },
+      { question: 'Further charges details', expectedAnswer: 'some chargesfurtherChargesText details' },
+      { question: 'Do these further charges increase risk in open conditions?', expectedAnswer: 'No' },
+    ])
+
+    categoriserReviewCYAPage.validateRiskLevelSummary([
+      { question: 'Risk of escaping or absconding', expectedAnswer: '' },
+      { question: 'Likely to abscond or abuse open conditions?', expectedAnswer: 'No' },
+    ])
+
+    categoriserReviewCYAPage.continueButton().click()
+
+    provisionalCategoryPage.indeterminateWarning().should('not.exist')
+    provisionalCategoryPage.warning().contains('The provisional category is open')
+
+    cy.task('stubCategorise', {
+      bookingId: 12,
+      category: 'D',
+      committee: 'OCA',
+      nextReviewDate: '2019-12-14',
+      comment: 'comment',
+      placementAgencyId: 'LEI',
+      sequenceNumber: 5,
+    })
+
+    provisionalCategoryPage.openConditionsAppropriateYes().click()
+    provisionalCategoryPage.submitButton().click()
+  })
+
+  it('The happy path is correct for categoriser overriding to D, all no 3 to 5 policy change', () => {
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      bookingId: 12,
+      nomisSequenceNumber: 1,
+      catType: CATEGORISATION_TYPE.INITIAL,
+      offenderNo: 'dummy',
+      sequenceNumber: 1,
+      status: STATUS.STARTED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: new Date(),
+      formResponse: {
+        categoriser: {
+          provisionalCategory: {
+            suggestedCategory: 'C',
+            overriddenCategory: 'D',
+            categoryAppropriate: 'No',
+            overriddenCategoryText: 'over ridden category text',
+          },
+        },
+        ratings: {
+          offendingHistory: {
+            previousConvictions: 'Yes',
+            previousConvictionsText: 'some convictions',
+          },
+          securityInput: {
+            securityInputNeeded: 'No',
+          },
+          furtherCharges: {
+            furtherCharges: 'Yes',
+            furtherChargesText: 'some charges',
+          },
+          violenceRating: {
+            highRiskOfViolence: 'No',
+            seriousThreat: 'Yes',
+          },
+          escapeRating: {
+            escapeOtherEvidence: 'Yes',
+            escapeOtherEvidenceText: 'evidence details',
+            escapeCatB: 'Yes',
+            escapeCatBText: 'cat b details',
+          },
+          extremismRating: {
+            previousTerrorismOffences: 'Yes',
+          },
+          nextReviewDate: {
+            date: '14/12/2019',
+          },
+        },
+      },
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      assignedUserId: null,
+      approvedBy: SUPERVISOR_USER.username,
+    })
+    setUpStubs()
+
+    setUpProfiles()
+
+    cy.stubLogin({
+      user: CATEGORISER_USER,
+    })
+    cy.signIn()
+    cy.visit(`/${ProvisionalCategoryPage.baseUrl}/12`)
+    const provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
+    provisionalCategoryPage.appropriateNo().click()
+    provisionalCategoryPage.overriddenCategoryD().click()
+    provisionalCategoryPage.setOverriddenCategoryText('categoriser override to D comment')
+    provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
+    provisionalCategoryPage.indeterminateWarning().should('not.exist')
+    provisionalCategoryPage.submitButton().click()
+
+    // Open Conditions Added Page
+    const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
+    openConditionsAddedPage.returnToTasklistButton(12).click()
+
+    const taskListPage = TaskListPage.createForBookingId(12)
+
+    completeOpenConditionsWorkflow(taskListPage, true)
+
+    taskListPage.openConditionsButton().should('exist')
+
+    cy.intercept('GET', '/form/categoriser/review/*', req => {
+      req.query.overrideFeatureFlag = 'true'
+    }).as('review')
+    taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
+    cy.wait('@review')
+
+    const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
+    categoriserReviewCYAPage.validateOffendingHistorySummary([
+      { question: 'Previous Cat A, Restricted.', expectedAnswer: 'Cat A (2012)' },
+      {
+        question: 'Previous convictions on NOMIS',
+        expectedAnswer: 'Libel (21/02/2019) Slander (22/02/2019 - 24/02/2019) Undated offence',
+      },
+      { question: 'Relevant convictions on PNC', expectedAnswer: 'Yes some convictions' },
+    ])
+
+    categoriserReviewCYAPage.validateFurtherChargesSummary([
+      { question: 'Further serious charges', expectedAnswer: 'Yes some charges' },
+      { question: 'Warrant category B?', expectedAnswer: '' },
+    ])
+
+    categoriserReviewCYAPage.validateViolenceRatingSummary([
+      { question: 'Previous assaults in custody recorded', expectedAnswer: '5' },
+      { question: 'Serious assaults in the past 12 months', expectedAnswer: '2' },
+      { question: 'Any more information about risk of violence in custody', expectedAnswer: 'No' },
+      { question: 'Serious threats to good order in custody recorded', expectedAnswer: 'Yes' },
+    ])
+
+    categoriserReviewCYAPage.validateEscapeRatingSummary([
+      { question: 'Escape list', expectedAnswer: 'Yes' },
+      { question: 'Escape alerts', expectedAnswer: 'Yes' },
+      { question: 'Any other information that they pose an escape risk', expectedAnswer: 'Yes evidence details' },
+      { question: 'Any further details', expectedAnswer: 'Yes cat b details' },
+    ])
+
+    categoriserReviewCYAPage.validateExtremismRatingSummary([
+      { question: 'Identified at risk of engaging in, or vulnerable to, extremism', expectedAnswer: 'Yes' },
+      { question: 'Offences under terrorism legislation', expectedAnswer: 'Yes' },
+    ])
+
+    categoriserReviewCYAPage.validateSecurityInputSummary([
+      { question: 'Automatic referral to security team', expectedAnswer: 'No' },
+      { question: 'Manual referral to security team', expectedAnswer: 'No' },
+      { question: 'Flagged by security team', expectedAnswer: 'No' },
+    ])
+
+    categoriserReviewCYAPage.validateNextReviewDateSummary([
+      { question: 'What date should they be reviewed by?', expectedAnswer: 'Saturday 14 December 2019' },
+    ])
+
+    categoriserReviewCYAPage.validateEarliestReleaseDateSummary([
+      { question: 'Earliest release date', expectedAnswer: '' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
