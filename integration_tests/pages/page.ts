@@ -7,6 +7,12 @@ type ToDoTableData = [string, string, string, string, string, string, string][]
 
 export type DtDlQuestionExpectedAnswerPair = { question: string; expectedAnswer: string }
 
+interface TextVisibilityOptions {
+  selector: string
+  text: string
+  isVisible?: boolean
+}
+
 export default abstract class Page {
   static verifyOnPage<T>(constructor: new () => T): T {
     return new constructor()
@@ -67,11 +73,21 @@ export default abstract class Page {
       expectedValues,
     })
 
+  assertTextVisibilityOnPage = (options: TextVisibilityOptions): PageElement => {
+    const { selector, text, isVisible = true } = options
+    const visibilityAssertion = isVisible ? 'be.visible' : 'not.exist'
+
+    return cy.contains(selector, text).should(visibilityAssertion)
+  }
+
   fallbackHeader = (): PageElement => cy.get('[data-qa=cat-tool-fallback-header]')
+
   fallbackFooter = (): PageElement => cy.get('[data-qa=cat-tool-fallback-footer]')
+
   headerUserName = (): PageElement => cy.get('[data-qa=header-user-name]')
 
   mockDpsComponentHeader = (): PageElement => cy.get('.connect-dps-common-header')
+
   mockDpsComponentFooter = (): PageElement => cy.get('.connect-dps-common-footer')
 
   protected _cleanString = cleanString
