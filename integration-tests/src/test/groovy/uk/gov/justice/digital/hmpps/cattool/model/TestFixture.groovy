@@ -1,11 +1,7 @@
 package uk.gov.justice.digital.hmpps.cattool.model
 
 import geb.Browser
-import uk.gov.justice.digital.hmpps.cattool.mockapis.AllocationApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
-import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.PrisonerSearchApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.*
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
@@ -14,10 +10,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_RECAT_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_USER
+import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.*
 
 class TestFixture {
 
@@ -112,7 +105,7 @@ class TestFixture {
   ]
 
   public static final defaultOpenConditions = [
-    earliestReleaseDate: ['threeOrMoreYears': 'No'],
+    earliestReleaseDate: ['fiveOrMoreYears': 'No'],
     foreignNational    : ['isForeignNational': 'No'],
     riskOfHarm         : ['seriousHarm': 'No'],
     furtherCharges     : ['increasedRisk': 'No', 'furtherChargesText': 'some charges,furtherChargesText details'],

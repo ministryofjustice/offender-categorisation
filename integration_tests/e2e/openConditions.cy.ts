@@ -150,11 +150,9 @@ describe('Open conditions', () => {
     })
 
     earliestReleasePage.validateErrorSummaryMessages([
-      { index: 0, href: '#threeOrMoreYears', text: 'Please select yes or no' },
+      { index: 0, href: '#fiveOrMoreYears', text: 'Please select yes or no' },
     ])
-    earliestReleasePage.validateErrorMessages([
-      { selector: '#threeOrMoreYears-error', text: 'Please select yes or no' },
-    ])
+    earliestReleasePage.validateErrorMessages([{ selector: '#fiveOrMoreYears-error', text: 'Please select yes or no' }])
 
     earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
     earliestReleasePage.continueButton().click()
