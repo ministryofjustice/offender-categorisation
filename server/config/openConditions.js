@@ -16,14 +16,14 @@ module.exports = {
   earliestReleaseDate: {
     fields: [
       {
-        threeOrMoreYears: {
+        fiveOrMoreYears: {
           responseType: 'requiredString',
           validationMessage: 'Please select yes or no',
         },
       },
       {
         justify: {
-          responseType: 'requiredStringIf_threeOrMoreYears_Yes',
+          responseType: 'requiredStringIf_fiveOrMoreYears_Yes',
           validationMessage: 'Please select yes or no',
         },
       },

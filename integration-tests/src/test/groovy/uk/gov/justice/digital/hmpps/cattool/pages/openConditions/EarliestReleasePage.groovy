@@ -13,8 +13,8 @@ class EarliestReleasePage extends Page {
   static content = {
     headingText { $('h1.govuk-heading-l').text() }
     form { $('form') }
-    threeOrMoreYearsYes { $('#threeOrMoreYears') }
-    threeOrMoreYearsNo { $('#threeOrMoreYears-2') }
+    fiveOrMoreYearsYes { $('#fiveOrMoreYears') }
+    fiveOrMoreYearsNo { $('#fiveOrMoreYears-2') }
     justifyYes(required: false) { $('#justify') }
     justifyNo(required: false) { $('#justify-2') }
     justifyText(required: false) { $('textarea', name: 'justifyText') }

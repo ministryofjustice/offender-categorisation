@@ -151,6 +151,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+    const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change
 
     return {
       data: { ...pageData, details },
@@ -160,12 +161,13 @@ module.exports = function Index({ formService, offendersService, userService, au
       catType: formData.catType,
       backLink,
       errors,
+      featurePolicyChangeThreeToFiveEnabled,
     }
   }
 
   const clearConditionalFields = body => {
     const updated = { ...body }
-    if (body.threeOrMoreYears === 'No') {
+    if (body.fiveOrMoreYears === 'No') {
       delete updated.justify
       delete updated.justifyText
     }

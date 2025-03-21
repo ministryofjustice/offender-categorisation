@@ -25,8 +25,9 @@ import SupervisorReviewPage from '../../pages/form/supervisor/review'
 import SupervisorReviewOutcomePage from '../../pages/form/supervisor/outcome'
 import SupervisorMessagePage from '../../pages/form/supervisor/message'
 import SupervisorDonePage from '../../pages/supervisor/done'
-import ApprovedViewPage from '../../pages/form/approvedView'
 import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
+
+type DbQueryResult = { rowCount: number; rows: any[] }
 
 describe('Open Conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -228,7 +229,7 @@ describe('Open Conditions', () => {
               exhaustedAppeal: 'No',
               isForeignNational: 'Yes',
             },
-            earliestReleaseDate: { justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes' },
+            earliestReleaseDate: { justify: 'Yes', justifyText: 'justify details text', fiveOrMoreYears: 'Yes' },
             victimContactScheme: { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' },
           },
           openConditionsRequested: true,
@@ -620,7 +621,7 @@ describe('Open Conditions', () => {
             riskOfHarm: { seriousHarm: 'No' },
             furtherCharges: { furtherCharges: 'No' },
             foreignNational: { isForeignNational: 'No' },
-            earliestReleaseDate: { threeOrMoreYears: 'No' },
+            earliestReleaseDate: { fiveOrMoreYears: 'No' },
             victimContactScheme: { vcsOptedFor: 'No' },
           },
           openConditionsRequested: true,
@@ -710,8 +711,7 @@ describe('Open Conditions', () => {
         cancelled_by: null,
       }
 
-      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
-      return dbRecordMatchesExpected
+      return compareObjects(expected, dbRecord)
     })
 
     // 'I confirm the cat D category'
@@ -1035,7 +1035,7 @@ describe('Open Conditions', () => {
             riskOfHarm: { seriousHarm: 'No' },
             furtherCharges: { furtherCharges: 'No' },
             foreignNational: { isForeignNational: 'No' },
-            earliestReleaseDate: { threeOrMoreYears: 'No' },
+            earliestReleaseDate: { fiveOrMoreYears: 'No' },
             victimContactScheme: { vcsOptedFor: 'No' },
           },
           openConditionsRequested: true,
@@ -1125,8 +1125,7 @@ describe('Open Conditions', () => {
         cancelled_by: null,
       }
 
-      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
-      return dbRecordMatchesExpected
+      return compareObjects(expected, dbRecord)
     })
 
     // 'I confirm the cat D category'
@@ -1493,8 +1492,7 @@ describe('Open Conditions', () => {
         cancelled_by: null,
       }
 
-      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
-      return dbRecordMatchesExpected
+      return compareObjects(expected, dbRecord)
     })
 
     // 'the category is submitted'
@@ -1748,7 +1746,7 @@ describe('Open Conditions', () => {
             riskOfHarm: { seriousHarm: 'No' },
             furtherCharges: { furtherCharges: 'No' },
             foreignNational: { isForeignNational: 'No' },
-            earliestReleaseDate: { threeOrMoreYears: 'No' },
+            earliestReleaseDate: { fiveOrMoreYears: 'No' },
             victimContactScheme: { vcsOptedFor: 'No' },
           },
           openConditionsRequested: true,
@@ -1865,8 +1863,7 @@ describe('Open Conditions', () => {
         cancelled_by: null,
       }
 
-      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
-      return dbRecordMatchesExpected
+      return compareObjects(expected, dbRecord)
     })
 
     // 'the approved view page is shown'

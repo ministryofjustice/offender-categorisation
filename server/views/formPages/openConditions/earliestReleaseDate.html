@@ -36,7 +36,7 @@
 
 {% endset %}
 
-{% set threeOrMoreYearsTextHtml %}
+{% set fiveOrMoreYearsTextHtml %}
 
   {{ govukRadios({
     formGroup: { classes: 'govuk-!-margin-bottom-6' },
@@ -72,50 +72,61 @@
 
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
+  {% if featurePolicyChangeThreeToFiveEnabled %}
+    {% set releaseDateHtml =  "Is it 5 or more years to their earliest release date?" %}
+  {% else %}
+    {% set releaseDateHtml =  "Is it 3 or more years to their earliest release date?" %}
+  {% endif %}
+
   {{ govukRadios({
-    name: "threeOrMoreYears",
+    name: "fiveOrMoreYears",
     fieldset: {
       legend: {
-        text: "Is it 3 or more years to their earliest release date?"
+        text: releaseDateHtml
       }
     },
     errorMessage: {
       text: "Please select yes or no"
-    } if (errors | findError('threeOrMoreYears')),
+    } if (errors | findError('fiveOrMoreYears')),
     items: [
       {
         value: "Yes",
         text: "Yes",
-        checked: data.openConditions.earliestReleaseDate.threeOrMoreYears === 'Yes',
+        checked: data.openConditions.earliestReleaseDate.fiveOrMoreYears === 'Yes',
         conditional: {
-          html: threeOrMoreYearsTextHtml
+          html: fiveOrMoreYearsTextHtml
         }
       },
       {
         value: "No",
-        checked: data.openConditions.earliestReleaseDate.threeOrMoreYears === 'No',
+        checked: data.openConditions.earliestReleaseDate.fiveOrMoreYears === 'No',
         text: "No"
       }
     ]
   }) }}
 
-  {% set guidanceThreeOrMoreYears %}
-<div>If they have 3 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now. In this case:</div>
-<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You should check:</div>
-<ul class="govuk-list govuk-list--bullet">
-  <li>they meet standard criteria for open conditions</li>
-  <li>for any exceptional reasons why they should be in open conditions</li>
-</ul>
-<div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
-<ul class="govuk-list govuk-list--bullet">
-  <li>low risk of harm or absconding or taking advantage of low security</li>
-  <li>work placements or further education opportunities that are critical to resettlement</li>
-</ul>
+  {% set guidanceFiveOrMoreYears %}
+    {% if featurePolicyChangeThreeToFiveEnabled %}
+      <div class="govuk-!-margin-bottom-4">If they have 5 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now.</div>
+    {% else %}
+      <div>If they have 3 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now. In this case:</div>
+    {% endif %}
+
+    <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You should check:</div>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>they meet standard criteria for open conditions</li>
+      <li>for any exceptional reasons why they should be in open conditions</li>
+    </ul>
+    <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You are looking for:</div>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>low risk of harm or absconding or taking advantage of low security</li>
+      <li>work placements or further education opportunities that are critical to resettlement</li>
+    </ul>
   {% endset %}
 
   {{ govukDetails({
     summaryText: "What information should I consider?",
-    html: guidanceThreeOrMoreYears
+    html: guidanceFiveOrMoreYears
   }) }}
 
 {% endblock %}

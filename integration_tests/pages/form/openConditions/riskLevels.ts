@@ -40,7 +40,7 @@ export default class RiskLevelsPage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: RiskLevelsChoiceValues
+      href: RiskLevelsChoiceValues | string // FIXME
       text: string
     }[]
   ) {
