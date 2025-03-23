@@ -28,3 +28,4 @@ test_results/*
 lib/
 dist
 test-results
+cypress/

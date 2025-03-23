@@ -13,12 +13,12 @@
     "build": "npm run compile-sass && tsc && npm run copy-views",
     "clean": "rm -rf assets/stylesheets/* .port.tmp *.log dist build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
-    "test": "jest --detectOpenHandles --runInBand --forceExit",
+    "test": "jest",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
     "snyk-protect": "snyk-protect",
-    "prepare": "npm run snyk-protect",
+    "prepare": "npm run snyk-protect && husky install",
     "copy-views": "cp -R server/views dist/server/",
     "int-test": "export $(cat feature.env) && cypress run --config video=false",
     "int-test-ui": "export $(cat feature.env) && cypress open",
@@ -78,11 +78,24 @@
     ],
     "delay": 2500
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && tsc && npm test"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js,css}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@joi/date": "^2.1.1",
-    "@microsoft/applicationinsights-clickanalytics-js": "^3.1.0",
-    "@microsoft/applicationinsights-web": "^3.1.0",
-    "@ministryofjustice/frontend": "^3.7.0",
+    "@ministryofjustice/frontend": "^2.1.0",
     "@snyk/protect": "^1.1293.0",
     "agentkeepalive": "^4.2.1",
     "applicationinsights": "^2.5.1",
@@ -106,7 +119,6 @@
     "helmet": "^7.0.0",
     "http-errors": "~1.8.1",
     "joi": "^17.12.0",
-    "jquery": "^3.7.1",
     "jwt-decode": "^2.2.0",
     "knex": "^2.4.2",
     "lru-cache": "^6.0.0",
@@ -123,8 +135,7 @@
     "redis": "^3.1.2",
     "sqs-consumer": "^5.8.0",
     "superagent": "^9.0.1",
-    "uuid": "^8.3.2",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/bunyan": "^1.8.11",
@@ -152,7 +163,7 @@
     "audit-ci": "^6.6.1",
     "concurrently": "^8.2.2",
     "cookie-session": "^2.0.0",
-    "cypress": "^13.17.0",
+    "cypress": "^13.14.1",
     "cypress-multi-reporters": "^1.6.4",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
