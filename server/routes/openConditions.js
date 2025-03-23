@@ -1,6 +1,7 @@
 const express = require('express')
 const flash = require('connect-flash')
 const R = require('ramda')
+const joi = require('joi')
 const { firstItem } = require('../utils/functionalHelpers')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
@@ -8,11 +9,18 @@ const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
 const log = require('../../log')
 const { isFemalePrisonId } = require('../utils/utils')
+const logger = require('../../log')
 
 const formConfig = {
   openConditions,
   categoriser,
 }
+
+const NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE = 'EARLIEST_RELEASE_DATE'
+const NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME = 'VICTIM_CONTACT_SCHEME'
+const NOT_SUITABLE_REASON_PREVIOUS_SENTENCES = 'PREVIOUS_SENTENCES'
+const NOT_SUITABLE_FOREIGN_NATIONAL_FORM = 'FOREIGN_NATIONAL_FORM'
+const NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS = 'FOREIGN_NATIONAL_EXHAUSTED_APPEALS'
 
 module.exports = function Index({ formService, offendersService, userService, authenticationMiddleware }) {
   const router = express.Router()
@@ -73,53 +81,62 @@ module.exports = function Index({ formService, offendersService, userService, au
   router.get(
     '/openConditionsNotSuitable/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const section = 'openConditions'
-      const form = 'openConditionsNotSuitable'
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-
-      if (result.data.openConditions.earliestReleaseDate.justify === 'No') {
-        res.render('formPages/openConditions/openConditionsNotSuitable', {
-          warningText:
-            'This person cannot be sent to open conditions because they have more than three years to their' +
-            ' earliest release date and there are no special circumstances to warrant them moving into open conditions',
-          ...result,
+      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+      const validation = joi
+        .object({
+          reason: joi
+            .valid(
+              NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE,
+              NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME,
+              NOT_SUITABLE_REASON_PREVIOUS_SENTENCES,
+              NOT_SUITABLE_FOREIGN_NATIONAL_FORM,
+              NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS
+            )
+            .required(),
         })
-      } else if (
-        result.data.openConditions.victimContactScheme &&
-        result.data.openConditions.victimContactScheme.contactedVLO === 'No'
-      ) {
-        res.render('formPages/openConditions/openConditionsNotSuitable', {
-          warningText:
-            'This person cannot be sent to open conditions because a victim of the crime has opted-in' +
-            ' to the Victim Contact Scheme and the VLO has not been contacted.',
-          ...result,
+        .validate(req.query, { stripUnknown: true, abortEarly: false })
+      if (validation.error) {
+        logger.error('Invalid reason for open conditions not suitable.', validation.error)
+        res.render('pages/error', {
+          message: 'Invalid not suitable for open conditions reason',
         })
-      } else if (
-        result.data.openConditions.previousSentences &&
-        result.data.openConditions.previousSentences.releasedLastFiveYears === 'Yes'
-      ) {
-        res.render('formPages/openConditions/openConditionsNotSuitable', {
-          warningText:
-            'This person cannot be sent to open conditions because they have a previous sentence of 7 years or more' +
-            ' that they were released from in the last 5 years.',
-          ...result,
-        })
-      } else if (result.data.openConditions.foreignNational.formCompleted === 'No') {
-        res.render('formPages/openConditions/openConditionsNotSuitable', {
-          warningText: 'This person cannot be sent to open conditions without a CCD3 form',
-          ...result,
-        })
-      } else if (result.data.openConditions.foreignNational.exhaustedAppeal === 'Yes') {
-        res.render('formPages/openConditions/openConditionsNotSuitable', {
-          warningText:
-            'This person cannot be sent to open conditions because they have a liability for deportation and have' +
-            ' exhausted all appeal rights in the UK',
-          ...result,
-        })
-      } else {
-        throw new Error('No openConditionsNotSuitable warning condition')
       }
+
+      let warningText = ''
+
+      switch (validation.value.reason) {
+        case NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE:
+          warningText =
+            'This person cannot be sent to open conditions because they have more than three years to their' +
+            ' earliest release date and there are no special circumstances to warrant them moving into open conditions'
+          break
+        case NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME:
+          warningText =
+            'This person cannot be sent to open conditions because a victim of the crime has opted-in' +
+            ' to the Victim Contact Scheme and the VLO has not been contacted.'
+          break
+        case NOT_SUITABLE_REASON_PREVIOUS_SENTENCES:
+          warningText =
+            'This person cannot be sent to open conditions because they have a previous sentence of 7 years or more' +
+            ' that they were released from in the last 5 years.'
+          break
+        case NOT_SUITABLE_FOREIGN_NATIONAL_FORM:
+          warningText = 'This person cannot be sent to open conditions without a CCD3 form'
+          break
+        case NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS:
+          warningText =
+            'This person cannot be sent to open conditions because they have a liability for deportation and have' +
+            ' exhausted all appeal rights in the UK'
+          break
+        default:
+          throw new Error('No openConditionsNotSuitable warning condition')
+      }
+
+      res.render('formPages/openConditions/openConditionsNotSuitable', {
+        warningText,
+        catType: formData.catType,
+      })
     })
   )
 
@@ -386,13 +403,34 @@ module.exports = function Index({ formService, offendersService, userService, au
         userInput.sevenOrMoreYears === 'Yes'
       ) {
         await formService.cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
-        res.redirect(`/form/openConditions/openConditionsNotSuitable/${bookingId}`)
+        res.redirect(
+          `/form/openConditions/openConditionsNotSuitable/${bookingId}?reason=${calculateNotSuitableForOpenConditionsReason(userInput)}`
+        )
       } else {
         const nextPath = getPathFor({ data: userInput, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
     })
   )
+
+  const calculateNotSuitableForOpenConditionsReason = userInput => {
+    if (userInput.justify === 'No') {
+      return NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE
+    }
+    if (userInput.contactedVLO === 'No') {
+      return NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME
+    }
+    if (userInput.formCompleted === 'No') {
+      return NOT_SUITABLE_FOREIGN_NATIONAL_FORM
+    }
+    if (userInput.exhaustedAppeal === 'Yes') {
+      return NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS
+    }
+    if (userInput.sevenOrMoreYears === 'Yes') {
+      return NOT_SUITABLE_REASON_PREVIOUS_SENTENCES
+    }
+    throw new Error('No valid openConditionsNotSuitable reason')
+  }
 
   return router
 }
