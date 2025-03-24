@@ -27,7 +27,7 @@ const SELECTORS = {
   JUSTIFY_OPEN_CONDITIONS: {
     TEXTAREA: '#justifyText',
   },
-}
+} as const
 
 export default class EarliestReleaseDatePage extends Page {
   private static _bookingId: number
@@ -50,7 +50,10 @@ export default class EarliestReleaseDatePage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: EarliestReleaseDateChoiceValues | string // FIXME
+      href:
+        | EarliestReleaseDateChoiceValues
+        | JustifyOpenConditionsChoiceValues
+        | typeof SELECTORS.JUSTIFY_OPEN_CONDITIONS.TEXTAREA
       text: string
     }[]
   ) {
@@ -59,7 +62,7 @@ export default class EarliestReleaseDatePage extends Page {
 
   validateErrorMessages(
     errorMessages: {
-      selector: typeof SELECTORS.EARLIEST_RELEASE_DATE.ERROR
+      selector: typeof SELECTORS.EARLIEST_RELEASE_DATE.ERROR | '#justify-error' | '#justifyText-error'
       text: string
     }[]
   ) {

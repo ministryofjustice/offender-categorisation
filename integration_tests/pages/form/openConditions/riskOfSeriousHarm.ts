@@ -27,7 +27,7 @@ const SELECTORS = {
   RISK_MANAGED_IN_OPEN_CONDITIONS: {
     TEXTAREA: '#harmManagedText',
   },
-}
+} as const
 
 export default class RiskOfSeriousHarmPage extends Page {
   private static _bookingId: number
@@ -50,7 +50,10 @@ export default class RiskOfSeriousHarmPage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: RiskOfSeriousHarmChoiceValues | string // FIXME
+      href:
+        | RiskOfSeriousHarmChoiceValues
+        | typeof SELECTORS.RISK_MANAGED_IN_OPEN_CONDITIONS.TEXTAREA
+        | ManageInOpenConditionsChoiceValues
       text: string
     }[]
   ) {
@@ -59,7 +62,11 @@ export default class RiskOfSeriousHarmPage extends Page {
 
   validateErrorMessages(
     errorMessages: {
-      selector: typeof SELECTORS.RISK_OF_SERIOUS_HARM.ERROR
+      selector:
+        | typeof SELECTORS.RISK_OF_SERIOUS_HARM.ERROR
+        | '#likelyToAbscondText-error'
+        | '#likelyToAbscond-error'
+        | '#harmManaged-error'
       text: string
     }[]
   ) {
