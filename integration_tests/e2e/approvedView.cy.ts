@@ -196,6 +196,8 @@ describe('Approved view', () => {
       approvedBy: SUPERVISOR_USER.username,
     })
 
+    //asd
+
     navigateToView()
 
     formApprovedView.validateCategorisationWarnings([
