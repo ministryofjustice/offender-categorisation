@@ -226,12 +226,6 @@ module.exports = {
         requireInProduction: false,
       }),
     },
-    // TODO deprecate after enabling
-    policy_change: {
-      three_to_five: get('FEATURE_FLAG__EVENT__3_TO_5_POLICY_CHANGE', 'false', true, {
-        requireInProduction: false,
-      }),
-    },
   },
   appInsightsConnectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', '', true, { requireInProduction: true }),
 }
