@@ -11,6 +11,7 @@ const SELECTORS = {
   DATE: '#date',
   DATE_ERROR: '#reviewDate-error',
   EXISTING_DATE: '#existingDate',
+  EXISTING_DATE_LONG: '#existingDateLong',
   REASON: '#reason',
   REASON_ERROR: '#reason-error',
   REVIEW_DATE: '#reviewDate',
@@ -55,6 +56,9 @@ export default class NextReviewStandalonePage extends Page {
 
   validateExistingDateValue = (expectedExistingDate: string): PageElement =>
     cy.get(SELECTORS.EXISTING_DATE).should('have.text', expectedExistingDate)
+
+  validateExistingDateLongValue = (expectedExistingDate: string): PageElement =>
+    cy.get(SELECTORS.EXISTING_DATE_LONG).should('have.text', `Current review date: ${expectedExistingDate}`)
 
   clearNewReviewDateInput = (): PageElement => cy.get(SELECTORS.REVIEW_DATE).clear()
 
