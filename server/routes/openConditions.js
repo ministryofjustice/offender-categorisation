@@ -105,10 +105,13 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       let warningText = ''
 
+      const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change
+      const years = featurePolicyChangeThreeToFiveEnabled ? '5' : 'three'
+
       switch (validation.value.reason) {
         case NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE:
           warningText =
-            'This person cannot be sent to open conditions because they have more than three years to their' +
+            `This person cannot be sent to open conditions because they have more than ${years} years to their` +
             ' earliest release date and there are no special circumstances to warrant them moving into open conditions'
           break
         case NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME:
