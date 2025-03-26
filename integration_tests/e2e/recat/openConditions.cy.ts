@@ -44,13 +44,11 @@ describe('Open Conditions', () => {
     }
 
     today = new Date()
-  })
 
-  it('The happy path is correct for recategoriser setting cat D, all yeses, then cancelling open conditions', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
-      nomisSequenceNumber: 1,
+      // nomisSequenceNumber: 1,
       catType: CATEGORISATION_TYPE.RECAT,
       offenderNo: 'B2345YZ',
       sequenceNumber: 1,
@@ -78,13 +76,12 @@ describe('Open Conditions', () => {
       approvedBy: null,
     })
 
-    // when: 'The categoriser sets cat D'
     cy.task('stubRecategorise')
     cy.task('stubGetPrisonerSearchPrisoners')
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345XY', 'B2345YZ'],
       bookingIds: [11, 12],
-      startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
+      startDates: [today, today],
     })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
@@ -125,7 +122,9 @@ describe('Open Conditions', () => {
       user: RECATEGORISER_USER,
     })
     cy.signIn()
+  })
 
+  it('The happy path is correct for recategoriser setting cat D, all yeses, then cancelling open conditions', () => {
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
@@ -258,7 +257,7 @@ describe('Open Conditions', () => {
         security_reviewed_date: null,
         approval_date: null,
         cat_type: 'RECAT',
-        nomis_sequence_no: 1,
+        nomis_sequence_no: null,
         assessment_date: null,
         approved_by: null,
         assessed_by: null,
@@ -415,7 +414,7 @@ describe('Open Conditions', () => {
         security_reviewed_date: null,
         approval_date: null,
         cat_type: 'RECAT',
-        nomis_sequence_no: 1,
+        nomis_sequence_no: null,
         assessment_date: null,
         approved_by: null,
         assessed_by: null,
@@ -435,85 +434,6 @@ describe('Open Conditions', () => {
   })
 
   it('The happy path is correct for recategoriser setting cat D, all nos', () => {
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      // nomisSequenceNumber: 1,
-      catType: CATEGORISATION_TYPE.RECAT,
-      offenderNo: 'B2345YZ',
-      sequenceNumber: 1,
-      status: STATUS.STARTED.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      startDate: new Date(),
-      formResponse: {
-        recat: {
-          decision: { category: 'C' },
-          oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
-          securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
-          nextReviewDate: { date: '14/12/2019' },
-          prisonerBackground: { offenceDetails: 'offence Details text' },
-          riskAssessment: {
-            lowerCategory: 'lower security category text',
-            otherRelevant: 'Yes',
-            higherCategory: 'higher security category text',
-            otherRelevantText: 'other relevant information',
-          },
-        },
-      },
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      assignedUserId: null,
-      approvedBy: null,
-    })
-
-    // when: 'The categoriser overrides to D'
-    cy.task('stubRecategorise')
-    cy.task('stubGetPrisonerSearchPrisoners')
-    cy.task('stubSentenceData', {
-      offenderNumbers: ['B2345XY', 'B2345YZ'],
-      bookingIds: [11, 12],
-      startDates: [today, today],
-    })
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
-    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
-    cy.task('stubGetOffenderDetails', {
-      bookingId: 12,
-      offenderNo: 'B2345YZ',
-      youngOffender: false,
-      indeterminateSentence: false,
-    })
-    cy.task('stubGetSocProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      transferToSecurity: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
-    })
-    cy.task('stubGetEscapeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
-    })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
-    })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
-
-    cy.stubLogin({
-      user: RECATEGORISER_USER,
-    })
-    cy.signIn()
-
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
@@ -849,85 +769,6 @@ describe('Open Conditions', () => {
   })
 
   it('recategoriser sets D, supervisor overrides to C', () => {
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      // nomisSequenceNumber: 1,
-      catType: CATEGORISATION_TYPE.RECAT,
-      offenderNo: 'B2345YZ',
-      sequenceNumber: 1,
-      status: STATUS.STARTED.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      startDate: new Date(),
-      formResponse: {
-        recat: {
-          decision: { category: 'C' },
-          oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
-          securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
-          nextReviewDate: { date: '14/12/2019' },
-          prisonerBackground: { offenceDetails: 'offence Details text' },
-          riskAssessment: {
-            lowerCategory: 'lower security category text',
-            otherRelevant: 'Yes',
-            higherCategory: 'higher security category text',
-            otherRelevantText: 'other relevant information',
-          },
-        },
-      },
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      assignedUserId: null,
-      approvedBy: null,
-    })
-
-    // when: 'The categoriser overrides to D'
-    cy.task('stubRecategorise')
-    cy.task('stubGetPrisonerSearchPrisoners')
-    cy.task('stubSentenceData', {
-      offenderNumbers: ['B2345XY', 'B2345YZ'],
-      bookingIds: [11, 12],
-      startDates: [today, today],
-    })
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
-    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
-    cy.task('stubGetOffenderDetails', {
-      bookingId: 12,
-      offenderNo: 'B2345YZ',
-      youngOffender: false,
-      indeterminateSentence: false,
-    })
-    cy.task('stubGetSocProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      transferToSecurity: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
-    })
-    cy.task('stubGetEscapeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
-    })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
-    })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
-
-    cy.stubLogin({
-      user: RECATEGORISER_USER,
-    })
-    cy.signIn()
-
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
@@ -1278,84 +1119,6 @@ describe('Open Conditions', () => {
   })
 
   it('The happy path is correct for supervisor overriding to D', () => {
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      catType: CATEGORISATION_TYPE.RECAT,
-      offenderNo: 'B2345YZ',
-      sequenceNumber: 1,
-      status: STATUS.STARTED.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      startDate: new Date(),
-      formResponse: {
-        recat: {
-          decision: { category: 'C' },
-          oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
-          securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
-          nextReviewDate: { date: '14/12/2019' },
-          prisonerBackground: { offenceDetails: 'offence Details text' },
-          riskAssessment: {
-            lowerCategory: 'lower security category text',
-            otherRelevant: 'Yes',
-            higherCategory: 'higher security category text',
-            otherRelevantText: 'other relevant information',
-          },
-        },
-      },
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      assignedUserId: null,
-      approvedBy: null,
-    })
-
-    // when: 'The categoriser submits cat C'
-    cy.task('stubRecategorise')
-    cy.task('stubGetPrisonerSearchPrisoners')
-    cy.task('stubSentenceData', {
-      offenderNumbers: ['B2345XY', 'B2345YZ'],
-      bookingIds: [11, 12],
-      startDates: [today, today],
-    })
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
-    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
-    cy.task('stubGetOffenderDetails', {
-      bookingId: 12,
-      offenderNo: 'B2345YZ',
-      youngOffender: false,
-      indeterminateSentence: false,
-    })
-    cy.task('stubGetSocProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      transferToSecurity: false,
-    })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
-    })
-    cy.task('stubGetEscapeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
-    })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
-    })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
-
-    cy.stubLogin({
-      user: RECATEGORISER_USER,
-    })
-    cy.signIn()
-
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
@@ -1892,6 +1655,112 @@ describe('Open Conditions', () => {
     })
     approvedViewRecatPage.validateOtherSupervisorComments({
       expectedComments: 'super other info 1 + 2',
+    })
+  })
+
+  describe('Not suitable for Open Conditions', () => {
+    beforeEach(() => {
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+      tasklistRecatPage.decisionButton().click()
+
+      // Decision page
+      const decisionPage = Page.verifyOnPage(DecisionPage)
+      decisionPage.catDOption().click()
+      decisionPage.submitButton().click()
+
+      // Open Conditions Added Page
+      const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
+      openConditionsAddedPage.returnToRecatTasklistButton(12).click()
+
+      // 'the tasklist recat page is displayed with open conditions section added'
+      tasklistRecatPage.openConditionsButton().should('exist')
+
+      // 'open conditions task is selected'
+      tasklistRecatPage.openConditionsButton().click()
+      const tprsPage = Page.verifyOnPage(TprsPage)
+
+      // 'the TPRS page is displayed'
+      tprsPage.selectTprsRadioButton('YES')
+      tprsPage.continueButton().click()
+    })
+
+    it('Shows correct message when not suitable for open conditions because of earliest release date', () => {
+      // 'the Earliest Release page is displayed'
+      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
+      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
+      earliestReleasePage.selectJustifyRadioButton('NO')
+      earliestReleasePage.continueButton().click()
+
+      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
+      cy.contains('This person cannot be sent to open conditions because they have more than three years to their earliest release date and there are no special circumstances to warrant them moving into open conditions')
+    })
+
+    it('Shows correct message when not suitable for open conditions because of VCS', () => {
+      // 'the Earliest Release page is displayed'
+      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
+      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
+      earliestReleasePage.selectJustifyRadioButton('YES')
+      earliestReleasePage.setJustifyOpenConditionsTextInput('justify details text')
+      earliestReleasePage.continueButton().click()
+
+      const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
+      victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
+      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('NO')
+      victimContactSchemaPage.continueButton().click()
+
+      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
+      cy.contains('This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.')
+    })
+
+    it('Shows correct message when not suitable for open conditions because of foreign national form', () => {
+      // 'the Earliest Release page is displayed'
+      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
+      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
+      earliestReleasePage.selectJustifyRadioButton('YES')
+      earliestReleasePage.setJustifyOpenConditionsTextInput('justify details text')
+      earliestReleasePage.continueButton().click()
+
+      const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
+      victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
+      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
+      victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
+      victimContactSchemaPage.continueButton().click()
+
+      const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+      foreignNationalPage.selectForeignNationalRadioButton('YES')
+      foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('NO')
+      foreignNationalPage.continueButton().click()
+
+      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
+      cy.contains('This person cannot be sent to open conditions without a CCD3 form')
+    })
+
+    it('Shows correct message when not suitable for open conditions because of foreign national exhausted appeals', () => {
+      // 'the Earliest Release page is displayed'
+      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
+      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
+      earliestReleasePage.selectJustifyRadioButton('YES')
+      earliestReleasePage.setJustifyOpenConditionsTextInput('justify details text')
+      earliestReleasePage.continueButton().click()
+
+      const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
+      victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
+      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
+      victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
+      victimContactSchemaPage.continueButton().click()
+
+      const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+      foreignNationalPage.selectForeignNationalRadioButton('YES')
+      foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('YES')
+      foreignNationalPage.selectLiabilityToBeDeportedRadioButton('YES')
+      foreignNationalPage.selectExhaustedAppealRadioButton('YES')
+      foreignNationalPage.continueButton().click()
+
+      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
+      cy.contains('This person cannot be sent to open conditions because they have a liability for deportation and have exhausted all appeal rights in the UK')
     })
   })
 })

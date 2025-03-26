@@ -369,19 +369,19 @@ describe('open conditions', () => {
 
   test.each`
     formName                 | userInput                                                                                     | updateInfo                                                        | nextPath
-    ${'tprs'}                | ${{ tprsSelected: 'No' }}                                                                     | ${{ tprsSelected: 'No' }}                                         | ${'/form/openConditions/earliestReleaseDate/'}
-    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}           | ${{ catType: 'RECAT', fiveOrMoreYears: 'No' }}                    | ${'/form/openConditions/victimContactScheme/'}
-    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}         | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No' }}                  | ${'/form/openConditions/previousSentences/'}
-    ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                                                    | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                        | ${'/form/openConditions/foreignNational/'}
-    ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No' }}            | ${'/form/openConditions/victimContactScheme/'}
-    ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                                                  | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                      | ${'/form/openConditions/sexualOffences/'}
-    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                                    | ${'/form/openConditions/riskOfHarm/'}
-    ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                                          | ${'/form/openConditions/furtherCharges/'}
-    ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                                             | ${'/form/openConditions/riskLevels/'}
-    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                                         | ${'/tasklist/'}
-    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                                           | ${'/tasklistRecat/'}
-    ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'Yes', contactedVLO: 'No' }}                             | ${{ catType: 'INITIAL', vcsOptedFor: 'Yes', contactedVLO: 'No' }} | ${'/form/openConditions/openConditionsNotSuitable/'}
-    ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'Yes', contactedVLO: 'No' }}                               | ${{ catType: 'RECAT', vcsOptedFor: 'Yes', contactedVLO: 'No' }}   | ${'/form/openConditions/openConditionsNotSuitable/'}
+    ${'tprs'}                | ${{ tprsSelected: 'No' }}                                                                     | ${{ tprsSelected: 'No' }}                                         | ${'/form/openConditions/earliestReleaseDate/12345'}
+    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}           | ${{ catType: 'RECAT', fiveOrMoreYears: 'No' }}                    | ${'/form/openConditions/victimContactScheme/12345'}
+    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}         | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No' }}                  | ${'/form/openConditions/previousSentences/12345'}
+    ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                                                    | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                        | ${'/form/openConditions/foreignNational/12345'}
+    ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No' }}            | ${'/form/openConditions/victimContactScheme/12345'}
+    ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                                                  | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                      | ${'/form/openConditions/sexualOffences/12345'}
+    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                                    | ${'/form/openConditions/riskOfHarm/12345'}
+    ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                                          | ${'/form/openConditions/furtherCharges/12345'}
+    ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                                             | ${'/form/openConditions/riskLevels/12345'}
+    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                                         | ${'/tasklist/12345'}
+    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                                           | ${'/tasklistRecat/12345'}
+    ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'Yes', contactedVLO: 'No' }}                             | ${{ catType: 'INITIAL', vcsOptedFor: 'Yes', contactedVLO: 'No' }} | ${'/form/openConditions/openConditionsNotSuitable/12345?reason=VICTIM_CONTACT_SCHEME'}
+    ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'Yes', contactedVLO: 'No' }}                               | ${{ catType: 'RECAT', vcsOptedFor: 'Yes', contactedVLO: 'No' }}   | ${'/form/openConditions/openConditionsNotSuitable/12345?reason=VICTIM_CONTACT_SCHEME'}
   `('Post $formName for $userInput.catType should go to $nextPath', ({ formName, userInput, updateInfo, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
@@ -391,7 +391,7 @@ describe('open conditions', () => {
       .post(`/${formName}/12345`)
       .send(userInput)
       .expect(302)
-      .expect('Location', `${nextPath}12345`)
+      .expect('Location', nextPath)
       .expect(() => {
         expect(formService.update).toBeCalledWith({
           bookingId: 12345,
@@ -406,12 +406,12 @@ describe('open conditions', () => {
   })
 
   test.each`
-    formName                 | userInput
-    ${'earliestReleaseDate'} | ${{ fiveOrMoreYears: 'Yes', justify: 'No' }}
-    ${'previousSentences'}   | ${{ releasedLastFiveYears: 'Yes', sevenOrMoreYears: 'Yes' }}
-    ${'foreignNational'}     | ${{ formCompleted: 'No' }}
-    ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}
-  `('should render openConditionsNotSuitable page for $formName', ({ formName, userInput }) => {
+    formName                 | userInput                                                    | queryParam
+    ${'earliestReleaseDate'} | ${{ fiveOrMoreYears: 'Yes', justify: 'No' }}                 | ${'EARLIEST_RELEASE_DATE'}
+    ${'previousSentences'}   | ${{ releasedLastFiveYears: 'Yes', sevenOrMoreYears: 'Yes' }} | ${'PREVIOUS_SENTENCES'}
+    ${'foreignNational'}     | ${{ formCompleted: 'No' }}                                   | ${'FOREIGN_NATIONAL_FORM'}
+    ${'foreignNational'}     | ${{ exhaustedAppeal: 'Yes' }}                                | ${'FOREIGN_NATIONAL_EXHAUSTED_APPEALS'}
+  `('should render openConditionsNotSuitable page for $formName', ({ formName, userInput, queryParam }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,
       formObject: userInput,
@@ -420,7 +420,7 @@ describe('open conditions', () => {
       .post(`/${formName}/12345`)
       .send(userInput)
       .expect(302)
-      .expect('Location', `/form/openConditions/openConditionsNotSuitable/12345`)
+      .expect('Location', `/form/openConditions/openConditionsNotSuitable/12345?reason=${queryParam}`)
       .expect(() => {
         expect(formService.update).toBeCalledWith({
           bookingId: 12345,
@@ -495,49 +495,6 @@ describe('open conditions', () => {
       .send({ stillRefer: 'No', catType: 'RECAT' })
       .expect(302)
       .expect('Location', `/tasklistRecat/12345`)
-  })
-
-  test('open conditions not suitable should show when previous sentences page was skipped', () => {
-    formService.getCategorisationRecord.mockResolvedValue({
-      bookingId: 12,
-      formObject: {
-        ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
-        openConditions: {
-          earliestReleaseDate: { justify: 'Yes' },
-          victimContactScheme: { contactedVLO: 'Yes' },
-          foreignNational: { exhaustedAppeal: 'Yes' },
-        },
-      },
-      catType: 'INITIAL',
-    })
-    return request(app)
-      .get('/openConditionsNotSuitable/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('This person cannot be sent to open conditions')
-      })
-  })
-
-  test('open conditions not suitable should show when VCS is not yet populated', () => {
-    formService.getCategorisationRecord.mockResolvedValue({
-      bookingId: 12,
-      formObject: {
-        ratings: { furtherCharges: { furtherCharges: 'Yes', furtherChargesText: 'old stuff' } },
-        openConditions: {
-          earliestReleaseDate: { justify: 'Yes' },
-          previousSentences: { releasedLastFiveYears: 'Yes', sevenOrMoreYears: 'Yes' },
-        },
-      },
-      catType: 'INITIAL',
-    })
-    return request(app)
-      .get('/openConditionsNotSuitable/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('This person cannot be sent to open conditions')
-      })
   })
 
   test('Should have D for openConditionsSuggestedCategory for male prison', () => {
