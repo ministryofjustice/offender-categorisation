@@ -112,7 +112,7 @@ class TestFixture {
   ]
 
   public static final defaultOpenConditions = [
-    earliestReleaseDate: ['threeOrMoreYears': 'No'],
+    earliestReleaseDate: ['fiveOrMoreYears': 'No'],
     foreignNational    : ['isForeignNational': 'No'],
     riskOfHarm         : ['seriousHarm': 'No'],
     furtherCharges     : ['increasedRisk': 'No', 'furtherChargesText': 'some charges,furtherChargesText details'],
