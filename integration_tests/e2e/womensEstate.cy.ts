@@ -521,7 +521,7 @@ describe("Women's Estate", () => {
               releasedLastFiveYears: 'No',
             },
             earliestReleaseDate: {
-              threeOrMoreYears: 'No',
+              fiveOrMoreYears: 'No',
             },
             victimContactScheme: {
               vcsOptedFor: 'No',

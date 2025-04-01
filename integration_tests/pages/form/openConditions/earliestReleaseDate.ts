@@ -1,8 +1,8 @@
 import Page, { PageElement } from '../../page'
 
 const earliestReleaseDateRadioChoiceHtmlSelectors = {
-  YES: '#threeOrMoreYears',
-  NO: '#threeOrMoreYears-2',
+  YES: '#fiveOrMoreYears',
+  NO: '#fiveOrMoreYears-2',
 } as const
 
 type EarliestReleaseDateChoice = keyof typeof earliestReleaseDateRadioChoiceHtmlSelectors
@@ -22,12 +22,12 @@ type JustifyOpenConditionsChoiceValues =
 
 const SELECTORS = {
   EARLIEST_RELEASE_DATE: {
-    ERROR: '#threeOrMoreYears-error',
+    ERROR: '#fiveOrMoreYears-error',
   },
   JUSTIFY_OPEN_CONDITIONS: {
     TEXTAREA: '#justifyText',
   },
-}
+} as const
 
 export default class EarliestReleaseDatePage extends Page {
   private static _bookingId: number
@@ -50,7 +50,10 @@ export default class EarliestReleaseDatePage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: EarliestReleaseDateChoiceValues
+      href:
+        | EarliestReleaseDateChoiceValues
+        | JustifyOpenConditionsChoiceValues
+        | typeof SELECTORS.JUSTIFY_OPEN_CONDITIONS.TEXTAREA
       text: string
     }[]
   ) {
@@ -59,7 +62,7 @@ export default class EarliestReleaseDatePage extends Page {
 
   validateErrorMessages(
     errorMessages: {
-      selector: typeof SELECTORS.EARLIEST_RELEASE_DATE.ERROR
+      selector: typeof SELECTORS.EARLIEST_RELEASE_DATE.ERROR | '#justify-error' | '#justifyText-error'
       text: string
     }[]
   ) {

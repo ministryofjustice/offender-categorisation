@@ -27,7 +27,7 @@ const SELECTORS = {
   VICTIM_LIAISON_OFFICER_RESPONSE: {
     TEXTAREA: '#vloResponseText',
   },
-}
+} as const
 
 export default class VictimContactSchemePage extends Page {
   private static _bookingId: number
@@ -50,7 +50,10 @@ export default class VictimContactSchemePage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: VictimContactSchemeChoiceValues
+      href:
+        | VictimContactSchemeChoiceValues
+        | typeof SELECTORS.VICTIM_LIAISON_OFFICER_RESPONSE.TEXTAREA
+        | ContactedVictimLiaisonOfficerChoiceValues
       text: string
     }[]
   ) {
@@ -59,7 +62,7 @@ export default class VictimContactSchemePage extends Page {
 
   validateErrorMessages(
     errorMessages: {
-      selector: typeof SELECTORS.VICTIM_CONTACT_SCHEME.ERROR
+      selector: typeof SELECTORS.VICTIM_CONTACT_SCHEME.ERROR | '#vloResponseText-error' | '#contactedVLO-error'
       text: string
     }[]
   ) {

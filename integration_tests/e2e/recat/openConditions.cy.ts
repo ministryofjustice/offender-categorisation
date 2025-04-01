@@ -25,8 +25,9 @@ import SupervisorReviewPage from '../../pages/form/supervisor/review'
 import SupervisorReviewOutcomePage from '../../pages/form/supervisor/outcome'
 import SupervisorMessagePage from '../../pages/form/supervisor/message'
 import SupervisorDonePage from '../../pages/supervisor/done'
-import ApprovedViewPage from '../../pages/form/approvedView'
 import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
+
+type DbQueryResult = { rowCount: number; rows: any[] }
 
 describe('Open Conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -227,7 +228,7 @@ describe('Open Conditions', () => {
               exhaustedAppeal: 'No',
               isForeignNational: 'Yes',
             },
-            earliestReleaseDate: { justify: 'Yes', justifyText: 'justify details text', threeOrMoreYears: 'Yes' },
+            earliestReleaseDate: { justify: 'Yes', justifyText: 'justify details text', fiveOrMoreYears: 'Yes' },
             victimContactScheme: { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' },
           },
           openConditionsRequested: true,
@@ -540,7 +541,7 @@ describe('Open Conditions', () => {
             riskOfHarm: { seriousHarm: 'No' },
             furtherCharges: { furtherCharges: 'No' },
             foreignNational: { isForeignNational: 'No' },
-            earliestReleaseDate: { threeOrMoreYears: 'No' },
+            earliestReleaseDate: { fiveOrMoreYears: 'No' },
             victimContactScheme: { vcsOptedFor: 'No' },
           },
           openConditionsRequested: true,
@@ -630,8 +631,7 @@ describe('Open Conditions', () => {
         cancelled_by: null,
       }
 
-      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
-      return dbRecordMatchesExpected
+      return compareObjects(expected, dbRecord)
     })
 
     // 'I confirm the cat D category'
@@ -876,7 +876,7 @@ describe('Open Conditions', () => {
             riskOfHarm: { seriousHarm: 'No' },
             furtherCharges: { furtherCharges: 'No' },
             foreignNational: { isForeignNational: 'No' },
-            earliestReleaseDate: { threeOrMoreYears: 'No' },
+            earliestReleaseDate: { fiveOrMoreYears: 'No' },
             victimContactScheme: { vcsOptedFor: 'No' },
           },
           openConditionsRequested: true,
@@ -966,8 +966,7 @@ describe('Open Conditions', () => {
         cancelled_by: null,
       }
 
-      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
-      return dbRecordMatchesExpected
+      return compareObjects(expected, dbRecord)
     })
 
     // 'I confirm the cat D category'
@@ -1256,8 +1255,7 @@ describe('Open Conditions', () => {
         cancelled_by: null,
       }
 
-      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
-      return dbRecordMatchesExpected
+      return compareObjects(expected, dbRecord)
     })
 
     // 'the category is submitted'
@@ -1511,7 +1509,7 @@ describe('Open Conditions', () => {
             riskOfHarm: { seriousHarm: 'No' },
             furtherCharges: { furtherCharges: 'No' },
             foreignNational: { isForeignNational: 'No' },
-            earliestReleaseDate: { threeOrMoreYears: 'No' },
+            earliestReleaseDate: { fiveOrMoreYears: 'No' },
             victimContactScheme: { vcsOptedFor: 'No' },
           },
           openConditionsRequested: true,
@@ -1628,8 +1626,7 @@ describe('Open Conditions', () => {
         cancelled_by: null,
       }
 
-      const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
-      return dbRecordMatchesExpected
+      return compareObjects(expected, dbRecord)
     })
 
     // 'the approved view page is shown'
@@ -1695,10 +1692,35 @@ describe('Open Conditions', () => {
       const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
       earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
       earliestReleasePage.selectJustifyRadioButton('NO')
+
+      cy.intercept('GET', '/form/openConditions/openConditionsNotSuitable/*', req => {
+        req.query.overrideFeatureFlag = 'false'
+      }).as('earliestReleaseDate')
       earliestReleasePage.continueButton().click()
+      cy.wait('@earliestReleaseDate')
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
-      cy.contains('This person cannot be sent to open conditions because they have more than three years to their earliest release date and there are no special circumstances to warrant them moving into open conditions')
+      cy.contains(
+        'This person cannot be sent to open conditions because they have more than three years to their earliest release date and there are no special circumstances to warrant them moving into open conditions'
+      )
+    })
+
+    it('Shows correct message when not suitable for open conditions because of earliest release date 3 to 5 change', () => {
+      // 'the Earliest Release page is displayed'
+      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
+      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
+      earliestReleasePage.selectJustifyRadioButton('NO')
+
+      cy.intercept('GET', '/form/openConditions/openConditionsNotSuitable/*', req => {
+        req.query.overrideFeatureFlag = 'true'
+      }).as('earliestReleaseDate')
+      earliestReleasePage.continueButton().click()
+      cy.wait('@earliestReleaseDate')
+
+      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
+      cy.contains(
+        'This person cannot be sent to open conditions because they have more than 5 years to their earliest release date and there are no special circumstances to warrant them moving into open conditions'
+      )
     })
 
     it('Shows correct message when not suitable for open conditions because of VCS', () => {
@@ -1715,7 +1737,9 @@ describe('Open Conditions', () => {
       victimContactSchemaPage.continueButton().click()
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
-      cy.contains('This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.')
+      cy.contains(
+        'This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.'
+      )
     })
 
     it('Shows correct message when not suitable for open conditions because of foreign national form', () => {
@@ -1763,7 +1787,9 @@ describe('Open Conditions', () => {
       foreignNationalPage.continueButton().click()
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
-      cy.contains('This person cannot be sent to open conditions because they have a liability for deportation and have exhausted all appeal rights in the UK')
+      cy.contains(
+        'This person cannot be sent to open conditions because they have a liability for deportation and have exhausted all appeal rights in the UK'
+      )
     })
   })
 })

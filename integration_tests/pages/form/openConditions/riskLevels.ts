@@ -17,7 +17,7 @@ const SELECTORS = {
   RISK_LEVEL_DETAILS: {
     TEXTAREA: '#likelyToAbscondText',
   },
-}
+} as const
 
 export default class RiskLevelsPage extends Page {
   private static _bookingId: number
@@ -40,7 +40,7 @@ export default class RiskLevelsPage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: RiskLevelsChoiceValues
+      href: RiskLevelsChoiceValues | typeof SELECTORS.RISK_LEVEL_DETAILS.TEXTAREA
       text: string
     }[]
   ) {
