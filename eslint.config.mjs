@@ -21,7 +21,7 @@ export default [
     files: ['**/*.{js,ts,jsx,tsx}'],
     languageOptions: {
       ecmaVersion: 2022,
-      // sourceType: 'module',
+      sourceType: 'module',
     },
   },
   // TEMP: Project-wide overrides to silence rules during ESLint 9 upgrade
