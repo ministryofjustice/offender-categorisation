@@ -1,6 +1,4 @@
 ;(() => {
-  'use strict'
-
   const disableSubmitButtons = event => {
     event.currentTarget.querySelectorAll('button[data-prevent-double-click="true"]').forEach(button => {
       button.dataset.clicked = 'true'
