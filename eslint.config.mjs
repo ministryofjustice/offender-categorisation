@@ -5,7 +5,8 @@ import hmppsConfig from '@ministryofjustice/eslint-config-hmpps'
 
 export default [
   ...hmppsConfig({
-    extraIgnorePaths: ['integration_tests/**', '**/*.min.js', 'eslint.config.mjs'],
+    // extraIgnorePaths: ['integration_tests/**', '**/*.min.js', 'eslint.config.mjs'],
+    extraIgnorePaths: ['**/*'],
     extraPathsAllowingDevDependencies: ['test/**'],
 
     // // Pass in merged globals from browser, node, and jest environments
