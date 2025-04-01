@@ -1,13 +1,13 @@
 const express = require('express')
 const supertest = require('supertest')
-const setUpWebSecurityTest = require('../../server/utils/setUpWebSecurity')
+const setUpWebSecurity = require('../../server/utils/setUpWebSecurity')
 
 describe('Set Up Web Security', () => {
   let app
 
   beforeAll(() => {
     app = express()
-    app.use(setUpWebSecurityTest())
+    app.use(setUpWebSecurity())
   })
 
   it('should set up Content Security Policy (CSP)', async () => {
