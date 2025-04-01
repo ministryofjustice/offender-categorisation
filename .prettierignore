@@ -1,0 +1,15 @@
+# Ignore generated/minified files
+*.min.*
+
+# Build output
+dist/
+build/
+coverage/
+
+# Dependencies
+node_modules/
+
+# Other common excludes
+*.lock
+.DS_Store
+.env
