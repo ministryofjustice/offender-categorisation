@@ -188,7 +188,7 @@ describe('GET /tasklistRecat/', () => {
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
           { socProfile: sampleSocProfile, extremismProfile: sampleExtremismProfile },
-          mockTransactionalClient
+          mockTransactionalClient,
         )
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(
           '12345',
@@ -196,7 +196,7 @@ describe('GET /tasklistRecat/', () => {
           sampleSocProfile,
           sampleExtremismProfile,
           'STARTED',
-          mockTransactionalClient
+          mockTransactionalClient,
         )
         expect(formService.updateFormData).not.toBeCalled()
       })

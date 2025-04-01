@@ -182,7 +182,7 @@ describe('update', () => {
         CatType.INITIAL.name,
         'AGE',
         '2019-06-04',
-        mockTransactionalClient
+        mockTransactionalClient,
       )
 
       expect(formClient.create).toBeCalledTimes(1)
@@ -227,7 +227,7 @@ describe('update', () => {
           formName: 'form3',
           status: 'APPROVED',
           transactionalClient: mockTransactionalClient,
-        })
+        }),
       ).rejects.toThrow('Cannot transition from status SECURITY_BACK to APPROVED')
     })
 
@@ -258,7 +258,7 @@ describe('update', () => {
           formName: 'form3',
           status: 'STARTED',
           transactionalClient: mockTransactionalClient,
-        })
+        }),
       ).rejects.toThrow('Cannot transition from status APPROVED to STARTED')
     })
 
@@ -436,7 +436,7 @@ describe('mergeRiskProfileData', () => {
         section2: { value: 'new2' },
         section3: { value: 'existing' },
       },
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 })
@@ -519,10 +519,10 @@ describe('validateStatusIfProvided', () => {
     ({ current, proposed, expectedOutput }) => {
       if (expectedOutput === 'exception') {
         expect(() => service.validateStatusIfProvided(current, proposed)).toThrow(
-          `Cannot transition from status ${current} to ${proposed}`
+          `Cannot transition from status ${current} to ${proposed}`,
         )
       } else expect(service.validateStatusIfProvided(current, proposed)).toEqual(expectedOutput)
-    }
+    },
   )
 })
 
@@ -571,13 +571,13 @@ describe('referToSecurityIfRiskAssessed', () => {
       { transferToSecurity: true },
       { notifyRegionalCTLead: false },
       'STARTED',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
     expect(formClient.referToSecurity).toBeCalledWith(
       bookingId,
       null,
       Status.SECURITY_AUTO.name,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 
@@ -588,13 +588,13 @@ describe('referToSecurityIfRiskAssessed', () => {
       { transferToSecurity: false },
       { notifyRegionalCTLead: true },
       'STARTED',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
     expect(formClient.referToSecurity).toBeCalledWith(
       bookingId,
       null,
       Status.SECURITY_AUTO.name,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 
@@ -606,8 +606,8 @@ describe('referToSecurityIfRiskAssessed', () => {
         socProfile,
         extremismProfile,
         'APPROVED',
-        mockTransactionalClient
-      )
+        mockTransactionalClient,
+      ),
     ).rejects.toThrow('Cannot transition from status APPROVED to SECURITY_AUTO')
   })
 
@@ -618,7 +618,7 @@ describe('referToSecurityIfRiskAssessed', () => {
       socProfile,
       extremismProfile,
       'SECURITY_AUTO',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
     expect(formClient.referToSecurity).not.toBeCalled()
   })
@@ -633,8 +633,8 @@ describe('referToSecurityIfRiskAssessed', () => {
         socProfile,
         extremismProfile,
         'STARTED',
-        mockTransactionalClient
-      )
+        mockTransactionalClient,
+      ),
     ).rejects.toThrow('TEST')
   })
 })
@@ -652,7 +652,7 @@ describe('referToSecurityIfRequested', () => {
       bookingId,
       userId,
       Status.SECURITY_MANUAL.name,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 
@@ -665,7 +665,7 @@ describe('referToSecurityIfRequested', () => {
       bookingId,
       userId,
       Status.SECURITY_MANUAL.name,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 
@@ -673,7 +673,7 @@ describe('referToSecurityIfRequested', () => {
     formClient.getFormDataForUser.mockResolvedValue({ rows: [] })
 
     await expect(
-      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
+      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient),
     ).rejects.toThrow('Cannot transition from status undefined to SECURITY_MANUAL')
 
     expect(formClient.referToSecurity).not.toBeCalled()
@@ -683,7 +683,7 @@ describe('referToSecurityIfRequested', () => {
     formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'APPROVED' }] })
 
     await expect(
-      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
+      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient),
     ).rejects.toThrow('Cannot transition from status APPROVED to SECURITY_MANUAL')
 
     expect(formClient.referToSecurity).not.toBeCalled()
@@ -702,7 +702,7 @@ describe('referToSecurityIfRequested', () => {
     formClient.referToSecurity.mockRejectedValue(new Error('TEST'))
 
     await expect(
-      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient)
+      service.referToSecurityIfRequested(bookingId, userId, updatedFormObjectInitial, mockTransactionalClient),
     ).rejects.toThrow('TEST')
   })
 })
@@ -717,7 +717,7 @@ describe('referToSecurityIfFlagged', () => {
       bookingId,
       'SEC_USER',
       Status.SECURITY_FLAGGED.name,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
     expect(formClient.setSecurityReferralProcessed).toBeCalledWith(offenderNo, mockTransactionalClient)
   })
@@ -762,7 +762,7 @@ describe('updateStatus', () => {
     formClient.getFormDataForUser.mockResolvedValue({ rows: [] })
 
     await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow(
-      'Cannot transition from status undefined to SUPERVISOR_BACK'
+      'Cannot transition from status undefined to SUPERVISOR_BACK',
     )
 
     expect(formClient.updateStatus).not.toBeCalled()
@@ -772,7 +772,7 @@ describe('updateStatus', () => {
     formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'STARTED' }] })
 
     await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow(
-      'Cannot transition from status STARTED to SUPERVISOR_BACK'
+      'Cannot transition from status STARTED to SUPERVISOR_BACK',
     )
 
     expect(formClient.updateStatus).not.toBeCalled()
@@ -782,7 +782,7 @@ describe('updateStatus', () => {
     formClient.getFormDataForUser.mockResolvedValue({ rows: [{ status: 'SECURITY_BACK' }] })
 
     await expect(service.backToCategoriser(bookingId, mockTransactionalClient)).rejects.toThrow(
-      'Cannot transition from status SECURITY_BACK to SUPERVISOR_BACK'
+      'Cannot transition from status SECURITY_BACK to SUPERVISOR_BACK',
     )
 
     expect(formClient.updateStatus).not.toBeCalled()
@@ -815,7 +815,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
       'A4567RS',
       'RECAT',
       'DUE',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
 
     expect(formClient.update).not.toBeCalled()
@@ -832,7 +832,7 @@ describe('createOrRetrieveCategorisationRecord', () => {
       'RECAT',
       'AGE',
       '2019-06-04',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
 
     expect(formClient.create).toBeCalledWith({
@@ -866,7 +866,7 @@ describe('deleteFormData', () => {
     expect(formClient.updateFormData).toBeCalledWith(
       34,
       { a1: { b1: { c1: '123', c2: '321' } } },
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 
@@ -928,7 +928,7 @@ describe('cancelOpenConditions', () => {
         categoriser: { other: 'stuff' },
         recat: { decision: { category: 'D', inner: 'value1' }, outer: 'value2' },
       },
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 
@@ -958,7 +958,7 @@ describe('cancelOpenConditions', () => {
         categoriser: { provisionalCategory: { suggestedCategory: 'B', categoryAppropriate: 'Yes' }, other: 'stuff' },
         recat: { outer: 'value2' },
       },
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 })
@@ -1051,7 +1051,7 @@ describe('updateOffenderIdentifierReturningBookingId', () => {
     formClient.getSecurityReferral.mockImplementation(offender =>
       offender === 'SURVIVES'
         ? { rows: [] }
-        : { rows: [{ id: 100, status: 'REFERRED', raisedDate: '2021-01-01T00:00:00' }] }
+        : { rows: [{ id: 100, status: 'REFERRED', raisedDate: '2021-01-01T00:00:00' }] },
     )
     formClient.updateOffenderIdentifierSecurityReferral.mockResolvedValue({ rowCount: 4, rows: [{}] })
 
@@ -1060,18 +1060,18 @@ describe('updateOffenderIdentifierReturningBookingId', () => {
     expect(formClient.updateOffenderIdentifierReturningBookingIdForm).toBeCalledWith(
       'REMOVE',
       'SURVIVES',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
     expect(formClient.updateOffenderIdentifierReturningBookingIdLite).toBeCalledWith(
       'REMOVE',
       'SURVIVES',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
     expect(formClient.updateOffenderIdentifierRiskChange).toBeCalledWith('REMOVE', 'SURVIVES', mockTransactionalClient)
     expect(formClient.updateOffenderIdentifierSecurityReferral).toBeCalledWith(
       'REMOVE',
       'SURVIVES',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 
@@ -1095,7 +1095,7 @@ describe('updateOffenderIdentifierReturningBookingId', () => {
       formClient.getSecurityReferral.mockImplementation(offender =>
         offender === 'SURVIVES'
           ? { rows: [surviveStatus ? { id: 100, status: surviveStatus, raisedDate: surviveDate } : {}] }
-          : { rows: [{ id: 101, status: removeStatus, raisedDate: removeDate }] }
+          : { rows: [{ id: 101, status: removeStatus, raisedDate: removeDate }] },
       )
 
       await service.updateOffenderIdentifierReturningBookingId('REMOVE', 'SURVIVES', mockTransactionalClient)
@@ -1104,7 +1104,7 @@ describe('updateOffenderIdentifierReturningBookingId', () => {
         expect(formClient.updateOffenderIdentifierSecurityReferral).toBeCalledWith(
           'REMOVE',
           'SURVIVES',
-          mockTransactionalClient
+          mockTransactionalClient,
         )
       } else {
         expect(formClient.updateOffenderIdentifierSecurityReferral).not.toBeCalled()
@@ -1114,7 +1114,7 @@ describe('updateOffenderIdentifierReturningBookingId', () => {
       } else {
         expect(formClient.deleteSecurityReferral).not.toBeCalled()
       }
-    }
+    },
   )
 })
 

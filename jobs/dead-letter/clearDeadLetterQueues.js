@@ -5,7 +5,7 @@ const { transferDlqEventMessages } = require('../../server/utils/eventUtils')
 
 const sqsRiskProfilerCredentials = getAwsCredentials(
   config.sqs.riskProfiler.accessKeyId,
-  config.sqs.riskProfiler.secretAccessKey
+  config.sqs.riskProfiler.secretAccessKey,
 )
 
 const sqsRiskProfiler = new AWS.SQS({
@@ -17,7 +17,7 @@ const sqsRiskProfilerQueueUrl = config.sqs.riskProfiler.queueUrl
 
 const sqsRiskProfilerDlqCredentials = getAwsCredentials(
   config.sqs.riskProfiler.dlq.accessKeyId,
-  config.sqs.riskProfiler.dlq.secretAccessKey
+  config.sqs.riskProfiler.dlq.secretAccessKey,
 )
 
 const sqsRiskProfilerDlq = new AWS.SQS({

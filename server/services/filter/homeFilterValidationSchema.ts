@@ -13,7 +13,7 @@ const buildHomeSchemaFilters = filters => {
         joi
           .string()
           .valid(...Object.keys(filters[key]))
-          .required()
+          .required(),
       )
       .optional()
   })

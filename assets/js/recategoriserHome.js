@@ -22,15 +22,15 @@ function setSelectAllButtonTextBasedOnSelectedCheckboxes(selectAllButtonId, chec
 }
 
 const selectAllSuitabilityForOpenConditionsFilter = document.getElementById(
-  'selectAllSuitabilityForOpenConditionsFilter'
+  'selectAllSuitabilityForOpenConditionsFilter',
 )
 if (selectAllSuitabilityForOpenConditionsFilter) {
   selectAllSuitabilityForOpenConditionsFilter.addEventListener('click', () =>
     toggleAllCheckboxes(
       'suitabilityForOpenConditions[]',
       !allCheckboxesAreChecked('suitabilityForOpenConditions[]'),
-      'selectAllSuitabilityForOpenConditionsFilter'
-    )
+      'selectAllSuitabilityForOpenConditionsFilter',
+    ),
   )
 }
 
@@ -38,7 +38,7 @@ document.getElementsByName('suitabilityForOpenConditions[]').forEach(checkbox =>
   checkbox.addEventListener('change', () => {
     setSelectAllButtonTextBasedOnSelectedCheckboxes(
       'selectAllSuitabilityForOpenConditionsFilter',
-      'suitabilityForOpenConditions[]'
+      'suitabilityForOpenConditions[]',
     )
   })
 })

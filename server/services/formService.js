@@ -52,7 +52,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         statusList,
         catType,
         reviewReason,
-        transactionalClient
+        transactionalClient,
       )
       return data.rows
     } catch (error) {
@@ -107,15 +107,15 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
           `Updating Categorisation for booking Id: ${bookingId}, offender No: ${
             currentCategorisation.offenderNo
           }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
-            filterJsonObjectForLogging(userInput)
-          )}`
+            filterJsonObjectForLogging(userInput),
+          )}`,
         )
       }
       await formClient.update(
         newCategorisationForm,
         bookingId,
         calculateStatus(currentCategorisation.status, status),
-        transactionalClient
+        transactionalClient,
       )
     }
     return newCategorisationForm
@@ -152,15 +152,15 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       `Updating Categorisation for booking Id: ${bookingId}, offender No: ${
         currentCategorisation.offenderNo
       }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
-        filterJsonObjectForLogging(userInput)
-      )}`
+        filterJsonObjectForLogging(userInput),
+      )}`,
     )
     if (validateStatusIfProvided(currentCategorisation.status, Status.AWAITING_APPROVAL.name)) {
       await formClient.categoriserDecisionWithFormResponse(
         newCategorisationForm,
         bookingId,
         userId,
-        transactionalClient
+        transactionalClient,
       )
     }
     return newCategorisationForm
@@ -194,7 +194,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       }
     }
     log.debug(
-      `Unrequired call to remove form data for booking Id: ${bookingId}, form section: ${formSection}, form name: ${formName}`
+      `Unrequired call to remove form data for booking Id: ${bookingId}, form section: ${formSection}, form name: ${formName}`,
     )
     return false
   }
@@ -223,8 +223,8 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         `Supervisor approval for booking Id: ${bookingId}, offender No: ${
           currentCategorisation.offenderNo
         }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
-          filterJsonObjectForLogging(userInput)
-        )}`
+          filterJsonObjectForLogging(userInput),
+        )}`,
       )
       await formClient.supervisorApproval(newCategorisationForm, bookingId, userId, transactionalClient)
       await formClient.setSecurityReferralStatus(currentCategorisation.offenderNo, 'COMPLETED', transactionalClient)
@@ -240,7 +240,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     catType,
     reviewReason,
     dueByDate,
-    transactionalClient
+    transactionalClient,
   ) {
     await formClient.create({
       bookingId,
@@ -265,7 +265,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     catType,
     reviewReason,
     dueByDate,
-    transactionalClient
+    transactionalClient,
   ) {
     const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
     const currentRecord = dataIfExists(data)
@@ -279,7 +279,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         catType,
         reviewReason,
         dueByDate,
-        transactionalClient
+        transactionalClient,
       )
       return record
     }
@@ -396,7 +396,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       transactionalClient,
     })
     logger.debug(
-      `updateStatusForOutstandingRiskChange for offender no  ${offenderNo} Updated ${result.rowCount} records`
+      `updateStatusForOutstandingRiskChange for offender no  ${offenderNo} Updated ${result.rowCount} records`,
     )
   }
 
@@ -473,7 +473,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     await formClient.updateRiskProfileData(
       bookingId,
       oldRecord && oldRecord.riskProfile ? { ...oldRecord.riskProfile, ...data } : data,
-      transactionalClient
+      transactionalClient,
     )
   }
 
@@ -538,7 +538,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     socProfile,
     extremismProfile,
     currentStatus,
-    transactionalClient
+    transactionalClient,
   ) {
     if (
       (socProfile.transferToSecurity || extremismProfile.notifyRegionalCTLead) &&
@@ -576,7 +576,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
           bookingId,
           securityReferral.userId,
           Status.SECURITY_FLAGGED.name,
-          transactionalClient
+          transactionalClient,
         )
         await formClient.setSecurityReferralProcessed(offenderNo, transactionalClient)
       }
@@ -612,7 +612,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       try {
         await formClient.updateStatus(bookingId, Status.AWAITING_APPROVAL.name, transactionalClient)
         log.info(
-          `Supervisor sent back categorisation record for : ${bookingId}, offender No: ${currentCategorisation.offenderNo}. user name: ${currentCategorisation.userId}`
+          `Supervisor sent back categorisation record for : ${bookingId}, offender No: ${currentCategorisation.offenderNo}. user name: ${currentCategorisation.userId}`,
         )
       } catch (error) {
         logger.error(error)
@@ -661,7 +661,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       const data = await formClient.getCategorisationRecordsByStatus(
         agencyId,
         [Status.SECURITY_MANUAL.name, Status.SECURITY_AUTO.name, Status.SECURITY_FLAGGED.name],
-        transactionalClient
+        transactionalClient,
       )
 
       return data.rows || []
@@ -733,7 +733,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   async function requiresOpenConditions(bookingId, userId, transactionalDbClient) {
     const categorisationRecord = await getCategorisationRecord(bookingId, transactionalDbClient)
     log.info(
-      `Open conditions requested for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
+      `Open conditions requested for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`,
     )
 
     const dataToStore = {
@@ -767,7 +767,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     updated.openConditionsRequested = false
 
     log.info(
-      `Open conditions cancelled for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`
+      `Open conditions cancelled for booking Id: ${bookingId}, offender No: ${categorisationRecord.offenderNo}. user name: ${userId}`,
     )
     await updateFormData(bookingId, updated, transactionalDbClient)
   }
@@ -786,21 +786,21 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     const result1 = await formClient.updateOffenderIdentifierReturningBookingIdForm(
       oldOffenderNo,
       newOffenderNo,
-      transactionalClient
+      transactionalClient,
     )
     logger.info(`Merge: updateOffenderIdentifierReturningBookingIdForm: rows updated = ${result1.rowCount}`)
 
     const result2 = await formClient.updateOffenderIdentifierReturningBookingIdLite(
       oldOffenderNo,
       newOffenderNo,
-      transactionalClient
+      transactionalClient,
     )
     logger.info(`Merge: updateOffenderIdentifierReturningBookingIdLite: rows updated = ${result2.rowCount}`)
 
     const result3 = await formClient.updateOffenderIdentifierRiskChange(
       oldOffenderNo,
       newOffenderNo,
-      transactionalClient
+      transactionalClient,
     )
     logger.info(`Merge: updateOffenderIdentifierRiskChange: rows updated = ${result3.rowCount}`)
 
@@ -831,7 +831,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
             const result4 = await formClient.updateOffenderIdentifierSecurityReferral(
               oldOffenderNo,
               newOffenderNo,
-              transactionalClient
+              transactionalClient,
             )
             logger.info(`Merge: updateOffenderIdentifierSecurityReferral: rows updated = ${result4.rowCount}`)
           }
@@ -841,7 +841,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         const result4 = await formClient.updateOffenderIdentifierSecurityReferral(
           oldOffenderNo,
           newOffenderNo,
-          transactionalClient
+          transactionalClient,
         )
         logger.info(`Merge: updateOffenderIdentifierSecurityReferral: rows updated = ${result4.rowCount}`)
       }
@@ -875,8 +875,8 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     if (conf.featureFlags.events.offender_release.enable_pending_categorisation_deletion === 'true') {
       await Promise.all(
         pendingCategorisations.rows.map(async pendingCategorisation =>
-          formClient.deleteCategorisation(pendingCategorisation.id, transactionalClient)
-        )
+          formClient.deleteCategorisation(pendingCategorisation.id, transactionalClient),
+        ),
       )
 
       await Promise.all(
@@ -885,8 +885,8 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
             bookingId: pendingLiteCategorisation.booking_id,
             sequence: pendingLiteCategorisation.sequence,
             transactionalClient,
-          })
-        )
+          }),
+        ),
       )
     } else {
       logger.debug('Would have deleted the following pending categorisations', {

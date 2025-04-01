@@ -6,14 +6,14 @@ import hmppsConfig from '@ministryofjustice/eslint-config-hmpps'
 export default [
   ...hmppsConfig({
     // extraIgnorePaths: ['integration_tests/**', '**/*.min.js', 'eslint.config.mjs'],
-    extraIgnorePaths: ['**/*'],
-    extraPathsAllowingDevDependencies: ['test/**'],
+    extraIgnorePaths: ['integration_tests/**', '**/*.min.js', 'integration-tests/build', 'eslint.config.mjs'],
+    // extraPathsAllowingDevDependencies: ['test/**'],
 
     // // Pass in merged globals from browser, node, and jest environments
     // extraUnitTestGlobals: {
     //   ...globals.browser,
     //   ...globals.node,
-    //   ...globals.jest,
+    //   ...globals.cypress,
     //   expect: 'readonly',
     //   sinon: 'readonly',
     // },
@@ -31,12 +31,12 @@ export default [
     rules: {
       // TEMP: Turn off rule until upgrade is complete and violations are fixed
       '@typescript-eslint/no-empty-object-type': 'off',
-      'comma-dangle': 'off',
-      'prettier/prettier': 'off',
-      'import/no-unresolved': 'off',
-      'import/extensions': 'off',
+      // 'comma-dangle': 'off',
+      // 'prettier/prettier': 'off',
+      // 'import/no-unresolved': 'off',
+      // 'import/extensions': 'off',
       'import/no-cycle': 'off',
-      'import/no-extraneous-dependencies': 'off',
+      // 'import/no-extraneous-dependencies': 'off',
       'import/order': 'off',
       'import/no-self-import': 'off',
       'import/no-useless-path-segments': 'off',
@@ -45,11 +45,11 @@ export default [
       'import/no-relative-packages': 'off',
       'import/default': 'off',
       'import/no-named-as-default': 'off',
-      'no-plusplus': 'off',
-      'no-shadow': 'off',
+      // 'no-plusplus': 'off',
+      // 'no-shadow': 'off',
       'func-names': 'off',
       'no-undef': 'off',
-      'no-param-reassign': 'off',
+      // 'no-param-reassign': 'off',
       'no-continue': 'off',
     },
   },

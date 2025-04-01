@@ -15,7 +15,7 @@ const getBuild = () => {
   try {
     // eslint-disable-next-line import/no-unresolved,global-require
     return require('../../build-info.json')
-  } catch (ex) {
+  } catch {
     return null
   }
 }
