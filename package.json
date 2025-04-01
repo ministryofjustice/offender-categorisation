@@ -27,7 +27,9 @@
     "watch-node-feature": "export $(cat feature.env) && npm run start:dev",
     "start-feature": "export $(cat feature.env) && npm run build && node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
     "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-node-feature\" \"npm run watch-sass\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write ."
   },
   "jest": {
     "preset": "ts-jest",
@@ -153,7 +155,6 @@
     "@typescript-eslint/parser": "^6.19.0",
     "audit-ci": "^6.6.1",
     "concurrently": "^8.2.2",
-    "cookie-session": "^2.0.0",
     "cypress": "^13.17.0",
     "cypress-multi-reporters": "^1.6.4",
     "eslint": "^8.56.0",
@@ -173,8 +174,8 @@
     "mocha-junit-reporter": "^2.2.1",
     "nock": "^13.5.5",
     "nodemon": "^3.1.4",
-    "prettier": "^3.3.3",
-    "prettier-plugin-jinja-template": "^1.5.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-jinja-template": "^2.0.0",
     "sass": "^1.77.8",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
