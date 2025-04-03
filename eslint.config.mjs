@@ -5,15 +5,13 @@ import hmppsConfig from '@ministryofjustice/eslint-config-hmpps'
 
 export default [
   ...hmppsConfig({
-    // extraIgnorePaths: ['integration_tests/**', '**/*.min.js', 'eslint.config.mjs'],
     extraIgnorePaths: ['integration_tests/**', '**/*.min.js', 'integration-tests/build', 'eslint.config.mjs'],
-    // extraPathsAllowingDevDependencies: ['test/**'],
+    extraPathsAllowingDevDependencies: ['test/**'],
 
     // // Pass in merged globals from browser, node, and jest environments
     // extraUnitTestGlobals: {
     //   ...globals.browser,
     //   ...globals.node,
-    //   ...globals.cypress,
     //   expect: 'readonly',
     //   sinon: 'readonly',
     // },
@@ -33,28 +31,40 @@ export default [
       // '@typescript-eslint/no-empty-object-type': 'off',
       // 'comma-dangle': 'off',
       // 'prettier/prettier': 'off',
-      'import/no-unresolved': 'off',
-      'import/extensions': 'off',
-      'import/no-cycle': 'off',
-      'import/no-extraneous-dependencies': 'off',
-      'import/order': 'off',
-      'import/no-self-import': 'off',
-      'import/no-useless-path-segments': 'off',
-      'import/no-duplicates': 'off',
-      'import/namespace': 'off',
-      'import/no-relative-packages': 'off',
-      'import/default': 'off',
-      'import/no-named-as-default': 'off',
       // 'no-plusplus': 'off',
       // 'no-shadow': 'off',
       // 'func-names': 'off',
       // 'no-undef': 'off',
       // 'no-param-reassign': 'off',
-      // 'no-continue': 'off',
+      // 'no-continue': 'off',      'import/no-unresolved': 'off',
+      // PIPELINE ERRORS
+      // 'import/extensions': 'off',
+      // 'import/no-cycle': 'off',
+      // 'import/no-extraneous-dependencies': 'off',
+      // 'import/order': 'off',
+      // 'import/no-self-import': 'off',
+      // 'import/no-useless-path-segments': 'off',
+      // 'import/no-duplicates': 'off',
+      // 'import/namespace': 'off',
+      // 'import/no-relative-packages': 'off',
+      // 'import/default': 'off',
+      // 'import/no-named-as-default': 'off',
+      // '@typescript-eslint/no-explicit-any': 'off',
     },
   },
 
-  // // 🧪 Test-specific environment and globals
+  // {
+  //   files: ['test/**/*.{js,ts}'],
+  //   languageOptions: {
+  //     globals: {
+  //       ...globals.node,
+  //       ...globals.jest,
+  //       expect: 'readonly',
+  //       sinon: 'readonly',
+  //     },
+  //   },
+  // },
+  // // Test-specific environment and globals
   // {
   //   files: ['test/**/*.{js,ts}'],
   //   languageOptions: {
