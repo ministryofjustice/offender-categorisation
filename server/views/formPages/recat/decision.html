@@ -31,7 +31,7 @@
 
 {% macro threeToFivePolicyChangeAlert(data) %}
   {% set alertContent %}
-    <p class="govuk-!-margin-top-4">Due to a policy change, prisoners withing 5 years of their earliest release date should now be considered for Category D. This will either be a Conditional release date (CRD), or a Parole eligibility date (PED) if there is one.</p>
+    <p class="govuk-!-margin-top-4">Due to a policy change, prisoners within 5 years of their earliest release date should now be considered for Category D. This will either be a Conditional release date (CRD), or a Parole eligibility date (PED) if there is one.</p>
 
     {% if data.details.sentence.paroleEligibilityDate %}
       <span class="govuk-!-font-weight-bold govuk-!-margin-top-4">Parole eligibility date: </span><span>{{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>

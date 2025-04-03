@@ -114,8 +114,4 @@ module.exports = (app, path) => {
       // FIXME remove after expiration
       return new Date() >= new Date('2025-05-28')
     })
-    .addGlobal('today', () => {
-      // FIXME remove after expiration
-      return new Date()
-    })
 }

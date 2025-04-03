@@ -1659,7 +1659,7 @@ describe('Open Conditions', () => {
   })
 
   describe('conditional release or parole eligibility date', () => {
-    it('hides Parole eligibility date if feature 3 to 5 policy is off', () => {
+    it('does not show parole eligibility date when 3-to-5 policy flag is disabled', () => {
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
