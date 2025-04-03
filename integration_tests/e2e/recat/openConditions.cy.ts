@@ -1658,6 +1658,66 @@ describe('Open Conditions', () => {
     })
   })
 
+  describe('conditional release or parole eligibility date', () => {
+    it('hides Parole eligibility date if feature 3 to 5 policy is off', () => {
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+
+      cy.intercept('GET', '/form/recat/decision/*', req => {
+        req.query.overrideFeatureFlag = 'false'
+      }).as('decision')
+      tasklistRecatPage.decisionButton().click()
+      cy.wait('@decision')
+
+      const decisionPage = Page.verifyOnPage(DecisionPage)
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ', isVisible: false })
+    })
+
+    it('shows Parole eligibility date', () => {
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+
+      cy.intercept('GET', '/form/recat/decision/*', req => {
+        req.query.overrideFeatureFlag = 'true'
+      }).as('decision')
+      tasklistRecatPage.decisionButton().click()
+      cy.wait('@decision')
+
+      const decisionPage = Page.verifyOnPage(DecisionPage)
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ' })
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Saturday 13 June 2020' })
+    })
+
+    it('shows Conditional release date', () => {
+      cy.task('stubGetOffenderDetails', {
+        bookingId: 12,
+        offenderNo: 'B2345YZ',
+        youngOffender: false,
+        indeterminateSentence: false,
+        paroleEligibilityDate: null,
+      })
+
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+
+      cy.intercept('GET', '/form/recat/decision/*', req => {
+        req.query.overrideFeatureFlag = 'true'
+      }).as('decision')
+      tasklistRecatPage.decisionButton().click()
+      cy.wait('@decision')
+
+      const decisionPage = Page.verifyOnPage(DecisionPage)
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Conditional release date: ' })
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Sunday 2 February 2020' })
+    })
+  })
+
   describe('Not suitable for Open Conditions', () => {
     beforeEach(() => {
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
@@ -1687,6 +1747,7 @@ describe('Open Conditions', () => {
       tprsPage.continueButton().click()
     })
 
+    // FIXME remove after '2025-05-28'
     it('Shows correct message when not suitable for open conditions because of earliest release date', () => {
       // 'the Earliest Release page is displayed'
       const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)

@@ -3,7 +3,6 @@
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 {% from "../../macros/prisonerReviewGuidance.html" import prisonerReviewGuidance %}
-{% from "../../macros/threeToFivePolicyChangeAlert.html" import threeToFivePolicyChangeAlert %}
 
 {% set pageTitle = "Categorisation is in progress: please use the tasklist to change date" %}
 {% set greenButtonText = "Submit" %}
@@ -16,10 +15,6 @@
 {% endblock %}
 
 {% block formItems %}
-
-  {% if featurePolicyChangeThreeToFiveEnabled %}
-    {{ threeToFivePolicyChangeAlert() }}
-  {% endif %}
 
   <input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}"/>
   <h1 class="govuk-heading-l">Change the review date</h1>

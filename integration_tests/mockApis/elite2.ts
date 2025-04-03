@@ -1,4 +1,4 @@
-import { SuperAgentRequest, Response } from 'superagent'
+import { Response, SuperAgentRequest } from 'superagent'
 import { getMatchingRequests, stubFor } from './wiremock'
 import moment from 'moment'
 import { UserAccount } from '../factory/user'
@@ -542,6 +542,7 @@ const stubGetOffenderDetails = ({
   multipleSentences = false,
   nextReviewDate = '2020-01-16',
   basicInfo = false,
+  paroleEligibilityDate = '2020-06-13',
 }: {
   bookingId: number
   offenderNo?: string
@@ -551,6 +552,7 @@ const stubGetOffenderDetails = ({
   multipleSentences?: boolean
   nextReviewDate?: string
   basicInfo?: boolean
+  paroleEligibilityDate?: string
 }): Promise<Response[]> => {
   const stubBasicInfo = () =>
     stubFor({
@@ -584,7 +586,7 @@ const stubGetOffenderDetails = ({
     bookingId,
     sentenceStartDate: '2019-08-15',
     homeDetentionCurfewEligibilityDate: '2020-06-10',
-    paroleEligibilityDate: '2020-06-13',
+    paroleEligibilityDate: paroleEligibilityDate,
     nonParoleDate: '2020-06-14',
     tariffDate: '2020-06-15',
     licenceExpiryDate: '2020-06-16',
