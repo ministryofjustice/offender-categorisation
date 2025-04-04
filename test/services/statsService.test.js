@@ -303,7 +303,7 @@ describe('getTprsTotals', () => {
       startDate,
       endDate,
       prisonId,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 
@@ -318,7 +318,7 @@ describe('getTprsTotals', () => {
       startDate,
       endDate,
       anotherPrisonId,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
   })
 })

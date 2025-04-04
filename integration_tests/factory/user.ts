@@ -1,5 +1,5 @@
 import { Caseload, CASELOAD } from './caseload'
-import { StaffMember, STAFF_MEMBER } from './staffMember'
+import { STAFF_MEMBER, StaffMember } from './staffMember'
 import { ROLE } from '../support/role'
 
 enum UserType {
@@ -22,7 +22,7 @@ function createUserAccount(
   type: UserType,
   workingCaseload: Caseload,
   caseloads: Caseload[],
-  roles: string[]
+  roles: string[],
 ): UserAccount {
   return {
     username,
@@ -40,7 +40,7 @@ export const CATEGORISER_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.LEI,
   [CASELOAD.BXI, CASELOAD.LEI, CASELOAD.MDI, CASELOAD.SYI, CASELOAD.WAI],
-  [ROLE.ROLE_CREATE_CATEGORISATION]
+  [ROLE.ROLE_CREATE_CATEGORISATION],
 )
 export const ITAG_USER_COLLEAGUE = createUserAccount(
   'CATEGORISER_USER',
@@ -48,7 +48,7 @@ export const ITAG_USER_COLLEAGUE = createUserAccount(
   UserType.GENERAL,
   CASELOAD.LEI,
   [CASELOAD.BXI, CASELOAD.LEI, CASELOAD.MDI, CASELOAD.SYI, CASELOAD.WAI],
-  [ROLE.ROLE_CREATE_CATEGORISATION]
+  [ROLE.ROLE_CREATE_CATEGORISATION],
 )
 export const RECATEGORISER_USER = createUserAccount(
   'RECATEGORISER_USER',
@@ -56,7 +56,7 @@ export const RECATEGORISER_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.LEI,
   [CASELOAD.BXI, CASELOAD.LEI, CASELOAD.MDI, CASELOAD.SYI, CASELOAD.WAI],
-  [ROLE.ROLE_CREATE_RECATEGORISATION]
+  [ROLE.ROLE_CREATE_RECATEGORISATION],
 )
 export const RECATEGORISER_USER_PNI = createUserAccount(
   'RECATEGORISER_USER',
@@ -64,7 +64,7 @@ export const RECATEGORISER_USER_PNI = createUserAccount(
   UserType.GENERAL,
   CASELOAD.PNI,
   [CASELOAD.PNI],
-  [ROLE.ROLE_CREATE_RECATEGORISATION]
+  [ROLE.ROLE_CREATE_RECATEGORISATION],
 )
 export const SUPERVISOR_USER = createUserAccount(
   'SUPERVISOR_USER',
@@ -72,7 +72,7 @@ export const SUPERVISOR_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.LEI,
   [CASELOAD.LEI, CASELOAD.BXI, CASELOAD.LEI, CASELOAD.MDI, CASELOAD.SYI, CASELOAD.WAI],
-  [ROLE.ROLE_APPROVE_CATEGORISATION]
+  [ROLE.ROLE_APPROVE_CATEGORISATION],
 )
 export const WOMEN_SUPERVISOR_USER = createUserAccount(
   'WOMEN_SUPERVISOR_USER',
@@ -80,7 +80,7 @@ export const WOMEN_SUPERVISOR_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.PFI,
   [CASELOAD.PFI, CASELOAD.LNI, CASELOAD.AGI],
-  [ROLE.ROLE_APPROVE_CATEGORISATION]
+  [ROLE.ROLE_APPROVE_CATEGORISATION],
 )
 export const SECURITY_USER = createUserAccount(
   'SECURITY_USER',
@@ -88,7 +88,7 @@ export const SECURITY_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.LEI,
   [CASELOAD.LEI],
-  [ROLE.ROLE_CATEGORISATION_SECURITY]
+  [ROLE.ROLE_CATEGORISATION_SECURITY],
 )
 export const FEMALE_SECURITY_USER = createUserAccount(
   'FEMALE_SECURITY_USER',
@@ -96,7 +96,7 @@ export const FEMALE_SECURITY_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.PFI,
   [CASELOAD.PFI, CASELOAD.LNI, CASELOAD.AGI],
-  [ROLE.ROLE_CATEGORISATION_SECURITY]
+  [ROLE.ROLE_CATEGORISATION_SECURITY],
 )
 export const READONLY_USER = createUserAccount(
   'READONLY_USER',
@@ -104,7 +104,7 @@ export const READONLY_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.LEI,
   [CASELOAD.LEI],
-  []
+  [],
 )
 export const MULTIROLE_USER = createUserAccount(
   'MULTIROLE_USER',
@@ -112,7 +112,7 @@ export const MULTIROLE_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.LEI,
   [CASELOAD.LEI],
-  [ROLE.ROLE_APPROVE_CATEGORISATION, ROLE.ROLE_CREATE_CATEGORISATION]
+  [ROLE.ROLE_APPROVE_CATEGORISATION, ROLE.ROLE_CREATE_CATEGORISATION],
 )
 export const FEMALE_USER = createUserAccount(
   'FEMALE_USER',
@@ -120,7 +120,7 @@ export const FEMALE_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.PFI,
   [CASELOAD.PFI, CASELOAD.LNI, CASELOAD.AGI],
-  [ROLE.ROLE_CREATE_CATEGORISATION]
+  [ROLE.ROLE_CREATE_CATEGORISATION],
 )
 export const FEMALE_RECAT_USER = createUserAccount(
   'FEMALE_RECAT_USER',
@@ -128,5 +128,5 @@ export const FEMALE_RECAT_USER = createUserAccount(
   UserType.GENERAL,
   CASELOAD.PFI,
   [CASELOAD.PFI, CASELOAD.LNI, CASELOAD.AGI],
-  [ROLE.ROLE_CREATE_RECATEGORISATION]
+  [ROLE.ROLE_CREATE_RECATEGORISATION],
 )

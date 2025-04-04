@@ -41,7 +41,7 @@ export default class RecategoriserSecurityBackPage extends Page {
         .invoke('text')
         .then(text => {
           expect(this._cleanString(text)).to.contains(expected)
-        })
+        }),
     )
 
   validateErrorSummaryMessages(
@@ -49,7 +49,7 @@ export default class RecategoriserSecurityBackPage extends Page {
       index: number
       href: WarrantACategoryBChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -58,7 +58,7 @@ export default class RecategoriserSecurityBackPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.CAT_B_RADIO
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -72,7 +72,7 @@ export default class RecategoriserSecurityBackPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => warrantACategoryBRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectedWarrantACategoryBRadioButton = (selectedTextValue: WarrantACategoryBChoice): PageElement =>

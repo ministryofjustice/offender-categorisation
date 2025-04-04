@@ -1,5 +1,5 @@
 import BaseCategoriserPage from './base'
-import {PageElement} from "../page";
+import { PageElement } from '../page'
 
 export default class CategoriserAwaitingApprovalViewPage extends BaseCategoriserPage {
   static baseUrl: string = '/form/awaitingApprovalView'

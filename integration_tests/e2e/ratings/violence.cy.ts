@@ -82,7 +82,7 @@ describe('Violence', () => {
         exists: true,
       })
       violencePage.validateExpectedViolenceInfo(
-        'This person has not been reported as the perpetrator in any assaults in custody before'
+        'This person has not been reported as the perpetrator in any assaults in custody before',
       )
       violencePage.validateViolenceWarningExists({
         exists: false,
@@ -190,7 +190,7 @@ describe('Violence', () => {
       violencePage = ViolencePage.createForBookingId(bookingId)
 
       violencePage.validateExpectedViolenceWarning(
-        'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months'
+        'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months',
       )
       violencePage.validateViolenceInfoExists({ exists: false })
     })

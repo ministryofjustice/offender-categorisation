@@ -6,7 +6,7 @@ exports.up = knex =>
     .then(() =>
       knex.raw(`
     update form set approval_date = CURRENT_DATE where approval_date is null and status = 'APPROVED'
-      `)
+      `),
     )
 
 exports.down = knex =>

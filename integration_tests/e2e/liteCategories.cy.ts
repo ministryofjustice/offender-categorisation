@@ -447,7 +447,7 @@ describe('Lite Categories', () => {
       const liteCategorisationAlreadyApprovedPage = LiteCategoriesAlreadyApprovedPage.createForBookingId(bookingId)
       liteCategorisationAlreadyApprovedPage.validateAlreadyApprovedWarningExists({ exists: true })
       liteCategorisationAlreadyApprovedPage.validateExpectedAlreadyApprovedWarning(
-        'Categorisation has already been approved'
+        'Categorisation has already been approved',
       )
 
       cy.task('getLiteData', { bookingId }).then((result: { rows: LiteCategoryDbRow[] }) => {

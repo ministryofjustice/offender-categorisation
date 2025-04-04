@@ -17,7 +17,7 @@ export const staffMemberFactory = (
   lastName: string,
   firstName: string,
   middleName: string,
-  active: boolean
+  active: boolean,
 ): StaffMember => {
   return {
     id,

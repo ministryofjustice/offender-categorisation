@@ -43,7 +43,7 @@ export default class CategoriserSecurityInputPage extends Page {
       index: number
       href: SecurityInputChoiceValues | typeof SELECTORS.SECURITY_INPUT_NEEDED.TEXTAREA
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -52,7 +52,7 @@ export default class CategoriserSecurityInputPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.SECURITY_INPUT_NEEDED.ERROR | typeof SELECTORS.SECURITY_INPUT_NEEDED.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -66,7 +66,7 @@ export default class CategoriserSecurityInputPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => securityInputRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validateSecurityInputTextBox = ({ expectedText, isVisible }: { expectedText?: string; isVisible: boolean }) => {

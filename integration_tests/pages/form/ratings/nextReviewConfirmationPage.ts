@@ -33,7 +33,7 @@ export default class NextReviewConfirmationPage extends Page {
       index: number
       href: typeof SELECTORS.REVIEW_DATE.ERROR_SUMMARY
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -42,7 +42,7 @@ export default class NextReviewConfirmationPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.REVIEW_DATE.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }

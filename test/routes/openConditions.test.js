@@ -109,7 +109,7 @@ describe('open conditions', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-      })
+      }),
   )
 
   test('INITIAL categorisation in a mens prison where further charges and open conditions further charges are both yes', () => {

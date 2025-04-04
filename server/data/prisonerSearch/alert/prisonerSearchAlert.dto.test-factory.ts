@@ -1,7 +1,7 @@
 import { ESCAPE_LIST_ALERT_CODE, PrisonerSearchAlertDto } from './prisonerSearchAlert.dto'
 
 const makeTestPrisonerSearchAlertDto = (
-  prisonerSearchAlertDto: Partial<PrisonerSearchAlertDto> = {}
+  prisonerSearchAlertDto: Partial<PrisonerSearchAlertDto> = {},
 ): PrisonerSearchAlertDto => ({
   alertType: prisonerSearchAlertDto.alertType ?? 'H',
   alertCode: prisonerSearchAlertDto.alertCode ?? ESCAPE_LIST_ALERT_CODE,

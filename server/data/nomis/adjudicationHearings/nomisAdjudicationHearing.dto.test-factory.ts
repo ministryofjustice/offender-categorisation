@@ -1,7 +1,7 @@
 import { NomisAdjudicationHearingDto } from './nomisAdjudicationHearing.dto'
 
 const makeTestNomisAdjudicationHearingDto = (
-  nomisAdjudicationHearingDto: Partial<NomisAdjudicationHearingDto> = {}
+  nomisAdjudicationHearingDto: Partial<NomisAdjudicationHearingDto> = {},
 ): NomisAdjudicationHearingDto => ({
   agencyId: nomisAdjudicationHearingDto.agencyId ?? 'ABC',
   offenderNo: nomisAdjudicationHearingDto.offenderNo ?? 'ABC123',

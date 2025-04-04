@@ -72,7 +72,7 @@ describe('Offending History', () => {
       stubLoginAndBrowseToOffendingHistoryPage()
 
       categoriserOffendingHistoryPage.validateExpectedCatAWarning(
-        'This prisoner was categorised as Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014'
+        'This prisoner was categorised as Cat A in 2012 until 2013 for a previous sentence and released as a Cat B in 2014',
       )
       categoriserOffendingHistoryPage.validateCatAInfoExists({ exists: false })
       categoriserOffendingHistoryPage.validateExpectedConvictions([
@@ -88,7 +88,7 @@ describe('Offending History', () => {
       stubLoginAndBrowseToOffendingHistoryPage()
 
       categoriserOffendingHistoryPage.validateExpectedCatAInfo(
-        'This person has not been categorised as Cat A, restricted or a provisional Cat A before.'
+        'This person has not been categorised as Cat A, restricted or a provisional Cat A before.',
       )
       categoriserOffendingHistoryPage.validateCatAWarningExists({ exists: false })
     })
@@ -99,7 +99,7 @@ describe('Offending History', () => {
       stubLoginAndBrowseToOffendingHistoryPage()
 
       categoriserOffendingHistoryPage.validateExpectedCatAWarning(
-        'This prisoner was categorised as Provisional Cat A in 2018 until 2019'
+        'This prisoner was categorised as Provisional Cat A in 2018 until 2019',
       )
       categoriserOffendingHistoryPage.validateCatAInfoExists({ exists: false })
     })
@@ -144,7 +144,7 @@ describe('Offending History', () => {
         })
 
         cy.task('selectFormTableDbRow', { bookingId: 12 }).then((result: { rows: FormDbJson[] }) =>
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.STARTED.name),
         )
       })
 
@@ -167,7 +167,7 @@ describe('Offending History', () => {
         })
 
         cy.task('selectFormTableDbRow', { bookingId: 12 }).then((result: { rows: FormDbJson[] }) =>
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.STARTED.name),
         )
       })
     })

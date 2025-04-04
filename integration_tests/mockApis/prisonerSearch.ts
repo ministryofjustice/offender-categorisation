@@ -31,7 +31,7 @@ const stubGetPrisonerSearchPrisoners = (
       dateOfBirth: string
       category: string
     }[]
-  } = { agencyId: 'LEI', content: [] }
+  } = { agencyId: 'LEI', content: [] },
 ): SuperAgentRequest => {
   const datePattern = `\\d{4}-\\d{2}-\\d{2}`
   return stubFor({
@@ -56,7 +56,7 @@ const stubGetPrisonerSearchPrisonersWomen = (
   }: {
     dateOfBirths: string[]
     agencyId: string
-  } = { dateOfBirths: [], agencyId: 'PFI' }
+  } = { dateOfBirths: [], agencyId: 'PFI' },
 ): SuperAgentRequest => {
   const fromDob = moment().subtract(22, 'years').format('yyyy-MM-DD')
   const toDob = moment().subtract(21, 'years').add(2, 'months').format('yyyy-MM-DD')

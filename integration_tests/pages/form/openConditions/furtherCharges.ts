@@ -52,7 +52,7 @@ export default class FurtherChargesPage extends Page {
       index: number
       href: FurtherChargesChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -61,7 +61,7 @@ export default class FurtherChargesPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.FURTHER_CHARGES.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -75,7 +75,7 @@ export default class FurtherChargesPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => furtherChargesRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectFurtherChargesRadioButton = (selectedTextValue: FurtherChargesChoice): PageElement =>

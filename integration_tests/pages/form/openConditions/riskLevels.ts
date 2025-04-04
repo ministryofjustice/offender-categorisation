@@ -42,7 +42,7 @@ export default class RiskLevelsPage extends Page {
       index: number
       href: RiskLevelsChoiceValues | typeof SELECTORS.RISK_LEVEL_DETAILS.TEXTAREA
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -51,7 +51,7 @@ export default class RiskLevelsPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.RISK_LEVELS.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -59,7 +59,7 @@ export default class RiskLevelsPage extends Page {
   validateRiskLevelsRadioButton = ({ selection, isChecked }: { selection: RiskLevelsChoice[]; isChecked: boolean }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => riskLevelsRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectRiskLevelsRadioButton = (selectedTextValue: RiskLevelsChoice): PageElement =>

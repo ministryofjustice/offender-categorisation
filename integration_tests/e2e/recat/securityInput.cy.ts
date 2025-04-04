@@ -1,18 +1,16 @@
 import moment from 'moment/moment'
-import { CATEGORISER_USER, RECATEGORISER_USER, SECURITY_USER, UserAccount } from "../../factory/user";
+import { CATEGORISER_USER, RECATEGORISER_USER, SECURITY_USER } from '../../factory/user'
 import Page from '../../pages/page'
 import { FormDbJson } from '../../fixtures/db-key-convertor'
 import Status from '../../../server/utils/statusEnum'
 import CatType from '../../../server/utils/catTypeEnum'
 import SecurityHomePage from '../../pages/security/home'
 import SecurityReviewPage from '../../pages/form/security/review'
-import CategoriserSecurityBackPage, {
-  WarrantACategoryBChoice,
-} from '../../pages/form/ratings/categoriserSecurityBackPage'
-import RecategoriserHomePage from "../../pages/recategoriser/home";
-import TasklistRecatPage from "../../pages/tasklistRecat/tasklistRecat";
-import RecategoriserSecurityInputPage from "../../pages/form/recat/security/recategoriserSecurityInputPage";
-import RecategoriserSecurityBackPage from "../../pages/form/recat/security/recategoriserSecurityBackPage";
+import CategoriserSecurityBackPage from '../../pages/form/ratings/categoriserSecurityBackPage'
+import RecategoriserHomePage from '../../pages/recategoriser/home'
+import TasklistRecatPage from '../../pages/tasklistRecat/tasklistRecat'
+import RecategoriserSecurityInputPage from '../../pages/form/recat/security/recategoriserSecurityInputPage'
+import RecategoriserSecurityBackPage from '../../pages/form/recat/security/recategoriserSecurityBackPage'
 
 describe('Security Input', () => {
   let recategoriserHomePage: RecategoriserHomePage
@@ -118,7 +116,7 @@ describe('Security Input', () => {
           expect(result.rows[0].status).to.eq(Status.SECURITY_MANUAL.name)
           expect(result.rows[0].form_response).to.deep.eq({
             recat: {
-              securityInput: { securityInputNeeded: "Yes", securityNoteNeeded: "No" },
+              securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
             },
           })
         })
@@ -213,7 +211,11 @@ describe('Security Input', () => {
           const testSecurityText = 'Some security input text'
           securityReviewPage.validateParagraphRecatNote({ isVisible: true, expectedText: testSecurityText })
           securityReviewPage.setSecurityInformationText(testSecurityText)
-          cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: testSecurityText }}} })
+          cy.task('updateFormRecord', {
+            bookingId,
+            status: Status.SECURITY_BACK.name,
+            formResponse: { security: { review: { securityReview: testSecurityText } } },
+          })
           securityReviewPage.saveAndSubmitButton().click()
 
           securityHomePage.validateNoReferralsToReview()
@@ -242,7 +244,11 @@ describe('Security Input', () => {
 
             const securityReviewPage = SecurityReviewPage.createForBookingId(bookingId)
             securityReviewPage.setSecurityInformationText('security info text')
-            cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: `${testSecurityText} security info text` }}} })
+            cy.task('updateFormRecord', {
+              bookingId,
+              status: Status.SECURITY_BACK.name,
+              formResponse: { security: { review: { securityReview: `${testSecurityText} security info text` } } },
+            })
             securityReviewPage.saveAndSubmitButton().click()
 
             cy.stubLogin({

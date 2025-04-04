@@ -255,7 +255,7 @@ context('Security', () => {
         {
           columnName: 'Days since sentence',
           expectedValues: ['B2345XY', 'B2345YZ'].map(offenderNo =>
-            moment().diff(sentenceStartDates[offenderNo], 'days').toString()
+            moment().diff(sentenceStartDates[offenderNo], 'days').toString(),
           ),
         },
         {

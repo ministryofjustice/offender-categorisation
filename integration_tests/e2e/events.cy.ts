@@ -40,7 +40,7 @@ describe('Events', () => {
           cy.log('Result: ', data.rowCount)
           const expectedRemainingSequenceNumbers = [8, 10, 11, 12]
           const allRemain = data.rows.every(row =>
-            expectedRemainingSequenceNumbers.some(seq_no => seq_no === row.sequence_no)
+            expectedRemainingSequenceNumbers.some(seq_no => seq_no === row.sequence_no),
           )
           return data.rowCount === expectedRemainingSequenceNumbers.length && allRemain
         })
@@ -52,7 +52,7 @@ describe('Events', () => {
       cy.assertDBWithRetries(
         'selectFormTableDbRow',
         { bookingId: 20000 },
-        (rows: DbQueryResult) => rows.rowCount === 12
+        (rows: DbQueryResult) => rows.rowCount === 12,
       )
 
       cy.task('sendPrisonerReleasedMessage', { nomsNumber: 'B0011XY' }).then(() => {
@@ -60,7 +60,7 @@ describe('Events', () => {
           cy.log('Result: ', data.rowCount)
           const expectedRemainingSequenceNumbers = [8, 10, 11, 12]
           const allRemain = data.rows.every(row =>
-            expectedRemainingSequenceNumbers.some(seq_no => seq_no === row.sequence_no)
+            expectedRemainingSequenceNumbers.some(seq_no => seq_no === row.sequence_no),
           )
           return data.rowCount === expectedRemainingSequenceNumbers.length && allRemain
         })
@@ -79,7 +79,7 @@ describe('Events', () => {
           cy.log('Result: ', data.rowCount)
           const expectedRemainingSequenceNumbers = [3, 4, 6]
           const allRemain = data.rows.every(row =>
-            expectedRemainingSequenceNumbers.some(seq_no => seq_no === row.sequence)
+            expectedRemainingSequenceNumbers.some(seq_no => seq_no === row.sequence),
           )
           return data.rowCount === expectedRemainingSequenceNumbers.length && allRemain
         })

@@ -161,7 +161,7 @@ describe('GET /ratings/offendingHistory', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCatAInformation).toBeCalledTimes(1)
-      })
+      }),
   )
 })
 
@@ -178,7 +178,7 @@ describe('GET /ratings/securityInput', () => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
         expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
-      })
+      }),
   )
   test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
     formService.getCategorisationRecord.mockResolvedValue({
@@ -206,7 +206,7 @@ describe('GET /security/review', () => {
         expect(offendersService.getOffenderDetails).toBeCalledTimes(1)
         expect(res.text).toContain('Claire Dent')
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
-      })
+      }),
   )
 
   test('security user get - referred by current user', () => {
@@ -1287,10 +1287,10 @@ describe('GET /ratings/violence', () => {
         expect(riskProfilerService.getViolenceProfile).toBeCalledTimes(1)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
         expect(res.text).toContain(
-          'This person has not been reported as the perpetrator in any assaults in custody before.'
+          'This person has not been reported as the perpetrator in any assaults in custody before.',
         )
         expect(res.text).not.toContain("'This person has been reported as the perpetrator")
-      })
+      }),
   )
 
   test('violence flag logic - assaults and notify', () => {
@@ -1311,7 +1311,7 @@ describe('GET /ratings/violence', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toMatch(
-          /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 3 non-serious assaults in the past 12 months./
+          /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 3 non-serious assaults in the past 12 months./,
         )
         expect(res.text).toContain('Please notify your safer custody lead about this prisoner')
       })
@@ -1331,7 +1331,7 @@ describe('GET /ratings/extremism', () => {
         expect(res.text).toContain(expectedContent)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
         expect(riskProfilerService.getExtremismProfile).toBeCalledTimes(1)
-      })
+      }),
   )
 })
 
@@ -1388,7 +1388,7 @@ describe('GET /categoriser/review', () => {
               offence: 'details',
             },
           },
-          mockTransactionalClient
+          mockTransactionalClient,
         )
         expect(formService.updateFormData).not.toBeCalled()
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
@@ -1619,7 +1619,7 @@ describe('GET /recat/review', () => {
           const updateArg = formService.update.mock.calls[0][0]
           expect(updateArg.bookingId).toBe(12345)
           expect(updateArg.config).toBe(formConfig[sectionName][formName])
-        })
+        }),
     )
   })
 })
@@ -1643,7 +1643,7 @@ describe('POST /supervisor/review', () => {
           expect(offendersService.createSupervisorApproval).toBeCalledWith(context, '12345', userInput)
           const updateArg = formService.supervisorApproval.mock.calls[0][0]
           expect(updateArg.bookingId).toBe(12345)
-        })
+        }),
   )
   test('Should delete recat decision if overriding to open conditions', () => {
     const userInput = {

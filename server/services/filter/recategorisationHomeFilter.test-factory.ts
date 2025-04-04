@@ -1,7 +1,7 @@
 import { RecategorisationHomeFilters } from './homeFilter'
 
 const makeTestRecategorisationHomeFiltersFilter = (
-  recategorisationHomeFilters: Partial<RecategorisationHomeFilters> = {}
+  recategorisationHomeFilters: Partial<RecategorisationHomeFilters> = {},
 ): RecategorisationHomeFilters => ({
   suitabilityForOpenConditions: recategorisationHomeFilters.suitabilityForOpenConditions ?? [],
   dueDate: recategorisationHomeFilters.dueDate ?? [],

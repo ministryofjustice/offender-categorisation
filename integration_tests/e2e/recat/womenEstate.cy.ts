@@ -1,23 +1,17 @@
-import RecategoriserHomePage from "../../pages/recategoriser/home";
-import moment from "moment";
-import {
-  CATEGORISER_USER,
-  FEMALE_RECAT_USER,
-  FEMALE_SECURITY_USER,
-  RECATEGORISER_USER,
-  SECURITY_USER
-} from "../../factory/user";
-import Page from "../../pages/page";
-import TasklistRecatPage from "../../pages/tasklistRecat/tasklistRecat";
-import { CASELOAD } from "../../factory/caseload";
-import RecategoriserSecurityInputPage from "../../pages/form/recat/security/recategoriserSecurityInputPage";
-import { FormDbJson } from "../../fixtures/db-key-convertor";
+import RecategoriserHomePage from '../../pages/recategoriser/home'
+import moment from 'moment'
+import { FEMALE_RECAT_USER, FEMALE_SECURITY_USER } from '../../factory/user'
+import Page from '../../pages/page'
+import TasklistRecatPage from '../../pages/tasklistRecat/tasklistRecat'
+import { CASELOAD } from '../../factory/caseload'
+import RecategoriserSecurityInputPage from '../../pages/form/recat/security/recategoriserSecurityInputPage'
+import { FormDbJson } from '../../fixtures/db-key-convertor'
 import Status from '../../../server/utils/statusEnum'
 import CatType from '../../../server/utils/catTypeEnum'
-import SecurityHomePage from "../../pages/security/home";
-import SecurityReviewPage from "../../pages/form/security/review";
-import OpenConditionsAdded from "../../pages/openConditionsAdded";
-import EarliestReleaseDatePage from "../../pages/form/openConditions/earliestReleaseDate";
+import SecurityHomePage from '../../pages/security/home'
+import SecurityReviewPage from '../../pages/form/security/review'
+import OpenConditionsAdded from '../../pages/openConditionsAdded'
+import EarliestReleaseDatePage from '../../pages/form/openConditions/earliestReleaseDate'
 
 describe("Women's estate recategorisation", () => {
   let recategoriserHomePage: RecategoriserHomePage
@@ -40,7 +34,7 @@ describe("Women's estate recategorisation", () => {
       assessStatus: 'A',
       category: 'R',
       nextReviewDate: nextReviewDate,
-      dateOfBirth: '1990-01-01'
+      dateOfBirth: '1990-01-01',
     }
 
     cy.task('stubRecategorise', { agencyId: CASELOAD.PFI.id, recategorisations: [recat] })
@@ -105,8 +99,12 @@ describe("Women's estate recategorisation", () => {
     taskListPage = TasklistRecatPage.createForBookingId(testBookingId)
     taskListPage.prisonerBackgroundButton().click()
 
-    cy.get('#extremismInfo').contains('This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.')
-    cy.get('#violenceInfo').contains('This person has not been reported as the perpetrator in any assaults in custody before.')
+    cy.get('#extremismInfo').contains(
+      'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
+    )
+    cy.get('#violenceInfo').contains(
+      'This person has not been reported as the perpetrator in any assaults in custody before.',
+    )
     cy.get('#escapeInfo').contains('This person is not on the E-List and does not have an Escape Risk Alert.')
     checkPrisonerHeaderSummary()
     cy.get('#offenceDetails').type('offenceDetails text')
@@ -130,7 +128,10 @@ describe("Women's estate recategorisation", () => {
       expect(result.rows[0].status).to.eq(Status.SECURITY_MANUAL.name)
       expect(result.rows[0].referred_by).to.eq(FEMALE_RECAT_USER.username)
       expect(result.rows[0].referred_date).to.contains(moment().format('YYYY-MM-DD'))
-      expect(result.rows[0].form_response.recat.securityInput).to.deep.eq({ securityInputNeeded: "Yes", securityNoteNeeded: "No" })
+      expect(result.rows[0].form_response.recat.securityInput).to.deep.eq({
+        securityInputNeeded: 'Yes',
+        securityNoteNeeded: 'No',
+      })
     })
     taskListPage.validateSecurityReferralDate(new Date())
 
@@ -149,7 +150,7 @@ describe("Women's estate recategorisation", () => {
     securityHomePage.validateCategorisationReferralsToDoTableColumnData([
       {
         columnName: 'Name and prison number',
-        expectedValues: ['Clark, Frank'+testOffenderNumber],
+        expectedValues: ['Clark, Frank' + testOffenderNumber],
       },
       {
         columnName: 'Referred by',
@@ -158,7 +159,7 @@ describe("Women's estate recategorisation", () => {
       {
         columnName: 'Type',
         expectedValues: ['Recat'],
-      }
+      },
     ])
     securityHomePage.getStartButton({ bookingId: testBookingId }).click()
 
@@ -167,7 +168,11 @@ describe("Women's estate recategorisation", () => {
     const testSecurityText = 'Some security input text'
     securityReviewPage.validateNoParagraphRecatNote()
     securityReviewPage.setSecurityInformationText(testSecurityText)
-    cy.task('updateFormRecord', { bookingId: testBookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: testSecurityText }}} })
+    cy.task('updateFormRecord', {
+      bookingId: testBookingId,
+      status: Status.SECURITY_BACK.name,
+      formResponse: { security: { review: { securityReview: testSecurityText } } },
+    })
     securityReviewPage.saveAndSubmitButton().click()
 
     securityHomePage.validateNoReferralsToReview()
@@ -213,39 +218,57 @@ describe("Women's estate recategorisation", () => {
     cy.get(`a[href="/form/recat/review/${testBookingId}"]`).contains('Continue').click()
 
     cy.get('.securityInputSummary').within(() => {
-      cy.contains('Automatic referral to security team').parent().within(() => {
-        cy.contains('No')
-      })
-      cy.contains('Manual referral to security team').parent().within(() => {
-        cy.contains('Yes')
-      })
-      cy.contains('Flagged by security team').parent().within(() => {
-        cy.contains('No')
-      })
-      cy.contains('Security comments').parent().within(() => {
-        cy.contains(testSecurityText)
-      })
+      cy.contains('Automatic referral to security team')
+        .parent()
+        .within(() => {
+          cy.contains('No')
+        })
+      cy.contains('Manual referral to security team')
+        .parent()
+        .within(() => {
+          cy.contains('Yes')
+        })
+      cy.contains('Flagged by security team')
+        .parent()
+        .within(() => {
+          cy.contains('No')
+        })
+      cy.contains('Security comments')
+        .parent()
+        .within(() => {
+          cy.contains(testSecurityText)
+        })
     })
     cy.get('.riskAssessmentSummary').within(() => {
-      cy.contains('Could they be managed in a lower security category?').parent().within(() => {
-        cy.contains('lower category text')
-      })
-      cy.contains('Should they remain in their current security category? Or be put in a higher security category?').parent().within(() => {
-        cy.contains('higher category text')
-      })
-      cy.contains('Other relevant information').parent().within(() => {
-        cy.contains('No')
-      })
+      cy.contains('Could they be managed in a lower security category?')
+        .parent()
+        .within(() => {
+          cy.contains('lower category text')
+        })
+      cy.contains('Should they remain in their current security category? Or be put in a higher security category?')
+        .parent()
+        .within(() => {
+          cy.contains('higher category text')
+        })
+      cy.contains('Other relevant information')
+        .parent()
+        .within(() => {
+          cy.contains('No')
+        })
     })
     cy.get('.assessmentSummary').within(() => {
-      cy.contains('What security category is most suitable for this person?').parent().within(() => {
-        cy.contains('Closed')
-      })
+      cy.contains('What security category is most suitable for this person?')
+        .parent()
+        .within(() => {
+          cy.contains('Closed')
+        })
     })
     cy.get('.nextReviewDateSummary').within(() => {
-      cy.contains('What date should they be reviewed by?').parent().within(() => {
-        cy.contains(moment().add(6, 'months').format('dddd D MMMM YYYY'))
-      })
+      cy.contains('What date should they be reviewed by?')
+        .parent()
+        .within(() => {
+          cy.contains(moment().add(6, 'months').format('dddd D MMMM YYYY'))
+        })
     })
     cy.task('stubCategorise', {
       expectedCat: 'R',

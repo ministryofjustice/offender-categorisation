@@ -55,7 +55,7 @@ export default class VictimContactSchemePage extends Page {
         | typeof SELECTORS.VICTIM_LIAISON_OFFICER_RESPONSE.TEXTAREA
         | ContactedVictimLiaisonOfficerChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -64,7 +64,7 @@ export default class VictimContactSchemePage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.VICTIM_CONTACT_SCHEME.ERROR | '#vloResponseText-error' | '#contactedVLO-error'
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -78,14 +78,14 @@ export default class VictimContactSchemePage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => victimContactSchemeRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectVictimContactSchemeRadioButton = (selectedTextValue: VictimContactSchemeChoice): PageElement =>
     cy.get(victimContactSchemeRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
   selectContactedVictimLiaisonOfficerRadioButton = (
-    selectedTextValue: ContactedVictimLiaisonOfficerChoice
+    selectedTextValue: ContactedVictimLiaisonOfficerChoice,
   ): PageElement => cy.get(contactedVictimLiaisonOfficerRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
   setVictimLiaisonOfficerResponseTextInput = (justification: string): PageElement =>

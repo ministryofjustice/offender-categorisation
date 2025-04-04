@@ -22,7 +22,7 @@ Cypress.Commands.add(
           expect(actualValue).to.equal(expectedValue)
         })
       })
-  }
+  },
 )
 
 Cypress.Commands.add(
@@ -35,7 +35,7 @@ Cypress.Commands.add(
       })
       expect(rowData).to.deep.equal(expectedValues[$index])
     })
-  }
+  },
 )
 
 Cypress.Commands.add('validateCategorisationDetails', (columns: { key: string; value: string }[][]) => {
@@ -85,5 +85,5 @@ Cypress.Commands.add(
     }
 
     return assertDBWithRetries(retries)
-  }
+  },
 )

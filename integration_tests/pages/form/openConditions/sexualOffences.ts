@@ -39,7 +39,7 @@ export default class SexualOffencesPage extends Page {
       index: number
       href: SexualOffencesChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -48,7 +48,7 @@ export default class SexualOffencesPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.SEXUAL_OFFENCES.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -62,7 +62,7 @@ export default class SexualOffencesPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => sexualOffencesRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectSexualOffencesRadioButton = (selectedTextValue: SexualOffencesChoice): PageElement =>

@@ -64,7 +64,7 @@ module.exports = function Index({
     '/',
     asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       redirectUsingRole(req, res, '/categoriserHome', '/supervisorHome', '/securityHome', '/recategoriserHome')
-    })
+    }),
   )
 
   router.get(
@@ -109,7 +109,7 @@ module.exports = function Index({
         sortAttribute,
         sortDirection,
       })
-    })
+    }),
   )
 
   router.post(
@@ -125,7 +125,7 @@ module.exports = function Index({
       }
       req.session.hideCategoriserHomeFilter = validation.value.hideFilter
       res.sendStatus(200)
-    })
+    }),
   )
 
   router.get(
@@ -138,7 +138,7 @@ module.exports = function Index({
         ? await offendersService.getCategorisedOffenders(res.locals, user, CatType.INITIAL.name, transactionalDbClient)
         : []
       res.render('pages/categoriserDone', { offenders })
-    })
+    }),
   )
 
   router.get(
@@ -151,7 +151,7 @@ module.exports = function Index({
         ? await offendersService.getCategorisedOffenders(res.locals, user, null, transactionalDbClient)
         : []
       res.render('pages/supervisorDone', { offenders })
-    })
+    }),
   )
 
   router.get(
@@ -164,7 +164,7 @@ module.exports = function Index({
         ? await offendersService.getSecurityReviewedOffenders(res.locals, transactionalDbClient)
         : []
       res.render('pages/securityDone', { offenders })
-    })
+    }),
   )
 
   router.get(
@@ -175,7 +175,7 @@ module.exports = function Index({
 
       const offenders = res.locals.user.activeCaseLoad ? await offendersService.getUnapprovedOffenders(res.locals) : []
       res.render('pages/supervisorHome', { offenders })
-    })
+    }),
   )
 
   router.get(
@@ -186,7 +186,7 @@ module.exports = function Index({
 
       const offenders = res.locals.user.activeCaseLoad ? await offendersService.getReferredOffenders(res.locals) : []
       res.render('pages/securityHome', { offenders })
-    })
+    }),
   )
 
   router.get(
@@ -199,7 +199,7 @@ module.exports = function Index({
         ? await offendersService.getUpcomingReferredOffenders(res.locals, transactionalDbClient)
         : []
       res.render('pages/securityUpcoming', { offenders })
-    })
+    }),
   )
 
   router.get(
@@ -219,7 +219,7 @@ module.exports = function Index({
       // Can be removed after pilot of recategorisation prioritisation filter
       if (validation.value.filterRemoved) {
         logger.info(
-          `Recategorisation Prioritisation Filter: filter removed using chips: ${validation.value.filterRemoved}`
+          `Recategorisation Prioritisation Filter: filter removed using chips: ${validation.value.filterRemoved}`,
         )
         delete validation.value.filterRemoved
       }
@@ -238,7 +238,7 @@ module.exports = function Index({
       // Can be removed after pilot of recategorisation prioritisation filter
       if (typeof validation.value === 'object' && Object.keys(validation.value).length > 0) {
         logger.info(
-          `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}, prisonId = ${user.activeCaseLoad.caseLoadId}`
+          `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}, prisonId = ${user.activeCaseLoad.caseLoadId}`,
         )
       }
 
@@ -255,7 +255,7 @@ module.exports = function Index({
         sortAttribute,
         sortDirection,
       })
-    })
+    }),
   )
 
   router.post(
@@ -271,7 +271,7 @@ module.exports = function Index({
       }
       req.session.hideRecategoriserHomeFilter = validation.value.hideFilter
       res.sendStatus(200)
-    })
+    }),
   )
 
   router.get(
@@ -285,10 +285,10 @@ module.exports = function Index({
         : []
       const riskChangeCount = await formService.getRiskChangeCount(
         res.locals.user.activeCaseLoad.caseLoadId,
-        transactionalDbClient
+        transactionalDbClient,
       )
       res.render('pages/recategoriserDone', { offenders, riskChangeCount })
-    })
+    }),
   )
 
   router.get(
@@ -301,7 +301,7 @@ module.exports = function Index({
         ? await offendersService.getRiskChanges(res.locals, transactionalDbClient)
         : []
       res.render('pages/recategoriserCheck', { offenders })
-    })
+    }),
   )
 
   const INIT = CatType.INITIAL.name
@@ -361,7 +361,7 @@ module.exports = function Index({
           catType: CatType.INITIAL.name,
         })
       }
-    })
+    }),
   )
 
   router.get(
@@ -380,7 +380,7 @@ module.exports = function Index({
           end,
           prisonId,
           transactionalDbClient,
-          user.activeCaseLoad.female
+          user.activeCaseLoad.female,
         )
         const recat = await statsService.getRecatCategoryOutcomes(start, end, prisonId, transactionalDbClient)
         const security = await statsService.getSecurityReferrals(RECAT, start, end, prisonId, transactionalDbClient)
@@ -407,7 +407,7 @@ module.exports = function Index({
           catType: CatType.RECAT.name,
         })
       }
-    })
+    }),
   )
 
   router.get(
@@ -418,7 +418,7 @@ module.exports = function Index({
       const { bookingId } = req.params
       const data = await offendersService.getCategoryHistory(res.locals, bookingId, transactionalDbClient)
       res.render(`pages/categoryHistory`, { data })
-    })
+    }),
   )
 
   router.get(
@@ -431,7 +431,7 @@ module.exports = function Index({
       res.locals.currentRole = role
 
       res.redirect(calculateLandingTarget(referer))
-    })
+    }),
   )
 
   router.get(
@@ -443,7 +443,7 @@ module.exports = function Index({
       const { catType } = req.query
 
       res.render('pages/openConditionsAdded', { data: { catType, details: { bookingId } } })
-    })
+    }),
   )
 
   router.get(
@@ -457,9 +457,9 @@ module.exports = function Index({
         `/supervisorLanding/${bookingId}`,
         `/securityLanding/${bookingId}`,
         `/recategoriserLanding/${bookingId}`,
-        `/landing/${bookingId}`
+        `/landing/${bookingId}`,
       )
-    })
+    }),
   )
 
   router.get(
@@ -483,7 +483,7 @@ module.exports = function Index({
       const requiredCatType = offendersService.requiredCatType(
         parseInt(bookingId, 10),
         details.categoryCode,
-        categoryHistory.history
+        categoryHistory.history,
       )
 
       const nextReviewDateHistory = await formService.getNextReview(details.offenderNo, transactionalDbClient)
@@ -502,7 +502,7 @@ module.exports = function Index({
           nextReviewDateHistory,
         },
       })
-    })
+    }),
   )
 
   router.get(
@@ -515,7 +515,7 @@ module.exports = function Index({
       const nextReviewDate = extractNextReviewDate(details)
 
       res.render(`pages/landing`, { data: { details, nextReviewDate } })
-    })
+    }),
   )
 
   /* we only need the categorisation user name if the categorisation is in progress and the current user has the security role */
@@ -558,7 +558,7 @@ module.exports = function Index({
     asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
       res.redirect(`/tasklistRecat/${bookingId}?reason=MANUAL`)
-    })
+    }),
   )
 
   router.post(
@@ -585,10 +585,10 @@ module.exports = function Index({
         details.agencyId,
         details.offenderNo,
         user.username,
-        transactionalDbClient
+        transactionalDbClient,
       )
       return res.render('pages/securityReferralSubmitted', { bookingId })
-    })
+    }),
   )
 
   router.get(
@@ -600,7 +600,7 @@ module.exports = function Index({
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
       const errors = req.flash('errors')
       res.render(`pages/securityCancel`, { data: { details }, errors })
-    })
+    }),
   )
 
   router.post(
@@ -625,7 +625,7 @@ module.exports = function Index({
       formService.cancelSecurityReferral(details.offenderNo, transactionalDbClient)
 
       return res.render('pages/securityCancelConfirmed', { bookingId })
-    })
+    }),
   )
 
   return router

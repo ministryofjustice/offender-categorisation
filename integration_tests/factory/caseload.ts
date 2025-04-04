@@ -5,7 +5,7 @@ export const caseloadFactory = (
   id: string,
   description: string,
   type: CaseloadType,
-  locations: AgencyLocation[]
+  locations: AgencyLocation[],
 ): Caseload => {
   return {
     id,
