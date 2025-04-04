@@ -18,7 +18,7 @@ describe('Set Up Web Security', () => {
   it('should set up Cross-Origin Embedder Policy', async () => {
     const response = await supertest(app).get('/some-route')
     expect(response.header['cross-origin-embedder-policy']).toBeDefined()
-    expect(response.header['cross-origin-embedder-policy']).toContain('require-corp')
+    expect(response.header['cross-origin-embedder-policy']).toContain('credentialless')
   })
 
   it('should handle /well-known/security.txt route', async () => {
