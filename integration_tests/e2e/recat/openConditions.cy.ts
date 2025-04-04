@@ -1683,13 +1683,13 @@ describe('Open Conditions', () => {
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
 
       cy.intercept('GET', '/form/recat/decision/*', req => {
+        // FIXME remove after 2025-05-28
         req.query.overrideFeatureFlag = 'true'
       }).as('decision')
       tasklistRecatPage.decisionButton().click()
       cy.wait('@decision')
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
-      // FIXME update after 2025-05-28 to check for /macros/conditionalReleaseDateInsetText.html
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ' })
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Saturday 13 June 2020' })
     })
@@ -1709,15 +1709,14 @@ describe('Open Conditions', () => {
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
 
       cy.intercept('GET', '/form/recat/decision/*', req => {
+        // FIXME remove after 2025-05-28
         req.query.overrideFeatureFlag = 'true'
       }).as('decision')
       tasklistRecatPage.decisionButton().click()
       cy.wait('@decision')
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
-      // FIXME update after 2025-05-28 to check for /macros/conditionalReleaseDateInsetText.html
-      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Conditional release date: ' })
-      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Sunday 2 February 2020' })
+      decisionPage.checkConditionalReleaseDateInsetText('2020-02-02')
     })
   })
 
