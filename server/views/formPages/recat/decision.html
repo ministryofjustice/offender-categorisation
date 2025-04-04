@@ -171,16 +171,13 @@
     {% set itemList = [ optionB, optionC, optionD, optionI, optionJ ] if data.details.youngOffender else [ optionB, optionC, optionD ] %}
   {% endif %}
 
-  {% set categoryRadiosLabel %}
-      <span class="govuk-!-font-weight-bold">What security category is most suitable for this prisoner?</span>
-  {% endset %}
-
   {{ govukRadios({
     name: 'category',
     classes: 'govuk-radios',
     fieldset: {
       legend: {
-        html: categoryRadiosLabel
+        text: 'What security category is most suitable for this prisoner?',
+        classes: 'govuk-!-font-weight-bold'
       }
     },
     errorMessage: {
