@@ -607,7 +607,7 @@ describe('referToSecurityIfRiskAssessed', () => {
         extremismProfile,
         'APPROVED',
         mockTransactionalClient
-      )
+      ),
     ).rejects.toThrow('Cannot transition from status APPROVED to SECURITY_AUTO')
   })
 
@@ -634,7 +634,7 @@ describe('referToSecurityIfRiskAssessed', () => {
         extremismProfile,
         'STARTED',
         mockTransactionalClient
-      )
+      ),
     ).rejects.toThrow('TEST')
   })
 })

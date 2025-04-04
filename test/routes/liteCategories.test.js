@@ -78,7 +78,7 @@ describe('assessment', () => {
           new RegExp(
             `<input\\s+class="govuk-input govuk-!-width-full"\\s+id="nextReviewDate"\\s+name="nextReviewDate"\\s+type="text"\\s+value="${sixMonths}"\\s*>`,
             's'
-          )
+          ),
         )
 
         expect(res.text).toContain('<option value="SYI">Shrewsbury (HMP)</option>')

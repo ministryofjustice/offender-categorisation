@@ -624,7 +624,7 @@ module.exports = function createOffendersService(
         sortByDateTime(
           b.dateRequired ? b.dateRequired : b.nextReviewDate,
           a.dateRequired ? a.dateRequired : a.nextReviewDate
-        )
+        ),
       )
     } catch (error) {
       logger.error(error, 'Error during getUnapprovedOffenders')

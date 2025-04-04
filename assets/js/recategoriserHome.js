@@ -30,7 +30,7 @@ if (selectAllSuitabilityForOpenConditionsFilter) {
       'suitabilityForOpenConditions[]',
       !allCheckboxesAreChecked('suitabilityForOpenConditions[]'),
       'selectAllSuitabilityForOpenConditionsFilter'
-    )
+    ),
   )
 }
 

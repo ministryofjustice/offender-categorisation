@@ -1,18 +1,18 @@
 import { removeFilterFromFullUrl } from './nunjucks.utility'
 import {
+  CategorisationHomeFilters,
   DUE_DATE,
+  HomeFilterDueDateValue,
+  HomeFilterPomValue,
   LOW_RISK_OF_ESCAPE,
   NOT_MARKED_AS_NOT_FOR_RELEASE,
   OVERDUE,
   POM,
-  HomeFilterDueDateValue,
-  HomeFilterPomValue,
   RecategorisationHomeFilters,
   RecategorisationHomeFilterSuitabilityForOpenConditionsValue,
   REVIEWS_ASSIGNED_TO_ME,
   STANDARD_OR_ENHANCED_INCENTIVE_LEVEL,
   SUITABILIGY_FOR_OPEN_CONDITIONS,
-  CategorisationHomeFilters,
 } from '../services/filter/homeFilter'
 
 describe('removeFilterFromFullUrl', () => {

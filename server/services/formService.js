@@ -108,7 +108,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
             currentCategorisation.offenderNo
           }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
             filterJsonObjectForLogging(userInput)
-          )}`
+          )}`,
         )
       }
       await formClient.update(
@@ -153,7 +153,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         currentCategorisation.offenderNo
       }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
         filterJsonObjectForLogging(userInput)
-      )}`
+      )}`,
     )
     if (validateStatusIfProvided(currentCategorisation.status, Status.AWAITING_APPROVAL.name)) {
       await formClient.categoriserDecisionWithFormResponse(
@@ -224,7 +224,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
           currentCategorisation.offenderNo
         }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
           filterJsonObjectForLogging(userInput)
-        )}`
+        )}`,
       )
       await formClient.supervisorApproval(newCategorisationForm, bookingId, userId, transactionalClient)
       await formClient.setSecurityReferralStatus(currentCategorisation.offenderNo, 'COMPLETED', transactionalClient)
@@ -876,7 +876,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       await Promise.all(
         pendingCategorisations.rows.map(async pendingCategorisation =>
           formClient.deleteCategorisation(pendingCategorisation.id, transactionalClient)
-        )
+        ),
       )
 
       await Promise.all(
@@ -886,7 +886,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
             sequence: pendingLiteCategorisation.sequence,
             transactionalClient,
           })
-        )
+        ),
       )
     } else {
       logger.debug('Would have deleted the following pending categorisations', {

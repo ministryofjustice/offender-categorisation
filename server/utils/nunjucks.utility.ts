@@ -1,9 +1,9 @@
-import { CategorisationHomeFilters, RecategorisationHomeFilters } from '../services/filter/homeFilter'
 import type {
   HomeFilterDueDateValue,
   HomeFilterPomValue,
   RecategorisationHomeFilterSuitabilityForOpenConditionsValue,
 } from '../services/filter/homeFilter'
+import { CategorisationHomeFilters, RecategorisationHomeFilters } from '../services/filter/homeFilter'
 import config from '../config'
 
 export const removeFilterFromFullUrl = (
