@@ -1659,6 +1659,7 @@ describe('Open Conditions', () => {
   })
 
   describe('conditional release or parole eligibility date', () => {
+    // FIXME remove after 2025-05-28
     it('does not show parole eligibility date when 3-to-5 policy flag is disabled', () => {
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
@@ -1688,6 +1689,7 @@ describe('Open Conditions', () => {
       cy.wait('@decision')
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
+      // FIXME update after 2025-05-28 to check for /macros/conditionalReleaseDateInsetText.html
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ' })
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Saturday 13 June 2020' })
     })
@@ -1713,6 +1715,7 @@ describe('Open Conditions', () => {
       cy.wait('@decision')
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
+      // FIXME update after 2025-05-28 to check for /macros/conditionalReleaseDateInsetText.html
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Conditional release date: ' })
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Sunday 2 February 2020' })
     })
@@ -1747,7 +1750,7 @@ describe('Open Conditions', () => {
       tprsPage.continueButton().click()
     })
 
-    // FIXME remove after '2025-05-28'
+    // FIXME remove after 2025-05-28
     it('Shows correct message when not suitable for open conditions because of earliest release date', () => {
       // 'the Earliest Release page is displayed'
       const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)

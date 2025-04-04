@@ -2,9 +2,9 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "details/macro.njk" import govukDetails %}
-{% from "inset-text/macro.njk" import govukInsetText %}
 {% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "../../macros/conditionalReleaseDateInsetText.html" import conditionalReleaseDateInsetText %}
 
 {% set pageTitle = "Category decision" %}
 
@@ -54,23 +54,21 @@
 {% block formItems %}
 
   {% if featurePolicyChangeThreeToFiveEnabled %}
+    {% if is3to5PolicyChangeAlertBannerExpired() %}
+      {% if data.details.sentence.paroleEligibilityDate %}
+        {% set govukInsetTextDate %}
 
-    {% if is3to5AlertBannerExpired() %}
-
-      {% set govukInsetTextDate %}
-
-        {% if data.details.sentence.paroleEligibilityDate %}
           <span>Parole eligibility date: {{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>
-        {% else %}
-          <span>Conditional release date: {{ getLongDateFormatIso(data.details.sentence.conditionalReleaseDate) }}</span>
-        {% endif %}
+          {{ govukInsetText({
+            html: govukInsetTextDate
+          }) }}
 
-      {% endset %}
+        {% endset %}
+      {% else %}
 
-      {{ govukInsetText({
-        html: govukInsetTextDate
-      }) }}
+        {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDat) }}
 
+      {% endif %}
     {% else %}
 
       {#  FIXME remove after 2025-05-28 #}
