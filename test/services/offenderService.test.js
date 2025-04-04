@@ -2945,6 +2945,14 @@ describe('getOffenderDetailsWithNextReviewDate', () => {
 })
 
 describe('getDueRecats', () => {
+  beforeAll(() => {
+    jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should return an empty array when no data is available', async () => {
     nomisClient.getRecategoriseOffenders.mockResolvedValue([])
     formService.getCategorisationRecords.mockResolvedValue([])
@@ -2955,7 +2963,7 @@ describe('getDueRecats', () => {
     expect(result).toEqual([])
   })
 
-  it.only('should return a filtered list of offenders pending recats - keeping nulls for records that have been filtered', async () => {
+  it('should return a filtered list of offenders pending recats - keeping nulls for records that have been filtered', async () => {
     nomisClient.getRecategoriseOffenders.mockResolvedValue([
       {
         offenderNo: 'G9285UP',
@@ -3037,8 +3045,8 @@ describe('getDueRecats', () => {
         pnomis: false,
         buttonText: 'Start',
         pom: 'Steve Rendell',
-        dbRecordExists: undefined,
-        dbStatus: undefined,
+        dbRecordExists: 'asd',
+        dbStatus: 'qweqwe',
       },
       null,
     ])
