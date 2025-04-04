@@ -2955,7 +2955,7 @@ describe('getDueRecats', () => {
     expect(result).toEqual([])
   })
 
-  it('should return a filtered list of offenders pending recats - keeping nulls for records that have been filtered', async () => {
+  it.only('should return a filtered list of offenders pending recats - keeping nulls for records that have been filtered', async () => {
     nomisClient.getRecategoriseOffenders.mockResolvedValue([
       {
         offenderNo: 'G9285UP',
@@ -3037,6 +3037,8 @@ describe('getDueRecats', () => {
         pnomis: false,
         buttonText: 'Start',
         pom: 'Steve Rendell',
+        dbRecordExists: undefined,
+        dbStatus: undefined,
       },
       null,
     ])
