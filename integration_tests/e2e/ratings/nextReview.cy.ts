@@ -134,44 +134,6 @@ describe('Next Review', () => {
     })
   })
 
-  describe('step 1 - when should they next be reviewed? 3 to 5 policy change', () => {
-    beforeEach(() => {
-      cy.stubLogin({ user: CATEGORISER_USER })
-      cy.signIn()
-
-      categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
-
-      taskListPage = TaskListPage.createForBookingId(bookingId)
-
-      cy.intercept('GET', '/form/nextReviewDate/nextReviewDateQuestion/*', req => {
-        req.query.overrideFeatureFlag = 'true'
-      }).as('nextReviewDateQuestion')
-      taskListPage.nextReviewDateButton().click()
-      cy.wait('@nextReviewDateQuestion')
-
-      nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
-      nextReviewQuestionPage.assertTextVisibilityOnPage({
-        selector: 'div',
-        text: 'is 5 or more years away, they must be reviewed every 12 months',
-      })
-    })
-
-    describe('invalid', () => {
-      it('should show a validation error on empty form submission 3 to 5 policy change', () => {
-        nextReviewQuestionPage.continueButton().click()
-
-        nextReviewQuestionPage.validateErrorSummaryMessages([
-          { index: 0, href: '#nextDateChoice', text: 'Please select a choice' },
-        ])
-
-        nextReviewQuestionPage.validateErrorMessages([
-          { selector: '#nextDateChoice-error', text: 'Please select a choice' },
-        ])
-      })
-    })
-  })
-
   describe('step 2 - Confirm the date they should be reviewed by', () => {
     beforeEach(() => {
       cy.stubLogin({
@@ -353,7 +315,7 @@ describe('Next Review', () => {
           nextReviewStandalonePage.clearNewReviewReasonTextInput()
 
           nextReviewStandalonePage.setNewReviewDateInput(
-            moment().add(1, 'year').add(1, 'day').format(EXPECTED_DATE_FORMAT_FRONT_END)
+            moment().add(1, 'year').add(1, 'day').format(EXPECTED_DATE_FORMAT_FRONT_END),
           )
           nextReviewStandalonePage.submitButton().click()
 
@@ -398,7 +360,7 @@ describe('Next Review', () => {
               expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
               expect(result.rows[0].changed_by).to.eq(CATEGORISER_USER.username)
               expect(result.rows.length).to.eq(1)
-            }
+            },
           )
         })
       })
@@ -518,7 +480,7 @@ describe('Next Review', () => {
               expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
               expect(result.rows[0].changed_by).to.eq(SUPERVISOR_USER.username)
               expect(result.rows.length).to.eq(1)
-            }
+            },
           )
         })
 
@@ -572,7 +534,7 @@ describe('Next Review', () => {
               expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
               expect(result.rows[0].changed_by).to.eq(SUPERVISOR_USER.username)
               expect(result.rows.length).to.eq(1)
-            }
+            },
           )
         })
       })
@@ -665,7 +627,7 @@ describe('Next Review', () => {
             expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
             expect(result.rows[0].changed_by).to.eq(CATEGORISER_USER.username)
             expect(result.rows.length).to.eq(1)
-          }
+          },
         )
       })
     })
