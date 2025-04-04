@@ -58,7 +58,7 @@ module.exports = context => {
             legalStatus: r.legalStatus,
             recall: r.recall,
             offenderNo: r.prisonerNumber,
-          })
+          }),
         )
       }
       return responses

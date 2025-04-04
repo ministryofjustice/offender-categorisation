@@ -58,7 +58,7 @@ describe('authorisationMiddleware roles', () => {
     await authorisationMiddleware(userService, offendersService)(
       { originalUrl: '/categoryHistory/123', path: '/categoryHistory/123' },
       genericRes,
-      next
+      next,
     )
 
     expect(next).toBeCalledWith()
@@ -74,7 +74,7 @@ describe('authorisationMiddleware roles', () => {
     await authorisationMiddleware(userService, offendersService)(
       { originalUrl: '/categoryHistory/123', path: '/categoryHistory/123' },
       genericRes,
-      next
+      next,
     )
 
     expect(next).toBeCalledWith(new Error('Prisoner is not in this prison'))
@@ -90,7 +90,7 @@ describe('authorisationMiddleware roles', () => {
     await authorisationMiddleware(userService, offendersService)(
       { originalUrl: '/form/approvedView/invalid', path: '/form/approvedView/invalid' },
       genericRes,
-      next
+      next,
     )
 
     expect(next).toBeCalledWith(new Error('Url not recognised')) // blocked by auth config
@@ -106,7 +106,7 @@ describe('authorisationMiddleware roles', () => {
     await authorisationMiddleware(userService, offendersService)(
       { originalUrl: '/categoryHistory/123', path: '/categoryHistory/123' },
       genericRes,
-      next
+      next,
     )
 
     expect(next).toBeCalledWith(new Error('Booking id not found'))

@@ -12,7 +12,7 @@ export interface RecategorisationPrisonerSearchDto {
 }
 
 export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
-  prisonerSearchDto: PrisonerSearchDto
+  prisonerSearchDto: PrisonerSearchDto,
 ): RecategorisationPrisonerSearchDto => ({
   releaseDate: prisonerSearchDto.releaseDate,
   alerts: prisonerSearchDto.alerts,

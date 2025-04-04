@@ -199,7 +199,7 @@ describe('GET /tasklist/', () => {
             socProfile: sampleSocProfile,
             extremismProfile: sampleExtremismProfile,
           },
-          mockTransactionalClient
+          mockTransactionalClient,
         )
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(
           '12345',
@@ -207,7 +207,7 @@ describe('GET /tasklist/', () => {
           sampleSocProfile,
           sampleExtremismProfile,
           'STARTED',
-          mockTransactionalClient
+          mockTransactionalClient,
         )
         expect(formService.updateFormData).not.toBeCalled()
       })

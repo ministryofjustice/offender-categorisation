@@ -1,7 +1,7 @@
 import { ProbationOffenderSearchOffenderDto } from './probationOffenderSearchOffender.dto'
 
 export const makeTestProbationOffenderSearchOffenderDto = (
-  probationOffenderSearchOffenderDto: Partial<ProbationOffenderSearchOffenderDto> = {}
+  probationOffenderSearchOffenderDto: Partial<ProbationOffenderSearchOffenderDto> = {},
 ): ProbationOffenderSearchOffenderDto => ({
   otherIds: {
     nomsNumber: probationOffenderSearchOffenderDto.otherIds?.nomsNumber ?? 'ABC123',

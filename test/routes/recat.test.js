@@ -149,7 +149,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-      })
+      }),
   )
 
   describe('GET /form/recat/securityInput', () => {
@@ -164,7 +164,7 @@ describe('recat', () => {
         .expect(res => {
           expect(res.text).toContain(expectedContent)
           expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
-        })
+        }),
     )
     test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
       formService.getCategorisationRecord.mockResolvedValue({
@@ -341,7 +341,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toMatch(
-          /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 4 non-serious assaults in the past 12 months./
+          /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 4 non-serious assaults in the past 12 months./,
         )
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Category task list/s)
       })
@@ -364,7 +364,7 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).not.toContain('This person has been reported as the perpetrator')
         expect(res.text).toContain(
-          'This person has not been reported as the perpetrator in any assaults in custody before'
+          'This person has not been reported as the perpetrator in any assaults in custody before',
         )
       })
   })
@@ -383,7 +383,7 @@ describe('recat', () => {
       .expect(res => {
         expect(res.text).toContain('This person is at risk of engaging in, or vulnerable to, extremism.')
         expect(res.text).not.toContain(
-          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.'
+          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
         )
       })
   })
@@ -403,7 +403,7 @@ describe('recat', () => {
         expect(res.text).not.toContain('This person is at risk of engaging in, or vulnerable to, extremism.')
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain(
-          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.'
+          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
         )
       })
   })
@@ -468,12 +468,12 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain(
-          'This person needs to be considered by security. Please start a review and refer this person to security.'
+          'This person needs to be considered by security. Please start a review and refer this person to security.',
         )
         expect(res.text).toContain('Notify your safer custody lead about this prisoner')
         expect(res.text).toContain('This person is now considered a risk of escape')
         expect(res.text).toMatch(
-          /They have been reported as the perpetrator of 4 assaults in custody before,\s+including 1 serious assaults and 2 non-serious assaults in the past 12 months/
+          /They have been reported as the perpetrator of 4 assaults in custody before,\s+including 1 serious assaults and 2 non-serious assaults in the past 12 months/,
         )
         expect(res.text).toContain('There are no reported assaults during this sentence')
         expect(res.text).toContain('Do you want to start an early category review?')
@@ -495,10 +495,10 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
         expect(res.text).not.toContain('Risk of escape')
         expect(res.text).not.toContain('Security referral')
         expect(res.text).toMatch(
-          /They have been reported as the perpetrator of 7 assaults in custody before,\s+including 3 serious assaults and 2 non-serious assaults in the past 12 months/
+          /They have been reported as the perpetrator of 7 assaults in custody before,\s+including 3 serious assaults and 2 non-serious assaults in the past 12 months/,
         )
         expect(res.text).toMatch(
-          /They have been reported as the perpetrator of 6 assaults in custody before,\s+including 0 serious assaults and 5 non-serious assaults in the past 12 months/
+          /They have been reported as the perpetrator of 6 assaults in custody before,\s+including 0 serious assaults and 5 non-serious assaults in the past 12 months/,
         )
       })
   })
@@ -518,10 +518,10 @@ describe('GET /riskProfileChangeDetail/:bookingId', () => {
         expect(res.text).not.toContain('Risk of escape')
         expect(res.text).not.toContain('Security referral')
         expect(res.text).toMatch(
-          /They have been reported as the perpetrator of 3 assaults in custody before,\s+including 1 serious assaults and 2 non-serious assaults in the past 12 months/
+          /They have been reported as the perpetrator of 3 assaults in custody before,\s+including 1 serious assaults and 2 non-serious assaults in the past 12 months/,
         )
         expect(res.text).toMatch(
-          /They have been reported as the perpetrator of 5 assaults in custody before,\s+including 1 serious assaults and 4 non-serious assaults in the past 12 months/
+          /They have been reported as the perpetrator of 5 assaults in custody before,\s+including 1 serious assaults and 4 non-serious assaults in the past 12 months/,
         )
       })
   })
@@ -652,7 +652,7 @@ describe('POST /form/recat/fasttrackProgress', () => {
             },
             something: 'alreadyOnTheForm',
           },
-          mockTransactionalClient
+          mockTransactionalClient,
         )
       })
   })
@@ -694,7 +694,7 @@ describe('POST /form/recat/fasttrackProgress', () => {
             },
             something: 'alreadyOnTheForm',
           },
-          mockTransactionalClient
+          mockTransactionalClient,
         )
       })
   })
@@ -711,7 +711,7 @@ describe('Testing oasys input page routing', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-      })
+      }),
   )
   test('Oasys Validation error redirect to page', () => {
     request(app).post(`/oasysInput/866018`).expect(302).expect('Location', 'form/recat/oasysInput/866018')

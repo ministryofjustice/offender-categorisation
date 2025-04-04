@@ -61,7 +61,7 @@ module.exports = function Index({
         CatType.RECAT.name,
         reason,
         calculateDueDate(reason, details),
-        transactionalDbClient
+        transactionalDbClient,
       )
       const backLink = req.get('Referrer')
 
@@ -93,7 +93,7 @@ module.exports = function Index({
           CatType.RECAT.name,
           reason,
           calculateDueDate(reason, details),
-          transactionalDbClient
+          transactionalDbClient,
         )
       }
 
@@ -142,7 +142,7 @@ module.exports = function Index({
         isInWomensEstate: isFemalePrisonId(details.prisonId),
       }
       return res.render('pages/tasklistRecat', { data, backLink, reason })
-    })
+    }),
   )
 
   //  <<-------disabling Fast track as part of CAT-1340------>>
@@ -183,7 +183,7 @@ module.exports = function Index({
       res.render('pages/recategoriserSubmitted', {
         data: { surveyParameters: `recat=true&host=${req.hostname}` },
       })
-    })
+    }),
   )
 
   return router

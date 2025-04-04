@@ -31,7 +31,7 @@ export const formApiClientBuilder = (username: string): FormApiClient => {
     submitSecurityReview: async (
       bookingId: number,
       submitted: boolean,
-      securityReview: string | undefined = undefined
+      securityReview: string | undefined = undefined,
     ) => {
       const path = `${apiUrl}security/review/${bookingId}`
       return clientPost({

@@ -37,7 +37,7 @@ const offendersService = createOffendersService(
   formService,
   prisonerSearchClientBuilder,
   risksAndNeedsClientBuilder,
-  probationOffenderSearchClientBuilder
+  probationOffenderSearchClientBuilder,
 )
 const userService = createUserService(nomisClientBuilder)
 const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)

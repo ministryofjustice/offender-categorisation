@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-shadow
 export enum OverallRiskLevel {
   low = 'LOW',
   medium = 'MEDIUM',

@@ -53,7 +53,7 @@ module.exports = function setUpWebSecurity() {
 
   // cf. https://security-guidance.service.justice.gov.uk/implement-security-txt/
   router.get('/.well-known/security.txt', (req, res) =>
-    res.redirect(301, 'https://security-guidance.service.justice.gov.uk/.well-known/security.txt')
+    res.redirect(301, 'https://security-guidance.service.justice.gov.uk/.well-known/security.txt'),
   )
 
   return router

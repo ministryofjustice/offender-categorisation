@@ -13,9 +13,9 @@ const gatherCheckInfo = (total, currentValue) => ({ ...total, [currentValue.name
 
 const getBuild = () => {
   try {
-    // eslint-disable-next-line import/no-unresolved,global-require
+    // eslint-disable-next-line global-require,import/no-unresolved
     return require('../../build-info.json')
-  } catch (ex) {
+  } catch {
     return null
   }
 }

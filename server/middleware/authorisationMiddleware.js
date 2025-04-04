@@ -47,7 +47,7 @@ module.exports = (userService, offendersService) => async (req, res, next) => {
         if (!found) {
           return next(unauthorisedError('Prisoner is not in this prison'))
         }
-      } catch (e) {
+      } catch {
         return next(unauthorisedError('Booking id not found'))
       }
     }

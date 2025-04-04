@@ -1,0 +1,21 @@
+# Temporary only
+.tmp/
+
+# Ignore generated/minified files
+*.min.*
+
+# Build output
+dist/
+build/
+coverage/
+
+# Node.js modules
+node_modules/
+
+# Other common excludes
+*.lock
+.DS_Store
+.env
+
+# Files to ignore
+package-lock.json

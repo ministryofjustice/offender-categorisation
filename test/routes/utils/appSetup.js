@@ -31,7 +31,6 @@ module.exports = (route, production = false) => {
   app.use(cookieParser())
   app.use(featureFlagMiddleware)
   app.use('/', route)
-  // eslint-disable-next-line no-unused-vars
   app.use((error, req, res, next) => {
     // eslint-disable-next-line no-console
     console.log(error)
