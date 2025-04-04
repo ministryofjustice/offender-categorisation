@@ -92,7 +92,6 @@ module.exports = function Index({ formService, offendersService, userService, au
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
     const nomisDate = dateConverter(extractNextReviewDate(details))
-    // FIXME we should remove date arg and use nextReviewDate directly
     const date = standalone
       ? nomisDate
       : pageData[section] && pageData[section].nextReviewDate && pageData[section].nextReviewDate.date
