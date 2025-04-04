@@ -1,0 +1,13 @@
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% macro conditionalReleaseDateInsetText(date) %}
+
+  {% set govukInsetTextDate %}
+    <span>Conditional release date: {{ getLongDateFormatIso(date) }}</span>
+  {% endset %}
+
+  {{ govukInsetText({
+    html: govukInsetTextDate
+  }) }}
+
+{% endmacro %}

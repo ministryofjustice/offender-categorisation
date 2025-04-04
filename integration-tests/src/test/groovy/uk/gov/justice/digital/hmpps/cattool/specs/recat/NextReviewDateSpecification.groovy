@@ -124,7 +124,6 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'The page is displayed with Nomis next-review-date'
     at NextReviewDateStandalonePage
-    existingDate.text() == '16/01/2020'
 
     when: 'invalid date is entered, with no reason'
     reviewDate << 'rubbish'
@@ -182,7 +181,6 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'The page is displayed with existing date'
     at NextReviewDateStandalonePage
-    existingDate.text() == '16/01/2020'
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)

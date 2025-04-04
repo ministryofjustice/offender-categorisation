@@ -10,12 +10,10 @@ type NextReviewDateValues = typeof nextReviewDateHtmlSelectors.NEW_DATE | typeof
 const SELECTORS = {
   DATE: '#date',
   DATE_ERROR: '#reviewDate-error',
-  EXISTING_DATE: '#existingDate',
-  EXISTING_DATE_LONG: '#existingDateLong',
   REASON: '#reason',
   REASON_ERROR: '#reason-error',
   REVIEW_DATE: '#reviewDate',
-}
+} as const
 
 export default class NextReviewStandalonePage extends Page {
   private static _bookingId: number
@@ -54,11 +52,16 @@ export default class NextReviewStandalonePage extends Page {
 
   submitButton = (): PageElement => cy.get('button[type="submit"]').contains('Submit')
 
-  validateExistingDateValue = (expectedExistingDate: string): PageElement =>
-    cy.get(SELECTORS.EXISTING_DATE).should('have.text', expectedExistingDate)
+  checkCurrentReviewInsetText = (isoDate: string): void => {
+    const formattedDate = new Intl.DateTimeFormat('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date(isoDate))
 
-  validateExistingDateLongValue = (expectedExistingDate: string): PageElement =>
-    cy.get(SELECTORS.EXISTING_DATE_LONG).should('have.text', `Current review date: ${expectedExistingDate}`)
+    cy.contains(`Current review date: ${formattedDate}`)
+  }
 
   clearNewReviewDateInput = (): PageElement => cy.get(SELECTORS.REVIEW_DATE).clear()
 

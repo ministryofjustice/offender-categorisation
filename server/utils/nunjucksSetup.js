@@ -6,6 +6,7 @@ const {
   dateConverter,
   formatLength,
   getLongDateFormat,
+  getLongDateFormatIso,
   getVerboseDateFormat,
   catMappings,
   catLabel,
@@ -59,6 +60,7 @@ module.exports = (app, path) => {
     .addGlobal('ReviewReason', ReviewReason)
     .addGlobal('dateConverter', dateConverter)
     .addGlobal('getLongDateFormat', getLongDateFormat)
+    .addGlobal('getLongDateFormatIso', getLongDateFormatIso)
     .addGlobal('getVerboseDateFormat', getVerboseDateFormat)
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleTagManagerKey', config.googleTagManagerTag)
@@ -99,13 +101,8 @@ module.exports = (app, path) => {
 
       return date
     })
-    .addFilter('isFiveOrMoreYearsAway', sentenceExpiryDate => {
-      if (!sentenceExpiryDate) return false
-
-      const expiryDate = new Date(sentenceExpiryDate)
-      const fiveYearsFromNow = new Date()
-      fiveYearsFromNow.setFullYear(fiveYearsFromNow.getFullYear() + 5)
-
-      return expiryDate >= fiveYearsFromNow
+    .addGlobal('is3to5PolicyChangeAlertBannerExpired', () => {
+      // FIXME remove after 2025-05-28
+      return new Date() >= new Date('2025-05-28')
     })
 }

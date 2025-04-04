@@ -3,7 +3,8 @@
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 {% from "../../macros/prisonerReviewGuidance.html" import prisonerReviewGuidance %}
-{% from "../../macros/threeToFivePolicyChangeAlert.html" import threeToFivePolicyChangeAlert %}
+{% from "../../macros/conditionalReleaseDateInsetText.html" import conditionalReleaseDateInsetText %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% set pageTitle = "Categorisation is in progress: please use the tasklist to change date" %}
 {% set greenButtonText = "Submit" %}
@@ -17,47 +18,36 @@
 
 {% block formItems %}
 
-  {% if featurePolicyChangeThreeToFiveEnabled %}
-    {{ threeToFivePolicyChangeAlert() }}
-  {% endif %}
-
   <input name="indeterminate" type="hidden" value="{{ data.details.sentence.indeterminate }}"/>
   <h1 class="govuk-heading-l">Change the review date</h1>
 
-  {% if featurePolicyChangeThreeToFiveEnabled %}
-
-      {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
-        <p><span class="govuk-!-font-weight-bold">Their conditional release date is: </span>{{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}</p>
-      {% elif data.details.sentence.indeterminate %}
-        <p>They have an indeterminate prison sentence.</p>
-      {% endif %}
-
-    <p>You can amend this person's next review date, without creating a new categorisation.</p>
-    <p id="existingDateLong"><span class="govuk-!-font-weight-bold">Current review date: </span>{{ getLongDateFormat(date) }}</p>
-
-  {% else %}
-
-      {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
-        <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">Their conditional release date is:</p>
-        <p>{{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}</p>
-      {% elif data.details.sentence.indeterminate %}
-        <p>They have an indeterminate prison sentence.</p>
-      {% endif %}
-
-    <p>You can alter the prisoner's next review date (Re-assessment date) without needing to create a new categorisation.</p>
-
-    <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0"> Current review date:</p>
-    <p id="existingDate">{{ date }}</p>
+  {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
+    {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
+  {% elif data.details.sentence.indeterminate %}
+    <p>They have an indeterminate prison sentence.</p>
   {% endif %}
+
+  <p>You can amend this person's next review date, without creating a new categorisation.</p>
+
+  {% set govukInsetTextDate %}
+    <span>Current review date: {{ getLongDateFormat(date) }}</span>
+  {% endset %}
+
+  {{ govukInsetText({
+    html: govukInsetTextDate
+  }) }}
 
   {{ govukInput({
     id: "reviewDate",
     name: "date",
     value: data.nextReviewDate.nextReviewDateStandalone.date,
-    label: { text: "New date", classes: "govuk-!-font-weight-bold" },
+    label: { text: "New review date", classes: "govuk-!-font-weight-bold" },
     errorMessage: {
       text: (errors | findError('date')).text
     } if (errors | findError('date')),
+    hint: {
+      text: "For example, 2/11/2021"
+    },
     classes: "dateInputWidth"
   }) }}
 
@@ -70,7 +60,7 @@
     errorMessage: { text: "Enter reason for date change" } if (errors | findError('reason'))
   }) }}
 
-  {{ prisonerReviewGuidance(form="nextReviewDateStandalone", featurePolicyChangeThreeToFiveEnabled=featurePolicyChangeThreeToFiveEnabled) }}
+  {{ prisonerReviewGuidance() }}
 
 {% endblock %}
 
