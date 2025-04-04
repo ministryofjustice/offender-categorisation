@@ -89,7 +89,7 @@ beforeEach(() => {
     formService,
     prisonerSearchClientBuilder,
     risksAndNeedsClientBuilder,
-    probationOffenderSearchClientBuilder
+    probationOffenderSearchClientBuilder,
   )
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
@@ -1759,7 +1759,7 @@ describe('requiredCatType', () => {
           bookingId: 5,
           classificationCode: 'U',
         },
-      ])
+      ]),
     ).toBe('RECAT')
   })
 
@@ -1778,7 +1778,7 @@ describe('requiredCatType', () => {
           bookingId: 5,
           classificationCode: 'U',
         },
-      ])
+      ]),
     ).toBe('INITIAL')
   })
 
@@ -1793,7 +1793,7 @@ describe('requiredCatType', () => {
           bookingId: 5,
           classificationCode: 'U',
         },
-      ])
+      ]),
     ).toBe('INITIAL')
   })
 })
@@ -2537,7 +2537,7 @@ describe('handleRiskChangeDecision', () => {
       -5,
       'Me',
       RiskChangeStatus.REVIEW_REQUIRED.name,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
 
     expect(nomisClient.updateNextReviewDate).toBeCalledWith(-5, '2019-06-14')
@@ -2563,7 +2563,7 @@ describe('handleRiskChangeDecision', () => {
       -5,
       'Me',
       RiskChangeStatus.REVIEW_REQUIRED.name,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
 
     expect(nomisClient.updateNextReviewDate).not.toBeCalled()
@@ -2589,7 +2589,7 @@ describe('handleRiskChangeDecision', () => {
       -5,
       'Me',
       RiskChangeStatus.REVIEW_NOT_REQUIRED.name,
-      mockTransactionalClient
+      mockTransactionalClient,
     )
 
     expect(nomisClient.updateNextReviewDate).not.toBeCalled()
@@ -2706,7 +2706,7 @@ describe('mergeOffenderLists', () => {
       [
         { bookingId: 1, name: 'second1' },
         { bookingId: 4, name: 'second4' },
-      ]
+      ],
     )
     expect(result).toMatchObject([
       { bookingId: 1, name: 'first1' },
@@ -2720,7 +2720,7 @@ describe('mergeOffenderLists', () => {
       [
         { bookingId: 1, name: 'second1' },
         { bookingId: 4, name: 'second4' },
-      ]
+      ],
     )
     expect(result).toMatchObject([
       { bookingId: 1, name: 'second1' },
@@ -2733,7 +2733,7 @@ describe('mergeOffenderLists', () => {
         { bookingId: 1, name: 'first1' },
         { bookingId: 2, name: 'first2' },
       ],
-      []
+      [],
     )
     expect(result).toMatchObject([
       { bookingId: 1, name: 'first1' },
@@ -2743,7 +2743,7 @@ describe('mergeOffenderLists', () => {
   test('mergeOffenderLists - ignore nulls', () => {
     const result = service.mergeOffenderLists(
       [{ bookingId: 1, name: 'first1' }, null],
-      [null, { bookingId: 4, name: 'first2' }]
+      [null, { bookingId: 4, name: 'first2' }],
     )
     expect(result).toMatchObject([
       { bookingId: 1, name: 'first1' },
@@ -2812,7 +2812,7 @@ describe('checkAndMergeOffenderNo', () => {
     expect(formService.updateOffenderIdentifierReturningBookingId).toBeCalledWith(
       'G123OLD',
       'G123NEW',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
     expect(formService.getCategorisationRecord).toHaveBeenNthCalledWith(1, 123, mockTransactionalClient)
     expect(formService.getCategorisationRecord).toHaveBeenNthCalledWith(2, 456, mockTransactionalClient)
@@ -2837,7 +2837,7 @@ describe('checkAndMergeOffenderNo', () => {
     expect(formService.updateOffenderIdentifierReturningBookingId).toBeCalledWith(
       'G123OLD',
       'G123NEW',
-      mockTransactionalClient
+      mockTransactionalClient,
     )
     expect(formService.getCategorisationRecord).toHaveBeenNthCalledWith(1, 123, mockTransactionalClient)
     expect(formService.getCategorisationRecord).toHaveBeenNthCalledWith(2, 456, mockTransactionalClient)
@@ -3265,7 +3265,7 @@ describe('getDueRecats', () => {
         },
       ])
     },
-    10000
+    10000,
   )
 
   it('it should show an offender who has a release date AFTER their next review date, AND they are currently in Rejected By Supervisor', async () => {
@@ -3588,7 +3588,7 @@ describe('decorateWithCategorisationData', () => {
       mockOffender,
       mockUser,
       mockNomisClient,
-      mockCategorisation
+      mockCategorisation,
     )
     const expectedStatusText = `${service.statusTextDisplay(mockCategorisation.status)} (Firstname Lastname)`
     expect(mockNomisClient.getUserByUserId).toHaveBeenCalledWith(mockCategorisation.assignedUserId)
@@ -3606,7 +3606,7 @@ describe('decorateWithCategorisationData', () => {
       mockOffender,
       mockUser,
       mockNomisClient,
-      mockCategorisation
+      mockCategorisation,
     )
     const expectedStatusText = `${service.statusTextDisplay(mockCategorisation.status)} (Firstname Lastname)`
     expect(mockNomisClient.getUserByUserId).not.toHaveBeenCalled()
@@ -3624,7 +3624,7 @@ describe('decorateWithCategorisationData', () => {
       mockOffender,
       mockUser,
       mockNomisClient,
-      mockCategorisation
+      mockCategorisation,
     )
     const expectedStatusText = service.statusTextDisplay(mockCategorisation.status)
     expect(result).toEqual({
@@ -3647,7 +3647,7 @@ describe('statusTextDisplay', () => {
     async status => {
       expect(service.isAwaitingApprovalOrSecurity(status)).toBeTruthy()
     },
-    10000
+    10000,
   )
 
   test.each([
@@ -3662,7 +3662,7 @@ describe('statusTextDisplay', () => {
     async status => {
       expect(service.isAwaitingApprovalOrSecurity(status)).toBeFalsy()
     },
-    10000
+    10000,
   )
 })
 
@@ -3891,7 +3891,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
         allocationClient,
         prisonerSearchClient,
         risksAndNeedsClient,
-        probationOffenderSearchApiClient
+        probationOffenderSearchApiClient,
       )
 
       expect(result).toEqual([])
@@ -3927,7 +3927,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
         allocationClient,
         prisonerSearchClient,
         risksAndNeedsClient,
-        probationOffenderSearchApiClient
+        probationOffenderSearchApiClient,
       )
       expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
       expect(formService.getCategorisationRecord).toBeCalledTimes(1)
@@ -4001,7 +4001,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
         allocationClient,
         prisonerSearchClient,
         risksAndNeedsClient,
-        probationOffenderSearchApiClient
+        probationOffenderSearchApiClient,
       )
       expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
       expect(formService.getCategorisationRecord).toBeCalledTimes(2)

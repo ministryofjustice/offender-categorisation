@@ -26,7 +26,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'nextReviewDate'
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
       res.render(`formPages/nextReviewDate/${form}`, { ...result, date: calculateNextReviewDate(nextDateChoice) })
-    })
+    }),
   )
 
   router.get(
@@ -43,7 +43,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         })
       }
       return res.render(`formPages/nextReviewDate/${form}`, result)
-    })
+    }),
   )
 
   router.get(
@@ -53,7 +53,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const form = 'nextReviewDateStandaloneConfirmed'
       const result = await buildFormData(res, req, true, form, bookingId, false, transactionalDbClient)
       res.render(`pages/nextReviewDateStandaloneConfirmed`, result)
-    })
+    }),
   )
 
   router.get(
@@ -62,7 +62,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { form, bookingId } = req.params
       const result = await buildFormData(res, req, false, form, bookingId, true, transactionalDbClient)
       res.render(`formPages/nextReviewDate/${form}`, result)
-    })
+    }),
   )
 
   const buildFormData = async (res, req, standalone, form, bookingId, strict, transactionalDbClient) => {
@@ -129,14 +129,14 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}?nextDateChoice=${userInput.nextDateChoice}`)
-    })
+    }),
   )
 
   router.post(
     '/nextReviewDateEditing/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       res.redirect(`/tasklistRecat/${req.params.bookingId}`)
-    })
+    }),
   )
 
   router.post(
@@ -165,7 +165,7 @@ module.exports = function Index({ formService, offendersService, userService, au
             nextReviewDate: dateConverterToISO(userInput.date),
             reason: userInput.reason,
           },
-          transactionalDbClient
+          transactionalDbClient,
         )
 
         await offendersService.updateNextReviewDate(res.locals, bookingId, userInput.date)
@@ -185,7 +185,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const nextPath = getPathFor({ data: userInput, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   return router

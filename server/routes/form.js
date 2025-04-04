@@ -57,7 +57,7 @@ module.exports = function Index({
       const offences = await offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo)
       const data = { ...result.data, history, offences }
       res.render(`formPages/${section}/${form}`, { ...result, data })
-    })
+    }),
   )
 
   router.get(
@@ -75,7 +75,7 @@ module.exports = function Index({
       } else {
         res.render('formPages/ratings/securityInput', result)
       }
-    })
+    }),
   )
 
   router.get(
@@ -88,7 +88,7 @@ module.exports = function Index({
       const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
       const data = { ...result.data, violenceProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
-    })
+    }),
   )
 
   router.get(
@@ -101,7 +101,7 @@ module.exports = function Index({
       const escapeProfile = await riskProfilerService.getEscapeProfile(result.data.details.offenderNo, res.locals)
       const data = { ...result.data, escapeProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
-    })
+    }),
   )
 
   router.get(
@@ -114,11 +114,11 @@ module.exports = function Index({
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         result.data.details.offenderNo,
         res.locals,
-        false // don't yet have the answer the question - will be populated correctly in the review route
+        false, // don't yet have the answer the question - will be populated correctly in the review route
       )
       const data = { ...result.data, extremismProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
-    })
+    }),
   )
 
   router.get(
@@ -136,7 +136,7 @@ module.exports = function Index({
         const data = { ...result.data, suggestedCat }
         res.render(`formPages/${section}/${form}`, { ...result, data })
       }
-    })
+    }),
   )
 
   router.get(
@@ -154,7 +154,7 @@ module.exports = function Index({
         res.locals,
         result.data.ratings &&
           result.data.ratings.extremismRating &&
-          result.data.ratings.extremismRating.previousTerrorismOffences === 'Yes'
+          result.data.ratings.extremismRating.previousTerrorismOffences === 'Yes',
       )
       const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
       const lifeProfile = await riskProfilerService.getLifeProfile(result.data.details.offenderNo, res.locals)
@@ -179,7 +179,7 @@ module.exports = function Index({
       await formService.mergeRiskProfileData(bookingId, dataToStore, transactionalDbClient)
 
       res.render('formPages/categoriser/review', { ...result, data: dataToDisplay })
-    })
+    }),
   )
 
   router.get(
@@ -196,7 +196,7 @@ module.exports = function Index({
         const data = { ...result.data, categorisations }
         res.render(`formPages/${section}/recatReview`, { ...result, data })
       }
-    })
+    }),
   )
 
   router.get(
@@ -208,10 +208,10 @@ module.exports = function Index({
       const securityReferral = await getSecurityReferral(
         res.locals,
         result.data.details.offenderNo,
-        transactionalDbClient
+        transactionalDbClient,
       )
       res.render(`formPages/security/review`, { ...result, securityReferred: { ...securityReferral } })
-    })
+    }),
   )
 
   const getSecurityReferral = async (context, offenderNo, transactionalDbClient) => {
@@ -248,7 +248,7 @@ module.exports = function Index({
       const { section, form, bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
       res.render(`formPages/${section}/${form}`, result)
-    })
+    }),
   )
 
   router.get(
@@ -264,7 +264,7 @@ module.exports = function Index({
         const data = { ...result.data, categorisations }
         res.render('formPages/recat/awaitingApprovalView', { ...result, data })
       }
-    })
+    }),
   )
 
   router.get(
@@ -275,7 +275,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'dummy1', 'dummy2', bookingId, transactionalDbClient, sequenceNo)
       const prisonDescription = await offendersService.getOptionalAssessmentAgencyDescription(
         res.locals,
-        result.prisonId
+        result.prisonId,
       )
       const approvalDateDisplay = getLongDateFormat(result.approvalDate)
       if (result.catType === CatType.INITIAL.name) {
@@ -284,12 +284,12 @@ module.exports = function Index({
         const categorisations = await offendersService.getPrisonerBackground(
           res.locals,
           result.data.details.offenderNo,
-          result.approvalDate
+          result.approvalDate,
         )
         const data = { ...result.data, categorisations }
         res.render(`formPages/recat/approvedView`, { ...result, data, approvalDateDisplay, prisonDescription })
       }
-    })
+    }),
   )
 
   router.get(
@@ -304,7 +304,7 @@ module.exports = function Index({
           : null
       const data = { ...result.data, categorisations, referer }
       res.render('formPages/cancel', { ...result, data })
-    })
+    }),
   )
 
   router.get(
@@ -314,7 +314,7 @@ module.exports = function Index({
       const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
       res.render('pages/cancelConfirmed', { data: { details } })
-    })
+    }),
   )
 
   const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient, sequenceNo, userDetails) => {
@@ -441,12 +441,12 @@ module.exports = function Index({
         bookingId,
         req.user.username,
         updatedFormObject,
-        transactionalDbClient
+        transactionalDbClient,
       )
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   router.post(
@@ -483,7 +483,7 @@ module.exports = function Index({
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   router.post(
@@ -517,7 +517,7 @@ module.exports = function Index({
 
       const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`
       res.redirect(`${nextPath}`)
-    })
+    }),
   )
 
   router.post(
@@ -529,7 +529,7 @@ module.exports = function Index({
       const nextPath =
         categorisationRecord.catType === 'INITIAL' ? `/tasklist/${bookingId}` : `/tasklistRecat/${bookingId}`
       res.redirect(`${nextPath}`)
-    })
+    }),
   )
 
   router.post(
@@ -551,7 +551,7 @@ module.exports = function Index({
           validation.error.details.map(error => ({
             text: error.message,
             href: `#${error.context.label}`,
-          }))
+          })),
         )
         req.flash('userInput', validation.value)
         res.redirect(`/form/security/review/${bookingId}`)
@@ -563,7 +563,7 @@ module.exports = function Index({
           bookingId,
           req.user.username,
           validation.value.button === SECURITY_BUTTON_SUBMIT,
-          validation.value.securityReview
+          validation.value.securityReview,
         )
       } catch (error) {
         res.render('pages/error', {
@@ -571,7 +571,7 @@ module.exports = function Index({
         })
       }
       res.redirect('/')
-    })
+    }),
   )
 
   router.post(
@@ -636,7 +636,7 @@ module.exports = function Index({
         // redirect to tasklist for open conditions, via 'added' page
         res.redirect(`/openConditionsAdded/${bookingId}?catType=INITIAL`)
       }
-    })
+    }),
   )
 
   router.post(
@@ -671,7 +671,7 @@ module.exports = function Index({
         if (userInput.catType === CatType.RECAT.name) {
           const categorisations = await offendersService.getPrisonerBackground(
             res.locals,
-            categorisationRecord.offenderNo
+            categorisationRecord.offenderNo,
           )
           const dataToStore = {
             catHistory: categorisations,
@@ -706,7 +706,7 @@ module.exports = function Index({
         const formObjectWithMessageValues = R.assocPath(
           ['supervisor', 'confirmBack'],
           { messageText: userInput.supervisorOverriddenCategoryText, supervisorName: user.displayNameAlternative },
-          formObject
+          formObject,
         )
 
         // Reset cat so it appears the categoriser originally chose open conditions!
@@ -719,7 +719,7 @@ module.exports = function Index({
               categoryAppropriate: 'Yes',
               otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
             },
-            formObjectWithMessageValues
+            formObjectWithMessageValues,
           )
           // delete ratings.decision if present
           if (existingCatDecision) {
@@ -742,7 +742,7 @@ module.exports = function Index({
         await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
         res.redirect(`/supervisorHome`)
       }
-    })
+    }),
   )
 
   router.post(
@@ -772,7 +772,7 @@ module.exports = function Index({
       } else {
         res.redirect(userInput.referer || '/')
       }
-    })
+    }),
   )
 
   router.post(
@@ -811,7 +811,7 @@ module.exports = function Index({
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
-    })
+    }),
   )
   router.post(
     '/categoriser/review/:bookingId',
@@ -880,7 +880,7 @@ module.exports = function Index({
           throw new Error('category has not been specified')
         }
       }
-    })
+    }),
   )
 
   router.post(
@@ -907,7 +907,7 @@ module.exports = function Index({
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   return router
