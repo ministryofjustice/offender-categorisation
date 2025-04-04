@@ -55,7 +55,7 @@ export default class EarliestReleaseDatePage extends Page {
         | JustifyOpenConditionsChoiceValues
         | typeof SELECTORS.JUSTIFY_OPEN_CONDITIONS.TEXTAREA
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -64,7 +64,7 @@ export default class EarliestReleaseDatePage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.EARLIEST_RELEASE_DATE.ERROR | '#justify-error' | '#justifyText-error'
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -78,7 +78,7 @@ export default class EarliestReleaseDatePage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => earliestReleaseDateRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectEarliestReleaseDateRadioButton = (selectedTextValue: EarliestReleaseDateChoice): PageElement =>

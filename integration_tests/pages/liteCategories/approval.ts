@@ -72,7 +72,7 @@ export default class LiteCategoriesApprovalPage extends Page {
       index: number
       href: typeof SELECTORS.APPROVAL_DATE.INPUT
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -81,7 +81,7 @@ export default class LiteCategoriesApprovalPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.APPROVAL_DATE.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }

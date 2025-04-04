@@ -353,7 +353,7 @@ describe('Next Review', () => {
           nextReviewStandalonePage.clearNewReviewReasonTextInput()
 
           nextReviewStandalonePage.setNewReviewDateInput(
-            moment().add(1, 'year').add(1, 'day').format(EXPECTED_DATE_FORMAT_FRONT_END)
+            moment().add(1, 'year').add(1, 'day').format(EXPECTED_DATE_FORMAT_FRONT_END),
           )
           nextReviewStandalonePage.submitButton().click()
 
@@ -398,7 +398,7 @@ describe('Next Review', () => {
               expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
               expect(result.rows[0].changed_by).to.eq(CATEGORISER_USER.username)
               expect(result.rows.length).to.eq(1)
-            }
+            },
           )
         })
       })
@@ -518,7 +518,7 @@ describe('Next Review', () => {
               expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
               expect(result.rows[0].changed_by).to.eq(SUPERVISOR_USER.username)
               expect(result.rows.length).to.eq(1)
-            }
+            },
           )
         })
 
@@ -572,7 +572,7 @@ describe('Next Review', () => {
               expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
               expect(result.rows[0].changed_by).to.eq(SUPERVISOR_USER.username)
               expect(result.rows.length).to.eq(1)
-            }
+            },
           )
         })
       })
@@ -665,7 +665,7 @@ describe('Next Review', () => {
             expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
             expect(result.rows[0].changed_by).to.eq(CATEGORISER_USER.username)
             expect(result.rows.length).to.eq(1)
-          }
+          },
         )
       })
     })

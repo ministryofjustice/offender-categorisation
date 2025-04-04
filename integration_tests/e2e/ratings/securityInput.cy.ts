@@ -52,7 +52,7 @@ describe('Security Input', () => {
    * this point is reached.
    */
   const stubLoginAndBrowseToCategoriserSecurityInputPage = (
-    { user }: { user: UserAccount } = { user: CATEGORISER_USER }
+    { user }: { user: UserAccount } = { user: CATEGORISER_USER },
   ) => {
     cy.stubLogin({
       user,
@@ -207,7 +207,11 @@ describe('Security Input', () => {
             expectedText: 'Manually sent for review',
           })
           securityReviewPage.setSecurityInformationText(testSecurityText)
-          cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: testSecurityText }}} })
+          cy.task('updateFormRecord', {
+            bookingId,
+            status: Status.SECURITY_BACK.name,
+            formResponse: { security: { review: { securityReview: testSecurityText } } },
+          })
           securityReviewPage.saveAndSubmitButton().click()
 
           securityHomePage.validateNoReferralsToReview()
@@ -236,7 +240,11 @@ describe('Security Input', () => {
 
             const securityReviewPage = SecurityReviewPage.createForBookingId(bookingId)
             securityReviewPage.setSecurityInformationText('security info text')
-            cy.task('updateFormRecord', { bookingId, status: Status.SECURITY_BACK.name, formResponse: { security: { review: { securityReview: `${testSecurityText} security info text` }}} })
+            cy.task('updateFormRecord', {
+              bookingId,
+              status: Status.SECURITY_BACK.name,
+              formResponse: { security: { review: { securityReview: `${testSecurityText} security info text` } } },
+            })
             securityReviewPage.saveAndSubmitButton().click()
 
             cy.stubLogin({

@@ -39,7 +39,7 @@ export default class PreviousSentencesPage extends Page {
       index: number
       href: PreviousSentencesChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -48,7 +48,7 @@ export default class PreviousSentencesPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.RELEASED_LAST_FIVE_YEARS.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -62,7 +62,7 @@ export default class PreviousSentencesPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => previousSentencesRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectPreviousSentencesRadioButton = (selectedTextValue: PreviousSentencesChoice): PageElement =>

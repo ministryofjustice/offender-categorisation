@@ -198,10 +198,10 @@ describe('Approved View', () => {
     ].forEach(cy.checkTableColumnTextValues)
 
     approvedViewRecatPage.validatePrisonerSummary(
-      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.'
+      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
     )
     approvedViewRecatPage.validatePrisonerSummary(
-      'This person is considered an escape risk E-List: First xel comment 2016-09-14 (expired)'
+      'This person is considered an escape risk E-List: First xel comment 2016-09-14 (expired)',
     )
     approvedViewRecatPage.validatePrisonerSummary('This person is at risk of engaging in, or vulnerable to, extremism.')
   })

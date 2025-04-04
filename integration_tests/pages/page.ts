@@ -20,7 +20,7 @@ export default abstract class Page {
 
   constructor(
     private readonly title: string | undefined = undefined,
-    private readonly config = { checkOnPage: { tag: 'h1' } }
+    private readonly config = { checkOnPage: { tag: 'h1' } },
   ) {
     this.checkOnPage(config.checkOnPage.tag)
   }
@@ -46,7 +46,7 @@ export default abstract class Page {
 
   validateRadioButtonSelections = (optionSelectors: string[], isChecked: boolean): void =>
     optionSelectors.forEach(optionSelector =>
-      cy.get(optionSelector).should(isChecked ? 'be.checked' : 'not.be.checked')
+      cy.get(optionSelector).should(isChecked ? 'be.checked' : 'not.be.checked'),
     )
 
   validateSelectorExists = (selector: string, exists: boolean) =>

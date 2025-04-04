@@ -37,7 +37,7 @@ export default class TprsPage extends Page {
       index: number
       href: TprsChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -46,7 +46,7 @@ export default class TprsPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.TPRS.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -54,7 +54,7 @@ export default class TprsPage extends Page {
   validateTprsRadioButton = ({ selection, isChecked }: { selection: TprsChoice[]; isChecked: boolean }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => tprsRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectTprsRadioButton = (selectedTextValue: TprsChoice): PageElement =>

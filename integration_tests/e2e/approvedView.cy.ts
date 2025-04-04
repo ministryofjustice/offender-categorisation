@@ -36,7 +36,7 @@ describe('Approved view', () => {
     { bookingId, sequenceNumber }: { bookingId?: number; sequenceNumber?: number } = {
       bookingId: 12,
       sequenceNumber: 1,
-    }
+    },
   ) => {
     sentenceStartDates = {
       B2345XY: new Date('2019-01-28'),

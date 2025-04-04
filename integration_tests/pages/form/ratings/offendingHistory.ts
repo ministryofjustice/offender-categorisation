@@ -46,7 +46,7 @@ export default class CategoriserOffendingHistoryPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => previousConvictionsRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validateCatAWarningExists = ({ exists }: { exists: boolean }) =>

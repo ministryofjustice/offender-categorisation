@@ -55,7 +55,7 @@ export default class RiskOfSeriousHarmPage extends Page {
         | typeof SELECTORS.RISK_MANAGED_IN_OPEN_CONDITIONS.TEXTAREA
         | ManageInOpenConditionsChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -68,7 +68,7 @@ export default class RiskOfSeriousHarmPage extends Page {
         | '#likelyToAbscond-error'
         | '#harmManaged-error'
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -82,7 +82,7 @@ export default class RiskOfSeriousHarmPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => riskOfSeriousHarmRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectRiskOfSeriousHarmRadioButton = (selectedTextValue: RiskOfSeriousHarmChoice): PageElement =>

@@ -42,7 +42,7 @@ export default class OpenConditionsNotRecommended extends Page {
       index: number
       href: StillReferChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -51,7 +51,7 @@ export default class OpenConditionsNotRecommended extends Page {
     errorMessages: {
       selector: typeof SELECTORS.STILL_REFER.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -59,7 +59,7 @@ export default class OpenConditionsNotRecommended extends Page {
   validateStillReferRadioButton = ({ selection, isChecked }: { selection: StillReferChoice[]; isChecked: boolean }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => stillReferRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectStillReferRadioButton = (selectedTextValue: StillReferChoice): PageElement =>

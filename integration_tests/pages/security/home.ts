@@ -9,7 +9,7 @@ export default class SecurityHomePage extends BaseSecurityPage {
   }
 
   validateCategorisationReferralsToDoTableColumnData = (
-    expectedData: { columnName: string; expectedValues: string[] }[]
+    expectedData: { columnName: string; expectedValues: string[] }[],
   ) => expectedData.forEach(cy.checkTableColumnTextValues)
 
   getStartButton = ({ bookingId }: { bookingId: number }): PageElement =>

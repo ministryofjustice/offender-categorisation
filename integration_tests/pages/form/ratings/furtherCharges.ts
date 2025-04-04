@@ -64,7 +64,7 @@ export default class FurtherChargesPage extends Page {
         | FurtherChargesCategoryBAppropriateChoiceValues
         | typeof SELECTORS.FURTHER_CHARGES.TEXTAREA
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -73,7 +73,7 @@ export default class FurtherChargesPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.FURTHER_CHARGES.ERROR | typeof SELECTORS.FURTHER_CHARGES.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -87,7 +87,7 @@ export default class FurtherChargesPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => furtherChargesRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validateFurtherChargesCategoryBAppropriateRadioButton = ({
@@ -99,7 +99,7 @@ export default class FurtherChargesPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => furtherChargesCategoryBAppropriateRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validateFurtherChargesCategoryBAppropriateTextBox = ({
@@ -124,7 +124,7 @@ export default class FurtherChargesPage extends Page {
     cy.get(furtherChargesRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
   selectFurtherChargesCategoryBAppropriateRadioButton = (
-    selectedTextValue: FurtherChargesCategoryBAppropriateChoice
+    selectedTextValue: FurtherChargesCategoryBAppropriateChoice,
   ): PageElement => cy.get(furtherChargesCategoryBAppropriateRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
   setFurtherChargesCategoryBAppropriateText = (text: string) => cy.get(SELECTORS.FURTHER_CHARGES.TEXTAREA).type(text)

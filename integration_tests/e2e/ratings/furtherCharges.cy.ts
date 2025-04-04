@@ -100,7 +100,7 @@ describe('Further Charges', () => {
           furtherChargesPage = FurtherChargesPage.createForBookingId(bookingId)
           furtherChargesPage.selectFurtherChargesRadioButton('YES')
           furtherChargesPage.selectFurtherChargesCategoryBAppropriateRadioButton(
-            catBChargesAppropriateSelection as FurtherChargesCategoryBAppropriateChoice
+            catBChargesAppropriateSelection as FurtherChargesCategoryBAppropriateChoice,
           )
 
           furtherChargesPage.saveAndReturnButton().click()

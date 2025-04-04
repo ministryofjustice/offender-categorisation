@@ -64,7 +64,7 @@ export default class ViolencePage extends Page {
         | typeof SELECTORS.HIGH_RISK_OF_VIOLENCE.TEXT_ERROR
         | typeof SELECTORS.SERIOUS_THREAT.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -73,7 +73,7 @@ export default class ViolencePage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.HIGH_RISK_OF_VIOLENCE.ERROR | typeof SELECTORS.SERIOUS_THREAT.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -93,7 +93,7 @@ export default class ViolencePage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => highRiskOfViolenceRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validateSeriousThreatRadioButtons = ({
@@ -105,7 +105,7 @@ export default class ViolencePage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => seriousThreatRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validateViolenceWarningExists = ({ exists }: { exists: boolean }) =>

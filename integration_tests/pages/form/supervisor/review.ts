@@ -65,13 +65,13 @@ export default class SupervisorReviewPage extends Page {
   submitButton = (): PageElement => cy.get('button[type="submit"]').contains('Submit')
 
   selectAgreeWithProvisionalCategoryRadioButton = (
-    selectedTextValue: AgreeWithProvisionalCategoryChoice
+    selectedTextValue: AgreeWithProvisionalCategoryChoice,
   ): PageElement => cy.get(agreeWithProvisionalCategoryRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
   setAgreeWithProvisionalCategoryText = (text: string) => cy.get(SELECTORS.OTHER_INFORMATION.TEXTAREA).type(text)
 
   selectWhichCategoryIsMoreAppropriateRadioButton = (
-    selectedTextValue: WhichCategoryIsMoreAppropriateChoice
+    selectedTextValue: WhichCategoryIsMoreAppropriateChoice,
   ): PageElement => cy.get(whichCategoryIsMoreAppropriateRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
   validateWhichCategoryIsMoreAppropriateRadioButton = ({
@@ -83,7 +83,7 @@ export default class SupervisorReviewPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => whichCategoryIsMoreAppropriateRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   setWhichCategoryIsMoreAppropriateText = (text: string) => cy.get(SELECTORS.OVERRIDE_CATEGORY_J.TEXTAREA).type(text)
@@ -138,7 +138,7 @@ export default class SupervisorReviewPage extends Page {
         | typeof SELECTORS.OTHER_INFORMATION.TEXTAREA
         | typeof SELECTORS.OVERRIDE_CATEGORY_J.TEXTAREA
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -147,7 +147,7 @@ export default class SupervisorReviewPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.OTHER_INFORMATION.ERROR | typeof SELECTORS.OVERRIDE_CATEGORY_J.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }

@@ -110,7 +110,7 @@ export default class EscapePage extends Page {
         | typeof SELECTORS.CAT_B.TEXTAREA
         | typeof SELECTORS.ESCAPE_RISK.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -123,7 +123,7 @@ export default class EscapePage extends Page {
         | typeof SELECTORS.ESCAPE_RISK.ERROR
         | typeof SELECTORS.ESCAPE_RISK.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -137,7 +137,7 @@ export default class EscapePage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => shouldBeInCatBRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validateOtherEvidenceBRadioButton = ({
@@ -149,7 +149,7 @@ export default class EscapePage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => otherEvidenceRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validateShouldBeInCategoryBTextAreaContent = expected =>
