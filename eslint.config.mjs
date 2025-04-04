@@ -11,6 +11,7 @@ export default [
       'integration-tests/build',
       'node_modules',
       'eslint.config.mjs',
+      '*.js',
     ],
     extraPathsAllowingDevDependencies: ['test/**'],
 
