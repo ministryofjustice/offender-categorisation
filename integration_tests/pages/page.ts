@@ -132,12 +132,20 @@ export default abstract class Page {
   }
 
   checkConditionalReleaseDateInsetText = (isoDate: string): void => {
-    const formattedDate = new Intl.DateTimeFormat('en-GB', {
+    const dateParts = new Intl.DateTimeFormat('en-GB', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    }).format(new Date(isoDate))
+    }).formatToParts(new Date(isoDate))
+
+    // GOV.UK style: no comma after weekday
+    const formattedDate = [
+      dateParts.find(p => p.type === 'weekday')?.value,
+      dateParts.find(p => p.type === 'day')?.value,
+      dateParts.find(p => p.type === 'month')?.value,
+      dateParts.find(p => p.type === 'year')?.value,
+    ].join(' ')
 
     cy.contains(`Conditional release date: ${formattedDate}`)
   }
