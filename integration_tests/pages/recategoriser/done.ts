@@ -8,7 +8,7 @@ export default class RecategoriserDonePage extends BaseRecategoriserPage {
   constructor() {
     super('Category reviews for prisoners')
   }
-/*
+  /*
   validateCategoryReviewsTableData = (expectedValues: CategoryReviewsTableData) =>
     cy.checkTableRowData<CategoryReviewsTableData>({
       tableRowsSelector: 'table#offenderTable > tbody > tr',

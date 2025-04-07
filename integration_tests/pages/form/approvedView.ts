@@ -1,4 +1,4 @@
-import {PageElement} from '../page'
+import { PageElement } from '../page'
 import BaseApprovedViewPage from './baseApprovedView'
 
 export default class ApprovedViewPage extends BaseApprovedViewPage {
@@ -12,5 +12,5 @@ export default class ApprovedViewPage extends BaseApprovedViewPage {
 
   commentLabel = (): PageElement => cy.get('label')
 
-  otherInformationSummary  = (): PageElement => cy.get('.otherInformationSummary .govuk-summary-list__value')
+  otherInformationSummary = (): PageElement => cy.get('.otherInformationSummary .govuk-summary-list__value')
 }

@@ -651,7 +651,7 @@ describe("Women's Estate", () => {
 
       const supervisorReviewOutcomePage = SupervisorReviewOutcomePage.createForBookingIdAndCategorisationType(
         bookingId,
-        CATEGORISATION_TYPE.INITIAL
+        CATEGORISATION_TYPE.INITIAL,
       )
       supervisorReviewOutcomePage.finishButton().should('be.visible')
       supervisorReviewOutcomePage.dcsSurveyLink().should('be.visible')
@@ -889,7 +889,7 @@ describe("Women's Estate", () => {
               supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
               supervisorReviewPage.selectWhichCategoryIsMoreAppropriateRadioButton('YOI_OPEN')
               supervisorReviewPage.setWhichCategoryIsMoreAppropriateText(
-                'A reason why I believe this is a more appropriate category'
+                'A reason why I believe this is a more appropriate category',
               )
               supervisorReviewPage.validateIndeterminateWarningIsDisplayed({
                 isVisible: true,
@@ -982,13 +982,13 @@ describe("Women's Estate", () => {
               cy.task('stubSupervisorApprove')
 
               supervisorReviewPage.setWhichCategoryIsMoreAppropriateText(
-                'A reason why I believe this is a more appropriate category'
+                'A reason why I believe this is a more appropriate category',
               )
               supervisorReviewPage.submitButton().click()
 
               const supervisorReviewOutcomePage = SupervisorReviewOutcomePage.createForBookingIdAndCategorisationType(
                 bookingId,
-                CATEGORISATION_TYPE.INITIAL
+                CATEGORISATION_TYPE.INITIAL,
               )
               supervisorReviewOutcomePage.finishButton().should('be.visible')
               supervisorReviewOutcomePage.dcsSurveyLink().should('be.visible')

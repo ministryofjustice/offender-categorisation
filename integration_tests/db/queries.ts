@@ -1,6 +1,6 @@
-import { mergeRight } from "ramda";
-import db from "../../server/data/dataAccess/db";
-import { QueryArrayResult } from "pg";
+import { mergeRight } from 'ramda'
+import db from '../../server/data/dataAccess/db'
+import { QueryArrayResult } from 'pg'
 
 export type CatType = 'INITIAL' | 'RECAT'
 export type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
@@ -184,7 +184,7 @@ async function insertFormTableDbRow(rowData: MandatoryRowData & Partial<FormDbRo
       dueByDate,
       cancelledDate,
       cancelledBy,
-    ]
+    ],
   )
 }
 
@@ -246,7 +246,7 @@ async function insertLiteCategoryTableDbRow({
       approved_placement_prison_id,
       approved_placement_comment,
       approved_comment,
-    ]
+    ],
   )
 }
 
@@ -263,7 +263,7 @@ async function insertSecurityReferralTableDbRow({
 }) {
   return await db.query(
     `insert into security_referral (id, offender_no, user_id, prison_id, status, raised_date) values ($1, $2, $3, $4, $5, $6)`,
-    [id, offenderNumber, 'SECURITY_USER', prisonId, status, new Date()]
+    [id, offenderNumber, 'SECURITY_USER', prisonId, status, new Date()],
   )
 }
 
@@ -309,22 +309,28 @@ async function updateRiskProfile({
   return await db.query(`update form set risk_profile = $1::JSON where booking_id = $2`, [riskProfile, bookingId])
 }
 
-const updateFormRecord = async ({ bookingId, status, formResponse }: { bookingId: number, status: string, formResponse: any }) => {
+const updateFormRecord = async ({
+  bookingId,
+  status,
+  formResponse,
+}: {
+  bookingId: number
+  status: string
+  formResponse: any
+}) => {
   const existingFormResponse = await db.query(`select form_response from form where booking_id = $1`, [bookingId])
-  return await db.query(
-    `update form set status = $1, form_response = $2 where booking_id = $3`,
-    [status, mergeRight(existingFormResponse.rows[0]?.form_response, formResponse), bookingId]
-  )
+  return await db.query(`update form set status = $1, form_response = $2 where booking_id = $3`, [
+    status,
+    mergeRight(existingFormResponse.rows[0]?.form_response, formResponse),
+    bookingId,
+  ])
 }
 
 const deleteRowsFromForm = () => db.query({ text: 'truncate form cascade' })
 const deleteRowsFromSecurityReferral = () => db.query({ text: 'truncate security_referral cascade' })
 
-const getSecurityReferral = async ({ offenderNumber }: {offenderNumber: string}) => {
-  return await db.query(
-    `select * from security_referral where offender_no = $1`,
-    [offenderNumber]
-  )
+const getSecurityReferral = async ({ offenderNumber }: { offenderNumber: string }) => {
+  return await db.query(`select * from security_referral where offender_no = $1`, [offenderNumber])
 }
 
 export default {
@@ -339,5 +345,5 @@ export default {
   updateFormRecord,
   deleteRowsFromForm,
   deleteRowsFromSecurityReferral,
-  getSecurityReferral
+  getSecurityReferral,
 }
