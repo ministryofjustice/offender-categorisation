@@ -27,7 +27,9 @@
     "watch-node-feature": "export $(cat feature.env) && npm run start:dev",
     "start-feature": "export $(cat feature.env) && npm run build && node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
     "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-node-feature\" \"npm run watch-sass\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --check \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
+    "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,mjs,cjs}\""
   },
   "jest": {
     "preset": "ts-jest",

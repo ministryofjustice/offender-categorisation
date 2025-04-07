@@ -1,5 +1,5 @@
 import Page, { PageElement } from '../page'
-import moment from "moment/moment";
+import moment from 'moment/moment'
 
 export default class TasklistRecatPage extends Page {
   private static _bookingId: number
@@ -36,7 +36,7 @@ export default class TasklistRecatPage extends Page {
   validateSecurityReferralDate = (date: Date) => {
     cy.get('#securitySection').should(
       'contain.text',
-      `Manually referred to Security (${moment(date).format('DD/MM/yyyy')})`
+      `Manually referred to Security (${moment(date).format('DD/MM/yyyy')})`,
     )
   }
 

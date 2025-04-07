@@ -74,7 +74,7 @@ export default class ForeignNationalPage extends Page {
         | ExhaustedAppealChoiceValues
         | LiabilityToBeDeportedChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -83,7 +83,7 @@ export default class ForeignNationalPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.FOREIGN_NATIONAL.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -97,7 +97,7 @@ export default class ForeignNationalPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => foreignNationalRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectForeignNationalRadioButton = (selectedTextValue: ForeignNationalChoice): PageElement =>

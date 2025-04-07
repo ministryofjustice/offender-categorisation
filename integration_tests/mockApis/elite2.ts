@@ -1040,7 +1040,7 @@ const stubGetStaffDetailsByUsernameList = ({ usernames } = { usernames: [] }): S
           lastName: `lastName_${username}`,
           email: 'itaguser@syscon.net',
           activeCaseLoadId: 'LEI',
-        }))
+        })),
       ),
     },
   })
@@ -1290,7 +1290,7 @@ const stubUncategorisedAwaitingApproval = (
   { emptyResponse = false, bookingIds = [] } = {
     emptyResponse: false,
     bookingIds: [],
-  }
+  },
 ): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1484,7 +1484,7 @@ const stubRecategorise = (
     recategorisations: undefined,
     latestOnly: undefined,
     agencyId: undefined,
-  }
+  },
 ) => {
   let recategorisationsResponse = recategorisations
   if (typeof recategorisations === 'undefined' || !Array.isArray(recategorisations)) {

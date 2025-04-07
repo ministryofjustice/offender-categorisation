@@ -36,7 +36,7 @@ export default class NextReviewStandalonePage extends Page {
       index: number
       href: NextReviewDateValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -45,7 +45,7 @@ export default class NextReviewStandalonePage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.DATE_ERROR | typeof SELECTORS.REASON_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }

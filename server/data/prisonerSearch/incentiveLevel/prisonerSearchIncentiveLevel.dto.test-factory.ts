@@ -1,7 +1,7 @@
 import { INCENTIVE_LEVEL_STANDARD, PrisonerSearchIncentiveLevelDto } from './prisonerSearchIncentiveLevel.dto'
 
 const makeTestPrisonerSearchIncentiveLevelDto = (
-  prisonerSearchIncentiveLevelDto: Partial<PrisonerSearchIncentiveLevelDto> = {}
+  prisonerSearchIncentiveLevelDto: Partial<PrisonerSearchIncentiveLevelDto> = {},
 ): PrisonerSearchIncentiveLevelDto => ({
   level: {
     code: prisonerSearchIncentiveLevelDto.level.code ?? INCENTIVE_LEVEL_STANDARD,

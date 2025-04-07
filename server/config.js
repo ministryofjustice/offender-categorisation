@@ -208,7 +208,7 @@ module.exports = {
   femalePrisonIds: `${get(
     'FEMALE_PRISON_IDS',
     ['AGI', 'DWI', 'DHI', 'ESI', 'EWI', 'BZI', 'FHI', 'LNI', 'SDI', 'STI', 'NHI', 'PFI'],
-    true
+    true,
   )}`,
   https: production,
   productId: get('PRODUCT_ID', 'UNASSIGNED', true, { requireInProduction: true }),

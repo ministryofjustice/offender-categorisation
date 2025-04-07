@@ -41,7 +41,7 @@ export default class SupervisorConfirmBackPage extends Page {
       index: number
       href: ConfirmationChoiceValues | typeof SELECTORS.CONFIRMATION.TEXTAREA
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -50,7 +50,7 @@ export default class SupervisorConfirmBackPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.CONFIRMATION.ERROR | typeof SELECTORS.CONFIRMATION.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -64,7 +64,7 @@ export default class SupervisorConfirmBackPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => confirmationRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   selectConfirmationRadioButton = (selectedTextValue: ConfirmationChoice): PageElement =>

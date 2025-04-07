@@ -96,7 +96,7 @@ describe('Extremism', () => {
 
       extremismPage.validateInfoVisibility({ isVisible: true })
       extremismPage.validateInfoText(
-        'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.'
+        'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
       )
 
       extremismPage.validatePreviousTerrorismOffencesTextBox({ isVisible: false })

@@ -32,7 +32,7 @@ describe('rpQueueConsumer', () => {
   test('should ignore old and new profiles with no change', async () => {
     await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
-        profile
+        profile,
       )} }`,
     })
     expect(offendersService.getOffenderDetailWithFullInfo).not.toBeCalled()
@@ -41,7 +41,7 @@ describe('rpQueueConsumer', () => {
     const newProfile = buildProfile({ socPC: 'B' })
     await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
-        newProfile
+        newProfile,
       )} }`,
     })
     expect(offendersService.getOffenderDetailWithFullInfo).not.toBeCalled()
@@ -55,7 +55,7 @@ describe('rpQueueConsumer', () => {
     const newProfile = buildProfile({ activeEscapeList: true })
     await service.rpQueueConsumer.handleMessage({
       Body: `{"offenderNo": "GN123", "oldProfile":${JSON.stringify(profile)}, "newProfile":${JSON.stringify(
-        newProfile
+        newProfile,
       )} }`,
     })
     expect(offendersService.getOffenderDetailWithFullInfo).toBeCalledWith({ user: {} }, 'GN123')

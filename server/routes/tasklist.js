@@ -42,7 +42,7 @@ module.exports = function Index({
         CatType.INITIAL.name,
         reason || null,
         dueByDate,
-        transactionalDbClient
+        transactionalDbClient,
       )
       const backLink = req.get('Referrer')
 
@@ -74,7 +74,7 @@ module.exports = function Index({
           CatType.INITIAL.name,
           reason || null,
           dueByDate,
-          transactionalDbClient
+          transactionalDbClient,
         )
       }
 
@@ -104,7 +104,7 @@ module.exports = function Index({
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
       }
       return res.render('pages/tasklist', { data, backLink })
-    })
+    }),
   )
 
   router.get(
@@ -117,14 +117,14 @@ module.exports = function Index({
       res.render('pages/supervisorReviewOutcome', {
         data: { surveyParameters: `${catType}=true&host=${req.hostname}` },
       })
-    })
+    }),
   )
 
   router.get(
     '/images/:imageId/data',
     asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       await offendersService.getImage(res.locals, req.params.imageId, res)
-    })
+    }),
   )
 
   router.get(
@@ -135,7 +135,7 @@ module.exports = function Index({
       res.render('pages/categoriserSubmitted', {
         data: { surveyParameters: `initial=true&host=${req.hostname}` },
       })
-    })
+    }),
   )
 
   return router

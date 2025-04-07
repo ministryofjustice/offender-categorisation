@@ -50,7 +50,7 @@ function dpsFeClientGetBuilder(token) {
       if (sanitisedError.status !== 401) {
         logger.warn(
           { ...sanitisedError, path, query },
-          'Error in DPS Front End Components GET using clientId credentials'
+          'Error in DPS Front End Components GET using clientId credentials',
         )
         throw sanitisedError
       }

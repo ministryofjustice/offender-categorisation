@@ -51,7 +51,7 @@ declare namespace Cypress {
       arg: any,
       assertionFn: (result: any) => boolean,
       retries?: number,
-      delay?: number
+      delay?: number,
     ): Chainable<boolean>
   }
 }

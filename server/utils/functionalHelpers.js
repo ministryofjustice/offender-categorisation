@@ -95,7 +95,7 @@ async function addSocProfile({
     const extremismProfile = await riskProfilerService.getExtremismProfile(
       details.offenderNo,
       res.locals,
-      false // don't yet have the answer to this question - will be populated correctly in the review route
+      false, // don't yet have the answer to this question - will be populated correctly in the review route
     )
 
     await formService.mergeRiskProfileData(bookingId, { socProfile, extremismProfile }, transactionalDbClient)
@@ -106,7 +106,7 @@ async function addSocProfile({
       socProfile,
       extremismProfile,
       status,
-      transactionalDbClient
+      transactionalDbClient,
     )
   }
 

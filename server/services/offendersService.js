@@ -48,7 +48,7 @@ async function getSentenceMap(offenderList, prisonerSearchClient) {
   return new Map(
     prisoners
       .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
-      .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
+      .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }]),
   )
 }
 
@@ -69,7 +69,7 @@ async function getReleaseDateMap(offenderList, prisonerSearchClient) {
   return new Map(
     prisoners
       .filter(s => s.releaseDate) // the endpoint returns records for offenders without sentences
-      .map(s => [s.bookingId, s.releaseDate])
+      .map(s => [s.bookingId, s.releaseDate]),
   )
 }
 
@@ -90,7 +90,7 @@ async function getPomMap(offenderList, allocationClient) {
         const no = offender.offenderNo || offender.prisonerNumber
         const pomData = await allocationClient.getPomByOffenderNo(no)
         result.set(no, pomData)
-      })
+      }),
     )
   }
   logger.debug('end getPomMap')
@@ -125,7 +125,7 @@ module.exports = function createOffendersService(
   formService,
   prisonerSearchClientBuilder,
   risksAndNeedsClientBuilder,
-  probationOffenderSearchClientBuilder
+  probationOffenderSearchClientBuilder,
 ) {
   async function getUncategorisedOffenders(context, user, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -148,7 +148,7 @@ module.exports = function createOffendersService(
           Status.SECURITY_MANUAL.name,
         ],
         CatType.INITIAL.name,
-        ReviewReason.MANUAL.name
+        ReviewReason.MANUAL.name,
       )
 
       if (isNilOrEmpty(uncategorisedResult)) {
@@ -172,7 +172,7 @@ module.exports = function createOffendersService(
       const sentenceMap = new Map(
         prisoners
           .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
-          .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
+          .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }]),
       )
 
       const filterIS91s = o => {
@@ -205,7 +205,7 @@ module.exports = function createOffendersService(
         pomMap,
         user.staffId,
         risksAndNeedsClient,
-        probationOffenderSearchClient
+        probationOffenderSearchClient,
       )
 
       const decoratedResults = await Promise.all(
@@ -215,7 +215,7 @@ module.exports = function createOffendersService(
 
           if (dbRecord.catType === 'RECAT') {
             logger.info(
-              `Initial cat missing recalls investigation: booking id=${dbRecord.bookingId}, offenderNo=${dbRecord.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`
+              `Initial cat missing recalls investigation: booking id=${dbRecord.bookingId}, offenderNo=${dbRecord.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`,
             )
             return null
           }
@@ -245,11 +245,11 @@ module.exports = function createOffendersService(
           }
           if (inconsistent && !liteInProgress) {
             logger.warn(
-              `getUncategorisedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`
+              `getUncategorisedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`,
             )
           }
           return row
-        })
+        }),
       )
 
       return decoratedResults
@@ -273,7 +273,7 @@ module.exports = function createOffendersService(
   const matchEliteAndDBCategorisations = (categorisedFromElite, categorisedFromDB) =>
     categorisedFromDB.map(dbRecord => {
       const elite = categorisedFromElite.find(
-        record => record.bookingId === dbRecord.bookingId && record.assessmentSeq === dbRecord.nomisSeq
+        record => record.bookingId === dbRecord.bookingId && record.assessmentSeq === dbRecord.nomisSeq,
       )
       if (elite) {
         return {
@@ -282,7 +282,7 @@ module.exports = function createOffendersService(
         }
       }
       logger.warn(
-        `matchEliteAndDBCategorisations: Found database record with no elite record, bookingId=${dbRecord.bookingId}, offenderNo=${dbRecord.offenderNo}, nomisSeq=${dbRecord.nomisSeq}`
+        `matchEliteAndDBCategorisations: Found database record with no elite record, bookingId=${dbRecord.bookingId}, offenderNo=${dbRecord.offenderNo}, nomisSeq=${dbRecord.nomisSeq}`,
       )
       return {
         dbRecord,
@@ -327,7 +327,7 @@ module.exports = function createOffendersService(
               catTypeDisplay: CatType[o.dbRecord.catType].value,
               sequence: o.dbRecord.sequence,
             }
-          })
+          }),
         )
 
         return decoratedResults.sort((a, b) => sortByDateTime(a.displayApprovalDate, b.displayApprovalDate))
@@ -354,7 +354,7 @@ module.exports = function createOffendersService(
           nomisClient.getOffenderDetailList(securityReferredFromDB.map(c => c.offenderNo)),
           nomisClient.getUserDetailList(securityReferredFromDB.map(c => c.securityReferredBy)),
           nomisClient.getLatestCategorisationForOffenders(
-            securityReferredFromDB.filter(c => c.catType === CatType.RECAT.name).map(c => c.offenderNo)
+            securityReferredFromDB.filter(c => c.catType === CatType.RECAT.name).map(c => c.offenderNo),
           ),
         ])
 
@@ -417,13 +417,13 @@ module.exports = function createOffendersService(
           nomisClient.getUserDetailList(newSecurityReferred.map(c => c.userId)),
         ])
         const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(
-          offenderDetailsFromNomis.map(o => o.bookingId)
+          offenderDetailsFromNomis.map(o => o.bookingId),
         )
 
         const sentenceMap = new Map(
           prisoners
             .filter(s => s.sentenceStartDate) // the endpoint returns records for offenders without sentences
-            .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }])
+            .map(s => [s.bookingId, { sentenceDate: s.sentenceStartDate }]),
         )
 
         const decoratedResults = newSecurityReferred.map(o => {
@@ -480,7 +480,7 @@ module.exports = function createOffendersService(
         const decoratedResults = changesFromDB.map(o => {
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
           const offenderCategorisation = offenderCategorisationsFromElite.find(
-            record => record.offenderNo === o.offenderNo
+            record => record.offenderNo === o.offenderNo,
           )
 
           // it is possible that the offender now has a new booking without a categorisation (since the alert was recorded)
@@ -566,7 +566,7 @@ module.exports = function createOffendersService(
         uncategorisedResult.map(async s => {
           const dbRecord = await formService.getCategorisationRecord(s.bookingId, transactionalDbClient)
           return { ...s, dbRecord }
-        })
+        }),
       )
 
       // remove any sent back to categoriser records
@@ -575,7 +575,7 @@ module.exports = function createOffendersService(
           o =>
             o.dbRecord.status !== Status.SUPERVISOR_BACK.name &&
             o.dbRecord.status !== Status.SECURITY_BACK.name &&
-            o.dbRecord.status !== Status.SECURITY_MANUAL.name
+            o.dbRecord.status !== Status.SECURITY_MANUAL.name,
         )
         // remove any which are on the 'Other categories' tab
         .filter(o => !unapprovedLiteBookingIds.includes(o.bookingId))
@@ -609,12 +609,12 @@ module.exports = function createOffendersService(
         }
         if (dbRecordExists && row.dbRecord.status !== Status.AWAITING_APPROVAL.name) {
           logger.warn(
-            `getUnapprovedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, PG status=${row.dbRecord.status}`
+            `getUnapprovedOffenders: Detected status inconsistency for booking id=${row.bookingId}, offenderNo=${row.offenderNo}, PG status=${row.dbRecord.status}`,
           )
         }
         if (dbRecordExists && row.dbRecord.nomisSeq !== row.assessmentSeq) {
           logger.warn(
-            `getUnapprovedOffenders: sequence mismatch for bookingId=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, nomisSeq=${row.dbRecord.nomisSeq}, assessmentSeq=${row.assessmentSeq}`
+            `getUnapprovedOffenders: sequence mismatch for bookingId=${row.bookingId}, offenderNo=${row.offenderNo}, Nomis status=${o.status}, nomisSeq=${row.dbRecord.nomisSeq}, assessmentSeq=${row.assessmentSeq}`,
           )
         }
         return row
@@ -623,8 +623,8 @@ module.exports = function createOffendersService(
       return decoratedResults.sort((a, b) =>
         sortByDateTime(
           b.dateRequired ? b.dateRequired : b.nextReviewDate,
-          a.dateRequired ? a.dateRequired : a.nextReviewDate
-        )
+          a.dateRequired ? a.dateRequired : a.nextReviewDate,
+        ),
       )
     } catch (error) {
       logger.error(error, 'Error during getUnapprovedOffenders')
@@ -718,7 +718,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
-    filters = {}
+    filters = {},
   ) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
@@ -734,7 +734,7 @@ module.exports = function createOffendersService(
         Status.SECURITY_MANUAL.name,
       ],
       CatType.RECAT.name,
-      ReviewReason.MANUAL.name
+      ReviewReason.MANUAL.name,
     )
 
     // trim db results to only those not in the Nomis-derived list
@@ -756,7 +756,7 @@ module.exports = function createOffendersService(
       pomMap,
       user.staffId,
       risksAndNeedsClient,
-      probationOffenderSearchClient
+      probationOffenderSearchClient,
     )
 
     return Promise.all(
@@ -776,7 +776,7 @@ module.exports = function createOffendersService(
           moment(prisonerSearchRecord.sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))
         ) {
           logger.info(
-            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}`
+            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}`,
           )
         }
 
@@ -798,11 +798,11 @@ module.exports = function createOffendersService(
         const { pnomis, requiresWarning } = pnomisOrInconsistentWarning(
           dbRecord,
           nomisRecord.assessStatus,
-          liteInProgress
+          liteInProgress,
         )
         if (requiresWarning) {
           logger.warn(
-            `getDueRecats: Detected status inconsistency for booking id=${nomisRecord.bookingId}, offenderNo=${nomisRecord.offenderNo}, Nomis assessment status=${nomisRecord.assessStatus}, PG status=${dbRecord.status}`
+            `getDueRecats: Detected status inconsistency for booking id=${nomisRecord.bookingId}, offenderNo=${nomisRecord.offenderNo}, Nomis assessment status=${nomisRecord.assessStatus}, PG status=${dbRecord.status}`,
           )
         }
 
@@ -827,7 +827,7 @@ module.exports = function createOffendersService(
           buttonText,
           pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
         }
-      })
+      }),
     )
   }
 
@@ -871,13 +871,13 @@ module.exports = function createOffendersService(
         logger.info(
           `Next review date for offender ${
             offenderdetails.offenderNo
-          }, bookingId ${bookingId} was NOT required, review date is ${nextReviewMoment.format('YYYY-MM-DD')}`
+          }, bookingId ${bookingId} was NOT required, review date is ${nextReviewMoment.format('YYYY-MM-DD')}`,
         )
       }
     } catch (error) {
       logger.error(
         error,
-        `Error during updateNextReviewDateIfRequired, unable to update next review date for ${bookingId} `
+        `Error during updateNextReviewDateIfRequired, unable to update next review date for ${bookingId} `,
       )
       throw error
     }
@@ -917,7 +917,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
-    filters = {}
+    filters = {},
   ) {
     const u21From = moment()
       .subtract(22, 'years') // allow up to a year overdue
@@ -939,7 +939,7 @@ module.exports = function createOffendersService(
     ])
 
     const u21map = new Map(
-      resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])
+      resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]),
     )
 
     const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
@@ -951,7 +951,7 @@ module.exports = function createOffendersService(
       pomMap,
       user.staffId,
       risksAndNeedsClient,
-      probationOffenderSearchClient
+      probationOffenderSearchClient,
     )
 
     return Promise.all(
@@ -970,7 +970,7 @@ module.exports = function createOffendersService(
 
         if (requiresWarning) {
           logger.warn(
-            `getU21Recats: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`
+            `getU21Recats: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`,
           )
         }
         const nextReviewDate = moment(o.dateOfBirth, 'YYYY-MM-DD')
@@ -995,7 +995,7 @@ module.exports = function createOffendersService(
           buttonText,
           pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
         }
-      })
+      }),
     )
   }
 
@@ -1007,7 +1007,7 @@ module.exports = function createOffendersService(
 
     // remove items from second list that are already in first list
     const itemsToAdd = listToMergeWithoutNulls.filter(
-      o => !masterListWithoutNulls.some(masterItem => o.bookingId === masterItem.bookingId)
+      o => !masterListWithoutNulls.some(masterItem => o.bookingId === masterItem.bookingId),
     )
 
     return masterListWithoutNulls.concat(itemsToAdd)
@@ -1031,7 +1031,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
-          filters
+          filters,
         ),
         getU21Recats(
           agencyId,
@@ -1041,7 +1041,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
-          filters
+          filters,
         ),
         formService.getSecurityReferrals(agencyId),
       ])
@@ -1070,7 +1070,7 @@ module.exports = function createOffendersService(
 
   async function mergeU21ResultWithNomisCategorisationData(nomisClient, agencyId, resultsU21IJ) {
     const eliteResultsRaw = await nomisClient.getLatestCategorisationForOffenders(
-      resultsU21IJ.map(c => c.prisonerNumber)
+      resultsU21IJ.map(c => c.prisonerNumber),
     )
 
     // results can include inactive - need to remove
@@ -1299,7 +1299,7 @@ module.exports = function createOffendersService(
 
       const uniqueAgencies = [...new Set(filteredCats.map(o => o.assessmentAgencyId))]
       const agencyMap = new Map(
-        await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)]))
+        await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)])),
       )
 
       const decoratedCats = await Promise.all(
@@ -1310,7 +1310,7 @@ module.exports = function createOffendersService(
             agencyDescription: description,
             approvalDateDisplay: dateConverter(o.approvalDate),
           }
-        })
+        }),
       )
 
       return decoratedCats.sort((a, b) => sortByDateTime(a.approvalDateDisplay, b.approvalDateDisplay))
@@ -1339,13 +1339,13 @@ module.exports = function createOffendersService(
 
     const uniqueAgencies = [...new Set(nomisRecords.map(o => o.assessmentAgencyId))]
     const agencyMap = new Map(
-      await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)]))
+      await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)])),
     )
 
     const dataDecorated = await Promise.all(
       nomisRecords.map(async nomisRecord => {
         const foundCatRecord = catRecords.find(
-          o => o.bookingId === nomisRecord.bookingId && o.nomisSeq === nomisRecord.assessmentSeq
+          o => o.bookingId === nomisRecord.bookingId && o.nomisSeq === nomisRecord.assessmentSeq,
         )
         return {
           ...nomisRecord,
@@ -1355,7 +1355,7 @@ module.exports = function createOffendersService(
           sequence: foundCatRecord && foundCatRecord.sequence,
           tprsSelected: foundCatRecord?.formObject?.openConditions?.tprs?.tprsSelected === 'Yes' || false,
         }
-      })
+      }),
     )
 
     return {
@@ -1414,7 +1414,7 @@ module.exports = function createOffendersService(
     } catch (error) {
       logger.error(
         error,
-        `Error during createOrUpdateCategorisation for booking id ${bookingId} and user ${context.user.username}`
+        `Error during createOrUpdateCategorisation for booking id ${bookingId} and user ${context.user.username}`,
       )
       throw error
     }
@@ -1461,7 +1461,7 @@ module.exports = function createOffendersService(
     } catch (error) {
       logger.error(
         error,
-        `Error during createLiteCategorisation for booking id ${bookingId} and user ${context.user.username}`
+        `Error during createLiteCategorisation for booking id ${bookingId} and user ${context.user.username}`,
       )
       throw error
     }
@@ -1484,7 +1484,7 @@ module.exports = function createOffendersService(
     } catch (error) {
       logger.error(
         error,
-        `Error during createSupervisorApproval for booking id ${bookingId} and user ${context.user.username}`
+        `Error during createSupervisorApproval for booking id ${bookingId} and user ${context.user.username}`,
       )
       throw error
     }
@@ -1510,7 +1510,7 @@ module.exports = function createOffendersService(
       const nextReviewDateConverted = dateConverterToISO(nextReviewDate)
 
       logger.info(
-        `Recording cat ${supervisorCategory} approval for booking id ${bookingId} and user ${context.user.username}`
+        `Recording cat ${supervisorCategory} approval for booking id ${bookingId} and user ${context.user.username}`,
       )
       await formService.approveLiteCategorisation({
         context,
@@ -1543,7 +1543,7 @@ module.exports = function createOffendersService(
     } catch (error) {
       logger.error(
         error,
-        `Error during createLiteCategorisation for booking id ${bookingId} and user ${context.user.username}`
+        `Error during createLiteCategorisation for booking id ${bookingId} and user ${context.user.username}`,
       )
       throw error
     }
@@ -1567,7 +1567,7 @@ module.exports = function createOffendersService(
       const nomisClient = nomisClientBuilder(context)
       await nomisClient.createSupervisorRejection(details)
       logger.info(
-        `Supervisor sent back categorisation record for bookingId: ${bookingId}, offender No: ${currentCategorisation.offenderNo}, user name: ${currentCategorisation.userId}`
+        `Supervisor sent back categorisation record for bookingId: ${bookingId}, offender No: ${currentCategorisation.offenderNo}, user name: ${currentCategorisation.userId}`,
       )
     } catch (error) {
       logger.error(error, 'Error during createSupervisorApproval')
@@ -1657,12 +1657,12 @@ module.exports = function createOffendersService(
           const { formRows, liteRows } = await formService.updateOffenderIdentifierReturningBookingId(
             from,
             to,
-            transactionalDbClient
+            transactionalDbClient,
           )
           await Promise.all(
             formRows.map(async r => {
               logger.info(
-                `Merge: form row updated for bookingId ${r.booking_id}, changing offender no from ${from} to ${to}`
+                `Merge: form row updated for bookingId ${r.booking_id}, changing offender no from ${from} to ${to}`,
               )
               const dbRecord = await formService.getCategorisationRecord(r.booking_id, transactionalDbClient)
               if (
@@ -1673,12 +1673,12 @@ module.exports = function createOffendersService(
                 // The merge process may have copied an older active record to a higher seq no than the pending record
                 await setInactive(context, r.booking_id, 'ACTIVE')
               }
-            })
+            }),
           )
           await Promise.all(
             liteRows.map(async r => {
               logger.info(
-                `Merge: lite row updated for bookingId ${r.booking_id}, changing offender no from ${from} to ${to}`
+                `Merge: lite row updated for bookingId ${r.booking_id}, changing offender no from ${from} to ${to}`,
               )
               const dbRecord = await formService.getLiteCategorisation(r.booking_id, transactionalDbClient)
               if (dbRecord.bookingId && !dbRecord.approvedDate) {
@@ -1686,9 +1686,9 @@ module.exports = function createOffendersService(
                 // The merge process may have copied an older active record to a higher seq no than the pending record
                 await setInactive(context, r.booking_id, 'ACTIVE')
               }
-            })
+            }),
           )
-        })
+        }),
     )
   }
 
@@ -1699,10 +1699,10 @@ module.exports = function createOffendersService(
     movementType,
     fromAgencyLocationId,
     toAgencyLocationId,
-    client
+    client,
   ) => {
     logger.info(
-      `Processing EXTERNAL_MOVEMENT_RECORD-INSERTED event for bookingId: ${bookingId}, offenderNo: ${offenderNo}, movementType: ${movementType} from: ${fromAgencyLocationId} to: ${toAgencyLocationId}`
+      `Processing EXTERNAL_MOVEMENT_RECORD-INSERTED event for bookingId: ${bookingId}, offenderNo: ${offenderNo}, movementType: ${movementType} from: ${fromAgencyLocationId} to: ${toAgencyLocationId}`,
     )
     switch (movementType) {
       case 'ADM':
@@ -1728,19 +1728,19 @@ module.exports = function createOffendersService(
             const resultSecurity = await formService.updatePrisonSecurityReferral(
               offenderNo,
               toAgencyLocationId,
-              client
+              client,
             )
             results.push({ name: 'riskChange', ...resultRiskChange })
             results.push({ name: 'securityReferral', ...resultSecurity })
           }
           logger.info(
-            `Movement summary: rows updated =${results.reduce((s, item) => `${s} ${item.name}: ${item.rowCount}`, '')}`
+            `Movement summary: rows updated =${results.reduce((s, item) => `${s} ${item.name}: ${item.rowCount}`, '')}`,
           )
         }
         break
       default:
         logger.debug(
-          `Ignoring EXTERNAL_MOVEMENT_RECORD-INSERTED event for nomsId: ${bookingId}, movementType: ${movementType}`
+          `Ignoring EXTERNAL_MOVEMENT_RECORD-INSERTED event for nomsId: ${bookingId}, movementType: ${movementType}`,
         )
         break
     }

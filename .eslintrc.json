@@ -47,7 +47,7 @@
         "prettier/prettier": [
           "error",
           {
-            "trailingComma": "es5",
+            "trailingComma": "all",
             "singleQuote": true,
             "printWidth": 120,
             "semi": false,
@@ -85,15 +85,6 @@
         "tsx": "never"
       }
     ],
-    "comma-dangle": [
-      "error",
-      {
-        "arrays": "always-multiline",
-        "objects": "always-multiline",
-        "imports": "never",
-        "exports": "never",
-        "functions": "never"
-      }
-    ]
+    "comma-dangle": ["error", "always-multiline"]
   }
 }
