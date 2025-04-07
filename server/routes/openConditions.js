@@ -52,12 +52,12 @@ module.exports = function Index({ formService, offendersService, userService, au
         result = R.assocPath(
           ['data', 'openConditions', 'furtherCharges', 'furtherChargesText'],
           result.data.ratings.furtherCharges.furtherChargesText,
-          result
+          result,
         )
       }
 
       res.render(`formPages/openConditions/${form}`, result)
-    })
+    }),
   )
 
   router.get(
@@ -75,7 +75,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const data = { ...result.data, openConditionsSuggestedCat }
 
       res.render(`formPages/openConditions/provisionalCategory`, { ...result, data })
-    })
+    }),
   )
 
   router.get(
@@ -91,7 +91,7 @@ module.exports = function Index({ formService, offendersService, userService, au
               NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME,
               NOT_SUITABLE_REASON_PREVIOUS_SENTENCES,
               NOT_SUITABLE_FOREIGN_NATIONAL_FORM,
-              NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS
+              NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS,
             )
             .required(),
         })
@@ -140,7 +140,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         warningText,
         catType: formData.catType,
       })
-    })
+    }),
   )
 
   router.get(
@@ -149,7 +149,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { form, bookingId } = req.params
       const result = await buildFormData(res, req, 'openConditions', form, bookingId, transactionalDbClient)
       res.render(`formPages/openConditions/${form}`, result)
-    })
+    }),
   )
 
   const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient) => {
@@ -280,7 +280,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
-    })
+    }),
   )
 
   router.post(
@@ -310,7 +310,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       }
       const nextPath = getPathFor({ data: userInput, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   /* The provisional category data is persisted against the categoriser section to avoid
@@ -332,7 +332,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           req,
           res,
           `/form/${sectionForValidation}/${form}/${bookingId}`,
-          userInput
+          userInput,
         )
       ) {
         return
@@ -373,7 +373,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         await formService.cancelOpenConditions(bookingInt, req.user.username, transactionalDbClient)
         res.redirect(`/tasklist/${bookingId}`)
       }
-    })
+    }),
   )
 
   router.post(
@@ -409,13 +409,13 @@ module.exports = function Index({ formService, offendersService, userService, au
       ) {
         await formService.cancelOpenConditions(bookingIdInt, userId, transactionalDbClient)
         res.redirect(
-          `/form/openConditions/openConditionsNotSuitable/${bookingId}?reason=${calculateNotSuitableForOpenConditionsReason(userInput)}`
+          `/form/openConditions/openConditionsNotSuitable/${bookingId}?reason=${calculateNotSuitableForOpenConditionsReason(userInput)}`,
         )
       } else {
         const nextPath = getPathFor({ data: userInput, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
-    })
+    }),
   )
 
   const calculateNotSuitableForOpenConditionsReason = userInput => {

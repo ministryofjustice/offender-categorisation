@@ -1701,7 +1701,7 @@ describe('Open Conditions', () => {
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
       cy.contains(
-        'This person cannot be sent to open conditions because they have more than three years to their earliest release date and there are no special circumstances to warrant them moving into open conditions'
+        'This person cannot be sent to open conditions because they have more than three years to their earliest release date and there are no special circumstances to warrant them moving into open conditions',
       )
     })
 
@@ -1719,7 +1719,7 @@ describe('Open Conditions', () => {
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
       cy.contains(
-        'This person cannot be sent to open conditions because they have more than 5 years to their earliest release date and there are no special circumstances to warrant them moving into open conditions'
+        'This person cannot be sent to open conditions because they have more than 5 years to their earliest release date and there are no special circumstances to warrant them moving into open conditions',
       )
     })
 
@@ -1738,7 +1738,7 @@ describe('Open Conditions', () => {
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
       cy.contains(
-        'This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.'
+        'This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.',
       )
     })
 
@@ -1788,7 +1788,7 @@ describe('Open Conditions', () => {
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
       cy.contains(
-        'This person cannot be sent to open conditions because they have a liability for deportation and have exhausted all appeal rights in the UK'
+        'This person cannot be sent to open conditions because they have a liability for deportation and have exhausted all appeal rights in the UK',
       )
     })
   })

@@ -30,12 +30,12 @@ module.exports = function createSqsService(offenderService, formService) {
               detail.agencyId,
               change.oldProfile,
               change.newProfile,
-              transactionalDbClient
+              transactionalDbClient,
             )
           })
         } else {
           logger.debug(
-            `Ignoring Risk Change alert for category ${detail.categoryCode} as category cannot be increased or this is not a recategorisation for offender ${change.offenderNo}`
+            `Ignoring Risk Change alert for category ${detail.categoryCode} as category cannot be increased or this is not a recategorisation for offender ${change.offenderNo}`,
           )
         }
       } catch (error) {
@@ -106,7 +106,7 @@ module.exports = function createSqsService(offenderService, formService) {
           case events.EVENT_DOMAIN_PRISONER_OFFENDER_SEARCH_PRISONER_RELEASED: {
             logger.info(
               { event },
-              `${events.EVENT_DOMAIN_PRISONER_OFFENDER_SEARCH_PRISONER_RELEASED}: Received payload`
+              `${events.EVENT_DOMAIN_PRISONER_OFFENDER_SEARCH_PRISONER_RELEASED}: Received payload`,
             )
             const nomsNumber = event?.additionalInformation?.nomsNumber
             if (!nomsNumber) {
@@ -132,7 +132,7 @@ module.exports = function createSqsService(offenderService, formService) {
                 movementType,
                 fromAgencyLocationId,
                 toAgencyLocationId,
-                transactionalDbClient
+                transactionalDbClient,
               )
             }
             break

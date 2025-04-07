@@ -62,7 +62,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       res.locals.user = { ...user, ...res.locals.user }
       const offenders = await offendersService.getUnapprovedLite(res.locals, transactionalDbClient)
       res.render(`pages/supervisorLite`, { offenders })
-    })
+    }),
   )
 
   router.get(
@@ -94,7 +94,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         nextReviewDate: calculateNextReviewDate('6'),
         data: { details, status: categorisationRecord.status },
       })
-    })
+    }),
   )
 
   router.get(
@@ -102,7 +102,7 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddlewareInDatabaseTransaction(async (req, res) => {
       const { bookingId } = req.params
       res.render(`pages/liteCategoriesConfirmed`, { bookingId })
-    })
+    }),
   )
 
   router.get(
@@ -158,7 +158,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         nextReviewDate: assessmentData.inputNextReviewDate,
         data: { details },
       })
-    })
+    }),
   )
 
   router.post(
@@ -223,7 +223,7 @@ module.exports = function Index({ formService, offendersService, userService, au
         })
         res.redirect(`/liteCategories/confirmed/${bookingId}`)
       }
-    })
+    }),
   )
 
   router.post(
@@ -327,7 +327,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           }
         }
       }
-    })
+    }),
   )
 
   router.get(
@@ -338,7 +338,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       res.locals.user = { ...user, ...res.locals.user }
 
       res.render(`pages/liteAlreadyApproved`, { context: res.locals, bookingId })
-    })
+    }),
   )
 
   return router

@@ -39,7 +39,7 @@ export default class NextReviewQuestionPage extends Page {
       index: number
       href: NextReviewChoiceValues
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -48,7 +48,7 @@ export default class NextReviewQuestionPage extends Page {
     errorMessages: {
       selector: typeof SELECTORS.NEXT_REVIEW.ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }
@@ -56,7 +56,7 @@ export default class NextReviewQuestionPage extends Page {
   validateReviewDateRadioButton = ({ selection, isChecked }: { selection: NextReviewChoice[]; isChecked: boolean }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => nextReviewRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   continueButton = (): PageElement => cy.get('button[type="submit"]').contains('Continue')

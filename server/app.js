@@ -90,7 +90,7 @@ module.exports = function createApp({
       secret: config.session.secret,
       resave: false, // redis implements touch so shouldn't need this
       saveUninitialized: true,
-    })
+    }),
   )
 
   app.use(passport.initialize())
@@ -138,11 +138,11 @@ module.exports = function createApp({
 
   app.use(
     '/assets/js/jquery.min.js',
-    express.static(path.join(process.cwd(), '/node_modules/jquery/dist/jquery.min.js'), cacheControl)
+    express.static(path.join(process.cwd(), '/node_modules/jquery/dist/jquery.min.js'), cacheControl),
   )
   app.use(
     '/assets/moj-frontend/moj/all.js',
-    express.static(path.join(process.cwd(), '/node_modules/@ministryofjustice/frontend/moj/all.js'), cacheControl)
+    express.static(path.join(process.cwd(), '/node_modules/@ministryofjustice/frontend/moj/all.js'), cacheControl),
   )
 
   const health = healthFactory(
@@ -150,7 +150,7 @@ module.exports = function createApp({
     config.apis.elite2.url,
     config.apis.riskProfiler.url,
     config.apis.allocationManager.url,
-    config.apis.prisonerSearch.url
+    config.apis.prisonerSearch.url,
   )
   app.get('/health', (req, res, next) => {
     health((err, result) => {
@@ -200,7 +200,7 @@ module.exports = function createApp({
           logger.info(
             `updating time by ${newToken.refreshTime - req.user.refreshTime} from ${req.user.refreshTime} to ${
               newToken.refreshTime
-            }`
+            }`,
           )
           req.user.refreshTime = newToken.refreshTime
         } catch (error) {
@@ -241,7 +241,7 @@ module.exports = function createApp({
     passport.authenticate('oauth2', {
       successReturnToOrRedirect: req.session.returnTo || '/',
       failureRedirect: '/autherror',
-    })(req, res, next)
+    })(req, res, next),
   )
 
   app.use('/sign-out', (req, res, next) => {
@@ -268,7 +268,7 @@ module.exports = function createApp({
   app.use('/', homeRouter)
   app.use(
     '/tasklist/',
-    createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService })
+    createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService }),
   )
   app.use(
     '/tasklistRecat/',
@@ -278,7 +278,7 @@ module.exports = function createApp({
       userService,
       authenticationMiddleware,
       riskProfilerService,
-    })
+    }),
   )
 
   const openConditionsRouter = createOpenConditionsRouter({

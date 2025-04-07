@@ -77,7 +77,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result).toEqual(testPrisoners)
@@ -101,7 +101,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(0)
@@ -125,7 +125,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result).toEqual(testPrisoners)
@@ -149,7 +149,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result).toEqual(testPrisoners)
@@ -173,7 +173,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(0)
@@ -199,7 +199,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(0)
@@ -223,7 +223,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(0)
@@ -249,7 +249,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(0)
@@ -275,7 +275,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result).toEqual(testPrisoners)
@@ -300,7 +300,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(0)
@@ -325,7 +325,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(0)
@@ -350,7 +350,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result).toEqual(testPrisoners)
@@ -370,7 +370,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(nomisClient.getOffenderAdjudications.mock.calls).toEqual([
@@ -395,7 +395,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(nomisClient.getOffenderAdjudications.mock.calls).toEqual([
@@ -416,7 +416,7 @@ describe('filterListOfPrisoners', () => {
       }),
     ])
     risksAndNeedsClient.getRisksSummary.mockResolvedValue(
-      makeTestRiskSummaryDto({ overallRiskLevel: OverallRiskLevel.high })
+      makeTestRiskSummaryDto({ overallRiskLevel: OverallRiskLevel.high }),
     )
     const result = await filterListOfPrisoners(
       makeTestRecategorisationHomeFiltersFilter({
@@ -429,7 +429,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(probationOffenderSearchApiClient.matchPrisoners.mock.calls).toEqual([[[testOffenderNumber]]])
@@ -447,7 +447,7 @@ describe('filterListOfPrisoners', () => {
       }),
     ])
     risksAndNeedsClient.getRisksSummary.mockResolvedValue(
-      makeTestRiskSummaryDto({ overallRiskLevel: OverallRiskLevel.low })
+      makeTestRiskSummaryDto({ overallRiskLevel: OverallRiskLevel.low }),
     )
     const result = await filterListOfPrisoners(
       makeTestRecategorisationHomeFiltersFilter({
@@ -460,7 +460,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(probationOffenderSearchApiClient.matchPrisoners.mock.calls).toEqual([[[testOffenderNumber]]])
@@ -489,7 +489,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(probationOffenderSearchApiClient.matchPrisoners.mock.calls).toEqual([[[testOffenderNumber]]])
@@ -513,7 +513,7 @@ describe('filterListOfPrisoners', () => {
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(1)
@@ -547,7 +547,7 @@ describe('filterListOfPrisoners', () => {
       ]),
       testUserStaffId,
       risksAndNeedsClient,
-      probationOffenderSearchApiClient
+      probationOffenderSearchApiClient,
     )
 
     expect(result.length).toBe(1)

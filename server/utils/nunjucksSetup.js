@@ -42,7 +42,7 @@ module.exports = (app, path) => {
     {
       autoescape: true,
       express: app,
-    }
+    },
   )
 
   app.locals.appInsightsConnectionString = config.appInsightsConnectionString

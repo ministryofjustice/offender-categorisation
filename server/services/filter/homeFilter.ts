@@ -107,7 +107,7 @@ const getDateNMonthsAgo = (n: number) => {
 const loadAdjudicationsData = async (
   prisoners,
   nomisClient,
-  agencyId: string
+  agencyId: string,
 ): Promise<NomisAdjudicationHearingDto[]> => {
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
   if (prisonerNumbers.length <= 0) {
@@ -127,7 +127,7 @@ const loadAdjudicationsData = async (
 const getOffenderNumbersWithLowRoshScore = async (
   prisoners,
   risksAndNeedsClient: RisksAndNeedsApiClient,
-  probationOffenderSearchClient: ProbationOffenderSearchApiClient
+  probationOffenderSearchClient: ProbationOffenderSearchApiClient,
 ) => {
   const prisonerNumbersWithLowRoshScore = []
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
@@ -141,7 +141,7 @@ const getOffenderNumbersWithLowRoshScore = async (
     probationOffenderSearchOffenders.map(probationOffenderSearchOffender => [
       probationOffenderSearchOffender.otherIds.crn,
       probationOffenderSearchOffender.otherIds.nomsNumber,
-    ])
+    ]),
   )
   startTime = Date.now()
   let crnsWithNoRoshLevel = 0
@@ -159,7 +159,7 @@ const getOffenderNumbersWithLowRoshScore = async (
         if (risksSummary.overallRiskLevel === OverallRiskLevel.low) {
           prisonerNumbersWithLowRoshScore.push(crnsToOffenderNumbers[crn])
         }
-      })
+      }),
     )
   }
   logger.info(`CAT prioritisation filter investigation: fetching RoSH took ${Date.now() - startTime}ms`)
@@ -176,7 +176,7 @@ export const filterListOfPrisoners = async (
   pomMap: Map<string, PrisonerAllocationDto>,
   userStaffId: number,
   risksAndNeedsClient: RisksAndNeedsApiClient,
-  probationOffenderSearchClient: ProbationOffenderSearchApiClient
+  probationOffenderSearchClient: ProbationOffenderSearchApiClient,
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
@@ -185,7 +185,7 @@ export const filterListOfPrisoners = async (
   }
   // in order to improve load time we should apply any filters which don't require further data to be loaded first
   const allFiltersWhichDoNotRequireFurtherDataToBeLoaded = allFilters.filter(
-    filter => ![NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS, LOW_ROSH].includes(filter)
+    filter => ![NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS, LOW_ROSH].includes(filter),
   )
   let filteredPrisoners = prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
@@ -265,7 +265,7 @@ export const filterListOfPrisoners = async (
     offenderNumbersWithLowRoshScorePromise = getOffenderNumbersWithLowRoshScore(
       filteredPrisoners,
       risksAndNeedsClient,
-      probationOffenderSearchClient
+      probationOffenderSearchClient,
     )
   }
   const [adjudicationsData, offenderNumbersWithLowRoshScore] = await Promise.all([

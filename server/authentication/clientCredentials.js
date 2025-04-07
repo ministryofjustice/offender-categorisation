@@ -41,7 +41,7 @@ const keepaliveAgent = oauthUrl.startsWith('https') ? new HttpsAgent(agentOption
 
 function generateOauthClientToken(
   clientId = config.apis.oauth2.apiClientId,
-  clientSecret = config.apis.oauth2.apiClientSecret
+  clientSecret = config.apis.oauth2.apiClientSecret,
 ) {
   return generate(clientId, clientSecret)
 }
@@ -65,7 +65,7 @@ async function getApiClientToken(username) {
     : querystring.stringify({ grant_type: 'client_credentials' })
 
   logger.info(
-    `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`
+    `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`,
   )
 
   const newToken = await superagent

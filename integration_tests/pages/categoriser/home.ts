@@ -1,6 +1,8 @@
 import BaseCategoriserPage from './base'
 
-type ToDoTableData = [string, string, string, string, string, string][] | [string, string, string, string, string, string][]
+type ToDoTableData =
+  | [string, string, string, string, string, string][]
+  | [string, string, string, string, string, string][]
 
 export default class CategoriserHomePage extends BaseCategoriserPage {
   static baseUrl: string = '/categoriserHome'

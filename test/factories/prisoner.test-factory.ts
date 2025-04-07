@@ -1,7 +1,7 @@
 const makeTestPrisoner = (
   bookingId: number = 12345,
   offenderNumber: string = 'G12345',
-  nextReviewDate: string = '2019-04-20'
+  nextReviewDate: string = '2019-04-20',
 ) => ({
   bookingId,
   offenderNo: offenderNumber,

@@ -69,7 +69,7 @@ export default class ExtremismPage extends Page {
   }) =>
     this.validateRadioButtonSelections(
       selection.map(selectedTextValue => previousTerrorismOffencesRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked
+      isChecked,
     )
 
   validatePreviousTerrorismOffencesTextBox = ({
@@ -91,7 +91,7 @@ export default class ExtremismPage extends Page {
       index: number
       href: PreviousTerrorismOffencesChoiceValues | typeof SELECTORS.PREVIOUS_TERRORISM_OFFENCES.TEXTAREA
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorSummaryMessages(errorSummaryMessages)
   }
@@ -102,7 +102,7 @@ export default class ExtremismPage extends Page {
         | typeof SELECTORS.PREVIOUS_TERRORISM_OFFENCES.ERROR
         | typeof SELECTORS.PREVIOUS_TERRORISM_OFFENCES.TEXT_ERROR
       text: string
-    }[]
+    }[],
   ) {
     super.validateErrorMessages(errorMessages)
   }

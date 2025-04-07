@@ -50,7 +50,7 @@ module.exports = function Index({
       } else {
         res.render('formPages/recat/securityInput', result)
       }
-    })
+    }),
   )
 
   router.get(
@@ -64,7 +64,7 @@ module.exports = function Index({
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
         res.locals,
-        false // not used for recat (contributes towards recommended category)
+        false, // not used for recat (contributes towards recommended category)
       )
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
       const offenderDpsCaseNotesLink = offenderCaseNotesLink(offenderNo)
@@ -84,7 +84,7 @@ module.exports = function Index({
       }
 
       res.render(`formPages/recat/prisonerBackground`, { ...result, data })
-    })
+    }),
   )
 
   router.get(
@@ -98,7 +98,7 @@ module.exports = function Index({
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
         res.locals,
-        false // contributes towards recommended category, only used in initial categorisations
+        false, // contributes towards recommended category, only used in initial categorisations
       )
 
       const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
@@ -121,7 +121,7 @@ module.exports = function Index({
       }
 
       res.render(`formPages/recat/review`, { ...result, data })
-    })
+    }),
   )
 
   router.get(
@@ -135,7 +135,7 @@ module.exports = function Index({
       const errors = req.flash('errors')
       const backLink = req.get('Referrer')
       res.render('formPages/recat/riskProfileChangeDetail', { errors, backLink, data })
-    })
+    }),
   )
 
   router.get(
@@ -145,7 +145,7 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.render(`formPages/recat/fasttrackConfirmation`, { bookingId })
-    })
+    }),
   )
 
   router.get(
@@ -155,7 +155,7 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       res.render(`formPages/recat/fasttrackCancelled`, { bookingId })
-    })
+    }),
   )
 
   router.get(
@@ -165,7 +165,7 @@ module.exports = function Index({
       const section = 'recat'
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
       res.render(`formPages/${section}/${form}`, result)
-    })
+    }),
   )
 
   const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient) => {
@@ -242,12 +242,12 @@ module.exports = function Index({
         bookingId,
         req.user.username,
         updatedFormObject,
-        transactionalDbClient
+        transactionalDbClient,
       )
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   router.post(
@@ -274,7 +274,7 @@ module.exports = function Index({
         bookingIdInt,
         req.user.username,
         status,
-        transactionalDbClient
+        transactionalDbClient,
       )
 
       if (userInput.confirmation === 'No') {
@@ -283,7 +283,7 @@ module.exports = function Index({
         // in the event of an initial categorisation the user will see an error (edge-case as this should be filtered out in the sqs service)
         res.redirect(`/tasklistRecat/${bookingId}?reason=RISK_CHANGE`)
       }
-    })
+    }),
   )
 
   router.post(
@@ -345,7 +345,7 @@ module.exports = function Index({
           res.redirect(`${nextPath}${bookingId}`)
         }
       }
-    })
+    }),
   )
 
   router.post(
@@ -381,7 +381,7 @@ module.exports = function Index({
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   router.post(
@@ -417,7 +417,7 @@ module.exports = function Index({
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   router.post(
@@ -453,7 +453,7 @@ module.exports = function Index({
       } else {
         throw new Error('category has not been specified')
       }
-    })
+    }),
   )
 
   router.post(
@@ -486,7 +486,7 @@ module.exports = function Index({
         const nextPath = getPathFor({ data: req.body, config: formPageConfig })
         res.redirect(`${nextPath}${bookingId}`)
       }
-    })
+    }),
   )
 
   router.post(
@@ -521,7 +521,7 @@ module.exports = function Index({
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   const applyFasttrackDefaults = data => {
@@ -536,7 +536,7 @@ module.exports = function Index({
       newData = R.assocPath(
         ['recat', 'riskAssessment', 'higherCategory'],
         'They pose no additional risks. There’s no reason to consider them for higher security conditions.',
-        newData
+        newData,
       )
     }
     if (!existingLower) {
@@ -584,7 +584,7 @@ module.exports = function Index({
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
       res.redirect(`${nextPath}${bookingId}`)
-    })
+    }),
   )
 
   return router

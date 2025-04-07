@@ -47,7 +47,7 @@ module.exports = function createstatsService(statsClient) {
       // Add totals at the right
       table.forEach(row => {
         row.push(
-          row.reduce((accumulator, currentValue) => (currentValue ? accumulator + currentValue : accumulator), 0)
+          row.reduce((accumulator, currentValue) => (currentValue ? accumulator + currentValue : accumulator), 0),
         )
       })
       return table

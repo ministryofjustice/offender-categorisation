@@ -77,8 +77,8 @@ describe('assessment', () => {
         expect(res.text).toMatch(
           new RegExp(
             `<input\\s+class="govuk-input govuk-!-width-full"\\s+id="nextReviewDate"\\s+name="nextReviewDate"\\s+type="text"\\s+value="${sixMonths}"\\s*>`,
-            's'
-          )
+            's',
+          ),
         )
 
         expect(res.text).toContain('<option value="SYI">Shrewsbury (HMP)</option>')
@@ -268,7 +268,7 @@ describe('alreadyApproved', () => {
       .expect(res => {
         expect(res.text).toContain(`Categorisation has already been approved`)
         expect(res.text).toContain(
-          `This categorisation has already been approved manually on P-Nomis. It will be visible on the <a href="/categoryHistory/12">prisoners categorisation history</a>`
+          `This categorisation has already been approved manually on P-Nomis. It will be visible on the <a href="/categoryHistory/12">prisoners categorisation history</a>`,
         )
         expect(res.text).toContain(`Finish`)
         expect(res.text).toContain(`<a href="/12">Manage prisoner</a>`)
