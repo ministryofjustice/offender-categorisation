@@ -168,9 +168,9 @@ const getOffenderNumbersWithLowRoshScore = async (
 }
 
 export const filterListOfPrisoners = async (
-  filters: RecategorisationHomeFilters | CategorisationHomeFilters,
+  filters: RecategorisationHomeFilters | CategorisationHomeFilters | {},
   prisoners,
-  prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
+  prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto> | any,
   nomisClient,
   agencyId: string,
   pomMap: Map<string, PrisonerAllocationDto>,

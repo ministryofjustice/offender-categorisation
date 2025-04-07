@@ -1,11 +1,12 @@
-const moment = require('moment')
+import moment from 'moment'
+import Status from '../../server/utils/statusEnum'
+import ReviewReason from '../../server/utils/reviewReasonEnum'
+import RiskChangeStatus from '../../server/utils/riskChangeStatusEnum'
+import CatType from '../../server/utils/catTypeEnum'
+import { dateConverter } from '../../server/utils/utils'
+import { DUE_DATE, OVERDUE } from '../../server/services/filter/homeFilter'
+
 const serviceCreator = require('../../server/services/offendersService')
-const Status = require('../../server/utils/statusEnum')
-const ReviewReason = require('../../server/utils/reviewReasonEnum')
-const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
-const CatType = require('../../server/utils/catTypeEnum')
-const { dateConverter } = require('../../server/utils/utils')
-const { DUE_DATE, OVERDUE } = require('../../server/services/filter/homeFilter')
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -133,6 +134,7 @@ afterEach(() => {
 
 moment.now = jest.fn()
 // NOTE: mock current date!
+// @ts-ignore
 moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 
 function mockTodaySubtract(days) {
@@ -800,6 +802,7 @@ describe('getUncategorisedOffenders', () => {
 
   test('it should calculate business days correctly', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
     expect(service.buildSentenceData('2019-01-14')).toEqual({
       daysSinceSentence: 2,
@@ -812,6 +815,7 @@ describe('getUncategorisedOffenders', () => {
 
   test('it should calculate business days correctly when sentenceDate is Saturday', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
     expect(service.buildSentenceData('2019-01-12')).toEqual({
       daysSinceSentence: 4,
@@ -824,6 +828,7 @@ describe('getUncategorisedOffenders', () => {
 
   test('it should calculate business days correctly when sentenceDate is Sunday', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
     expect(service.buildSentenceData('2019-01-13')).toEqual({
       daysSinceSentence: 3,
@@ -836,6 +841,7 @@ describe('getUncategorisedOffenders', () => {
 
   test('it should detect overdue record', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-01-29', 'YYYY-MM-DD'))
     expect(service.buildSentenceData('2019-01-14')).toEqual({
       daysSinceSentence: 15,
@@ -2495,6 +2501,7 @@ describe('mergeU21ResultWithNomisCategorisationData', () => {
 describe('updateNextReviewDateIfRequired', () => {
   test('calls nomis to update review date', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
     const offenderDetails = {
       offenderNo: 'GN123',
@@ -2507,6 +2514,7 @@ describe('updateNextReviewDateIfRequired', () => {
   })
   test('does not call nomis to update review date if date within 10 working days', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
     const offenderDetails = {
       offenderNo: 'GN123',
@@ -2524,6 +2532,7 @@ describe('handleRiskChangeDecision', () => {
 
   test('should handle review required decision correctly', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
@@ -2550,6 +2559,7 @@ describe('handleRiskChangeDecision', () => {
   })
   test('should handle review required decision with next review date within 10 working days correctly', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
@@ -2576,6 +2586,7 @@ describe('handleRiskChangeDecision', () => {
   })
   test('should handle review NOT required decision correctly', async () => {
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
@@ -3517,6 +3528,8 @@ describe('isInitialInProgress', () => {
       const dbRecord = { catType: CatType.INITIAL.name, status: Status.APPROVED.name }
       const result = service.isInitialInProgress(dbRecord)
       expect(result).toBe(false)
+
+      new Intl.DateTimeFormat(["ban", "id"]).formatToParts(date))
     })
 
     it('returns true when given a dbRecord with an in-progress status', () => {
@@ -3759,6 +3772,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
   beforeEach(() => {
     // this is necessary as other tests mess with the globally set value
     moment.now = jest.fn()
+    // @ts-ignore
     moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
   })
 

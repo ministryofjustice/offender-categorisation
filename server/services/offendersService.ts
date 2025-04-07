@@ -1,27 +1,27 @@
-const path = require('path')
-const moment = require('moment')
-const logger = require('../../log')
-const Status = require('../utils/statusEnum')
-const CatType = require('../utils/catTypeEnum')
-const ReviewReason = require('../utils/reviewReasonEnum')
-const { isNilOrEmpty, inProgress, getIn, extractNextReviewDate } = require('../utils/functionalHelpers')
-const {
-  properCaseName,
+import Status from '../utils/statusEnum'
+
+import R from 'ramda'
+import path from 'path'
+import moment from 'moment'
+import logger from '../../log'
+import CatType from '../utils/catTypeEnum'
+import ReviewReason from '../utils/reviewReasonEnum'
+import { extractNextReviewDate, inProgress, isNilOrEmpty } from '../utils/functionalHelpers'
+import {
   dateConverter,
   dateConverterToISO,
   get10BusinessDays,
   getNamesFromString,
-} = require('../utils/utils')
-const { sortByDateTime, sortByStatus } = require('./offenderSort')
-const config = require('../config')
-const riskChangeHelper = require('../utils/riskChange')
-const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
-const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
-const { filterListOfPrisoners } = require('./filter/homeFilter')
-const {
-  mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
-} = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
-const { isReviewOverdue } = require('./reviewStatusCalculator')
+  properCaseName,
+} from '../utils/utils'
+import { sortByDateTime, sortByStatus } from './offenderSort'
+import config from '../config'
+import riskChangeHelper from '../utils/riskChange'
+import RiskChangeStatus from '../utils/riskChangeStatusEnum'
+import liteCategoriesPrisonerPartition from '../utils/liteCategoriesPrisonerPartition'
+import { filterListOfPrisoners } from './filter/homeFilter'
+import { mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto } from './recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
+import { isReviewOverdue } from './reviewStatusCalculator'
 
 const dirname = process.cwd()
 
@@ -176,7 +176,7 @@ module.exports = function createOffendersService(
       )
 
       const filterIS91s = o => {
-        const offence = prisonerMap.get(o.bookingId)
+        const offence: any = prisonerMap.get(o.bookingId)
         if (!offence) {
           return true
         }
@@ -234,11 +234,11 @@ module.exports = function createOffendersService(
             ? 'OTHER'
             : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
 
-          const sentence = sentenceMap.get(nomisRecord.bookingId)
+          const sentence: any = sentenceMap.get(nomisRecord.bookingId)
           const row = {
             ...nomisRecord,
             displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
-            ...buildSentenceData(sentence && sentence.sentenceDate),
+            ...buildSentenceData(sentence?.sentenceDate),
             ...(await decorateWithCategorisationData(nomisRecord, user, nomisClient, dbRecord)),
             pnomis,
             pom: pomData?.primary_pom?.name && getNamesFromString(pomData.primary_pom.name),
@@ -375,7 +375,7 @@ module.exports = function createOffendersService(
 
           let sentenceAndDate
           if (o.catType === CatType.INITIAL.name) {
-            const entry = sentenceMap.get(o.bookingId)
+            const entry: any = sentenceMap.get(o.bookingId)
             sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
           } else {
             const nomisCat = nomisCatData.find(record => record.bookingId === o.bookingId)
@@ -389,7 +389,7 @@ module.exports = function createOffendersService(
             securityReferredBy,
             ...sentenceAndDate,
             catTypeDisplay: CatType[o.catType].value,
-            buttonText: getIn(['formObject', 'security', 'review', 'securityReview'], o) ? 'Edit' : 'Start',
+            buttonText: R.path(['formObject', 'security', 'review', 'securityReview'], o) ? 'Edit' : 'Start',
           }
         })
 
@@ -441,7 +441,7 @@ module.exports = function createOffendersService(
               : o.userId
           }
 
-          const entry = sentenceMap.get(offenderDetail.bookingId)
+          const entry: any = sentenceMap.get(offenderDetail.bookingId)
           const sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
 
           return {
@@ -588,7 +588,7 @@ module.exports = function createOffendersService(
       const sentenceMap = await getSentenceMap(unapprovedOffenders, prisonerSearchClient)
 
       const decoratedResults = unapprovedOffenders.map(o => {
-        const sentencedOffender = sentenceMap.get(o.bookingId)
+        const sentencedOffender: any = sentenceMap.get(o.bookingId)
         const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
         const dbRecordExists = !!o.dbRecord.bookingId
         const row = {
@@ -742,7 +742,7 @@ module.exports = function createOffendersService(
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
-    const [prisonerSearchData, pomMap] = await Promise.all([
+    const [prisonerSearchData, pomMap]: any = await Promise.all([
       getPrisonerSearchData(allOffenders, prisonerSearchClient),
       getPomMap(allOffenders, allocationClient),
     ])
@@ -769,7 +769,7 @@ module.exports = function createOffendersService(
           return null
         }
 
-        const prisonerSearchRecord = prisonerSearchData.get(raw.bookingId) || null
+        const prisonerSearchRecord: any = prisonerSearchData.get(raw.bookingId) || null
         if (
           prisonerSearchRecord == null ||
           prisonerSearchRecord.sentenceStartDate == null ||
@@ -1109,7 +1109,7 @@ module.exports = function createOffendersService(
     }
   }
 
-  function buildSentenceData(sentenceDate) {
+  function buildSentenceData(sentenceDate: moment.MomentInput) {
     if (!sentenceDate) {
       return {}
     }
@@ -1299,6 +1299,7 @@ module.exports = function createOffendersService(
 
       const uniqueAgencies = [...new Set(filteredCats.map(o => o.assessmentAgencyId))]
       const agencyMap = new Map(
+        // @ts-ignore
         await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)]))
       )
 
@@ -1339,6 +1340,7 @@ module.exports = function createOffendersService(
 
     const uniqueAgencies = [...new Set(nomisRecords.map(o => o.assessmentAgencyId))]
     const agencyMap = new Map(
+      // @ts-ignore
       await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)]))
     )
 

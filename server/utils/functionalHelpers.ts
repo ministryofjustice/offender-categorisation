@@ -1,7 +1,7 @@
-const R = require('ramda')
-const Status = require('./statusEnum')
+import * as R from 'ramda'
+import Status from './statusEnum'
 
-module.exports = {
+export default {
   getIn: R.path,
   equals: R.equals,
   isNilOrEmpty,
@@ -21,7 +21,7 @@ module.exports = {
   addSocProfile,
 }
 
-function isNilOrEmpty(item) {
+export function isNilOrEmpty(item) {
   return R.isEmpty(item) || R.isNil(item)
 }
 
@@ -61,6 +61,7 @@ function replace(array, toReplace, newElement) {
 }
 
 function groupBy(array, groupByProperty) {
+  // @ts-ignore
   return R.groupBy(R.prop(groupByProperty), array)
 }
 
@@ -68,12 +69,12 @@ function isFirstVisit(res) {
   return res.locals.formObject ? !res.locals.formObject.socProfile : true
 }
 
-function inProgress(dbRecord) {
+export function inProgress(dbRecord) {
   // Note cancelled rows are invisible
   return dbRecord && dbRecord.status && dbRecord.status !== Status.APPROVED.name
 }
 
-function extractNextReviewDate(details) {
+export function extractNextReviewDate(details) {
   const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
   return catRecord && catRecord.nextReviewDate
 }
