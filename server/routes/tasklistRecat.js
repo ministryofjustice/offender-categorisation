@@ -1,7 +1,7 @@
 const moment = require('moment')
 const express = require('express')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
-const Status = require('../utils/statusEnum')
+const Status = require('../utils/statusEnum').default
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
 const RiskChange = require('../utils/riskChangeStatusEnum')

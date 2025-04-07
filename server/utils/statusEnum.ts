@@ -1,4 +1,11 @@
-const states = {
+export type State = {
+  name: string
+  value: string
+  displayOrder?: number
+  previous?: (State | undefined)[]
+}
+
+const states: Record<string, State> = {
   UNCATEGORISED: { name: 'UNCATEGORISED', value: 'Not categorised' },
   STARTED: { name: 'STARTED', value: 'Started' },
   SECURITY_MANUAL: { name: 'SECURITY_MANUAL', value: 'Manually referred to Security' },
@@ -9,7 +16,8 @@ const states = {
   APPROVED: { name: 'APPROVED', value: 'Approved' },
   SUPERVISOR_BACK: { name: 'SUPERVISOR_BACK', value: 'Back from Supervisor', displayOrder: 20 },
   CANCELLED: { name: 'CANCELLED', value: 'Cancelled' },
-}
+} as const
+
 states.SECURITY_MANUAL.previous = [
   states.STARTED,
   states.SECURITY_AUTO,
@@ -17,6 +25,7 @@ states.SECURITY_MANUAL.previous = [
   states.SECURITY_BACK,
   states.SUPERVISOR_BACK,
 ]
+
 states.SECURITY_AUTO.previous = [undefined, states.STARTED]
 states.SECURITY_FLAGGED.previous = [undefined, states.STARTED, states.SECURITY_AUTO]
 states.SECURITY_BACK.previous = [states.SECURITY_MANUAL, states.SECURITY_AUTO, states.SECURITY_FLAGGED]
@@ -34,4 +43,4 @@ states.CANCELLED.previous = [
   states.AWAITING_APPROVAL,
 ]
 
-module.exports = Object.freeze(states)
+export default states

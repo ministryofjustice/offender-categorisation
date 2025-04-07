@@ -9,7 +9,7 @@ const { firstItem } = require('../utils/functionalHelpers')
 const { getLongDateFormat, isFemalePrisonId } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
-const Status = require('../utils/statusEnum')
+const Status = require('../utils/statusEnum').default
 
 const ratings = require('../config/ratings')
 const categoriser = require('../config/categoriser')

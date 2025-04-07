@@ -1,11 +1,11 @@
-const moment = require('moment')
-const serviceCreator = require('../../server/services/offendersService')
-const Status = require('../../server/utils/statusEnum')
-const ReviewReason = require('../../server/utils/reviewReasonEnum')
-const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
-const CatType = require('../../server/utils/catTypeEnum')
-const { dateConverter } = require('../../server/utils/utils')
-const { DUE_DATE, OVERDUE } = require('../../server/services/filter/homeFilter')
+import serviceCreator from '../../server/services/offendersService'
+import Status from '../../server/utils/statusEnum'
+import ReviewReason from '../../server/utils/reviewReasonEnum'
+import RiskChangeStatus from '../../server/utils/riskChangeStatusEnum'
+import CatType from '../../server/utils/catTypeEnum'
+import { dateConverter } from '../../server/utils/utils'
+import { DUE_DATE, OVERDUE } from '../../server/services/filter/homeFilter'
+import { addMonths, addWeeks, format, parseISO, subDays } from 'date-fns'
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -131,12 +131,16 @@ afterEach(() => {
   probationOffenderSearchApiClient.matchPrisoners.mockReset()
 })
 
-moment.now = jest.fn()
-// NOTE: mock current date!
-moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+beforeAll(() => {
+  jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
+})
 
-function mockTodaySubtract(days) {
-  return moment().subtract(days, 'day').format('YYYY-MM-DD')
+afterAll(() => {
+  jest.useRealTimers()
+})
+
+function mockTodaySubtract(days: number): string {
+  return format(subDays(new Date(Date.now()), days), 'yyyy-MM-dd')
 }
 
 describe('getRecategoriseOffenders', () => {
@@ -799,8 +803,8 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should calculate business days correctly', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-01-16'))
+
     expect(service.buildSentenceData('2019-01-14')).toEqual({
       daysSinceSentence: 2,
       dateRequired: '28/01/2019',
@@ -811,8 +815,8 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should calculate business days correctly when sentenceDate is Saturday', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-01-16'))
+
     expect(service.buildSentenceData('2019-01-12')).toEqual({
       daysSinceSentence: 4,
       dateRequired: '28/01/2019',
@@ -823,8 +827,8 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should calculate business days correctly when sentenceDate is Sunday', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-01-16'))
+
     expect(service.buildSentenceData('2019-01-13')).toEqual({
       daysSinceSentence: 3,
       dateRequired: '28/01/2019',
@@ -835,8 +839,8 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should detect overdue record', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-01-29', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-01-29'))
+
     expect(service.buildSentenceData('2019-01-14')).toEqual({
       daysSinceSentence: 15,
       dateRequired: '28/01/2019',
@@ -1871,7 +1875,7 @@ describe('backToCategoriser', () => {
     const expectedDetails = {
       bookingId: 12,
       assessmentSeq: 6,
-      evaluationDate: moment().format('YYYY-MM-DD'),
+      evaluationDate: format(new Date(), 'yyyy-MM-dd'),
       reviewCommitteeCode: 'OCA',
       committeeCommentText: 'cat-tool rejected',
     }
@@ -2040,7 +2044,7 @@ describe('getPrisonerBackground', () => {
       },
     ]
 
-    const result = await service.getPrisonerBackground(context, 'ABC1', moment('2019-04-16'))
+    const result = await service.getPrisonerBackground(context, 'ABC1', parseISO('2019-04-16'))
 
     expect(nomisClient.getAgencyDetail).toBeCalledTimes(2) // 1 for each unique agency
     expect(nomisClient.getCategoryHistory).toBeCalledTimes(1)
@@ -2494,8 +2498,8 @@ describe('mergeU21ResultWithNomisCategorisationData', () => {
 
 describe('updateNextReviewDateIfRequired', () => {
   test('calls nomis to update review date', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
+
     const offenderDetails = {
       offenderNo: 'GN123',
       lastName: 'SMITH',
@@ -2506,8 +2510,8 @@ describe('updateNextReviewDateIfRequired', () => {
     expect(nomisClient.updateNextReviewDate).toBeCalledWith(-5, '2019-06-14')
   })
   test('does not call nomis to update review date if date within 10 working days', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
+
     const offenderDetails = {
       offenderNo: 'GN123',
       lastName: 'SMITH',
@@ -2523,8 +2527,8 @@ describe('handleRiskChangeDecision', () => {
   const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
 
   test('should handle review required decision correctly', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
+
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
     nomisClient.getOffenderDetails.mockResolvedValue({
@@ -2549,8 +2553,8 @@ describe('handleRiskChangeDecision', () => {
     })
   })
   test('should handle review required decision with next review date within 10 working days correctly', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
+
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
     nomisClient.getOffenderDetails.mockResolvedValue({
@@ -2575,8 +2579,8 @@ describe('handleRiskChangeDecision', () => {
     })
   })
   test('should handle review NOT required decision correctly', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
+
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
     nomisClient.getOffenderDetails.mockResolvedValue({
@@ -3269,8 +3273,9 @@ describe('getDueRecats', () => {
   )
 
   it('it should show an offender who has a release date AFTER their next review date, AND they are currently in Rejected By Supervisor', async () => {
-    const releaseDate = moment().add(7, 'months')
-    const nextReviewDate = moment().add(9, 'months')
+    const releaseDate = addMonths(new Date(), 7)
+    const nextReviewDate = addMonths(new Date(), 9)
+
     nomisClient.getRecategoriseOffenders.mockResolvedValue([
       {
         offenderNo: 'G9285UP',
@@ -3758,8 +3763,7 @@ describe('isNextReviewAfterRelease', () => {
 describe('isRejectedBySupervisorSuitableForDisplay', () => {
   beforeEach(() => {
     // this is necessary as other tests mess with the globally set value
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
   })
 
   const testCases = [
@@ -3768,7 +3772,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       dbRecord: {
         status: Status.APPROVED.name,
       },
-      releaseDate: mockTodaySubtract(1),
+      releaseDate: () => mockTodaySubtract(1),
       expected: false,
     },
     {
@@ -3776,7 +3780,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       dbRecord: {
         status: Status.APPROVED.name,
       },
-      releaseDate: moment().add(1, 'week'),
+      releaseDate: () => addWeeks(new Date(), 1),
       expected: false,
     },
     {
@@ -3784,7 +3788,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       dbRecord: {
         status: Status.APPROVED.name,
       },
-      releaseDate: moment(),
+      releaseDate: () => new Date(),
       expected: false,
     },
     {
@@ -3792,7 +3796,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       dbRecord: {
         status: Status.SUPERVISOR_BACK.name,
       },
-      releaseDate: mockTodaySubtract(37),
+      releaseDate: () => mockTodaySubtract(37),
       expected: false,
     },
     {
@@ -3800,7 +3804,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       dbRecord: {
         status: Status.SUPERVISOR_BACK.name,
       },
-      releaseDate: moment().add(1, 'month'),
+      releaseDate: () => addMonths(new Date(), 1),
       expected: true,
     },
     {
@@ -3816,7 +3820,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       dbRecord: {
         status: Status.SUPERVISOR_BACK.name,
       },
-      releaseDate: moment(),
+      releaseDate: () => new Date(),
       expected: true,
     },
     {
@@ -3824,7 +3828,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       dbRecord: {
         status: 'invalid-status',
       },
-      releaseDate: mockTodaySubtract(44),
+      releaseDate: () => mockTodaySubtract(44),
       expected: false,
     },
     {
@@ -3846,7 +3850,7 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
     {
       description: 'should return false if status is missing and release date is in the past',
       dbRecord: {},
-      releaseDate: mockTodaySubtract(2),
+      releaseDate: () => mockTodaySubtract(2),
       expected: false,
     },
     {
@@ -3861,7 +3865,10 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
 
   testCases.forEach(({ description, dbRecord, releaseDate, expected }) => {
     it(description, () => {
-      const result = service.isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate)
+      const result = service.isRejectedBySupervisorSuitableForDisplay(
+        dbRecord,
+        typeof releaseDate === 'function' ? releaseDate() : releaseDate,
+      )
       expect(result).toBe(expected)
     })
   })

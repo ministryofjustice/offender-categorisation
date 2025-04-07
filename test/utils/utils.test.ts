@@ -1,23 +1,23 @@
-const moment = require('moment')
-const {
-  filterJsonObjectForLogging,
-  formatLength,
+import { addMonths, addYears, format } from 'date-fns'
+import {
   calculateNextReviewDate,
-  getLongDateFormat,
-  getVerboseDateFormat,
-  isFemalePrisonId,
-  setFemaleCaseLoads,
-  catMappings,
   catLabel,
-  isOpenCategory,
+  catMappings,
   choosingHigherCategory,
-  properCase,
-  isBlank,
-  properCaseName,
-  getNamesFromString,
   dateConverter,
   dateConverterToISO,
-} = require('../../server/utils/utils')
+  filterJsonObjectForLogging,
+  formatLength,
+  getLongDateFormat,
+  getNamesFromString,
+  getVerboseDateFormat,
+  isBlank,
+  isFemalePrisonId,
+  isOpenCategory,
+  properCase,
+  properCaseName,
+  setFemaleCaseLoads,
+} from '../../server/utils/utils'
 
 describe('filterJsonObjectForLogging', () => {
   it('it removes the _csrf property from a json object', () => {
@@ -46,12 +46,13 @@ describe('formatLength formatting sentence length correctly', () => {
 })
 
 describe('calculateNextReviewDate', () => {
-  const SIX_MONTHS_AHEAD = moment().add(6, 'months')
-  const TWELVE_MONTHS_AHEAD = moment().add(1, 'years')
+  const SIX_MONTHS_AHEAD = format(addMonths(new Date(), 6), 'd/M/yyyy')
+  const TWELVE_MONTHS_AHEAD = format(addYears(new Date(), 1), 'd/M/yyyy')
+
   test.each`
     nextDateChoice | expectedValue
-    ${'6'}         | ${SIX_MONTHS_AHEAD.format('D/M/YYYY')}
-    ${'12'}        | ${TWELVE_MONTHS_AHEAD.format('D/M/YYYY')}
+    ${'6'}         | ${SIX_MONTHS_AHEAD}
+    ${'12'}        | ${TWELVE_MONTHS_AHEAD}
     ${'other'}     | ${''}
     ${''}          | ${''}
   `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {

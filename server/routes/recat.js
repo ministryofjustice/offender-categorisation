@@ -13,7 +13,7 @@ const {
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const recat = require('../config/recat')
-const Status = require('../utils/statusEnum')
+const Status = require('../utils/statusEnum').default
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
 
