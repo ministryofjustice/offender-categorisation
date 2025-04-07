@@ -36,22 +36,45 @@ const formatLength = sentenceTerms => {
   return result.endsWith(', ') ? result.substr(0, result.length - 2) : result
 }
 
-const SATURDAY = 6
-const SUNDAY = 0
-const SUNDAY2 = 7
+// const SATURDAY = 6
+// const SUNDAY = 0
+// const SUNDAY2 = 7
+//
+// const get10BusinessDays = from => {
+//   let numberOfDays = 14
+//   switch (from.isoWeekday()) {
+//     case SATURDAY:
+//       numberOfDays += 2
+//       break
+//     case SUNDAY:
+//     case SUNDAY2:
+//       numberOfDays += 1
+//       break
+//     default:
+//   }
+//   return numberOfDays
+// }
 
-const get10BusinessDays = from => {
-  let numberOfDays = 14
-  switch (from.isoWeekday()) {
-    case SATURDAY:
-      numberOfDays += 2
-      break
-    case SUNDAY:
-    case SUNDAY2:
-      numberOfDays += 1
-      break
-    default:
-  }
+const SATURDAY = 6 // JavaScript's Date.getUTCDay() returns 6 for Saturday
+const SUNDAY = 0 // JavaScript's Date.getUTCDay() returns 0 for Sunday
+
+/**
+ * Returns the number of calendar days to reach 10 business days from a start date.
+ * This version assumes weekends are non-working days and pads accordingly.
+ *
+ * @param {Date | string} fromDate - A Date object or ISO string (YYYY-MM-DD)
+ * @returns {number} Number of days to add to get 10 business days
+ */
+const get10BusinessDays = fromDate => {
+  const date = new Date(fromDate)
+  if (isNaN(date.getTime())) return 14 // Fallback if invalid date
+
+  const dayOfWeek = date.getUTCDay() // 0 = Sunday, 6 = Saturday
+  let numberOfDays = 14 // Base 10 business days (14 calendar days)
+
+  if (dayOfWeek === SATURDAY) numberOfDays += 2
+  else if (dayOfWeek === SUNDAY) numberOfDays += 1
+
   return numberOfDays
 }
 

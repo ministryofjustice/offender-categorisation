@@ -131,12 +131,20 @@ afterEach(() => {
   probationOffenderSearchApiClient.matchPrisoners.mockReset()
 })
 
+beforeAll(() => {
+  jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
+})
+
+afterAll(() => {
+  jest.useRealTimers()
+})
+
 moment.now = jest.fn()
 // NOTE: mock current date!
 moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
 
 function mockTodaySubtract(days) {
-  return moment().subtract(days, 'day').format('YYYY-MM-DD')
+  return moment().utc().startOf('day').subtract(days, 'day').format('YYYY-MM-DD')
 }
 
 describe('getRecategoriseOffenders', () => {
@@ -799,8 +807,7 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should calculate business days correctly', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-01-16'))
     expect(service.buildSentenceData('2019-01-14')).toEqual({
       daysSinceSentence: 2,
       dateRequired: '28/01/2019',
@@ -811,8 +818,7 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should calculate business days correctly when sentenceDate is Saturday', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-01-16'))
     expect(service.buildSentenceData('2019-01-12')).toEqual({
       daysSinceSentence: 4,
       dateRequired: '28/01/2019',
@@ -823,8 +829,7 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should calculate business days correctly when sentenceDate is Sunday', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-01-16', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-01-16'))
     expect(service.buildSentenceData('2019-01-13')).toEqual({
       daysSinceSentence: 3,
       dateRequired: '28/01/2019',
@@ -835,8 +840,7 @@ describe('getUncategorisedOffenders', () => {
   })
 
   test('it should detect overdue record', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-01-29', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-01-29'))
     expect(service.buildSentenceData('2019-01-14')).toEqual({
       daysSinceSentence: 15,
       dateRequired: '28/01/2019',
@@ -2494,8 +2498,7 @@ describe('mergeU21ResultWithNomisCategorisationData', () => {
 
 describe('updateNextReviewDateIfRequired', () => {
   test('calls nomis to update review date', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
     const offenderDetails = {
       offenderNo: 'GN123',
       lastName: 'SMITH',
@@ -2506,8 +2509,7 @@ describe('updateNextReviewDateIfRequired', () => {
     expect(nomisClient.updateNextReviewDate).toBeCalledWith(-5, '2019-06-14')
   })
   test('does not call nomis to update review date if date within 10 working days', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
     const offenderDetails = {
       offenderNo: 'GN123',
       lastName: 'SMITH',
@@ -2523,8 +2525,7 @@ describe('handleRiskChangeDecision', () => {
   const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
 
   test('should handle review required decision correctly', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
     nomisClient.getOffenderDetails.mockResolvedValue({
@@ -2549,8 +2550,7 @@ describe('handleRiskChangeDecision', () => {
     })
   })
   test('should handle review required decision with next review date within 10 working days correctly', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
     nomisClient.getOffenderDetails.mockResolvedValue({
@@ -2575,8 +2575,7 @@ describe('handleRiskChangeDecision', () => {
     })
   })
   test('should handle review NOT required decision correctly', async () => {
-    moment.now = jest.fn()
-    moment.now.mockReturnValue(moment('2019-05-31', 'YYYY-MM-DD'))
+    jest.useFakeTimers().setSystemTime(new Date('2019-05-31'))
     nomisClient.getSentenceDetails.mockResolvedValue({ dummyDetails: 'stuff' })
     nomisClient.getSentenceTerms.mockResolvedValue(sentenceTerms)
     nomisClient.getOffenderDetails.mockResolvedValue({
@@ -2945,14 +2944,6 @@ describe('getOffenderDetailsWithNextReviewDate', () => {
 })
 
 describe('getDueRecats', () => {
-  beforeAll(() => {
-    jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
-  })
-
-  afterAll(() => {
-    jest.useRealTimers()
-  })
-
   it('should return an empty array when no data is available', async () => {
     nomisClient.getRecategoriseOffenders.mockResolvedValue([])
     formService.getCategorisationRecords.mockResolvedValue([])
@@ -3045,8 +3036,8 @@ describe('getDueRecats', () => {
         pnomis: false,
         buttonText: 'Start',
         pom: 'Steve Rendell',
-        dbRecordExists: 'asd',
-        dbStatus: 'qweqwe',
+        dbRecordExists: undefined,
+        dbStatus: undefined,
       },
       null,
     ])

@@ -1,3 +1,4 @@
+// @ts-check
 const path = require('path')
 const moment = require('moment')
 const logger = require('../../log')
@@ -1109,25 +1110,88 @@ module.exports = function createOffendersService(
     }
   }
 
-  function buildSentenceData(sentenceDate) {
-    if (!sentenceDate) {
-      return {}
-    }
-    const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
-    const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
+  // function buildSentenceData(sentenceDate) {
+  //   if (!sentenceDate) {
+  //     return {}
+  //   }
+  //   const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
+  //   const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
+  //
+  //   const actualDays = get10BusinessDays(sentenceDateMoment)
+  //   const dateRequiredRaw = sentenceDateMoment.add(actualDays, 'day')
+  //   const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
+  //   const now = moment(0, 'HH')
+  //   const overdue = dateRequiredRaw.isBefore(now)
+  //   const overdueText = getOverdueText(dateRequiredRaw)
+  //   return { daysSinceSentence, dateRequired, sentenceDate, overdue, overdueText }
+  // }
 
-    const actualDays = get10BusinessDays(sentenceDateMoment)
-    const dateRequiredRaw = sentenceDateMoment.add(actualDays, 'day')
-    const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
-    const now = moment(0, 'HH')
-    const overdue = dateRequiredRaw.isBefore(now)
-    const overdueText = getOverdueText(dateRequiredRaw)
-    return { daysSinceSentence, dateRequired, sentenceDate, overdue, overdueText }
+  // function getOverdueText(dateRequired) {
+  //   const diffInDays = moment.utc().startOf('day').diff(moment.utc(dateRequired).startOf('day'), 'days')
+  //   // eslint-disable-next-line no-nested-ternary
+  //   return diffInDays > 1 ? `${diffInDays} days` : diffInDays === 1 ? '1 day' : ''
+  // }
+
+  /**
+   * @param {string | Date} sentenceDate
+   * @returns {{
+   *   daysSinceSentence: number,
+   *   dateRequired: string,
+   *   sentenceDate: string,
+   *   overdue: boolean,
+   *   overdueText: string
+   * } | {}}  // fallback if date is invalid
+   */
+  function buildSentenceData(sentenceDate) {
+    if (!sentenceDate) return {}
+
+    // Safely parse date (handles YYYY-MM-DD or Date object)
+    const parsedDate = new Date(typeof sentenceDate === 'string' ? `${sentenceDate}T00:00:00` : sentenceDate)
+
+    if (isNaN(parsedDate.getTime())) return {}
+
+    // Normalize dates to UTC midnight for accurate diff
+    const today = new Date()
+    const todayUTC = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+    const sentenceUTC = Date.UTC(parsedDate.getUTCFullYear(), parsedDate.getUTCMonth(), parsedDate.getUTCDate())
+    const daysSinceSentence = Math.floor((todayUTC - sentenceUTC) / (1000 * 60 * 60 * 24))
+
+    // Calculate required date (business days logic)
+    const businessDays = get10BusinessDays(parsedDate)
+    const requiredDate = new Date(parsedDate)
+    requiredDate.setUTCDate(requiredDate.getUTCDate() + businessDays)
+
+    // Compare dates (normalized to UTC midnight)
+    const requiredUTC = Date.UTC(requiredDate.getUTCFullYear(), requiredDate.getUTCMonth(), requiredDate.getUTCDate())
+    const overdue = requiredUTC < todayUTC
+
+    return {
+      daysSinceSentence,
+      dateRequired: requiredDate.toLocaleDateString('en-GB'), // "DD/MM/YYYY"
+      sentenceDate: parsedDate.toISOString().split('T')[0], // "YYYY-MM-DD"
+      overdue,
+      overdueText: overdue ? getOverdueText(requiredDate) : '',
+    }
   }
 
+  /**
+   * Returns overdue status as text (e.g., "3 days" or "1 day").
+   * @param {string | Date} dateRequired - The due date to check.
+   * @returns {string} - Empty string if not overdue, otherwise formatted text.
+   */
   function getOverdueText(dateRequired) {
-    const diffInDays = moment.utc().startOf('day').diff(moment.utc(dateRequired).startOf('day'), 'days')
-    // eslint-disable-next-line no-nested-ternary
+    const today = new Date()
+    const required = new Date(dateRequired)
+
+    if (isNaN(required.getTime())) {
+      return ''
+    }
+
+    const MS_PER_DAY = 1000 * 60 * 60 * 24
+    const startOfToday = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())
+    const startOfRequired = Date.UTC(required.getUTCFullYear(), required.getUTCMonth(), required.getUTCDate())
+
+    const diffInDays = Math.floor((startOfToday - startOfRequired) / MS_PER_DAY)
     return diffInDays > 1 ? `${diffInDays} days` : diffInDays === 1 ? '1 day' : ''
   }
 
