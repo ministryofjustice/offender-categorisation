@@ -1,3 +1,23 @@
+// suggested folder structure for ts types
+//server/
+//├── types/                    # Shared/common types
+//│   ├── index.ts
+//│   ├── database.types.ts
+//│   └── config.types.ts
+//├── data/                     # API/External service DTOs
+//│   ├── prisonerSearch/
+//│   │   └── prisonerSearch.dto.ts
+//│   └── formApi/
+//│       └── form.dto.ts
+//├── services/                 # Service-specific types
+//│   ├── offenders/
+//│   │   ├── types.ts
+//│   │   └── service.ts
+//│   └── categories/
+//│       ├── types.ts
+//│       └── service.ts
+//└── routes/                   # Route-specific types
+//└── types.ts
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compileOnSave": true,

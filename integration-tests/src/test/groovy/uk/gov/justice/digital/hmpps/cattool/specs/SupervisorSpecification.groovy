@@ -219,7 +219,7 @@ class SupervisorSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'the supervisor home page is displayed'
-    at SupervisorHomePage
+    waitFor { at SupervisorHomePage }
 
     then: 'offender with booking id 12 has been removed'
     names == ['Pitstop, Penelope\n' +
@@ -353,9 +353,13 @@ class SupervisorSpecification extends AbstractSpecification {
     at SupervisorReviewPage
 
     // the displayed property does not work on these radios for some reason
-    overriddenCategoryB.@type == 'radio'
-    overriddenCategoryC.@type == 'radio'
-    overriddenCategoryD.@type == null
+    waitFor {
+      overriddenCategoryB.@type == 'radio'
+    }
+    waitFor {
+      overriddenCategoryC.@type == 'radio'
+      overriddenCategoryD.@type == null
+    }
 
     errorSummaries*.text() == ['Please enter the new category', 'Enter the reason why this category is more appropriate']
 
