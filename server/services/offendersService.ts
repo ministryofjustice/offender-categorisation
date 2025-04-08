@@ -134,7 +134,7 @@ function isNewSecurityReferred(offenderNo, securityReferredOffenders) {
   return securityReferredOffenders.filter(s => s.offenderNo === offenderNo).some(s => s.status === 'NEW')
 }
 
-export default function createOffendersService(
+export function createOffendersService(
   nomisClientBuilder,
   allocationClientBuilder,
   formService,
@@ -1876,3 +1876,5 @@ export default function createOffendersService(
     isRejectedBySupervisorSuitableForDisplay,
   }
 }
+
+export default createOffendersService
