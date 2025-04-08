@@ -1,13 +1,13 @@
 const moment = require('moment')
 const R = require('ramda')
 const { validate } = require('../utils/fieldValidation')
-const logger = require('../../log')
+const logger = require('../../log').default
 const Status = require('../utils/statusEnum').default
 const CatType = require('../utils/catTypeEnum')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
 const conf = require('../config')
-const log = require('../../log')
+const log = require('../../log').default
 const { filterJsonObjectForLogging } = require('../utils/utils')
 
 function dataIfExists(data) {

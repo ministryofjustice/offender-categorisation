@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk')
-const logger = require('../../log')
+const logger = require('../../log').default
 const config = require('../../server/config')
 const { transferDlqEventMessages } = require('../../server/utils/eventUtils')
 

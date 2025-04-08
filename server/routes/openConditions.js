@@ -7,9 +7,9 @@ const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const openConditions = require('../config/openConditions')
 const categoriser = require('../config/categoriser')
-const log = require('../../log')
+const log = require('../../log').default
 const { isFemalePrisonId } = require('../utils/utils')
-const logger = require('../../log')
+const logger = require('../../log').default
 
 const formConfig = {
   openConditions,

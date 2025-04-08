@@ -1,7 +1,7 @@
 const knex = require('knex')
 const knexfile = require('./knexfile')
 const { app, sqsService } = require('./server/index')
-const log = require('./log')
+const log = require('./log').default
 const config = require('./server/config')
 
 const selectSql = message => {

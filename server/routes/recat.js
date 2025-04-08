@@ -15,7 +15,7 @@ const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlew
 const recat = require('../config/recat')
 const Status = require('../utils/statusEnum').default
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
-const log = require('../../log')
+const log = require('../../log').default
 
 const formConfig = {
   recat,

@@ -4,24 +4,24 @@
 
 import { isAfter, isBefore } from 'date-fns'
 
-const moment = require('moment')
-const R = require('ramda')
-const { dpsUrl, femalePrisonIds } = require('../config')
+import moment from 'moment'
+import R from 'ramda'
+import { dpsUrl, femalePrisonIds } from '../config'
 
-export const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
-export const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
+export const dateConverter = (from: any) => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+export const dateConverterToISO = (from: string) => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
-export const getLongDateFormat = date => {
+export const getLongDateFormat = (date: any) => {
   if (date) return moment(date, 'DD/MM/YYYY').format('dddd D MMMM YYYY')
   return ''
 }
 
-export const getVerboseDateFormat = date => {
+export const getVerboseDateFormat = (date: any) => {
   if (date) return moment(date, 'DD/MM/YYYY').format('D MMMM YYYY')
   return ''
 }
 
-function plural(value) {
+function plural(value: number) {
   return value > 1 ? 's' : ''
 }
 

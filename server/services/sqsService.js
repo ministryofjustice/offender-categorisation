@@ -1,6 +1,6 @@
 const { Consumer } = require('sqs-consumer')
 const AWS = require('aws-sdk')
-const logger = require('../../log')
+const logger = require('../../log').default
 const config = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const db = require('../data/dataAccess/db')

@@ -3,7 +3,7 @@ const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 
 const querystring = require('querystring')
-const log = require('../../log')
+const log = require('../../log').default
 const fiveMinutesBefore = require('../utils/fiveMinutesBefore')
 const { generateOauthClientToken } = require('./clientCredentials')
 const config = require('../config')

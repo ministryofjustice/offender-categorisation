@@ -1,5 +1,5 @@
 const dpsFrontEndComponentsMiddleware = require('../../server/middleware/dpsFrontEndComponentsMiddleware')
-const logger = require('../../log')
+const logger = require('../../log').default
 
 describe('dpsFrontEndComponentsMiddleware', () => {
   let mockComponentService

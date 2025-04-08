@@ -1,7 +1,7 @@
 // @ts-check
 
 require('dotenv').config()
-const logger = require('../log')
+const logger = require('../log').default
 
 const production = process.env.NODE_ENV === 'production'
 

@@ -8,7 +8,7 @@ initialiseAppInsights()
 buildAppInsightsClient()
 
 const clearDLQs = require('./clearDeadLetterQueues')
-const logger = require('../../log')
+const logger = require('../../log').default
 
 clearDLQs()
   .then(() => {

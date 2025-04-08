@@ -12,6 +12,7 @@ import {
   parse,
   startOfDay,
   subYears,
+  parseISO,
 } from 'date-fns'
 
 import path from 'path'
@@ -1133,17 +1134,24 @@ export function createOffendersService(
     }
   }
 
-  function buildSentenceData(sentenceDate) {
+  function buildSentenceData(sentenceDate: string) {
     if (!sentenceDate) {
       return {}
     }
-    const sentenceDateParsed = parse(sentenceDate, 'yyyy-MM-dd', new Date())
+
+    // according to tests sentenceDate accepts two formats:
+    // 1. Simple date: 'yyyy-MM-dd' (e.g., '2023-12-25')
+    // 2. ISO 8601: 'yyyy-MM-ddTHH:mm:ss.SSSZ' (e.g., '2023-12-25T00:00:00.000Z')
+    let sentenceDateParsed = parseISO(sentenceDate)
+
+    if (!isValid(sentenceDateParsed)) {
+      sentenceDateParsed = parse(sentenceDate, 'yyyy-MM-dd', new Date())
+    }
+
     const today = new Date()
 
     const daysSinceSentence = differenceInDays(today, sentenceDateParsed)
-
     const dateRequiredRaw = get10BusinessDaysLegacy(sentenceDateParsed)
-
     const dateRequired = format(dateRequiredRaw, 'dd/MM/yyyy')
 
     const overdue = safeIsBefore(dateRequiredRaw, startOfDay(today))
