@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import serviceCreator from '../../server/services/offendersService'
 
 const offenderNo = 'C3456RS'
