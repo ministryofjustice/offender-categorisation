@@ -1,6 +1,7 @@
 /* eslint-disable import/no-import-module-exports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-restricted-globals */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isAfter, isBefore } from 'date-fns'
 
