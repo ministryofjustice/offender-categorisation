@@ -34,9 +34,7 @@ import riskChangeHelper from '../utils/riskChange'
 import RiskChangeStatus from '../utils/riskChangeStatusEnum'
 import liteCategoriesPrisonerPartition from '../utils/liteCategoriesPrisonerPartition'
 import { filterListOfPrisoners } from './filter/homeFilter'
-import {
-  mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
-} from './recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
+import { mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto } from './recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
 import { isReviewOverdue } from './reviewStatusCalculator'
 import { get10BusinessDaysLegacy } from '../../integration_tests/support/utilities'
 

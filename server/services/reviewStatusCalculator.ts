@@ -1,3 +1,5 @@
+/* eslint-disable import/prefer-default-export */
+
 import { format, isValid, parse, startOfDay } from 'date-fns'
 import { safeIsBefore } from '../utils/utils'
 
