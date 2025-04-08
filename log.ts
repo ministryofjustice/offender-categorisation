@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import bunyan from 'bunyan'
 import bunyanFormat from 'bunyan-format'
 
