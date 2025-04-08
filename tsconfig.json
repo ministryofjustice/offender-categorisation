@@ -13,7 +13,12 @@
     "experimentalDecorators": true,
     "typeRoots": ["./node_modules/@types"],
     "baseUrl": "./",
-    "checkJs": false
+    "checkJs": false,
+    // migrating from cjs to esm
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": [
     "node_modules",
