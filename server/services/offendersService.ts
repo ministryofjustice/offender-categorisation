@@ -542,7 +542,24 @@ export function createOffendersService(
         ])
 
         const decoratedResults = securityReviewedFromDB.map(o => {
-          const reviewedDate = parse(o.securityReviewedDate, 'yyyy-MM-dd', new Date())
+          // according to tests sentenceDate accepts two formats:
+          // 1. Simple date: 'yyyy-MM-dd' (e.g., '2023-12-25')
+          // 2. ISO 8601: 'yyyy-MM-ddTHH:mm:ss.SSSZ' (e.g., '2023-12-25T00:00:00.000Z')
+          // 3. Date
+          let reviewedDate: any
+
+          if (typeof o.securityReviewedDate === 'string') {
+            reviewedDate = parseISO(o.securityReviewedDate)
+          } else if (o.securityReviewedDate instanceof Date) {
+            reviewedDate = o.securityReviewedDate
+          } else {
+            reviewedDate = null
+          }
+
+          if (!isValid(reviewedDate)) {
+            reviewedDate = parse(o.securityReviewedDate, 'yyyy-MM-dd', new Date())
+          }
+
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
           const userDetail = userDetailFromElite.find(record => record.username === o.securityReviewedBy)
           return {
