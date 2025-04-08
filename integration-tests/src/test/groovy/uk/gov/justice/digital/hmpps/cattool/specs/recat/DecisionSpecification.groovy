@@ -229,9 +229,13 @@ class DecisionSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
-    at DecisionPage
-    errorSummaries*.text() == ['Select what category is most suitable for this person']
-    errors.text().toString() == "Error:\nSelect the category that is most suitable for this person"
+    waitFor { at DecisionPage }
+    waitFor {
+      errorSummaries*.text() == ['Select what category is most suitable for this person']
+    }
+    waitFor {
+      errors.text().toString() == "Error:\nSelect the category that is most suitable for this person"
+    }
 
     when: 'YOI Open option is submitted'
     categoryJOption.click()
