@@ -3,7 +3,7 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isAfter, isBefore } from 'date-fns'
+import { isAfter, isBefore, isValid, parseISO, parse } from 'date-fns'
 
 import moment from 'moment'
 import R from 'ramda'
@@ -231,6 +231,23 @@ export const safeIsBefore = (a: Date, b: Date | string | number | null | undefin
   return !isNaN(bDate.getTime()) && isBefore(a, bDate)
 }
 
+export const normaliseDate = (input: unknown): Date | null => {
+  if (input instanceof Date && isValid(input)) return input
+
+  if (typeof input === 'string') {
+    let parsed = parseISO(input)
+    if (isValid(parsed)) return parsed
+
+    parsed = parse(input, 'yyyy-MM-dd', new Date())
+    if (isValid(parsed)) return parsed
+
+    parsed = parse(input, 'dd/MM/yyyy', new Date())
+    if (isValid(parsed)) return parsed
+  }
+
+  return null
+}
+
 module.exports = {
   dateConverter,
   dateConverterToISO,
@@ -265,4 +282,5 @@ module.exports = {
   isBlank,
   safeIsAfter,
   safeIsBefore,
+  normaliseDate,
 }

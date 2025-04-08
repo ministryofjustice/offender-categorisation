@@ -12,7 +12,6 @@ import {
   parse,
   startOfDay,
   subYears,
-  parseISO,
 } from 'date-fns'
 
 import path from 'path'
@@ -25,6 +24,7 @@ import {
   dateConverter,
   dateConverterToISO,
   getNamesFromString,
+  normaliseDate,
   properCaseName,
   safeIsAfter,
   safeIsBefore,
@@ -546,19 +546,7 @@ export function createOffendersService(
           // 1. Simple date: 'yyyy-MM-dd' (e.g., '2023-12-25')
           // 2. ISO 8601: 'yyyy-MM-ddTHH:mm:ss.SSSZ' (e.g., '2023-12-25T00:00:00.000Z')
           // 3. Date
-          let reviewedDate: any
-
-          if (typeof o.securityReviewedDate === 'string') {
-            reviewedDate = parseISO(o.securityReviewedDate)
-          } else if (o.securityReviewedDate instanceof Date) {
-            reviewedDate = o.securityReviewedDate
-          } else {
-            reviewedDate = null
-          }
-
-          if (!isValid(reviewedDate)) {
-            reviewedDate = parse(o.securityReviewedDate, 'yyyy-MM-dd', new Date())
-          }
+          const reviewedDate = normaliseDate(o.securityReviewedDate)
 
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
           const userDetail = userDetailFromElite.find(record => record.username === o.securityReviewedBy)
@@ -1151,7 +1139,7 @@ export function createOffendersService(
     }
   }
 
-  function buildSentenceData(sentenceDate: string) {
+  function buildSentenceData(sentenceDate: any) {
     if (!sentenceDate) {
       return {}
     }
@@ -1159,11 +1147,8 @@ export function createOffendersService(
     // according to tests sentenceDate accepts two formats:
     // 1. Simple date: 'yyyy-MM-dd' (e.g., '2023-12-25')
     // 2. ISO 8601: 'yyyy-MM-ddTHH:mm:ss.SSSZ' (e.g., '2023-12-25T00:00:00.000Z')
-    let sentenceDateParsed = parseISO(sentenceDate)
-
-    if (!isValid(sentenceDateParsed)) {
-      sentenceDateParsed = parse(sentenceDate, 'yyyy-MM-dd', new Date())
-    }
+    // 3. Date obj
+    const sentenceDateParsed = normaliseDate(sentenceDate)
 
     const today = new Date()
 
