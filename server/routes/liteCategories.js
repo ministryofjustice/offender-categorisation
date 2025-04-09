@@ -3,7 +3,13 @@ const moment = require('moment')
 const flash = require('connect-flash')
 const baseJoi = require('joi')
 const dateExtend = require('@joi/date')
-const { properCaseName, calculateNextReviewDate, sanitisePrisonName } = require('../utils/utils')
+const {
+  properCaseName,
+  calculateNextReviewDate,
+  sanitisePrisonName,
+  removeLeadingZerosFromDate,
+  dateConverterWithoutLeadingZeros,
+} = require('../utils/utils')
 const { handleCsrf } = require('../utils/routes')
 const validation = require('../utils/fieldValidation')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
@@ -256,7 +262,10 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const schema = joi.object(fieldOptions)
       const joiErrors = schema.validate(
-        req.body.map(field => field.replace(/^0+/, '')?.replace(/\/0/g, '/')),
+        {
+          nextReviewDate: removeLeadingZerosFromDate(nextReviewDate),
+          approvedDate: removeLeadingZerosFromDate(approvedDate),
+        },
         { stripUnknown: true, abortEarly: false },
       )
       const errors = validation.mapJoiErrors(joiErrors, [
@@ -294,11 +303,11 @@ module.exports = function Index({ formService, offendersService, userService, au
           cats,
           committees,
           prisonList,
-          approvedDate,
+          approvedDate: dateConverterWithoutLeadingZeros(joiErrors.value.approvedDate),
           supervisorCategory,
           approvedCategoryComment,
           approvedCommittee,
-          nextReviewDate,
+          nextReviewDate: dateConverterWithoutLeadingZeros(joiErrors.value.nextReviewDate),
           approvedPlacement,
           approvedPlacementComment,
           approvedComment,
@@ -310,11 +319,11 @@ module.exports = function Index({ formService, offendersService, userService, au
             context: res.locals,
             bookingId: bookingIdInt,
             sequence: assessmentData.sequence,
-            approvedDate,
+            approvedDate: dateConverterWithoutLeadingZeros(joiErrors.value.approvedDate),
             supervisorCategory,
             approvedCategoryComment,
             approvedCommittee,
-            nextReviewDate,
+            nextReviewDate: dateConverterWithoutLeadingZeros(joiErrors.value.nextReviewDate),
             approvedPlacement,
             approvedPlacementComment,
             approvedComment,
