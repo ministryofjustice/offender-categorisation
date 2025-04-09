@@ -4,7 +4,7 @@ const redis = require('redis')
 const redisFunctions = { on: jest.fn(), get: jest.fn(), set: jest.fn() }
 redis.createClient = jest.fn().mockReturnValue(redisFunctions)
 
-const config = require('../../server/config')
+const { config } = require('../../server/config')
 const { generateOauthClientToken, getApiClientToken } = require('../../server/authentication/clientCredentials')
 
 const clientToken = { access_token: 'client-token', expires_in: 300 }

@@ -2,7 +2,7 @@ import Agent, { HttpsAgent } from 'agentkeepalive'
 import superagent from 'superagent'
 import redis from 'redis'
 import { promisify } from 'util'
-import config from '../../config'
+import { config } from '../../config'
 import { getApiClientToken } from '../../authentication/clientCredentials'
 import getSanitisedError from '../../sanitisedError'
 import logger from '../../../log'
@@ -33,8 +33,8 @@ const getRedisAsync = promisify(client.get).bind(client)
 const setRedisAsync = promisify(client.set).bind(client)
 
 const timeoutSpec = {
-  response: config.apis.risksAndNeeds.timeout.response,
-  deadline: config.apis.risksAndNeeds.timeout.deadline,
+  response: Number(config.apis.risksAndNeeds.timeout.response),
+  deadline: Number(config.apis.risksAndNeeds.timeout.deadline),
 }
 const agentOptions = {
   maxSockets: config.apis.risksAndNeeds.agent.maxSockets,

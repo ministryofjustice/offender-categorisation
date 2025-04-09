@@ -6,7 +6,7 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
-const conf = require('../config')
+const { config } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
 
@@ -635,7 +635,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   }
 
   async function getCategorisedOffenders(agencyId, catType, transactionalClient) {
-    const displayMonths = conf.approvedDisplayMonths
+    const displayMonths = config.approvedDisplayMonths
     const fromDate = moment().subtract(displayMonths, 'months').toDate()
     try {
       const data = await formClient.getApprovedCategorisations(agencyId, fromDate, catType, transactionalClient)
@@ -872,7 +872,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       formClient.getPendingLiteCategorisations(offenderNo, transactionalClient),
     ])
 
-    if (conf.featureFlags.events.offender_release.enable_pending_categorisation_deletion === 'true') {
+    if (config.featureFlags.events.offender_release.enable_pending_categorisation_deletion === 'true') {
       await Promise.all(
         pendingCategorisations.rows.map(async pendingCategorisation =>
           formClient.deleteCategorisation(pendingCategorisation.id, transactionalClient),

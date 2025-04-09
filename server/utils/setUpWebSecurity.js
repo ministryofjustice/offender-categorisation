@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const express = require('express')
 const helmet = require('helmet')
-const config = require('../config')
+const { config } = require('../config')
 
 module.exports = function setUpWebSecurity() {
   const router = express.Router()

@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk')
 const logger = require('../../log')
-const config = require('../../server/config')
+const { config } = require('../../server/config')
 const { transferDlqEventMessages } = require('../../server/utils/eventUtils')
 
 const sqsRiskProfilerCredentials = getAwsCredentials(

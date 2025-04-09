@@ -1,6 +1,6 @@
 const passport = require('passport')
 const { Strategy } = require('passport-oauth2')
-const config = require('../config')
+const { config } = require('../config')
 const { generateOauthClientToken } = require('./clientCredentials')
 
 function authenticationMiddleware() {

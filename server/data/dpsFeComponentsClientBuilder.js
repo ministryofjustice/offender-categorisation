@@ -3,7 +3,7 @@ const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 
 const logger = require('../../log')
-const config = require('../config')
+const { config } = require('../config')
 const getSanitisedError = require('../sanitisedError')
 
 const timeoutSpec = {

@@ -1,6 +1,6 @@
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import superagent from 'superagent'
-import config from '../../config'
+import { config } from '../../config'
 import { getApiClientToken } from '../../authentication/clientCredentials'
 import getSanitisedError from '../../sanitisedError'
 import logger from '../../../log'
@@ -14,8 +14,8 @@ export interface ProbationOffenderSearchApiClient {
 }
 
 const timeoutSpec = {
-  response: config.apis.probationOffenderSearch.timeout.response,
-  deadline: config.apis.probationOffenderSearch.timeout.deadline,
+  response: Number(config.apis.probationOffenderSearch.timeout.response),
+  deadline: Number(config.apis.probationOffenderSearch.timeout.deadline),
 }
 const agentOptions = {
   maxSockets: config.apis.probationOffenderSearch.agent.maxSockets,

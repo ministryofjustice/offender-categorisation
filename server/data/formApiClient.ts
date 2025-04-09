@@ -2,7 +2,7 @@ import superagent from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import moment from 'moment'
 import { getApiClientToken } from '../authentication/clientCredentials'
-import config from '../config'
+import { config } from '../config'
 import logger from '../../log'
 import getSanitisedError from '../sanitisedError'
 
@@ -11,8 +11,8 @@ export type FormApiClient = {
 }
 
 const timeoutSpec = {
-  response: config.apis.offenderCategorisationApi.timeout.response,
-  deadline: config.apis.offenderCategorisationApi.timeout.deadline,
+  response: Number(config.apis.offenderCategorisationApi.timeout.response),
+  deadline: Number(config.apis.offenderCategorisationApi.timeout.deadline),
 }
 
 const agentOptions = {
