@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+
 const moment = require('moment')
 const R = require('ramda')
 const { validate } = require('../utils/fieldValidation')

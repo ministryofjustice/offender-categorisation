@@ -141,6 +141,7 @@ const authUrl = get({
   requireInProduction: false,
 })
 
+/* eslint-disable import/prefer-default-export */
 export const config = {
   // General environment
   environment: process.env.ENVIRONMENT || 'local',
@@ -614,5 +615,3 @@ export const config = {
     requireInProduction: true,
   }),
 }
-
-// export default config
