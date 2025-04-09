@@ -57,13 +57,12 @@
     {% if is3to5PolicyChangeAlertBannerExpired() %}
       {% if data.details.sentence.paroleEligibilityDate %}
         {% set govukInsetTextDate %}
-
           <span>Parole eligibility date: {{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>
-          {{ govukInsetText({
-            html: govukInsetTextDate
-          }) }}
-
         {% endset %}
+
+        {{ govukInsetText({
+          html: govukInsetTextDate
+        }) }}
       {% else %}
 
         {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
