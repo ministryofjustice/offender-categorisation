@@ -255,7 +255,10 @@ module.exports = function Index({ formService, offendersService, userService, au
       }
 
       const schema = joi.object(fieldOptions)
-      const joiErrors = schema.validate(req.body, { stripUnknown: true, abortEarly: false })
+      const joiErrors = schema.validate(
+        req.body.map(field => field.replace(/^0+/, '')?.replace(/\/0/g, '/')),
+        { stripUnknown: true, abortEarly: false }
+      )
       const errors = validation.mapJoiErrors(joiErrors, [
         {
           approvedDate: {

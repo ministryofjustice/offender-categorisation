@@ -126,6 +126,9 @@
         id: 'approvedDate',
         name: 'approvedDate',
         label: { text: 'Approval Date' },
+        hint: {
+          text: "For example, 2/11/2021"
+        },
         errorMessage: {
           text: 'Enter a valid date'
         } if (errors | findError('approvedDate')),
@@ -203,6 +206,9 @@
         id: 'nextReviewDate',
         name: 'nextReviewDate',
         label: { text: 'Next review date' },
+        hint: {
+          text: "For example, 2/11/2021"
+        },
         errorMessage: {
           text: 'Enter a valid future date'
         } if (errors | findError('nextReviewDate')),
