@@ -543,6 +543,7 @@ const stubGetOffenderDetails = ({
   nextReviewDate = '2020-01-16',
   basicInfo = false,
   paroleEligibilityDate = '2020-06-13',
+  conditionalReleaseDate = '2020-02-02',
 }: {
   bookingId: number
   offenderNo?: string
@@ -553,6 +554,7 @@ const stubGetOffenderDetails = ({
   nextReviewDate?: string
   basicInfo?: boolean
   paroleEligibilityDate?: string
+  conditionalReleaseDate?: string
 }): Promise<Response[]> => {
   const stubBasicInfo = () =>
     stubFor({
@@ -594,7 +596,7 @@ const stubGetOffenderDetails = ({
   }
   if (!indeterminateSentence) {
     sentenceDetail.releaseDate = new Date().toISOString().substring(0, 10)
-    sentenceDetail.conditionalReleaseDate = '2020-02-02'
+    sentenceDetail.conditionalReleaseDate = conditionalReleaseDate
     sentenceDetail.confirmedReleaseDate = new Date(new Date().getFullYear() + 4, 0, 1).toISOString().substring(0, 10)
     sentenceDetail.automaticReleaseDate = '2020-06-11'
   }

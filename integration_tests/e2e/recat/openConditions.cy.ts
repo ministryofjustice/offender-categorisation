@@ -1718,6 +1718,37 @@ describe('Open Conditions', () => {
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.checkConditionalReleaseDateInsetText('2020-02-02')
     })
+
+    it('does not render Conditional release date is not available', () => {
+      cy.task('stubGetOffenderDetails', {
+        bookingId: 12,
+        offenderNo: 'B2345YZ',
+        youngOffender: false,
+        indeterminateSentence: false,
+        paroleEligibilityDate: null,
+        conditionalReleaseDate: null,
+      })
+
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+
+      cy.intercept('GET', '/form/recat/decision/*', req => {
+        // FIXME remove after 2025-05-28
+        req.query.overrideFeatureFlag = 'true'
+      }).as('decision')
+      tasklistRecatPage.decisionButton().click()
+      cy.wait('@decision')
+
+      const decisionPage = Page.verifyOnPage(DecisionPage)
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ', isVisible: false })
+      decisionPage.assertTextVisibilityOnPage({
+        selector: 'span',
+        text: 'Conditional release date: ',
+        isVisible: false,
+      })
+    })
   })
 
   describe('Not suitable for Open Conditions', () => {

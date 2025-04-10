@@ -35,7 +35,7 @@
 
     {% if data.details.sentence.paroleEligibilityDate %}
       <span class="govuk-!-font-weight-bold govuk-!-margin-top-4">Parole eligibility date: </span><span>{{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>
-    {% else %}
+    {% elseif data.details.sentence.conditionalReleaseDate %}
       <span class="govuk-!-font-weight-bold govuk-!-margin-top-4">Conditional release date: </span><span>{{ getLongDateFormatIso(data.details.sentence.conditionalReleaseDate) }}</span>
     {% endif %}
 
@@ -63,7 +63,7 @@
         {{ govukInsetText({
           html: govukInsetTextDate
         }) }}
-      {% else %}
+      {% elseif %}
 
         {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
 
