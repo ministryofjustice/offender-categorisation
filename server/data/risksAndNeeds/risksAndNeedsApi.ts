@@ -33,8 +33,8 @@ const getRedisAsync = promisify(client.get).bind(client)
 const setRedisAsync = promisify(client.set).bind(client)
 
 const timeoutSpec = {
-  response: Number(config.apis.risksAndNeeds.timeout.response),
-  deadline: Number(config.apis.risksAndNeeds.timeout.deadline),
+  response: config.apis.risksAndNeeds.timeout.response,
+  deadline: config.apis.risksAndNeeds.timeout.deadline,
 }
 const agentOptions = {
   maxSockets: config.apis.risksAndNeeds.agent.maxSockets,
