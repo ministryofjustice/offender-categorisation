@@ -25,21 +25,7 @@ const DEFAULT_HTTP_AGENT = {
   freeSocketTimeout: 30000,
 } as const
 
-const DEFAULT_FEMALE_PRISON_IDS = [
-  'AGI',
-  'DWI',
-  'DHI',
-  'ESI',
-  'EWI',
-  'BZI',
-  'FHI',
-  'LNI',
-  'SDI',
-  'STI',
-  'NHI',
-  'PFI',
-] as string[]
-
+const DEFAULT_FEMALE_PRISON_IDS = ['AGI', 'DWI', 'DHI', 'ESI', 'EWI', 'BZI', 'FHI', 'LNI', 'SDI', 'STI', 'NHI', 'PFI']
 const DEFAULT_FEMALE_PRISON_IDS_ENV = DEFAULT_FEMALE_PRISON_IDS.join(',')
 
 const DEFAULTS = {
@@ -361,18 +347,22 @@ export const config = {
         requireInProduction: false,
       }),
       timeout: {
-        response: get({
-          name: 'ELITE2API_ENDPOINT_TIMEOUT_RESPONSE',
-          fallback: DEFAULT_TIMEOUTS.response,
-          log: true,
-          requireInProduction: false,
-        }),
-        deadline: get({
-          name: 'ELITE2API_ENDPOINT_TIMEOUT_DEADLINE',
-          fallback: DEFAULT_TIMEOUTS.deadline,
-          log: true,
-          requireInProduction: false,
-        }),
+        response: Number(
+          get({
+            name: 'ELITE2API_ENDPOINT_TIMEOUT_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'ELITE2API_ENDPOINT_TIMEOUT_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
       },
       agent: DEFAULT_HTTP_AGENT,
     },
@@ -384,18 +374,22 @@ export const config = {
         requireInProduction: false,
       }),
       timeout: {
-        response: get({
-          name: 'RISK_PROFILER_ENDPOINT_TIMEOUT_RESPONSE',
-          fallback: DEFAULT_TIMEOUTS.response,
-          log: true,
-          requireInProduction: false,
-        }),
-        deadline: get({
-          name: 'RISK_PROFILER_ENDPOINT_TIMEOUT_DEADLINE',
-          fallback: DEFAULT_TIMEOUTS.deadline,
-          log: true,
-          requireInProduction: false,
-        }),
+        response: Number(
+          get({
+            name: 'RISK_PROFILER_ENDPOINT_TIMEOUT_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'RISK_PROFILER_ENDPOINT_TIMEOUT_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
       },
       agent: DEFAULT_HTTP_AGENT,
     },
@@ -407,18 +401,22 @@ export const config = {
         requireInProduction: false,
       }),
       timeout: {
-        response: get({
-          name: 'ALLOCATION_MANAGER_TIMEOUT_RESPONSE',
-          fallback: DEFAULT_TIMEOUTS.response,
-          log: true,
-          requireInProduction: false,
-        }),
-        deadline: get({
-          name: 'ALLOCATION_MANAGER_TIMEOUT_DEADLINE',
-          fallback: DEFAULT_TIMEOUTS.deadline,
-          log: true,
-          requireInProduction: false,
-        }),
+        response: Number(
+          get({
+            name: 'ALLOCATION_MANAGER_TIMEOUT_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'ALLOCATION_MANAGER_TIMEOUT_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
       },
       agent: DEFAULT_HTTP_AGENT,
     },
@@ -430,18 +428,22 @@ export const config = {
         requireInProduction: false,
       }),
       timeout: {
-        response: get({
-          name: 'PRISONER_SEARCH_TIMEOUT_RESPONSE',
-          fallback: DEFAULT_TIMEOUTS.response,
-          log: true,
-          requireInProduction: false,
-        }),
-        deadline: get({
-          name: 'PRISONER_SEARCH_TIMEOUT_DEADLINE',
-          fallback: DEFAULT_TIMEOUTS.deadline,
-          log: true,
-          requireInProduction: false,
-        }),
+        response: Number(
+          get({
+            name: 'PRISONER_SEARCH_TIMEOUT_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'PRISONER_SEARCH_TIMEOUT_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
       },
       agent: DEFAULT_HTTP_AGENT,
     },
@@ -453,18 +455,22 @@ export const config = {
         requireInProduction: false,
       }),
       timeout: {
-        response: get({
-          name: 'RISKS_AND_NEEDS_ENDPOINT_URL_RESPONSE',
-          fallback: DEFAULT_TIMEOUTS.response,
-          log: true,
-          requireInProduction: false,
-        }),
-        deadline: get({
-          name: 'RISKS_AND_NEEDS_ENDPOINT_URL_DEADLINE',
-          fallback: DEFAULT_TIMEOUTS.deadline,
-          log: true,
-          requireInProduction: false,
-        }),
+        response: Number(
+          get({
+            name: 'RISKS_AND_NEEDS_ENDPOINT_URL_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'RISKS_AND_NEEDS_ENDPOINT_URL_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
       },
       agent: DEFAULT_HTTP_AGENT,
     },
@@ -476,18 +482,22 @@ export const config = {
         requireInProduction: false,
       }),
       timeout: {
-        response: get({
-          name: 'PROBATION_OFFENDER_SEARCH_ENDPOINT_URL_RESPONSE',
-          fallback: DEFAULT_TIMEOUTS.response,
-          log: true,
-          requireInProduction: false,
-        }),
-        deadline: get({
-          name: 'PROBATION_OFFENDER_SEARCH_ENDPOINT_URL_DEADLINE',
-          fallback: DEFAULT_TIMEOUTS.deadline,
-          log: true,
-          requireInProduction: false,
-        }),
+        response: Number(
+          get({
+            name: 'PROBATION_OFFENDER_SEARCH_ENDPOINT_URL_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'PROBATION_OFFENDER_SEARCH_ENDPOINT_URL_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
       },
       agent: DEFAULT_HTTP_AGENT,
     },
@@ -499,18 +509,22 @@ export const config = {
         requireInProduction: false,
       }),
       timeout: {
-        response: get({
-          name: 'OFFENDER_CATEGORISATION_API_ENDPOINT_URL_RESPONSE',
-          fallback: DEFAULT_TIMEOUTS.response,
-          log: true,
-          requireInProduction: false,
-        }),
-        deadline: get({
-          name: 'OFFENDER_CATEGORISATION_API_ENDPOINT_URL_DEADLINE',
-          fallback: DEFAULT_TIMEOUTS.deadline,
-          log: true,
-          requireInProduction: false,
-        }),
+        response: Number(
+          get({
+            name: 'OFFENDER_CATEGORISATION_API_ENDPOINT_URL_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'OFFENDER_CATEGORISATION_API_ENDPOINT_URL_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
       },
       agent: DEFAULT_HTTP_AGENT,
     },

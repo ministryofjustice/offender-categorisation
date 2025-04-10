@@ -14,8 +14,8 @@ export interface ProbationOffenderSearchApiClient {
 }
 
 const timeoutSpec = {
-  response: Number(config.apis.probationOffenderSearch.timeout.response),
-  deadline: Number(config.apis.probationOffenderSearch.timeout.deadline),
+  response: config.apis.probationOffenderSearch.timeout.response,
+  deadline: config.apis.probationOffenderSearch.timeout.deadline,
 }
 const agentOptions = {
   maxSockets: config.apis.probationOffenderSearch.agent.maxSockets,

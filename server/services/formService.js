@@ -1,5 +1,3 @@
-/* eslint-disable no-shadow */
-
 const moment = require('moment')
 const R = require('ramda')
 const { validate } = require('../utils/fieldValidation')
@@ -8,7 +6,7 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
-const { config } = require('../config')
+const { config: conf } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
 
@@ -637,7 +635,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   }
 
   async function getCategorisedOffenders(agencyId, catType, transactionalClient) {
-    const displayMonths = config.approvedDisplayMonths
+    const displayMonths = conf.approvedDisplayMonths
     const fromDate = moment().subtract(displayMonths, 'months').toDate()
     try {
       const data = await formClient.getApprovedCategorisations(agencyId, fromDate, catType, transactionalClient)
@@ -874,7 +872,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       formClient.getPendingLiteCategorisations(offenderNo, transactionalClient),
     ])
 
-    if (config.featureFlags.events.offender_release.enable_pending_categorisation_deletion === 'true') {
+    if (conf.featureFlags.events.offender_release.enable_pending_categorisation_deletion === 'true') {
       await Promise.all(
         pendingCategorisations.rows.map(async pendingCategorisation =>
           formClient.deleteCategorisation(pendingCategorisation.id, transactionalClient),

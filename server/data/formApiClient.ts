@@ -11,8 +11,8 @@ export type FormApiClient = {
 }
 
 const timeoutSpec = {
-  response: Number(config.apis.offenderCategorisationApi.timeout.response),
-  deadline: Number(config.apis.offenderCategorisationApi.timeout.deadline),
+  response: config.apis.offenderCategorisationApi.timeout.response,
+  deadline: config.apis.offenderCategorisationApi.timeout.deadline,
 }
 
 const agentOptions = {
