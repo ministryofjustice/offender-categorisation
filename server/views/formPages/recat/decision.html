@@ -63,7 +63,7 @@
         {{ govukInsetText({
           html: govukInsetTextDate
         }) }}
-      {% elif %}
+      {% elif data.details.sentence.conditionalReleaseDate %}
 
         {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
 
