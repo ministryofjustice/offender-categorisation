@@ -130,7 +130,7 @@ const authUrl = get({
 /* eslint-disable import/prefer-default-export */
 export const config = {
   // General environment
-  environment: process.env.ENVIRONMENT || 'local',
+  environment: process.env.ENVIRONMENT || DEFAULTS.ENVIRONMENT,
   https: production,
   productId: get({
     name: 'PRODUCT_ID',
