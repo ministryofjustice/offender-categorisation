@@ -45,7 +45,9 @@ RP_QUEUE_ACCESS_KEY_ID=dummy
 RP_QUEUE_SECRET_ACCESS_KEY=dummy
 RP_DL_QUEUE_ACCESS_KEY_ID=dummy
 RP_DL_QUEUE_SECRET_ACCESS_KEY=dummy
-RP_QUEUE_URL=http://0.0.0.0:4576/queue/risk_profiler_change
-RP_DL_QUEUE_URL=http://0.0.0.0:4576/queue/risk_profiler_change_dlq
-EVENT_QUEUE_URL=http://0.0.0.0:4576/queue/event
-EVENT_DL_QUEUE_URL=http://0.0.0.0:4576/queue/event_dlq
+
+RP_QUEUE_URL=http://localhost:4566/000000000000/risk_profiler_change
+RP_DL_QUEUE_URL=http://localhost:4566/000000000000/risk_profiler_change_dlq
+
+EVENT_QUEUE_URL=http://localhost:4566/000000000000/event
+EVENT_DL_QUEUE_URL=http://localhost:4566/000000000000/event_dlq
