@@ -29,7 +29,8 @@
     "start-feature:dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-node-feature\" \"npm run watch-sass\"",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
-    "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,mjs,cjs}\""
+    "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
+    "clear-dlq": "ts-node jobs/dead-letter/clearDeadLetterQueuesWithExit.js"
   },
   "jest": {
     "preset": "ts-jest",
@@ -180,7 +181,8 @@
     "sass": "^1.77.8",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.5.4"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   },
   "snyk": true
 }
