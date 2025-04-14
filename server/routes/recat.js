@@ -190,6 +190,7 @@ module.exports = function Index({
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
     const youngOffender = formService.isYoungOffender(details)
+    const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change
 
     return {
       data: { ...pageData, details: { ...details, youngOffender } },
@@ -199,6 +200,7 @@ module.exports = function Index({
       reviewReason: formData.reviewReason,
       backLink,
       errors,
+      featurePolicyChangeThreeToFiveEnabled,
     }
   }
 
