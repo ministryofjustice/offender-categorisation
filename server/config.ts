@@ -64,7 +64,7 @@ const DEFAULTS = {
   // OAuth
   NOMIS_AUTH_URL: 'http://localhost:9090/auth',
   NOMIS_AUTH_EXTERNAL_URL: 'http://localhost:9090/auth',
-  API_CLIENT_ID: 'categorisationtool', // Update to `null` if you want to enforce no default
+  API_CLIENT_ID: 'categorisationtool',
   API_CLIENT_SECRET: 'clientsecret',
 
   // API
@@ -127,7 +127,6 @@ const authUrl = get({
   requireInProduction: false,
 })
 
-/* eslint-disable import/prefer-default-export */
 export const config = {
   // General environment
   environment: process.env.ENVIRONMENT || DEFAULTS.ENVIRONMENT,
