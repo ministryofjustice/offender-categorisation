@@ -71,13 +71,11 @@ export async function clearDLQs() {
   logger.info('DLQ transfer job finished') // NOTE alert depends on this
 }
 
-function getAwsCredentials(accessKeyId, secretAccessKey) {
-  const credentials =
-    accessKeyId && secretAccessKey
-      ? {
-          accessKeyId,
-          secretAccessKey,
-        }
-      : undefined
-  return credentials
+function getAwsCredentials(accessKeyId: any, secretAccessKey: any) {
+  return accessKeyId && secretAccessKey
+    ? {
+        accessKeyId,
+        secretAccessKey,
+      }
+    : undefined
 }
