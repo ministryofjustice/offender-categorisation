@@ -44,6 +44,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
     environment:
     - SPRING_PROFILES_ACTIVE=dev
+    - JAVA_TOOL_OPTIONS=-XX:UseSVE=0
 
 networks:
   hmpps:
