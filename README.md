@@ -90,13 +90,24 @@ Use docker compose to download and run the four required containers
 
 ```docker-compose -f docker-compose-test.yml up```
 
-
 Either set the environment variable ```SQS_ENABLED=false``` or make sure all the SQS queues have started up in the categorisation-localstack container and categorisation-localstack-setup container has exited
 
 Install dependencies using ```npm install```
 
 Run the application using  ```npm run start```
 
+### Note for M4 (Apple Silicon) CPU users
+
+If you're using an M4 (Apple Silicon) Mac, the `nomis-oauth2-server` container may crash with the following error:
+
+`[error occurred during error reporting (), id 0x5, SIGTRAP (0x5) at pc=0x0000ffff9cb771ec]`
+
+To fix this, add the following environment variable to the `nomis-oauth2-server` service in your `docker-compose.yml`:
+
+```yaml
+environment:
+  - JAVA_TOOL_OPTIONS=-XX:UseSVE=0
+```
 
 `Alternative way`
 
