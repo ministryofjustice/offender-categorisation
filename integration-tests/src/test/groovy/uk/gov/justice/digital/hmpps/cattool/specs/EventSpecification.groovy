@@ -201,12 +201,11 @@ class EventSpecification extends AbstractSpecification {
 
     when: 'the job runs'
 
-    def file = new File("../jobs/dead-letter/clearDeadLetterQueuesWithExit.js")
-    def command = "node " + file.absolutePath
+//    def file = new File("../jobs/dead-letter/clearDeadLetterQueuesWithExit.js")
     def env = System.getenv()
     def envlist = []
     env.each() { k,v -> envlist.push( "$k=$v" ) }
-    def proc = command.execute(envlist, new File('..'))
+    def proc = "npm run clear-dlq".execute(envlist, new File('..'))
     proc.getInputStream().transferTo(System.out)
     proc.getErrorStream().transferTo(System.err)
     proc.waitFor()
