@@ -58,7 +58,7 @@ export interface RecategorisationHomeFilters extends CommonHomeFilters {
   [SUITABILIGY_FOR_OPEN_CONDITIONS]: Array<RecategorisationHomeFilterSuitabilityForOpenConditionsValue>
 }
 
-export interface CategorisationHomeFilters extends CommonHomeFilters {}
+export type CategorisationHomeFilters = CommonHomeFilters
 
 const CommonHomeFilters = {
   [POM]: { [REVIEWS_ASSIGNED_TO_ME]: 'Reviews assigned to me' },

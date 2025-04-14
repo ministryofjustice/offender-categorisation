@@ -565,7 +565,7 @@ module.exports = function Index({
           validation.value.button === SECURITY_BUTTON_SUBMIT,
           validation.value.securityReview,
         )
-      } catch (error) {
+      } catch {
         res.render('pages/error', {
           message: 'Failed to submit security review',
         })
