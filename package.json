@@ -128,7 +128,6 @@
     "redis": "^3.1.2",
     "sqs-consumer": "^5.8.0",
     "superagent": "^9.0.1",
-    "ts-node": "^10.9.2",
     "uuid": "^8.3.2",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
@@ -183,6 +182,7 @@
     "sass": "^1.77.8",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "snyk": true
