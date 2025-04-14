@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: offender-categorisation
     app.kubernetes.io/instance: offender-categorisation
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "11 */6 * * *"
   concurrencyPolicy: Replace
   failedJobsHistoryLimit: 5
   startingDeadlineSeconds: 1200
