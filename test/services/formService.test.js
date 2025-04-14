@@ -3,7 +3,7 @@ const serviceCreator = require('../../server/services/formService')
 const { validate } = require('../../server/utils/fieldValidation')
 const Status = require('../../server/utils/statusEnum')
 const CatType = require('../../server/utils/catTypeEnum')
-const config = require('../../server/config')
+const { config } = require('../../server/config')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 const bookingId = 34

@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import nock from 'nock'
-import config from '../../config'
+import { config } from '../../config'
 import clientBuilder from './risksAndNeedsApi'
 import { makeTestUser } from '../user.test-factory'
 

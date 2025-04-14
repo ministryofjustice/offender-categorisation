@@ -85,6 +85,7 @@
         "tsx": "never"
       }
     ],
-    "comma-dangle": ["error", "always-multiline"]
+    "comma-dangle": ["error", "always-multiline"],
+    "import/prefer-default-export": "off"
   }
 }

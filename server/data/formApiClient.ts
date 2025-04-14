@@ -2,7 +2,7 @@ import superagent from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import moment from 'moment'
 import { getApiClientToken } from '../authentication/clientCredentials'
-import config from '../config'
+import { config } from '../config'
 import logger from '../../log'
 import getSanitisedError from '../sanitisedError'
 

@@ -1,5 +1,5 @@
 const setUpEnvironmentName = require('../../server/utils/setUpEnvironmentName')
-const config = require('../../server/config')
+const { config } = require('../../server/config')
 
 describe('Set Up Environment Name', () => {
   let app

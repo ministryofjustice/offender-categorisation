@@ -1,7 +1,7 @@
-const AWS = require('aws-sdk')
-const logger = require('../../log')
-const config = require('../../server/config')
-const { transferDlqEventMessages } = require('../../server/utils/eventUtils')
+import AWS from 'aws-sdk'
+import logger from '../../log'
+import { config } from '../../server/config'
+import { transferDlqEventMessages } from '../../server/utils/eventUtils'
 
 const sqsRiskProfilerCredentials = getAwsCredentials(
   config.sqs.riskProfiler.accessKeyId,
@@ -45,7 +45,7 @@ const sqsEventDlq = new AWS.SQS({
 
 const sqsEventDlqQueueUrl = config.sqs.event.dlq.queueUrl
 
-async function runJob() {
+export async function clearDLQs() {
   logger.info('DLQ transfer job starting')
   try {
     await transferDlqEventMessages({
@@ -71,15 +71,11 @@ async function runJob() {
   logger.info('DLQ transfer job finished') // NOTE alert depends on this
 }
 
-function getAwsCredentials(accessKeyId, secretAccessKey) {
-  const credentials =
-    accessKeyId && secretAccessKey
-      ? {
-          accessKeyId,
-          secretAccessKey,
-        }
-      : undefined
-  return credentials
+function getAwsCredentials(accessKeyId?: string, secretAccessKey?: string) {
+  return accessKeyId && secretAccessKey
+    ? {
+        accessKeyId,
+        secretAccessKey,
+      }
+    : undefined
 }
-
-module.exports = runJob

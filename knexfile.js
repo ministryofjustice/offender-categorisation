@@ -1,5 +1,5 @@
 const fs = require('fs')
-const config = require('./server/config')
+const { config } = require('./server/config')
 
 module.exports = {
   client: 'pg',

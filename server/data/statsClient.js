@@ -1,4 +1,4 @@
-const { femalePrisonIds } = require('../config')
+const { config } = require('../config')
 const StatsType = require('../utils/statsTypeEnum')
 const { isFemalePrisonId } = require('../utils/utils')
 
@@ -7,7 +7,7 @@ const whereClauseStart = `status = 'APPROVED' and
   ($2::date is null or $2::date <= approval_date) and
   ($3::date is null or approval_date <= $3::date)`
 
-const femalePrisonIdCsv = femalePrisonIds.split(',').join(`','`)
+const femalePrisonIdCsv = config.femalePrisonIds.split(',').join(`','`)
 const femaleInClause = ` and prison_id in ('${femalePrisonIdCsv}')`
 const femaleNotInClause = ` and prison_id not in ('${femalePrisonIdCsv}')`
 

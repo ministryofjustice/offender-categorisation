@@ -4,7 +4,7 @@ const { HttpsAgent } = require('agentkeepalive')
 
 const moment = require('moment')
 const logger = require('../../log')
-const config = require('../config')
+const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
 const getSanitisedError = require('../sanitisedError')
 
