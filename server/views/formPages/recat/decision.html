@@ -42,13 +42,15 @@
     <p class="govuk-!-margin-top-4 govuk-!-margin-bottom-2">Consider this when making your category decision.</p>
   {% endset %}
 
-  {{ mojAlert({
-    variant: "information",
-    title: "New policy change affecting category decisions",
-    showTitleAsHeading: true,
-    dismissible: false,
-    html: alertContent
-  }) }}
+  {% if data.details.sentence.paroleEligibilityDatedata.details.sentence.paroleEligibilityDate or data.details.sentence.conditionalReleaseDate %}
+    {{ mojAlert({
+      variant: "information",
+      title: "New policy change affecting category decisions",
+      showTitleAsHeading: true,
+      dismissible: false,
+      html: alertContent
+    }) }}
+  {% endif %}
 {% endmacro %}
 
 {% block formItems %}
