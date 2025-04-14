@@ -74,9 +74,11 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
-    at PrisonerBackgroundPage
+    waitFor { at PrisonerBackgroundPage }
     waitFor {
       errorSummaries*.text() == ['Please enter details']
+    }
+    waitFor {
       errors.text().toString() == "Error:\nPlease enter details"
     }
   }
