@@ -68,7 +68,11 @@ export default class ForeignNationalPage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: ForeignNationalChoiceValues | HomeOfficeImmigrationStatusChoiceValues | ExhaustedAppealChoiceValues
+      href:
+        | ForeignNationalChoiceValues
+        | HomeOfficeImmigrationStatusChoiceValues
+        | ExhaustedAppealChoiceValues
+        | LiabilityToBeDeportedChoiceValues
       text: string
     }[],
   ) {

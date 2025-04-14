@@ -1,43 +1,21 @@
 {% from "details/macro.njk" import govukDetails %}
 
-{% macro prisonerReviewGuidance(form = "default", featurePolicyChangeThreeToFiveEnabled=false) %}
-  {% if featurePolicyChangeThreeToFiveEnabled %}
-    {% set guidance %}
-      <div>The date you set should be in line with policy guidance.</div>
-      <div class="govuk-!-padding-top-4">It depends on the prisoner's sentence type and how long they have left in custody.</div>
-      <div class="govuk-!-font-weight-bold govuk-!-padding-top-4">Determinate sentence with 5 or more years left in custody</div>
-      <div>They should be reviewed within the next 12 months.</div>
-      <div class="govuk-!-font-weight-bold govuk-!-padding-top-4">Determinate sentence with less than 5 years left in custody</div>
-      <div>They should be reviewed within the next 6 months.</div>
-      <div class="govuk-!-font-weight-bold govuk-!-padding-top-4">Indeterminate prison sentence</div>
-      <div>They should be reviewed within the next 3 years.</div>
-    {% endset %}
-  {% else %}
-    {% if form == "nextReviewDate" or form == "nextReviewDateStandalone" %}
-      {% set guidance %}
-        <div class="govuk-!-font-weight-bold">Determinate prison sentence with three or more years left in custody</div>
-        <div>They should be reviewed within the next 12 months</div>
-        <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Determinate prison sentence with less than three years left in custody</div>
-        <div>They should be reviewed within the next 6 months</div>
-        <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Indeterminate prison sentence</div>
-        <div>They should be reviewed within the next 3 years</div>
-      {% endset %}
-    {% elif form == "nextReviewDateQuestion" %}
-      {% set guidance %}
-        <div class="govuk-!-font-weight-bold">Three or more years left in custody</div>
-        <div>They should be reviewed within the next 12 months</div>
-        <div class="govuk-!-font-weight-bold govuk-!-padding-top-2">Less than three years left in custody</div>
-        <div>They should be reviewed within the next 6 months</div>
-      {% endset %}
-    {% else %}
-      {% set guidance %}
-        <div>No guidance available for this form.</div>
-      {% endset %}
-    {% endif %}
-  {% endif %}
+{% macro prisonerReviewGuidance() %}
+
+  {% set guidance %}
+    <div>The date you set should be in line with policy guidance.</div>
+    <div class="govuk-!-padding-top-4">It depends on the prisoner's sentence type and how long they have left in custody.</div>
+    <div class="govuk-!-font-weight-bold govuk-!-padding-top-4">Determinate sentence with 3 or more years left in custody</div>
+    <div>They should be reviewed within the next 12 months.</div>
+    <div class="govuk-!-font-weight-bold govuk-!-padding-top-4">Determinate sentence with less than 3 years left in custody</div>
+    <div>They should be reviewed within the next 6 months.</div>
+    <div class="govuk-!-font-weight-bold govuk-!-padding-top-4">Indeterminate prison sentence</div>
+    <div>They should be reviewed within the next 3 years.</div>
+  {% endset %}
 
   {{ govukDetails({
     summaryText: "How to choose a date for a prisoner",
     html: guidance
   }) }}
+
 {% endmacro %}

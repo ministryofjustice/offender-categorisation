@@ -16,7 +16,6 @@ class NextReviewDateStandalonePage extends Page {
     headerValue { headerBlock.$('div.govuk-\\!-font-weight-bold') }
 
     form { $('form') }
-    existingDate { $('#existingDate') }
     reviewDate { $('#reviewDate') }
     reason { $('#reason') }
 
