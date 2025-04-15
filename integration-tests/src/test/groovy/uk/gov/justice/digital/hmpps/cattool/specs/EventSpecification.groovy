@@ -201,7 +201,7 @@ class EventSpecification extends AbstractSpecification {
 
     when: 'the job runs'
 
-    // Reference: ../jobs/dead-letter/clearDeadLetterQueuesWithExit.js
+    // Reference: ../jobs/dead-letter/clearDeadLetterQueuesWithExit.ts
     def env = System.getenv()
     def envlist = []
     env.each() { k,v -> envlist.push( "$k=$v" ) }
