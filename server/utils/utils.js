@@ -5,6 +5,7 @@ const { config } = require('../config')
 const { dpsUrl, femalePrisonIds } = config
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+const dateConverterWithoutLeadingZeros = from => from && moment(from, 'YYYY-MM-DD').format('D/M/YYYY')
 const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
 const getLongDateFormat = date => {
@@ -207,8 +208,11 @@ const isOpenCategory = cat => {
   return ['D', 'J', 'T'].includes(cat)
 }
 
+const removeLeadingZerosFromDate = date => date.replace(/^0+/, '')?.replace(/\/0/g, '/')
+
 module.exports = {
   dateConverter,
+  dateConverterWithoutLeadingZeros,
   dateConverterToISO,
   getLongDateFormat,
   getLongDateFormatIso,
@@ -240,4 +244,5 @@ module.exports = {
   isOpenCategory,
   // exposed for test purposes
   isBlank,
+  removeLeadingZerosFromDate,
 }
