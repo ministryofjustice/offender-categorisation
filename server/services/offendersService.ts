@@ -23,6 +23,7 @@ import { extractNextReviewDate, getIn, inProgress, isNilOrEmpty } from '../utils
 import {
   dateConverter,
   dateConverterToISO,
+  get10BusinessDaysLegacy,
   getNamesFromString,
   normaliseDate,
   properCaseName,
@@ -37,7 +38,6 @@ import liteCategoriesPrisonerPartition from '../utils/liteCategoriesPrisonerPart
 import { filterListOfPrisoners } from './filter/homeFilter'
 import { mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto } from './recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
 import { isReviewOverdue } from './reviewStatusCalculator'
-import { get10BusinessDaysLegacy } from '../../integration_tests/support/utilities'
 
 const dirname = process.cwd()
 

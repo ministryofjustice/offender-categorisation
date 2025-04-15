@@ -1,5 +1,4 @@
 import moment from 'moment'
-import { addDays, getISODay } from 'date-fns'
 
 export const cleanString = (rawText): string => rawText.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
 
@@ -20,26 +19,6 @@ export const get10BusinessDays = from => {
     default:
   }
   return numberOfDays
-}
-
-// [TODO]: This function uses a fixed approximation of 10 business days by adding 14 calendar days,
-//    and adding extra days if the start date is on a weekend.
-//    -
-//    For example, given a start date of Saturday 12 Jan 2019:
-//      - Saturday is skipped, so the first business day is Monday 14 Jan
-//      - 10 business days: 14, 15, 16, 17, 18 and 21, 22, 23, 24, 25 → ends on Friday 25 Jan
-//      - However, this function adds 14 + 2 days (for starting on Saturday), resulting in 28 Jan (Mon)
-//    -
-//    This behaviour matches legacy expectations but is not a true business day calculation.
-//    Re-evaluation recommended: proper handling should account for weekends and possibly public holidays
-export const get10BusinessDaysLegacy = (startDate: Date): Date => {
-  let daysToAdd = 14
-  const weekday = getISODay(startDate) // 1 = Monday, 7 = Sunday
-
-  if (weekday === 6) daysToAdd += 2 // Saturday
-  if (weekday === 7) daysToAdd += 1 // Sunday
-
-  return addDays(startDate, daysToAdd)
 }
 
 // copied from offendersService
