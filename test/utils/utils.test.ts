@@ -9,6 +9,7 @@ import {
   filterJsonObjectForLogging,
   formatLength,
   getLongDateFormat,
+  getLongDateFormatIso,
   getNamesFromString,
   getVerboseDateFormat,
   isBlank,
@@ -71,6 +72,20 @@ describe('getLongDateFormat', () => {
     ${new Date(2020, 0, 15)} | ${'Wednesday 15 January 2020'}
   `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {
     const actualDate = getLongDateFormat(nextDateChoice)
+    expect(actualDate).toEqual(expectedValue)
+  })
+})
+
+describe('getLongDateFormatIso', () => {
+  test.each`
+    nextDateChoice           | expectedValue
+    ${undefined}             | ${''}
+    ${''}                    | ${''}
+    ${'2025-04-23'}          | ${'Wednesday 23 April 2025'}
+    ${'1974-01-21'}          | ${'Monday 21 January 1974'}
+    ${new Date(2020, 0, 15)} | ${'Wednesday 15 January 2020'}
+  `('returns "$expectedValue" for "$date", "$nextDateChoice"', async ({ nextDateChoice, expectedValue }) => {
+    const actualDate = getLongDateFormatIso(nextDateChoice)
     expect(actualDate).toEqual(expectedValue)
   })
 })

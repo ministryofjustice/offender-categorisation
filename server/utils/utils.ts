@@ -22,6 +22,11 @@ export const getVerboseDateFormat = (date: any) => {
   return ''
 }
 
+const getLongDateFormatIso = date => {
+  if (date) return moment(date).format('dddd D MMMM YYYY')
+  return ''
+}
+
 function plural(value: number) {
   return value > 1 ? 's' : ''
 }
@@ -252,6 +257,7 @@ module.exports = {
   dateConverter,
   dateConverterToISO,
   getLongDateFormat,
+  getLongDateFormatIso,
   getVerboseDateFormat,
   formatLength,
   get10BusinessDays,

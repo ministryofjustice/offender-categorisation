@@ -1,6 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "input/macro.njk" import govukInput %}
 {% from "../../macros/prisonerReviewGuidance.html" import prisonerReviewGuidance %}
+{% from "../../macros/conditionalReleaseDateInsetText.html" import conditionalReleaseDateInsetText %}
 
 {% set pageTitle = "Confirm the date they should be reviewed by" %}
 
@@ -20,7 +21,7 @@
 
   <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
   {% if data.details.sentence.conditionalReleaseDate and not data.details.sentence.indeterminate %}
-    <p>Their conditional release date is {{ getLongDateFormat(dateConverter(data.details.sentence.conditionalReleaseDate)) }}.</p>
+    {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
   {% elif data.details.sentence.indeterminate %}
     <p>They have an indeterminate prison sentence.</p>
   {% endif %}
@@ -43,6 +44,6 @@
     value: date
   }) }}
 
-  {{ prisonerReviewGuidance(form="nextReviewDate", featurePolicyChangeThreeToFiveEnabled=featurePolicyChangeThreeToFiveEnabled) }}
+  {{ prisonerReviewGuidance() }}
 
 {% endblock %}

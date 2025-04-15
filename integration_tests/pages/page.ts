@@ -109,4 +109,44 @@ export default abstract class Page {
       })
     })
   }
+
+  checkPrisonerReviewGuidance = (): void => {
+    cy.get('.govuk-details').within(() => {
+      cy.get('.govuk-details__summary-text').should('contain.text', 'How to choose a date for a prisoner')
+
+      const expectedTexts = [
+        'The date you set should be in line with policy guidance.',
+        "It depends on the prisoner's sentence type and how long they have left in custody.",
+        'Determinate sentence with 3 or more years left in custody',
+        'They should be reviewed within the next 12 months.',
+        'Determinate sentence with less than 3 years left in custody',
+        'They should be reviewed within the next 6 months.',
+        'Indeterminate prison sentence',
+        'They should be reviewed within the next 3 years.',
+      ]
+
+      expectedTexts.forEach(text => {
+        cy.get('.govuk-details__text').should('contain.text', text)
+      })
+    })
+  }
+
+  checkConditionalReleaseDateInsetText = (isoDate: string): void => {
+    const dateParts = new Intl.DateTimeFormat('en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).formatToParts(new Date(isoDate))
+
+    // GOV.UK style: no comma after weekday
+    const formattedDate = [
+      dateParts.find(p => p.type === 'weekday')?.value,
+      dateParts.find(p => p.type === 'day')?.value,
+      dateParts.find(p => p.type === 'month')?.value,
+      dateParts.find(p => p.type === 'year')?.value,
+    ].join(' ')
+
+    cy.contains(`Conditional release date: ${formattedDate}`)
+  }
 }
