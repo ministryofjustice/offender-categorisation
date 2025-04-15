@@ -353,9 +353,13 @@ class SupervisorSpecification extends AbstractSpecification {
     at SupervisorReviewPage
 
     // the displayed property does not work on these radios for some reason
-    overriddenCategoryB.@type == 'radio'
-    overriddenCategoryC.@type == 'radio'
-    overriddenCategoryD.@type == null
+    waitFor { overriddenCategoryB }
+    waitFor { overriddenCategoryC }
+    waitFor { overriddenCategoryD }
+
+    assert overriddenCategoryB.@type == 'radio'
+    assert overriddenCategoryC.@type == 'radio'
+    assert overriddenCategoryD.@type == null
 
     errorSummaries*.text() == ['Please enter the new category', 'Enter the reason why this category is more appropriate']
 
