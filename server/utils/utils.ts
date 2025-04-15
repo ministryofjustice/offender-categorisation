@@ -22,7 +22,7 @@ export const getVerboseDateFormat = (date: any) => {
   return ''
 }
 
-const getLongDateFormatIso = date => {
+export const getLongDateFormatIso = date => {
   if (date) return moment(date).format('dddd D MMMM YYYY')
   return ''
 }
