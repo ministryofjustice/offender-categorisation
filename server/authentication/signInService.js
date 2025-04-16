@@ -6,7 +6,7 @@ const querystring = require('querystring')
 const log = require('../../log').default
 const fiveMinutesBefore = require('../utils/fiveMinutesBefore')
 const { generateOauthClientToken } = require('./clientCredentials')
-const config = require('../config')
+const { config } = require('../config')
 
 const agentOptions = {
   maxSockets: config.apis.oauth2.agent.maxSockets,

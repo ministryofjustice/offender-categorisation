@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const config = require('../config')
+const { config } = require('../config')
 
 module.exports = app => {
   app.locals.environmentName = config.environment

@@ -6,7 +6,7 @@ const Status = require('../utils/statusEnum').default
 const CatType = require('../utils/catTypeEnum')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
-const conf = require('../config')
+const { config: conf } = require('../config')
 const log = require('../../log').default
 const { filterJsonObjectForLogging } = require('../utils/utils')
 

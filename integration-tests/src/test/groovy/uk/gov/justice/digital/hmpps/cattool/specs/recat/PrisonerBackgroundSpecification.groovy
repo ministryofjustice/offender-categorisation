@@ -74,10 +74,13 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
-    at PrisonerBackgroundPage
-    errorSummaries*.text() == ['Please enter details']
-    errors.text().toString() == "Error:\nPlease enter details"
-
+    waitFor { at PrisonerBackgroundPage }
+    waitFor {
+      errorSummaries*.text() == ['Please enter details']
+    }
+    waitFor {
+      errors.text().toString() == "Error:\nPlease enter details"
+    }
   }
 
   def "The prisoner background page provides a link to view Offender category history"() {

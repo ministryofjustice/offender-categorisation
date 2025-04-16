@@ -31,7 +31,7 @@ import {
   safeIsBefore,
 } from '../utils/utils'
 import { sortByDateTime, sortByStatus } from './offenderSort'
-import config from '../config'
+import { config } from '../config'
 import riskChangeHelper from '../utils/riskChange'
 import RiskChangeStatus from '../utils/riskChangeStatusEnum'
 import liteCategoriesPrisonerPartition from '../utils/liteCategoriesPrisonerPartition'

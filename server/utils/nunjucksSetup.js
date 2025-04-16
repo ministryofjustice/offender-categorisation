@@ -17,7 +17,7 @@ const {
   dpsUrl,
   isOpenCategory,
 } = require('./utils')
-const config = require('../config')
+const { config } = require('../config')
 const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
 const { removeFilterFromFullUrl } = require('./nunjucks.utility')
 

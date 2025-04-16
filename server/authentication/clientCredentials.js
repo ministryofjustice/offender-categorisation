@@ -5,7 +5,7 @@ const { HttpsAgent } = require('agentkeepalive')
 const redis = require('redis')
 const { promisify } = require('util')
 const logger = require('../../log').default
-const config = require('../config')
+const { config } = require('../config')
 
 module.exports = {
   generateOauthClientToken,

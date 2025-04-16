@@ -47,7 +47,7 @@ module.exports = function Index({
 }) {
   const router = express.Router()
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'local') {
     router.use((req, res, next) => {
       // eslint-disable-next-line no-console
       console.log(req.method, req.originalUrl)

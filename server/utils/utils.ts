@@ -9,6 +9,10 @@ import moment from 'moment'
 import R from 'ramda'
 import { dpsUrl, femalePrisonIds } from '../config'
 
+const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+const dateConverterWithoutLeadingZeros = from => from && moment(from, 'YYYY-MM-DD').format('D/M/YYYY')
+const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
+
 export const dateConverter = (from: any) => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 export const dateConverterToISO = (from: string) => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
@@ -232,6 +236,8 @@ export const isOpenCategory = cat => {
   return ['D', 'J', 'T'].includes(cat)
 }
 
+const removeLeadingZerosFromDate = date => date.replace(/^0+/, '')?.replace(/\/0/g, '/')
+
 /**
  * Safely checks whether date `a` is after date `b`.
  * Converts `b` to a Date if needed and ensures it's valid.
@@ -275,6 +281,7 @@ export const normaliseDate = (input: unknown): Date | null => {
 
 module.exports = {
   dateConverter,
+  dateConverterWithoutLeadingZeros,
   dateConverterToISO,
   getLongDateFormat,
   getLongDateFormatIso,
@@ -306,6 +313,7 @@ module.exports = {
   isOpenCategory,
   // exposed for test purposes
   isBlank,
+  removeLeadingZerosFromDate,
   safeIsAfter,
   safeIsBefore,
   normaliseDate,

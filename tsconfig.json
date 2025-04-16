@@ -34,6 +34,7 @@
     "typeRoots": ["./node_modules/@types"],
     "baseUrl": "./",
     "checkJs": false,
+    "typeRoots": ["./node_modules/@types"],
     // migrating from cjs to esm
     "module": "NodeNext",
     "moduleResolution": "NodeNext",

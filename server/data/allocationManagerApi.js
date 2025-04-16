@@ -3,7 +3,7 @@ const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const LRU = require('lru-cache')
 const logger = require('../../log').default
-const config = require('../config')
+const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
 const getSanitisedError = require('../sanitisedError')
 
