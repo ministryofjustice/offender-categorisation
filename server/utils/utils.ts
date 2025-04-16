@@ -7,14 +7,13 @@ import { addDays, getISODay, isAfter, isBefore, isValid, parseISO, parse } from 
 
 import moment from 'moment'
 import R from 'ramda'
-import { dpsUrl, femalePrisonIds } from '../config'
+import { config } from '../config'
 
-const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+const { dpsUrl, femalePrisonIds } = config
+
+export const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 const dateConverterWithoutLeadingZeros = from => from && moment(from, 'YYYY-MM-DD').format('D/M/YYYY')
-const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
-
-export const dateConverter = (from: any) => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
-export const dateConverterToISO = (from: string) => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
+export const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
 export const getLongDateFormat = (date: any) => {
   if (date) return moment(date, 'DD/MM/YYYY').format('dddd D MMMM YYYY')
@@ -317,4 +316,5 @@ module.exports = {
   safeIsAfter,
   safeIsBefore,
   normaliseDate,
+  get10BusinessDaysLegacy,
 }
