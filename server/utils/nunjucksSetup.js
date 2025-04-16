@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const nunjucks = require('nunjucks')
-const Status = require('./statusEnum')
+const Status = require('./statusEnum').default
 const ReviewReason = require('./reviewReasonEnum')
 const {
   dateConverter,

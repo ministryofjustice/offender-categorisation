@@ -1,27 +1,32 @@
-import moment from 'moment/moment'
+import { parseISO } from 'date-fns'
 import { isReviewOverdue } from './reviewStatusCalculator'
 
 describe('isReviewOverdue', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it('returns true if the date is before the current time', () => {
+    jest.setSystemTime(parseISO('2022-01-02'))
     const dbDate = '2022-01-01'
-    const now = moment('2022-01-02', 'YYYY-MM-DD')
-    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
 
     expect(isReviewOverdue(dbDate)).toBe(true)
   })
 
   it('returns false if the date is after the current time', () => {
+    jest.setSystemTime(parseISO('2022-01-01'))
     const dbDate = '2022-01-02'
-    const now = moment('2022-01-01', 'YYYY-MM-DD')
-    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
 
     expect(isReviewOverdue(dbDate)).toBe(false)
   })
 
   it('returns false if the date is the same as the current time', () => {
+    jest.setSystemTime(parseISO('2022-01-01'))
     const dbDate = '2022-01-01'
-    const now = moment('2022-01-01', 'YYYY-MM-DD')
-    jest.spyOn(moment, 'now').mockImplementation(() => now.valueOf())
 
     expect(isReviewOverdue(dbDate)).toBe(false)
   })

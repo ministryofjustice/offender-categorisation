@@ -1,5 +1,5 @@
 const moment = require('moment')
-const Status = require('../utils/statusEnum')
+const Status = require('../utils/statusEnum').default
 
 const sortByDateTime = (t1, t2) => {
   if (t1 && t2) {

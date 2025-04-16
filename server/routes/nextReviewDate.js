@@ -5,7 +5,7 @@ const { calculateNextReviewDate, dateConverter, dateConverterToISO } = require('
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const nextReviewDate = require('../config/nextReviewDate')
-const Status = require('../utils/statusEnum')
+const Status = require('../utils/statusEnum').default
 
 const formConfig = {
   nextReviewDate,

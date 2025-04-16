@@ -1,4 +1,4 @@
-const logger = require('../../log')
+const logger = require('../../log').default
 
 module.exports = function getFrontendComponents(frontEndComponentsService) {
   return async (req, res, next) => {

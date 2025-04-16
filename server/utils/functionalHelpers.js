@@ -1,5 +1,5 @@
 const R = require('ramda')
-const Status = require('./statusEnum')
+const Status = require('./statusEnum').default
 
 module.exports = {
   getIn: R.path,

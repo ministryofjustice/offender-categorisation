@@ -11,7 +11,7 @@ const { inProgress, extractNextReviewDate } = require('../utils/functionalHelper
 const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
-const logger = require('../../log')
+const logger = require('../../log').default
 const {
   recategorisationHomeFilters,
   recategorisationHomeFilterKeys,

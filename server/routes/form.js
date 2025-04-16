@@ -3,13 +3,13 @@ const flash = require('connect-flash')
 const R = require('ramda')
 const moment = require('moment')
 const joi = require('joi')
-const log = require('../../log')
+const log = require('../../log').default
 
 const { firstItem } = require('../utils/functionalHelpers')
 const { getLongDateFormat, isFemalePrisonId } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
-const Status = require('../utils/statusEnum')
+const Status = require('../utils/statusEnum').default
 
 const ratings = require('../config/ratings')
 const categoriser = require('../config/categoriser')

@@ -1,5 +1,5 @@
-const logger = require('../../log')
-const Status = require('../utils/statusEnum')
+const logger = require('../../log').default
+const Status = require('../utils/statusEnum').default
 const db = require('./dataAccess/db')
 
 const selectClause = `select id,

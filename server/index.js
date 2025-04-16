@@ -21,7 +21,7 @@ const probationOffenderSearchClientBuilder =
 
 const createFormService = require('./services/formService')
 const createStatsService = require('./services/statsService')
-const createOffendersService = require('./services/offendersService')
+const createOffendersService = require('./services/offendersService').default
 const createSignInService = require('./authentication/signInService')
 const createUserService = require('./services/userService')
 const createRiskProfilerService = require('./services/riskProfilerService')

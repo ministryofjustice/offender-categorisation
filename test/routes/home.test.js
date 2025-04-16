@@ -3,7 +3,7 @@ const moment = require('moment/moment')
 const appSetup = require('./utils/appSetup')
 const { authenticationMiddleware } = require('./utils/mockAuthentication')
 const db = require('../../server/data/dataAccess/db')
-const Status = require('../../server/utils/statusEnum')
+const Status = require('../../server/utils/statusEnum').default
 
 let roles
 // This needs mocking early, before 'requiring' jwt-decode

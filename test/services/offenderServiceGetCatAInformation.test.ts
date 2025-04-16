@@ -1,4 +1,6 @@
-const serviceCreator = require('../../server/services/offendersService')
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
+import serviceCreator from '../../server/services/offendersService'
 
 const offenderNo = 'C3456RS'
 const emptyResponse = { catAEndYear: null, catAStartYear: null, catAType: null, finalCat: null, releaseYear: null }
@@ -13,6 +15,7 @@ const formService = {
 
 const nomisClientBuilder = () => nomisClient
 
+// @ts-ignore
 const service = serviceCreator(nomisClientBuilder, formService)
 
 afterEach(() => {

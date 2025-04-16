@@ -219,7 +219,7 @@ class SupervisorSpecification extends AbstractSpecification {
     submitButton.click()
 
     then: 'the supervisor home page is displayed'
-    at SupervisorHomePage
+    waitFor { at SupervisorHomePage }
 
     then: 'offender with booking id 12 has been removed'
     names == ['Pitstop, Penelope\n' +
