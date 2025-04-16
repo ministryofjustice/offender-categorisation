@@ -1,5 +1,7 @@
 const { serviceCheckFactory, dbCheck } = require('../data/healthCheck')
-const { productId } = require('../config')
+const { config } = require('../config')
+
+const { productId } = config
 
 const service = (name, url) => {
   const check = serviceCheckFactory(name, url)

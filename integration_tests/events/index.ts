@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk'
-import config from '../../server/config'
+import { config } from '../../server/config'
 
 AWS.config.update({
   region: 'eu-west-2',

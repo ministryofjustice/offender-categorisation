@@ -1,6 +1,6 @@
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import superagent from 'superagent'
-import config from '../../config'
+import { config } from '../../config'
 import { getApiClientToken } from '../../authentication/clientCredentials'
 import getSanitisedError from '../../sanitisedError'
 import logger from '../../../log'

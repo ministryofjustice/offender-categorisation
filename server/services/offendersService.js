@@ -13,7 +13,7 @@ const {
   getNamesFromString,
 } = require('../utils/utils')
 const { sortByDateTime, sortByStatus } = require('./offenderSort')
-const config = require('../config')
+const { config } = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')

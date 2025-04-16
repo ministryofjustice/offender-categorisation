@@ -96,6 +96,8 @@ describe('Approved view', () => {
       securityReviewedDate: null,
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
+    }).then(() => {
+      cy.wait(1000)
     })
 
     navigateToView()

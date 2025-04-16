@@ -1,6 +1,8 @@
 const moment = require('moment')
 const R = require('ramda')
-const { dpsUrl, femalePrisonIds } = require('../config')
+const { config } = require('../config')
+
+const { dpsUrl, femalePrisonIds } = config
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 const dateConverterWithoutLeadingZeros = from => from && moment(from, 'YYYY-MM-DD').format('D/M/YYYY')
