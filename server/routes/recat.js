@@ -3,7 +3,6 @@ const flash = require('connect-flash')
 const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
 const {
-  calculateNextReviewDate,
   choosingHigherCategory,
   offenderAlertsLink,
   offenderCaseNotesLink,
