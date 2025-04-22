@@ -139,26 +139,6 @@ module.exports = function Index({
   )
 
   router.get(
-    '/fasttrackConfirmation/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
-      const { bookingId } = req.params
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      res.render(`formPages/recat/fasttrackConfirmation`, { bookingId })
-    }),
-  )
-
-  router.get(
-    '/fasttrackCancelled/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
-      const { bookingId } = req.params
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      res.render(`formPages/recat/fasttrackCancelled`, { bookingId })
-    }),
-  )
-
-  router.get(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
@@ -457,109 +437,6 @@ module.exports = function Index({
       }
     }),
   )
-
-  router.post(
-    '/fasttrackEligibility/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const { bookingId } = req.params
-      const form = 'fasttrackEligibility'
-      const section = 'recat'
-      const formPageConfig = formConfig[section][form]
-      const userInput = clearConditionalFields(req.body)
-
-      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
-      if (!valid) {
-        return
-      }
-
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        transactionalClient: transactionalDbClient,
-      })
-
-      if (userInput.earlyCatD === 'Yes' || userInput.increaseCategory === 'Yes') {
-        res.redirect(`/form/recat/fasttrackCancelled/${bookingId}`)
-      } else {
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-        res.redirect(`${nextPath}${bookingId}`)
-      }
-    }),
-  )
-
-  router.post(
-    '/fasttrackProgress/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const { bookingId } = req.params
-      const form = 'fasttrackProgress'
-      const section = 'recat'
-      const formPageConfig = formConfig[section][form]
-      const userInput = clearConditionalFields(req.body)
-
-      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
-      if (!valid) {
-        return
-      }
-
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        transactionalClient: transactionalDbClient,
-      })
-
-      // apply default text for fast track
-      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-
-      const newData = applyFasttrackDefaults(formData)
-      await formService.updateFormData(bookingId, newData, transactionalDbClient)
-
-      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      res.redirect(`${nextPath}${bookingId}`)
-    }),
-  )
-
-  const applyFasttrackDefaults = data => {
-    const existingHigher = R.path(['formObject', 'recat', 'riskAssessment', 'higherCategory'], data)
-    const existingLower = R.path(['formObject', 'recat', 'riskAssessment', 'lowerCategory'], data)
-    const otherRelevant = R.path(['formObject', 'recat', 'riskAssessment', 'otherRelevant'], data)
-    const existingNextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], data)
-    const existingSecurity = R.path(['formObject', 'recat', 'securityInput', 'securityInputNeeded'], data)
-
-    let newData = data.formObject
-    if (!existingHigher) {
-      newData = R.assocPath(
-        ['recat', 'riskAssessment', 'higherCategory'],
-        'They pose no additional risks. There’s no reason to consider them for higher security conditions.',
-        newData,
-      )
-    }
-    if (!existingLower) {
-      const defaultText =
-        "They could not be considered for open conditions early. Their circumstances weren't exceptional enough."
-      newData = R.assocPath(['recat', 'riskAssessment', 'lowerCategory'], defaultText, newData)
-    }
-    if (!otherRelevant) {
-      newData = R.assocPath(['recat', 'riskAssessment', 'otherRelevant'], 'No', newData)
-    }
-    if (!existingNextReviewDate) {
-      newData = R.assocPath(['recat', 'nextReviewDate', 'date'], calculateNextReviewDate('12'), newData)
-    }
-    if (!existingSecurity) {
-      newData = R.assocPath(['recat', 'securityInput', 'securityInputNeeded'], 'No', newData)
-    }
-
-    newData = R.assocPath(['recat', 'decision', 'category'], 'C', newData)
-
-    return newData
-  }
 
   router.post(
     '/:form/:bookingId',

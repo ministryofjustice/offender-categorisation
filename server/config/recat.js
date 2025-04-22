@@ -160,58 +160,6 @@ module.exports = {
     ],
     validate: true,
   },
-  fasttrackEligibility: {
-    fields: [
-      {
-        earlyCatD: {
-          responseType: 'requiredString',
-          validationMessage: 'Please enter yes or no',
-        },
-      },
-      {
-        increaseCategory: {
-          responseType: 'requiredString',
-          validationMessage: 'Please enter yes or no',
-        },
-      },
-    ],
-    nextPath: {
-      path: '/form/recat/fasttrackRemain/',
-    },
-    validate: true,
-  },
-  fasttrackRemain: {
-    fields: [
-      {
-        remainCatC: {
-          responseType: 'requiredString',
-          validationMessage: 'Please enter yes or no',
-        },
-      },
-    ],
-    nextPath: {
-      decisions: {
-        discriminator: 'remainCatC',
-        Yes: '/form/recat/fasttrackProgress/',
-        No: '/form/recat/fasttrackCancelled/',
-      },
-    },
-    validate: true,
-  },
-  fasttrackProgress: {
-    fields: [
-      {
-        progressText: {
-          responseType: 'requiredString',
-          validationMessage: 'Please enter details',
-        },
-      },
-    ],
-    nextPath: {
-      path: '/form/recat/fasttrackConfirmation/',
-    },
-    validate: true,
-  },
   oasysInput: {
     nextPath: {
       path: '/tasklistRecat/',

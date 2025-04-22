@@ -116,29 +116,6 @@
   ]
 }) }}
 
-{% if data.recat.fasttrackProgress %}
-{{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 print-full-width progressSummary',
-    rows: [
-      {
-        key: { classes: 'summary-list-title', text: "Progress" },
-        value: { classes: 'no-print'},
-        actions: { items: [{
-              href: '/form/recat/fasttrackProgress/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Progress"
-            }] if showChangeLinks else []
-        }
-      },
-      {
-        key: { text: "Progress information" },
-        value: { text: data.recat.fasttrackProgress.progressText },
-        actions: { items: [] }
-      }
-    ]
-  }) }}
-{% endif %}
-
 {{ govukSummaryList({
   classes: 'govuk-!-margin-bottom-9 print-full-width oasysInputSummary',
   rows: [
