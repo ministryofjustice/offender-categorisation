@@ -1,6 +1,8 @@
 import { PrisonerSearchAlertDto } from './alert/prisonerSearchAlert.dto'
 import { PrisonerSearchIncentiveLevelDto } from './incentiveLevel/prisonerSearchIncentiveLevel.dto'
 
+export const LEGAL_STATUS_REMAND = 'REMAND'
+
 export type LegalStatus =
   | 'RECALL'
   | 'DEAD'
@@ -9,7 +11,7 @@ export type LegalStatus =
   | 'CONVICTED_UNSENTENCED'
   | 'CIVIL_PRISONER'
   | 'IMMIGRATION_DETAINEE'
-  | 'REMAND'
+  | typeof LEGAL_STATUS_REMAND
   | 'UNKNOWN'
   | 'OTHER'
 
