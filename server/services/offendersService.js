@@ -22,6 +22,7 @@ const {
   mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
 } = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
 const { isReviewOverdue } = require('./reviewStatusCalculator')
+const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
 
 const dirname = process.cwd()
 
@@ -108,7 +109,7 @@ function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
 }
 
 function isInitialInProgress(dbRecord) {
-  return dbRecord.catType === CatType.INITIAL.name && inProgress(dbRecord)
+  return dbRecord?.catType === CatType.INITIAL.name && inProgress(dbRecord)
 }
 
 function calculateRecatDisplayStatus(displayStatus) {
@@ -719,6 +720,7 @@ module.exports = function createOffendersService(
     risksAndNeedsClient,
     probationOffenderSearchClient,
     filters = {},
+    withSi1481Changes = false,
   ) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
@@ -770,6 +772,10 @@ module.exports = function createOffendersService(
         }
 
         const prisonerSearchRecord = prisonerSearchData.get(raw.bookingId) || null
+        if (withSi1481Changes && prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
+          return null
+        }
+
         if (
           prisonerSearchRecord == null ||
           prisonerSearchRecord.sentenceStartDate == null ||
@@ -1013,7 +1019,7 @@ module.exports = function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, filters = {}) {
+  async function getRecategoriseOffenders(context, user, filters = {}, withSi1481Changes = false) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
@@ -1032,6 +1038,7 @@ module.exports = function createOffendersService(
           risksAndNeedsClient,
           probationOffenderSearchClient,
           filters,
+          withSi1481Changes,
         ),
         getU21Recats(
           agencyId,
@@ -1133,7 +1140,7 @@ module.exports = function createOffendersService(
 
   async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {
     let statusText
-    if (categorisation.status) {
+    if (categorisation?.status) {
       statusText = statusTextDisplay(categorisation.status)
       logger.debug(`retrieving status ${categorisation.status} for booking id ${offender.bookingId}`)
       if (categorisation.assignedUserId && categorisation.status === Status.STARTED.name) {

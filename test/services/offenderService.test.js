@@ -6,6 +6,7 @@ const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
 const CatType = require('../../server/utils/catTypeEnum')
 const { dateConverter } = require('../../server/utils/utils')
 const { DUE_DATE, OVERDUE } = require('../../server/services/filter/homeFilter')
+const { LEGAL_STATUS_REMAND } = require('../../server/data/prisonerSearch/prisonerSearch.dto')
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -486,6 +487,62 @@ describe('getRecategoriseOffenders', () => {
 
     expect(result).toHaveLength(0)
     expect(formService.getCategorisationRecord).toBeCalledTimes(2)
+  })
+
+  test('No results due to legal status remand when withSi1481Changes is true', async () => {
+    const data = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        category: 'B',
+        nextReviewDate: '2019-04-20',
+      },
+    ]
+    const prisonerSearchData = [
+      {
+        bookingId: 123,
+        legalStatus: LEGAL_STATUS_REMAND,
+      },
+    ]
+    formService.getCategorisationRecord.mockResolvedValue(null)
+    prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(data)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(prisonerSearchData)
+
+    const result = await service.getRecategoriseOffenders(context, 'user1', {}, true)
+
+    expect(result).toHaveLength(0)
+  })
+
+  test('Shows remand results when withSi1481Changes is false', async () => {
+    const data = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        category: 'B',
+        nextReviewDate: '2019-04-20',
+      },
+    ]
+    const prisonerSearchData = [
+      {
+        bookingId: 123,
+        legalStatus: LEGAL_STATUS_REMAND,
+      },
+    ]
+    formService.getCategorisationRecord.mockResolvedValue(null)
+    prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(data)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(prisonerSearchData)
+
+    const result = await service.getRecategoriseOffenders(context, 'user1', {}, false)
+
+    expect(result).toHaveLength(1)
   })
 })
 
