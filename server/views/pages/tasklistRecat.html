@@ -33,7 +33,6 @@
   {% set riskAssessmentCompleted = data.recat.riskAssessment.otherRelevant %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
   {% set nextReviewDateCompleted = data.recat.nextReviewDate.date %}
-  {% set fasttrackCompleted = data.recat.fasttrackProgress.progressText %}
   {% set openConditionsRequested = data.openConditionsRequested %}
   {% set decisionCompleted = data.recat.decision.category %}
   {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
@@ -85,21 +84,6 @@
               <div class="govuk-heading-m">Offender Assessment System (OASys)</div>
               <div class="govuk-!-margin-top-2">{% if oasysInputCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
-
-            {% if data.eligibleForFasttrack and not data.fasttrackCancelled %}
-              <li class="app-task-list__item">
-                {% set buttonClasses = buttonClassesDefault + " grey-button" if fasttrackCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                text: "Edit" if fasttrackCompleted else "Start",
-                href: "/form/recat/fasttrackEligibility/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes:
-                { 'id': 'fastrackEligibilityButton' }
-                }) }}
-                <div class="govuk-heading-m">Category C preliminary review questions</div>
-                <div class="govuk-!-margin-top-2">{% if fasttrackCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-              </li>
-            {% endif %}
 
             <li class="app-task-list__item" id="securitySection">
               {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
