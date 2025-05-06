@@ -6,7 +6,8 @@ const moment = require('moment')
 const logger = require('../../log')
 const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
+
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,

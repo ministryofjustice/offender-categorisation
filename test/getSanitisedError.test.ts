@@ -1,4 +1,4 @@
-const sanitisedError = require('../server/sanitisedError')
+import { getSanitisedError } from '../server/getSanitisedError'
 
 describe('sanitised error', () => {
   it('it should omit the request headers from the error object ', () => {
@@ -24,7 +24,7 @@ describe('sanitised error', () => {
       stack: 'stack description',
     }
 
-    expect(sanitisedError(error)).toEqual({
+    expect(getSanitisedError(error)).toEqual({
       headers: { date: 'Tue, 19 May 2020 15:16:20 GMT' },
       message: 'hi there',
       stack: 'stack description',
@@ -38,7 +38,7 @@ describe('sanitised error', () => {
     const error = {
       message: 'error description',
     }
-    expect(sanitisedError(error)).toEqual({
+    expect(getSanitisedError(error)).toEqual({
       message: 'error description',
     })
   })
@@ -47,6 +47,6 @@ describe('sanitised error', () => {
     const error = {
       property: 'unknown',
     }
-    expect(sanitisedError(error)).toEqual({})
+    expect(getSanitisedError(error)).toEqual({})
   })
 })

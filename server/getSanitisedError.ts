@@ -1,4 +1,14 @@
-module.exports = error => {
+export interface ParsedError {
+  status?: number
+  statusText?: string
+  message: string
+  headers?: Record<string, any>
+  data?: any
+  code?: string
+  stack?: string
+}
+
+export const getSanitisedError = (error: any): ParsedError => {
   if (error.response) {
     return {
       status: error.response.status,
@@ -9,6 +19,7 @@ module.exports = error => {
       stack: error.stack,
     }
   }
+
   if (error.request) {
     // request is too big and best skipped
     return {
@@ -17,6 +28,7 @@ module.exports = error => {
       stack: error.stack,
     }
   }
+
   return {
     message: error.message,
     stack: error.stack,
