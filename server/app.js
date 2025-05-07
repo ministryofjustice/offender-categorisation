@@ -11,7 +11,7 @@ const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
-const getSanitisedError = require('./sanitisedError')
+const { getSanitisedError } = require('./getSanitisedError')
 require('./catToolSerialisers') // do not remove, logging requires it!
 const auth = require('./authentication/auth')
 const healthFactory = require('./services/healthCheck')

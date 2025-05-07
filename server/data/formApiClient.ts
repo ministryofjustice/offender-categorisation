@@ -4,7 +4,7 @@ import moment from 'moment'
 import { getApiClientToken } from '../authentication/clientCredentials'
 import { config } from '../config'
 import logger from '../../log'
-import getSanitisedError from '../sanitisedError'
+import { getSanitisedError } from '../getSanitisedError'
 
 export type FormApiClient = {
   submitSecurityReview(bookingId: number, submitted: boolean, securityReview: string | undefined): Promise<boolean>
