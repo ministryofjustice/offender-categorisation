@@ -496,12 +496,8 @@ describe('Open conditions', () => {
     tprsPage.continueButton().click()
 
     const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
-
-    cy.intercept('GET', '/form/openConditions/earliestReleaseDate/*', req => {
-      req.query.overrideFeatureFlag = 'true'
-    }).as('earliestReleaseDate')
     earliestReleasePage.continueButton().click()
-    cy.wait('@earliestReleaseDate')
+
     earliestReleasePage.assertTextVisibilityOnPage({
       selector: 'div',
       text: 'Is it 5 or more years to their earliest release date?',
@@ -796,12 +792,7 @@ describe('Open conditions', () => {
     completeOpenConditionsWorkflow(taskListPage, true)
 
     taskListPage.openConditionsButton().should('exist')
-
-    cy.intercept('GET', '/form/categoriser/review/*', req => {
-      req.query.overrideFeatureFlag = 'true'
-    }).as('review')
     taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
-    cy.wait('@review')
 
     const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.validateOffendingHistorySummary([

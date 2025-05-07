@@ -55,27 +55,18 @@
 
 {% block formItems %}
 
-  {% if featurePolicyChangeThreeToFiveEnabled %}
-    {% if is3to5PolicyChangeAlertBannerExpired() %}
-      {% if data.details.sentence.paroleEligibilityDate %}
-        {% set govukInsetTextDate %}
-          <span>Parole eligibility date: {{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>
-        {% endset %}
+  {% if data.details.sentence.paroleEligibilityDate %}
+    {% set govukInsetTextDate %}
+      <span>Parole eligibility date: {{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>
+    {% endset %}
 
-        {{ govukInsetText({
-          html: govukInsetTextDate
-        }) }}
-      {% elif data.details.sentence.conditionalReleaseDate %}
+    {{ govukInsetText({
+      html: govukInsetTextDate
+    }) }}
+  {% elif data.details.sentence.conditionalReleaseDate %}
 
-        {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
+    {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
 
-      {% endif %}
-    {% else %}
-
-      {#  FIXME remove after 2025-05-28 #}
-      {{ threeToFivePolicyChangeAlert(data) }}
-
-    {% endif %}
   {% endif %}
 
   <h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
