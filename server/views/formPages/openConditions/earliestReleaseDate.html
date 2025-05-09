@@ -72,17 +72,11 @@
 
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
-  {% if featurePolicyChangeThreeToFiveEnabled %}
-    {% set releaseDateHtml =  "Is it 5 or more years to their earliest release date?" %}
-  {% else %}
-    {% set releaseDateHtml =  "Is it 3 or more years to their earliest release date?" %}
-  {% endif %}
-
   {{ govukRadios({
     name: "fiveOrMoreYears",
     fieldset: {
       legend: {
-        text: releaseDateHtml
+        text: "Is it 5 or more years to their earliest release date?"
       }
     },
     errorMessage: {
@@ -107,11 +101,7 @@
 
   {% set guidanceFiveOrMoreYears %}
 
-    {% if featurePolicyChangeThreeToFiveEnabled %}
-      <div class="govuk-!-margin-bottom-4">If they have 5 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now.</div>
-    {% else %}
-      <div>If they have 3 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now. In this case:</div>
-    {% endif %}
+    <div class="govuk-!-margin-bottom-4">If they have 5 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now.</div>
 
     <div class="govuk-!-font-weight-bold govuk-!-padding-top-1">You should check:</div>
     <ul class="govuk-list govuk-list--bullet">
