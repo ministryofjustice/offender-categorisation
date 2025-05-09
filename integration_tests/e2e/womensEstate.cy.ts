@@ -433,7 +433,7 @@ describe("Women's Estate", () => {
         },
         // open conditions
         // earliest release date
-        { term: '3 or more years until earliest release date?', definition: 'No' },
+        { term: '5 or more years until earliest release date?', definition: 'No' },
         { term: 'Reasons that justify moving to open conditions?', definition: 'Not applicable' },
         // previous sentences
         { term: 'Have they been released from a previous sentence in the last 5 years?', definition: 'No' },

@@ -491,7 +491,7 @@ describe('Open Conditions', () => {
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
     reviewRecatPage.changeLinks().should('have.length', 13)
     reviewRecatPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
@@ -680,7 +680,7 @@ describe('Open Conditions', () => {
     const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
     recatAwaitingApprovalPage.getCategoryForApproval().contains('Category for approval is open category')
     recatAwaitingApprovalPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
@@ -826,7 +826,7 @@ describe('Open Conditions', () => {
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
     reviewRecatPage.changeLinks().should('have.length', 13)
     reviewRecatPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
@@ -1015,7 +1015,7 @@ describe('Open Conditions', () => {
     const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
     recatAwaitingApprovalPage.getCategoryForApproval().contains('Category for approval is open category')
     recatAwaitingApprovalPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
