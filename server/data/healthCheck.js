@@ -3,7 +3,7 @@ const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log')
 const db = require('./dataAccess/db')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
 
 function dbCheck() {
   const MAX_WAIT = 30 * 1000 // 30 seconds
