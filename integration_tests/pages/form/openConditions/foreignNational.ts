@@ -88,17 +88,9 @@ export default class ForeignNationalPage extends Page {
     super.validateErrorMessages(errorMessages)
   }
 
-  validateForeignNationalRadioButton = ({
-    selection,
-    isChecked,
-  }: {
-    selection: ForeignNationalChoice[]
-    isChecked: boolean
-  }) =>
-    this.validateRadioButtonSelections(
-      selection.map(selectedTextValue => foreignNationalRadioChoiceHtmlSelectors[selectedTextValue]),
-      isChecked,
-    )
+  validateInsetText = (): void => {
+    cy.contains('Foreign Nationals should be considered for open conditions, unless they have a deportation order or have exhausted their appeal options.')
+  }
 
   selectForeignNationalRadioButton = (selectedTextValue: ForeignNationalChoice): PageElement =>
     cy.get(foreignNationalRadioChoiceHtmlSelectors[selectedTextValue]).click()
