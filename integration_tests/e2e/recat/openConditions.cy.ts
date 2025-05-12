@@ -495,8 +495,7 @@ describe('Open Conditions', () => {
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
@@ -830,8 +829,7 @@ describe('Open Conditions', () => {
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },

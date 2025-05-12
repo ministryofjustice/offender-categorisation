@@ -654,8 +654,7 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
       { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([
@@ -857,8 +856,7 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
       { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([

@@ -81,7 +81,7 @@ describe('Validating sexual offences page', () => {
 })
 
 describe('Validating victim contact scheme page', () => {
-  it('Validation should return the correct error message for blank input to "Have any victims of the crime opted-in to the Victim Contact Scheme?"', () => {
+  it('Validation should return the correct error message for blank input to "Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?"', () => {
     const formResponse = { vcsOptedFor: '' }
     expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([
       {
@@ -90,17 +90,8 @@ describe('Validating victim contact scheme page', () => {
       },
     ])
   })
-  it('Validation should return the correct error message for blank input to "Have you contacted the Victim Liaison Officer (VLO)?"', () => {
-    const formResponse = { vcsOptedFor: 'Yes', contactedVLO: '' }
-    expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([
-      {
-        href: '#contactedVLO',
-        text: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)',
-      },
-    ])
-  })
   it('Validation should return the correct error message for blank input to "Enter the response from the Victim Liaison Officer (VLO)"', () => {
-    const formResponse = { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: '' }
+    const formResponse = { vcsOptedFor: 'Yes', vloResponseText: '' }
     expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([
       {
         href: '#vloResponseText',
@@ -109,11 +100,7 @@ describe('Validating victim contact scheme page', () => {
     ])
   })
   it('Validation should return no error messages with every detail filled in', () => {
-    const formResponse = { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'text detail' }
-    expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([])
-  })
-  it('Validation should return no error messages with Yes and No selected', () => {
-    const formResponse = { vcsOptedFor: 'Yes', contactedVLO: 'No' }
+    const formResponse = { vcsOptedFor: 'Yes', vloResponseText: 'text detail' }
     expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([])
   })
   it('Validation should return no error messages with No selected', () => {
