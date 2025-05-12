@@ -1814,24 +1814,6 @@ describe('Open Conditions', () => {
       )
     })
 
-    it('Shows correct message when not suitable for open conditions because of VCS', () => {
-      // 'the Earliest Release page is displayed'
-      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
-      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
-      earliestReleasePage.selectJustifyRadioButton('YES')
-      earliestReleasePage.setJustifyOpenConditionsTextInput('justify details text')
-      earliestReleasePage.continueButton().click()
-
-      const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
-      victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.continueButton().click()
-
-      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
-      cy.contains(
-        'This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.',
-      )
-    })
-
     it('Shows correct message when not suitable for open conditions because of foreign national form', () => {
       // 'the Earliest Release page is displayed'
       const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)

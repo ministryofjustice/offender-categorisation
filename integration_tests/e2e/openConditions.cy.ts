@@ -201,7 +201,7 @@ describe('Open conditions', () => {
     victimContactSchemePage.validateErrorMessages([
       {
         selector: '#vloResponseText-error',
-        text: '\n        \n        Error: Enter the response from the Victim Liaison Officer (VLO)\n        \n      ',
+        text: '\n      \n      Error: Enter the response from the Victim Liaison Officer (VLO)\n      \n    ',
       },
     ])
     victimContactSchemePage.setVictimLiaisonOfficerResponseTextInput('vlo response details text')
