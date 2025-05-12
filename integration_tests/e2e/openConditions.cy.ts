@@ -193,16 +193,6 @@ describe('Open conditions', () => {
     victimContactSchemePage.selectVictimContactSchemeRadioButton('YES')
     victimContactSchemePage.continueButton().click()
 
-    victimContactSchemePage.validateErrorSummaryMessages([
-      { index: 0, href: '#contactedVLO', text: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)' },
-    ])
-    victimContactSchemePage.validateErrorMessages([
-      {
-        selector: '#contactedVLO-error',
-        text: '\n        \n        Error: Select Yes if you have contacted the Victim Liaison Officer (VLO)\n        \n      ',
-      },
-    ])
-    victimContactSchemePage.selectContactedVictimLiaisonOfficerRadioButton('YES')
     victimContactSchemePage.continueButton().click()
 
     victimContactSchemePage.validateErrorSummaryMessages([

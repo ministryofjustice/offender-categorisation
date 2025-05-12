@@ -161,7 +161,6 @@ describe('Open Conditions', () => {
     //  'the Victim Contact Scheme page is displayed'
     const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
     victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-    victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
     victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
     victimContactSchemaPage.continueButton().click()
 
@@ -229,7 +228,7 @@ describe('Open Conditions', () => {
               isForeignNational: 'Yes',
             },
             earliestReleaseDate: { justify: 'Yes', justifyText: 'justify details text', fiveOrMoreYears: 'Yes' },
-            victimContactScheme: { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' },
+            victimContactScheme: { vcsOptedFor: 'Yes', vloResponseText: 'vlo response text' },
           },
           openConditionsRequested: true,
         },
@@ -1825,7 +1824,6 @@ describe('Open Conditions', () => {
 
       const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
       victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('NO')
       victimContactSchemaPage.continueButton().click()
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
@@ -1844,7 +1842,6 @@ describe('Open Conditions', () => {
 
       const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
       victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
       victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
       victimContactSchemaPage.continueButton().click()
 
@@ -1867,7 +1864,6 @@ describe('Open Conditions', () => {
 
       const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
       victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
       victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
       victimContactSchemaPage.continueButton().click()
 

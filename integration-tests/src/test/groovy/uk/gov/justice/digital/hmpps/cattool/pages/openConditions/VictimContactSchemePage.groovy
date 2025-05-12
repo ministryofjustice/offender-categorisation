@@ -15,8 +15,6 @@ class VictimContactSchemePage extends Page {
     form { $('form') }
     vcsOptedForYes { $('#vcsOptedFor') }
     vcsOptedForNo { $('#vcsOptedFor-2') }
-    contactedVLOYes(required: false) { $('#contactedVLO') }
-    contactedVLONo(required: false) { $('#contactedVLO-2') }
     vloResponseText(required: false) { $('textarea', name: 'vloResponseText') }
 
     submitButton { $('button', type: 'submit') }
