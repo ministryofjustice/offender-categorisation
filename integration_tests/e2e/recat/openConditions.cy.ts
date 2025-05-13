@@ -166,6 +166,7 @@ describe('Open Conditions', () => {
 
     // 'the Foreign National page is displayed'
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('YES')
     foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('YES')
     foreignNationalPage.selectLiabilityToBeDeportedRadioButton('YES')
@@ -467,6 +468,7 @@ describe('Open Conditions', () => {
     victimContactSchemaPage.continueButton().click()
 
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('NO')
     foreignNationalPage.continueButton().click()
 
@@ -801,6 +803,7 @@ describe('Open Conditions', () => {
     victimContactSchemaPage.continueButton().click()
 
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('NO')
     foreignNationalPage.continueButton().click()
 
@@ -1364,6 +1367,7 @@ describe('Open Conditions', () => {
     victimContactSchemaPage.continueButton().click()
 
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('NO')
     foreignNationalPage.continueButton().click()
 
@@ -1828,6 +1832,7 @@ describe('Open Conditions', () => {
       victimContactSchemaPage.continueButton().click()
 
       const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+      foreignNationalPage.validateInsetText()
       foreignNationalPage.selectForeignNationalRadioButton('YES')
       foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('NO')
       foreignNationalPage.continueButton().click()
@@ -1850,6 +1855,7 @@ describe('Open Conditions', () => {
       victimContactSchemaPage.continueButton().click()
 
       const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+      foreignNationalPage.validateInsetText()
       foreignNationalPage.selectForeignNationalRadioButton('YES')
       foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('YES')
       foreignNationalPage.selectLiabilityToBeDeportedRadioButton('YES')
