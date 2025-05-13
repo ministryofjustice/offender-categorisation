@@ -104,9 +104,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       }
 
       let warningText = ''
-
-      const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change
-      const years = featurePolicyChangeThreeToFiveEnabled ? '5' : 'three'
+      const years = '5'
 
       switch (validation.value.reason) {
         case NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE:
@@ -171,7 +169,6 @@ module.exports = function Index({ formService, offendersService, userService, au
 
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-    const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change
 
     return {
       data: { ...pageData, details },
@@ -181,7 +178,6 @@ module.exports = function Index({ formService, offendersService, userService, au
       catType: formData.catType,
       backLink,
       errors,
-      featurePolicyChangeThreeToFiveEnabled,
     }
   }
 
