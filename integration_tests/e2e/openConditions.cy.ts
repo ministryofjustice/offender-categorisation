@@ -218,6 +218,7 @@ describe('Open conditions', () => {
     sexualOffencesPage.continueButton().click()
 
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.continueButton().click()
 
     foreignNationalPage.validateErrorSummaryMessages([
@@ -1286,6 +1287,7 @@ describe('Open conditions', () => {
     sexualOffencesPage.continueButton().click()
 
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('NO')
     foreignNationalPage.continueButton().click()
 
