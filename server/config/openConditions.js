@@ -68,7 +68,7 @@ module.exports = {
       {
         vcsOptedFor: {
           responseType: 'requiredString',
-          validationMessage: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme',
+          validationMessage: 'Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)',
         },
       },
       {

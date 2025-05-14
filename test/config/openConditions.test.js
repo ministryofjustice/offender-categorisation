@@ -86,7 +86,7 @@ describe('Validating victim contact scheme page', () => {
     expect(fieldValidation.validate(formResponse, openConditions.victimContactScheme)).toEqual([
       {
         href: '#vcsOptedFor',
-        text: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme',
+        text: 'Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)',
       },
     ])
   })

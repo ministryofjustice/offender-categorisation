@@ -181,13 +181,13 @@ describe('Open conditions', () => {
       {
         index: 0,
         href: '#vcsOptedFor',
-        text: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme',
+        text: 'Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)',
       },
     ])
     victimContactSchemePage.validateErrorMessages([
       {
         selector: '#vcsOptedFor-error',
-        text: '\n      \n      Error: Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme\n      \n    ',
+        text: '\n      \n      Error: Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)\n      \n    ',
       },
     ])
     victimContactSchemePage.selectVictimContactSchemeRadioButton('YES')
