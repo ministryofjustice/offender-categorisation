@@ -9,6 +9,9 @@ export interface RecategorisationPrisonerSearchDto {
   legalStatus: LegalStatus
   sentenceStartDate: string | undefined
   recall: boolean | undefined
+  postRecallReleaseDate: string | undefined
+  dueDateForRecalls: string | undefined
+  lastDateInPrison: string | undefined
 }
 
 export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
@@ -20,4 +23,7 @@ export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
   legalStatus: prisonerSearchDto.legalStatus,
   sentenceStartDate: prisonerSearchDto.sentenceStartDate,
   recall: prisonerSearchDto.recall,
+  postRecallReleaseDate: prisonerSearchDto.postRecallReleaseDate,
+  dueDateForRecalls: null, // set only for recalls
+  lastDateInPrison: null, // set only for recalls
 })
