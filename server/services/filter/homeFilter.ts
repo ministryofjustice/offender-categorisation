@@ -189,6 +189,7 @@ export const filterListOfPrisoners = async (
   )
   let filteredPrisoners = prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
+
     const activeNonExpiredAlertCodes =
       (currentPrisonerSearchData &&
         currentPrisonerSearchData.alerts
@@ -241,7 +242,11 @@ export const filterListOfPrisoners = async (
           }
           break
         case OVERDUE:
-          if (!isReviewOverdue(prisoner.nextReviewDate)) {
+          var nextReviewDate: string = prisoner.nextReviewDate
+          if (currentPrisonerSearchData.recall) {
+            nextReviewDate = currentPrisonerSearchData.dueDateForRecalls
+          }
+          if (!isReviewOverdue(nextReviewDate)) {
             return false
           }
           break
@@ -254,6 +259,7 @@ export const filterListOfPrisoners = async (
           throw new Error(`Invalid filter type: ${allFiltersWhichDoNotRequireFurtherDataToBeLoaded[i]}`)
       }
     }
+
     return true
   })
   let adjudicationsDataPromise

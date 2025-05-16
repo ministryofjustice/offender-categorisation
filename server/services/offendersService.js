@@ -23,6 +23,7 @@ const {
 } = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
 const { isReviewOverdue } = require('./reviewStatusCalculator')
 const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
+const {filterOutRecalledPrisoners} = require("./filter/recallFilter");
 
 const dirname = process.cwd()
 
@@ -56,7 +57,6 @@ async function getSentenceMap(offenderList, prisonerSearchClient) {
 async function getPrisonerSearchData(offenderList, prisonerSearchClient) {
   const bookingIds = offenderList.map(offender => offender.bookingId)
   const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
-
   return new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]))
 }
 
@@ -740,7 +740,6 @@ module.exports = function createOffendersService(
     )
 
     // trim db results to only those not in the Nomis-derived list
-
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
@@ -749,9 +748,11 @@ module.exports = function createOffendersService(
       getPomMap(allOffenders, allocationClient),
     ])
 
+    const filteredOutRecalledPrisoners = filterOutRecalledPrisoners(allOffenders, prisonerSearchData, nomisClient)
+
     const filteredPrisoners = await filterListOfPrisoners(
       filters,
-      allOffenders,
+      filteredOutRecalledPrisoners,
       prisonerSearchData,
       nomisClient,
       agencyId,
@@ -826,8 +827,8 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isReviewOverdue(nomisRecord.nextReviewDate),
-          overdueText: getOverdueText(nomisRecord.nextReviewDate),
+          overdue: isReviewOverdue(getReviewDateForRecats(prisonerSearchRecord, nomisRecord.nextReviewDate)),
+          overdueText: getOverdueText(getReviewDateForRecats(prisonerSearchRecord, nomisRecord.nextReviewDate)),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -835,6 +836,13 @@ module.exports = function createOffendersService(
         }
       }),
     )
+  }
+
+  const getReviewDateForRecats = (prisonerSearchRecord, nextReviewDate) => {
+    if (prisonerSearchRecord && prisonerSearchRecord.recall) {
+      return prisonerSearchRecord.dueDateForRecalls
+    }
+    return nextReviewDate
   }
 
   const getOffenderDetailsWithNextReviewDate = async (nomisClient, bookingId) => {
@@ -948,9 +956,11 @@ module.exports = function createOffendersService(
       resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]),
     )
 
+    const filteredOutRecalledPrisoners = filterOutRecalledPrisoners(eliteCategorisationResultsU21, u21map, nomisClient)
+
     const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
       filters,
-      eliteCategorisationResultsU21,
+      filteredOutRecalledPrisoners,
       u21map,
       nomisClient,
       agencyId,
@@ -994,8 +1004,8 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay,
-          overdue: isReviewOverdue(nextReviewDate),
-          overdueText: getOverdueText(nextReviewDate),
+          overdue: isReviewOverdue(getReviewDateForRecats(u21map.get(o.bookingId), nextReviewDate)),
+          overdueText: getOverdueText(getReviewDateForRecats(u21map.get(o.bookingId), nextReviewDate)),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -1386,15 +1396,15 @@ module.exports = function createOffendersService(
   }
 
   async function createOrUpdateCategorisation({
-    context,
-    bookingId,
-    overriddenCategory,
-    suggestedCategory,
-    overriddenCategoryText,
-    nextReviewDate,
-    nomisSeq,
-    transactionalDbClient,
-  }) {
+                                                context,
+                                                bookingId,
+                                                overriddenCategory,
+                                                suggestedCategory,
+                                                overriddenCategoryText,
+                                                nextReviewDate,
+                                                nomisSeq,
+                                                transactionalDbClient,
+                                              }) {
     try {
       const category = overriddenCategory || suggestedCategory
       const comment = (overriddenCategoryText && overriddenCategoryText.substring(0, 4000)) || ''
@@ -1428,17 +1438,17 @@ module.exports = function createOffendersService(
   }
 
   async function createLiteCategorisation({
-    context,
-    bookingId,
-    category,
-    authority,
-    nextReviewDate,
-    placement,
-    comment,
-    offenderNo,
-    prisonId,
-    transactionalClient,
-  }) {
+                                            context,
+                                            bookingId,
+                                            category,
+                                            authority,
+                                            nextReviewDate,
+                                            placement,
+                                            comment,
+                                            offenderNo,
+                                            prisonId,
+                                            transactionalClient,
+                                          }) {
     try {
       const nomisClient = nomisClientBuilder(context)
       const nextReviewDateConverted = dateConverterToISO(nextReviewDate)
@@ -1498,19 +1508,19 @@ module.exports = function createOffendersService(
   }
 
   async function approveLiteCategorisation({
-    context,
-    bookingId,
-    sequence,
-    approvedDate,
-    supervisorCategory,
-    approvedCategoryComment,
-    approvedCommittee,
-    nextReviewDate,
-    approvedPlacement,
-    approvedPlacementComment,
-    approvedComment,
-    transactionalClient,
-  }) {
+                                             context,
+                                             bookingId,
+                                             sequence,
+                                             approvedDate,
+                                             supervisorCategory,
+                                             approvedCategoryComment,
+                                             approvedCommittee,
+                                             nextReviewDate,
+                                             approvedPlacement,
+                                             approvedPlacementComment,
+                                             approvedComment,
+                                             transactionalClient,
+                                           }) {
     try {
       const nomisClient = nomisClientBuilder(context)
       const approvedDateConverted = dateConverterToISO(approvedDate)
@@ -1713,37 +1723,37 @@ module.exports = function createOffendersService(
     )
     switch (movementType) {
       case 'ADM':
-        {
-          const results = []
-          const dbRecord = await formService.getCategorisationRecord(bookingId, client)
-          const prisonHasChanged = toAgencyLocationId !== dbRecord.prisonId
-          if (inProgress(dbRecord) && prisonHasChanged) {
-            const result = await formService.updatePrisonForm(bookingId, toAgencyLocationId, client)
-            results.push({ name: 'form', ...result })
-          }
-
-          const assessmentData = await formService.getLiteCategorisation(bookingId, client)
-          const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
-          const litePrisonHasChanged = toAgencyLocationId !== assessmentData.prisonId
-          if (liteInProgress && litePrisonHasChanged) {
-            const result = await formService.updatePrisonLite(bookingId, toAgencyLocationId, client)
-            results.push({ name: 'lite', ...result })
-          }
-
-          if (offenderNo) {
-            const resultRiskChange = await formService.updatePrisonRiskChange(offenderNo, toAgencyLocationId, client)
-            const resultSecurity = await formService.updatePrisonSecurityReferral(
-              offenderNo,
-              toAgencyLocationId,
-              client,
-            )
-            results.push({ name: 'riskChange', ...resultRiskChange })
-            results.push({ name: 'securityReferral', ...resultSecurity })
-          }
-          logger.info(
-            `Movement summary: rows updated =${results.reduce((s, item) => `${s} ${item.name}: ${item.rowCount}`, '')}`,
-          )
+      {
+        const results = []
+        const dbRecord = await formService.getCategorisationRecord(bookingId, client)
+        const prisonHasChanged = toAgencyLocationId !== dbRecord.prisonId
+        if (inProgress(dbRecord) && prisonHasChanged) {
+          const result = await formService.updatePrisonForm(bookingId, toAgencyLocationId, client)
+          results.push({ name: 'form', ...result })
         }
+
+        const assessmentData = await formService.getLiteCategorisation(bookingId, client)
+        const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
+        const litePrisonHasChanged = toAgencyLocationId !== assessmentData.prisonId
+        if (liteInProgress && litePrisonHasChanged) {
+          const result = await formService.updatePrisonLite(bookingId, toAgencyLocationId, client)
+          results.push({ name: 'lite', ...result })
+        }
+
+        if (offenderNo) {
+          const resultRiskChange = await formService.updatePrisonRiskChange(offenderNo, toAgencyLocationId, client)
+          const resultSecurity = await formService.updatePrisonSecurityReferral(
+            offenderNo,
+            toAgencyLocationId,
+            client,
+          )
+          results.push({ name: 'riskChange', ...resultRiskChange })
+          results.push({ name: 'securityReferral', ...resultSecurity })
+        }
+        logger.info(
+          `Movement summary: rows updated =${results.reduce((s, item) => `${s} ${item.name}: ${item.rowCount}`, '')}`,
+        )
+      }
         break
       default:
         logger.debug(
