@@ -23,7 +23,7 @@ const {
 } = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
 const { isReviewOverdue } = require('./reviewStatusCalculator')
 const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
-const {filterOutRecalledPrisoners} = require("./filter/recallFilter");
+const { filterOutRecalledPrisoners } = require('./filter/recallFilter')
 
 const dirname = process.cwd()
 
@@ -1396,15 +1396,15 @@ module.exports = function createOffendersService(
   }
 
   async function createOrUpdateCategorisation({
-                                                context,
-                                                bookingId,
-                                                overriddenCategory,
-                                                suggestedCategory,
-                                                overriddenCategoryText,
-                                                nextReviewDate,
-                                                nomisSeq,
-                                                transactionalDbClient,
-                                              }) {
+    context,
+    bookingId,
+    overriddenCategory,
+    suggestedCategory,
+    overriddenCategoryText,
+    nextReviewDate,
+    nomisSeq,
+    transactionalDbClient,
+  }) {
     try {
       const category = overriddenCategory || suggestedCategory
       const comment = (overriddenCategoryText && overriddenCategoryText.substring(0, 4000)) || ''
@@ -1438,17 +1438,17 @@ module.exports = function createOffendersService(
   }
 
   async function createLiteCategorisation({
-                                            context,
-                                            bookingId,
-                                            category,
-                                            authority,
-                                            nextReviewDate,
-                                            placement,
-                                            comment,
-                                            offenderNo,
-                                            prisonId,
-                                            transactionalClient,
-                                          }) {
+    context,
+    bookingId,
+    category,
+    authority,
+    nextReviewDate,
+    placement,
+    comment,
+    offenderNo,
+    prisonId,
+    transactionalClient,
+  }) {
     try {
       const nomisClient = nomisClientBuilder(context)
       const nextReviewDateConverted = dateConverterToISO(nextReviewDate)
@@ -1508,19 +1508,19 @@ module.exports = function createOffendersService(
   }
 
   async function approveLiteCategorisation({
-                                             context,
-                                             bookingId,
-                                             sequence,
-                                             approvedDate,
-                                             supervisorCategory,
-                                             approvedCategoryComment,
-                                             approvedCommittee,
-                                             nextReviewDate,
-                                             approvedPlacement,
-                                             approvedPlacementComment,
-                                             approvedComment,
-                                             transactionalClient,
-                                           }) {
+    context,
+    bookingId,
+    sequence,
+    approvedDate,
+    supervisorCategory,
+    approvedCategoryComment,
+    approvedCommittee,
+    nextReviewDate,
+    approvedPlacement,
+    approvedPlacementComment,
+    approvedComment,
+    transactionalClient,
+  }) {
     try {
       const nomisClient = nomisClientBuilder(context)
       const approvedDateConverted = dateConverterToISO(approvedDate)
@@ -1723,37 +1723,37 @@ module.exports = function createOffendersService(
     )
     switch (movementType) {
       case 'ADM':
-      {
-        const results = []
-        const dbRecord = await formService.getCategorisationRecord(bookingId, client)
-        const prisonHasChanged = toAgencyLocationId !== dbRecord.prisonId
-        if (inProgress(dbRecord) && prisonHasChanged) {
-          const result = await formService.updatePrisonForm(bookingId, toAgencyLocationId, client)
-          results.push({ name: 'form', ...result })
-        }
+        {
+          const results = []
+          const dbRecord = await formService.getCategorisationRecord(bookingId, client)
+          const prisonHasChanged = toAgencyLocationId !== dbRecord.prisonId
+          if (inProgress(dbRecord) && prisonHasChanged) {
+            const result = await formService.updatePrisonForm(bookingId, toAgencyLocationId, client)
+            results.push({ name: 'form', ...result })
+          }
 
-        const assessmentData = await formService.getLiteCategorisation(bookingId, client)
-        const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
-        const litePrisonHasChanged = toAgencyLocationId !== assessmentData.prisonId
-        if (liteInProgress && litePrisonHasChanged) {
-          const result = await formService.updatePrisonLite(bookingId, toAgencyLocationId, client)
-          results.push({ name: 'lite', ...result })
-        }
+          const assessmentData = await formService.getLiteCategorisation(bookingId, client)
+          const liteInProgress = assessmentData.bookingId && !assessmentData.approvedDate
+          const litePrisonHasChanged = toAgencyLocationId !== assessmentData.prisonId
+          if (liteInProgress && litePrisonHasChanged) {
+            const result = await formService.updatePrisonLite(bookingId, toAgencyLocationId, client)
+            results.push({ name: 'lite', ...result })
+          }
 
-        if (offenderNo) {
-          const resultRiskChange = await formService.updatePrisonRiskChange(offenderNo, toAgencyLocationId, client)
-          const resultSecurity = await formService.updatePrisonSecurityReferral(
-            offenderNo,
-            toAgencyLocationId,
-            client,
+          if (offenderNo) {
+            const resultRiskChange = await formService.updatePrisonRiskChange(offenderNo, toAgencyLocationId, client)
+            const resultSecurity = await formService.updatePrisonSecurityReferral(
+              offenderNo,
+              toAgencyLocationId,
+              client,
+            )
+            results.push({ name: 'riskChange', ...resultRiskChange })
+            results.push({ name: 'securityReferral', ...resultSecurity })
+          }
+          logger.info(
+            `Movement summary: rows updated =${results.reduce((s, item) => `${s} ${item.name}: ${item.rowCount}`, '')}`,
           )
-          results.push({ name: 'riskChange', ...resultRiskChange })
-          results.push({ name: 'securityReferral', ...resultSecurity })
         }
-        logger.info(
-          `Movement summary: rows updated =${results.reduce((s, item) => `${s} ${item.name}: ${item.rowCount}`, '')}`,
-        )
-      }
         break
       default:
         logger.debug(

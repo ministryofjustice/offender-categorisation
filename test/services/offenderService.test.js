@@ -34,6 +34,7 @@ const nomisClient = {
   getBasicOffenderDetails: jest.fn(),
   getIdentifiersByBookingId: jest.fn(),
   setInactive: jest.fn(),
+  getOffenderPrisonPeriods: jest.fn(),
 }
 
 const prisonerSearchClient = {
@@ -3185,10 +3186,68 @@ describe('getDueRecats', () => {
         releaseDate: '2018-11-15',
         sentenceStartDate: '2017-04-01',
         recall: true,
-        postRecallReleaseDate: '2017-04-01',
-        dueDateForRecalls: '2017-09-23',
+        postRecallReleaseDate: '2017-04-01'
       },
     ])
+    nomisClient.getOffenderPrisonPeriods.mockResolvedValue({
+      "prisonerNumber": "A7748DZ",
+      "prisonPeriod": [
+        {
+          "bookNumber": "47828A",
+          "bookingId": 1186272,
+          "entryDate": "2023-12-08T15:50:37",
+          "releaseDate": "2023-12-08T16:21:24",
+          "movementDates": [
+            {
+              "reasonInToPrison": "Imprisonment Without Option",
+              "dateInToPrison": (new Date()).toISOString().split('T')[0],
+              "inwardType": "ADM",
+              "reasonOutOfPrison": "Wedding/Civil Ceremony",
+              "dateOutOfPrison": "2023-12-08T15:53:37",
+              "outwardType": "TAP",
+              "admittedIntoPrisonId": "BMI",
+              "releaseFromPrisonId": "BSI"
+            },
+            {
+              "reasonInToPrison": "Wedding/Civil Ceremony",
+              "dateInToPrison": "2023-11-11T15:54:12",
+              "inwardType": "TAP",
+              "reasonOutOfPrison": "Conditional Release (CJA91) -SH Term>1YR",
+              "dateOutOfPrison": "2023-12-08T16:20:19",
+              "outwardType": "REL",
+              "admittedIntoPrisonId": "BSI",
+              "releaseFromPrisonId": "AYI"
+            }
+          ]
+        },
+        {
+          "bookNumber": "47829A",
+          "bookingId": 1186273,
+          "entryDate": "2023-12-08T16:21:21",
+          "movementDates": [
+            {
+              "reasonInToPrison": "Imprisonment Without Option",
+              "dateInToPrison": "2023-12-08T16:21:21",
+              "inwardType": "ADM",
+              "admittedIntoPrisonId": "DGI"
+            }
+          ],
+          "transfers": [
+            {
+              "dateOutOfPrison": "2023-12-08T16:22:02",
+              "dateInToPrison": "2023-12-08T16:23:32",
+              "transferReason": "Overcrowding Draft",
+              "fromPrisonId": "DGI",
+              "toPrisonId": "BLI"
+            }
+          ],
+          "prisons": [
+            "DGI",
+            "BLI"
+          ]
+        }
+      ]
+    })
 
     const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
 

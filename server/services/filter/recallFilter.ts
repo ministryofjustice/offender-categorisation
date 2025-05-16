@@ -1,29 +1,39 @@
+import moment from 'moment'
 import { RecategorisationPrisonerSearchDto } from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
-import moment from "moment";
 
 export const setDatesForRecalledPrisoners = async (
   nomisClient,
   offenderNo: string,
-  bookingId: Number,
-  recatPrisonerSearchDto: RecategorisationPrisonerSearchDto
+  bookingId: number,
+  recatPrisonerSearchDto: RecategorisationPrisonerSearchDto,
 ) => {
   const response = await nomisClient.getOffenderPrisonPeriods(offenderNo)
   const prisonPeriodForBookingId = response.prisonPeriod.find(p => p.bookingId === bookingId)
   if (prisonPeriodForBookingId) {
-    const dateInPrisonSortedDesc = prisonPeriodForBookingId.movementDates.sort((a, b) => moment(b.dateInToPrison).valueOf() - moment(a.dateInToPrison).valueOf())
+    const dateInPrisonSortedDesc = prisonPeriodForBookingId.movementDates.sort(
+      (a, b) => moment(b.dateInToPrison).valueOf() - moment(a.dateInToPrison).valueOf(),
+    )
     // Record dates for recalled prisoners
-    recatPrisonerSearchDto['dueDateForRecalls'] = dueDateForRecalls(dateInPrisonSortedDesc[0].dateInToPrison)
-    recatPrisonerSearchDto['lastDateInPrison'] = dateInPrisonSortedDesc[0].dateInToPrison
+    // eslint-disable-next-line no-param-reassign
+    recatPrisonerSearchDto.dueDateForRecalls = dueDateForRecalls(dateInPrisonSortedDesc[0].dateInToPrison)
+    // eslint-disable-next-line no-param-reassign
+    recatPrisonerSearchDto.lastDateInPrison = dateInPrisonSortedDesc[0].dateInToPrison
   }
 }
 
-export const isFixedTermRecallLessThanAndEqualTo28Days = (recatPrisonerSearchDto: RecategorisationPrisonerSearchDto) => {
+export const isFixedTermRecallLessThanAndEqualTo28Days = (
+  recatPrisonerSearchDto: RecategorisationPrisonerSearchDto,
+) => {
   const FIXED_TERM_RECALL_DAYS_LIMIT = 28
   if (recatPrisonerSearchDto.postRecallReleaseDate) {
     // Fixed term recall
-    const differenceInDays =
-      Math.abs(moment(recatPrisonerSearchDto.postRecallReleaseDate, 'YYYY-MM-DD').diff(moment(recatPrisonerSearchDto.lastDateInPrison, 'YYYY-MM-DD'), 'days'));
-    return differenceInDays <= FIXED_TERM_RECALL_DAYS_LIMIT;
+    const differenceInDays = Math.abs(
+      moment(recatPrisonerSearchDto.postRecallReleaseDate, 'YYYY-MM-DD').diff(
+        moment(recatPrisonerSearchDto.lastDateInPrison, 'YYYY-MM-DD'),
+        'days',
+      ),
+    )
+    return differenceInDays <= FIXED_TERM_RECALL_DAYS_LIMIT
   }
   return false
 }
@@ -38,8 +48,7 @@ export const filterOutRecalledPrisoners = async (
   prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
   nomisClient,
 ) => {
-
-  let filteredPrisoners = prisoners.filter(prisoner => {
+  return prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
 
     if (currentPrisonerSearchData && currentPrisonerSearchData.recall) {
@@ -53,6 +62,4 @@ export const filterOutRecalledPrisoners = async (
 
     return true
   })
-
-  return filteredPrisoners
 }

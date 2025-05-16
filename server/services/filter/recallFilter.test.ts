@@ -2,11 +2,10 @@ import moment from 'moment'
 import {
   setDatesForRecalledPrisoners,
   isFixedTermRecallLessThanAndEqualTo28Days,
-  filterOutRecalledPrisoners
+  filterOutRecalledPrisoners,
 } from './recallFilter'
-import {RecategorisationPrisonerSearchDto} from "../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto";
-import makeTestRecategorisationPrisonerSearchDto
-  from "../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto.test-factory";
+import { RecategorisationPrisonerSearchDto } from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
+import makeTestRecategorisationPrisonerSearchDto from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto.test-factory'
 
 describe('Recall filter', () => {
   describe('setDatesForRecalledPrisoners', () => {
@@ -32,7 +31,7 @@ describe('Recall filter', () => {
 
       expect(recatPrisonerSearchDto.lastDateInPrison).toEqual('2024-04-05')
       expect(recatPrisonerSearchDto.dueDateForRecalls).toBe(
-        moment('2024-04-05', 'YYYY-MM-DD').add(10, 'days').format('YYYY-MM-DD')
+        moment('2024-04-05', 'YYYY-MM-DD').add(10, 'days').format('YYYY-MM-DD'),
       )
     })
 
@@ -47,11 +46,11 @@ describe('Recall filter', () => {
       await setDatesForRecalledPrisoners(nomisClient, 'A1234BC', 999, recatPrisonerSearchDto)
 
       expect(recatPrisonerSearchDto).toEqual({
-        "lastDateInPrison": "2025-01-01",
-        "legalStatus": "SENTENCED",
-        "postRecallReleaseDate": "2025-01-01",
-        "recall": false,
-        "sentenceStartDate": "2025-01-01"
+        lastDateInPrison: '2025-01-01',
+        legalStatus: 'SENTENCED',
+        postRecallReleaseDate: '2025-01-01',
+        recall: false,
+        sentenceStartDate: '2025-01-01',
       })
     })
   })
@@ -101,24 +100,30 @@ describe('Recall filter', () => {
       ]
 
       const prisonerSearchData = new Map([
-        [1,
+        [
+          1,
           Object.assign({} as RecategorisationPrisonerSearchDto, {
             recall: true,
             postRecallReleaseDate: '2024-05-15',
             lastDateInPrison: '2024-04-20', // 25 days difference → should be filtered out
-          })],
-        [2,
+          }),
+        ],
+        [
+          2,
           Object.assign({} as RecategorisationPrisonerSearchDto, {
-            recall: true
-          })],
+            recall: true,
+          }),
+        ],
       ])
 
       const nomisClient = {
         getOffenderPrisonPeriods: jest.fn().mockResolvedValue({
-          prisonPeriod: [{
-            bookingId: 1,
-            movementDates: [{ dateInToPrison: '2024-04-20' }]
-          }]
+          prisonPeriod: [
+            {
+              bookingId: 1,
+              movementDates: [{ dateInToPrison: '2024-04-20' }],
+            },
+          ],
         }),
       }
 
@@ -136,22 +141,30 @@ describe('Recall filter', () => {
       ]
 
       const prisonerSearchData = new Map([
-        [3, {
-          recall: true,
-          postRecallReleaseDate: '2024-06-01',
-          lastDateInPrison: '2024-04-01', // 61 days → should stay
-        } as RecategorisationPrisonerSearchDto],
-        [4, {
-          recall: false,
-        } as RecategorisationPrisonerSearchDto],
+        [
+          3,
+          {
+            recall: true,
+            postRecallReleaseDate: '2024-06-01',
+            lastDateInPrison: '2024-04-01', // 61 days → should stay
+          } as RecategorisationPrisonerSearchDto,
+        ],
+        [
+          4,
+          {
+            recall: false,
+          } as RecategorisationPrisonerSearchDto,
+        ],
       ])
 
       const nomisClient = {
         getOffenderPrisonPeriods: jest.fn().mockResolvedValue({
-          prisonPeriod: [{
-            bookingId: 3,
-            movementDates: [{ dateInToPrison: '2024-04-01' }]
-          }]
+          prisonPeriod: [
+            {
+              bookingId: 3,
+              movementDates: [{ dateInToPrison: '2024-04-01' }],
+            },
+          ],
         }),
       }
 

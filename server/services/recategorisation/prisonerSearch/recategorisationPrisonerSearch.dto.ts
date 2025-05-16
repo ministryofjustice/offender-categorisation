@@ -24,6 +24,6 @@ export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
   sentenceStartDate: prisonerSearchDto.sentenceStartDate,
   recall: prisonerSearchDto.recall,
   postRecallReleaseDate: prisonerSearchDto.postRecallReleaseDate,
-  dueDateForRecalls: null, //set only for recalls
-  lastDateInPrison: null //set only for recalls
+  dueDateForRecalls: null, // set only for recalls
+  lastDateInPrison: null, // set only for recalls
 })

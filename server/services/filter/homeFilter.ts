@@ -197,6 +197,7 @@ export const filterListOfPrisoners = async (
           .map(alert => alert.alertCode)) ||
       []
     const incentiveLevelCode = currentPrisonerSearchData?.currentIncentive?.level.code
+    let { nextReviewDate } = prisoner
     for (let i = 0; i < allFiltersWhichDoNotRequireFurtherDataToBeLoaded.length; i += 1) {
       switch (allFiltersWhichDoNotRequireFurtherDataToBeLoaded[i]) {
         case LOW_RISK_OF_ESCAPE:
@@ -242,7 +243,6 @@ export const filterListOfPrisoners = async (
           }
           break
         case OVERDUE:
-          var nextReviewDate: string = prisoner.nextReviewDate
           if (currentPrisonerSearchData.recall) {
             nextReviewDate = currentPrisonerSearchData.dueDateForRecalls
           }
