@@ -439,8 +439,7 @@ describe("Women's Estate", () => {
         { term: 'Have they been released from a previous sentence in the last 5 years?', definition: 'No' },
         { term: 'Was that previous sentence for 7 years or more?', definition: 'Not applicable' },
         // victim contact scheme
-        { term: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', definition: 'No' },
-        { term: 'Have you contacted the Victim Liaison Officer (VLO)?', definition: 'Not applicable' },
+        { term: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', definition: 'No' },
         // sexual offences
         { term: 'Have they ever been convicted of a sexual offence?', definition: 'No' },
         { term: 'Can the risk to the public be managed in open conditions?', definition: 'Not applicable' },
