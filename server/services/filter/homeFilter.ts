@@ -243,7 +243,7 @@ export const filterListOfPrisoners = async (
           }
           break
         case OVERDUE:
-          if (currentPrisonerSearchData.recall) {
+          if (currentPrisonerSearchData && currentPrisonerSearchData.recall) {
             nextReviewDate = currentPrisonerSearchData.dueDateForRecalls
           }
           if (!isReviewOverdue(nextReviewDate)) {
