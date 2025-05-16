@@ -24,4 +24,5 @@ export interface PrisonerSearchDto {
   currentIncentive: PrisonerSearchIncentiveLevelDto | undefined
   legalStatus: LegalStatus
   recall: boolean | undefined
+  postRecallReleaseDate: string | undefined
 }

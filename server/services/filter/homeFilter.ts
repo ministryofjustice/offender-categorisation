@@ -189,6 +189,7 @@ export const filterListOfPrisoners = async (
   )
   let filteredPrisoners = prisoners.filter(prisoner => {
     const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
+
     const activeNonExpiredAlertCodes =
       (currentPrisonerSearchData &&
         currentPrisonerSearchData.alerts
@@ -196,6 +197,7 @@ export const filterListOfPrisoners = async (
           .map(alert => alert.alertCode)) ||
       []
     const incentiveLevelCode = currentPrisonerSearchData?.currentIncentive?.level.code
+    let { nextReviewDate } = prisoner
     for (let i = 0; i < allFiltersWhichDoNotRequireFurtherDataToBeLoaded.length; i += 1) {
       switch (allFiltersWhichDoNotRequireFurtherDataToBeLoaded[i]) {
         case LOW_RISK_OF_ESCAPE:
@@ -241,7 +243,10 @@ export const filterListOfPrisoners = async (
           }
           break
         case OVERDUE:
-          if (!isReviewOverdue(prisoner.nextReviewDate)) {
+          if (currentPrisonerSearchData && currentPrisonerSearchData.recall) {
+            nextReviewDate = currentPrisonerSearchData.dueDateForRecalls
+          }
+          if (!isReviewOverdue(nextReviewDate)) {
             return false
           }
           break
@@ -254,6 +259,7 @@ export const filterListOfPrisoners = async (
           throw new Error(`Invalid filter type: ${allFiltersWhichDoNotRequireFurtherDataToBeLoaded[i]}`)
       }
     }
+
     return true
   })
   let adjudicationsDataPromise

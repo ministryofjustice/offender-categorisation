@@ -23,6 +23,7 @@ const {
 } = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
 const { isReviewOverdue } = require('./reviewStatusCalculator')
 const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
+const { filterOutRecalledPrisoners } = require('./filter/recallFilter')
 
 const dirname = process.cwd()
 
@@ -56,7 +57,6 @@ async function getSentenceMap(offenderList, prisonerSearchClient) {
 async function getPrisonerSearchData(offenderList, prisonerSearchClient) {
   const bookingIds = offenderList.map(offender => offender.bookingId)
   const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
-
   return new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]))
 }
 
@@ -740,7 +740,6 @@ module.exports = function createOffendersService(
     )
 
     // trim db results to only those not in the Nomis-derived list
-
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
@@ -749,9 +748,11 @@ module.exports = function createOffendersService(
       getPomMap(allOffenders, allocationClient),
     ])
 
+    const filteredOutRecalledPrisoners = await filterOutRecalledPrisoners(allOffenders, prisonerSearchData, nomisClient)
+
     const filteredPrisoners = await filterListOfPrisoners(
       filters,
-      allOffenders,
+      filteredOutRecalledPrisoners,
       prisonerSearchData,
       nomisClient,
       agencyId,
@@ -826,8 +827,8 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isReviewOverdue(nomisRecord.nextReviewDate),
-          overdueText: getOverdueText(nomisRecord.nextReviewDate),
+          overdue: isReviewOverdue(getReviewDateForRecats(prisonerSearchRecord, nomisRecord.nextReviewDate)),
+          overdueText: getOverdueText(getReviewDateForRecats(prisonerSearchRecord, nomisRecord.nextReviewDate)),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -835,6 +836,13 @@ module.exports = function createOffendersService(
         }
       }),
     )
+  }
+
+  const getReviewDateForRecats = (prisonerSearchRecord, nextReviewDate) => {
+    if (prisonerSearchRecord && prisonerSearchRecord.recall) {
+      return prisonerSearchRecord.dueDateForRecalls
+    }
+    return nextReviewDate
   }
 
   const getOffenderDetailsWithNextReviewDate = async (nomisClient, bookingId) => {
@@ -948,9 +956,15 @@ module.exports = function createOffendersService(
       resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]),
     )
 
+    const filteredOutRecalledPrisoners = await filterOutRecalledPrisoners(
+      eliteCategorisationResultsU21,
+      u21map,
+      nomisClient,
+    )
+
     const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
       filters,
-      eliteCategorisationResultsU21,
+      filteredOutRecalledPrisoners,
       u21map,
       nomisClient,
       agencyId,
@@ -994,8 +1008,8 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay,
-          overdue: isReviewOverdue(nextReviewDate),
-          overdueText: getOverdueText(nextReviewDate),
+          overdue: isReviewOverdue(getReviewDateForRecats(u21map.get(o.bookingId), nextReviewDate)),
+          overdueText: getOverdueText(getReviewDateForRecats(u21map.get(o.bookingId), nextReviewDate)),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
