@@ -1331,7 +1331,12 @@ module.exports = function createOffendersService(
     try {
       const allCategorisation = await nomisClient.getCategoryHistory(offenderNo)
       // remove any that don't have an approval date  - these could be pending, rejected, cancelled
+<<<<<<< Updated upstream
       return allCategorisation.filter(c => c.approvalDate)
+=======
+      logger.info(allCategorisation)
+      return allCategorisation.filter(c => c.approvalDate && c.assessmentStatus !== 'P')
+>>>>>>> Stashed changes
     } catch (error) {
       logger.error(error, 'Error during getAllApprovedCategorisationsForOffender')
       throw error

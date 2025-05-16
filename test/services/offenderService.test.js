@@ -2053,6 +2053,19 @@ describe('getPrisonerBackground', () => {
       assessmentAgencyId: 'BXI',
       assessmentStatus: 'A',
     },
+    // Records which are rejected by supervisors, then cancelled will have an approval
+    // date even though they were never approved, it is the date they were rejected. They
+    // should not be included.
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'B',
+      classification: 'Cat B',
+      assessmentDate: '2019-04-17',
+      approvalDate: '2019-04-17',
+      assessmentAgencyId: 'BXI',
+      assessmentStatus: 'P',
+    },
   ]
 
   test('it should return a list of historical categorisations, filtering out any pending, cancelled and future categorisations, sorted by approval date', async () => {
