@@ -840,18 +840,20 @@ describe("Women's Estate", () => {
 
         it('should allow the supervisor to return the categorisation request to the categoriser', () => {
           cy.task('stubSupervisorReject')
+          const confirmBackMessage = 'a message to pass back to the categoriser'
 
           supervisorReviewPage.giveBackToCategoriserButton(bookingId).click()
 
           const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
           supervisorConfirmBackPage.selectConfirmationRadioButton('YES')
-          supervisorConfirmBackPage.setConfirmationMessageText('a message to pass back to the categoriser')
+          supervisorConfirmBackPage.setConfirmationMessageText(confirmBackMessage)
           supervisorConfirmBackPage.saveAndReturnButton().click()
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
             expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
             expect(result.rows[0].approved_by).to.eq(null)
+            expect(result.rows[0].form_response.supervisor.confirmBack.messageText).to.eq(confirmBackMessage)
           })
         })
 
