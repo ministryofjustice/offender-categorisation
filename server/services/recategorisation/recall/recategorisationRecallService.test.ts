@@ -20,16 +20,18 @@ describe('getRecalledOffendersData', () => {
 
     const testPrisonerSearchData = new Map([
       [
-        'ABC123',
+        123,
         makeTestRecategorisationPrisonerSearchDto({
           bookingId: 123,
+          prisonerNumber: 'ABC123',
           recall: true,
         }),
       ],
       [
-        'DEF456',
+        456,
         makeTestRecategorisationPrisonerSearchDto({
           bookingId: 456,
+          prisonerNumber: 'DEF456',
           recall: false,
         }),
       ],
