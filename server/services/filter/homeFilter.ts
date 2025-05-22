@@ -23,6 +23,7 @@ import { RisksAndNeedsApiClient } from '../../data/risksAndNeeds/risksAndNeedsAp
 import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
 import logger from '../../../log'
 import { RecalledOffenderData } from '../recategorisation/recall/recalledOffenderData'
+import { add10BusinessDays } from '../../utils/utils'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
@@ -246,8 +247,13 @@ export const filterListOfPrisoners = async (
           }
           break
         case OVERDUE:
-          if (withSi1481Changes && currentPrisonerSearchData && currentPrisonerSearchData.recall) {
-            nextReviewDate = recalledOffenderData.get(prisoner.offenderNo).recallDate
+          if (
+            withSi1481Changes &&
+            currentPrisonerSearchData &&
+            currentPrisonerSearchData.recall &&
+            recalledOffenderData.get(prisoner.offenderNo).recallDate
+          ) {
+            nextReviewDate = add10BusinessDays(recalledOffenderData.get(prisoner.offenderNo).recallDate)
           }
           if (!isReviewOverdue(nextReviewDate)) {
             return false
