@@ -755,7 +755,6 @@ module.exports = function createOffendersService(
       ? await getRecalledOffendersData(prisonerSearchData, nomisClient)
       : null
 
-
     const filteredPrisoners = await filterListOfPrisoners(
       filters,
       allOffenders,
