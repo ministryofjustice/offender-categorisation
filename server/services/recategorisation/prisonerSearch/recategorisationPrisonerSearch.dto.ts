@@ -4,6 +4,7 @@ import type { LegalStatus, PrisonerSearchDto } from '../../../data/prisonerSearc
 
 export interface RecategorisationPrisonerSearchDto {
   bookingId: number
+  prisonerNumber: string
   releaseDate: string | undefined
   alerts: PrisonerSearchAlertDto[] | undefined
   currentIncentive: PrisonerSearchIncentiveLevelDto | undefined
@@ -17,6 +18,7 @@ export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
   prisonerSearchDto: PrisonerSearchDto,
 ): RecategorisationPrisonerSearchDto => ({
   bookingId: prisonerSearchDto.bookingId,
+  prisonerNumber: prisonerSearchDto.prisonerNumber,
   releaseDate: prisonerSearchDto.releaseDate,
   alerts: prisonerSearchDto.alerts,
   currentIncentive: prisonerSearchDto.currentIncentive,

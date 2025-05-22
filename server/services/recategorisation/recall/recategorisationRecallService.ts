@@ -20,23 +20,23 @@ const getRecalledOffenderData = async (
 }
 
 export const getRecalledOffendersData = async (
-  prisonerSearchData: Map<string, RecategorisationPrisonerSearchDto>,
+  prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
   nomisClient,
 ): Promise<Map<string, RecalledOffenderData>> => {
   const recalledOffenderNumbersToRecallData: Map<string, RecalledOffenderData> = new Map()
 
-  const recalledOffenderNumbers = Array.from(prisonerSearchData.keys()).filter(
-    offenderNumber => prisonerSearchData.get(offenderNumber).recall,
+  const recalledPrisonerSearchData = Array.from(prisonerSearchData.values()).filter(
+    recategorisationPrisonerSearchData => recategorisationPrisonerSearchData.recall,
   )
   await Promise.all(
-    recalledOffenderNumbers.map(async offenderNumber => {
+    recalledPrisonerSearchData.map(async recalledPrisonerSearchDatum => {
       const recalledOffenderData = await getRecalledOffenderData(
-        offenderNumber,
-        prisonerSearchData.get(offenderNumber).bookingId,
+        recalledPrisonerSearchDatum.prisonerNumber,
+        recalledPrisonerSearchDatum.bookingId,
         nomisClient,
       )
       if (typeof recalledOffenderData !== 'undefined') {
-        recalledOffenderNumbersToRecallData.set(offenderNumber, recalledOffenderData)
+        recalledOffenderNumbersToRecallData.set(recalledPrisonerSearchDatum.prisonerNumber, recalledOffenderData)
       }
     }),
   )

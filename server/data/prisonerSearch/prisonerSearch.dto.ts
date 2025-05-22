@@ -16,6 +16,7 @@ export type LegalStatus =
   | 'OTHER'
 
 export interface PrisonerSearchDto {
+  prisonerNumber: string
   bookingId: number
   releaseDate: string | undefined
   sentenceStartDate: string

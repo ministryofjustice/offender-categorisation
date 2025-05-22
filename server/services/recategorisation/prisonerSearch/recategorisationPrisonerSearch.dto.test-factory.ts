@@ -4,6 +4,7 @@ const makeTestRecategorisationPrisonerSearchDto = (
   recategorisationPrisonerSearchDto: Partial<RecategorisationPrisonerSearchDto> = {},
 ): RecategorisationPrisonerSearchDto => ({
   bookingId: recategorisationPrisonerSearchDto.bookingId ?? 123,
+  prisonerNumber: recategorisationPrisonerSearchDto.prisonerNumber ?? 'ABC123',
   releaseDate: recategorisationPrisonerSearchDto.releaseDate ?? undefined,
   alerts: recategorisationPrisonerSearchDto.alerts ?? undefined,
   currentIncentive: recategorisationPrisonerSearchDto.currentIncentive ?? undefined,

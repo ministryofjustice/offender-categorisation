@@ -755,6 +755,7 @@ module.exports = function createOffendersService(
       ? await getRecalledOffendersData(prisonerSearchData, nomisClient)
       : null
 
+
     const filteredPrisoners = await filterListOfPrisoners(
       filters,
       allOffenders,
@@ -784,7 +785,7 @@ module.exports = function createOffendersService(
           return null
         }
 
-        let reviewDueDate = dateConverter(nomisRecord.nextReviewDate)
+        let reviewDueDate = nomisRecord.nextReviewDate
 
         if (withSi1481Changes && recalledOffenderData?.get(raw.offenderNumber)) {
           // Fixed term recalls with less than or equal to 28 days to serve do not require a recategorisation
