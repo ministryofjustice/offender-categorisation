@@ -3,6 +3,7 @@ import { PrisonerSearchIncentiveLevelDto } from '../../../data/prisonerSearch/in
 import type { LegalStatus, PrisonerSearchDto } from '../../../data/prisonerSearch/prisonerSearch.dto'
 
 export interface RecategorisationPrisonerSearchDto {
+  bookingId: number
   releaseDate: string | undefined
   alerts: PrisonerSearchAlertDto[] | undefined
   currentIncentive: PrisonerSearchIncentiveLevelDto | undefined
@@ -10,13 +11,12 @@ export interface RecategorisationPrisonerSearchDto {
   sentenceStartDate: string | undefined
   recall: boolean | undefined
   postRecallReleaseDate: string | undefined
-  dueDateForRecalls: string | undefined
-  lastDateInPrison: string | undefined
 }
 
 export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
   prisonerSearchDto: PrisonerSearchDto,
 ): RecategorisationPrisonerSearchDto => ({
+  bookingId: prisonerSearchDto.bookingId,
   releaseDate: prisonerSearchDto.releaseDate,
   alerts: prisonerSearchDto.alerts,
   currentIncentive: prisonerSearchDto.currentIncentive,
@@ -24,6 +24,4 @@ export const mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto = (
   sentenceStartDate: prisonerSearchDto.sentenceStartDate,
   recall: prisonerSearchDto.recall,
   postRecallReleaseDate: prisonerSearchDto.postRecallReleaseDate,
-  dueDateForRecalls: null, // set only for recalls
-  lastDateInPrison: null, // set only for recalls
 })

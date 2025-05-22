@@ -1,6 +1,12 @@
 import moment from 'moment'
 import { RecategorisationPrisonerSearchDto } from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
 
+export interface RecalledOffenderData {
+  recallDate: string
+  dueDateBasedOnRecallDate: string
+  lastDateInToPrison: string
+}
+
 export const setDatesForRecalledPrisoners = async (
   nomisClient,
   offenderNo: string,

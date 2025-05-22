@@ -148,6 +148,10 @@ module.exports = context => {
       const path = `${apiUrl}api/offenders/adjudication-hearings?agencyId=${agencyId}&fromDate=${fromDate}&toDate=${toDate}`
       return nomisClientPost({ path, body: offenderNos })
     },
+    getOffenderPrisonPeriods(offenderNo) {
+      const path = `${apiUrl}/api/offenders/${offenderNo}/prison-timeline`
+      return nomisClientGet({ path })
+    },
   }
 }
 
