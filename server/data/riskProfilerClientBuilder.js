@@ -1,7 +1,7 @@
 const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
-const logger = require('../../log')
+const logger = require('../../log').default
 const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
 const { getSanitisedError } = require('../getSanitisedError')

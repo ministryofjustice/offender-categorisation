@@ -4,7 +4,7 @@ const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const redis = require('redis')
 const { promisify } = require('util')
-const logger = require('../../log')
+const logger = require('../../log').default
 const { config } = require('../config')
 
 module.exports = {

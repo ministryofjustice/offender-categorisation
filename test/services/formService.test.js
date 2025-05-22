@@ -1,7 +1,7 @@
 const moment = require('moment')
 const serviceCreator = require('../../server/services/formService')
 const { validate } = require('../../server/utils/fieldValidation')
-const Status = require('../../server/utils/statusEnum')
+const Status = require('../../server/utils/statusEnum').default
 const CatType = require('../../server/utils/catTypeEnum')
 const { config } = require('../../server/config')
 

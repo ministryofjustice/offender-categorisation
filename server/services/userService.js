@@ -1,4 +1,4 @@
-const logger = require('../../log')
+const logger = require('../../log').default
 const { properCaseName, setFemaleCaseLoads } = require('../utils/utils')
 
 module.exports = function createUserService(nomisClientBuilder) {

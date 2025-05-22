@@ -1,16 +1,25 @@
-const moment = require('moment/moment')
-const fieldValidation = require('../../server/utils/fieldValidation')
-const pageConfig = require('../../server/config/nextReviewDate')
+import { addDays, addMonths, addYears, format, startOfMonth, subDays, subMonths } from 'date-fns'
+import fieldValidation from '../../server/utils/fieldValidation'
+import pageConfig from '../../server/config/nextReviewDate'
 
-const overThreeYearsDate = moment().add(3, 'years').add(1, 'days').format('D/M/YYYY')
-const validFutureDate = moment().add(12, 'months').format('D/M/YYYY')
-const overOneYearsDate = moment().add(12, 'months').add(1, 'days').format('D/M/YYYY')
-const todaysDate = moment().format('D/M/YYYY')
-const todaysDateAlternativeFormat = moment().format('DD/MM/YYYY')
-const pastDate = moment().subtract(1, 'days').format('D/M/YYYY')
-const pastDateAlternativeFormat = moment().subtract(1, 'month').startOf('month').format('DD/MM/YYYY')
+const today = new Date()
+
+// Today
+const todaysDate = format(today, 'd/M/yyyy')
+const todaysDateAlternativeFormat = format(today, 'dd/MM/yyyy')
+
+// Future Dates
+const validFutureDate = format(addMonths(today, 12), 'd/M/yyyy')
+const overOneYearsDate = format(addDays(addMonths(today, 12), 1), 'd/M/yyyy')
+const overThreeYearsDate = format(addDays(addYears(today, 3), 1), 'd/M/yyyy')
+const tomorrow = format(addDays(today, 1), 'd/M/yyyy')
+
+// Past Dates
+const pastDate = format(subDays(today, 1), 'd/M/yyyy')
+const pastDateAlternativeFormat = format(startOfMonth(subMonths(today, 1)), 'dd/MM/yyyy')
+
+// Invalid Date
 const invalidDate = '78/13/3043'
-const tomorrow = moment().add(1, 'days').format('D/M/YYYY')
 
 describe('Validating next review date for indeterminate', () => {
   it('Validation should return the correct error message for indeterminate over 3 years', () => {

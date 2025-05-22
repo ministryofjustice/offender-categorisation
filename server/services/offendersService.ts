@@ -1,28 +1,44 @@
-const path = require('path')
-const moment = require('moment')
-const logger = require('../../log')
-const Status = require('../utils/statusEnum')
-const CatType = require('../utils/catTypeEnum')
-const ReviewReason = require('../utils/reviewReasonEnum')
-const { isNilOrEmpty, inProgress, getIn, extractNextReviewDate } = require('../utils/functionalHelpers')
-const {
-  properCaseName,
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import {
+  addBusinessDays,
+  addHours,
+  addMonths,
+  addYears,
+  differenceInDays,
+  format,
+  isAfter,
+  isValid,
+  parse,
+  startOfDay,
+  subYears,
+} from 'date-fns'
+
+import path from 'path'
+import logger from '../../log'
+import Status from '../utils/statusEnum'
+import CatType from '../utils/catTypeEnum'
+import ReviewReason from '../utils/reviewReasonEnum'
+import { extractNextReviewDate, getIn, inProgress, isNilOrEmpty } from '../utils/functionalHelpers'
+import {
   dateConverter,
   dateConverterToISO,
-  get10BusinessDays,
+  get10BusinessDaysLegacy,
   getNamesFromString,
-} = require('../utils/utils')
-const { sortByDateTime, sortByStatus } = require('./offenderSort')
-const { config } = require('../config')
-const riskChangeHelper = require('../utils/riskChange')
-const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
-const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
-const { filterListOfPrisoners } = require('./filter/homeFilter')
-const {
-  mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
-} = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
-const { isReviewOverdue } = require('./reviewStatusCalculator')
-const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
+  normaliseDate,
+  properCaseName,
+  safeIsAfter,
+  safeIsBefore,
+} from '../utils/utils'
+import { sortByDateTime, sortByStatus } from './offenderSort'
+import { config } from '../config'
+import riskChangeHelper from '../utils/riskChange'
+import RiskChangeStatus from '../utils/riskChangeStatusEnum'
+import liteCategoriesPrisonerPartition from '../utils/liteCategoriesPrisonerPartition'
+import { filterListOfPrisoners } from './filter/homeFilter'
+import { mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto } from './recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
+import { isReviewOverdue } from './reviewStatusCalculator'
+import { LEGAL_STATUS_REMAND } = '../data/prisonerSearch/prisonerSearch.dto'
 
 const dirname = process.cwd()
 
@@ -120,7 +136,7 @@ function isNewSecurityReferred(offenderNo, securityReferredOffenders) {
   return securityReferredOffenders.filter(s => s.offenderNo === offenderNo).some(s => s.status === 'NEW')
 }
 
-module.exports = function createOffendersService(
+export function createOffendersService(
   nomisClientBuilder,
   allocationClientBuilder,
   formService,
@@ -177,7 +193,7 @@ module.exports = function createOffendersService(
       )
 
       const filterIS91s = o => {
-        const offence = prisonerMap.get(o.bookingId)
+        const offence: any = prisonerMap.get(o.bookingId)
         if (!offence) {
           return true
         }
@@ -198,6 +214,8 @@ module.exports = function createOffendersService(
       const allRecords = [...nomisFiltered, ...dbInProgressFiltered]
       const pomMap = await getPomMap(allRecords, allocationClient)
       const filteredRecords = await filterListOfPrisoners(
+        // [FIXME]
+        // @ts-ignore
         filters,
         allRecords,
         new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])),
@@ -235,7 +253,7 @@ module.exports = function createOffendersService(
             ? 'OTHER'
             : (inconsistent || (nomisStatusAwaitingApproval && !dbRecord.status)) && 'PNOMIS'
 
-          const sentence = sentenceMap.get(nomisRecord.bookingId)
+          const sentence: any = sentenceMap.get(nomisRecord.bookingId)
           const row = {
             ...nomisRecord,
             displayName: `${properCaseName(nomisRecord.lastName)}, ${properCaseName(nomisRecord.firstName)}`,
@@ -376,7 +394,7 @@ module.exports = function createOffendersService(
 
           let sentenceAndDate
           if (o.catType === CatType.INITIAL.name) {
-            const entry = sentenceMap.get(o.bookingId)
+            const entry: any = sentenceMap.get(o.bookingId)
             sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
           } else {
             const nomisCat = nomisCatData.find(record => record.bookingId === o.bookingId)
@@ -442,7 +460,7 @@ module.exports = function createOffendersService(
               : o.userId
           }
 
-          const entry = sentenceMap.get(offenderDetail.bookingId)
+          const entry: any = sentenceMap.get(offenderDetail.bookingId)
           const sentenceAndDate = entry && buildSentenceData(entry.sentenceDate)
 
           return {
@@ -525,14 +543,19 @@ module.exports = function createOffendersService(
         ])
 
         const decoratedResults = securityReviewedFromDB.map(o => {
-          const reviewedMoment = moment(o.securityReviewedDate, 'YYYY-MM-DD')
+          // according to tests sentenceDate accepts two formats:
+          // 1. Simple date: 'yyyy-MM-dd' (e.g., '2023-12-25')
+          // 2. ISO 8601: 'yyyy-MM-ddTHH:mm:ss.SSSZ' (e.g., '2023-12-25T00:00:00.000Z')
+          // 3. Date
+          const reviewedDate = normaliseDate(o.securityReviewedDate)
+
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
           const userDetail = userDetailFromElite.find(record => record.username === o.securityReviewedBy)
           return {
             ...o,
             offenderNo: offenderDetail.offenderNo,
             displayName: `${properCaseName(offenderDetail.lastName)}, ${properCaseName(offenderDetail.firstName)}`,
-            displayReviewedDate: reviewedMoment.format('DD/MM/YYYY'),
+            displayReviewedDate: format(reviewedDate, 'dd/MM/yyyy'),
             displayReviewerName: `${properCaseName(userDetail.lastName)}, ${properCaseName(userDetail.firstName)}`,
             catTypeDisplay: CatType[o.catType].value,
           }
@@ -589,7 +612,7 @@ module.exports = function createOffendersService(
       const sentenceMap = await getSentenceMap(unapprovedOffenders, prisonerSearchClient)
 
       const decoratedResults = unapprovedOffenders.map(o => {
-        const sentencedOffender = sentenceMap.get(o.bookingId)
+        const sentencedOffender: any = sentenceMap.get(o.bookingId)
         const sentenceData = sentencedOffender ? buildSentenceData(sentencedOffender.sentenceDate) : {}
         const dbRecordExists = !!o.dbRecord.bookingId
         const row = {
@@ -666,7 +689,7 @@ module.exports = function createOffendersService(
         .filter(offender => insidePrison.includes(offender.bookingId))
         .map(o => {
           const offenderDetail = offenderDetailsFromElite.find(record => record.offenderNo === o.offenderNo)
-          const assessedDate = moment(o.createdDate).format('DD/MM/YYYY')
+          const assessedDate = format(new Date(o.createdDate), 'dd/MM/yyyy')
           const assessor = userDetailFromElite.find(record => record.username === o.assessedBy)
           const categoriserDisplayName = assessor
             ? `${properCaseName(assessor.firstName)} ${properCaseName(assessor.lastName)}`
@@ -693,7 +716,8 @@ module.exports = function createOffendersService(
 
   function isNextReviewAfterRelease(nomisRecord, releaseDate) {
     const { nextReviewDate } = nomisRecord
-    return nextReviewDate && releaseDate && moment(nextReviewDate).isAfter(moment(releaseDate))
+
+    return nextReviewDate && releaseDate && safeIsAfter(new Date(nextReviewDate), releaseDate)
   }
 
   function isAwaitingApprovalOrSecurity(status) {
@@ -707,7 +731,8 @@ module.exports = function createOffendersService(
 
   function isRejectedBySupervisorSuitableForDisplay(dbRecord, releaseDate) {
     const isSupervisorBack = dbRecord.status === Status.SUPERVISOR_BACK.name
-    const hasBeenReleased = moment().isAfter(moment(releaseDate))
+    const hasBeenReleased = safeIsAfter(new Date(), releaseDate)
+
     return !hasBeenReleased && isSupervisorBack
   }
 
@@ -722,7 +747,7 @@ module.exports = function createOffendersService(
     filters = {},
     withSi1481Changes = false,
   ) {
-    const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
+    const reviewTo = format(addMonths(new Date(), Number(config.recatMarginMonths)), 'yyyy-MM-dd')
 
     const resultsReview = await nomisClient.getRecategoriseOffenders(agencyId, reviewTo)
     const dbManualInProgress = await formService.getCategorisationRecords(
@@ -744,12 +769,14 @@ module.exports = function createOffendersService(
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
-    const [prisonerSearchData, pomMap] = await Promise.all([
+    const [prisonerSearchData, pomMap]: any = await Promise.all([
       getPrisonerSearchData(allOffenders, prisonerSearchClient),
       getPomMap(allOffenders, allocationClient),
     ])
 
     const filteredPrisoners = await filterListOfPrisoners(
+      // [FIXME]
+      // @ts-ignore
       filters,
       allOffenders,
       prisonerSearchData,
@@ -771,7 +798,7 @@ module.exports = function createOffendersService(
           return null
         }
 
-        const prisonerSearchRecord = prisonerSearchData.get(raw.bookingId) || null
+        const prisonerSearchRecord: any = prisonerSearchData.get(raw.bookingId) || null
         if (withSi1481Changes && prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
           return null
         }
@@ -779,7 +806,7 @@ module.exports = function createOffendersService(
         if (
           prisonerSearchRecord == null ||
           prisonerSearchRecord.sentenceStartDate == null ||
-          moment(prisonerSearchRecord.sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))
+          isAfter(new Date(prisonerSearchRecord.sentenceStartDate), new Date(nomisRecord.assessmentDate))
         ) {
           logger.info(
             `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}`,
@@ -865,19 +892,19 @@ module.exports = function createOffendersService(
   async function updateNextReviewDateIfRequired(context, bookingId, offenderdetails) {
     try {
       const nextReviewDate = extractNextReviewDate(offenderdetails)
-      const nextReviewMoment = moment(nextReviewDate, 'YYYY-MM-DD')
-      const today = moment()
-      const tenDaysInFutureMoment = today.add(get10BusinessDays(today), 'days')
-      if (tenDaysInFutureMoment < nextReviewMoment) {
+      const nextReview = parse(nextReviewDate, 'yyyy-MM-dd', new Date())
+      const today = new Date()
+
+      const tenDaysInFuture = addBusinessDays(today, 10)
+
+      if (isAfter(nextReview, tenDaysInFuture)) {
         logger.info(`updating next review date for offender ${offenderdetails.offenderNo}, bookingId ${bookingId}`)
         const nomisClient = nomisClientBuilder(context)
         // adjust nextReviewDate on nomis which will ensure that the categorisation is picked on the on the recat to do list
-        await nomisClient.updateNextReviewDate(bookingId, tenDaysInFutureMoment.format('YYYY-MM-DD'))
+        await nomisClient.updateNextReviewDate(bookingId, format(tenDaysInFuture, 'yyyy-MM-dd'))
       } else {
         logger.info(
-          `Next review date for offender ${
-            offenderdetails.offenderNo
-          }, bookingId ${bookingId} was NOT required, review date is ${nextReviewMoment.format('YYYY-MM-DD')}`,
+          `Next review date for offender ${offenderdetails.offenderNo}, bookingId ${bookingId} was NOT required, review date is ${format(nextReview, 'yyyy-MM-dd')}`,
         )
       }
     } catch (error) {
@@ -925,10 +952,9 @@ module.exports = function createOffendersService(
     probationOffenderSearchClient,
     filters = {},
   ) {
-    const u21From = moment()
-      .subtract(22, 'years') // allow up to a year overdue
-      .format('YYYY-MM-DD')
-    const u21To = moment().subtract(21, 'years').add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
+    // allow up to a year overdue
+    const u21From = format(subYears(new Date(), 22), 'yyyy-MM-dd')
+    const u21To = format(addMonths(subYears(new Date(), 21), Number(config.recatMarginMonths)), 'yyyy-MM-dd')
 
     const resultsU21 = await prisonerSearchClient.getPrisonersAtLocation(agencyId, u21From, u21To)
 
@@ -949,6 +975,8 @@ module.exports = function createOffendersService(
     )
 
     const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
+      // [FIXME]
+      // @ts-ignore
       filters,
       eliteCategorisationResultsU21,
       u21map,
@@ -979,8 +1007,10 @@ module.exports = function createOffendersService(
             `getU21Recats: Detected status inconsistency for booking id=${o.bookingId}, offenderNo=${o.offenderNo}, Nomis assessment status=${o.assessStatus}, PG status=${dbRecord.status}`,
           )
         }
-        const nextReviewDate = moment(o.dateOfBirth, 'YYYY-MM-DD')
-        const nextReviewDateDisplay = nextReviewDate.add(21, 'years').format('DD/MM/YYYY')
+
+        const nextReviewDate = addYears(parse(o.dateOfBirth, 'yyyy-MM-dd', new Date()), 21)
+        const nextReviewDateDisplay = format(nextReviewDate, 'dd/MM/yyyy')
+
         const buttonText = calculateButtonStatus(dbRecord, o.assessStatus)
         // if this review hasn't been started the reason is always 'age 21'. For started reviews, use the persisted reason
         const reason =
@@ -994,7 +1024,7 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay,
-          overdue: isReviewOverdue(nextReviewDate),
+          overdue: isReviewOverdue(format(nextReviewDate, 'yyyy-MM-dd')),
           overdueText: getOverdueText(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
@@ -1116,26 +1146,49 @@ module.exports = function createOffendersService(
     }
   }
 
-  function buildSentenceData(sentenceDate) {
+  function buildSentenceData(sentenceDate: any) {
     if (!sentenceDate) {
       return {}
     }
-    const sentenceDateMoment = moment(sentenceDate, 'YYYY-MM-DD')
-    const daysSinceSentence = moment().diff(sentenceDateMoment, 'days')
 
-    const actualDays = get10BusinessDays(sentenceDateMoment)
-    const dateRequiredRaw = sentenceDateMoment.add(actualDays, 'day')
-    const dateRequired = dateRequiredRaw.format('DD/MM/YYYY')
-    const now = moment(0, 'HH')
-    const overdue = dateRequiredRaw.isBefore(now)
+    // according to tests sentenceDate accepts two formats:
+    // 1. Simple date: 'yyyy-MM-dd' (e.g., '2023-12-25')
+    // 2. ISO 8601: 'yyyy-MM-ddTHH:mm:ss.SSSZ' (e.g., '2023-12-25T00:00:00.000Z')
+    // 3. Date obj
+    const sentenceDateParsed = normaliseDate(sentenceDate)
+
+    const today = new Date()
+
+    const daysSinceSentence = differenceInDays(today, sentenceDateParsed)
+    const dateRequiredRaw = get10BusinessDaysLegacy(sentenceDateParsed)
+    const dateRequired = format(dateRequiredRaw, 'dd/MM/yyyy')
+
+    const overdue = safeIsBefore(dateRequiredRaw, startOfDay(today))
     const overdueText = getOverdueText(dateRequiredRaw)
-    return { daysSinceSentence, dateRequired, sentenceDate, overdue, overdueText }
+
+    return {
+      daysSinceSentence,
+      dateRequired,
+      sentenceDate,
+      overdue,
+      overdueText,
+    }
   }
 
   function getOverdueText(dateRequired) {
-    const diffInDays = moment.utc().startOf('day').diff(moment.utc(dateRequired).startOf('day'), 'days')
-    // eslint-disable-next-line no-nested-ternary
-    return diffInDays > 1 ? `${diffInDays} days` : diffInDays === 1 ? '1 day' : ''
+    if (!dateRequired) return ''
+
+    const requiredDate = startOfDay(dateRequired)
+    const today = startOfDay(new Date())
+
+    if (!isValid(requiredDate)) return ''
+
+    const diffInDays = differenceInDays(today, requiredDate)
+
+    if (diffInDays > 1) return `${diffInDays} days`
+    if (diffInDays === 1) return '1 day'
+
+    return ''
   }
 
   async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {
@@ -1216,11 +1269,34 @@ module.exports = function createOffendersService(
     }
   }
 
+  /**
+   * Formats a Date as RFC 7231 (HTTP/1.1) compliant UTC string.
+   * https://datatracker.ietf.org/doc/html/rfc7231#section-7.1.1.1
+   * @param {Date} date - Input date (will be treated as UTC)
+   * @returns {string} RFC 7231 formatted date (e.g., "Thu, 21 Dec 2023 09:30:00 GMT")
+   */
+  function formatHttpDateUTC(date) {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    const weekday = days[date.getUTCDay()]
+    const day = String(date.getUTCDate()).padStart(2, '0')
+    const month = months[date.getUTCMonth()]
+    const year = date.getUTCFullYear()
+    const hours = String(date.getUTCHours()).padStart(2, '0')
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0')
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0')
+
+    return `${weekday}, ${day} ${month} ${year} ${hours}:${minutes}:${seconds} GMT`
+  }
+
   function enableCaching(res) {
+    // [TODO] discuss stricter options eg 'private/public, max-age=3600, stale-while-revalidate=86400/must-revalidate'
     res.setHeader('Cache-Control', 'max-age=3600')
-    const expirationDate = moment().add(1, 'h') // one hour from now
-    const rfc822Date = moment(expirationDate).format('ddd, DD MMM YYYY HH:mm:ss ZZ')
-    res.setHeader('Expires', rfc822Date)
+
+    const expirationDate = addHours(new Date(), 1) // one hour from now
+    res.setHeader('Expires', formatHttpDateUTC(expirationDate))
+
     // Undo helmet noCache:
     res.removeHeader('Surrogate-Control')
     res.removeHeader('Pragma')
@@ -1301,11 +1377,20 @@ module.exports = function createOffendersService(
       const currentCats = await getAllApprovedCategorisationsForOffender(nomisClient, offenderNo)
       // If approved, omit any cats that were done later than the approval of this cat
       const filteredCats = approvalDate
-        ? currentCats.filter(o => !o.approvalDate || moment(o.approvalDate, 'YYYY-MM-DD') <= approvalDate)
+        ? currentCats.filter(o => {
+            if (!o.approvalDate) {
+              return true
+            }
+
+            const oDate = parse(o.approvalDate, 'yyyy-MM-dd', new Date())
+
+            return isValid(oDate) && !isAfter(oDate, new Date(approvalDate))
+          })
         : currentCats
 
       const uniqueAgencies = [...new Set(filteredCats.map(o => o.assessmentAgencyId))]
       const agencyMap = new Map(
+        // @ts-ignore
         await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)])),
       )
 
@@ -1346,6 +1431,7 @@ module.exports = function createOffendersService(
 
     const uniqueAgencies = [...new Set(nomisRecords.map(o => o.assessmentAgencyId))]
     const agencyMap = new Map(
+      // @ts-ignore
       await Promise.all(uniqueAgencies.map(async a => [a, await getOptionalAssessmentAgencyDescription(context, a)])),
     )
 
@@ -1483,7 +1569,7 @@ module.exports = function createOffendersService(
       await nomisClient.createSupervisorApproval({
         bookingId,
         category,
-        evaluationDate: moment().format('YYYY-MM-DD'),
+        evaluationDate: format(new Date(), 'yyyy-MM-dd'),
         approvedCategoryComment: comment,
         committeeCommentText: 'cat-tool approval',
         reviewCommitteeCode: 'OCA',
@@ -1567,7 +1653,7 @@ module.exports = function createOffendersService(
       const details = {
         bookingId,
         assessmentSeq: currentCategorisation.nomisSeq,
-        evaluationDate: moment().format('YYYY-MM-DD'),
+        evaluationDate: format(new Date(), 'yyyy-MM-dd'),
         reviewCommitteeCode: 'OCA',
         committeeCommentText: 'cat-tool rejected',
       }
@@ -1807,3 +1893,5 @@ module.exports = function createOffendersService(
     isRejectedBySupervisorSuitableForDisplay,
   }
 }
+
+export default createOffendersService

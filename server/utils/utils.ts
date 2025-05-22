@@ -1,29 +1,36 @@
-const moment = require('moment')
-const R = require('ramda')
-const { config } = require('../config')
+/* eslint-disable import/no-import-module-exports */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-restricted-globals */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { addDays, getISODay, isAfter, isBefore, isValid, parseISO, parse } from 'date-fns'
+
+import moment from 'moment'
+import R from 'ramda'
+import { config } from '../config'
 
 const { dpsUrl, femalePrisonIds } = config
 
-const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+export const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
 const dateConverterWithoutLeadingZeros = from => from && moment(from, 'YYYY-MM-DD').format('D/M/YYYY')
-const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
+export const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
-const getLongDateFormat = date => {
+export const getLongDateFormat = (date: any) => {
   if (date) return moment(date, 'DD/MM/YYYY').format('dddd D MMMM YYYY')
   return ''
 }
 
-const getLongDateFormatIso = date => {
-  if (date) return moment(date).format('dddd D MMMM YYYY')
-  return ''
-}
-
-const getVerboseDateFormat = date => {
+export const getVerboseDateFormat = (date: any) => {
   if (date) return moment(date, 'DD/MM/YYYY').format('D MMMM YYYY')
   return ''
 }
 
-function plural(value) {
+export const getLongDateFormatIso = date => {
+  if (date) return moment(date).format('dddd D MMMM YYYY')
+  return ''
+}
+
+function plural(value: number) {
   return value > 1 ? 's' : ''
 }
 
@@ -31,7 +38,7 @@ function formatValue(value, label) {
   return value > 0 ? `${value} ${label}${plural(value)}, ` : ''
 }
 
-const formatLength = sentenceTerms => {
+export const formatLength = sentenceTerms => {
   if (sentenceTerms.lifeSentence) {
     return 'Life'
   }
@@ -63,10 +70,30 @@ const get10BusinessDays = from => {
   return numberOfDays
 }
 
-const properCase = word =>
+// [TODO]: This function uses a fixed approximation of 10 business days by adding 14 calendar days,
+//    and adding extra days if the start date is on a weekend.
+//    -
+//    For example, given a start date of Saturday 12 Jan 2019:
+//      - Saturday is skipped, so the first business day is Monday 14 Jan
+//      - 10 business days: 14, 15, 16, 17, 18 and 21, 22, 23, 24, 25 → ends on Friday 25 Jan
+//      - However, this function adds 14 + 2 days (for starting on Saturday), resulting in 28 Jan (Mon)
+//    -
+//    This behaviour matches legacy expectations but is not a true business day calculation.
+//    Re-evaluation recommended: proper handling should account for weekends and possibly public holidays
+export const get10BusinessDaysLegacy = (startDate: Date): Date => {
+  let daysToAdd = 14
+  const weekday = getISODay(startDate) // 1 = Monday, 7 = Sunday
+
+  if (weekday === 6) daysToAdd += 2 // Saturday
+  if (weekday === 7) daysToAdd += 1 // Sunday
+
+  return addDays(startDate, daysToAdd)
+}
+
+export const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 
-function isBlank(str) {
+export function isBlank(str) {
   return !str || /^\s*$/.test(str)
 }
 
@@ -76,7 +103,7 @@ function isBlank(str) {
  * @param name name to be converted.
  * @returns name converted to proper case.
  */
-const properCaseName = name => (isBlank(name) ? '' : name.split('-').map(properCase).join('-'))
+export const properCaseName = name => (isBlank(name) ? '' : name.split('-').map(properCase).join('-'))
 
 const getHoursMinutes = timestamp => {
   const indexOfT = timestamp.indexOf('T')
@@ -114,7 +141,7 @@ const linkOnClick = handlerFn => ({
   },
 })
 
-const filterJsonObjectForLogging = json => {
+export const filterJsonObjectForLogging = json => {
   const dup = {}
   Object.keys(json).forEach(key => {
     if (key !== '_csrf') {
@@ -124,7 +151,7 @@ const filterJsonObjectForLogging = json => {
   return dup
 }
 
-const catLabel = cat => {
+export const catLabel = cat => {
   if (cat === 'B' || cat === 'C') return `Category ${catMappings(cat)}`
   return `${catMappings(cat)} category`
 }
@@ -134,7 +161,7 @@ const replaceCatLabel = cat => {
   return catLabel(cat)
 }
 
-const catMappings = cat => {
+export const catMappings = cat => {
   switch (cat) {
     case 'D':
       return 'Open'
@@ -161,14 +188,14 @@ const displayIcon = cat => {
 }
 
 // R.cond is like a switch statement
-const calculateNextReviewDate = R.cond([
+export const calculateNextReviewDate = R.cond([
   [R.equals('6'), () => moment().add(6, 'months').format('D/M/YYYY')],
   [R.equals('12'), () => moment().add(1, 'years').format('D/M/YYYY')],
   [R.T, R.always('')],
 ])
 
 const catMap = new Set(['DB', 'DC', 'DI', 'CB', 'JI', 'JC', 'JB', 'JD', 'JT', 'JR', 'TR', 'TI'])
-const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
+export const choosingHigherCategory = (current, newCat) => catMap.has(current + newCat)
 
 const offenderLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}`
 const offenderCaseNotesLink = offenderNo => `${dpsUrl}prisoner/${offenderNo}/case-notes`
@@ -186,29 +213,70 @@ const sanitisePrisonName = prisonName => convertYoiToUpperCase(convertHmpToUpper
 const convertHmpToUpperCase = prisonName => prisonName.replace(/hmp/gi, 'HMP')
 const convertYoiToUpperCase = prisonName => prisonName.replace(/yoi/gi, 'YOI')
 
-const getNamesFromString = string =>
+export const getNamesFromString = string =>
   string
     ?.split(', ')
     .reverse()
     .map(name => properCaseName(name))
     .join(' ')
 
-const isFemalePrisonId = prisonId => {
+export const isFemalePrisonId = prisonId => {
   const females = femalePrisonIds ? femalePrisonIds.split(',') : []
   return females.includes(prisonId)
 }
 
-const setFemaleCaseLoads = caseLoads => {
+export const setFemaleCaseLoads = caseLoads => {
   return caseLoads.map(c => {
     return { ...c, female: isFemalePrisonId(c.caseLoadId) }
   })
 }
 
-const isOpenCategory = cat => {
+export const isOpenCategory = cat => {
   return ['D', 'J', 'T'].includes(cat)
 }
 
 const removeLeadingZerosFromDate = date => date.replace(/^0+/, '')?.replace(/\/0/g, '/')
+
+/**
+ * Safely checks whether date `a` is after date `b`.
+ * Converts `b` to a Date if needed and ensures it's valid.
+ */
+export const safeIsAfter = (a: Date, b: Date | string | number | null | undefined): boolean => {
+  if (b == null) return false
+
+  const bDate = b instanceof Date ? b : new Date(b)
+
+  return !isNaN(bDate.getTime()) && isAfter(a, bDate)
+}
+
+/**
+ * Safely checks whether date `a` is before date `b`.
+ * Converts `b` to a Date if needed and ensures it's valid.
+ */
+export const safeIsBefore = (a: Date, b: Date | string | number | null | undefined): boolean => {
+  if (b == null) return false
+
+  const bDate = b instanceof Date ? b : new Date(b)
+
+  return !isNaN(bDate.getTime()) && isBefore(a, bDate)
+}
+
+export const normaliseDate = (input: unknown): Date | null => {
+  if (input instanceof Date && isValid(input)) return input
+
+  if (typeof input === 'string') {
+    let parsed = parseISO(input)
+    if (isValid(parsed)) return parsed
+
+    parsed = parse(input, 'yyyy-MM-dd', new Date())
+    if (isValid(parsed)) return parsed
+
+    parsed = parse(input, 'dd/MM/yyyy', new Date())
+    if (isValid(parsed)) return parsed
+  }
+
+  return null
+}
 
 module.exports = {
   dateConverter,
@@ -245,4 +313,8 @@ module.exports = {
   // exposed for test purposes
   isBlank,
   removeLeadingZerosFromDate,
+  safeIsAfter,
+  safeIsBefore,
+  normaliseDate,
+  get10BusinessDaysLegacy,
 }

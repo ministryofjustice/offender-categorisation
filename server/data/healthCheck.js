@@ -1,7 +1,7 @@
 const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
-const logger = require('../../log')
+const logger = require('../../log').default
 const db = require('./dataAccess/db')
 const { getSanitisedError } = require('../getSanitisedError')
 
