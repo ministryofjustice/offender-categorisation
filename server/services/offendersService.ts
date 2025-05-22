@@ -38,6 +38,7 @@ import liteCategoriesPrisonerPartition from '../utils/liteCategoriesPrisonerPart
 import { filterListOfPrisoners } from './filter/homeFilter'
 import { mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto } from './recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
 import { isReviewOverdue } from './reviewStatusCalculator'
+import { LEGAL_STATUS_REMAND } = '../data/prisonerSearch/prisonerSearch.dto'
 
 const dirname = process.cwd()
 
@@ -124,7 +125,7 @@ function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
 }
 
 function isInitialInProgress(dbRecord) {
-  return dbRecord.catType === CatType.INITIAL.name && inProgress(dbRecord)
+  return dbRecord?.catType === CatType.INITIAL.name && inProgress(dbRecord)
 }
 
 function calculateRecatDisplayStatus(displayStatus) {
@@ -744,6 +745,7 @@ export function createOffendersService(
     risksAndNeedsClient,
     probationOffenderSearchClient,
     filters = {},
+    withSi1481Changes = false,
   ) {
     const reviewTo = format(addMonths(new Date(), Number(config.recatMarginMonths)), 'yyyy-MM-dd')
 
@@ -797,6 +799,10 @@ export function createOffendersService(
         }
 
         const prisonerSearchRecord: any = prisonerSearchData.get(raw.bookingId) || null
+        if (withSi1481Changes && prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
+          return null
+        }
+
         if (
           prisonerSearchRecord == null ||
           prisonerSearchRecord.sentenceStartDate == null ||
@@ -1043,7 +1049,7 @@ export function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, filters = {}) {
+  async function getRecategoriseOffenders(context, user, filters = {}, withSi1481Changes = false) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
@@ -1062,6 +1068,7 @@ export function createOffendersService(
           risksAndNeedsClient,
           probationOffenderSearchClient,
           filters,
+          withSi1481Changes,
         ),
         getU21Recats(
           agencyId,
@@ -1186,7 +1193,7 @@ export function createOffendersService(
 
   async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {
     let statusText
-    if (categorisation.status) {
+    if (categorisation?.status) {
       statusText = statusTextDisplay(categorisation.status)
       logger.debug(`retrieving status ${categorisation.status} for booking id ${offender.bookingId}`)
       if (categorisation.assignedUserId && categorisation.status === Status.STARTED.name) {
@@ -1408,8 +1415,8 @@ export function createOffendersService(
   async function getAllApprovedCategorisationsForOffender(nomisClient, offenderNo) {
     try {
       const allCategorisation = await nomisClient.getCategoryHistory(offenderNo)
-      // remove any that don't have an approval date  - these could be pending, rejected, cancelled
-      return allCategorisation.filter(c => c.approvalDate)
+      // remove any that don't have an approval date or assessment status P  - these could be pending, rejected, cancelled
+      return allCategorisation.filter(c => c.approvalDate && c.assessmentStatus !== 'P')
     } catch (error) {
       logger.error(error, 'Error during getAllApprovedCategorisationsForOffender')
       throw error

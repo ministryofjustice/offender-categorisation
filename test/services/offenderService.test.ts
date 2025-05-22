@@ -6,6 +6,7 @@ import RiskChangeStatus from '../../server/utils/riskChangeStatusEnum'
 import CatType from '../../server/utils/catTypeEnum'
 import { dateConverter } from '../../server/utils/utils'
 import { DUE_DATE, OVERDUE } from '../../server/services/filter/homeFilter'
+import { LEGAL_STATUS_REMAND } from '../../server/data/prisonerSearch/prisonerSearch.dto'
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -490,6 +491,62 @@ describe('getRecategoriseOffenders', () => {
 
     expect(result).toHaveLength(0)
     expect(formService.getCategorisationRecord).toBeCalledTimes(2)
+  })
+
+  test('No results due to legal status remand when withSi1481Changes is true', async () => {
+    const data = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        category: 'B',
+        nextReviewDate: '2019-04-20',
+      },
+    ]
+    const prisonerSearchData = [
+      {
+        bookingId: 123,
+        legalStatus: LEGAL_STATUS_REMAND,
+      },
+    ]
+    formService.getCategorisationRecord.mockResolvedValue(null)
+    prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(data)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(prisonerSearchData)
+
+    const result = await service.getRecategoriseOffenders(context, 'user1', {}, true)
+
+    expect(result).toHaveLength(0)
+  })
+
+  test('Shows remand results when withSi1481Changes is false', async () => {
+    const data = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        category: 'B',
+        nextReviewDate: '2019-04-20',
+      },
+    ]
+    const prisonerSearchData = [
+      {
+        bookingId: 123,
+        legalStatus: LEGAL_STATUS_REMAND,
+      },
+    ]
+    formService.getCategorisationRecord.mockResolvedValue(null)
+    prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(data)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(prisonerSearchData)
+
+    const result = await service.getRecategoriseOffenders(context, 'user1', {}, false)
+
+    expect(result).toHaveLength(1)
   })
 })
 
@@ -1999,6 +2056,19 @@ describe('getPrisonerBackground', () => {
       approvalDate: '2019-04-17',
       assessmentAgencyId: 'BXI',
       assessmentStatus: 'A',
+    },
+    // Records which are rejected by supervisors, then cancelled will have an approval
+    // date even though they were never approved, it is the date they were rejected. They
+    // should not be included.
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'B',
+      classification: 'Cat B',
+      assessmentDate: '2019-04-17',
+      approvalDate: '2019-04-17',
+      assessmentAgencyId: 'BXI',
+      assessmentStatus: 'P',
     },
   ]
 

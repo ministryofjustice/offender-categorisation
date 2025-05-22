@@ -1,6 +1,6 @@
 module.exports = {
   '/categoriser(Home|Done)\\??(\\?.+)?': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
-  '/recategoriser(Home|Done|Check)\\??(\\?.+)?': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
+  '/recategoriser(Home|HomeDevelopment|Done|Check)\\??(\\?.+)?': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/recategoriserHome/hide-filter': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/categoriserHome/hide-filter': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/riskProfileChangeDetail/\\d+': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },

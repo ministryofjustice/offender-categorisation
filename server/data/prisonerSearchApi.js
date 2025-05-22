@@ -4,7 +4,7 @@ const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log').default
 const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
 
 const timeoutSpec = {
   response: config.apis.prisonerSearch.timeout.response,

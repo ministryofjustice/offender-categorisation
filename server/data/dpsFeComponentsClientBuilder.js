@@ -4,7 +4,7 @@ const { HttpsAgent } = require('agentkeepalive')
 
 const logger = require('../../log').default
 const { config } = require('../config')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
 
 const timeoutSpec = {
   response: config.apis.frontendComponents.timeout.response,
