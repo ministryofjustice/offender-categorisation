@@ -744,10 +744,15 @@ module.exports = function createOffendersService(
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [prisonerSearchData, pomMap] = await Promise.all([
-      getPrisonerSearchData(allOffenders, prisonerSearchClient),
+      getPrisonerSearchData(allOffenders, prisonerSearchClient), -- immutable map - objects
       getPomMap(allOffenders, allocationClient),
     ])
 
+    // find recalled prisoners from all offenders
+    // shoot prison period api calls for all recalled prisoners
+    // get the lastdateInPrison for each booking id - map
+    //  merge getPrisonerSearchData + above map - BookingId -> dto map
+    // get that map of booking id and value new dto with prisoner search data + extra info
     const filteredOutRecalledPrisoners = await filterOutRecalledPrisoners(allOffenders, prisonerSearchData, nomisClient)
 
     const filteredPrisoners = await filterListOfPrisoners(

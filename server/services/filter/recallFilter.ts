@@ -1,5 +1,15 @@
 import moment from 'moment'
 import { RecategorisationPrisonerSearchDto } from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
+import {PrisonerSearchAlertDto} from "../../data/prisonerSearch/alert/prisonerSearchAlert.dto";
+import {
+  PrisonerSearchIncentiveLevelDto
+} from "../../data/prisonerSearch/incentiveLevel/prisonerSearchIncentiveLevel.dto";
+import type {LegalStatus} from "../../data/prisonerSearch/prisonerSearch.dto";
+
+export interface RecalledPrisonerData extends RecategorisationPrisonerSearchDto{
+  dueDateForRecalls: string | undefined
+  lastDateInPrison: string | undefined
+}
 
 export interface RecalledOffenderData {
   recallDate: string
@@ -55,26 +65,18 @@ export const filterOutRecalledPrisoners = async (
   prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
   nomisClient,
 ) => {
-  const results = await Promise.all(
-    prisoners.map(async prisoner => {
-      const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
+  const prisonersToBeDisplayed = []
 
-      if (currentPrisonerSearchData?.recall) {
-        await setDatesForRecalledPrisoners(
-          nomisClient,
-          prisoner.offenderNo || prisoner.prisonerNumber,
-          prisoner.bookingId,
-          currentPrisonerSearchData,
-        )
-
-        if (isFixedTermRecallLessThanAndEqualTo28Days(currentPrisonerSearchData)) {
-          return false // Filter out
-        }
+  for (const prisoner of prisoners) {
+    const currentPrisonerSearchData = prisonerSearchData.get(prisoner.bookingId)
+    if (currentPrisonerSearchData?.recall) {
+      if (!isFixedTermRecallLessThanAndEqualTo28Days(currentPrisonerSearchData)) {
+        prisonersToBeDisplayed.push(prisoner)
       }
+    } else {
+      prisonersToBeDisplayed.push(prisoner)
+    }
+  }
 
-      return true
-    }),
-  )
-
-  return prisoners.filter((_, index) => results[index])
+  return prisonersToBeDisplayed
 }

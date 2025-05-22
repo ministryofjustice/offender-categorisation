@@ -105,6 +105,7 @@ describe('Recall filter', () => {
           Object.assign({} as RecategorisationPrisonerSearchDto, {
             recall: true,
             postRecallReleaseDate: '2024-05-15',
+            lastDateInPrison: '2024-04-20',
           }),
         ],
         [
@@ -148,18 +149,6 @@ describe('Recall filter', () => {
       expect(result).toEqual([
         { bookingId: 2, prisonerNumber: 'A2222BB' }, // only this one stays
       ])
-      expect(prisonerSearchData.get(1)).toEqual({
-        dueDateForRecalls: '2024-04-30',
-        lastDateInPrison: '2024-04-20',
-        postRecallReleaseDate: '2024-05-15',
-        recall: true,
-      })
-      expect(prisonerSearchData.get(2)).toEqual({
-        dueDateForRecalls: '2024-01-30',
-        lastDateInPrison: '2024-01-20',
-        postRecallReleaseDate: '2024-05-15',
-        recall: true,
-      })
     })
 
     it('does not filter out prisoners with no recall or over 28 day recall', async () => {
@@ -218,15 +207,6 @@ describe('Recall filter', () => {
         { bookingId: 3, prisonerNumber: 'A3333CC' },
         { bookingId: 4, prisonerNumber: 'A4444DD' },
       ])
-      expect(prisonerSearchData.get(3)).toEqual({
-        dueDateForRecalls: '2024-04-22',
-        lastDateInPrison: '2024-04-12',
-        postRecallReleaseDate: '2024-06-01',
-        recall: true,
-      })
-      expect(prisonerSearchData.get(4)).toEqual({
-        recall: false,
-      })
     })
   })
 })
