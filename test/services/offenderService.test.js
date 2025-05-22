@@ -3273,7 +3273,7 @@ describe('getDueRecats', () => {
         displayName: 'Khaliam, Obinins',
         displayStatus: 'Not started',
         reason: { name: 'DUE', value: 'Review due' },
-        nextReviewDateDisplay: '23/09/2017',
+        nextReviewDateDisplay: '14/03/2019',
         overdue: true,
         overdueText: '78 days',
         pnomis: false,
