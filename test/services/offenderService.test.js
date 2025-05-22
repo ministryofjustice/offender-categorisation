@@ -3165,7 +3165,6 @@ describe('getDueRecats', () => {
   })
 
   it('should show the expected offender who is due for a recat where their due date for recall date is before their release date', async () => {
-    // now is 2019-05-31
     nomisClient.getRecategoriseOffenders.mockResolvedValue([
       {
         offenderNo: 'G9285UP',
@@ -3188,8 +3187,6 @@ describe('getDueRecats', () => {
         sentenceStartDate: '2017-04-01',
         recall: true,
         postRecallReleaseDate: '2019-09-01',
-        dueDateForRecalls: '2019-03-08',
-        lastDateInPrison: '2019-02-28',
       },
     ])
     nomisClient.getOffenderPrisonPeriods.mockResolvedValue({
@@ -3249,7 +3246,17 @@ describe('getDueRecats', () => {
       ],
     })
 
-    const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      null,
+      null,
+      {},
+      true,
+    )
 
     expect(result).toEqual([
       {

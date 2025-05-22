@@ -1,5 +1,6 @@
-import { RecalledOffenderData } from './recalledOffenderData'
+import { off } from 'bunyan-format'
 import { RecategorisationPrisonerSearchDto } from '../prisonerSearch/recategorisationPrisonerSearch.dto'
+import { RecalledOffenderData } from './recalledOffenderData'
 
 const getRecalledOffenderData = async (
   offenderNumber: string,
@@ -24,16 +25,15 @@ export const getRecalledOffendersData = async (
   nomisClient,
 ): Promise<Map<string, RecalledOffenderData>> => {
   const recalledOffenderNumbersToRecallData: Map<string, RecalledOffenderData> = new Map()
-  const recalledPrisonersPrisonerSearchData = new Map(
-    [...prisonerSearchData.entries()].filter(
-      ([_offenderNumber, recategorisationPrisonerSearchDto]) => recategorisationPrisonerSearchDto.recall === true,
-    ),
+
+  const recalledOffenderNumbers = Array.from(prisonerSearchData.keys()).filter(
+    offenderNumber => prisonerSearchData.get(offenderNumber).recall,
   )
   await Promise.all(
-    Object.keys(recalledPrisonersPrisonerSearchData).map(async offenderNumber => {
+    recalledOffenderNumbers.map(async offenderNumber => {
       const recalledOffenderData = await getRecalledOffenderData(
         offenderNumber,
-        recalledPrisonersPrisonerSearchData.get(offenderNumber).bookingId,
+        prisonerSearchData.get(offenderNumber).bookingId,
         nomisClient,
       )
       if (typeof recalledOffenderData !== 'undefined') {

@@ -22,6 +22,7 @@ import { ProbationOffenderSearchApiClient } from '../../data/probationOffenderSe
 import { RisksAndNeedsApiClient } from '../../data/risksAndNeeds/risksAndNeedsApi'
 import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
 import logger from '../../../log'
+import { RecalledOffenderData } from '../recategorisation/recall/recalledOffenderData'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
@@ -171,12 +172,14 @@ export const filterListOfPrisoners = async (
   filters: RecategorisationHomeFilters | CategorisationHomeFilters,
   prisoners,
   prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
+  recalledOffenderData: Map<string, RecalledOffenderData> | null,
   nomisClient,
   agencyId: string,
   pomMap: Map<string, PrisonerAllocationDto>,
   userStaffId: number,
   risksAndNeedsClient: RisksAndNeedsApiClient,
   probationOffenderSearchClient: ProbationOffenderSearchApiClient,
+  withSi1481Changes = false,
 ) => {
   const allFilterArrays = Object.values(filters)
   const allFilters = allFilterArrays.flat() || []
@@ -243,8 +246,8 @@ export const filterListOfPrisoners = async (
           }
           break
         case OVERDUE:
-          if (currentPrisonerSearchData && currentPrisonerSearchData.recall) {
-            nextReviewDate = currentPrisonerSearchData.dueDateForRecalls
+          if (withSi1481Changes && currentPrisonerSearchData && currentPrisonerSearchData.recall) {
+            nextReviewDate = recalledOffenderData.get(prisoner.offenderNo).recallDate
           }
           if (!isReviewOverdue(nextReviewDate)) {
             return false

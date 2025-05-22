@@ -89,9 +89,7 @@ export default class ForeignNationalPage extends Page {
   }
 
   validateInsetText = (): void => {
-    cy.contains(
-      'Foreign Nationals should be considered for open conditions, unless they have a deportation order or have exhausted their appeal options.',
-    )
+    cy.contains('Foreign Nationals should be considered for open conditions, unless they have a deportation order or have exhausted their appeal options.')
   }
 
   selectForeignNationalRadioButton = (selectedTextValue: ForeignNationalChoice): PageElement =>

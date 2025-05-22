@@ -1,5 +1,6 @@
 const path = require('path')
 const moment = require('moment')
+const { toDate, differenceInDays } = require('date-fns')
 const logger = require('../../log')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
@@ -11,6 +12,7 @@ const {
   dateConverterToISO,
   get10BusinessDays,
   getNamesFromString,
+  add10BusinessDays,
 } = require('../utils/utils')
 const { sortByDateTime, sortByStatus } = require('./offenderSort')
 const { config } = require('../config')
@@ -23,7 +25,8 @@ const {
 } = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
 const { isReviewOverdue } = require('./reviewStatusCalculator')
 const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
-const { filterOutRecalledPrisoners } = require('./filter/recallFilter')
+const { getRecalledOffendersData } = require('./recategorisation/recall/recategorisationRecallService')
+const { FIXED_TERM_RECALL_DAYS_LIMIT } = require('./recategorisation/recall/recalledOffenderData')
 
 const dirname = process.cwd()
 
@@ -744,27 +747,26 @@ module.exports = function createOffendersService(
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
     const [prisonerSearchData, pomMap] = await Promise.all([
-      getPrisonerSearchData(allOffenders, prisonerSearchClient), -- immutable map - objects
+      getPrisonerSearchData(allOffenders, prisonerSearchClient),
       getPomMap(allOffenders, allocationClient),
     ])
 
-    // find recalled prisoners from all offenders
-    // shoot prison period api calls for all recalled prisoners
-    // get the lastdateInPrison for each booking id - map
-    //  merge getPrisonerSearchData + above map - BookingId -> dto map
-    // get that map of booking id and value new dto with prisoner search data + extra info
-    const filteredOutRecalledPrisoners = await filterOutRecalledPrisoners(allOffenders, prisonerSearchData, nomisClient)
+    const recalledOffenderData = withSi1481Changes
+      ? await getRecalledOffendersData(prisonerSearchData, nomisClient)
+      : null
 
     const filteredPrisoners = await filterListOfPrisoners(
       filters,
-      filteredOutRecalledPrisoners,
+      allOffenders,
       prisonerSearchData,
+      recalledOffenderData,
       nomisClient,
       agencyId,
       pomMap,
       user.staffId,
       risksAndNeedsClient,
       probationOffenderSearchClient,
+      withSi1481Changes,
     )
 
     return Promise.all(
@@ -780,6 +782,23 @@ module.exports = function createOffendersService(
         const prisonerSearchRecord = prisonerSearchData.get(raw.bookingId) || null
         if (withSi1481Changes && prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
           return null
+        }
+
+        let reviewDueDate = dateConverter(nomisRecord.nextReviewDate)
+
+        if (withSi1481Changes && recalledOffenderData?.get(raw.offenderNumber)) {
+          // Fixed term recalls with less than or equal to 28 days to serve do not require a recategorisation
+          if (
+            prisonerSearchRecord?.postRecallReleaseDate &&
+            differenceInDays(
+              toDate(prisonerSearchRecord.postRecallReleaseDate),
+              toDate(recalledOffenderData.get(raw.offenderNumber).recallDate),
+            ) <= FIXED_TERM_RECALL_DAYS_LIMIT
+          ) {
+            return null
+          }
+          // Recalls are due a recategorisation within 10 business days of the recall date rather then the original next review date
+          reviewDueDate = add10BusinessDays(recalledOffenderData.get(raw.offenderNumber).recallDate)
         }
 
         if (
@@ -831,9 +850,9 @@ module.exports = function createOffendersService(
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason,
-          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isReviewOverdue(getReviewDateForRecats(prisonerSearchRecord, nomisRecord.nextReviewDate)),
-          overdueText: getOverdueText(getReviewDateForRecats(prisonerSearchRecord, nomisRecord.nextReviewDate)),
+          nextReviewDateDisplay: dateConverter(reviewDueDate),
+          overdue: isReviewOverdue(reviewDueDate),
+          overdueText: getOverdueText(reviewDueDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -843,7 +862,7 @@ module.exports = function createOffendersService(
     )
   }
 
-  const getReviewDateForRecats = (prisonerSearchRecord, nextReviewDate) => {
+  const getReviewDueDateForRecats = (prisonerSearchRecord, nextReviewDate) => {
     if (prisonerSearchRecord && prisonerSearchRecord.recall) {
       return prisonerSearchRecord.dueDateForRecalls
     }
@@ -961,16 +980,11 @@ module.exports = function createOffendersService(
       resultsU21.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]),
     )
 
-    const filteredOutRecalledPrisoners = await filterOutRecalledPrisoners(
-      eliteCategorisationResultsU21,
-      u21map,
-      nomisClient,
-    )
-
     const filteredEliteCategorisationResultsU21 = await filterListOfPrisoners(
       filters,
-      filteredOutRecalledPrisoners,
+      eliteCategorisationResultsU21,
       u21map,
+      null,
       nomisClient,
       agencyId,
       pomMap,
@@ -1013,8 +1027,8 @@ module.exports = function createOffendersService(
           dbStatus: decorated.dbStatus,
           reason,
           nextReviewDateDisplay,
-          overdue: isReviewOverdue(getReviewDateForRecats(u21map.get(o.bookingId), nextReviewDate)),
-          overdueText: getOverdueText(getReviewDateForRecats(u21map.get(o.bookingId), nextReviewDate)),
+          overdue: isReviewOverdue(nextReviewDate),
+          overdueText: getOverdueText(nextReviewDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
