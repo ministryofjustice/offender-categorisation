@@ -1,4 +1,3 @@
-import { off } from 'bunyan-format'
 import { RecategorisationPrisonerSearchDto } from '../prisonerSearch/recategorisationPrisonerSearch.dto'
 import { RecalledOffenderData } from './recalledOffenderData'
 
