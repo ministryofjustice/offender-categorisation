@@ -50,6 +50,7 @@ module.exports = context => {
         response.forEach(r =>
           responses.push({
             bookingId: Number(r.bookingId),
+            prisonerNumber: r.prisonerNumber,
             releaseDate: r.releaseDate,
             sentenceStartDate: r.sentenceStartDate,
             status: r.status,
