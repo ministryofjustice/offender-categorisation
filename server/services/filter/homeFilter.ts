@@ -23,7 +23,7 @@ import { RisksAndNeedsApiClient } from '../../data/risksAndNeeds/risksAndNeedsAp
 import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
 import logger from '../../../log'
 import { RecalledOffenderData } from '../recategorisation/recall/recalledOffenderData'
-import { add10BusinessDays } from '../../utils/utils'
+import { add10BusinessDays } from "../../utils/utilities";
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
