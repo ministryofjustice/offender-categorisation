@@ -862,13 +862,6 @@ module.exports = function createOffendersService(
     )
   }
 
-  const getReviewDueDateForRecats = (prisonerSearchRecord, nextReviewDate) => {
-    if (prisonerSearchRecord && prisonerSearchRecord.recall) {
-      return prisonerSearchRecord.dueDateForRecalls
-    }
-    return nextReviewDate
-  }
-
   const getOffenderDetailsWithNextReviewDate = async (nomisClient, bookingId) => {
     const offenderDetails = await nomisClient.getOffenderDetails(bookingId)
     return (offenderDetails && { ...offenderDetails, nextReviewDate: extractNextReviewDate(offenderDetails) }) || {}
