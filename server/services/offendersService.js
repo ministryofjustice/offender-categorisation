@@ -6,7 +6,14 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
 const { isNilOrEmpty, inProgress, getIn, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { properCaseName, dateConverter, dateConverterToISO, getNamesFromString } = require('../utils/utils')
+const {
+  properCaseName,
+  dateConverter,
+  dateConverterToISO,
+  getNamesFromString,
+  add10BusinessDays,
+  get10BusinessDays,
+} = require('../utils/utils')
 const { sortByDateTime, sortByStatus } = require('./offenderSort')
 const { config } = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
@@ -20,7 +27,6 @@ const { isReviewOverdue } = require('./reviewStatusCalculator')
 const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
 const { getRecalledOffendersData } = require('./recategorisation/recall/recategorisationRecallService')
 const { FIXED_TERM_RECALL_DAYS_LIMIT } = require('./recategorisation/recall/recalledOffenderData')
-const { get10BusinessDays, add10BusinessDays } = require('../utils/utilities')
 
 const dirname = process.cwd()
 

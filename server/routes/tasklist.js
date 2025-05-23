@@ -4,8 +4,7 @@ const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlew
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
-const { isFemalePrisonId } = require('../utils/utils')
-const { add10BusinessDays } = require('../utils/utilities')
+const { isFemalePrisonId, add10BusinessDays } = require('../utils/utils')
 
 module.exports = function Index({
   formService,

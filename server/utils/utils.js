@@ -44,6 +44,31 @@ const formatLength = sentenceTerms => {
   return result.endsWith(', ') ? result.substr(0, result.length - 2) : result
 }
 
+const SATURDAY = 6
+const SUNDAY = 0
+const SUNDAY2 = 7
+
+const get10BusinessDays = from => {
+  let numberOfDays = 14
+  switch (from.isoWeekday()) {
+    case SATURDAY:
+      numberOfDays += 2
+      break
+    case SUNDAY:
+    case SUNDAY2:
+      numberOfDays += 1
+      break
+    default:
+  }
+  return numberOfDays
+}
+
+const add10BusinessDays = isoDate => {
+  const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
+  const numberOfDays = get10BusinessDays(sentenceDateMoment)
+  return sentenceDateMoment.add(numberOfDays, 'day').format('YYYY-MM-DD')
+}
+
 const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 
@@ -199,6 +224,8 @@ module.exports = {
   getLongDateFormatIso,
   getVerboseDateFormat,
   formatLength,
+  add10BusinessDays,
+  get10BusinessDays,
   properCase,
   properCaseName,
   getHoursMinutes,

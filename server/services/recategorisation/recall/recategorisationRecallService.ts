@@ -9,8 +9,8 @@ const getRecalledOffenderData = async (
   const response = await nomisClient.getOffenderPrisonPeriods(offenderNumber)
   const prisonPeriodForBookingId = response.prisonPeriod.find(p => p.bookingId === bookingId)
   if (prisonPeriodForBookingId) {
-    const movementDatesSortedByDateInToPrisonDesc = prisonPeriodForBookingId.movementDates.sort((a, b) =>
-      b.dateInToPrison > a.dateInToPrison ? 1 : -1,
+    const movementDatesSortedByDateInToPrisonDesc = prisonPeriodForBookingId.movementDates.sort(
+      (a, b) => new Date(b.dateInToPrison).getTime() - new Date(a.dateInToPrison).getTime(),
     )
     return {
       recallDate: movementDatesSortedByDateInToPrisonDesc[0].dateInToPrison,
