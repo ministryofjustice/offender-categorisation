@@ -4,13 +4,7 @@ const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlew
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const { addSocProfile, inProgress } = require('../utils/functionalHelpers')
-const { get10BusinessDays, isFemalePrisonId } = require('../utils/utils')
-
-function add10BusinessDays(isoDate) {
-  const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
-  const numberOfDays = get10BusinessDays(sentenceDateMoment)
-  return sentenceDateMoment.add(numberOfDays, 'day').format('YYYY-MM-DD')
-}
+const { isFemalePrisonId, add10BusinessDays } = require('../utils/utils')
 
 module.exports = function Index({
   formService,

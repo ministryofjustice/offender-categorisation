@@ -16,6 +16,7 @@ export type LegalStatus =
   | 'OTHER'
 
 export interface PrisonerSearchDto {
+  prisonerNumber: string
   bookingId: number
   releaseDate: string | undefined
   sentenceStartDate: string
@@ -24,4 +25,5 @@ export interface PrisonerSearchDto {
   currentIncentive: PrisonerSearchIncentiveLevelDto | undefined
   legalStatus: LegalStatus
   recall: boolean | undefined
+  postRecallReleaseDate: string | undefined
 }
