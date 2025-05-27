@@ -161,7 +161,6 @@ describe('Open Conditions', () => {
     //  'the Victim Contact Scheme page is displayed'
     const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
     victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-    victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
     victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
     victimContactSchemaPage.continueButton().click()
 
@@ -230,7 +229,7 @@ describe('Open Conditions', () => {
               isForeignNational: 'Yes',
             },
             earliestReleaseDate: { justify: 'Yes', justifyText: 'justify details text', fiveOrMoreYears: 'Yes' },
-            victimContactScheme: { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' },
+            victimContactScheme: { vcsOptedFor: 'Yes', vloResponseText: 'vlo response text' },
           },
           openConditionsRequested: true,
         },
@@ -497,8 +496,7 @@ describe('Open Conditions', () => {
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
@@ -833,8 +831,7 @@ describe('Open Conditions', () => {
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
@@ -1821,25 +1818,6 @@ describe('Open Conditions', () => {
       )
     })
 
-    it('Shows correct message when not suitable for open conditions because of VCS', () => {
-      // 'the Earliest Release page is displayed'
-      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
-      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
-      earliestReleasePage.selectJustifyRadioButton('YES')
-      earliestReleasePage.setJustifyOpenConditionsTextInput('justify details text')
-      earliestReleasePage.continueButton().click()
-
-      const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
-      victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('NO')
-      victimContactSchemaPage.continueButton().click()
-
-      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
-      cy.contains(
-        'This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.',
-      )
-    })
-
     it('Shows correct message when not suitable for open conditions because of foreign national form', () => {
       // 'the Earliest Release page is displayed'
       const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
@@ -1850,7 +1828,6 @@ describe('Open Conditions', () => {
 
       const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
       victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
       victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
       victimContactSchemaPage.continueButton().click()
 
@@ -1874,7 +1851,6 @@ describe('Open Conditions', () => {
 
       const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
       victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
       victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
       victimContactSchemaPage.continueButton().click()
 

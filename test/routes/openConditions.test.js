@@ -368,20 +368,18 @@ describe('open conditions', () => {
   })
 
   test.each`
-    formName                 | userInput                                                                                     | updateInfo                                                        | nextPath
-    ${'tprs'}                | ${{ tprsSelected: 'No' }}                                                                     | ${{ tprsSelected: 'No' }}                                         | ${'/form/openConditions/earliestReleaseDate/12345'}
-    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}           | ${{ catType: 'RECAT', fiveOrMoreYears: 'No' }}                    | ${'/form/openConditions/victimContactScheme/12345'}
-    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}         | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No' }}                  | ${'/form/openConditions/previousSentences/12345'}
-    ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                                                    | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                        | ${'/form/openConditions/foreignNational/12345'}
-    ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No' }}            | ${'/form/openConditions/victimContactScheme/12345'}
-    ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                                                  | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                      | ${'/form/openConditions/sexualOffences/12345'}
-    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                                    | ${'/form/openConditions/riskOfHarm/12345'}
-    ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                                          | ${'/form/openConditions/furtherCharges/12345'}
-    ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                                             | ${'/form/openConditions/riskLevels/12345'}
-    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                                         | ${'/tasklist/12345'}
-    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                                           | ${'/tasklistRecat/12345'}
-    ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'Yes', contactedVLO: 'No' }}                             | ${{ catType: 'INITIAL', vcsOptedFor: 'Yes', contactedVLO: 'No' }} | ${'/form/openConditions/openConditionsNotSuitable/12345?reason=VICTIM_CONTACT_SCHEME'}
-    ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'Yes', contactedVLO: 'No' }}                               | ${{ catType: 'RECAT', vcsOptedFor: 'Yes', contactedVLO: 'No' }}   | ${'/form/openConditions/openConditionsNotSuitable/12345?reason=VICTIM_CONTACT_SCHEME'}
+    formName                 | userInput                                                                                     | updateInfo                                             | nextPath
+    ${'tprs'}                | ${{ tprsSelected: 'No' }}                                                                     | ${{ tprsSelected: 'No' }}                              | ${'/form/openConditions/earliestReleaseDate/12345'}
+    ${'earliestReleaseDate'} | ${{ catType: 'RECAT', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}           | ${{ catType: 'RECAT', fiveOrMoreYears: 'No' }}         | ${'/form/openConditions/victimContactScheme/12345'}
+    ${'earliestReleaseDate'} | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No', justify: 'Yes', justifyText: 'text' }}         | ${{ catType: 'INITIAL', fiveOrMoreYears: 'No' }}       | ${'/form/openConditions/previousSentences/12345'}
+    ${'victimContactScheme'} | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}                                                    | ${{ catType: 'RECAT', vcsOptedFor: 'No' }}             | ${'/form/openConditions/foreignNational/12345'}
+    ${'previousSentences'}   | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No', sevenOrMoreYears: 'No' }}                | ${{ catType: 'INITIAL', releasedLastFiveYears: 'No' }} | ${'/form/openConditions/victimContactScheme/12345'}
+    ${'victimContactScheme'} | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}                                                  | ${{ catType: 'INITIAL', vcsOptedFor: 'No' }}           | ${'/form/openConditions/sexualOffences/12345'}
+    ${'foreignNational'}     | ${{ isForeignNational: 'No', dueDeported: 'Yes', formCompleted: 'Yes', exhaustedAppeal: '' }} | ${{ isForeignNational: 'No' }}                         | ${'/form/openConditions/riskOfHarm/12345'}
+    ${'riskOfHarm'}          | ${{ seriousHarm: 'No', harmManaged: 'Yes', harmManagedText: '' }}                             | ${{ seriousHarm: 'No' }}                               | ${'/form/openConditions/furtherCharges/12345'}
+    ${'furtherCharges'}      | ${{}}                                                                                         | ${{}}                                                  | ${'/form/openConditions/riskLevels/12345'}
+    ${'riskLevels'}          | ${{ catType: 'INITIAL' }}                                                                     | ${{ catType: 'INITIAL' }}                              | ${'/tasklist/12345'}
+    ${'riskLevels'}          | ${{ catType: 'RECAT' }}                                                                       | ${{ catType: 'RECAT' }}                                | ${'/tasklistRecat/12345'}
   `('Post $formName for $userInput.catType should go to $nextPath', ({ formName, userInput, updateInfo, nextPath }) => {
     formService.getCategorisationRecord.mockResolvedValue({
       bookingId: 12,

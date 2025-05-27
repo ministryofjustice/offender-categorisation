@@ -15,13 +15,8 @@
         }
         },
         {
-          key: { text: "Have any victims of the crime opted-in to the Victim Contact Scheme?" },
+          key: { text: "Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?" },
           value: { html: formatAnswerWithNA(data.openConditions.victimContactScheme.vcsOptedFor) },
-          actions: { items: [] }
-        },
-        {
-          key: { text: "Have you contacted the Victim Liaison Officer (VLO)?" },
-          value: { html: formatAnswerWithNA(data.openConditions.victimContactScheme.contactedVLO, data.openConditions.victimContactScheme.vloResponseText) },
           actions: { items: [] }
         }
       ]
