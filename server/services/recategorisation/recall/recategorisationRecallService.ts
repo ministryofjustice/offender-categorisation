@@ -1,5 +1,6 @@
 import { RecategorisationPrisonerSearchDto } from '../prisonerSearch/recategorisationPrisonerSearch.dto'
 import { RecalledOffenderData } from './recalledOffenderData'
+import logger from '../../../../log'
 
 const getRecalledOffenderData = async (
   offenderNumber: string,
@@ -7,7 +8,10 @@ const getRecalledOffenderData = async (
   nomisClient,
 ): Promise<RecalledOffenderData | undefined> => {
   const response = await nomisClient.getOffenderPrisonPeriods(offenderNumber)
-  const prisonPeriodForBookingId = response.prisonPeriod.find(p => p.bookingId === bookingId)
+  const prisonPeriodForBookingId = response.prisonPeriod.find(p => Number(p.bookingId) === bookingId)
+  logger.info(
+    `recategorisationDashboardErrorInvestigation_recalls: response = ${response}, prison period for booking ID = ${prisonPeriodForBookingId}`,
+  )
   if (prisonPeriodForBookingId) {
     const movementDatesSortedByDateInToPrisonDesc = prisonPeriodForBookingId.movementDates.sort(
       (a, b) => new Date(b.dateInToPrison).getTime() - new Date(a.dateInToPrison).getTime(),
