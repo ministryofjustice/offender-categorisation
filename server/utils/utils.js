@@ -63,6 +63,12 @@ const get10BusinessDays = from => {
   return numberOfDays
 }
 
+const add10BusinessDays = isoDate => {
+  const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
+  const numberOfDays = get10BusinessDays(sentenceDateMoment)
+  return sentenceDateMoment.add(numberOfDays, 'day').format('YYYY-MM-DD')
+}
+
 const properCase = word =>
   typeof word === 'string' && word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
 
@@ -218,6 +224,7 @@ module.exports = {
   getLongDateFormatIso,
   getVerboseDateFormat,
   formatLength,
+  add10BusinessDays,
   get10BusinessDays,
   properCase,
   properCaseName,
