@@ -786,19 +786,19 @@ module.exports = function createOffendersService(
 
         let reviewDueDate = nomisRecord.nextReviewDate
 
-        if (withSi1481Changes && recalledOffenderData?.get(raw.offenderNumber)) {
+        if (withSi1481Changes && recalledOffenderData?.has(nomisRecord.offenderNo)) {
           // Fixed term recalls with less than or equal to 28 days to serve do not require a recategorisation
           if (
             prisonerSearchRecord?.postRecallReleaseDate &&
             differenceInDays(
               toDate(prisonerSearchRecord.postRecallReleaseDate),
-              toDate(recalledOffenderData.get(raw.offenderNumber).recallDate),
+              toDate(recalledOffenderData.get(nomisRecord.offenderNo).recallDate),
             ) <= FIXED_TERM_RECALL_DAYS_LIMIT
           ) {
             return null
           }
           // Recalls are due a recategorisation within 10 business days of the recall date rather then the original next review date
-          reviewDueDate = add10BusinessDays(recalledOffenderData.get(raw.offenderNumber).recallDate)
+          reviewDueDate = add10BusinessDays(recalledOffenderData.get(nomisRecord.offenderNo).recallDate)
         }
 
         if (
@@ -807,7 +807,7 @@ module.exports = function createOffendersService(
           moment(prisonerSearchRecord.sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))
         ) {
           logger.info(
-            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}, recall data = ${recalledOffenderData?.get(raw.offenderNumber)}`,
+            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}, recall data = ${recalledOffenderData?.get(nomisRecord.offenderNo)}`,
           )
         }
 
