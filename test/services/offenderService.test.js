@@ -3183,6 +3183,7 @@ describe('getDueRecats', () => {
     prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
       {
         bookingId: 1186272,
+        prisonerNumber: 'G9285UP',
         releaseDate: '2018-11-15',
         sentenceStartDate: '2017-04-01',
         recall: true,
