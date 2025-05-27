@@ -10,7 +10,7 @@ const getRecalledOffenderData = async (
   const response = await nomisClient.getOffenderPrisonPeriods(offenderNumber)
   const prisonPeriodForBookingId = response.prisonPeriod.find(p => Number(p.bookingId) === bookingId)
   logger.info(
-    `recategorisationDashboardErrorInvestigation_recalls: response = ${response}, prison period for booking ID = ${prisonPeriodForBookingId}`,
+    `recategorisationDashboardErrorInvestigation_recalls: response = ${JSON.stringify(response)}, prison period for booking ID = ${JSON.stringify(prisonPeriodForBookingId)}`,
   )
   if (prisonPeriodForBookingId) {
     const movementDatesSortedByDateInToPrisonDesc = prisonPeriodForBookingId.movementDates.sort(
