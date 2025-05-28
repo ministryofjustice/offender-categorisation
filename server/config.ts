@@ -91,7 +91,6 @@ const DEFAULTS = {
 
   // Feature flags
   FEATURE_FLAG__EVENT__DELETE_PENDING_RECATS: 'false',
-  FEATURE_FLAG__EVENT__3_TO_5_POLICY_CHANGE: 'false',
 
   // App insights
   APPLICATIONINSIGHTS_CONNECTION_STRING: '',
@@ -609,15 +608,6 @@ export const config = {
           requireInProduction: false,
         }),
       },
-    },
-    // [TODO] deprecate after enabling
-    policy_change: {
-      three_to_five: get({
-        name: 'FEATURE_FLAG__EVENT__3_TO_5_POLICY_CHANGE',
-        fallback: DEFAULTS.FEATURE_FLAG__EVENT__3_TO_5_POLICY_CHANGE,
-        log: true,
-        requireInProduction: false,
-      }),
     },
   },
   // App insights

@@ -46,8 +46,6 @@
     }) }}
   {% endif %}
 
-  {% set selectedOptionText = "5 or more years until earliest release date?" if featurePolicyChangeThreeToFiveEnabled else "3 or more years until earliest release date?" %}
-
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 earliestReleaseDateSummary',
     rows: [
@@ -61,7 +59,7 @@
         }
       },
       {
-        key: { text: selectedOptionText },
+        key: { text: "5 or more years until earliest release date?" },
         value: { text: data.openConditions.earliestReleaseDate.fiveOrMoreYears },
         actions: { items: [] }
       },
