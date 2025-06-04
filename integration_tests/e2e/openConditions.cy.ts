@@ -177,28 +177,18 @@ describe('Open conditions', () => {
       {
         index: 0,
         href: '#vcsOptedFor',
-        text: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme',
+        text: 'Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)',
       },
     ])
     victimContactSchemePage.validateErrorMessages([
       {
         selector: '#vcsOptedFor-error',
-        text: '\n      \n      Error: Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme\n      \n    ',
+        text: '\n      \n      Error: Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)\n      \n    ',
       },
     ])
     victimContactSchemePage.selectVictimContactSchemeRadioButton('YES')
     victimContactSchemePage.continueButton().click()
 
-    victimContactSchemePage.validateErrorSummaryMessages([
-      { index: 0, href: '#contactedVLO', text: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)' },
-    ])
-    victimContactSchemePage.validateErrorMessages([
-      {
-        selector: '#contactedVLO-error',
-        text: '\n        \n        Error: Select Yes if you have contacted the Victim Liaison Officer (VLO)\n        \n      ',
-      },
-    ])
-    victimContactSchemePage.selectContactedVictimLiaisonOfficerRadioButton('YES')
     victimContactSchemePage.continueButton().click()
 
     victimContactSchemePage.validateErrorSummaryMessages([
@@ -207,7 +197,7 @@ describe('Open conditions', () => {
     victimContactSchemePage.validateErrorMessages([
       {
         selector: '#vloResponseText-error',
-        text: '\n        \n        Error: Enter the response from the Victim Liaison Officer (VLO)\n        \n      ',
+        text: '\n      \n      Error: Enter the response from the Victim Liaison Officer (VLO)\n      \n    ',
       },
     ])
     victimContactSchemePage.setVictimLiaisonOfficerResponseTextInput('vlo response details text')
@@ -541,8 +531,7 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
       { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([
@@ -739,8 +728,7 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
       { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([

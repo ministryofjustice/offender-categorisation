@@ -1,5 +1,5 @@
+/* eslint-disable no-console */
 import dotenv from 'dotenv'
-import logger from '../log'
 
 dotenv.config()
 
@@ -102,7 +102,7 @@ function get<T extends FallbackValue>({ name, fallback, log, requireInProduction
 
   if (value !== undefined) {
     if (log) {
-      logger.info(`Env var: ${name} value: ${value}`)
+      console.log(`Env var: ${name} value: ${value}`)
     }
 
     return value
@@ -110,7 +110,7 @@ function get<T extends FallbackValue>({ name, fallback, log, requireInProduction
 
   if (fallback !== undefined && (!production || !requireInProduction)) {
     if (log) {
-      logger.info(`Env var: ${name} value: ${fallback} (from fallback)`)
+      console.log(`Env var: ${name} value: ${fallback} (from fallback)`)
     }
 
     return fallback

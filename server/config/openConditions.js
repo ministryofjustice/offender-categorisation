@@ -68,18 +68,12 @@ module.exports = {
       {
         vcsOptedFor: {
           responseType: 'requiredString',
-          validationMessage: 'Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme',
-        },
-      },
-      {
-        contactedVLO: {
-          responseType: 'requiredStringIf_vcsOptedFor_Yes',
-          validationMessage: 'Select Yes if you have contacted the Victim Liaison Officer (VLO)',
+          validationMessage: 'Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)',
         },
       },
       {
         vloResponseText: {
-          responseType: 'requiredStringIf_contactedVLO_Yes',
+          responseType: 'requiredStringIf_vcsOptedFor_Yes',
           validationMessage: 'Enter the response from the Victim Liaison Officer (VLO)',
         },
       },

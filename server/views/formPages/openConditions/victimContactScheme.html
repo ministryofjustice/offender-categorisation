@@ -25,7 +25,7 @@
     id: "vloResponseText",
     attributes: { 'maxlength': 50000 },
     label: {
-      text: "Enter the response from the Victim Liaison Officer (VLO)"
+      text: "Enter the response from the VLO"
     },
     hint: {
       text: "Do not include any personal information that could identify the victims."
@@ -38,41 +38,6 @@
   }}
 {% endset %}
 
-{% set contactedVLOTextHtml %}
-
-  {{ govukRadios({
-    formGroup: { classes: 'govuk-!-margin-bottom-6' },
-    name: "contactedVLO",
-    fieldset: {
-      legend: {
-        text: "Have you contacted the Victim Liaison Officer (VLO)?"
-      }
-    },
-    hint: {
-      text: "You should tell them you are considering open conditions."
-    },
-    errorMessage: {
-      text: "Select Yes if you have contacted the Victim Liaison Officer (VLO)"
-    } if (errors | findError('contactedVLO')),
-    items: [
-      {
-        value: "Yes",
-        text: "Yes",
-        checked: data.openConditions.victimContactScheme.contactedVLO === 'Yes',
-        conditional: {
-          html: vloResponseTextHtml
-        }
-      },
-      {
-        value: "No",
-        checked: data.openConditions.victimContactScheme.contactedVLO === 'No',
-        text: "No"
-      }
-    ]
-  }) }}
-
-{% endset %}
-
 {% block formItems %}
 
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
@@ -81,11 +46,15 @@
     name: "vcsOptedFor",
     fieldset: {
       legend: {
-        text: "Have any victims of the crime opted-in to the Victim Contact Scheme?"
+        text: "Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?",
+        classes: 'govuk-!-font-weight-bold'
       }
     },
+    hint: {
+      text: "The Victim Liaison Officer (VLO) must be contacted before this person can be considered for open conditions."
+    },
     errorMessage: {
-      text: "Select Yes if any victims of the crime have opted-in to the Victim Contact Scheme"
+      text: "Select if any victims of the crime have opted-in to the Victim Contact Scheme (VCS)"
     } if (errors | findError('vcsOptedFor')),
     items: [
       {
@@ -93,7 +62,7 @@
         text: "Yes",
         checked: data.openConditions.victimContactScheme.vcsOptedFor === 'Yes',
         conditional: {
-          html: contactedVLOTextHtml
+          html: vloResponseTextHtml
         }
       },
       {
