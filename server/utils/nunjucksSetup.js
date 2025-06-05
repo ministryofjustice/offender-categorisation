@@ -101,8 +101,4 @@ module.exports = (app, path) => {
 
       return date
     })
-    .addGlobal('is3to5PolicyChangeAlertBannerExpired', () => {
-      // FIXME remove after 2025-05-28
-      return new Date() >= new Date('2025-05-28')
-    })
 }

@@ -134,19 +134,15 @@ describe('Open conditions', () => {
     tprsPage.continueButton().click()
 
     const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
-
-    cy.intercept('GET', '/form/openConditions/earliestReleaseDate/*', req => {
-      req.query.overrideFeatureFlag = 'false'
-    }).as('earliestReleaseDate')
     earliestReleasePage.continueButton().click()
-    cy.wait('@earliestReleaseDate')
+
     earliestReleasePage.assertTextVisibilityOnPage({
       selector: 'div',
-      text: 'Is it 3 or more years to their earliest release date?',
+      text: 'Is it 5 or more years to their earliest release date?',
     })
     earliestReleasePage.assertTextVisibilityOnPage({
       selector: 'div',
-      text: 'If they have 3 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now. In this case:',
+      text: 'If they have 5 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now.',
     })
 
     earliestReleasePage.validateErrorSummaryMessages([
@@ -398,111 +394,6 @@ describe('Open conditions', () => {
     ])
   })
 
-  it('should show correct strings for 3 to 5 policy change', () => {
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      nomisSequenceNumber: 1,
-      catType: CATEGORISATION_TYPE.INITIAL,
-      offenderNo: 'dummy',
-      sequenceNumber: 1,
-      status: STATUS.SECURITY_BACK.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      startDate: new Date(),
-      formResponse: {
-        categoriser: {
-          provisionalCategory: {
-            suggestedCategory: 'C',
-            overriddenCategory: 'D',
-            categoryAppropriate: 'No',
-            overriddenCategoryText: 'over ridden category text',
-          },
-        },
-        ratings: {
-          offendingHistory: {
-            previousConvictions: 'Yes',
-            previousConvictionsText: 'some convictions',
-          },
-          securityInput: {
-            securityInputNeeded: 'No',
-          },
-          furtherCharges: {
-            furtherCharges: 'Yes',
-            furtherChargesText: 'some charges',
-          },
-          violenceRating: {
-            highRiskOfViolence: 'No',
-            seriousThreat: 'Yes',
-          },
-          escapeRating: {
-            escapeOtherEvidence: 'Yes',
-            escapeOtherEvidenceText: 'evidence details',
-            escapeCatB: 'Yes',
-            escapeCatBText: 'cat b details',
-          },
-          extremismRating: {
-            previousTerrorismOffences: 'Yes',
-          },
-          nextReviewDate: {
-            date: '14/12/2019',
-          },
-        },
-      },
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      assignedUserId: null,
-      approvedBy: SUPERVISOR_USER.username,
-    })
-    setUpStubs()
-
-    setUpProfiles()
-
-    cy.stubLogin({
-      user: CATEGORISER_USER,
-    })
-    cy.signIn()
-    cy.visit(`/${ProvisionalCategoryPage.baseUrl}/12`)
-    const provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
-    provisionalCategoryPage.appropriateNo().click()
-    provisionalCategoryPage.overriddenCategoryD().click()
-    provisionalCategoryPage.setOverriddenCategoryText('categoriser override to D comment')
-    provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
-    provisionalCategoryPage.submitButton().click()
-
-    // Open Conditions Added Page
-    const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
-    openConditionsAddedPage.returnToTasklistButton(12).click()
-
-    const taskListPage = TaskListPage.createForBookingId(12)
-    taskListPage.openConditionsButton().should('exist')
-    taskListPage.openConditionsButton().click()
-
-    const tprsPage = Page.verifyOnPage(TprsPage)
-    tprsPage.continueButton().click()
-
-    tprsPage.validateErrorSummaryMessages([{ index: 0, href: '#tprsSelected', text: 'Please select yes or no' }])
-
-    tprsPage.validateErrorMessages([{ selector: '#tprsSelected-error', text: 'Please select yes or no' }])
-    tprsPage.selectTprsRadioButton('YES')
-    tprsPage.continueButton().click()
-
-    const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
-
-    cy.intercept('GET', '/form/openConditions/earliestReleaseDate/*', req => {
-      req.query.overrideFeatureFlag = 'true'
-    }).as('earliestReleaseDate')
-    earliestReleasePage.continueButton().click()
-    cy.wait('@earliestReleaseDate')
-    earliestReleasePage.assertTextVisibilityOnPage({
-      selector: 'div',
-      text: 'Is it 5 or more years to their earliest release date?',
-    })
-    earliestReleasePage.assertTextVisibilityOnPage({
-      selector: 'div',
-      text: 'If they have 5 or more years to their earliest release date you will need to provide a reason to justify sending them to open conditions now.',
-    })
-  })
-
   it('The happy path is correct for categoriser overriding to D, all no', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
@@ -584,12 +475,7 @@ describe('Open conditions', () => {
     completeOpenConditionsWorkflow(taskListPage, true)
 
     taskListPage.openConditionsButton().should('exist')
-
-    cy.intercept('GET', '/form/categoriser/review/*', req => {
-      req.query.overrideFeatureFlag = 'false'
-    }).as('review')
     taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
-    cy.wait('@review')
 
     const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.validateOffendingHistorySummary([
@@ -637,7 +523,7 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateEarliestReleaseDateSummary([
       { question: 'Earliest release date', expectedAnswer: '' },
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
@@ -786,12 +672,7 @@ describe('Open conditions', () => {
     completeOpenConditionsWorkflow(taskListPage, true)
 
     taskListPage.openConditionsButton().should('exist')
-
-    cy.intercept('GET', '/form/categoriser/review/*', req => {
-      req.query.overrideFeatureFlag = 'true'
-    }).as('review')
     taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
-    cy.wait('@review')
 
     const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.validateOffendingHistorySummary([
