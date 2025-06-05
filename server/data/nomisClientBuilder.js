@@ -6,7 +6,7 @@ const moment = require('moment')
 const logger = require('../../log')
 const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,
@@ -147,6 +147,10 @@ module.exports = context => {
     getOffenderAdjudications(offenderNos, fromDate, toDate, agencyId) {
       const path = `${apiUrl}api/offenders/adjudication-hearings?agencyId=${agencyId}&fromDate=${fromDate}&toDate=${toDate}`
       return nomisClientPost({ path, body: offenderNos })
+    },
+    getOffenderPrisonPeriods(offenderNo) {
+      const path = `${apiUrl}api/offenders/${offenderNo}/prison-timeline`
+      return nomisClientGet({ path })
     },
   }
 }

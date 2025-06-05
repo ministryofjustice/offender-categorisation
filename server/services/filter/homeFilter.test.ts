@@ -72,6 +72,7 @@ describe('filterListOfPrisoners', () => {
       makeTestRecategorisationHomeFiltersFilter(),
       testPrisoners,
       new Map([[testBookingId, makeTestRecategorisationPrisonerSearchDto()]]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -96,6 +97,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -120,6 +122,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -144,6 +147,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -168,6 +172,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -194,6 +199,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -218,6 +224,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -244,6 +251,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -270,6 +278,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -295,6 +304,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -320,6 +330,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -345,6 +356,7 @@ describe('filterListOfPrisoners', () => {
           }),
         ],
       ]),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -365,6 +377,7 @@ describe('filterListOfPrisoners', () => {
       }),
       testPrisoners,
       new Map(),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -390,6 +403,7 @@ describe('filterListOfPrisoners', () => {
       }),
       testPrisoners,
       new Map(),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -424,6 +438,7 @@ describe('filterListOfPrisoners', () => {
       }),
       testPrisoners,
       new Map(),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -455,6 +470,7 @@ describe('filterListOfPrisoners', () => {
       }),
       testPrisoners,
       new Map(),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -484,6 +500,7 @@ describe('filterListOfPrisoners', () => {
       }),
       testPrisoners,
       new Map(),
+      null,
       nomisClient,
       testAgencyId,
       new Map(),
@@ -502,22 +519,54 @@ describe('filterListOfPrisoners', () => {
     ])
     const overduePrisoner = makeTestPrisoner(testBookingId, testOffenderNumber, '2023-12-01')
     const nonOverduePrisoner = makeTestPrisoner(56789, 'DEF456', '2024-02-01')
+    const overdueRecalledPrisonerBookingNumber = 63634
+    const overdueRecalledPrisonerPrisonerNumber = 'DCA145'
+    const nonOverdueRecalledPrisonerBookingNumber = 8856
+    const nonOverdueRecalledPrisonerPrisonerNumber = 'A3A2B7'
+    const overdueRecalledPrisoner = makeTestPrisoner(
+      overdueRecalledPrisonerBookingNumber,
+      overdueRecalledPrisonerPrisonerNumber,
+      '2024-02-01',
+    )
+    const nonOverdueRecalledPrisoner = makeTestPrisoner(
+      nonOverdueRecalledPrisonerBookingNumber,
+      nonOverdueRecalledPrisonerPrisonerNumber,
+      '2024-02-01',
+    )
     const result = await filterListOfPrisoners(
       makeTestRecategorisationHomeFiltersFilter({
         dueDate: [OVERDUE],
       }),
-      [overduePrisoner, nonOverduePrisoner],
-      new Map(),
+      [overduePrisoner, nonOverduePrisoner, overdueRecalledPrisoner, nonOverdueRecalledPrisoner],
+      new Map([
+        [
+          overdueRecalledPrisonerBookingNumber,
+          makeTestRecategorisationPrisonerSearchDto({
+            recall: true,
+          }),
+        ],
+        [
+          nonOverdueRecalledPrisonerBookingNumber,
+          makeTestRecategorisationPrisonerSearchDto({
+            recall: true,
+          }),
+        ],
+      ]),
+      new Map([
+        [overdueRecalledPrisonerPrisonerNumber, { recallDate: '2023-12-01' }],
+        [nonOverdueRecalledPrisonerPrisonerNumber, { recallDate: '2024-02-01' }],
+      ]),
       nomisClient,
       testAgencyId,
       new Map(),
       testUserStaffId,
       risksAndNeedsClient,
       probationOffenderSearchApiClient,
+      true,
     )
 
-    expect(result.length).toBe(1)
-    expect(result).toEqual([overduePrisoner])
+    expect(result.length).toBe(2)
+    expect(result).toEqual([overduePrisoner, overdueRecalledPrisoner])
   })
   test('it should filter out offenders not assigned to current POM user', async () => {
     const prisonerAssignedToCurrentUser = makeTestPrisoner(testBookingId, testOffenderNumber, '2023-12-01')
@@ -529,6 +578,7 @@ describe('filterListOfPrisoners', () => {
       }),
       [prisonerAssignedToCurrentUser, prisonerAssignedToAnotherPom, prisonerNotAssigned],
       new Map(),
+      null,
       nomisClient,
       testAgencyId,
       new Map([

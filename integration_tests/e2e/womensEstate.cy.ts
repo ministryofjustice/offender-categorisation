@@ -439,8 +439,7 @@ describe("Women's Estate", () => {
         { term: 'Have they been released from a previous sentence in the last 5 years?', definition: 'No' },
         { term: 'Was that previous sentence for 7 years or more?', definition: 'Not applicable' },
         // victim contact scheme
-        { term: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', definition: 'No' },
-        { term: 'Have you contacted the Victim Liaison Officer (VLO)?', definition: 'Not applicable' },
+        { term: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', definition: 'No' },
         // sexual offences
         { term: 'Have they ever been convicted of a sexual offence?', definition: 'No' },
         { term: 'Can the risk to the public be managed in open conditions?', definition: 'Not applicable' },
@@ -840,18 +839,20 @@ describe("Women's Estate", () => {
 
         it('should allow the supervisor to return the categorisation request to the categoriser', () => {
           cy.task('stubSupervisorReject')
+          const confirmBackMessage = 'a message to pass back to the categoriser'
 
           supervisorReviewPage.giveBackToCategoriserButton(bookingId).click()
 
           const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
           supervisorConfirmBackPage.selectConfirmationRadioButton('YES')
-          supervisorConfirmBackPage.setConfirmationMessageText('a message to pass back to the categoriser')
+          supervisorConfirmBackPage.setConfirmationMessageText(confirmBackMessage)
           supervisorConfirmBackPage.saveAndReturnButton().click()
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
             expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
             expect(result.rows[0].approved_by).to.eq(null)
+            expect(result.rows[0].form_response.supervisor.confirmBack.messageText).to.eq(confirmBackMessage)
           })
         })
 
