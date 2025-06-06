@@ -492,7 +492,7 @@ describe('Open Conditions', () => {
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
     reviewRecatPage.changeLinks().should('have.length', 13)
     reviewRecatPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
@@ -680,7 +680,7 @@ describe('Open Conditions', () => {
     const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
     recatAwaitingApprovalPage.getCategoryForApproval().contains('Category for approval is open category')
     recatAwaitingApprovalPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
@@ -827,7 +827,7 @@ describe('Open Conditions', () => {
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
     reviewRecatPage.changeLinks().should('have.length', 13)
     reviewRecatPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
@@ -1015,7 +1015,7 @@ describe('Open Conditions', () => {
     const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
     recatAwaitingApprovalPage.getCategoryForApproval().contains('Category for approval is open category')
     recatAwaitingApprovalPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
@@ -1660,35 +1660,12 @@ describe('Open Conditions', () => {
   })
 
   describe('conditional release or parole eligibility date', () => {
-    // FIXME remove after 2025-05-28
-    it('does not show parole eligibility date when 3-to-5 policy flag is disabled', () => {
-      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
-      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
-
-      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-
-      cy.intercept('GET', '/form/recat/decision/*', req => {
-        req.query.overrideFeatureFlag = 'false'
-      }).as('decision')
-      tasklistRecatPage.decisionButton().click()
-      cy.wait('@decision')
-
-      const decisionPage = Page.verifyOnPage(DecisionPage)
-      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ', isVisible: false })
-    })
-
     it('shows Parole eligibility date', () => {
       const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-
-      cy.intercept('GET', '/form/recat/decision/*', req => {
-        // FIXME remove after 2025-05-28
-        req.query.overrideFeatureFlag = 'true'
-      }).as('decision')
       tasklistRecatPage.decisionButton().click()
-      cy.wait('@decision')
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ' })
@@ -1708,13 +1685,7 @@ describe('Open Conditions', () => {
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-
-      cy.intercept('GET', '/form/recat/decision/*', req => {
-        // FIXME remove after 2025-05-28
-        req.query.overrideFeatureFlag = 'true'
-      }).as('decision')
       tasklistRecatPage.decisionButton().click()
-      cy.wait('@decision')
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.checkConditionalReleaseDateInsetText('2020-02-02')
@@ -1734,13 +1705,7 @@ describe('Open Conditions', () => {
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-
-      cy.intercept('GET', '/form/recat/decision/*', req => {
-        // FIXME remove after 2025-05-28
-        req.query.overrideFeatureFlag = 'true'
-      }).as('decision')
       tasklistRecatPage.decisionButton().click()
-      cy.wait('@decision')
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ', isVisible: false })
@@ -1781,36 +1746,12 @@ describe('Open Conditions', () => {
       tprsPage.continueButton().click()
     })
 
-    // FIXME remove after 2025-05-28
-    it('Shows correct message when not suitable for open conditions because of earliest release date', () => {
-      // 'the Earliest Release page is displayed'
-      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
-      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
-      earliestReleasePage.selectJustifyRadioButton('NO')
-
-      cy.intercept('GET', '/form/openConditions/openConditionsNotSuitable/*', req => {
-        req.query.overrideFeatureFlag = 'false'
-      }).as('earliestReleaseDate')
-      earliestReleasePage.continueButton().click()
-      cy.wait('@earliestReleaseDate')
-
-      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
-      cy.contains(
-        'This person cannot be sent to open conditions because they have more than three years to their earliest release date and there are no special circumstances to warrant them moving into open conditions',
-      )
-    })
-
     it('Shows correct message when not suitable for open conditions because of earliest release date 3 to 5 change', () => {
       // 'the Earliest Release page is displayed'
       const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
       earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
       earliestReleasePage.selectJustifyRadioButton('NO')
-
-      cy.intercept('GET', '/form/openConditions/openConditionsNotSuitable/*', req => {
-        req.query.overrideFeatureFlag = 'true'
-      }).as('earliestReleaseDate')
       earliestReleasePage.continueButton().click()
-      cy.wait('@earliestReleaseDate')
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
       cy.contains(

@@ -29,57 +29,24 @@
   </span>
 {% endmacro %}
 
-{% macro threeToFivePolicyChangeAlert(data) %}
-  {% set alertContent %}
-    <p class="govuk-!-margin-top-4">Due to a policy change, prisoners within 5 years of their earliest release date should now be considered for Category D. This will either be a Conditional release date (CRD), or a Parole eligibility date (PED) if there is one.</p>
-
-    {% if data.details.sentence.paroleEligibilityDate %}
-      <span class="govuk-!-font-weight-bold govuk-!-margin-top-4">Parole eligibility date: </span><span>{{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>
-    {% elif data.details.sentence.conditionalReleaseDate %}
-      <span class="govuk-!-font-weight-bold govuk-!-margin-top-4">Conditional release date: </span><span>{{ getLongDateFormatIso(data.details.sentence.conditionalReleaseDate) }}</span>
-    {% endif %}
-
-    <p class="govuk-!-margin-top-4 govuk-!-margin-bottom-2">Consider this when making your category decision.</p>
-  {% endset %}
-
-  {% if data.details.sentence.paroleEligibilityDatedata.details.sentence.paroleEligibilityDate or data.details.sentence.conditionalReleaseDate %}
-    {{ mojAlert({
-      variant: "information",
-      title: "New policy change affecting category decisions",
-      showTitleAsHeading: true,
-      dismissible: false,
-      html: alertContent
-    }) }}
-  {% endif %}
-{% endmacro %}
-
 {% block formItems %}
-
-  {% if featurePolicyChangeThreeToFiveEnabled %}
-    {% if is3to5PolicyChangeAlertBannerExpired() %}
-      {% if data.details.sentence.paroleEligibilityDate %}
-        {% set govukInsetTextDate %}
-          <span>Parole eligibility date: {{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>
-        {% endset %}
-
-        {{ govukInsetText({
-          html: govukInsetTextDate
-        }) }}
-      {% elif data.details.sentence.conditionalReleaseDate %}
-
-        {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
-
-      {% endif %}
-    {% else %}
-
-      {#  FIXME remove after 2025-05-28 #}
-      {{ threeToFivePolicyChangeAlert(data) }}
-
-    {% endif %}
-  {% endif %}
 
   <h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
   <input type="hidden" name="currentCategory" value="{{ data.details.categoryCode }}" />
+
+  {% if data.details.sentence.paroleEligibilityDate %}
+    {% set govukInsetTextDate %}
+      <span>Parole eligibility date: {{ getLongDateFormatIso(data.details.sentence.paroleEligibilityDate) }}</span>
+    {% endset %}
+
+    {{ govukInsetText({
+      html: govukInsetTextDate
+    }) }}
+    {% elif data.details.sentence.conditionalReleaseDate %}
+
+    {{ conditionalReleaseDateInsetText(data.details.sentence.conditionalReleaseDate) }}
+
+  {% endif %}
 
   {% set warningIndeterminate %}
     {% include "../../partials/warningIndeterminate.html" %}

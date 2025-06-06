@@ -204,6 +204,7 @@ module.exports = function createOffendersService(
         filters,
         allRecords,
         new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])),
+        null,
         nomisClient,
         agencyId,
         pomMap,
