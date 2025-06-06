@@ -781,7 +781,7 @@ module.exports = function createOffendersService(
         }
 
         const prisonerSearchRecord = prisonerSearchData.get(raw.bookingId) || null
-        if (withSi1481Changes && prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
+        if (prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
           return null
         }
 
