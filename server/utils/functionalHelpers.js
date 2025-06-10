@@ -18,6 +18,7 @@ module.exports = {
   isFirstVisit,
   inProgress,
   extractNextReviewDate,
+  extractAssessmentDate,
   addSocProfile,
 }
 
@@ -76,6 +77,11 @@ function inProgress(dbRecord) {
 function extractNextReviewDate(details) {
   const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
   return catRecord && catRecord.nextReviewDate
+}
+
+function extractAssessmentDate(details) {
+  const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
+  return catRecord && catRecord.assessmentDate
 }
 
 async function addSocProfile({

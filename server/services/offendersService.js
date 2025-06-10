@@ -5,7 +5,13 @@ const logger = require('../../log')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
-const { isNilOrEmpty, inProgress, getIn, extractNextReviewDate } = require('../utils/functionalHelpers')
+const {
+  isNilOrEmpty,
+  inProgress,
+  getIn,
+  extractNextReviewDate,
+  extractAssessmentDate,
+} = require('../utils/functionalHelpers')
 const {
   properCaseName,
   dateConverter,
@@ -787,7 +793,11 @@ module.exports = function createOffendersService(
 
         let reviewDueDate = nomisRecord.nextReviewDate
 
-        if (withSi1481Changes && recalledOffenderData?.has(nomisRecord.offenderNo)) {
+        if (
+          withSi1481Changes &&
+          recalledOffenderData?.has(nomisRecord.offenderNo) &&
+          recalledOffenderData.get(nomisRecord.offenderNo).recallDate > nomisRecord.assessmentDate
+        ) {
           // Fixed term recalls with less than or equal to 28 days to serve do not require a recategorisation
           if (
             prisonerSearchRecord?.postRecallReleaseDate &&
@@ -865,7 +875,14 @@ module.exports = function createOffendersService(
 
   const getOffenderDetailsWithNextReviewDate = async (nomisClient, bookingId) => {
     const offenderDetails = await nomisClient.getOffenderDetails(bookingId)
-    return (offenderDetails && { ...offenderDetails, nextReviewDate: extractNextReviewDate(offenderDetails) }) || {}
+    return (
+      (offenderDetails && {
+        ...offenderDetails,
+        nextReviewDate: extractNextReviewDate(offenderDetails),
+        assessmentDate: extractAssessmentDate(offenderDetails),
+      }) ||
+      {}
+    )
   }
 
   async function handleRiskChangeDecision(context, bookingId, user, decision, transactionalDbClient) {
