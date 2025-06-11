@@ -80,7 +80,7 @@ function extractNextReviewDate(details) {
 }
 
 function extractAssessmentDate(details) {
-  const catRecord = details && details.assessments && details.assessments.find(a => a.assessmentCode === 'CATEGORY')
+  const catRecord = details?.assessments?.find(a => a.assessmentCode === 'CATEGORY')
   return catRecord && catRecord.assessmentDate
 }
 
