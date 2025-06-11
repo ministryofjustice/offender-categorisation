@@ -875,14 +875,13 @@ module.exports = function createOffendersService(
 
   const getOffenderDetailsWithNextReviewDate = async (nomisClient, bookingId) => {
     const offenderDetails = await nomisClient.getOffenderDetails(bookingId)
-    return (
-      (offenderDetails && {
-        ...offenderDetails,
-        nextReviewDate: extractNextReviewDate(offenderDetails),
-        assessmentDate: extractAssessmentDate(offenderDetails),
-      }) ||
-      {}
-    )
+    if (!offenderDetails) return {}
+
+    return {
+      ...offenderDetails,
+      nextReviewDate: extractNextReviewDate(offenderDetails),
+      assessmentDate: extractAssessmentDate(offenderDetails),
+    }
   }
 
   async function handleRiskChangeDecision(context, bookingId, user, decision, transactionalDbClient) {
