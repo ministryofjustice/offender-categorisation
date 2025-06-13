@@ -32,6 +32,11 @@ describe('Open conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
   let today: Date
 
+  let provisionalCategoryPage: ProvisionalCategoryPage
+  let categoriserHomePage: CategoriserHomePage
+  let taskListPage: TaskListPage
+  let categoriserReviewCYAPage: CategoriserReviewCYAPage
+
   beforeEach(() => {
     cy.task('deleteRowsFromForm')
     cy.task('reset')
@@ -43,16 +48,14 @@ describe('Open conditions', () => {
     }
 
     today = new Date()
-  })
 
-  it('The happy path is correct for categoriser overriding to D, all yeses, then cancelling open conditions', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
-      nomisSequenceNumber: 1,
+      nomisSequenceNumber: 5,
       catType: CATEGORISATION_TYPE.INITIAL,
       offenderNo: 'dummy',
-      sequenceNumber: 1,
+      sequenceNumber: 5,
       status: STATUS.SECURITY_BACK.name,
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
@@ -62,7 +65,7 @@ describe('Open conditions', () => {
             suggestedCategory: 'C',
             overriddenCategory: 'D',
             categoryAppropriate: 'No',
-            overriddenCategoryText: 'over ridden category text',
+            otherInformationText: 'over ridden category text',
           },
         },
         ratings: {
@@ -108,11 +111,20 @@ describe('Open conditions', () => {
       user: CATEGORISER_USER,
     })
     cy.signIn()
-    cy.visit(`/${ProvisionalCategoryPage.baseUrl}/12`)
-    const provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
+
+    categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+    categoriserHomePage.selectPrisonerWithBookingId(12, 'Edit')
+
+    taskListPage = TaskListPage.createForBookingId(12)
+    taskListPage.continueReviewAndCategorisationButton(12).click()
+    categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12)
+    categoriserReviewCYAPage.continueButton().click()
+    provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
+  })
+
+  it('The happy path is correct for categoriser overriding to D, all yeses, then cancelling open conditions', () => {
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
-    provisionalCategoryPage.setOverriddenCategoryText('categoriser override to D comment')
     provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
     provisionalCategoryPage.submitButton().click()
 
@@ -120,7 +132,6 @@ describe('Open conditions', () => {
     const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
     openConditionsAddedPage.returnToTasklistButton(12).click()
 
-    const taskListPage = TaskListPage.createForBookingId(12)
     taskListPage.openConditionsButton().should('exist')
     taskListPage.openConditionsButton().click()
 
@@ -347,7 +358,6 @@ describe('Open conditions', () => {
 
     taskListPage1.continueReviewAndCategorisationButton(12).click()
 
-    const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12)
     categoriserReviewCYAPage.changeLinks().should('have.length', 10)
 
     categoriserReviewCYAPage.validateOffendingHistorySummary([
@@ -395,73 +405,8 @@ describe('Open conditions', () => {
   })
 
   it('The happy path is correct for categoriser overriding to D, all no', () => {
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      nomisSequenceNumber: 1,
-      catType: CATEGORISATION_TYPE.INITIAL,
-      offenderNo: 'dummy',
-      sequenceNumber: 1,
-      status: STATUS.STARTED.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      startDate: new Date(),
-      formResponse: {
-        categoriser: {
-          provisionalCategory: {
-            suggestedCategory: 'C',
-            overriddenCategory: 'D',
-            categoryAppropriate: 'No',
-            overriddenCategoryText: 'over ridden category text',
-          },
-        },
-        ratings: {
-          offendingHistory: {
-            previousConvictions: 'Yes',
-            previousConvictionsText: 'some convictions',
-          },
-          securityInput: {
-            securityInputNeeded: 'No',
-          },
-          furtherCharges: {
-            furtherCharges: 'Yes',
-            furtherChargesText: 'some charges',
-          },
-          violenceRating: {
-            highRiskOfViolence: 'No',
-            seriousThreat: 'Yes',
-          },
-          escapeRating: {
-            escapeOtherEvidence: 'Yes',
-            escapeOtherEvidenceText: 'evidence details',
-            escapeCatB: 'Yes',
-            escapeCatBText: 'cat b details',
-          },
-          extremismRating: {
-            previousTerrorismOffences: 'Yes',
-          },
-          nextReviewDate: {
-            date: '14/12/2019',
-          },
-        },
-      },
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      assignedUserId: null,
-      approvedBy: SUPERVISOR_USER.username,
-    })
-    setUpStubs()
-
-    setUpProfiles()
-
-    cy.stubLogin({
-      user: CATEGORISER_USER,
-    })
-    cy.signIn()
-    cy.visit(`/${ProvisionalCategoryPage.baseUrl}/12`)
-    const provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
-    provisionalCategoryPage.setOverriddenCategoryText('categoriser override to D comment')
     provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
     provisionalCategoryPage.indeterminateWarning().should('not.exist')
     provisionalCategoryPage.submitButton().click()
@@ -470,14 +415,11 @@ describe('Open conditions', () => {
     const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
     openConditionsAddedPage.returnToTasklistButton(12).click()
 
-    const taskListPage = TaskListPage.createForBookingId(12)
-
-    completeOpenConditionsWorkflow(taskListPage, true)
+    completeOpenConditionsWorkflow(taskListPage)
 
     taskListPage.openConditionsButton().should('exist')
     taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
 
-    const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.validateOffendingHistorySummary([
       { question: 'Previous Cat A, Restricted.', expectedAnswer: 'Cat A (2012)' },
       {
@@ -592,73 +534,8 @@ describe('Open conditions', () => {
   })
 
   it('The happy path is correct for categoriser overriding to D, all no 3 to 5 policy change', () => {
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      nomisSequenceNumber: 1,
-      catType: CATEGORISATION_TYPE.INITIAL,
-      offenderNo: 'dummy',
-      sequenceNumber: 1,
-      status: STATUS.STARTED.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      startDate: new Date(),
-      formResponse: {
-        categoriser: {
-          provisionalCategory: {
-            suggestedCategory: 'C',
-            overriddenCategory: 'D',
-            categoryAppropriate: 'No',
-            overriddenCategoryText: 'over ridden category text',
-          },
-        },
-        ratings: {
-          offendingHistory: {
-            previousConvictions: 'Yes',
-            previousConvictionsText: 'some convictions',
-          },
-          securityInput: {
-            securityInputNeeded: 'No',
-          },
-          furtherCharges: {
-            furtherCharges: 'Yes',
-            furtherChargesText: 'some charges',
-          },
-          violenceRating: {
-            highRiskOfViolence: 'No',
-            seriousThreat: 'Yes',
-          },
-          escapeRating: {
-            escapeOtherEvidence: 'Yes',
-            escapeOtherEvidenceText: 'evidence details',
-            escapeCatB: 'Yes',
-            escapeCatBText: 'cat b details',
-          },
-          extremismRating: {
-            previousTerrorismOffences: 'Yes',
-          },
-          nextReviewDate: {
-            date: '14/12/2019',
-          },
-        },
-      },
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      assignedUserId: null,
-      approvedBy: SUPERVISOR_USER.username,
-    })
-    setUpStubs()
-
-    setUpProfiles()
-
-    cy.stubLogin({
-      user: CATEGORISER_USER,
-    })
-    cy.signIn()
-    cy.visit(`/${ProvisionalCategoryPage.baseUrl}/12`)
-    const provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
-    provisionalCategoryPage.setOverriddenCategoryText('categoriser override to D comment')
     provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
     provisionalCategoryPage.indeterminateWarning().should('not.exist')
     provisionalCategoryPage.submitButton().click()
@@ -667,14 +544,11 @@ describe('Open conditions', () => {
     const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
     openConditionsAddedPage.returnToTasklistButton(12).click()
 
-    const taskListPage = TaskListPage.createForBookingId(12)
-
-    completeOpenConditionsWorkflow(taskListPage, true)
+    completeOpenConditionsWorkflow(taskListPage)
 
     taskListPage.openConditionsButton().should('exist')
     taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
 
-    const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.validateOffendingHistorySummary([
       { question: 'Previous Cat A, Restricted.', expectedAnswer: 'Cat A (2012)' },
       {
@@ -789,75 +663,9 @@ describe('Open conditions', () => {
   })
 
   it('categoriser overriding to D, supervisor overrides to C', () => {
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      nomisSequenceNumber: 5,
-      catType: CATEGORISATION_TYPE.INITIAL,
-      offenderNo: 'dummy',
-      sequenceNumber: 5,
-      status: STATUS.STARTED.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      startDate: new Date(),
-      formResponse: {
-        categoriser: {
-          provisionalCategory: {
-            suggestedCategory: 'C',
-            overriddenCategory: 'D',
-            categoryAppropriate: 'No',
-            overriddenCategoryText: 'over ridden category text',
-          },
-        },
-        ratings: {
-          offendingHistory: {
-            previousConvictions: 'Yes',
-            previousConvictionsText: 'some convictions',
-          },
-          securityInput: {
-            securityInputNeeded: 'No',
-          },
-          furtherCharges: {
-            furtherCharges: 'Yes',
-            furtherChargesText: 'some charges',
-          },
-          violenceRating: {
-            highRiskOfViolence: 'No',
-            seriousThreat: 'Yes',
-          },
-          escapeRating: {
-            escapeOtherEvidence: 'Yes',
-            escapeOtherEvidenceText: 'evidence details',
-            escapeCatB: 'Yes',
-            escapeCatBText: 'cat b details',
-          },
-          extremismRating: {
-            previousTerrorismOffences: 'Yes',
-          },
-          nextReviewDate: {
-            date: '14/12/2019',
-          },
-        },
-      },
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      assignedUserId: null,
-      approvedBy: SUPERVISOR_USER.username,
-    })
-    setUpStubs()
-
-    setUpProfiles()
-
-    cy.stubLogin({
-      user: CATEGORISER_USER,
-    })
-    cy.signIn()
-
-    cy.visit(`/${ProvisionalCategoryPage.baseUrl}/12`)
-    const provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
     provisionalCategoryPage.indeterminateWarning().should('not.exist')
-    provisionalCategoryPage.setOverriddenCategoryText('categoriser override to D comment')
     provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
 
     provisionalCategoryPage.submitButton().click()
@@ -866,14 +674,11 @@ describe('Open conditions', () => {
     const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
     openConditionsAddedPage.returnToTasklistButton(12).click()
 
-    const taskListPage = TaskListPage.createForBookingId(12)
-
-    completeOpenConditionsWorkflow(taskListPage, true)
+    completeOpenConditionsWorkflow(taskListPage)
 
     taskListPage.openConditionsButton().should('exist')
     taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
 
-    const categoriserReviewCYAPage = Page.verifyOnPage(CategoriserReviewCYAPage)
     categoriserReviewCYAPage.continueButton().click()
 
     cy.task('stubCategorise', {
@@ -944,67 +749,15 @@ describe('Open conditions', () => {
       'The recommended category was changed from Category B to open category',
       'The recommended category was changed from open category to Category C',
     ])
-    approvedViewPage.comments().contains('categoriser override to D comment')
     approvedViewPage.comments().contains('super changed D to C')
     approvedViewPage.comments().contains('super other info')
 
     approvedViewPage.otherInformationSummary().contains('categoriser relevant info 1')
-    approvedViewPage.commentLabel().should('have.length', 2)
+    approvedViewPage.commentLabel().should('have.length', 1)
   })
 
   it('The happy path is correct for supervisor overriding to D', () => {
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      nomisSequenceNumber: 5,
-      catType: CATEGORISATION_TYPE.INITIAL,
-      offenderNo: 'dummy',
-      sequenceNumber: 5,
-      status: STATUS.STARTED.name,
-      prisonId: AGENCY_LOCATION.LEI.id,
-      startDate: new Date(),
-      formResponse: {
-        categoriser: {
-          provisionalCategory: {
-            suggestedCategory: 'C',
-            overriddenCategory: 'D',
-            categoryAppropriate: 'No',
-            overriddenCategoryText: 'over ridden category text',
-          },
-        },
-        ratings: {
-          offendingHistory: {
-            previousConvictions: 'Yes',
-            previousConvictionsText: 'some convictions',
-          },
-          securityInput: {
-            securityInputNeeded: 'No',
-          },
-          furtherCharges: {
-            furtherCharges: 'No',
-          },
-          violenceRating: {
-            highRiskOfViolence: 'No',
-            seriousThreat: 'No',
-          },
 
-          escapeRating: {
-            escapeOtherEvidence: 'No',
-          },
-          extremismRating: {
-            previousTerrorismOffences: 'No',
-          },
-          nextReviewDate: {
-            date: '14/12/2019',
-          },
-        },
-      },
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      assignedUserId: null,
-      approvedBy: SUPERVISOR_USER.username,
-    })
-    setUpStubs()
     cy.task('stubCategorise', {
       bookingId: 12,
       category: 'D',
@@ -1024,14 +777,6 @@ describe('Open conditions', () => {
       placementAgencyId: 'LEI',
       sequenceNumber: 5,
     })
-
-    cy.stubLogin({
-      user: CATEGORISER_USER,
-    })
-    cy.signIn()
-
-    cy.visit(`/${ProvisionalCategoryPage.baseUrl}/12`)
-    const provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
 
     provisionalCategoryPage.setOtherInformationText('categoriser relevant info for accept')
     provisionalCategoryPage.appropriateYes().click()
@@ -1096,7 +841,7 @@ describe('Open conditions', () => {
     supervisorMessagePage.saveAndReturnButton().click()
 
     const taskListPage2 = TaskListPage.createForBookingId(12)
-    completeOpenConditionsWorkflow(taskListPage2, false)
+    completeOpenConditionsWorkflow(taskListPage2)
 
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
@@ -1251,7 +996,7 @@ describe('Open conditions', () => {
     })
   }
 
-  function completeOpenConditionsWorkflow(taskListPage: TaskListPage, furtherChanges: boolean) {
+  function completeOpenConditionsWorkflow(taskListPage: TaskListPage) {
     taskListPage.openConditionsButton().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
@@ -1284,12 +1029,8 @@ describe('Open conditions', () => {
     riskOfSeriousHarmPage.continueButton().click()
 
     const furtherChargesPage = Page.verifyOnPage(FurtherChargesPage)
-    if (furtherChanges) {
-      furtherChargesPage.setFurtherChargesCategoryBAppropriateText('furtherChargesText details')
-      furtherChargesPage.selectIncreasedRiskRadioButton('NO')
-    } else {
-      furtherChargesPage.selectFurtherChargesRadioButton('NO')
-    }
+    furtherChargesPage.setFurtherChargesCategoryBAppropriateText('furtherChargesText details')
+    furtherChargesPage.selectIncreasedRiskRadioButton('NO')
     furtherChargesPage.continue().click()
 
     const riskLevelsPage = Page.verifyOnPage(RiskLevelsPage)

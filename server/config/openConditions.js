@@ -255,18 +255,14 @@ module.exports = {
         },
       },
       {
-        overriddenCategoryText: {
-          responseType: 'optionalString',
-        },
-      },
-      {
         suggestedCategory: {
           responseType: 'optionalString',
         },
       },
       {
         otherInformationText: {
-          responseType: 'optionalString',
+          responseType: 'requiredString',
+          validationMessage: 'You must enter information about why the category is appropriate',
         },
       },
     ],

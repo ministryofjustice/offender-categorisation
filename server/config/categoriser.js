@@ -22,19 +22,14 @@ module.exports = {
         },
       },
       {
-        overriddenCategoryText: {
-          responseType: 'requiredStringIf_categoryAppropriate_No',
-          validationMessage: 'Enter the reason why you changed the category',
-        },
-      },
-      {
         suggestedCategory: {
           responseType: 'optionalString',
         },
       },
       {
         otherInformationText: {
-          responseType: 'optionalString',
+          responseType: 'requiredString',
+          validationMessage: 'You must enter information about why the category is appropriate',
         },
       },
     ],

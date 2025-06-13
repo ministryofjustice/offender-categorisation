@@ -39,7 +39,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -73,7 +73,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -204,6 +204,12 @@ describe('Approved View', () => {
       'This person is considered an escape risk E-List: First xel comment 2016-09-14 (expired)',
     )
     approvedViewRecatPage.validatePrisonerSummary('This person is at risk of engaging in, or vulnerable to, extremism.')
+
+    approvedViewRecatPage.validateCategoryDecisionSummary([
+      { question: 'Category decision', expectedAnswer: '' },
+      { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'justification test' },
+    ])
   })
 
   it('The approved view page is correctly displayed (Cat overridden by supervisor)', () => {
@@ -219,7 +225,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -252,7 +258,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -325,6 +331,11 @@ describe('Approved View', () => {
       areVisible: true,
       comments: "Here are the supervisor's comments on why the category was changed",
     })
+    approvedViewRecatPage.validateCategoryDecisionSummary([
+      { question: 'Category decision', expectedAnswer: '' },
+      { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'justification test' },
+    ])
     approvedViewRecatPage.getBackToCaseListButton().click()
   })
 
@@ -341,7 +352,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -405,5 +416,6 @@ describe('Approved View', () => {
     cy.get('.govuk-warning-text:eq(1)').should('contain.text', 'The categoriser recommends Category C')
     cy.get('.govuk-warning-text:eq(2)').should('contain.text', 'Warning')
     cy.get('.govuk-warning-text:eq(2)').should('contain.text', 'The supervisor also recommends Category C')
+    cy.contains('justification test')
   })
 })

@@ -8,7 +8,7 @@ export default class CategoriserReviewCYAPage extends Page {
   }
 
   constructor() {
-    super('Check your answers before you continue')
+    super('Check your answers before you submit')
   }
 
   static createForBookingId = (bookingId: number) => {
@@ -18,7 +18,7 @@ export default class CategoriserReviewCYAPage extends Page {
 
   changeLinks = (): PageElement => cy.get('a.govuk-link').filter(':contains("Change")')
 
-  continueButton = (): PageElement => cy.get('button[type="submit"]').contains('Continue')
+  continueButton = (): PageElement => cy.get('button[type="submit"]').contains('Save and submit')
 
   victimContactSchemeDl = (): PageElement => cy.get('.victimContactSchemeSummary.no-print')
 

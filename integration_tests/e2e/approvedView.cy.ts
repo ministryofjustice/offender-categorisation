@@ -89,7 +89,7 @@ describe('Approved view', () => {
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
       formResponse: {
-        categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes' } },
+        categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes', otherInformationText: 'test justification' } },
         supervisor: { review: { supervisorCategoryAppropriate: 'Yes' } },
       },
       securityReviewedBy: null,
@@ -155,6 +155,10 @@ describe('Approved view', () => {
 
     formApprovedView.validateCommentsVisibility({ areVisible: false })
     formApprovedView.validateOpenConditionsHeadingVisibility({ isVisible: false })
+
+    formApprovedView.validateOtherInformationSummary([
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'test justification' },
+    ])
   })
 
   it('should correctly display the "Cat overridden by categoriser and supervisor" messaging', () => {
@@ -175,7 +179,7 @@ describe('Approved view', () => {
             suggestedCategory: 'B',
             categoryAppropriate: 'No',
             overriddenCategory: 'C',
-            overriddenCategoryText: "Here are the categoriser's comments on why the category was changed",
+            otherInformationText: "Here are the categoriser's comments on why the category was changed",
           },
         },
         supervisor: {
@@ -206,12 +210,12 @@ describe('Approved view', () => {
       'The recommended category was changed from Category C to open category',
     ])
 
-    formApprovedView.validateCategoriserComments({
-      expectedComments: `Here are the categoriser's comments on why the category was changed`,
-    })
     formApprovedView.validateSupervisorComments({
       expectedComments: `Here are the supervisor's comments on why the category was changed`,
     })
+    formApprovedView.validateOtherInformationSummary([
+      { question: 'Information about why this category is appropriate', expectedAnswer: "Here are the categoriser's comments on why the category was changed" },
+    ])
 
     formApprovedView.validateOpenConditionsHeadingVisibility({ isVisible: true })
 

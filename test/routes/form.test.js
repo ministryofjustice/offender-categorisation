@@ -152,7 +152,7 @@ describe('GET /ratings/offendingHistory', () => {
   test.each`
     path                                | expectedContent
     ${'ratings/offendingHistory/12345'} | ${'Offending history'}
-    ${'categoriser/review/12345'}       | ${'Check your answers before you continue'}
+    ${'categoriser/review/12345'}       | ${'Check your answers before you submit'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
@@ -1476,7 +1476,7 @@ describe('GET /categoriser/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Check your answers before you continue')
+        expect(res.text).toContain('Check your answers before you submit')
         expect(res.text).toContain('Further serious charges')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).toContain('Are they facing any further charges?')
@@ -1501,7 +1501,7 @@ describe('GET /categoriser/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Check your answers before you continue')
+        expect(res.text).toContain('Check your answers before you submit')
         expect(res.text).toContain('Further serious charges')
         expect(res.text).not.toContain('Open Conditions')
         expect(res.text).not.toContain('Are they facing any further charges?')
@@ -1528,7 +1528,7 @@ describe('GET /categoriser/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Check your answers before you continue')
+        expect(res.text).toContain('Check your answers before you submit')
         expect(res.text).not.toContain('Further serious charges')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).toContain('Are they facing any further charges?')

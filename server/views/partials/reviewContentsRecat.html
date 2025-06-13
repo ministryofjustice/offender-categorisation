@@ -218,47 +218,31 @@
     ]
   }) }}
 
-{% if data.recat.decision.category == 'I' or data.recat.decision.category == 'J' or data.recat.decision.category == 'R' or data.recat.decision.category == 'T' %}
-  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
-    rows: [
-      {
-        key: { classes: 'summary-list-title', text: "Category decision" },
-        actions: { items: [{
-              href: '/form/recat/decision/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Assessment"
-            }] if showChangeLinks else []
-        }
-      },
-      {
-        key: { text: "What security category is most suitable for this person?" },
-        value: { text: data.recat.decision.category and catMappings(data.recat.decision.category) },
-        actions: { items: [] }
-      }
-    ]
-  }) }}
-{% else %}
-  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
-    rows: [
-      {
-        key: { classes: 'summary-list-title', text: "Category decision" },
-        actions: { items: [{
+{% set categoryText = (data.recat.decision.category and catMappings(data.recat.decision.category)) if (data.recat.decision.category == 'I' or data.recat.decision.category == 'J' or data.recat.decision.category == 'R' or data.recat.decision.category == 'T') else data.recat.decision.category and 'Category ' + data.recat.decision.category %}
+{{ govukSummaryList({
+  classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
+  rows: [
+    {
+      key: { classes: 'summary-list-title', text: "Category decision" },
+      actions: { items: [{
             href: '/form/recat/decision/' + data.details.bookingId,
             text: "Change",
             visuallyHiddenText: "Assessment"
           }] if showChangeLinks else []
-        }
-      },
-      {
-        key: { text: "What security category is most suitable for this person?" },
-        value: { text: data.recat.decision.category and 'Category ' + data.recat.decision.category },
-        actions: { items: [] }
-       }
-    ]
-  }) }}
-{% endif %}
+      }
+    },
+    {
+      key: { text: "What security category is most suitable for this person?" },
+      value: { text: categoryText },
+      actions: { items: [] }
+    },
+    {
+      key: { text: "Information about why this category is appropriate" },
+      value: { text: data.recat.decision.justification },
+      actions: { items: [] }
+    }
+  ]
+}) }}
 
   {% set miniTitle = {
     key: { classes: 'summary-list-title', text: "Higher Security Review" },
