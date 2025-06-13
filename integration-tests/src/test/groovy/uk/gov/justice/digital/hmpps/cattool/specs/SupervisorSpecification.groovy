@@ -496,7 +496,6 @@ class SupervisorSpecification extends AbstractSpecification {
       'This person is at risk of engaging in, or vulnerable to, extremism.', 'offence Details text']
     securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
-    assessmentSummary*.text() == ['', 'Category C']
     nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
 
 

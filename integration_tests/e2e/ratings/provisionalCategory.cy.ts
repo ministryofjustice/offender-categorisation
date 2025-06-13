@@ -133,8 +133,8 @@ describe('Provisional Category', () => {
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
       taskListPage.continueReviewAndCategorisationButton(bookingId).click()
-      const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-      categoriserReviewCYAPage.continueButton().click()
+      const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId, 'continue')
+      categoriserReviewCYAPage.continueButton('Continue').click()
       provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(bookingId)
     })
 

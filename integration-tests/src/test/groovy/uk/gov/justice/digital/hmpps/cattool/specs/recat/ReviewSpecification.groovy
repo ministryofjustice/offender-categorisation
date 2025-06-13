@@ -70,7 +70,6 @@ class ReviewSpecification extends AbstractSpecification {
       'offence Details text']
     securityInputSummary*.text() == ['', 'No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
-    assessmentSummary*.text() == ['', 'Category C']
     higherSecurityReviewSummary*.text() == ['', 'good', 'step', 'No', 'conditions']
     nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
 

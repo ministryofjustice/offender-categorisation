@@ -117,8 +117,8 @@ describe('Open conditions', () => {
 
     taskListPage = TaskListPage.createForBookingId(12)
     taskListPage.continueReviewAndCategorisationButton(12).click()
-    categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12)
-    categoriserReviewCYAPage.continueButton().click()
+    categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12, 'continue')
+    categoriserReviewCYAPage.continueButton('Continue').click()
     provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
   })
 
@@ -514,7 +514,7 @@ describe('Open conditions', () => {
       { question: 'Likely to abscond or abuse open conditions?', expectedAnswer: 'No' },
     ])
 
-    categoriserReviewCYAPage.continueButton().click()
+    categoriserReviewCYAPage.continueButton('Continue').click()
 
     provisionalCategoryPage.indeterminateWarning().should('not.exist')
     provisionalCategoryPage.warning().contains('The provisional category is open')
@@ -643,7 +643,7 @@ describe('Open conditions', () => {
       { question: 'Likely to abscond or abuse open conditions?', expectedAnswer: 'No' },
     ])
 
-    categoriserReviewCYAPage.continueButton().click()
+    categoriserReviewCYAPage.continueButton('Continue').click()
 
     provisionalCategoryPage.indeterminateWarning().should('not.exist')
     provisionalCategoryPage.warning().contains('The provisional category is open')
@@ -679,7 +679,7 @@ describe('Open conditions', () => {
     taskListPage.openConditionsButton().should('exist')
     taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
 
-    categoriserReviewCYAPage.continueButton().click()
+    categoriserReviewCYAPage.continueButton('Continue').click()
 
     cy.task('stubCategorise', {
       bookingId: 12,
@@ -867,8 +867,8 @@ describe('Open conditions', () => {
     taskListPage2.openConditionsButton().should('exist')
     taskListPage2.continueReviewAndCategorisationButton(12).click()
 
-    const categoriserReviewCYAPage1 = Page.verifyOnPage(CategoriserReviewCYAPage)
-    categoriserReviewCYAPage1.continueButton().click()
+    const categoriserReviewCYAPage1 = CategoriserReviewCYAPage.createForBookingId(12, 'continue')
+    categoriserReviewCYAPage1.continueButton('Continue').click()
 
     const provisionalCategoryPage1 = ProvisionalCategoryPage.createForBookingId(12)
     provisionalCategoryPage1.warning().contains('The provisional category is open')
