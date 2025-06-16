@@ -299,7 +299,7 @@ describe('Open Conditions', () => {
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 6)
+    reviewRecatPage.changeLinks().should('have.length', 12)
     reviewRecatPage.validateSecurityInputSummary([
       { question: 'Automatic referral to security team', expectedAnswer: 'No' },
       { question: 'Manual referral to security team', expectedAnswer: 'Yes' },
@@ -494,7 +494,7 @@ describe('Open Conditions', () => {
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateEarliestReleaseDateSummary([
       { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
@@ -831,7 +831,7 @@ describe('Open Conditions', () => {
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateEarliestReleaseDateSummary([
       { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
@@ -1142,7 +1142,7 @@ describe('Open Conditions', () => {
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 6)
+    reviewRecatPage.changeLinks().should('have.length', 12)
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
       { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
@@ -1397,7 +1397,7 @@ describe('Open Conditions', () => {
 
     // 'the review page is displayed'
     Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category D' },
       { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },

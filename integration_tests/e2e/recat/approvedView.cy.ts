@@ -206,7 +206,6 @@ describe('Approved View', () => {
     approvedViewRecatPage.validatePrisonerSummary('This person is at risk of engaging in, or vulnerable to, extremism.')
 
     approvedViewRecatPage.validateCategoryDecisionSummary([
-      { question: 'Category decision', expectedAnswer: '' },
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
       { question: 'Information about why this category is appropriate', expectedAnswer: 'justification test' },
     ])
@@ -332,7 +331,6 @@ describe('Approved View', () => {
       comments: "Here are the supervisor's comments on why the category was changed",
     })
     approvedViewRecatPage.validateCategoryDecisionSummary([
-      { question: 'Category decision', expectedAnswer: '' },
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
       { question: 'Information about why this category is appropriate', expectedAnswer: 'justification test' },
     ])

@@ -378,7 +378,7 @@ describe("Women's Estate", () => {
       })
 
       const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-      categoriserReviewCYAPage.changeLinks().should('have.length', 18)
+      categoriserReviewCYAPage.changeLinks().should('have.length', 27)
       cy.validateCategorisationDetails([
         // column 1
         [
