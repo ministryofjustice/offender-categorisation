@@ -89,7 +89,7 @@ describe('Approved view', () => {
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
       formResponse: {
-        categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes', otherInformationText: 'test justification' } },
+        categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes', justification: 'test justification' } },
         supervisor: { review: { supervisorCategoryAppropriate: 'Yes' } },
       },
       securityReviewedBy: null,
@@ -179,7 +179,7 @@ describe('Approved view', () => {
             suggestedCategory: 'B',
             categoryAppropriate: 'No',
             overriddenCategory: 'C',
-            otherInformationText: "Here are the categoriser's comments on why the category was changed",
+            justification: "Here are the categoriser's comments on why the category was changed",
           },
         },
         supervisor: {
@@ -222,6 +222,54 @@ describe('Approved view', () => {
     formApprovedView.getBackToCaseListButton().click()
 
     Page.verifyOnPage(SupervisorDonePage)
+  })
+
+  it('should correctly display the historic other relevant information message', () => {
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      userId: CATEGORISER_USER.username,
+      bookingId: 12,
+      nomisSequenceNumber: 1,
+      catType: CATEGORISATION_TYPE.INITIAL,
+      offenderNo: 'dummy',
+      sequenceNumber: 1,
+      status: STATUS.APPROVED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: new Date(),
+      formResponse: {
+        categoriser: {
+          provisionalCategory: {
+            suggestedCategory: 'B',
+            categoryAppropriate: 'No',
+            overriddenCategory: 'C',
+            otherInformationText: "Here are the categoriser's comments on why the category was changed",
+          },
+        },
+        supervisor: {
+          review: {
+            supervisorCategoryAppropriate: 'No',
+            supervisorOverriddenCategory: 'D',
+            supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed",
+          },
+        },
+        openConditions: {
+          riskLevels: { likelyToAbscond: 'No' },
+          riskOfHarm: { seriousHarm: 'No' },
+          foreignNational: { isForeignNational: 'No' },
+          earliestReleaseDate: { fiveOrMoreYears: 'No' },
+        },
+      },
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      assignedUserId: null,
+      approvedBy: SUPERVISOR_USER.username,
+    })
+
+    navigateToView()
+
+    formApprovedView.validateOtherInformationSummary([
+      { question: 'Other relevant information', expectedAnswer: "Here are the categoriser's comments on why the category was changed" },
+    ])
   })
 
   it('should allow the display of a previous / older categorisation', () => {

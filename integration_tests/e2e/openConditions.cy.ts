@@ -125,7 +125,7 @@ describe('Open conditions', () => {
   it('The happy path is correct for categoriser overriding to D, all yeses, then cancelling open conditions', () => {
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
-    provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
+    provisionalCategoryPage.setJustificationText('categoriser relevant info 1')
     provisionalCategoryPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -407,7 +407,7 @@ describe('Open conditions', () => {
   it('The happy path is correct for categoriser overriding to D, all no', () => {
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
-    provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
+    provisionalCategoryPage.setJustificationText('categoriser relevant info 1')
     provisionalCategoryPage.indeterminateWarning().should('not.exist')
     provisionalCategoryPage.submitButton().click()
 
@@ -528,7 +528,7 @@ describe('Open conditions', () => {
   it('The happy path is correct for categoriser overriding to D, all no 3 to 5 policy change', () => {
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
-    provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
+    provisionalCategoryPage.setJustificationText('categoriser relevant info 1')
     provisionalCategoryPage.indeterminateWarning().should('not.exist')
     provisionalCategoryPage.submitButton().click()
 
@@ -650,7 +650,7 @@ describe('Open conditions', () => {
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
     provisionalCategoryPage.indeterminateWarning().should('not.exist')
-    provisionalCategoryPage.setOtherInformationText('categoriser relevant info 1')
+    provisionalCategoryPage.setJustificationText('categoriser relevant info 1')
 
     provisionalCategoryPage.submitButton().click()
 
@@ -762,7 +762,7 @@ describe('Open conditions', () => {
       sequenceNumber: 5,
     })
 
-    provisionalCategoryPage.setOtherInformationText('categoriser relevant info for accept')
+    provisionalCategoryPage.setJustificationText('categoriser relevant info for accept')
     provisionalCategoryPage.appropriateYes().click()
     provisionalCategoryPage.submitButton().click()
 

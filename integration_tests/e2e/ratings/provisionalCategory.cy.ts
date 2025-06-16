@@ -150,7 +150,7 @@ describe('Provisional Category', () => {
 
       it(`should accept an agreement with the suggested category`, () => {
         provisionalCategoryPage.selectCategoryAppropriateRadioButton('YES')
-        provisionalCategoryPage.setOtherInformationText('Test justification')
+        provisionalCategoryPage.setJustificationText('Test justification')
 
         cy.task('stubCategoriseUpdate', {
           bookingId: 12,
@@ -167,14 +167,14 @@ describe('Provisional Category', () => {
           expect(result.rows[0].form_response.categoriser.provisionalCategory).to.deep.eq({
             "suggestedCategory": "B",
             "categoryAppropriate": "Yes",
-            "otherInformationText": "Test justification"
+            "justification": "Test justification"
           })
         })
       })
 
       it(`should show error when the user disagrees with the suggested category but doesn't choose another`, () => {
         provisionalCategoryPage.selectCategoryAppropriateRadioButton('NO')
-        provisionalCategoryPage.setOtherInformationText('Test justification')
+        provisionalCategoryPage.setJustificationText('Test justification')
 
         provisionalCategoryPage.submitButton().click()
 
@@ -185,7 +185,7 @@ describe('Provisional Category', () => {
       it(`should accept a disagreement with the suggested category and change to C`, () => {
         provisionalCategoryPage.selectCategoryAppropriateRadioButton('NO')
         provisionalCategoryPage.selectOverrideCategoryDecisionRadioButton('C')
-        provisionalCategoryPage.setOtherInformationText('Test justification')
+        provisionalCategoryPage.setJustificationText('Test justification')
 
         cy.task('stubCategoriseUpdate', {
           bookingId: 12,
@@ -203,7 +203,7 @@ describe('Provisional Category', () => {
             "suggestedCategory": "B",
             "overriddenCategory": "C",
             "categoryAppropriate": "No",
-            "otherInformationText": "Test justification"
+            "justification": "Test justification"
           })
         })
       })
@@ -211,7 +211,7 @@ describe('Provisional Category', () => {
       it(`should accept a disagreement with the suggested category and change to D`, () => {
         provisionalCategoryPage.selectCategoryAppropriateRadioButton('NO')
         provisionalCategoryPage.selectOverrideCategoryDecisionRadioButton('D')
-        provisionalCategoryPage.setOtherInformationText('Test justification')
+        provisionalCategoryPage.setJustificationText('Test justification')
 
         provisionalCategoryPage.submitButton().click()
         cy.get('h1').contains('Open conditions assessment added to your task list')
@@ -224,7 +224,7 @@ describe('Provisional Category', () => {
             "suggestedCategory": "B",
             "overriddenCategory": "D",
             "categoryAppropriate": "No",
-            "otherInformationText": "Test justification"
+            "justification": "Test justification"
           })
         })
       })

@@ -44,11 +44,8 @@ export default class ProvisionalCategoryPage extends Page {
   selectOverrideCategoryDecisionRadioButton = (value: OverrideCategoryDecisionChoice): PageElement =>
     cy.get(overrideCategoryDecisionRadioChoiceHtmlSelectors[value]).click()
 
-  setOverriddenCategoryText = (overriddenText: string): PageElement =>
-    cy.get('#overriddenCategoryText').type(overriddenText, { delay: 0 })
-
-  setOtherInformationText = (otherInformationText: string): PageElement =>
-    cy.get('#otherInformationText').type(otherInformationText, { delay: 0 })
+  setJustificationText = (justificationText: string): PageElement =>
+    cy.get('#justification').type(justificationText, { delay: 0 })
 
   submitButton = (): PageElement => cy.get('button[type="submit"]').contains('Submit')
 
