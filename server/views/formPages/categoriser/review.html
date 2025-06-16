@@ -7,12 +7,10 @@
 
 {% block beforeContent %}
 
-{% include "../../partials/breadCrumbTaskList.html" %}
+  {% include "../../partials/breadCrumbTaskList.html" %}
 
-  <div class="govuk-body-m govuk-!-margin-left-4">
-    {% include "../../partials/offenderDetails.html" %}
-    <hr/>
-  </div>
+  {% include "../../partials/offenderDetails.html" %}
+  <hr/>
 
 {% endblock %}
 
@@ -23,11 +21,13 @@
 
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8 main-heading">{{ pageTitle }}</h1>
 
-    {{ govukWarningText({
-      text: "Your answers may be disclosed to the prisoner",
-      iconFallbackText: "Warning",
-      classes: "warning-overrides"
-    }) }}
+    <div class="govuk-grid-row">
+      {{ govukWarningText({
+        text: "Your answers may be disclosed to the prisoner",
+        iconFallbackText: "Warning",
+        classes: "warning-overrides"
+      }) }}
+    </div>
 
     {% include "../../partials/openConditionsBanner.html" %}
     {% set isFemale = isInWomensEstate %}

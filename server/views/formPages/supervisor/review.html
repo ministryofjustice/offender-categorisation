@@ -11,10 +11,8 @@
 {% block beforeContent %}
   {% include "../../partials/breadCrumb.html" %}
 
-  <div class="govuk-body-m govuk-!-margin-left-6">
-    {% include "../../partials/offenderDetails.html" %}
-    <hr/>
-  </div>
+  {% include "../../partials/offenderDetails.html" %}
+  <hr/>
 
 {% endblock %}
 
@@ -51,11 +49,13 @@
         The category was originally {{ replaceCatLabel(cat) }} and is now {{ replaceCatLabel(overriddenCat) }}
       </strong>
     </div>
-    <div class="govuk-!-margin-bottom-8">
-      <label for="overriddenText">Reason for overriding the suggested category</label>
-      <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
-      </div>
-    </div>
+      {% if data.categoriser.provisionalCategory.overriddenCategoryText %}
+        <div class="govuk-!-margin-bottom-8">
+          <label for="overriddenText">Reason for overriding the suggested category</label>
+          <div class="forms-comments-text" id="overriddenText">{{ data.categoriser.provisionalCategory.overriddenCategoryText }}
+          </div>
+        </div>
+      {% endif %}
     {% else %}
     <div class="govuk-warning-text forms-info-text warning-overrides govuk-!-margin-bottom-6">
       <span class="govuk-warning-text__icon" aria-hidden="true">{{ displayIcon(cat) }}</span>
@@ -84,7 +84,7 @@
       classes: 'govuk-!-margin-bottom-9',
       rows: [
        {
-         key: { text: "Other relevant information" },
+         key: { text: "Information about why this category is appropriate" },
          value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
          actions: { items: [] }
         }

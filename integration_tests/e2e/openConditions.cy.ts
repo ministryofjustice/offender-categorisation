@@ -464,7 +464,6 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateEarliestReleaseDateSummary([
-      { question: 'Earliest release date', expectedAnswer: '' },
       { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
@@ -472,24 +471,20 @@ describe('Open conditions', () => {
     categoriserReviewCYAPage.victimContactSchemeDl().should('exist')
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
-      { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
       { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([
-      { question: 'Previous sentences', expectedAnswer: '' },
       { question: 'Have they been released from a previous sentence in the last 5 years?', expectedAnswer: 'No' },
       { question: 'Was that previous sentence for 7 years or more?', expectedAnswer: 'Not applicable' },
     ])
 
     categoriserReviewCYAPage.validateSexualOffencesSummarySummary([
-      { question: 'Sexual offences', expectedAnswer: '' },
       { question: 'Have they ever been convicted of a sexual offence?', expectedAnswer: 'No' },
       { question: 'Can the risk to the public be managed in open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
     categoriserReviewCYAPage.validateForeignNationalSummary([
-      { question: 'Foreign national', expectedAnswer: '' },
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
       { question: 'Have the Home Office confirmed their immigration status?', expectedAnswer: 'Not applicable' },
       { question: 'Do they have a liability for deportation?', expectedAnswer: 'Not applicable' },
@@ -497,20 +492,17 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateRiskOfHarmSummary([
-      { question: 'Risk of serious harm', expectedAnswer: '' },
       { question: 'Risk of serious harm to the public?', expectedAnswer: 'No' },
       { question: 'Can this risk be managed?', expectedAnswer: 'Not applicable' },
     ])
 
     categoriserReviewCYAPage.validateFurtherChargesOpenSummary([
-      { question: 'Further charges', expectedAnswer: '' },
       { question: 'Are they facing any further charges?', expectedAnswer: 'Yes' },
       { question: 'Further charges details', expectedAnswer: 'some chargesfurtherChargesText details' },
       { question: 'Do these further charges increase risk in open conditions?', expectedAnswer: 'No' },
     ])
 
     categoriserReviewCYAPage.validateRiskLevelSummary([
-      { question: 'Risk of escaping or absconding', expectedAnswer: '' },
       { question: 'Likely to abscond or abuse open conditions?', expectedAnswer: 'No' },
     ])
 
@@ -593,7 +585,6 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateEarliestReleaseDateSummary([
-      { question: 'Earliest release date', expectedAnswer: '' },
       { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
@@ -601,24 +592,20 @@ describe('Open conditions', () => {
     categoriserReviewCYAPage.victimContactSchemeDl().should('exist')
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
-      { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
       { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([
-      { question: 'Previous sentences', expectedAnswer: '' },
       { question: 'Have they been released from a previous sentence in the last 5 years?', expectedAnswer: 'No' },
       { question: 'Was that previous sentence for 7 years or more?', expectedAnswer: 'Not applicable' },
     ])
 
     categoriserReviewCYAPage.validateSexualOffencesSummarySummary([
-      { question: 'Sexual offences', expectedAnswer: '' },
       { question: 'Have they ever been convicted of a sexual offence?', expectedAnswer: 'No' },
       { question: 'Can the risk to the public be managed in open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
     categoriserReviewCYAPage.validateForeignNationalSummary([
-      { question: 'Foreign national', expectedAnswer: '' },
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
       { question: 'Have the Home Office confirmed their immigration status?', expectedAnswer: 'Not applicable' },
       { question: 'Do they have a liability for deportation?', expectedAnswer: 'Not applicable' },
@@ -626,20 +613,17 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateRiskOfHarmSummary([
-      { question: 'Risk of serious harm', expectedAnswer: '' },
       { question: 'Risk of serious harm to the public?', expectedAnswer: 'No' },
       { question: 'Can this risk be managed?', expectedAnswer: 'Not applicable' },
     ])
 
     categoriserReviewCYAPage.validateFurtherChargesOpenSummary([
-      { question: 'Further charges', expectedAnswer: '' },
       { question: 'Are they facing any further charges?', expectedAnswer: 'Yes' },
       { question: 'Further charges details', expectedAnswer: 'some chargesfurtherChargesText details' },
       { question: 'Do these further charges increase risk in open conditions?', expectedAnswer: 'No' },
     ])
 
     categoriserReviewCYAPage.validateRiskLevelSummary([
-      { question: 'Risk of escaping or absconding', expectedAnswer: '' },
       { question: 'Likely to abscond or abuse open conditions?', expectedAnswer: 'No' },
     ])
 
