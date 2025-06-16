@@ -40,9 +40,9 @@
       classes: 'govuk-!-margin-bottom-9 otherInformationSummary',
       rows: [
       {
-      key: { text: "Information about why this category is appropriate" },
-      value: { text: data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None' },
-      actions: { items: [] }
+        key: { text: "Information about why this category is appropriate" if data.categoriser.provisionalCategory.justification else "Other relevant information" },
+        value: { text: data.categoriser.provisionalCategory.justification if data.categoriser.provisionalCategory.justification else (data.categoriser.provisionalCategory.otherInformationText if data.categoriser.provisionalCategory.otherInformationText else 'None') },
+        actions: { items: [] }
       }
       ]
     }) }}

@@ -58,7 +58,7 @@ class ReviewSpecification extends AbstractSpecification {
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage
     headerValue*.text() == fixture.FULL_HEADER
-    changeLinks.size() == 12
+    changeLinks.size() == 13
 
     prisonerBackgroundSummary*.text() == [
       'Age 21',
@@ -121,7 +121,7 @@ class ReviewSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewRecatPage
-    changeLinks.size() == 13
+    changeLinks.size() == 12
     changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
     securityInputSummary*.text() == ['No', 'Yes', 'No']
   }

@@ -71,6 +71,22 @@ function createSchemaFromConfig(pageConfig) {
         then: joi.string().trim().required(),
         otherwise: joi.any().optional(),
       }),
+    requiredStringNotExists: (requiredItem = 'decision') =>
+      joi.when(requiredItem, {
+        is: joi.exist(),
+        then: joi.any().optional(),
+        otherwise: joi.string().trim().required(),
+      }),
+    provisionalCategoryOverriddenCategoryTextValidation: () =>
+      joi.when('justification', {
+        is: joi.exist(),
+        then: joi.any().optional(),
+        otherwise: joi.when('categoryAppropriate', {
+          is: 'No',
+          then: joi.string().trim().required(),
+          otherwise: joi.any().optional(),
+        }),
+      }),
     //  The below check is for Next review date validation. CAT-907.
     indeterminateCheck: (requiredItem = 'indeterminate', requiredAnswer = 'true') =>
       joi.when(requiredItem, {

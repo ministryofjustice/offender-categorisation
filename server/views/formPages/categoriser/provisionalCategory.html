@@ -76,6 +76,25 @@
     <h2 class="govuk-heading-m">Changing to YOI Open</h2>
     <input type="hidden" name="overriddenCategory" value="J" />
   {% endif %}
+
+  {% if data.categoriser.provisionalCategory.overriddenCategoryText %}
+    {{ govukTextarea({
+      name: "overriddenCategoryText",
+      type: "myTextWhatsThisFor",
+      id: "overriddenCategoryText",
+      attributes: { 'maxlength': 50000 },
+      label: {
+        text: "Explain why"
+      },
+      hint: {
+        text: "Your comments will be disclosed to the prisoner"
+      },
+      value: data.categoriser.provisionalCategory.overriddenCategoryText,
+      errorMessage: {
+        text: "Enter the reason why you changed the category"
+      } if (errors | findError('overriddenCategoryText'))
+    }) }}
+  {% endif %}
 {% endset %}
 
 {% block formItems %}
@@ -120,21 +139,36 @@
   ]
 }) }}
 
-{{ govukTextarea({
-  name: "otherInformationText",
-  type: "otherInformationText",
-  id: "otherInformationText",
-  label: {
-    text: "Information about why this category is appropriate"
-  },
-  hint: {
-    text: "Your comments may be disclosed to the prisoner."
-  },
-  value: data.categoriser.provisionalCategory.otherInformationText,
-  errorMessage: {
-    text: "You must enter information about why the category is appropriate"
-  } if (errors | findError('otherInformationText'))
-}) }}
+  {% if data.categoriser.provisionalCategory.overriddenCategoryText %}
+    {{ govukTextarea({
+      name: "otherInformationText",
+      type: "otherInformationText",
+      id: "otherInformationText",
+      attributes: { 'maxlength': 50000 },
+      label: {
+        text: "Is there any other relevant information that you want to record?"
+      },
+      hint: {
+        text: "Your comments will be disclosed to the prisoner"
+      },
+      value: data.categoriser.provisionalCategory.otherInformationText
+    }) }}
+  {% else %}
+    {{ govukTextarea({
+      name: "justification",
+      id: "justification",
+      label: {
+        text: "Information about why this category is appropriate"
+      },
+      hint: {
+        text: "Your comments may be disclosed to the prisoner."
+      },
+      value: data.categoriser.provisionalCategory.otherInformationText,
+      errorMessage: {
+        text: "You must enter information about why the category is appropriate"
+      } if (errors | findError('justification'))
+    }) }}
+  {% endif %}
 
   {% set guidance %}<div class="govuk-!-font-weight-bold">What to consider:</div>
     <div>The provisional category is based on the information we provide to you and your answers to the yes or no questions. It does not take into account any information you entered in the text boxes.</div>
