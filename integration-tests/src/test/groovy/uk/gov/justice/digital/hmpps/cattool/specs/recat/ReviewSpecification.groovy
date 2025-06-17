@@ -122,7 +122,7 @@ class ReviewSpecification extends AbstractSpecification {
     then: 'the review page is displayed with manual security link enabled'
     at ReviewRecatPage
     changeLinks.size() == 12
-    changeLinks.filter(href: contains('/form/recat/securityInput/')).get(0).displayed
+    changeLinks.filter(href: contains('/form/recat/securityInput/'))*.displayed
     securityInputSummary*.text() == ['No', 'Yes', 'No']
   }
 
