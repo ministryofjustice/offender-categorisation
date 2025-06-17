@@ -171,7 +171,13 @@ module.exports = {
       {
         category: {
           responseType: 'requiredString',
-          validationMessage: 'Select the category that is most suitable for this person',
+          validationMessage: 'Select the category that is most suitable for this prisoner',
+        },
+      },
+      {
+        justification: {
+          responseType: 'requiredString',
+          validationMessage: 'You must enter information about why the category is appropriate',
         },
       },
     ],

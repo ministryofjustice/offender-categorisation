@@ -69,19 +69,10 @@
   </div>
 {% endset %}
 
+<h2 class="govuk-heading-m no-print">Prisoner background</h2>
 {{ govukSummaryList({
   classes: 'govuk-!-margin-bottom-9 print-full-width prisonerBackgroundSummary',
   rows: [
-    {
-      key: { classes: 'summary-list-title', text: "Prisoner background" },
-      value: { classes: 'no-print'},
-      actions: { items: [{
-            href: '/form/recat/prisonerBackground/' + data.details.bookingId,
-            text: "Change",
-            visuallyHiddenText: "Prisoner background"
-          }] if showChangeLinks else []
-      }
-    },
     {
       key: { text: "Reason for review" },
       value: { classes: 'reviewReason', text: ReviewReason[reviewReason].value },
@@ -111,230 +102,243 @@
     {
       key: { text: "Offence details for active sentences" },
       value: { text: data.recat.prisonerBackground.offenceDetails },
-      actions: { items: [] }
+      actions: { items: [{
+          href: '/form/recat/prisonerBackground/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Prisoner background"
+        }] if showChangeLinks else []
+      }
     }
   ]
 }) }}
 
+<h2 class="govuk-heading-m no-print">Offender Assessment System (OASys) check</h2>
 {{ govukSummaryList({
   classes: 'govuk-!-margin-bottom-9 print-full-width oasysInputSummary',
   rows: [
       {
-        key: { classes: 'summary-list-title', text: "Offender Assessment System (OASys) check" },
-        actions: { items: [{
-          value: { classes: 'no-print'},
-          href: '/form/recat/oasysInput/' + data.details.bookingId,
-          text: "Change",
-          visuallyHiddenText: "Assessment"
-        }] if showChangeLinks else []
-      }
-      },
-      {
         key: { text: "Completion date of the latest full review that is in OASys" },
         value: { text: data.recat.oasysInput.date },
-        actions: { items: [] }
-      },
-      {
-        key: { text: "Was there any information in the review that is relevant to the recategorisation?" },
-        value: { html: formatAnswerNoDetails(data.recat.oasysInput.oasysRelevantInfo, data.recat.oasysInput.oasysInputText) },
-        actions: { items: [] }
-      }
-    ]
-  })
-}}
-
-  {% set wasReferred = data.security.review.securityReview %}
-  {% set title = {
-    key: { classes: 'summary-list-title no-print',
-    text: "Security information" },
-    value: { classes: 'no-print'},
-    actions: { classes: 'no-print',
-        items: [{
-          href: '/form/recat/securityInput/' + data.details.bookingId,
-          text: "Change",
-          visuallyHiddenText: "Risk assessment"
-        }] if showChangeLinks and not wasReferred else []
-    }
-  } %}
-  {% set auto = {
-      classes: 'no-print',
-      key: { text: "Automatic referral to security team" },
-      value: { text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
-      actions: { items: [] }
-    } %}
-  {% set manual = {
-      classes: 'no-print',
-      key: { text: "Manual referral to security team" },
-      value: { text: data.recat.securityInput.securityInputNeeded or 'No' },
-      actions: { items: []
-      }
-    } %}
-  {% set flagged = {
-      classes: 'no-print',
-      key: { text: "Flagged by security team" },
-      value: { text: 'Yes' if data.security.review.securityReview and not data.socProfile.transferToSecurity and not data.recat.securityInput.securityInputNeeded else 'No' },
-      actions: { items: [] }
-    } %}
-  {% set comments = {
-      classes: 'no-print',
-      key: { text: "Security comments" },
-      value: { text: data.security.review.securityReview },
-      actions: { items: [] }
-    } %}
-
-  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary no-print',
-    rows: [ title, auto, manual, flagged, comments ] if wasReferred else [ title, auto, manual, flagged ]
-  }) }}
-
-  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 print-full-width riskAssessmentSummary',
-    rows: [
-      {
-        key: { classes: 'summary-list-title', text: "Risk assessment" },
-        value: { classes: 'no-print'},
         actions: { items: [{
-              href: '/form/recat/riskAssessment/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Risk assessment"
-            }] if showChangeLinks else []
-        }
-      },
-      {
-        key: { text: "Could they be managed in a lower security category?" },
-        value: { text: data.recat.riskAssessment.lowerCategory },
-        actions: { items: [] }
-      },
-      {
-        key: { text: "Should they remain in their current security category? Or be put in a higher security category?" },
-        value: { text: data.recat.riskAssessment.higherCategory },
-        actions: { items: [] }
-      },
-      {
-        key: { text: "Other relevant information" },
-        value: { html: formatAnswer(data.recat.riskAssessment.otherRelevant, data.recat.riskAssessment.otherRelevantText) },
-        actions: { items: [] }
-      }
-    ]
-  }) }}
-
-{% if data.recat.decision.category == 'I' or data.recat.decision.category == 'J' or data.recat.decision.category == 'R' or data.recat.decision.category == 'T' %}
-  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
-    rows: [
-      {
-        key: { classes: 'summary-list-title', text: "Category decision" },
-        actions: { items: [{
-              href: '/form/recat/decision/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Assessment"
-            }] if showChangeLinks else []
-        }
-      },
-      {
-        key: { text: "What security category is most suitable for this person?" },
-        value: { text: data.recat.decision.category and catMappings(data.recat.decision.category) },
-        actions: { items: [] }
-      }
-    ]
-  }) }}
-{% else %}
-  {{ govukSummaryList({
-    classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
-    rows: [
-      {
-        key: { classes: 'summary-list-title', text: "Category decision" },
-        actions: { items: [{
-            href: '/form/recat/decision/' + data.details.bookingId,
+            value: { classes: 'no-print'},
+            href: '/form/recat/oasysInput/' + data.details.bookingId,
             text: "Change",
             visuallyHiddenText: "Assessment"
           }] if showChangeLinks else []
         }
       },
       {
-        key: { text: "What security category is most suitable for this person?" },
-        value: { text: data.recat.decision.category and 'Category ' + data.recat.decision.category },
-        actions: { items: [] }
-       }
+        key: { text: "Was there any information in the review that is relevant to the recategorisation?" },
+        value: { html: formatAnswerNoDetails(data.recat.oasysInput.oasysRelevantInfo, data.recat.oasysInput.oasysInputText) },
+        actions: { items: [{
+            value: { classes: 'no-print'},
+            href: '/form/recat/oasysInput/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Assessment"
+          }] if showChangeLinks else []
+        }
+      }
+    ]
+  })
+}}
+
+  {% set wasReferred = data.security.review.securityReview %}
+  {% set auto = {
+      classes: 'no-print',
+      key: { text: "Automatic referral to security team" },
+      value: { text: 'Yes' if data.socProfile.transferToSecurity else 'No' },
+      actions: { classes: 'no-print',
+        items: [{
+          href: '/form/recat/securityInput/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Risk assessment"
+        }] if showChangeLinks and not wasReferred else []
+      }
+    } %}
+  {% set manual = {
+      classes: 'no-print',
+      key: { text: "Manual referral to security team" },
+      value: { text: data.recat.securityInput.securityInputNeeded or 'No' },
+      actions: { classes: 'no-print',
+        items: [{
+          href: '/form/recat/securityInput/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Risk assessment"
+        }] if showChangeLinks and not wasReferred else []
+      }
+    } %}
+  {% set flagged = {
+      classes: 'no-print',
+      key: { text: "Flagged by security team" },
+      value: { text: 'Yes' if data.security.review.securityReview and not data.socProfile.transferToSecurity and not data.recat.securityInput.securityInputNeeded else 'No' },
+      actions: { classes: 'no-print',
+        items: [{
+          href: '/form/recat/securityInput/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Risk assessment"
+        }] if showChangeLinks and not wasReferred else []
+      }
+    } %}
+  {% set comments = {
+      classes: 'no-print',
+      key: { text: "Security comments" },
+      value: { text: data.security.review.securityReview },
+      actions: { classes: 'no-print',
+        items: [{
+          href: '/form/recat/securityInput/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Risk assessment"
+        }] if showChangeLinks and not wasReferred else []
+      }
+    } %}
+
+  <h2 class="govuk-heading-m no-print">Security information</h2>
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 print-full-width securityInputSummary no-print',
+    rows: [ auto, manual, flagged, comments ] if wasReferred else [ auto, manual, flagged ]
+  }) }}
+
+  <h2 class="govuk-heading-m no-print">Risk assessment</h2>
+  {{ govukSummaryList({
+    classes: 'govuk-!-margin-bottom-9 print-full-width riskAssessmentSummary',
+    rows: [
+      {
+        key: { text: "Could they be managed in a lower security category?" },
+        value: { text: data.recat.riskAssessment.lowerCategory },
+        actions: { items: [{
+            href: '/form/recat/riskAssessment/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Risk assessment"
+          }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Should they remain in their current security category? Or be put in a higher security category?" },
+        value: { text: data.recat.riskAssessment.higherCategory },
+        actions: { items: [{
+            href: '/form/recat/riskAssessment/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Risk assessment"
+          }] if showChangeLinks else []
+        }
+      },
+      {
+        key: { text: "Other relevant information" },
+        value: { html: formatAnswer(data.recat.riskAssessment.otherRelevant, data.recat.riskAssessment.otherRelevantText) },
+        actions: { items: [{
+            href: '/form/recat/riskAssessment/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Risk assessment"
+          }] if showChangeLinks else []
+        }
+      }
     ]
   }) }}
-{% endif %}
 
-  {% set miniTitle = {
-    key: { classes: 'summary-list-title', text: "Higher Security Review" },
-    value: { classes: 'no-print'},
-    actions: { items: [{
-          href: '/form/recat/miniHigherSecurityReview/' + data.details.bookingId,
+{% set categoryText = (data.recat.decision.category and catMappings(data.recat.decision.category)) if (data.recat.decision.category == 'I' or data.recat.decision.category == 'J' or data.recat.decision.category == 'R' or data.recat.decision.category == 'T') else data.recat.decision.category and 'Category ' + data.recat.decision.category %}
+<h2 class="govuk-heading-m no-print">Category decision</h2>
+{{ govukSummaryList({
+  classes: 'govuk-!-margin-bottom-9 assessmentSummary no-print',
+  rows: [
+    {
+      key: { text: "What security category is most suitable for this person?" },
+      value: { text: categoryText },
+      actions: { items: [{
+          href: '/form/recat/decision/' + data.details.bookingId,
           text: "Change",
           visuallyHiddenText: "Assessment"
-        }] if showChangeLinks else [] }
-    }
-  %}
-
-  {% set hsrTitle = {
-    key: { classes: 'summary-list-title', text: "Higher Security Review" },
-    value: { classes: 'no-print'},
-    actions: { items: [{
-          href: '/form/recat/higherSecurityReview/' + data.details.bookingId,
+        }] if showChangeLinks else []
+      }
+    },
+    {
+      key: { text: "Information about why this category is appropriate" },
+      value: { text: data.recat.decision.justification },
+      actions: { items: [{
+          href: '/form/recat/decision/' + data.details.bookingId,
           text: "Change",
           visuallyHiddenText: "Assessment"
-        }] if showChangeLinks else [] }
+        }] if showChangeLinks else []
+      }
     }
-  %}
+  ]
+}) }}
 
   {% set hsrBehaviour = {
       key: { text: "What behaviour or incident has occurred to suggest the need for higher security conditions?" },
       value: { text: data.recat.higherSecurityReview.behaviour },
-      actions: { items: [] }
+      actions: { items: [{
+          href: '/form/recat/higherSecurityReview/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else []
+      }
   } %}
 
   {% set hsrSteps = {
       key: { text: "What steps have been taken to manage the behaviour within the prison?" },
       value: { text: data.recat.higherSecurityReview.steps },
-      actions: { items: [] }
+      actions: { items: [{
+          href: '/form/recat/higherSecurityReview/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else []
+      }
   } %}
 
   {% set hsrTransfer = {
       key: { text: "Could the behaviour be managed by transfer to another prison of the same category?" },
       value: { text: data.recat.higherSecurityReview.transfer },
-      actions: { items: [] }
+      actions: { items: [{
+          href: '/form/recat/higherSecurityReview/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else []
+      }
   } %}
 
   {% set hsrConditions = {
       key: { text: "What security conditions in the higher category prison are necessary to manage this person safely and securely?" },
       value: { text: data.recat.higherSecurityReview.conditions },
-      actions: { items: [] }
+      actions: { items: [{
+          href: '/form/recat/higherSecurityReview/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else []
+      }
   } %}
 
   {% set miniConditions = {
       key: { text: "What security conditions in the higher category prison are necessary to manage this person safely and securely?" },
       value: { text: data.recat.miniHigherSecurityReview.conditions },
-      actions: { items: [] }
+      actions: { items: [{
+          href: '/form/recat/miniHigherSecurityReview/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Assessment"
+        }] if showChangeLinks else []
+      }
   } %}
 
   {% if data.recat.higherSecurityReview or data.recat.miniHigherSecurityReview %}
+  <h2 class="govuk-heading-m no-print">Higher Security Review</h2>
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 print-full-width higherSecurityReview',
-    rows: [ hsrTitle, hsrBehaviour, hsrSteps, hsrTransfer, hsrConditions ] if data.recat.higherSecurityReview.behaviour else [ miniTitle, miniConditions ]
+    rows: [ hsrBehaviour, hsrSteps, hsrTransfer, hsrConditions ] if data.recat.higherSecurityReview.behaviour else [ miniConditions ]
   }) }}
   {% endif %}
 
+  <h2 class="govuk-heading-m no-print">Next category review date</h2>
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 nextReviewDateSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Next category review date" },
-        actions: { items: [{
-              href: '/form/nextReviewDate/nextReviewDate/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Set next category review date"
-            }] if showChangeLinks else []
-        }
-      },
-      {
         key: { text: "What date should they be reviewed by?" },
         value: { text: getLongDateFormat(data.recat.nextReviewDate.date) },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/nextReviewDate/nextReviewDate/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Set next category review date"
+          }] if showChangeLinks else []
+        }
       }
     ]
   }) }}

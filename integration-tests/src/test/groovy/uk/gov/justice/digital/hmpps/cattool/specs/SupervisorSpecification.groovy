@@ -121,12 +121,12 @@ class SupervisorSpecification extends AbstractSpecification {
     then: 'the review page includes Open conditions information'
     openConditionsHeader.isDisplayed()
 
-    riskOfHarm*.text() == ['', 'No', 'Not applicable']
-    foreignNational*.text() == ['', 'No', 'Not applicable', 'Not applicable', 'Not applicable']
-    previousSentences*.text() == ['', 'No','Not applicable']
-    sexualOffences*.text() == ['','No','Not applicable']
-    earliestReleaseDate*.text() == ['', 'No', 'Not applicable']
-    riskLevel*.text() == ['', 'No']
+    riskOfHarm*.text() == ['No', 'Not applicable']
+    foreignNational*.text() == ['No', 'Not applicable', 'Not applicable', 'Not applicable']
+    previousSentences*.text() == ['No','Not applicable']
+    sexualOffences*.text() == ['No','Not applicable']
+    earliestReleaseDate*.text() == ['No', 'Not applicable']
+    riskLevel*.text() == ['No']
 
     when: 'The supervisor views the review page for a juvenile'
     db.clearDb()
@@ -488,16 +488,15 @@ class SupervisorSpecification extends AbstractSpecification {
     overriddenCategoryD.@type == 'radio'
 
     prisonerBackgroundSummary*.text() == [
-      '', 'Review due', ('Categorisation date Category decision Review location\n' +
+      'Review due', ('Categorisation date Category decision Review location\n' +
       '24/03/2013 B LPI prison\n' +
       '08/06/2012 A LPI prison'),
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14',
       'This person is at risk of engaging in, or vulnerable to, extremism.', 'offence Details text']
-    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
-    riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
-    assessmentSummary*.text() == ['', 'Category C']
-    nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
+    securityInputSummary*.text() == ['No', 'Yes', 'No']
+    riskAssessmentSummary*.text() == ['lower security category text', 'higher security category text', 'Yes\nother relevant information']
+    nextReviewDateSummary*.text() == ['Saturday 14 December 2019']
 
 
     when: 'the supervisor selects yes (after changing their mind)'

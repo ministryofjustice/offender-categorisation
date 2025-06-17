@@ -15,12 +15,10 @@
 
 {% block content %}
 
-  <div class="govuk-grid-row">
-    {% include "../../partials/offenderDetails.html" %}
-    <hr/>
-  </div>
+  {% include "../../partials/offenderDetails.html" %}
+  <hr/>
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-!-margin-bottom-6">
     <h1 class="govuk-!-width-two-thirds govuk-heading-l govuk-!-display-inline mainHeading">
       {{ pageTitle }}
     </h1>
@@ -31,7 +29,7 @@
       </a>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-body-s">
+  <div class="govuk-body-s">
 
     <div class="govuk-!-width-two-thirds">
     {% set categoriserCat = data.recat.decision.category %}

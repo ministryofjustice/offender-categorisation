@@ -24,4 +24,7 @@ export default class DecisionPage extends Page {
   errorSummaries = (): PageElement => cy.get('ul.govuk-error-summary__list li')
   errors = (): PageElement => cy.get('.govuk-error-message')
   indeterminateWarning = (): PageElement => cy.get('#indeterminateWarning')
+
+  enterCategoryDecisionJustification = (text: String): PageElement =>
+    cy.get('#justification').type(text)
 }

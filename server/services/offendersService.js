@@ -204,6 +204,7 @@ module.exports = function createOffendersService(
         filters,
         allRecords,
         new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])),
+        null,
         nomisClient,
         agencyId,
         pomMap,
@@ -780,7 +781,7 @@ module.exports = function createOffendersService(
         }
 
         const prisonerSearchRecord = prisonerSearchData.get(raw.bookingId) || null
-        if (withSi1481Changes && prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
+        if (prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
           return null
         }
 
