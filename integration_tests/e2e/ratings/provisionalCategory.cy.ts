@@ -163,7 +163,6 @@ describe('Provisional Category', () => {
         cy.get('h1').contains('Submitted for approval')
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          console.log(result.rows[0].form_response)
           expect(result.rows[0].form_response.categoriser.provisionalCategory).to.deep.eq({
             "suggestedCategory": "B",
             "categoryAppropriate": "Yes",
@@ -198,7 +197,6 @@ describe('Provisional Category', () => {
         cy.get('h1').contains('Submitted for approval')
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          console.log(result.rows[0].form_response)
           expect(result.rows[0].form_response.categoriser.provisionalCategory).to.deep.eq({
             "suggestedCategory": "B",
             "overriddenCategory": "C",
@@ -219,7 +217,6 @@ describe('Provisional Category', () => {
         taskListPage.openConditionsButton().should('exist')
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          console.log(result.rows[0].form_response)
           expect(result.rows[0].form_response.categoriser.provisionalCategory).to.deep.eq({
             "suggestedCategory": "B",
             "overriddenCategory": "D",
