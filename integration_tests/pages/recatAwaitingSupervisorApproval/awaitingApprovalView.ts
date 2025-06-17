@@ -12,7 +12,6 @@ export default class RecatAwaitingApprovalPage extends Page {
 
   validateEarliestReleaseDateSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
     this.validateDescriptionList('earliestReleaseDateSummary', [
-      { question: 'Earliest release date', expectedAnswer: '' },
       ...expected,
     ])
   }

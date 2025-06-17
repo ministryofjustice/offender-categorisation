@@ -61,20 +61,23 @@ describe('Category Decision', () => {
       it('should show a validation error on empty form submission', () => {
         categoryDecisionPage.continueButton().click()
 
-        categoryDecisionPage.errorSummaries().contains('Select the category that is most suitable for this person')
-        categoryDecisionPage.errors().contains('Select the category that is most suitable for this person')
+        categoryDecisionPage.errorSummaries().contains('Select the category that is most suitable for this prisoner')
+        categoryDecisionPage.errors().contains('Select the category that is most suitable for this prisoner')
+        categoryDecisionPage.errorSummaries().contains('You must enter information about why the category is appropriate')
+        categoryDecisionPage.errors().contains('You must enter information about why the category is appropriate')
       })
 
       describe('should record a valid form submission', () => {
         it(`should accept a 'Closed' category decision`, () => {
           categoryDecisionPage.selectCategoryDecisionRadioButton('CLOSED')
+          categoryDecisionPage.enterCategoryDecisionJustification('Test justification')
           categoryDecisionPage.continueButton().click()
 
           taskListPage.checkOnPage()
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].form_response).to.deep.eq({
-              ratings: { decision: { category: 'R' } },
+              ratings: { decision: { category: 'R', justification: 'Test justification' } },
               openConditionsRequested: false,
             })
           })
@@ -82,6 +85,7 @@ describe('Category Decision', () => {
 
         it(`should accept an 'Open' category decision`, () => {
           categoryDecisionPage.selectCategoryDecisionRadioButton('OPEN')
+          categoryDecisionPage.enterCategoryDecisionJustification('Test justification')
           categoryDecisionPage.continueButton().click()
 
           const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
@@ -91,7 +95,7 @@ describe('Category Decision', () => {
             cy.log(result.rows[0].form_response)
 
             expect(result.rows[0].form_response).to.deep.eq({
-              ratings: { decision: { category: 'T' } },
+              ratings: { decision: { category: 'T', justification: 'Test justification' } },
               openConditionsRequested: true,
             })
           })
@@ -148,20 +152,23 @@ describe('Category Decision', () => {
       it('should show a validation error on empty form submission', () => {
         categoryDecisionPage.continueButton().click()
 
-        categoryDecisionPage.errorSummaries().contains('Select the category that is most suitable for this person')
-        categoryDecisionPage.errors().contains('Select the category that is most suitable for this person')
+        categoryDecisionPage.errorSummaries().contains('Select the category that is most suitable for this prisoner')
+        categoryDecisionPage.errors().contains('Select the category that is most suitable for this prisoner')
+        categoryDecisionPage.errorSummaries().contains('You must enter information about why the category is appropriate')
+        categoryDecisionPage.errors().contains('You must enter information about why the category is appropriate')
       })
 
       describe('should record a valid form submission', () => {
         it(`should accept a 'YOI Closed' category decision`, () => {
           categoryDecisionPage.selectYOICategoryDecisionRadioButton('YOI_CLOSED')
+          categoryDecisionPage.enterCategoryDecisionJustification('Test justification')
           categoryDecisionPage.continueButton().click()
 
           taskListPage.checkOnPage()
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].form_response).to.deep.eq({
-              ratings: { decision: { category: 'I' } },
+              ratings: { decision: { category: 'I', justification: 'Test justification' } },
               openConditionsRequested: false,
             })
           })
@@ -169,6 +176,7 @@ describe('Category Decision', () => {
 
         it(`should accept a 'Consider for YOI Open' category decision`, () => {
           categoryDecisionPage.selectYOICategoryDecisionRadioButton('CONSIDER_FOR_OPEN')
+          categoryDecisionPage.enterCategoryDecisionJustification('Test justification')
           categoryDecisionPage.continueButton().click()
 
           const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
@@ -176,7 +184,7 @@ describe('Category Decision', () => {
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].form_response).to.deep.eq({
-              ratings: { decision: { category: 'J' } },
+              ratings: { decision: { category: 'J', justification: 'Test justification' } },
               openConditionsRequested: true,
             })
           })
@@ -184,13 +192,14 @@ describe('Category Decision', () => {
 
         it(`should accept a 'Closed' category decision`, () => {
           categoryDecisionPage.selectYOICategoryDecisionRadioButton('CLOSED')
+          categoryDecisionPage.enterCategoryDecisionJustification('Test justification')
           categoryDecisionPage.continueButton().click()
 
           taskListPage.checkOnPage()
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].form_response).to.deep.eq({
-              ratings: { decision: { category: 'R' } },
+              ratings: { decision: { category: 'R', justification: 'Test justification' } },
               openConditionsRequested: false,
             })
           })

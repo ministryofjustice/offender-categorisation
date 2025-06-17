@@ -111,32 +111,32 @@
 </div>
 
 {% if sentence.list | length > 1 %}
-<div class="govuk-grid-row govuk-!-padding-left-3">
   <div class="govuk-grid-column-full">
     {{ headerTitle('Court-issued sentences') }}
-    <hr />
-    <table class="govuk-table" id="sentences" >
-      <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Line</th>
-        <th class="govuk-table__header" scope="col">Start</th>
-        <th class="govuk-table__header" scope="col">Length of sentence</th>
-        <th class="govuk-table__header" scope="col">Consecutive to (line)</th>
-        <th class="govuk-table__header" scope="col">Type</th>
-      </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-      {% for row in sentence.list %}
-      <tr class="govuk-table__row ">
-        <td class="govuk-table__cell">{{ row.sentenceSequence }}</td>
-        <td class="govuk-table__cell">{{ dateConverter(row.startDate) }}</td>
-        <td class="govuk-table__cell">{{ formatLength(row) }}</td>
-        <td class="govuk-table__cell">{{ row.consecutiveTo }}</td>
-        <td class="govuk-table__cell">{{ row.sentenceTypeDescription }}</td>
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+    <div class="govuk-grid-row">
+      <hr />
+      <table class="govuk-table" id="sentences" >
+        <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Line</th>
+          <th class="govuk-table__header" scope="col">Start</th>
+          <th class="govuk-table__header" scope="col">Length of sentence</th>
+          <th class="govuk-table__header" scope="col">Consecutive to (line)</th>
+          <th class="govuk-table__header" scope="col">Type</th>
+        </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+        {% for row in sentence.list %}
+        <tr class="govuk-table__row ">
+          <td class="govuk-table__cell">{{ row.sentenceSequence }}</td>
+          <td class="govuk-table__cell">{{ dateConverter(row.startDate) }}</td>
+          <td class="govuk-table__cell">{{ formatLength(row) }}</td>
+          <td class="govuk-table__cell">{{ row.consecutiveTo }}</td>
+          <td class="govuk-table__cell">{{ row.sentenceTypeDescription }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 {% endif %}
