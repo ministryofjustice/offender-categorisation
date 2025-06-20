@@ -1,12 +1,15 @@
 import logger = require('../../log')
 
+import transformDataToEscapeProfile = require('../utils/riskServiceHelpers')
+
 function createRiskService(alertsApiClientBuilder) {
   return {
-    async getActiveEscapeRisk(offenderNo, context) {
+    async getEscapeProfile(offenderNo, context) {
       try {
         const alertsApiClient = alertsApiClientBuilder(context)
         const response = await alertsApiClient.getPrisonersActiveEscapeAlerts(offenderNo)
-        return response.content
+        const escapeProfile = transformDataToEscapeProfile(response.content)
+        return escapeProfile
       } catch (error) {
         logger.error(error)
         throw error
