@@ -6,7 +6,7 @@ const joi = require('joi')
 const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
-const { getLongDateFormat, isFemalePrisonId } = require('../utils/utils')
+const { getLongDateFormat, isFemalePrisonId, transformDataToEscapeProfile } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const Status = require('../utils/statusEnum')
@@ -99,14 +99,8 @@ module.exports = function Index({
       const form = 'escapeRating'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      // change here
-      const escapeProfile = await riskProfilerService.getEscapeProfile(result.data.details.offenderNo, res.locals)
-      console.log(escapeProfile, '<-- escape profile')
-      const escapeProfileUsingNewService = await riskService.getActiveEscapeRisk(
-        result.data.details.offenderNo,
-        res.locals,
-      )
-      console.log(escapeProfileUsingNewService, '<--- escape profile new')
+      const escapeRisk = await riskService.getActiveEscapeRisk(result.data.details.offenderNo, res.locals)
+      const escapeProfile = transformDataToEscapeProfile(escapeRisk)
       const data = { ...result.data, escapeProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     }),
@@ -176,6 +170,7 @@ module.exports = function Index({
         violenceProfile,
         lifeProfile,
       }
+
       const dataToDisplay = {
         ...result.data,
         history,

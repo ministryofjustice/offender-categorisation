@@ -6,7 +6,7 @@ function createRiskService(alertsApiClientBuilder) {
       try {
         const alertsApiClient = alertsApiClientBuilder(context)
         const response = await alertsApiClient.getPrisonersActiveEscapeAlerts(offenderNo)
-        console.log(response, '<-- response in alertsApi')
+        return response.content
       } catch (error) {
         logger.error(error)
         throw error
