@@ -6,7 +6,7 @@ const joi = require('joi')
 const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
-const { getLongDateFormat, isFemalePrisonId, transformDataToEscapeProfile } = require('../utils/utils')
+const { getLongDateFormat, isFemalePrisonId } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
 const Status = require('../utils/statusEnum')

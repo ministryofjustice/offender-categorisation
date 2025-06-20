@@ -1,14 +1,35 @@
 import { ESCAPE_LIST_ALERT_CODE, ESCAPE_RISK_ALERT_CODE } from '../data/prisonerSearch/alert/prisonerSearchAlert.dto'
 
-const filterForEscapeAlert = (data, code) => data.filter(item => item.alertCode?.code === code)
+interface AlertData {
+  alertCode: {
+    code: string
+  }
+  activeFrom: string
+}
 
-const summariseEscapeAlerts = alerts =>
+interface SummarisedAlertData {
+  alertCode: string
+  dateCreated: string
+}
+
+interface EscapeProfile {
+  activeEscapeList: boolean
+  activeEscapeRisk: boolean
+  escapeListAlerts: SummarisedAlertData[]
+  escapeRiskAlerts: SummarisedAlertData[]
+  riskType: 'ESCAPE'
+}
+
+const filterForEscapeAlert = (data: AlertData[], code: string): AlertData[] =>
+  data.filter(item => item.alertCode?.code === code)
+
+const summariseEscapeAlerts = (alerts: AlertData[]): SummarisedAlertData[] =>
   alerts.map(item => ({
     alertCode: item.alertCode?.code,
     dateCreated: item.activeFrom,
   }))
 
-const transformDataToEscapeProfile = data => {
+const transformDataToEscapeProfile = (data: AlertData[]): EscapeProfile => {
   const activeEscapeListAlerts = filterForEscapeAlert(data, ESCAPE_LIST_ALERT_CODE)
   const activeEscapeRiskAlerts = filterForEscapeAlert(data, ESCAPE_RISK_ALERT_CODE)
 
