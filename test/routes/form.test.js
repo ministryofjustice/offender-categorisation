@@ -73,11 +73,16 @@ const userService = {
   getUserByUserId: jest.fn(),
 }
 
+const riskService = {
+  getEscapeProfile: jest.fn(),
+}
+
 const formRoute = createRouter({
   formService,
   offendersService,
   userService,
   riskProfilerService,
+  riskService,
   authenticationMiddleware,
 })
 
@@ -124,7 +129,7 @@ beforeEach(() => {
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
   riskProfilerService.getViolenceProfile.mockResolvedValue({})
   riskProfilerService.getExtremismProfile.mockResolvedValue({})
-  riskProfilerService.getEscapeProfile.mockResolvedValue({})
+  riskService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
@@ -1338,7 +1343,7 @@ describe('GET /ratings/extremism', () => {
 describe('GET /categoriser/review', () => {
   test('Should perform a merge with existing data when loading review', () => {
     // data that should be persisted
-    riskProfilerService.getEscapeProfile.mockResolvedValue({
+    riskService.getEscapeProfile.mockResolvedValue({
       flagA: 'B2345XY',
     })
     riskProfilerService.getViolenceProfile.mockResolvedValue({
@@ -2013,7 +2018,7 @@ describe('GET /ratings/escapeRating', () => {
       escapeListAlerts: [],
       riskType: 'ESCAPE',
     }
-    riskProfilerService.getEscapeProfile.mockResolvedValue(escapeProfile)
+    riskService.getEscapeProfile.mockResolvedValue(escapeProfile)
     return request(app)
       .get(`/ratings/escapeRating/12345`)
       .expect(200)
@@ -2062,7 +2067,7 @@ describe('GET /ratings/escapeRating', () => {
       escapeListAlerts: [],
       riskType: 'ESCAPE',
     }
-    riskProfilerService.getEscapeProfile.mockResolvedValue(escapeProfile)
+    riskService.getEscapeProfile.mockResolvedValue(escapeProfile)
 
     return request(app)
       .get(`/ratings/escapeRating/12345`)

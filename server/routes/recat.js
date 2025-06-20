@@ -26,6 +26,7 @@ module.exports = function Index({
   userService,
   riskProfilerService,
   authenticationMiddleware,
+  riskService,
 }) {
   const router = express.Router()
 
@@ -59,7 +60,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
       const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
+      const escapeProfile = await riskService.getEscapeProfile(offenderNo, res.locals)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
         res.locals,
@@ -93,7 +94,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
       const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
+      const escapeProfile = await riskService.getEscapeProfile(offenderNo, res.locals)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
         res.locals,
@@ -129,6 +130,10 @@ module.exports = function Index({
       const { bookingId } = req.params
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+
+      console.log('HERE!!!')
+
+      // here it can use expired alerts
 
       const data = await offendersService.getRiskChangeForOffender(res.locals, bookingId, transactionalDbClient)
       const errors = req.flash('errors')
