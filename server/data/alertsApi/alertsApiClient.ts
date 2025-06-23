@@ -1,14 +1,16 @@
 import superagent from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
-import { config } from '../config'
-import { getApiClientToken } from '../authentication/clientCredentials'
-import logger from '../../log'
-import { getSanitisedError } from '../getSanitisedError'
+import { config } from '../../config'
+import { getApiClientToken } from '../../authentication/clientCredentials'
+import logger from '../../../log'
+import { getSanitisedError } from '../../getSanitisedError'
 import {
   ESCAPE_LIST_ALERT_CODE,
   ESCAPE_RISK_ALERT_CODE,
   ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
-} from './prisonerSearch/alert/prisonerSearchAlert.dto'
+} from '../prisonerSearch/alert/prisonerSearchAlert.dto'
+import { EscapeAlertDto } from './escapeAlert.dto'
+import { User } from '../user'
 
 const timeoutSpec = {
   response: config.apis.alertsApi.timeout.response,
@@ -23,19 +25,17 @@ const agentOptions = {
 
 const apiUrl = config.apis.alertsApi.url
 
-console.log(apiUrl, '<-- api url')
-
 const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
-export const alertsApiClientBuilder = context => {
-  const apiGet = alertsApiGetBuilder(context.user.username)
+export const alertsApiClientBuilder = (user: User) => {
+  const apiGet = alertsApiGetBuilder(user.username)
 
   return {
-    async getPrisonersEscapeAlerts(offenderNo) {
+    async getPrisonersEscapeAlerts(offenderNo: string): Promise<EscapeAlertDto[]> {
       const path = `${apiUrl}prisoners/${offenderNo}/alerts`
       const query = `alertCode=${ESCAPE_RISK_ALERT_CODE},${ESCAPE_LIST_ALERT_CODE},${ESCAPE_LIST_HEIGHTENED_ALERT_CODE}`
-
       const response = await apiGet({ path, query })
+
       return response
     },
   }

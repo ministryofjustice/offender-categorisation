@@ -4,13 +4,7 @@ import {
   ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
 } from '../data/prisonerSearch/alert/prisonerSearchAlert.dto'
 
-interface AlertData {
-  alertCode: {
-    code: string
-  }
-  activeFrom: string
-  isActive: boolean
-}
+import { EscapeAlertDto } from '../data/alertsApi/escapeAlert.dto'
 
 interface SummarisedAlertData {
   alertCode: string
@@ -18,7 +12,7 @@ interface SummarisedAlertData {
   active: boolean
 }
 
-interface EscapeProfile {
+export interface EscapeProfile {
   activeEscapeList: boolean
   activeEscapeRisk: boolean
   escapeListAlerts: SummarisedAlertData[]
@@ -26,10 +20,10 @@ interface EscapeProfile {
   riskType: 'ESCAPE'
 }
 
-const filterForActive = (data: AlertData[], ...codes: string[]): AlertData[] =>
+const filterForActive = (data: EscapeAlertDto[], ...codes: string[]): EscapeAlertDto[] =>
   data.filter(alert => codes.includes(alert.alertCode?.code) && alert.isActive)
 
-const summariseEscapeAlerts = (alerts: AlertData[], ...codes: string[]): SummarisedAlertData[] => {
+const summariseEscapeAlerts = (alerts: EscapeAlertDto[], ...codes: string[]): SummarisedAlertData[] => {
   return alerts
     .filter(alert => codes.includes(alert.alertCode?.code))
     .map(alert => ({
@@ -39,7 +33,7 @@ const summariseEscapeAlerts = (alerts: AlertData[], ...codes: string[]): Summari
     }))
 }
 
-const transformDataToEscapeProfile = (data: AlertData[]): EscapeProfile => {
+export const transformDataToEscapeProfile = (data: EscapeAlertDto[]): EscapeProfile => {
   const activeEscapeListAlerts = filterForActive(data, ESCAPE_LIST_ALERT_CODE, ESCAPE_LIST_HEIGHTENED_ALERT_CODE)
   const activeEscapeRiskAlerts = filterForActive(data, ESCAPE_RISK_ALERT_CODE)
 
@@ -54,5 +48,3 @@ const transformDataToEscapeProfile = (data: AlertData[]): EscapeProfile => {
     riskType: 'ESCAPE',
   }
 }
-
-export = transformDataToEscapeProfile
