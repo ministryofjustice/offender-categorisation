@@ -5,11 +5,13 @@ interface AlertData {
     code: string
   }
   activeFrom: string
+  isActive: boolean
 }
 
 interface SummarisedAlertData {
   alertCode: string
   dateCreated: string
+  active: boolean
 }
 
 interface EscapeProfile {
@@ -20,27 +22,31 @@ interface EscapeProfile {
   riskType: 'ESCAPE'
 }
 
-const filterForEscapeAlert = (data: AlertData[], code: string): AlertData[] =>
-  data.filter(item => item.alertCode?.code === code)
+const filterForActive = (data: AlertData[], code: string): AlertData[] =>
+  data.filter(alert => alert.alertCode?.code === code && alert.isActive)
 
-const summariseEscapeAlerts = (alerts: AlertData[]): SummarisedAlertData[] =>
-  alerts.map(item => ({
-    alertCode: item.alertCode?.code,
-    dateCreated: item.activeFrom,
-  }))
+const summariseEscapeAlerts = (alerts: AlertData[], code: string): SummarisedAlertData[] => {
+  return alerts
+    .filter(alert => alert.alertCode?.code === code)
+    .map(alert => ({
+      alertCode: alert.alertCode?.code,
+      dateCreated: alert.activeFrom,
+      active: alert.isActive,
+    }))
+}
 
 const transformDataToEscapeProfile = (data: AlertData[]): EscapeProfile => {
-  const activeEscapeListAlerts = filterForEscapeAlert(data, ESCAPE_LIST_ALERT_CODE)
-  const activeEscapeRiskAlerts = filterForEscapeAlert(data, ESCAPE_RISK_ALERT_CODE)
+  const activeEscapeListAlerts = filterForActive(data, ESCAPE_LIST_ALERT_CODE)
+  const activeEscapeRiskAlerts = filterForActive(data, ESCAPE_RISK_ALERT_CODE)
 
-  const activeEscapeListAlertsSummary = summariseEscapeAlerts(activeEscapeListAlerts)
-  const activeEscapeRiskAlertsSummary = summariseEscapeAlerts(activeEscapeRiskAlerts)
+  const escapeListAlertsSummary = summariseEscapeAlerts(data, ESCAPE_LIST_ALERT_CODE)
+  const escapeRiskAlertsSummary = summariseEscapeAlerts(data, ESCAPE_RISK_ALERT_CODE)
 
   return {
     activeEscapeList: activeEscapeListAlerts.length > 0,
     activeEscapeRisk: activeEscapeRiskAlerts.length > 0,
-    escapeListAlerts: activeEscapeListAlertsSummary,
-    escapeRiskAlerts: activeEscapeRiskAlertsSummary,
+    escapeListAlerts: escapeListAlertsSummary,
+    escapeRiskAlerts: escapeRiskAlertsSummary,
     riskType: 'ESCAPE',
   }
 }
