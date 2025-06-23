@@ -185,6 +185,9 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const schema = joi.object(fieldOptions)
 
+      if (req.body.nextReviewDate) {
+        req.body.nextReviewDate = removeLeadingZerosFromDate(req.body.nextReviewDate)
+      }
       const joiErrors = schema.validate(req.body, { stripUnknown: true, abortEarly: false })
       const errors = validation.mapJoiErrors(joiErrors, [
         {
