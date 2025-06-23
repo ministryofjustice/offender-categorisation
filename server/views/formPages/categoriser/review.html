@@ -3,7 +3,7 @@
 {% set greenButtonText = "Save and submit" if isInWomensEstate else "Continue" %}
 {% set extraButtonClasses = "govuk-grid-row" %}
 
-{% set pageTitle = "Check your answers before you " + ("submit" if isInWomensEstate else "continue") %}
+{% set pageTitle = "Check your answers before " + ("submitting" if isInWomensEstate else "you continue") %}
 
 {% block beforeContent %}
 
