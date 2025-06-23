@@ -13,7 +13,7 @@ describe('transformDataToEscapeProfile', () => {
     expect(transformDataToEscapeProfile([])).toEqual(expectedEscapeProfile)
   })
 
-  it('returns an object with the correct values if input has an escape list alert', () => {
+  it('returns an object with the correct values if the input has an escape list alert', () => {
     const escapeListAlertData = [
       {
         alertCode: {
@@ -41,7 +41,35 @@ describe('transformDataToEscapeProfile', () => {
     expect(transformDataToEscapeProfile(escapeListAlertData)).toEqual(expectedEscapeProfile)
   })
 
-  it('returns an object with the correct values if input has an escape risk alert', () => {
+  it('returns an object with the correct values if the input has an escape list heightened alert code', () => {
+    const escapeListAlertData = [
+      {
+        alertCode: {
+          code: 'XELH',
+        },
+        activeFrom: '2017-01-27',
+        isActive: true,
+      },
+    ]
+
+    const expectedEscapeProfile = {
+      activeEscapeList: true,
+      activeEscapeRisk: false,
+      escapeListAlerts: [
+        {
+          alertCode: 'XELH',
+          dateCreated: '2017-01-27',
+          active: true,
+        },
+      ],
+      escapeRiskAlerts: [],
+      riskType: 'ESCAPE',
+    }
+
+    expect(transformDataToEscapeProfile(escapeListAlertData)).toEqual(expectedEscapeProfile)
+  })
+
+  it('returns an object with the correct values if the input has an escape risk alert', () => {
     const escapeRiskAlertData = [
       {
         alertCode: {
@@ -69,7 +97,7 @@ describe('transformDataToEscapeProfile', () => {
     expect(transformDataToEscapeProfile(escapeRiskAlertData)).toEqual(expectedEscapeProfile)
   })
 
-  it('returns an object with the correct values if input has both an escape risk alert and an escape list alert', () => {
+  it('returns an object with the correct values if the input has both an escape risk alert and an escape list alert', () => {
     const bothEscapeAlertsData = [
       {
         alertCode: {

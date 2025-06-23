@@ -4,7 +4,11 @@ import { config } from '../config'
 import { getApiClientToken } from '../authentication/clientCredentials'
 import logger from '../../log'
 import { getSanitisedError } from '../getSanitisedError'
-import { ESCAPE_LIST_ALERT_CODE, ESCAPE_RISK_ALERT_CODE } from './prisonerSearch/alert/prisonerSearchAlert.dto'
+import {
+  ESCAPE_LIST_ALERT_CODE,
+  ESCAPE_RISK_ALERT_CODE,
+  ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
+} from './prisonerSearch/alert/prisonerSearchAlert.dto'
 
 const timeoutSpec = {
   response: config.apis.alertsApi.timeout.response,
@@ -27,9 +31,9 @@ export const alertsApiClientBuilder = context => {
   const apiGet = alertsApiGetBuilder(context.user.username)
 
   return {
-    async getPrisonersActiveEscapeAlerts(offenderNo) {
+    async getPrisonersEscapeAlerts(offenderNo) {
       const path = `${apiUrl}prisoners/${offenderNo}/alerts`
-      const query = `isActive=true&alertCode=${ESCAPE_RISK_ALERT_CODE},${ESCAPE_LIST_ALERT_CODE}`
+      const query = `alertCode=${ESCAPE_RISK_ALERT_CODE},${ESCAPE_LIST_ALERT_CODE},${ESCAPE_LIST_HEIGHTENED_ALERT_CODE}`
 
       const response = await apiGet({ path, query })
       return response
