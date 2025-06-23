@@ -8,10 +8,10 @@ export default class CategoriserReviewCYAPage extends Page {
   }
 
   constructor(continueOrSubmitInTitle: String) {
-    super(`Check your answers before you ${continueOrSubmitInTitle}`)
+    super(`Check your answers before ${continueOrSubmitInTitle}`)
   }
 
-  static createForBookingId = (bookingId: number, continueOrSubmitInTitle: string = 'submit') => {
+  static createForBookingId = (bookingId: number, continueOrSubmitInTitle: string = 'submitting') => {
     this._bookingId = bookingId
     return new CategoriserReviewCYAPage(continueOrSubmitInTitle)
   }

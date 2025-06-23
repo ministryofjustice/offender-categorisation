@@ -117,7 +117,7 @@ describe('Open conditions', () => {
 
     taskListPage = TaskListPage.createForBookingId(12)
     taskListPage.continueReviewAndCategorisationButton(12).click()
-    categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12, 'continue')
+    categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12, 'you continue')
     categoriserReviewCYAPage.continueButton('Continue').click()
     provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
   })
@@ -851,7 +851,7 @@ describe('Open conditions', () => {
     taskListPage2.openConditionsButton().should('exist')
     taskListPage2.continueReviewAndCategorisationButton(12).click()
 
-    const categoriserReviewCYAPage1 = CategoriserReviewCYAPage.createForBookingId(12, 'continue')
+    const categoriserReviewCYAPage1 = CategoriserReviewCYAPage.createForBookingId(12, 'you continue')
     categoriserReviewCYAPage1.continueButton('Continue').click()
 
     const provisionalCategoryPage1 = ProvisionalCategoryPage.createForBookingId(12)

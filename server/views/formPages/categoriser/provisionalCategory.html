@@ -17,18 +17,6 @@
 {% set cat = data.suggestedCat %}
 {% set greenButtonText = "Submit" %}
 
-{% set warningCategoryOpenConditions %}
-  {% set categoryOpenConditionsText = "Making this category change means that you will have to provide more information." %}
-  {% include "../../partials/warningIndeterminate.html" %}
-  {{ govukWarningText({
-    text: categoryOpenConditionsText,
-    iconFallbackText: "Warning",
-    id: "openConditionsInfoMessage",
-    classes: "forms-warning-text warning-overrides background-white"
-  }) }}
-
-{% endset %}
-
 {% set radios = [
   {
     value: "B",
@@ -52,8 +40,7 @@
     hint: {
       text: "Making this category change means that you will have to provide more information."
     },
-    D: true,
-    conditional: { html: warningCategoryOpenConditions }
+    D: true
   }
 ] %}
 {% set overriddenCategoryTextHtml %}
@@ -157,6 +144,9 @@
     {{ govukTextarea({
       name: "justification",
       id: "justification",
+      formGroup: {
+        classes: 'margin-correction-below-radio-with-conditional'
+      },
       label: {
         text: "Information about why this category is appropriate"
       },
