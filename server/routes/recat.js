@@ -131,10 +131,6 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      console.log('HERE!!!')
-
-      // here it can use expired alerts
-
       const data = await offendersService.getRiskChangeForOffender(res.locals, bookingId, transactionalDbClient)
       const errors = req.flash('errors')
       const backLink = req.get('Referrer')

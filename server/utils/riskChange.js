@@ -38,11 +38,9 @@ function changeInViolenceCategoryRecommendation(oldP, newP) {
 
 const assessRiskProfiles = (oldP, newP) => {
   const escapeListAlert = listAlertChange(oldP, newP)
-  // here it takes old and new alerts
   const escapeRiskAlert = riskAlertChange(oldP, newP)
   const escapeList = isNewlyOnTheEscapeList(oldP, newP)
   const escapeRisk = isNewEscapeRisk(oldP, newP)
-  console.log(escapeRisk, '<-- escape risk')
   const violenceChange = changeInViolenceCategoryRecommendation(oldP, newP)
   const socNewlyReferred = isNewlyReferredToSecurity(oldP, newP)
   return {
