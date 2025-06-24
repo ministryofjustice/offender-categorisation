@@ -1,4 +1,4 @@
-import transformDataToEscapeProfile from './riskServiceHelpers'
+import { transformDataToEscapeProfile } from './riskServiceHelpers'
 
 describe('transformDataToEscapeProfile', () => {
   it('returns object with default values when input is an empty array', () => {
@@ -20,7 +20,6 @@ describe('transformDataToEscapeProfile', () => {
           code: 'XEL',
         },
         activeFrom: '2017-01-27',
-        isActive: true,
       },
     ]
 
@@ -31,7 +30,6 @@ describe('transformDataToEscapeProfile', () => {
         {
           alertCode: 'XEL',
           dateCreated: '2017-01-27',
-          active: true,
         },
       ],
       escapeRiskAlerts: [],
@@ -48,7 +46,6 @@ describe('transformDataToEscapeProfile', () => {
           code: 'XELH',
         },
         activeFrom: '2017-01-27',
-        isActive: true,
       },
     ]
 
@@ -59,7 +56,6 @@ describe('transformDataToEscapeProfile', () => {
         {
           alertCode: 'XELH',
           dateCreated: '2017-01-27',
-          active: true,
         },
       ],
       escapeRiskAlerts: [],
@@ -76,7 +72,6 @@ describe('transformDataToEscapeProfile', () => {
           code: 'XER',
         },
         activeFrom: '2017-01-27',
-        isActive: true,
       },
     ]
 
@@ -87,7 +82,6 @@ describe('transformDataToEscapeProfile', () => {
         {
           alertCode: 'XER',
           dateCreated: '2017-01-27',
-          active: true,
         },
       ],
       escapeListAlerts: [],
@@ -104,14 +98,12 @@ describe('transformDataToEscapeProfile', () => {
           code: 'XEL',
         },
         activeFrom: '2017-01-27',
-        isActive: true,
       },
       {
         alertCode: {
           code: 'XER',
         },
         activeFrom: '2017-01-27',
-        isActive: true,
       },
     ]
 
@@ -122,47 +114,17 @@ describe('transformDataToEscapeProfile', () => {
         {
           alertCode: 'XER',
           dateCreated: '2017-01-27',
-          active: true,
         },
       ],
       escapeListAlerts: [
         {
           alertCode: 'XEL',
           dateCreated: '2017-01-27',
-          active: true,
         },
       ],
       riskType: 'ESCAPE',
     }
 
     expect(transformDataToEscapeProfile(bothEscapeAlertsData)).toEqual(expectedEscapeProfile)
-  })
-
-  it('returns the correct values for inactive alerts', () => {
-    const escapeRiskAlertData = [
-      {
-        alertCode: {
-          code: 'XER',
-        },
-        activeFrom: '2017-01-27',
-        isActive: false,
-      },
-    ]
-
-    const expectedEscapeProfile = {
-      activeEscapeList: false,
-      activeEscapeRisk: false,
-      escapeRiskAlerts: [
-        {
-          alertCode: 'XER',
-          dateCreated: '2017-01-27',
-          active: false,
-        },
-      ],
-      escapeListAlerts: [],
-      riskType: 'ESCAPE',
-    }
-
-    expect(transformDataToEscapeProfile(escapeRiskAlertData)).toEqual(expectedEscapeProfile)
   })
 })

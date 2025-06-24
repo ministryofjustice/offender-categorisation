@@ -4,12 +4,11 @@ import {
   ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
 } from '../data/prisonerSearch/alert/prisonerSearchAlert.dto'
 
-import { EscapeAlertDto } from '../data/alertsApi/escapeAlert.dto'
+import { Alert } from '../data/alertsApi/escapeAlert.dto'
 
 interface SummarisedAlertData {
   alertCode: string
   dateCreated: string
-  active: boolean
 }
 
 export interface EscapeProfile {
@@ -20,31 +19,28 @@ export interface EscapeProfile {
   riskType: 'ESCAPE'
 }
 
-const filterForActive = (data: EscapeAlertDto[], ...codes: string[]): EscapeAlertDto[] =>
-  data.filter(alert => codes.includes(alert.alertCode?.code) && alert.isActive)
+const filterForEscapeAlert = (data: Alert[], ...codes: string[]): Alert[] =>
+  data.filter(alert => codes.includes(alert.alertCode?.code))
 
-const summariseEscapeAlerts = (alerts: EscapeAlertDto[], ...codes: string[]): SummarisedAlertData[] => {
-  return alerts
-    .filter(alert => codes.includes(alert.alertCode?.code))
-    .map(alert => ({
-      alertCode: alert.alertCode?.code,
-      dateCreated: alert.activeFrom,
-      active: alert.isActive,
-    }))
+const summariseEscapeAlerts = (alerts: Alert[]): SummarisedAlertData[] => {
+  return alerts.map(alert => ({
+    alertCode: alert.alertCode?.code,
+    dateCreated: alert.activeFrom,
+  }))
 }
 
-export const transformDataToEscapeProfile = (data: EscapeAlertDto[]): EscapeProfile => {
-  const activeEscapeListAlerts = filterForActive(data, ESCAPE_LIST_ALERT_CODE, ESCAPE_LIST_HEIGHTENED_ALERT_CODE)
-  const activeEscapeRiskAlerts = filterForActive(data, ESCAPE_RISK_ALERT_CODE)
+export const transformDataToEscapeProfile = (data: Alert[]): EscapeProfile => {
+  const activeEscapeListAlerts = filterForEscapeAlert(data, ESCAPE_LIST_ALERT_CODE, ESCAPE_LIST_HEIGHTENED_ALERT_CODE)
+  const activeEscapeRiskAlerts = filterForEscapeAlert(data, ESCAPE_RISK_ALERT_CODE)
 
-  const escapeListAlertsSummary = summariseEscapeAlerts(data, ESCAPE_LIST_ALERT_CODE, ESCAPE_LIST_HEIGHTENED_ALERT_CODE)
-  const escapeRiskAlertsSummary = summariseEscapeAlerts(data, ESCAPE_RISK_ALERT_CODE)
+  const activeEscapeListAlertsSummary = summariseEscapeAlerts(activeEscapeListAlerts)
+  const activeEscapeRiskAlertsSummary = summariseEscapeAlerts(activeEscapeRiskAlerts)
 
   return {
     activeEscapeList: activeEscapeListAlerts.length > 0,
     activeEscapeRisk: activeEscapeRiskAlerts.length > 0,
-    escapeListAlerts: escapeListAlertsSummary,
-    escapeRiskAlerts: escapeRiskAlertsSummary,
+    escapeListAlerts: activeEscapeListAlertsSummary,
+    escapeRiskAlerts: activeEscapeRiskAlertsSummary,
     riskType: 'ESCAPE',
   }
 }

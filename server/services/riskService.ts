@@ -9,7 +9,7 @@ export default class CreateRiskService {
   async getEscapeProfile(offenderNo: string, user: { username: string }): Promise<EscapeProfile> {
     try {
       const alertsApiClient = this.alertsApiClientBuilder(user)
-      const response = await alertsApiClient.getPrisonersEscapeAlerts(offenderNo)
+      const response = await alertsApiClient.getActivePrisonerEscapeAlerts(offenderNo)
       const escapeProfile = transformDataToEscapeProfile(response.content)
       return escapeProfile
     } catch (error) {

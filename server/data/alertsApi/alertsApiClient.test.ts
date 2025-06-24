@@ -32,12 +32,12 @@ describe('alertsApiClientBuilder', () => {
     nock.cleanAll()
   })
 
-  describe('getPrisonersEscapeAlerts', () => {
+  describe('getActivePrisonerEscapeAlerts', () => {
     it('should return data from alerts api', async () => {
       const testResponse = makeTestEscapeAlertDto()
-      fakeApi.get('/prisoners/123/alerts').query({ alertCode: 'XER,XEL,XELH' }).reply(200, testResponse)
+      fakeApi.get('/prisoners/123/alerts').query({ isActive: true, alertCode: 'XER,XEL,XELH' }).reply(200, testResponse)
 
-      const output = await client.getPrisonersEscapeAlerts('123')
+      const output = await client.getActivePrisonerEscapeAlerts('123')
       return expect(output).toEqual(testResponse)
     })
   })

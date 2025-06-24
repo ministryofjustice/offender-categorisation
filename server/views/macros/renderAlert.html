@@ -3,6 +3,5 @@
   {{ 'E-List:' if alert.alertCode == 'XEL' else ('Escape Risk Alert:' if alert.alertCode == 'XER' else alert.alertCode) }}
   {{ alert.comment }}
   <strong>{{ alert.dateCreated }}</strong>
-  {% if not alert.active %} (inactive){% endif %}
 </p>
 {% endmacro %}

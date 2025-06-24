@@ -31,9 +31,9 @@ export const alertsApiClientBuilder = (user: User) => {
   const apiGet = alertsApiGetBuilder(user.username)
 
   return {
-    async getPrisonersEscapeAlerts(offenderNo: string): Promise<EscapeAlertDto[]> {
+    async getActivePrisonerEscapeAlerts(offenderNo: string): Promise<EscapeAlertDto[]> {
       const path = `${apiUrl}prisoners/${offenderNo}/alerts`
-      const query = `alertCode=${ESCAPE_RISK_ALERT_CODE},${ESCAPE_LIST_ALERT_CODE},${ESCAPE_LIST_HEIGHTENED_ALERT_CODE}`
+      const query = `isActive=true&alertCode=${ESCAPE_RISK_ALERT_CODE},${ESCAPE_LIST_ALERT_CODE},${ESCAPE_LIST_HEIGHTENED_ALERT_CODE}`
       const response = await apiGet({ path, query })
 
       return response
