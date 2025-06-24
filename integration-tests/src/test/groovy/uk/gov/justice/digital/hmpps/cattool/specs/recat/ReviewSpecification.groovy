@@ -58,21 +58,19 @@ class ReviewSpecification extends AbstractSpecification {
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage
     headerValue*.text() == fixture.FULL_HEADER
-    changeLinks.size() == 6
+    changeLinks.size() == 13
 
     prisonerBackgroundSummary*.text() == [
-      '',
       'Age 21',
       'Categorisation date Category decision Review location\n24/03/2013 B LPI prison\n08/06/2012 A LPI prison',
       'This person has not been reported as the perpetrator in any assaults in custody before',
       'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
       'This person is at risk of engaging in, or vulnerable to, extremism.',
       'offence Details text']
-    securityInputSummary*.text() == ['', 'No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
-    riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
-    assessmentSummary*.text() == ['', 'Category C']
-    higherSecurityReviewSummary*.text() == ['', 'good', 'step', 'No', 'conditions']
-    nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
+    securityInputSummary*.text() == ['No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
+    riskAssessmentSummary*.text() == ['lower security category text', 'higher security category text', 'Yes\nother relevant information']
+    higherSecurityReviewSummary*.text() == ['good', 'step', 'No', 'conditions']
+    nextReviewDateSummary*.text() == ['Saturday 14 December 2019']
 
     !changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
     when: 'The page is submitted'
@@ -123,9 +121,9 @@ class ReviewSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewRecatPage
-    changeLinks.size() == 6
-    changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
-    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
+    changeLinks.size() == 12
+    changeLinks.filter(href: contains('/form/recat/securityInput/'))*.displayed
+    securityInputSummary*.text() == ['No', 'Yes', 'No']
   }
 
   def "The recat review page security flagged section"() {
@@ -160,7 +158,7 @@ class ReviewSpecification extends AbstractSpecification {
 
     then: 'the review page is displayed with security flagged showing as "yes"'
     at ReviewRecatPage
-    changeLinks.size() == 5
-    securityInputSummary*.text() == ['', 'No', 'No', 'Yes', 'security info text']
+    changeLinks.size() == 9
+    securityInputSummary*.text() == ['No', 'No', 'Yes', 'security info text']
   }
 }

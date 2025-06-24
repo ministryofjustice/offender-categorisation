@@ -1,8 +1,9 @@
 {% extends "../formTemplate.html" %}
 {% from "radios/macro.njk" import govukRadios %}
+{% from "../../macros/justifyCategoryDecision.html" import justifyCategoryDecision %}
 
 {% set pageTitle = "Category decision" %}
-{% set greenButtonText = "Continue" %}
+{% set greenButtonText = "Save and return" %}
 
 {% block navigation %}
 
@@ -31,7 +32,7 @@
       id: "catJOption",
       checked: data.ratings.decision.category == 'J',
       hint: {
-        text: "You will need to complete an open conditions assessment for this person, to check they are suitable for open conditions."
+        text: "You will need to complete an open conditions assessment for this prisoner, to check they are suitable for open conditions."
       },
       text: "Consider them for YOI (open)",
       label: { classes: "govuk-!-font-weight-bold" }
@@ -55,9 +56,9 @@
       id: "openOption",
       checked: data.ratings.decision.category == 'T',
       hint: {
-        text: "You will need to complete an open conditions assessment for this person, to check they are suitable for open conditions."
+        text: "You will need to complete an open conditions assessment for this prisoner, to check they are suitable for open conditions."
       },
-      text: "Open",
+      text: "Consider them for Open",
       label: { classes: "govuk-!-font-weight-bold" }
     }
   %}
@@ -67,14 +68,16 @@
     classes: "govuk-radios",
     fieldset: {
       legend: {
-        text: "What security category is most suitable for this person?",
+        text: "What security category is most suitable for this prisoner?",
         isPageHeading: false
       }
     },
     errorMessage: {
-      text: "Select the category that is most suitable for this person"
+      text: "Select the category that is most suitable for this prisoner"
     } if (errors | findError('category')),
     items: itemList
   }) }}
+
+  {{ justifyCategoryDecision(data.ratings.decision.justification, errors) }}
 
 {% endblock %}

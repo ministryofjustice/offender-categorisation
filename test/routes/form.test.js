@@ -1528,7 +1528,7 @@ describe('GET /categoriser/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Check your answers before you continue')
+        expect(res.text).toContain('Check your answers before submitting')
         expect(res.text).not.toContain('Further serious charges')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).toContain('Are they facing any further charges?')

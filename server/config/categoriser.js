@@ -23,7 +23,7 @@ module.exports = {
       },
       {
         overriddenCategoryText: {
-          responseType: 'requiredStringIf_categoryAppropriate_No',
+          responseType: 'provisionalCategoryOverriddenCategoryTextValidation',
           validationMessage: 'Enter the reason why you changed the category',
         },
       },
@@ -35,6 +35,13 @@ module.exports = {
       {
         otherInformationText: {
           responseType: 'optionalString',
+          validationMessage: 'You must enter information about why the category is appropriate',
+        },
+      },
+      {
+        justification: {
+          responseType: 'requiredStringNotExists_otherInformationText',
+          validationMessage: 'You must enter information about why the category is appropriate',
         },
       },
     ],

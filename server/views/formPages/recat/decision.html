@@ -5,6 +5,7 @@
 {% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "../../macros/conditionalReleaseDateInsetText.html" import conditionalReleaseDateInsetText %}
+{% from "../../macros/justifyCategoryDecision.html" import justifyCategoryDecision %}
 
 {% set pageTitle = "Category decision" %}
 
@@ -105,7 +106,7 @@
     id: "catJOption",
     checked: data.recat.decision.category == 'J',
     hint: { html: hintTextOpen('YOI open') },
-    text: "Consider them for YOI (open)",
+    text: "Consider them for YOI (Open)",
     label: { classes: "govuk-!-font-weight-bold" }
   } %}
   {% set optionR =  {
@@ -127,7 +128,7 @@
     hint: {
       html: hintTextOpen('open')
     },
-    text: 'Consider them for open',
+    text: 'Consider them for Open',
     label: {
       classes: 'govuk-!-font-weight-bold'
     }
@@ -144,14 +145,15 @@
     classes: 'govuk-radios',
     fieldset: {
       legend: {
-        text: 'What security category is most suitable for this prisoner?',
-        classes: 'govuk-!-font-weight-bold'
+        text: 'What security category is most suitable for this prisoner?'
       }
     },
     errorMessage: {
-      text: 'Select the category that is most suitable for this person'
+      text: 'Select the category that is most suitable for this prisoner'
     } if (errors | findError('category')),
     items: itemList
   }) }}
+
+  {{ justifyCategoryDecision(data.recat.decision.justification, errors) }}
 
 {% endblock %}

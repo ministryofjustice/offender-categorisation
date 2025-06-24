@@ -269,6 +269,11 @@ module.exports = {
           responseType: 'optionalString',
         },
       },
+      {
+        justification: {
+          responseType: 'optionalString',
+        },
+      },
     ],
     validate: true,
   },
