@@ -23,6 +23,18 @@ const CatType = require('../utils/catTypeEnum')
 const SECURITY_BUTTON_SUBMIT = 'submit'
 const SECURITY_BUTTON_RETURN = 'return'
 
+const SUPERVISOR_DECISION_AGREE = 'agreeWithCategoryDecision'
+const SUPERVISOR_DECISION_CHANGE_TO = 'changeCategoryTo_'
+const SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION = 'requestMoreInformation'
+
+const CATEGORY_B = 'B'
+const CATEGORY_C = 'C'
+const CATEGORY_D = 'D'
+const CATEGORY_J = 'J'
+const CATEGORY_I = 'I'
+const CATEGORY_R = 'R'
+const CATEGORY_T = 'T'
+
 const formConfig = {
   ratings,
   categoriser,
@@ -381,10 +393,6 @@ module.exports = function Index({
       delete updated.overriddenCategory
       delete updated.overriddenCategoryText
     }
-    if (body.supervisorCategoryAppropriate === 'Yes') {
-      delete updated.supervisorOverriddenCategory
-      delete updated.supervisorOverriddenCategoryText
-    }
     if (body.furtherCharges === 'No') {
       delete updated.furtherChargesCatB
       delete updated.furtherChargesText
@@ -644,10 +652,55 @@ module.exports = function Index({
     '/supervisor/review/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const section = 'supervisor'
-      const form = 'review'
-      const formPageConfig = formConfig[section][form]
       const userInput = clearConditionalFields(req.body)
+      const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+      const currentCategory =
+        R.path(['formObject', 'categoriser', 'provisionalCategory', 'overriddenCategory'], categorisationRecord) ??
+        R.path(['formObject', 'categoriser', 'provisionalCategory', 'suggestedCategory'], categorisationRecord)
+
+      const isYoungOffender = true
+
+      const validSupervisorDecisionValues = [SUPERVISOR_DECISION_AGREE, SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION]
+      switch (currentCategory) {
+        case CATEGORY_B:
+          validSupervisorDecisionValues.push([
+            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_C,
+            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_D,
+          ])
+          break
+        case CATEGORY_C:
+          validSupervisorDecisionValues.push([
+            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_B,
+            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_D,
+          ])
+          break
+        case CATEGORY_D:
+          validSupervisorDecisionValues.push([
+            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_B,
+            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_C,
+          ])
+          break
+        case CATEGORY_R:
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_T)
+          break
+        case CATEGORY_T:
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_R)
+          break
+        case CATEGORY_I && isYoungOffender:
+          validSupervisorDecisionValues.push([SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_J])
+          break
+        default:
+          throw Error(`Invalid category ${currentCategory}`)
+      }
+
+      const validation = joi
+        .object({
+          supervisorDecision: joi
+            .string()
+            .valid(...validSupervisorDecisionValues)
+            .required(),
+        })
+        .validate(userInput)
 
       if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
         return
@@ -667,7 +720,6 @@ module.exports = function Index({
           formName: form,
           transactionalClient: transactionalDbClient,
         })
-        const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
         if (userInput.catType === CatType.RECAT.name) {
           const categorisations = await offendersService.getPrisonerBackground(
