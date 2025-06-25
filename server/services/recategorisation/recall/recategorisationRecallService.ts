@@ -2,6 +2,8 @@ import { RecategorisationPrisonerSearchDto } from '../prisonerSearch/recategoris
 import { RecalledOffenderData } from './recalledOffenderData'
 import logger from '../../../../log'
 
+const ADMISSION_TYPE = 'ADM'
+
 const getRecalledOffenderData = async (
   offenderNumber: string,
   bookingId: number,
@@ -13,9 +15,9 @@ const getRecalledOffenderData = async (
     `recategorisationDashboardErrorInvestigation_recalls: response = ${JSON.stringify(response)}, prison period for booking ID = ${JSON.stringify(prisonPeriodForBookingId)}`,
   )
   if (prisonPeriodForBookingId) {
-    const movementDatesSortedByDateInToPrisonDesc = prisonPeriodForBookingId.movementDates.sort(
-      (a, b) => new Date(b.dateInToPrison).getTime() - new Date(a.dateInToPrison).getTime(),
-    )
+    const movementDatesSortedByDateInToPrisonDesc = prisonPeriodForBookingId.movementDates
+      .sort((a, b) => new Date(b.dateInToPrison).getTime() - new Date(a.dateInToPrison).getTime())
+      .filter(movement => movement.inwardType === ADMISSION_TYPE)
     return {
       recallDate: movementDatesSortedByDateInToPrisonDesc[0].dateInToPrison,
     }
