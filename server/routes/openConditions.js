@@ -211,9 +211,6 @@ module.exports = function Index({ formService, offendersService, userService, au
     if (body.likelyToAbscond === 'No') {
       delete updated.likelyToAbscondText
     }
-    if (body.isOtherInformation === 'No') {
-      delete updated.otherInformationText
-    }
     if (body.categoryAppropriate === 'Yes') {
       delete updated.overriddenCategory
       delete updated.overriddenCategoryText

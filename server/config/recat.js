@@ -120,6 +120,12 @@ module.exports = {
           validationMessage: 'Select what category is most suitable for this person',
         },
       },
+      {
+        justification: {
+          responseType: 'requiredString',
+          validationMessage: 'You must enter information about why the category is appropriate',
+        },
+      },
     ],
     validate: true,
   },

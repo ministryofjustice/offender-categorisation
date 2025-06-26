@@ -1,17 +1,16 @@
 {% extends "../formTemplate.html" %}
-{% set greenButtonText = "Continue" %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+{% set greenButtonText = "Save and submit" if isInWomensEstate else "Continue" %}
 {% set extraButtonClasses = "govuk-grid-row" %}
 
-{% set pageTitle = "Check your answers before you continue" %}
+{% set pageTitle = "Check your answers before " + ("submitting" if isInWomensEstate else "you continue") %}
 
 {% block beforeContent %}
 
-{% include "../../partials/breadCrumbTaskList.html" %}
+  {% include "../../partials/breadCrumbTaskList.html" %}
 
-  <div class="govuk-body-m govuk-!-margin-left-4">
-    {% include "../../partials/offenderDetails.html" %}
-    <hr/>
-  </div>
+  {% include "../../partials/offenderDetails.html" %}
+  <hr/>
 
 {% endblock %}
 
@@ -21,6 +20,14 @@
   <div>
 
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8 main-heading">{{ pageTitle }}</h1>
+
+    <div class="govuk-grid-row">
+      {{ govukWarningText({
+        text: "Your answers may be disclosed to the prisoner",
+        iconFallbackText: "Warning",
+        classes: "warning-overrides"
+      }) }}
+    </div>
 
     {% include "../../partials/openConditionsBanner.html" %}
     {% set isFemale = isInWomensEstate %}

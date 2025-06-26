@@ -134,6 +134,7 @@ describe('Open Conditions', () => {
     // Decision page
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.catDOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -201,7 +202,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'D' },
+            decision: { category: 'D', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -291,13 +292,14 @@ describe('Open Conditions', () => {
     tasklistRecatPage.decisionButton().click()
 
     decisionPage.catCOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     tasklistRecatPage.checkAndSubmitButton(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 6)
+    reviewRecatPage.changeLinks().should('have.length', 12)
     reviewRecatPage.validateSecurityInputSummary([
       { question: 'Automatic referral to security team', expectedAnswer: 'No' },
       { question: 'Manual referral to security team', expectedAnswer: 'Yes' },
@@ -316,6 +318,7 @@ describe('Open Conditions', () => {
     ])
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
     reviewRecatPage.validateNextReviewDateSummary([
       { question: 'What date should they be reviewed by?', expectedAnswer: 'Saturday 14 December 2019' },
@@ -329,7 +332,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'C' },
+            decision: { category: 'C', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -443,6 +446,7 @@ describe('Open Conditions', () => {
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
     decisionPage.catDOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -490,7 +494,7 @@ describe('Open Conditions', () => {
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateEarliestReleaseDateSummary([
       { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
@@ -513,6 +517,7 @@ describe('Open Conditions', () => {
     ])
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category D' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
 
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
@@ -523,7 +528,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'D' },
+            decision: { category: 'D', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -734,7 +739,7 @@ describe('Open Conditions', () => {
       expect(dbRecord.assessment_date).not.equals(null)
       expect(dbRecord.nomis_sequence_no).equals(5)
       expect(dbRecord.status).equals('APPROVED')
-      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D' })
+      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D', justification: 'category justification text' })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
         review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
       })
@@ -778,6 +783,7 @@ describe('Open Conditions', () => {
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
     decisionPage.catDOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -825,7 +831,7 @@ describe('Open Conditions', () => {
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateEarliestReleaseDateSummary([
       { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
@@ -848,6 +854,7 @@ describe('Open Conditions', () => {
     ])
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category D' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
 
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
@@ -858,7 +865,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'D' },
+            decision: { category: 'D', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -1072,7 +1079,7 @@ describe('Open Conditions', () => {
       expect(dbRecord.assessment_date).not.equals(null)
       expect(dbRecord.nomis_sequence_no).equals(5)
       expect(dbRecord.status).equals('APPROVED')
-      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D' })
+      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D', justification: 'category justification text' })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
         review: {
           proposedCategory: 'D',
@@ -1128,15 +1135,17 @@ describe('Open Conditions', () => {
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
     decisionPage.catCOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     tasklistRecatPage.checkAndSubmitButton(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 6)
+    reviewRecatPage.changeLinks().should('have.length', 12)
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
 
     // 'I confirm the cat C category'
@@ -1162,7 +1171,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'C' },
+            decision: { category: 'C', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -1344,6 +1353,7 @@ describe('Open Conditions', () => {
     Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
     decisionPage.catDOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -1387,9 +1397,10 @@ describe('Open Conditions', () => {
 
     // 'the review page is displayed'
     Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category D' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
 
     // 'I confirm the cat D category'
@@ -1479,7 +1490,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'D' },
+            decision: { category: 'D', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -1728,6 +1739,7 @@ describe('Open Conditions', () => {
       // Decision page
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.catDOption().click()
+      decisionPage.enterCategoryDecisionJustification('category justification text')
       decisionPage.submitButton().click()
 
       // Open Conditions Added Page
