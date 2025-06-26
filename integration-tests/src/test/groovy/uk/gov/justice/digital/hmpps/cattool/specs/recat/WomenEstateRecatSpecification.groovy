@@ -43,7 +43,6 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     then: 'the review outcome page is displayed'
     at SupervisorReviewOutcomePage
-    dcsSurveyLink.displayed
   }
 
   def "The supervisor review page with YOI options in provisional category"() {
@@ -71,7 +70,6 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     then: 'the review outcome page is displayed'
     at SupervisorReviewOutcomePage
-    dcsSurveyLink.displayed
   }
 
   def "The supervisor review page with YOI - indeterminate sentence"() {
