@@ -115,6 +115,9 @@ describe("Women's Estate", () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
+
+      taskListPage.smartSurveyLink().should('be.visible')
+
       cy.validateCategorisationDetails([
         // column 1
         [
@@ -592,7 +595,9 @@ describe("Women's Estate", () => {
       loginAsWomensSupervisorUser({ youngOffender: false, indeterminateSentence: false })
 
       const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+      supervisorHomePage.smartSurveyLink().should('be.visible')
       supervisorHomePage.startReviewForPrisoner(bookingId)
+
       cy.validateCategorisationDetails([
         // column 1
         [
