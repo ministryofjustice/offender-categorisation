@@ -50,4 +50,6 @@ export default class TaskListPage extends Page {
 
   continueReviewAndCategorisationButton = (bookingId: number, expectedButtonText = 'Continue') =>
     cy.contains(`a[href="/form/categoriser/review/${bookingId}"]`, expectedButtonText)
+
+  smartSurveyLink = () => cy.get('#smartSurveyLink')
 }
