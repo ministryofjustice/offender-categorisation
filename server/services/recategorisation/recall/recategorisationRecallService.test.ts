@@ -1,4 +1,4 @@
-import { getRecalledOffendersData } from './recategorisationRecallService'
+import { ADMISSION_TYPE, getRecalledOffendersData } from './recategorisationRecallService'
 import makeTestRecategorisationPrisonerSearchDto from '../prisonerSearch/recategorisationPrisonerSearch.dto.test-factory'
 
 describe('getRecalledOffendersData', () => {
@@ -9,9 +9,10 @@ describe('getRecalledOffendersData', () => {
           {
             bookingId: 123,
             movementDates: [
-              { dateInToPrison: '2024-01-10' },
-              { dateInToPrison: '2024-04-05' },
-              { dateInToPrison: '2024-03-01' },
+              { dateInToPrison: '2024-01-10', inwardType: ADMISSION_TYPE },
+              { dateInToPrison: '2024-04-05', inwardType: ADMISSION_TYPE },
+              { dateInToPrison: '2024-03-01', inwardType: ADMISSION_TYPE },
+              { dateInToPrison: '2024-05-01', inwardType: 'TAP' },
             ],
           },
         ],
