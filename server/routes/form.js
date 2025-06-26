@@ -326,6 +326,7 @@ module.exports = function Index({
     if (sequenceNo && Number.isNaN(parseInt(sequenceNo, 10))) {
       throw new Error('Invalid sequenceNo')
     }
+
     const formData = sequenceNo
       ? await formService.getCategorisationRecordUsingSequence(bookingId, sequenceNo, transactionalDbClient)
       : await formService.getCategorisationRecord(bookingId, transactionalDbClient)

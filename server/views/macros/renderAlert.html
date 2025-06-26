@@ -1,7 +1,6 @@
 {% macro renderAlert(alert) %}
 <p class="govuk-!-margin-bottom-1">
   {{ 'E-List:' if alert.alertCode == 'XEL' else ('Escape Risk Alert:' if alert.alertCode == 'XER' else alert.alertCode) }}
-  {{ alert.comment }}
   <strong>{{ alert.dateCreated }}</strong>
 </p>
 {% endmacro %}
