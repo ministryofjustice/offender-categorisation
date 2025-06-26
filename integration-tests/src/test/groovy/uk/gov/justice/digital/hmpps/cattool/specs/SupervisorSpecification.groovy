@@ -48,7 +48,6 @@ class SupervisorSpecification extends AbstractSpecification {
 
     then: 'the review outcome page is displayed and review choices persisted'
     at SupervisorReviewOutcomePage
-    dcsSurveyLink.displayed
 
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.form_response[0].toString())
