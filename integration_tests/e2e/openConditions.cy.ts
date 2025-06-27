@@ -531,7 +531,10 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
       { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
-      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
+      {
+        question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?',
+        expectedAnswer: 'No',
+      },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([
@@ -728,7 +731,10 @@ describe('Open conditions', () => {
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
       { question: 'Victim Contact Scheme (VCS)', expectedAnswer: '' },
-      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
+      {
+        question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?',
+        expectedAnswer: 'No',
+      },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([
@@ -1100,9 +1106,7 @@ describe('Open conditions', () => {
 
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: false,
-      activeOnEscapeList: false,
+      alertCode: 'ABC',
     })
     cy.task('stubGetViolenceProfile', {
       offenderNo: 'B2345YZ',
@@ -1231,9 +1235,7 @@ describe('Open conditions', () => {
   function setUpProfiles() {
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
+      alertCode: 'XER',
     })
     cy.task('stubGetViolenceProfile', {
       offenderNo: 'B2345YZ',

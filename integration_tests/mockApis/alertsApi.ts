@@ -3,66 +3,78 @@ import { stubFor } from './wiremock'
 
 const stubGetEscapeProfile = ({
   offenderNo,
-  category,
-  onEscapeList,
-  activeOnEscapeList,
+  alertCode,
 }: {
   offenderNo: string
-  category: string
-  onEscapeList: boolean
-  activeOnEscapeList: boolean
+  alertCode: string
 }): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
-      url: `/risk-profiler/risk-profile/escape/${offenderNo}`,
+      url: `/alerts-api/prisoners/${offenderNo}/alerts?isActive=true&alertCode=XER,XEL,XELH`,
     },
     response: {
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: {
-        nomsId: offenderNo,
-        riskType: 'ESCAPE',
-        provisionalCategorisation: category,
-        activeEscapeList: onEscapeList,
-        activeEscapeRisk: activeOnEscapeList,
-        escapeListAlerts: [
+        content: [
           {
-            alertCode: 'XEL',
-            alertCodeDescription: 'Escape List',
-            comment: 'First xel comment',
-            dateCreated: '2016-09-14',
-            expired: false,
-            active: true,
-          },
-          {
-            alertCode: 'XEL',
-            alertCodeDescription: 'Escape List',
-            comment: `
-Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text
-comment with lengthy text comment with lengthy text comment with lengthy text
-comment with lengthy text comment with lengthy text comment with lengthy text
-comment with lengthy text comment with lengthy text comment with lengthy text
-`,
-            dateCreated: '2016-09-15',
-            expired: true,
-            active: false,
-          },
-        ],
-        escapeRiskAlerts: [
-          {
-            alertCode: 'XER',
-            alertCodeDescription: 'Escape Risk',
-            comment: 'First xer comment',
-            dateCreated: '2016-09-16',
-            expired: false,
-            active: true,
+            alertCode: {
+              code: alertCode,
+            },
+            activeFrom: '2016-09-14',
           },
         ],
       },
     },
   })
 
+const stubGetProfileWomenEscapeAlert = ({
+  offenderNo,
+  alertCode,
+}: {
+  offenderNo: string
+  alertCode: string
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/alerts-api/prisoners/${offenderNo}/alerts?isActive=true&alertCode=XER,XEL,XELH`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        content: [
+          {
+            alertCode: {
+              code: alertCode,
+            },
+            activeFrom: '2016-09-14',
+          },
+        ],
+      },
+    },
+  })
+
+const stubAlertsApiPing = (statusCode = 200): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/alerts-api/health/ping`,
+    },
+    response: {
+      status: statusCode,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        status: statusCode,
+        response: {},
+      },
+    },
+  })
+
 export default {
   stubGetEscapeProfile,
+  stubGetProfileWomenEscapeAlert,
+  stubAlertsApiPing,
 }

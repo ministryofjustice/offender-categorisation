@@ -111,9 +111,7 @@ describe('Tasklist', () => {
 
     cy.task('stubGetEscapeProfile', {
       offenderNo: offenderNumber,
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: false,
+      alertCode: 'XER',
     })
     taskListPage.escapeButton().click()
 

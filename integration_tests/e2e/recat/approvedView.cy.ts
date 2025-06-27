@@ -98,22 +98,6 @@ describe('Approved View', () => {
       bookingId: 12,
       riskProfile: {
         socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false },
-        escapeProfile: {
-          nomsId: 'B2345YZ',
-          riskType: 'ESCAPE',
-          activeEscapeList: true,
-          activeEscapeRisk: true,
-          escapeListAlerts: [
-            {
-              active: true,
-              comment: 'First xel comment',
-              expired: true,
-              alertCode: 'XEL',
-              dateCreated: '2016-09-14',
-              alertCodeDescription: 'Escape List',
-            },
-          ],
-        },
         violenceProfile: {
           nomsId: 'B2345YZ',
           riskType: 'VIOLENCE',
@@ -199,9 +183,6 @@ describe('Approved View', () => {
 
     approvedViewRecatPage.validatePrisonerSummary(
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
-    )
-    approvedViewRecatPage.validatePrisonerSummary(
-      'This person is considered an escape risk E-List: First xel comment 2016-09-14 (expired)',
     )
     approvedViewRecatPage.validatePrisonerSummary('This person is at risk of engaging in, or vulnerable to, extremism.')
   })
