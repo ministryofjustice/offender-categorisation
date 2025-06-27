@@ -152,7 +152,7 @@ module.exports = function createApp({
     config.apis.riskProfiler.url,
     config.apis.allocationManager.url,
     config.apis.prisonerSearch.url,
-    config.apis.alertsApi,
+    config.apis.alertsApi.url,
   )
   app.get('/health', (req, res, next) => {
     health((err, result) => {

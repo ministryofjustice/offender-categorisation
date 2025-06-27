@@ -75,8 +75,7 @@ const DEFAULTS = {
   RISKS_AND_NEEDS_ENDPOINT_URL: 'http://localhost:8086/',
   PROBATION_OFFENDER_SEARCH_ENDPOINT_URL: 'http://localhost:8087/',
   OFFENDER_CATEGORISATION_API_ENDPOINT_URL: 'http://localhost:8088/',
-  // change this
-  ALERTS_ENDPOINT_URL: 'https://alerts-api-dev.hmpps.service.justice.gov.uk/',
+  ALERTS_ENDPOINT_URL: 'http://localhost:8089/',
   COMPONENT_API_URL: 'http://localhost:8085/components',
   COMPONENT_API_TIMEOUT_RESPONSE: 20000,
   COMPONENT_API_TIMEOUT_DEADLINE: 20000,
