@@ -13,7 +13,7 @@ public class AlertsApi extends WireMockRule {
   }
 
   public void stubGetAlerts(String offenderno, boolean onEscapeList, boolean activeOnEscapeList) {
-    this.stubFor(get("/prisoners/" + offenderno + "/alerts")
+    this.stubFor(get("/prisoners/" + offenderno + "/alerts?isActive=true&alertCode=XER,XEL,XELH")
       .willReturn(aResponse()
         .withStatus(200)
         .withHeader("Content-Type", "application/json")
