@@ -49,7 +49,7 @@ class ReviewSpecification extends AbstractSpecification {
     summarySection[1].text() == 'All tasks completed'
 
     when: 'The continue link is selected'
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    alertsApi.stubGetAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
     elite2Api.stubAgencyDetails('LPI')
@@ -115,7 +115,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    alertsApi.stubGetAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
     elite2Api.stubAgencyDetails('LPI')
@@ -152,7 +152,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    alertsApi.stubGetAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
     elite2Api.stubAgencyDetails('LPI')

@@ -11,6 +11,7 @@ API_CLIENT_ID=categorisationtool
 API_CLIENT_SECRET=clientsecret
 ELITE2API_ENDPOINT_URL=http://localhost:8080/
 RISK_PROFILER_ENDPOINT_URL=http://localhost:8082/
+ALERTS_API_ENDPOINT_URL=http://localhost:8089/
 ALLOCATION_MANAGER_ENDPOINT_URL=http://localhost:8083/
 PRISONER_SEARCH_ENDPOINT_URL=http://localhost:8084/
 RISKS_AND_NEEDS_ENDPOINT_URL=http://localhost:8086/
@@ -50,3 +51,5 @@ RP_DL_QUEUE_URL=http://localhost:4566/000000000000/risk_profiler_change_dlq
 
 EVENT_QUEUE_URL=http://localhost:4566/000000000000/event
 EVENT_DL_QUEUE_URL=http://localhost:4566/000000000000/event_dlq
+
+

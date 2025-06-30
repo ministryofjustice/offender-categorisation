@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import geb.spock.GebReportingSpec
 import org.junit.Rule
+import uk.gov.justice.digital.hmpps.cattool.mockapis.AlertsApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.AllocationApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
@@ -25,6 +26,9 @@ abstract class AbstractSpecification extends GebReportingSpec {
 
   @Rule
   protected RiskProfilerApi riskProfilerApi = new RiskProfilerApi()
+
+  @Rule
+  protected AlertsApi alertsApi = new AlertsApi()
 
   @Rule
   protected AllocationApi allocationApi = new AllocationApi()
