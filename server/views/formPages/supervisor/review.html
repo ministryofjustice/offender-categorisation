@@ -243,20 +243,7 @@
       ]
     }) }}
 
-    {{ govukTextarea({
-      name: "otherInformationText",
-      type: "otherInformationText",
-      id: "otherInformationText",
-      attributes: { 'maxlength': 50000 },
-      label: { text: "Is there any other relevant information that you want to record?" },
-      hint: { text: "Your comments will be disclosed to the prisoner" },
-      value: data.supervisor.review.otherInformationText
-    }) }}
-
     {{ supervisorDecisionRadioButtons(isYoungOffender, isFemale, currentCat, data.supervisor.review.supervisorDecision, errors, data.details.sentence.indeterminate) }}
-
-    <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
-    <input type="hidden" name="previousOverrideCategoryText" value="{{ data.supervisor.review.supervisorOverriddenCategoryText }}"/>
 </div>
 
 {% endblock %}

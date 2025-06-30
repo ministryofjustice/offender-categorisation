@@ -15,7 +15,7 @@ function dataIfExists(data) {
 }
 
 module.exports = function createFormService(formClient, formApiClientBuilder) {
-  async function getCategorisationRecord(bookingId, transactionalClient) {
+  async function getCategorisationRecord(bookingId, transactionalClient = undefined) {
     try {
       const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
       return dataIfExists(data) || {}
@@ -88,7 +88,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     formSection,
     formName,
     status,
-    transactionalClient,
+    transactionalClient = undefined,
     logUpdate,
   }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)

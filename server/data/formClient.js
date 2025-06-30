@@ -266,7 +266,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  update(formResponse, bookingId, status, transactionalClient) {
+  update(formResponse, bookingId, status, transactionalClient = db) {
     logger.info(`updating record for booking id ${bookingId}`)
     const query = {
       text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,

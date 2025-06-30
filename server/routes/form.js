@@ -3,6 +3,7 @@ const flash = require('connect-flash')
 const R = require('ramda')
 const moment = require('moment')
 const joi = require('joi')
+const { startsWith } = require('ramda')
 const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
@@ -19,6 +20,7 @@ const openConditions = require('../config/openConditions')
 const cancel = require('../config/cancel')
 
 const CatType = require('../utils/catTypeEnum')
+const asyncMiddleware = require('../middleware/asyncMiddleware').default
 
 const SECURITY_BUTTON_SUBMIT = 'submit'
 const SECURITY_BUTTON_RETURN = 'return'
@@ -208,6 +210,22 @@ module.exports = function Index({
         const data = { ...result.data, categorisations }
         res.render(`formPages/${section}/recatReview`, { ...result, data })
       }
+    }),
+  )
+
+  router.get(
+    '/supervisor/further-information/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const result = await buildFormData(res, req, 'supervisor', 'review', req.params.bookingId)
+      res.render('formPages/supervisor/furtherInformation', result)
+    }),
+  )
+
+  router.get(
+    '/supervisor/change-category/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const result = await buildFormData(res, req, 'supervisor', 'review', req.params.bookingId)
+      res.render('formPages/supervisor/changeCategory', result)
     }),
   )
 
@@ -650,47 +668,44 @@ module.exports = function Index({
 
   router.post(
     '/supervisor/review/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+    asyncMiddleware(async (req, res) => {
       const { bookingId } = req.params
       const userInput = clearConditionalFields(req.body)
-      const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+      const categorisationRecord = await formService.getCategorisationRecord(bookingId)
       const currentCategory =
         R.path(['formObject', 'categoriser', 'provisionalCategory', 'overriddenCategory'], categorisationRecord) ??
         R.path(['formObject', 'categoriser', 'provisionalCategory', 'suggestedCategory'], categorisationRecord)
 
-      const isYoungOffender = true
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      const isYoungOffender = formService.isYoungOffender(details)
+      const isInWomensEstate = isFemalePrisonId(details.prisonId)
 
       const validSupervisorDecisionValues = [SUPERVISOR_DECISION_AGREE, SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION]
-      switch (currentCategory) {
-        case CATEGORY_B:
-          validSupervisorDecisionValues.push([
-            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_C,
-            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_D,
-          ])
-          break
-        case CATEGORY_C:
-          validSupervisorDecisionValues.push([
-            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_B,
-            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_D,
-          ])
-          break
-        case CATEGORY_D:
-          validSupervisorDecisionValues.push([
-            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_B,
-            SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_C,
-          ])
-          break
-        case CATEGORY_R:
+      if (isYoungOffender) {
+        if (currentCategory !== CATEGORY_I) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_I)
+        }
+        if (currentCategory !== CATEGORY_J) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_J)
+        }
+      }
+      if (isInWomensEstate) {
+        if (currentCategory !== CATEGORY_T) {
           validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_T)
-          break
-        case CATEGORY_T:
+        }
+        if (currentCategory !== CATEGORY_R) {
           validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_R)
-          break
-        case CATEGORY_I && isYoungOffender:
-          validSupervisorDecisionValues.push([SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_J])
-          break
-        default:
-          throw Error(`Invalid category ${currentCategory}`)
+        }
+      } else {
+        if (currentCategory !== CATEGORY_B) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_B)
+        }
+        if (currentCategory !== CATEGORY_C) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_C)
+        }
+        if (currentCategory !== CATEGORY_D) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_D)
+        }
       }
 
       const validation = joi
@@ -698,104 +713,94 @@ module.exports = function Index({
           supervisorDecision: joi
             .string()
             .valid(...validSupervisorDecisionValues)
-            .required(),
+            .required()
+            .messages({ 'any.required': 'Select what you would like to do next' }),
         })
-        .validate(userInput)
+        .validate(userInput, { stripUnknown: true, abortEarly: false })
 
-      if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
-        return
-      }
-
-      if (
-        userInput.supervisorOverriddenCategory !== 'D' &&
-        userInput.supervisorOverriddenCategory !== 'J' &&
-        userInput.supervisorOverriddenCategory !== 'T'
-      ) {
-        await formService.supervisorApproval({
-          bookingId: parseInt(bookingId, 10),
-          userId: req.user.username,
-          config: formPageConfig,
-          userInput,
-          formSection: section,
-          formName: form,
-          transactionalClient: transactionalDbClient,
-        })
-
-        if (userInput.catType === CatType.RECAT.name) {
-          const categorisations = await offendersService.getPrisonerBackground(
-            res.locals,
-            categorisationRecord.offenderNo,
-          )
-          const dataToStore = {
-            catHistory: categorisations,
-          }
-
-          await formService.mergeRiskProfileData(bookingId, dataToStore, transactionalDbClient)
-        }
-
-        await offendersService.createSupervisorApproval(res.locals, bookingId, userInput)
-
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-        const catTypeArgument = userInput.catType ? `?catType=${userInput.catType}` : ''
-        res.redirect(`${nextPath}${bookingId}${catTypeArgument}`)
-      } else {
-        // persist the open conditions override and return to categoriser to complete the open conditions route.
-        log.info(`Supervisor overriding to Category ${userInput.supervisorOverriddenCategory}`)
-        await formService.update({
-          bookingId: parseInt(bookingId, 10),
-          userId: req.user.username,
-          config: formPageConfig,
-          userInput,
-          formSection: section,
-          formName: form,
-          transactionalClient: transactionalDbClient,
-          logUpdate: true,
-        })
-        await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
-
-        const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-        const { formObject } = categorisationRecord
-        const user = await userService.getUser(res.locals)
-        const formObjectWithMessageValues = R.assocPath(
-          ['supervisor', 'confirmBack'],
-          { messageText: userInput.supervisorOverriddenCategoryText, supervisorName: user.displayNameAlternative },
-          formObject,
+      if (validation.error) {
+        req.flash(
+          'errors',
+          validation.error.details.map(error => ({
+            text: error.message,
+            href: `#${error.context.label}`,
+          })),
         )
+        return res.redirect(`/form/supervisor/review/${bookingId}`)
+      }
 
-        // Reset cat so it appears the categoriser originally chose open conditions!
-        if (userInput.catType === CatType.INITIAL.name) {
-          const existingCatDecision = R.path(['ratings', 'decision'], formObjectWithMessageValues)
-          const newData = R.assocPath(
-            ['categoriser', 'provisionalCategory'],
-            {
-              suggestedCategory: userInput.supervisorOverriddenCategory,
-              categoryAppropriate: 'Yes',
-              otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
-              justification: formObject.categoriser.provisionalCategory.justification,
-            },
-            formObjectWithMessageValues,
-          )
-          // delete ratings.decision if present
-          if (existingCatDecision) {
-            delete newData.ratings.decision
-          }
-          await formService.updateFormData(bookingId, newData, transactionalDbClient)
-        } else {
-          await formService.updateFormData(bookingId, formObjectWithMessageValues, transactionalDbClient)
+      const section = 'supervisor'
+      const form = 'review'
+      const formPageConfig = formConfig[section][form]
 
-          // delete recat decision to force a new decision once open conditions completed
-          await formService.deleteFormData({
-            bookingId: parseInt(bookingId, 10),
-            formSection: 'recat',
-            formName: 'decision',
-            transactionalClient: transactionalDbClient,
-          })
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: validation.value,
+        formSection: section,
+        formName: form,
+        logUpdate: true,
+      })
+
+      switch (validation.value.supervisorDecision) {
+        case SUPERVISOR_DECISION_AGREE:
+          return res.redirect(`/form/supervisor/further-information/${bookingId}`)
+        case SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION:
+          return res.redirect(`/form/supervisor/confirmBack/${bookingId}`)
+        case startsWith(SUPERVISOR_DECISION_CHANGE_TO):
+          return res.redirect(`/form/supervisor/change-category/${bookingId}`)
+        default:
+          throw Error('invalid supervisor decision')
+      }
+    }),
+  )
+
+  router.post(
+    '/supervisor/further-information/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const { bookingId } = req.params
+      const userInput = clearConditionalFields(req.body)
+
+      const section = 'supervisor'
+      const form = 'furtherInformation'
+      const formPageConfig = formConfig[section][form]
+
+      await formService.supervisorApproval({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput,
+        formSection: section,
+        formName: form,
+      })
+      const categorisationRecord = await formService.getCategorisationRecord(bookingId)
+
+      if (userInput.catType === CatType.RECAT.name) {
+        const categorisations = await offendersService.getPrisonerBackground(
+          res.locals,
+          categorisationRecord.offenderNo,
+        )
+        const dataToStore = {
+          catHistory: categorisations,
         }
 
-        // send back to the categoriser for open conditions completion
-        await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
-        res.redirect(`/supervisorHome`)
+        await formService.mergeRiskProfileData(bookingId, dataToStore)
       }
+
+      await offendersService.createSupervisorApproval(res.locals, bookingId, userInput)
+
+      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+      const catTypeArgument = userInput.catType ? `?catType=${userInput.catType}` : ''
+      res.redirect(`${nextPath}${bookingId}${catTypeArgument}`)
+    }),
+  )
+
+  router.post(
+    '/supervisor/change-category/:bookingId',
+    asyncMiddleware(async (req, res) => {
+      const result = await buildFormData(res, req, 'supervisor', 'review', req.params.bookingId)
+      res.render('formPages/supervisor/changeCategory', result)
     }),
   )
 

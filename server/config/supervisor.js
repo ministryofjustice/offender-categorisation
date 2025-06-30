@@ -1,37 +1,40 @@
 module.exports = {
   review: {
+    fields: [
+      {
+        supervisorDecision: {
+          responseType: 'requiredString',
+          validationMessage: 'Select what you would like to do next',
+        },
+      },
+    ],
+    validate: true,
+  },
+  furtherInformation: {
     nextPath: {
       path: '/tasklist/supervisor/outcome/',
     },
     fields: [
       {
-        supervisorCategoryAppropriate: {
-          responseType: 'requiredString',
-          validationMessage: 'Please select yes or no',
-        },
-      },
-      {
-        supervisorOverriddenCategory: {
-          responseType: 'requiredStringIf_supervisorCategoryAppropriate_No',
-          validationMessage: 'Please enter the new category',
-        },
-      },
-      {
-        supervisorOverriddenCategoryText: {
-          responseType: 'requiredStringIf_supervisorCategoryAppropriate_No',
-          validationMessage: 'Enter the reason why this category is more appropriate',
-        },
-      },
-      {
-        previousOverrideCategoryText: {
+        otherInformationText: {
           responseType: 'optionalString',
         },
       },
+    ],
+    validate: true,
+  },
+  changeCategory: {
+    fields: [
       {
-        proposedCategory: {
+        otherInformationText: {
           responseType: 'optionalString',
         },
       },
+    ],
+    validate: true,
+  },
+  giveBackToCategoriser: {
+    fields: [
       {
         otherInformationText: {
           responseType: 'optionalString',

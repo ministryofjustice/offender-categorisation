@@ -1,0 +1,27 @@
+{% extends "../formTemplate.html" %}
+{% from "textarea/macro.njk" import govukTextarea %}
+
+{% set pageTitle = "Supervisor further information" %}
+{% set greenButtonText = "Save and submit" %}
+
+{% block beforeContent %}
+  {% include "../../partials/breadCrumb.html" %}
+
+  {% include "../../partials/offenderBanner.html" %}
+{% endblock %}
+
+{% block formItems %}
+<div class="govuk-body-s">
+
+  <h1 class="govuk-heading-l mainHeading">Further information</h1>
+  {{ govukTextarea({
+    name: "otherInformationText",
+    type: "otherInformationText",
+    id: "otherInformationText",
+    label: { text: "Is there any other information that you want to record? (optional)" },
+    hint: { text: "Your comments will be disclosed to the prisoner" },
+    value: data.supervisor.review.otherInformationText
+  }) }}
+
+</div>
+{% endblock %}
