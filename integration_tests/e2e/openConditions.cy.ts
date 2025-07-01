@@ -372,7 +372,7 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateEscapeRatingSummary([
-      { question: 'Escape list', expectedAnswer: 'Yes' },
+      { question: 'Escape list', expectedAnswer: 'No' },
       { question: 'Escape alerts', expectedAnswer: 'Yes' },
       { question: 'Any other information that they pose an escape risk', expectedAnswer: 'Yes evidence details' },
       { question: 'Any further details', expectedAnswer: 'Yes cat b details' },
@@ -500,7 +500,7 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateEscapeRatingSummary([
-      { question: 'Escape list', expectedAnswer: 'Yes' },
+      { question: 'Escape list', expectedAnswer: 'No' },
       { question: 'Escape alerts', expectedAnswer: 'Yes' },
       { question: 'Any other information that they pose an escape risk', expectedAnswer: 'Yes evidence details' },
       { question: 'Any further details', expectedAnswer: 'Yes cat b details' },
@@ -700,7 +700,7 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateEscapeRatingSummary([
-      { question: 'Escape list', expectedAnswer: 'Yes' },
+      { question: 'Escape list', expectedAnswer: 'No' },
       { question: 'Escape alerts', expectedAnswer: 'Yes' },
       { question: 'Any other information that they pose an escape risk', expectedAnswer: 'Yes evidence details' },
       { question: 'Any further details', expectedAnswer: 'Yes cat b details' },
