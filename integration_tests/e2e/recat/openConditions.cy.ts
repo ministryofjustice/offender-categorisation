@@ -240,7 +240,12 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          socProfile: {
+            nomsId: 'B2345YZ',
+            riskType: 'SOC',
+            transferToSecurity: false,
+            provisionalCategorisation: 'C',
+          },
           extremismProfile: {
             nomsId: 'B2345YZ',
             riskType: 'EXTREMISM',
@@ -352,14 +357,14 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
+          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
           escapeProfile: {
+            riskType: 'ESCAPE',
             activeEscapeList: true,
             activeEscapeRisk: false,
             escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
             escapeRiskAlerts: [],
-            riskType: 'ESCAPE',
           },
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
           violenceProfile: {
             nomsId: 'B2345YZ',
             riskType: 'VIOLENCE',
@@ -537,6 +542,13 @@ describe('Open Conditions', () => {
             transferToSecurity: false,
             provisionalCategorisation: 'C',
           },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
           violenceProfile: {
             nomsId: 'B2345YZ',
             riskType: 'VIOLENCE',
@@ -675,7 +687,10 @@ describe('Open Conditions', () => {
       expect(dbRecord.assessment_date).not.equals(null)
       expect(dbRecord.nomis_sequence_no).equals(5)
       expect(dbRecord.status).equals('APPROVED')
-      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D', justification: 'category justification text' })
+      expect(dbRecord.form_response.recat.decision).to.deep.equal({
+        category: 'D',
+        justification: 'category justification text',
+      })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
         review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
       })
@@ -841,6 +856,13 @@ describe('Open Conditions', () => {
             transferToSecurity: false,
             provisionalCategorisation: 'C',
           },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
           violenceProfile: {
             nomsId: 'B2345YZ',
             riskType: 'VIOLENCE',
@@ -982,7 +1004,10 @@ describe('Open Conditions', () => {
       expect(dbRecord.assessment_date).not.equals(null)
       expect(dbRecord.nomis_sequence_no).equals(5)
       expect(dbRecord.status).equals('APPROVED')
-      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D', justification: 'category justification text' })
+      expect(dbRecord.form_response.recat.decision).to.deep.equal({
+        category: 'D',
+        justification: 'category justification text',
+      })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
         review: {
           proposedCategory: 'D',
@@ -1097,6 +1122,13 @@ describe('Open Conditions', () => {
         sequence_no: 1,
         risk_profile: {
           socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
           violenceProfile: {
             nomsId: 'B2345YZ',
             riskType: 'VIOLENCE',
@@ -1436,6 +1468,13 @@ describe('Open Conditions', () => {
             },
           ],
           socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
           violenceProfile: {
             nomsId: 'B2345YZ',
             riskType: 'VIOLENCE',
