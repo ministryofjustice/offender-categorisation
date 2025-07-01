@@ -83,16 +83,7 @@ class ReviewSpecification extends AbstractSpecification {
                           [bookingId: 12, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
                           [bookingId: 12, offenceDescription: 'Undated offence']]
     response.socProfile == [nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C']
-    response.escapeProfile == [nomsId                   : 'B2345YZ', riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true,
-                               escapeListAlerts         : [[active: true, comment: 'First xel comment', expired: false, alertCode: 'XEL', dateCreated: '2016-09-14', alertCodeDescription: 'Escape List'],
-                                                           [active: false, comment: '''
-Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text
- comment with lengthy text comment with lengthy text comment with lengthy text
-  comment with lengthy text comment with lengthy text comment with lengthy text
-   comment with lengthy text comment with lengthy text comment with lengthy text
-''', expired: true, alertCode: 'XEL', dateCreated: '2016-09-15', alertCodeDescription: 'Escape List']],
-                               escapeRiskAlerts         : [[active: true, comment: 'First xer comment', expired: false, alertCode: 'XER', dateCreated: '2016-09-16', alertCodeDescription: 'Escape Risk']],
-                               provisionalCategorisation: 'C']
+    response.escapeProfile == [riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true, escapeListAlerts: [[alertCode: 'XEL', dateCreated: '2025-01-01']], escapeRiskAlerts: [[alertCode: 'XER', dateCreated: '2025-01-01']]]
     response.violenceProfile == [nomsId                 : 'B2345YZ', riskType: 'VIOLENCE', displayAssaults: false, numberOfAssaults: 5, notifySafetyCustodyLead: true,
                                  numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3, provisionalCategorisation: 'C', veryHighRiskViolentOffender: true]
     response.extremismProfile == [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: true, provisionalCategorisation: 'C']

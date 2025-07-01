@@ -492,7 +492,7 @@ class SupervisorSpecification extends AbstractSpecification {
       '24/03/2013 B LPI prison\n' +
       '08/06/2012 A LPI prison'),
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
-      'This person is considered an escape risk\nE-List: First xel comment 2016-09-14',
+      'This person is considered an escape risk\nE-List: 2016-09-14',
       'This person is at risk of engaging in, or vulnerable to, extremism.', 'offence Details text']
     securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
     riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
