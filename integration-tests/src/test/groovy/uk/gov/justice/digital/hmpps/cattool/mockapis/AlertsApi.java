@@ -17,7 +17,7 @@ public class AlertsApi extends WireMockRule {
       .willReturn(aResponse()
         .withStatus(200)
         .withHeader("Content-Type", "application/json")
-        .withBody(JsonOutput.toJson("[content: [[alertCode: [code: \"XER\"], activeFrom: \"2025-01-01\"], [alertCode: [code: \"XEL\"], activeFrom: \"2025-01-01\"]]]"))
+        .withBody(JsonOutput.toJson([content: [[alertCode: [code: "XER"], activeFrom: "2025-01-01"], [alertCode: [code: "XEL"], activeFrom: "2025-01-01"]]]))
       ));
   }
 }
