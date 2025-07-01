@@ -349,6 +349,13 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
+          escapeProfile: {
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+            riskType: 'ESCAPE',
+          },
           socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
           violenceProfile: {
             nomsId: 'B2345YZ',

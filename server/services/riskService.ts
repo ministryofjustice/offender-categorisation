@@ -10,9 +10,6 @@ export default class CreateRiskService {
     try {
       const alertsApiClient = this.alertsApiClientBuilder(user)
       const response = await alertsApiClient.getActivePrisonerEscapeAlerts(offenderNo)
-      /* eslint-disable no-console */
-      console.log('TEEEEESSSSSSSSTTTTTTTT')
-      console.log(response)
       const escapeProfile = transformDataToEscapeProfile(response.content)
       return escapeProfile
     } catch (error) {
