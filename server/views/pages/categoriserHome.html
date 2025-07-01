@@ -16,6 +16,9 @@
 
 {% block content %}
 
+  {% if isInWomensEstate %}
+    {% include "../partials/smartSurveyTag.html" %}
+  {% endif %}
 
 <div >
   <h1 class="govuk-heading-l">{{ pageTitle }}</h1>

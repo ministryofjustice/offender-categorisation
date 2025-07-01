@@ -31,10 +31,10 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     headerValue*.text() == fixture.FULL_HEADER2
     changeLinks.size() == 0
-    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
-    riskAssessmentSummary*.text() == ['', 'lower category text', 'higher category text', 'No']
-    assessmentSummary*.text() == ['', 'Closed']
-    nextReviewDateSummary*.text() == ['', SIX_MONTHS_AHEAD_ISO_DAY]
+    securityInputSummary*.text() == ['No', 'Yes', 'No']
+    riskAssessmentSummary*.text() == ['lower category text', 'higher category text', 'No']
+    assessmentSummary*.text() == ['Closed']
+    nextReviewDateSummary*.text() == [SIX_MONTHS_AHEAD_ISO_DAY]
 
     when: 'the supervisor selects yes'
     elite2Api.stubSupervisorApprove("R")
@@ -43,7 +43,6 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     then: 'the review outcome page is displayed'
     at SupervisorReviewOutcomePage
-    dcsSurveyLink.displayed
   }
 
   def "The supervisor review page with YOI options in provisional category"() {
@@ -71,7 +70,6 @@ class WomenEstateRecatSpecification extends AbstractSpecification {
 
     then: 'the review outcome page is displayed'
     at SupervisorReviewOutcomePage
-    dcsSurveyLink.displayed
   }
 
   def "The supervisor review page with YOI - indeterminate sentence"() {

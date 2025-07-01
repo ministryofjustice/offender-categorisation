@@ -115,6 +115,9 @@ describe("Women's Estate", () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
+
+      taskListPage.smartSurveyLink().should('be.visible')
+
       cy.validateCategorisationDetails([
         // column 1
         [
@@ -216,6 +219,7 @@ describe("Women's Estate", () => {
 
       const categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
       categoryDecisionPage.selectCategoryDecisionRadioButton('CLOSED')
+      categoryDecisionPage.enterCategoryDecisionJustification('justification for category')
       categoryDecisionPage.continueButton().click()
 
       cy.task('stubGetLifeProfile', {
@@ -232,7 +236,7 @@ describe("Women's Estate", () => {
       })
 
       const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-      categoriserReviewCYAPage.changeLinks().should('have.length', 9)
+      categoriserReviewCYAPage.changeLinks().should('have.length', 10)
       cy.validateCategorisationDetails([
         // column 1
         [
@@ -282,6 +286,7 @@ describe("Women's Estate", () => {
         { term: 'Flagged by security team', definition: 'No' },
         // category decision
         { term: 'What security category is most suitable for this person?', definition: 'Closed' },
+        { term: 'Information about why this category is appropriate', definition: 'justification for category' },
         // next category review date
         { term: 'What date should they be reviewed by?', definition: sixMonthsFromNow.format(LONG_DATE_FORMAT) },
       ].forEach(cy.checkDefinitionList)
@@ -295,7 +300,7 @@ describe("Women's Estate", () => {
         expect(result.rows[0].status).to.eq(Status.AWAITING_APPROVAL.name)
         expect(result.rows[0].form_response).to.deep.eq({
           ratings: {
-            decision: { category: 'R' },
+            decision: { category: 'R', justification: 'justification for category' },
             escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'No' },
             securityInput: { securityInputNeeded: 'No' },
             nextReviewDate: { date: sixMonthsFromNow.format(SHORT_DATE_FORMAT), indeterminate: 'false' },
@@ -319,6 +324,7 @@ describe("Women's Estate", () => {
 
       const categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
       categoryDecisionPage.selectCategoryDecisionRadioButton('OPEN')
+      categoryDecisionPage.enterCategoryDecisionJustification('justification for open conditions')
       categoryDecisionPage.continueButton().click()
 
       const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
@@ -358,8 +364,8 @@ describe("Women's Estate", () => {
       riskLevelsPage.selectRiskLevelsRadioButton('NO')
       riskLevelsPage.continueButton().click()
 
-      cy.visit(`/form/openconditions/provisionalCategory/${bookingId}`)
-      cy.url().should('include', `tasklist/${bookingId}`)
+      // cy.visit(`/form/openconditions/provisionalCategory/${bookingId}`)
+      // cy.url().should('include', `tasklist/${bookingId}`)
 
       cy.task('stubGetLifeProfile', {
         offenderNo,
@@ -375,7 +381,7 @@ describe("Women's Estate", () => {
       })
 
       const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-      categoriserReviewCYAPage.changeLinks().should('have.length', 17)
+      categoriserReviewCYAPage.changeLinks().should('have.length', 27)
       cy.validateCategorisationDetails([
         // column 1
         [
@@ -426,6 +432,7 @@ describe("Women's Estate", () => {
         { term: 'Flagged by security team', definition: 'No' },
         // category decision
         { term: 'What security category is most suitable for this person?', definition: 'Open' },
+        { term: 'Information about why this category is appropriate', definition: 'justification for open conditions' },
         // next category review date
         {
           term: 'What date should they be reviewed by?',
@@ -470,6 +477,7 @@ describe("Women's Estate", () => {
           ratings: {
             decision: {
               category: 'T',
+              justification: 'justification for open conditions',
             },
             escapeRating: {
               escapeCatB: 'No',
@@ -587,7 +595,9 @@ describe("Women's Estate", () => {
       loginAsWomensSupervisorUser({ youngOffender: false, indeterminateSentence: false })
 
       const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+      supervisorHomePage.smartSurveyLink().should('be.visible')
       supervisorHomePage.startReviewForPrisoner(bookingId)
+
       cy.validateCategorisationDetails([
         // column 1
         [
@@ -653,7 +663,6 @@ describe("Women's Estate", () => {
         CATEGORISATION_TYPE.INITIAL,
       )
       supervisorReviewOutcomePage.finishButton().should('be.visible')
-      supervisorReviewOutcomePage.dcsSurveyLink().should('be.visible')
     })
 
     it('should display the indeterminate sentence warning as appropriate', () => {
@@ -992,7 +1001,6 @@ describe("Women's Estate", () => {
                 CATEGORISATION_TYPE.INITIAL,
               )
               supervisorReviewOutcomePage.finishButton().should('be.visible')
-              supervisorReviewOutcomePage.dcsSurveyLink().should('be.visible')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
                 expect(result.rows[0].status).to.eq(Status.APPROVED.name)

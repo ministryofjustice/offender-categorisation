@@ -232,6 +232,15 @@
                 text: "Change",
                 visuallyHiddenText: "Decision"
               }] if showChangeLinks else [] }
+        },
+        {
+          key: { text: "Information about why this category is appropriate" },
+          value: { text: data.ratings.decision.justification },
+          actions: { items: [{
+                href: '/form/ratings/decision/' + data.details.bookingId,
+                text: "Change",
+                visuallyHiddenText: "Decision"
+              }] if showChangeLinks else [] }
       }
     ]
     }) }}

@@ -404,6 +404,9 @@ module.exports = function Index({
     if (body.otherInformationText === '') {
       delete updated.otherInformationText
     }
+    if (body.justification === '') {
+      delete updated.justification
+    }
     if (body.overriddenCategory === '') {
       delete updated.overriddenCategory
     }
@@ -719,6 +722,7 @@ module.exports = function Index({
               suggestedCategory: userInput.supervisorOverriddenCategory,
               categoryAppropriate: 'Yes',
               otherInformationText: formObject.categoriser.provisionalCategory.otherInformationText,
+              justification: formObject.categoriser.provisionalCategory.justification,
             },
             formObjectWithMessageValues,
           )

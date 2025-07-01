@@ -89,7 +89,7 @@ describe('Approved view', () => {
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
       formResponse: {
-        categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes' } },
+        categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes', justification: 'test justification' } },
         supervisor: { review: { supervisorCategoryAppropriate: 'Yes' } },
       },
       securityReviewedBy: null,
@@ -155,6 +155,10 @@ describe('Approved view', () => {
 
     formApprovedView.validateCommentsVisibility({ areVisible: false })
     formApprovedView.validateOpenConditionsHeadingVisibility({ isVisible: false })
+
+    formApprovedView.validateOtherInformationSummary([
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'test justification' },
+    ])
   })
 
   it('should correctly display the "Cat overridden by categoriser and supervisor" messaging', () => {
@@ -175,7 +179,7 @@ describe('Approved view', () => {
             suggestedCategory: 'B',
             categoryAppropriate: 'No',
             overriddenCategory: 'C',
-            overriddenCategoryText: "Here are the categoriser's comments on why the category was changed",
+            justification: "Here are the categoriser's comments on why the category was changed",
           },
         },
         supervisor: {
@@ -206,18 +210,66 @@ describe('Approved view', () => {
       'The recommended category was changed from Category C to open category',
     ])
 
-    formApprovedView.validateCategoriserComments({
-      expectedComments: `Here are the categoriser's comments on why the category was changed`,
-    })
     formApprovedView.validateSupervisorComments({
       expectedComments: `Here are the supervisor's comments on why the category was changed`,
     })
+    formApprovedView.validateOtherInformationSummary([
+      { question: 'Information about why this category is appropriate', expectedAnswer: "Here are the categoriser's comments on why the category was changed" },
+    ])
 
     formApprovedView.validateOpenConditionsHeadingVisibility({ isVisible: true })
 
     formApprovedView.getBackToCaseListButton().click()
 
     Page.verifyOnPage(SupervisorDonePage)
+  })
+
+  it('should correctly display the historic other relevant information message', () => {
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      userId: CATEGORISER_USER.username,
+      bookingId: 12,
+      nomisSequenceNumber: 1,
+      catType: CATEGORISATION_TYPE.INITIAL,
+      offenderNo: 'dummy',
+      sequenceNumber: 1,
+      status: STATUS.APPROVED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: new Date(),
+      formResponse: {
+        categoriser: {
+          provisionalCategory: {
+            suggestedCategory: 'B',
+            categoryAppropriate: 'No',
+            overriddenCategory: 'C',
+            otherInformationText: "Here are the categoriser's comments on why the category was changed",
+          },
+        },
+        supervisor: {
+          review: {
+            supervisorCategoryAppropriate: 'No',
+            supervisorOverriddenCategory: 'D',
+            supervisorOverriddenCategoryText: "Here are the supervisor's comments on why the category was changed",
+          },
+        },
+        openConditions: {
+          riskLevels: { likelyToAbscond: 'No' },
+          riskOfHarm: { seriousHarm: 'No' },
+          foreignNational: { isForeignNational: 'No' },
+          earliestReleaseDate: { fiveOrMoreYears: 'No' },
+        },
+      },
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      assignedUserId: null,
+      approvedBy: SUPERVISOR_USER.username,
+    })
+
+    navigateToView()
+
+    formApprovedView.validateOtherInformationSummary([
+      { question: 'Other relevant information', expectedAnswer: "Here are the categoriser's comments on why the category was changed" },
+    ])
   })
 
   it('should allow the display of a previous / older categorisation', () => {

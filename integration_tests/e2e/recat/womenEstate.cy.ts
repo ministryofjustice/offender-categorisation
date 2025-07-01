@@ -192,6 +192,7 @@ describe("Women's estate recategorisation", () => {
     taskListPage.decisionButton().click()
     checkPrisonerHeaderSummary()
     cy.get('#openOption').click()
+    cy.get('#justification').type('justification text')
     cy.get('button[type="submit"]').contains('Save and return').click()
     const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
     openConditionsAddedPage.returnToRecatTasklistButton(testBookingId).click()
@@ -203,6 +204,7 @@ describe("Women's estate recategorisation", () => {
 
     taskListPage.decisionButton().click()
     cy.get('#closedOption').click()
+    cy.get('#justification').type('justification text')
     cy.get('button[type="submit"]').contains('Save and return').click()
 
     taskListPage.nextReviewDateButton().click()

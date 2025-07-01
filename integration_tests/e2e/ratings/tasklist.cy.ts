@@ -153,8 +153,8 @@ describe('Tasklist', () => {
     })
     taskListPage.continueReviewAndCategorisationButton(bookingId).click()
 
-    const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-    categoriserReviewCYAPage.continueButton().click()
+    const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId, 'you continue')
+    categoriserReviewCYAPage.continueButton('Continue').click()
 
     cy.get('.govuk-warning-text:eq(0)').should(
       'contain.text',

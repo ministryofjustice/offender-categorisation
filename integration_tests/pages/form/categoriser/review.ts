@@ -7,18 +7,18 @@ export default class CategoriserReviewCYAPage extends Page {
     return `/form/categoriser/review/${this._bookingId}`
   }
 
-  constructor() {
-    super('Check your answers before you continue')
+  constructor(continueOrSubmitInTitle: String) {
+    super(`Check your answers before ${continueOrSubmitInTitle}`)
   }
 
-  static createForBookingId = (bookingId: number) => {
+  static createForBookingId = (bookingId: number, continueOrSubmitInTitle: string = 'submitting') => {
     this._bookingId = bookingId
-    return new CategoriserReviewCYAPage()
+    return new CategoriserReviewCYAPage(continueOrSubmitInTitle)
   }
 
   changeLinks = (): PageElement => cy.get('a.govuk-link').filter(':contains("Change")')
 
-  continueButton = (): PageElement => cy.get('button[type="submit"]').contains('Continue')
+  continueButton = (text: string = 'Save and submit'): PageElement => cy.get('button[type="submit"]').contains(text)
 
   victimContactSchemeDl = (): PageElement => cy.get('.victimContactSchemeSummary.no-print')
 
