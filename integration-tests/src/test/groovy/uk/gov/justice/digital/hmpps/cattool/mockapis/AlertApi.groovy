@@ -12,7 +12,7 @@ class AlertsApi extends WireMockRule {
     super(8089);
   }
 
-  void stubGetAlerts(String offenderno, boolean onEscapeList, boolean activeOnEscapeList) {
+  void stubGetEscapeAlerts(String offenderno, boolean onEscapeList, boolean activeOnEscapeList) {
     def responseContent = []
     if (onEscapeList) {
       responseContent += [alertCode: [code: "XER"], activeFrom: "2025-01-01"]

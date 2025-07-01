@@ -17,7 +17,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
-    alertsApi.stubGetAlerts('B2345YZ', false, true)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', false, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
 
     prisonerBackgroundButton.click()
@@ -61,7 +61,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, true)
-    alertsApi.stubGetAlerts('B2345YZ', true, false)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
 
     prisonerBackgroundButton.click()
@@ -88,7 +88,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
     riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
-    alertsApi.stubGetAlerts('B2345YZ', true, false)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
 
     prisonerBackgroundButton.click()
