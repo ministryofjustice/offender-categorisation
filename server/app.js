@@ -47,6 +47,7 @@ module.exports = function createApp({
   riskProfilerService,
   statsService,
   frontEndComponentsService,
+  pathfinderService,
 }) {
   const app = express()
 
@@ -269,7 +270,14 @@ module.exports = function createApp({
   app.use('/', homeRouter)
   app.use(
     '/tasklist/',
-    createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService }),
+    createTasklistRouter({
+      formService,
+      offendersService,
+      userService,
+      authenticationMiddleware,
+      riskProfilerService,
+      pathfinderService,
+    }),
   )
   app.use(
     '/tasklistRecat/',
@@ -279,6 +287,7 @@ module.exports = function createApp({
       userService,
       authenticationMiddleware,
       riskProfilerService,
+      pathfinderService,
     }),
   )
 
@@ -295,6 +304,7 @@ module.exports = function createApp({
     offendersService,
     userService,
     riskProfilerService,
+    pathfinderService,
     authenticationMiddleware,
   })
   app.use('/form/recat/', recatRouter)
@@ -321,6 +331,7 @@ module.exports = function createApp({
     userService,
     riskProfilerService,
     authenticationMiddleware,
+    pathfinderService,
   })
   app.use('/form/', formRouter)
   app.use('/supervisor/', formRouter)

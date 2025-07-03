@@ -38,6 +38,7 @@ module.exports = function Index({
   userService,
   riskProfilerService,
   authenticationMiddleware,
+  pathfinderService,
 }) {
   const router = express.Router()
 
@@ -116,6 +117,13 @@ module.exports = function Index({
         res.locals,
         false, // don't yet have the answer the question - will be populated correctly in the review route
       )
+      console.log(extremismProfile, '<-- extremism profile')
+      console.log(pathfinderService, '<-- pathfinder service')
+      const pathfinderExtremismProfile = await pathfinderService.getExtremismProfile(
+        result.data.details.offenderNo,
+        res.locals,
+      )
+      console.log(pathfinderExtremismProfile, '<-- pathfinder extremism')
       const data = { ...result.data, extremismProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     }),
