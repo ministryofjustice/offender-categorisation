@@ -498,6 +498,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     const isCatBDueToEscape =
       // The other Q on the escape page is info only
       data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes'
+    // need to change this
     const isCatBDueToExtremism =
       (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'B') ||
       (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
