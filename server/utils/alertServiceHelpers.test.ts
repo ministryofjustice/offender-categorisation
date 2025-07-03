@@ -1,4 +1,4 @@
-import { transformDataToEscapeProfile } from './riskServiceHelpers'
+import { transformDataToEscapeProfile } from './alertServiceHelpers'
 
 describe('transformDataToEscapeProfile', () => {
   it('returns object with default values when input is an empty array', () => {

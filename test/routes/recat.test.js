@@ -62,7 +62,7 @@ const userService = {
   getUser: jest.fn(),
 }
 
-const riskService = {
+const alertService = {
   getEscapeProfile: jest.fn(),
 }
 
@@ -92,7 +92,7 @@ const formRoute = createRouter({
   offendersService,
   userService,
   riskProfilerService,
-  riskService,
+  alertService,
   authenticationMiddleware,
 })
 
@@ -127,7 +127,7 @@ beforeEach(() => {
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
   riskProfilerService.getViolenceProfile.mockResolvedValue({})
   riskProfilerService.getExtremismProfile.mockResolvedValue({})
-  riskService.getEscapeProfile.mockResolvedValue({})
+  alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
   moment.now = jest.fn()

@@ -1,4 +1,4 @@
-import CreateRiskService from './riskService'
+import CreateAlertService from './alertService'
 
 const alertsApiClient = {
   getActivePrisonerEscapeAlerts: jest.fn(),
@@ -24,7 +24,7 @@ let service
 beforeEach(() => {
   alertsApiClientBuilder.mockReturnValue(alertsApiClient)
   alertsApiClient.getActivePrisonerEscapeAlerts.mockReturnValue(mockResponse)
-  service = new CreateRiskService(alertsApiClientBuilder)
+  service = new CreateAlertService(alertsApiClientBuilder)
 })
 
 afterEach(() => {

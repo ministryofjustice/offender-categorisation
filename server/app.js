@@ -47,7 +47,7 @@ module.exports = function createApp({
   riskProfilerService,
   statsService,
   frontEndComponentsService,
-  riskService,
+  alertService,
 }) {
   const app = express()
 
@@ -276,7 +276,7 @@ module.exports = function createApp({
       userService,
       authenticationMiddleware,
       riskProfilerService,
-      riskService,
+      alertService,
     }),
   )
   app.use(
@@ -287,7 +287,7 @@ module.exports = function createApp({
       userService,
       authenticationMiddleware,
       riskProfilerService,
-      riskService,
+      alertService,
     }),
   )
 
@@ -304,7 +304,7 @@ module.exports = function createApp({
     offendersService,
     userService,
     riskProfilerService,
-    riskService,
+    alertService,
     authenticationMiddleware,
   })
   app.use('/form/recat/', recatRouter)
@@ -331,7 +331,7 @@ module.exports = function createApp({
     userService,
     riskProfilerService,
     authenticationMiddleware,
-    riskService,
+    alertService,
   })
   app.use('/form/', formRouter)
   app.use('/supervisor/', formRouter)

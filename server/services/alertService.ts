@@ -1,8 +1,8 @@
 import logger = require('../../log')
 
-import { transformDataToEscapeProfile, EscapeProfile } from '../utils/riskServiceHelpers'
+import { transformDataToEscapeProfile, EscapeProfile } from '../utils/alertServiceHelpers'
 
-export default class CreateRiskService {
+export default class CreateAlertService {
   // eslint-disable-next-line no-empty-function
   constructor(private readonly alertsApiClientBuilder) {}
 
