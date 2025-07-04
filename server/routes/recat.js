@@ -66,11 +66,10 @@ module.exports = function Index({
         res.locals,
         false, // not used for recat (contributes towards recommended category)
       )
-      const pathfinderExtremismProfile = await pathfinderService.getExtremismProfile(
-        result.data.details.offenderNo,
-        res.locals,
-      )
-      console.log(pathfinderExtremismProfile, '<-- pathfinder extremism')
+      // const pathfinderExtremismProfile = await pathfinderService.getExtremismProfile(
+      //   result.data.details.offenderNo,
+      //   res.locals,
+      // )
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
       const offenderDpsCaseNotesLink = offenderCaseNotesLink(offenderNo)
       const offenderDpsAdjudicationsLink = offenderAdjudicationLink(offenderNo)

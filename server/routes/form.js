@@ -117,12 +117,10 @@ module.exports = function Index({
         res.locals,
         false, // don't yet have the answer the question - will be populated correctly in the review route
       )
-      console.log(extremismProfile, '<-- extremism profile')
-      const pathfinderExtremismProfile = await pathfinderService.getExtremismProfile(
-        result.data.details.offenderNo,
-        res.locals,
-      )
-      console.log(pathfinderExtremismProfile, '<-- pathfinder extremism')
+      // const pathfinderExtremismProfile = await pathfinderService.getExtremismProfile(
+      //   result.data.details.offenderNo,
+      //   res.locals,
+      // )
       const data = { ...result.data, extremismProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     }),
