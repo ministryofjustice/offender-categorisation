@@ -51,14 +51,8 @@ module.exports = {
         },
       },
       {
-        confirmation: {
-          responseType: 'requiredString',
-          validationMessage: 'Please select yes or no',
-        },
-      },
-      {
         messageText: {
-          responseType: 'requiredStringIf_confirmation_Yes',
+          responseType: 'requiredString',
           validationMessage: 'Please enter a message for the categorisor',
         },
       },

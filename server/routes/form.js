@@ -3,7 +3,6 @@ const flash = require('connect-flash')
 const R = require('ramda')
 const moment = require('moment')
 const joi = require('joi')
-const { startsWith } = require('ramda')
 const log = require('../../log')
 
 const { firstItem } = require('../utils/functionalHelpers')
@@ -26,7 +25,7 @@ const SECURITY_BUTTON_SUBMIT = 'submit'
 const SECURITY_BUTTON_RETURN = 'return'
 
 const SUPERVISOR_DECISION_AGREE = 'agreeWithCategoryDecision'
-const SUPERVISOR_DECISION_CHANGE_TO = 'changeCategoryTo_'
+export const SUPERVISOR_DECISION_CHANGE_TO = 'changeCategoryTo_'
 const SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION = 'requestMoreInformation'
 
 const CATEGORY_B = 'B'
@@ -537,12 +536,10 @@ module.exports = function Index({
         formName: form,
         transactionalClient: transactionalDbClient,
       })
-      const changeConfirmed = userInput.confirmation === 'Yes'
-      if (changeConfirmed) {
-        await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
-      }
 
-      const nextPath = changeConfirmed ? '/supervisorHome' : `/form/supervisor/review/${bookingId}`
+      await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
+
+      const nextPath = '/supervisorHome'
       res.redirect(`${nextPath}`)
     }),
   )
@@ -743,16 +740,16 @@ module.exports = function Index({
         logUpdate: true,
       })
 
-      switch (validation.value.supervisorDecision) {
-        case SUPERVISOR_DECISION_AGREE:
-          return res.redirect(`/form/supervisor/further-information/${bookingId}`)
-        case SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION:
-          return res.redirect(`/form/supervisor/confirmBack/${bookingId}`)
-        case startsWith(SUPERVISOR_DECISION_CHANGE_TO):
-          return res.redirect(`/form/supervisor/change-category/${bookingId}`)
-        default:
-          throw Error('invalid supervisor decision')
+      if (validation.value.supervisorDecision === SUPERVISOR_DECISION_AGREE) {
+        return res.redirect(`/form/supervisor/further-information/${bookingId}`)
       }
+      if (validation.value.supervisorDecision === SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION) {
+        return res.redirect(`/form/supervisor/confirmBack/${bookingId}`)
+      }
+      if (validation.value.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
+        return res.redirect(`/form/supervisor/change-category/${bookingId}`)
+      }
+      return res.redirect(`/form/supervisor/review/${bookingId}`)
     }),
   )
 
@@ -799,8 +796,31 @@ module.exports = function Index({
   router.post(
     '/supervisor/change-category/:bookingId',
     asyncMiddleware(async (req, res) => {
-      const result = await buildFormData(res, req, 'supervisor', 'review', req.params.bookingId)
-      res.render('formPages/supervisor/changeCategory', result)
+      const { bookingId } = req.params
+      const validation = joi
+        .object({
+          giveBackToCategoriser: joi
+            .bool()
+            .required()
+            .messages({ 'any.required': 'Select if you want to send the review back the categoriser' }),
+        })
+        .validate(req.body, { stripUnknown: true, abortEarly: false })
+
+      if (validation.error) {
+        req.flash(
+          'errors',
+          validation.error.details.map(error => ({
+            text: error.message,
+            href: `#${error.context.label}`,
+          })),
+        )
+        return res.redirect(`/form/supervisor/change-category/${bookingId}`)
+      }
+
+      if (validation.value.giveBackToCategoriser) {
+        return res.redirect(`/form/supervisor/confirmBack/${bookingId}`)
+      }
+      return res.redirect(`/form/supervisor/further-information/${bookingId}`)
     }),
   )
 

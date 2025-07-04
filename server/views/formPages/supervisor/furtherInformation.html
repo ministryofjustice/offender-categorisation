@@ -1,13 +1,16 @@
 {% extends "../formTemplate.html" %}
 {% from "textarea/macro.njk" import govukTextarea %}
+{% from "../../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Supervisor further information" %}
 {% set greenButtonText = "Save and submit" %}
 
-{% block beforeContent %}
-  {% include "../../partials/breadCrumb.html" %}
-
-  {% include "../../partials/offenderBanner.html" %}
+{% block navigation %}
+  {% set breadCrumbList = [
+    {href: '/', title: 'Categorisation dashboard'},
+    {href: '/form/supervisor/review/'+ data.details.bookingId, title: 'Approve category'}
+  ] %}
+  {{ breadCrumb(breadCrumbList) }}
 {% endblock %}
 
 {% block formItems %}
@@ -22,6 +25,10 @@
     hint: { text: "Your comments will be disclosed to the prisoner" },
     value: data.supervisor.review.otherInformationText
   }) }}
+
+  {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
+  {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
+  {% set currentCat = overriddenCat if overriddenCat else cat %}
 
 </div>
 {% endblock %}

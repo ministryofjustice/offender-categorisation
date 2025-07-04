@@ -9,6 +9,7 @@ const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpe
 const { config: conf } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
+const { SUPERVISOR_DECISION_CHANGE_TO } = require('../routes/form')
 
 function dataIfExists(data) {
   return data.rows[0]
@@ -417,6 +418,10 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
 
   function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
     const answers = fieldMap ? fieldMap.reduce(answersFromMapReducer(userInput), {}) : {}
+
+    if (userInput.supervisorDecision && userInput.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
+      answers.supervisorOverriddenCategory = userInput.supervisorDecision.slice(-1)
+    }
 
     return {
       ...formObject,

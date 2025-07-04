@@ -6,6 +6,7 @@
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 
 {% set pageTitle = "Message for the categoriser" %}
+{% set greenButtonText = "Give back to categoriser" %}
 
 {% block navigation %}
 
@@ -31,7 +32,7 @@
     hint: { text: "Your comments will be disclosed to the prisoner" },
     value: data.supervisor.confirmBack.messageText,
     errorMessage: {
-      text: "Please enter a message"
+      text: "Enter your message for the categoriser"
     } if (errors | findError('messageText'))
   }) }}
 

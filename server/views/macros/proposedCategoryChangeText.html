@@ -1,0 +1,16 @@
+{% macro proposedCategoryChangeText(supervisorDecision, includeTheWordCategory = true) %}
+
+  {% switch supervisorDecision %}
+  {% case 'changeCategoryTo_I' %}
+    YOI Closed
+  {% case 'changeCategoryTo_J' %}
+    YOI Open
+  {% case 'changeCategoryTo_T' %}
+    Open
+  {% case 'changeCategoryTo_R' %}
+    Closed
+  {% default %}
+    {{ "Category" if includeTheWordCategory else "" }} {{ supervisorDecision.slice(-1) }}
+  {% endswitch %}
+
+{% endmacro %}
