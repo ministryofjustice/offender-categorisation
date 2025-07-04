@@ -8,13 +8,13 @@ jest.mock('../../log')
 const mockTransformDataToProfile = jest.mocked(transformDataToExtremismProfile)
 const mockedLogger = jest.mocked(logger)
 
-const mockGetExtremismProfile = jest.fn()
+const mockGetPathfinderData = jest.fn()
 const mockPathfinderApiClientBuilder = jest.fn()
 
 beforeEach(() => {
   jest.clearAllMocks()
   mockPathfinderApiClientBuilder.mockReturnValue({
-    getExtremismProfile: mockGetExtremismProfile,
+    getPathfinderData: mockGetPathfinderData,
   })
 })
 
@@ -23,7 +23,7 @@ describe('CreatePathfinderService', () => {
   const offenderNo = '123'
 
   it('returns transformed profile when the api responds successfully', async () => {
-    mockGetExtremismProfile.mockResolvedValue({ band: 3 })
+    mockGetPathfinderData.mockResolvedValue({ band: 3 })
     mockTransformDataToProfile.mockReturnValue({ notifyRegionalCTLead: true, increasedRiskOfExtremism: false })
 
     const service = new CreatePathfinderService(mockPathfinderApiClientBuilder)
@@ -33,7 +33,7 @@ describe('CreatePathfinderService', () => {
   })
 
   it('returns default response when the api returns a 404', async () => {
-    mockGetExtremismProfile.mockRejectedValue({ status: 404 })
+    mockGetPathfinderData.mockRejectedValue({ status: 404 })
 
     const service = new CreatePathfinderService(mockPathfinderApiClientBuilder)
     const result = await service.getExtremismProfile(offenderNo, user)
@@ -43,7 +43,7 @@ describe('CreatePathfinderService', () => {
 
   it('logs and rethrows non-404 errors', async () => {
     const error = { status: 500 }
-    mockGetExtremismProfile.mockRejectedValue(error)
+    mockGetPathfinderData.mockRejectedValue(error)
 
     const service = new CreatePathfinderService(mockPathfinderApiClientBuilder)
 

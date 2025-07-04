@@ -5,6 +5,7 @@ import { getApiClientToken } from '../../authentication/clientCredentials'
 import logger from '../../../log'
 import { getSanitisedError } from '../../getSanitisedError'
 import { User } from '../user'
+import { PathfinderDataDto } from './escapeProfile.dto'
 
 const timeoutSpec = {
   response: config.apis.pathfinderApi.timeout.response,
@@ -25,8 +26,7 @@ export const pathfinderApiClientBuilder = (user: User) => {
   const apiGet = pathfinderApiGetBuilder(user.username)
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async getExtremismProfile(offenderNo: string): Promise<any> {
+    async getPathfinderData(offenderNo: string): Promise<PathfinderDataDto> {
       const path = `${apiUrl}pathfinder/offender/${offenderNo}`
       const response = await apiGet({ path })
 
@@ -51,6 +51,7 @@ export const pathfinderApiClientBuilder = (user: User) => {
         return result.body
       } catch (error) {
         const sanitisedError = getSanitisedError(error)
+        // should i log this if it is a 404?
         logger.error({ sanitisedError, path, query }, 'Error calling pathfinder api')
         throw sanitisedError
       }

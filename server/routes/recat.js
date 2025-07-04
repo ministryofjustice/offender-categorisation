@@ -26,6 +26,7 @@ module.exports = function Index({
   userService,
   riskProfilerService,
   authenticationMiddleware,
+  pathfinderService,
 }) {
   const router = express.Router()
 
@@ -65,6 +66,11 @@ module.exports = function Index({
         res.locals,
         false, // not used for recat (contributes towards recommended category)
       )
+      const pathfinderExtremismProfile = await pathfinderService.getExtremismProfile(
+        result.data.details.offenderNo,
+        res.locals,
+      )
+      console.log(pathfinderExtremismProfile, '<-- pathfinder extremism')
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
       const offenderDpsCaseNotesLink = offenderCaseNotesLink(offenderNo)
       const offenderDpsAdjudicationsLink = offenderAdjudicationLink(offenderNo)
