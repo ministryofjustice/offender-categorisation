@@ -61,15 +61,8 @@ module.exports = function Index({
       const { offenderNo } = result.data.details
       const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
       const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
-      const extremismProfile = await riskProfilerService.getExtremismProfile(
-        offenderNo,
-        res.locals,
-        false, // not used for recat (contributes towards recommended category)
-      )
-      // const pathfinderExtremismProfile = await pathfinderService.getExtremismProfile(
-      //   result.data.details.offenderNo,
-      //   res.locals,
-      // )
+
+      const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
       const offenderDpsCaseNotesLink = offenderCaseNotesLink(offenderNo)
       const offenderDpsAdjudicationsLink = offenderAdjudicationLink(offenderNo)
@@ -99,11 +92,7 @@ module.exports = function Index({
       const { offenderNo } = result.data.details
       const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
       const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
-      const extremismProfile = await riskProfilerService.getExtremismProfile(
-        offenderNo,
-        res.locals,
-        false, // contributes towards recommended category, only used in initial categorisations
-      )
+      const extremismProfile = pathfinderService.getExtremismProfile(offenderNo, res.locals)
 
       const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
 
