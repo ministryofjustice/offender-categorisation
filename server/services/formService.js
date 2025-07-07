@@ -149,6 +149,8 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       formName,
     })
 
+    delete newCategorisationForm?.supervisor?.review?.supervisorDecision
+
     log.info(
       `Updating Categorisation for booking Id: ${bookingId}, offender No: ${
         currentCategorisation.offenderNo
@@ -207,7 +209,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     formSection,
     formName,
     userId,
-    transactionalClient,
+    transactionalClient = undefined,
   }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 

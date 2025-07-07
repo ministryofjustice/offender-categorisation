@@ -7,6 +7,16 @@ module.exports = {
           validationMessage: 'Select what you would like to do next',
         },
       },
+      {
+        supervisorOverriddenCategory: {
+          responseType: 'optionalString',
+        },
+      },
+      {
+        supervisorCategoryAppropriate: {
+          responseType: 'optionalString',
+        },
+      },
     ],
     validate: true,
   },

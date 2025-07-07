@@ -29,6 +29,12 @@
   {% set cat = data.categoriser.provisionalCategory.suggestedCategory %}
   {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
   {% set currentCat = overriddenCat if overriddenCat else cat %}
+  <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
+  <input
+    type="hidden"
+    name="supervisorOverriddenCategory"
+    value="{{ data.supervisor.review.supervisorDecision.slice(-1) if data.supervisor.review.supervisorDecision.startsWith("changeCategoryTo_") else ''}}"
+  />
 
 </div>
 {% endblock %}

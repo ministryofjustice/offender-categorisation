@@ -36,6 +36,8 @@ const CATEGORY_I = 'I'
 const CATEGORY_R = 'R'
 const CATEGORY_T = 'T'
 
+const OPEN_CONDITIONS_CATEGORIES = [CATEGORY_D, CATEGORY_J, CATEGORY_T]
+
 const formConfig = {
   ratings,
   categoriser,
@@ -730,26 +732,39 @@ module.exports = function Index({
       const form = 'review'
       const formPageConfig = formConfig[section][form]
 
+      let redirectUrl = `/form/supervisor/review/${bookingId}`
+      const formResponseChanges = {
+        ...validation.value,
+      }
+
+      if (validation.value.supervisorDecision === SUPERVISOR_DECISION_AGREE) {
+        redirectUrl = `/form/supervisor/further-information/${bookingId}`
+      }
+      if (validation.value.supervisorDecision === SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION) {
+        redirectUrl = `/form/supervisor/confirmBack/${bookingId}`
+      }
+      if (validation.value.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
+        const overrideCategory = validation.value.supervisorDecision.slice(-1)
+        if (OPEN_CONDITIONS_CATEGORIES.includes(overrideCategory)) {
+          redirectUrl = `/form/supervisor/confirmBack/${bookingId}`
+        } else {
+          redirectUrl = `/form/supervisor/change-category/${bookingId}`
+        }
+        formResponseChanges.supervisorOverriddenCategory = validation.value.supervisorDecision.slice(-1)
+        formResponseChanges.supervisorCategoryAppropriate = 'No'
+      }
+
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: validation.value,
+        userInput: formResponseChanges,
         formSection: section,
         formName: form,
         logUpdate: true,
       })
 
-      if (validation.value.supervisorDecision === SUPERVISOR_DECISION_AGREE) {
-        return res.redirect(`/form/supervisor/further-information/${bookingId}`)
-      }
-      if (validation.value.supervisorDecision === SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION) {
-        return res.redirect(`/form/supervisor/confirmBack/${bookingId}`)
-      }
-      if (validation.value.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
-        return res.redirect(`/form/supervisor/change-category/${bookingId}`)
-      }
-      return res.redirect(`/form/supervisor/review/${bookingId}`)
+      return res.redirect(redirectUrl)
     }),
   )
 
