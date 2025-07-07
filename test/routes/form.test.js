@@ -50,7 +50,6 @@ const riskProfilerService = {
   getSecurityProfile: jest.fn(),
   getViolenceProfile: jest.fn(),
   getEscapeProfile: jest.fn(),
-  getExtremismProfile: jest.fn(),
   getLifeProfile: jest.fn(),
 }
 

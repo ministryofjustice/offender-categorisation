@@ -40,6 +40,7 @@ module.exports = function Index({
   userService,
   authenticationMiddleware,
   riskProfilerService,
+  pathfinderService,
 }) {
   const router = express.Router()
 
@@ -101,6 +102,8 @@ module.exports = function Index({
       res.locals.formObject = { ...res.locals.formObject, ...categorisationRecord.riskProfile }
       res.locals.formId = categorisationRecord.id
 
+      // here
+
       categorisationRecord = await addSocProfile({
         res,
         req,
@@ -110,6 +113,7 @@ module.exports = function Index({
         bookingId,
         transactionalDbClient,
         categorisationRecord,
+        pathfinderService,
       })
 
       await formService.updateStatusForOutstandingRiskChange({
