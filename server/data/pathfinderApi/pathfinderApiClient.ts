@@ -51,8 +51,9 @@ export const pathfinderApiClientBuilder = (user: User) => {
         return result.body
       } catch (error) {
         const sanitisedError = getSanitisedError(error)
-        // should i log this if it is a 404?
-        logger.error({ sanitisedError, path, query }, 'Error calling pathfinder api')
+        if (error.status !== 404) {
+          logger.error({ sanitisedError, path, query }, 'Error calling pathfinder api')
+        }
         throw sanitisedError
       }
     }
