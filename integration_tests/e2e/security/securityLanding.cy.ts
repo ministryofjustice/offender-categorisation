@@ -118,9 +118,7 @@ describe('Security Landing', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: testOffenderNumber,
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
 
     recategoriserHomePage.selectPrisonerWithBookingId(testBookingId)

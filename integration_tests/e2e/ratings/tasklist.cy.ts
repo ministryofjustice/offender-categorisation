@@ -50,9 +50,7 @@ describe('Tasklist', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: offenderNumber,
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 1,
     })
   })
 
@@ -124,9 +122,7 @@ describe('Tasklist', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: offenderNumber,
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
     taskListPage.extremismButton().click()
 

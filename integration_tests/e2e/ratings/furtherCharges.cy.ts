@@ -48,9 +48,7 @@ describe('Further Charges', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 1,
     })
 
     cy.stubLogin({

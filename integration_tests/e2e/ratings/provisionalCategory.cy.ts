@@ -1,14 +1,14 @@
 import moment from 'moment'
-import { CATEGORISER_USER } from "../../factory/user"
+import { CATEGORISER_USER } from '../../factory/user'
 import CategoriserHomePage from '../../pages/categoriser/home'
 import Page from '../../pages/page'
 import TaskListPage from '../../pages/taskList/taskList'
 import { FormDbJson } from '../../fixtures/db-key-convertor'
-import ProvisionalCategoryPage from "../../pages/form/categoriser/provisionalCategory"
-import { CATEGORISATION_TYPE } from "../../support/categorisationType"
-import { AGENCY_LOCATION } from "../../factory/agencyLocation"
+import ProvisionalCategoryPage from '../../pages/form/categoriser/provisionalCategory'
+import { CATEGORISATION_TYPE } from '../../support/categorisationType'
+import { AGENCY_LOCATION } from '../../factory/agencyLocation'
 import STATUS from '../../../server/utils/statusEnum'
-import CategoriserReviewCYAPage from "../../pages/form/categoriser/review";
+import CategoriserReviewCYAPage from '../../pages/form/categoriser/review'
 
 describe('Provisional Category', () => {
   let provisionalCategoryPage: ProvisionalCategoryPage
@@ -46,16 +46,11 @@ describe('Provisional Category', () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: true,
-        notifyRegionalCTLead: false,
-        previousOffences: true,
+        band: 1,
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: true,
-        notifyRegionalCTLead: false,
+        band: 1,
       })
       cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
       cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
@@ -144,7 +139,9 @@ describe('Provisional Category', () => {
 
         provisionalCategoryPage.errorSummaries().contains('Select yes if you think this category is appropriate')
         provisionalCategoryPage.errors().contains('Select yes if you think this category is appropriate')
-        provisionalCategoryPage.errorSummaries().contains('You must enter information about why the category is appropriate')
+        provisionalCategoryPage
+          .errorSummaries()
+          .contains('You must enter information about why the category is appropriate')
         provisionalCategoryPage.errors().contains('You must enter information about why the category is appropriate')
       })
 
@@ -164,9 +161,9 @@ describe('Provisional Category', () => {
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
           expect(result.rows[0].form_response.categoriser.provisionalCategory).to.deep.eq({
-            "suggestedCategory": "B",
-            "categoryAppropriate": "Yes",
-            "justification": "Test justification"
+            suggestedCategory: 'B',
+            categoryAppropriate: 'Yes',
+            justification: 'Test justification',
           })
         })
       })
@@ -198,10 +195,10 @@ describe('Provisional Category', () => {
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
           expect(result.rows[0].form_response.categoriser.provisionalCategory).to.deep.eq({
-            "suggestedCategory": "B",
-            "overriddenCategory": "C",
-            "categoryAppropriate": "No",
-            "justification": "Test justification"
+            suggestedCategory: 'B',
+            overriddenCategory: 'C',
+            categoryAppropriate: 'No',
+            justification: 'Test justification',
           })
         })
       })
@@ -218,10 +215,10 @@ describe('Provisional Category', () => {
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
           expect(result.rows[0].form_response.categoriser.provisionalCategory).to.deep.eq({
-            "suggestedCategory": "B",
-            "overriddenCategory": "D",
-            "categoryAppropriate": "No",
-            "justification": "Test justification"
+            suggestedCategory: 'B',
+            overriddenCategory: 'D',
+            categoryAppropriate: 'No',
+            justification: 'Test justification',
           })
         })
       })

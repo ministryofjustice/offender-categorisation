@@ -70,9 +70,7 @@ describe('Security Input', () => {
     it('should show a validation error on empty form submission', () => {
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
 
       stubLoginAndBrowseToCategoriserSecurityInputPage()
@@ -93,9 +91,7 @@ describe('Security Input', () => {
       it("should record a 'no' decision", () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: true,
-          notifyRegionalCTLead: false,
+          band: 4,
         })
 
         stubLoginAndBrowseToCategoriserSecurityInputPage()
@@ -129,9 +125,7 @@ describe('Security Input', () => {
       it('should display error if no security input text is given', () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: true,
-          notifyRegionalCTLead: false,
+          band: 1,
         })
         stubLoginAndBrowseToCategoriserSecurityInputPage()
 
@@ -152,9 +146,7 @@ describe('Security Input', () => {
         beforeEach(() => {
           cy.task('stubGetExtremismProfile', {
             offenderNo: 'B2345YZ',
-            category: 'C',
-            increasedRisk: true,
-            notifyRegionalCTLead: false,
+            band: 1,
           })
 
           stubLoginAndBrowseToCategoriserSecurityInputPage()

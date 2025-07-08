@@ -99,9 +99,7 @@ describe('Open Conditions', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 1,
     })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
@@ -500,7 +498,10 @@ describe('Open Conditions', () => {
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
-      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
+      {
+        question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?',
+        expectedAnswer: 'No',
+      },
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
@@ -739,7 +740,10 @@ describe('Open Conditions', () => {
       expect(dbRecord.assessment_date).not.equals(null)
       expect(dbRecord.nomis_sequence_no).equals(5)
       expect(dbRecord.status).equals('APPROVED')
-      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D', justification: 'category justification text' })
+      expect(dbRecord.form_response.recat.decision).to.deep.equal({
+        category: 'D',
+        justification: 'category justification text',
+      })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
         review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
       })
@@ -837,7 +841,10 @@ describe('Open Conditions', () => {
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
-      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
+      {
+        question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?',
+        expectedAnswer: 'No',
+      },
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
@@ -1079,7 +1086,10 @@ describe('Open Conditions', () => {
       expect(dbRecord.assessment_date).not.equals(null)
       expect(dbRecord.nomis_sequence_no).equals(5)
       expect(dbRecord.status).equals('APPROVED')
-      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D', justification: 'category justification text' })
+      expect(dbRecord.form_response.recat.decision).to.deep.equal({
+        category: 'D',
+        justification: 'category justification text',
+      })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
         review: {
           proposedCategory: 'D',

@@ -64,9 +64,7 @@ describe('Next Review', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 1,
     })
 
     cy.task('stubAgencyDetails', { agency: 'LPI' })

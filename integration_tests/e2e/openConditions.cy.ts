@@ -404,6 +404,8 @@ describe('Open conditions', () => {
     ])
   })
 
+  // STOP //
+
   it('The happy path is correct for categoriser overriding to D, all no', () => {
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
@@ -471,7 +473,10 @@ describe('Open conditions', () => {
     categoriserReviewCYAPage.victimContactSchemeDl().should('exist')
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
-      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
+      {
+        question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?',
+        expectedAnswer: 'No',
+      },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([
@@ -592,7 +597,10 @@ describe('Open conditions', () => {
     categoriserReviewCYAPage.victimContactSchemeDl().should('exist')
 
     categoriserReviewCYAPage.validateVictimContactSchemeSummary([
-      { question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', expectedAnswer: 'No' },
+      {
+        question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?',
+        expectedAnswer: 'No',
+      },
     ])
 
     categoriserReviewCYAPage.validatePreviousSentencesSummary([
@@ -741,7 +749,6 @@ describe('Open conditions', () => {
   })
 
   it('The happy path is correct for supervisor overriding to D', () => {
-
     cy.task('stubCategorise', {
       bookingId: 12,
       category: 'D',
@@ -794,8 +801,8 @@ describe('Open conditions', () => {
     supervisorReviewPage2.enterOtherInformationText('super other info 1')
     supervisorReviewPage2.submitButton().click()
     /*
-    supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
-*/
+      supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
+  */
 
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345XY', 'B2345YZ'],
@@ -842,10 +849,7 @@ describe('Open conditions', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
-      previousOffences: false,
+      band: 4,
     })
 
     taskListPage2.openConditionsButton().should('exist')
@@ -919,8 +923,8 @@ describe('Open conditions', () => {
 
     approvedViewPage.otherInformationSummary().contains('categoriser relevant info for accept')
     /*
-    approvedViewPage.commentLabel().size() == 1
-*/
+      approvedViewPage.commentLabel().size() == 1
+  */
   })
 
   function setUpStubs() {
@@ -937,9 +941,7 @@ describe('Open conditions', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
@@ -973,10 +975,7 @@ describe('Open conditions', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
-      previousOffences: true,
+      band: 1,
     })
   }
 

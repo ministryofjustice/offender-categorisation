@@ -1,11 +1,26 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 
+const stubGetExtremismProfile = ({ offenderNo, band }: { offenderNo: string; band: number }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `/pathfinder-api/pathfinder/offender/${offenderNo}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        band: band,
+      },
+    },
+  })
+
 const stubPathfinderPing = (statusCode = 200): SuperAgentRequest =>
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/pathfinder-api/health/ping`,
+      urlPattern: '/pathfinder-api/health/ping',
     },
     response: {
       status: statusCode,
@@ -18,5 +33,6 @@ const stubPathfinderPing = (statusCode = 200): SuperAgentRequest =>
   })
 
 export default {
+  stubGetExtremismProfile,
   stubPathfinderPing,
 }
