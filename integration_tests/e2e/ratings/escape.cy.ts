@@ -240,7 +240,7 @@ describe('Escape Risk', () => {
       })
       cy.task('stubAssessmentsWomen', { offenderNo: 'ON700' })
       cy.task('stubSentenceDataGetSingle', { offenderNumber: 'ON700', formattedReleaseDate: '2014-11-23' })
-      cy.task('stubGetProfileWomenEscapeAlert', {
+      cy.task('stubGetEscapeProfile', {
         offenderNo: 'ON700',
         alertCode: 'XEL',
       })

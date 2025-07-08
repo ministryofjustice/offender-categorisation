@@ -29,34 +29,6 @@ const stubGetEscapeProfile = ({
     },
   })
 
-const stubGetProfileWomenEscapeAlert = ({
-  offenderNo,
-  alertCode,
-}: {
-  offenderNo: string
-  alertCode: string
-}): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'GET',
-      url: `/alerts-api/prisoners/${offenderNo}/alerts?isActive=true&alertCode=XER,XEL,XELH`,
-    },
-    response: {
-      status: 200,
-      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: {
-        content: [
-          {
-            alertCode: {
-              code: alertCode,
-            },
-            activeFrom: '2016-09-14',
-          },
-        ],
-      },
-    },
-  })
-
 const stubAlertsApiPing = (statusCode = 200): SuperAgentRequest =>
   stubFor({
     request: {
@@ -75,6 +47,5 @@ const stubAlertsApiPing = (statusCode = 200): SuperAgentRequest =>
 
 export default {
   stubGetEscapeProfile,
-  stubGetProfileWomenEscapeAlert,
   stubAlertsApiPing,
 }
