@@ -1,5 +1,4 @@
 {% extends "../formTemplate.html" %}
-{% from "warning-text/macro.njk" import govukWarningText %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
@@ -56,19 +55,7 @@
 
     {% set isYoungOffender = data.details.youngOffender %}
 
-  {{ supervisorDecisionRadioButtons(isYoungOffender, isFemale, currentCat, data.supervisor.review.supervisorDecision, errors, data.details.sentence.indeterminate) }}
+  {{ supervisorDecisionRadioButtons(isYoungOffender, isFemale, currentCat, data.supervisor.review.supervisorDecision, errors, data.details.sentence.indeterminate, true) }}
 </div>
 
 {% endblock %}
-
-{% set warningCategoryOpenConditions %}
-{% set categoryOpenConditionsText = "Making this category change means that the categoriser will have to provide more information." %}
-  {% include "../../partials/warningIndeterminate.html" %}
-  {{ govukWarningText({
-    text: categoryOpenConditionsText,
-    iconFallbackText: "Warning",
-    id: "openConditionsInfoMessage",
-    classes: "forms-warning-text warning-overrides background-white"
-  }) }}
-
-{% endset %}

@@ -1,6 +1,18 @@
 {% from "radios/macro.njk" import govukRadios %}
+{% from "warning-text/macro.njk" import govukWarningText %}
 
-{% macro supervisorDecisionRadioButtons(isYoungOffender, isFemaleEstate, category, supervisorDecision, errors, isIndeterminateSentence) %}
+{% macro supervisorDecisionRadioButtons(isYoungOffender, isFemaleEstate, category, supervisorDecision, errors, isIndeterminateSentence, isRecategorisation = false) %}
+
+  {% set warningCategoryOpenConditions %}
+    {% set categoryOpenConditionsText = "Making this category change means that the categoriser will have to provide more information." %}
+    {% include "../partials/warningIndeterminate.html" %}
+    {{ govukWarningText({
+      text: categoryOpenConditionsText,
+      iconFallbackText: "Warning",
+      attributes: { 'id': 'openConditionsInfoMessage' },
+      classes: "forms-warning-text warning-overrides background-white"
+    }) }}
+  {% endset %}
 
   {% set radioItems = [
     {
@@ -49,7 +61,7 @@
     {% endif %}
   {% endif %}
   {% if isFemaleEstate %}
-    {% if category !== 'T' %}
+    {% if category !== 'T' and ((not isYoungOffender) or isRecategorisation) %}
       {% set radioItems = (radioItems.push(
         {
           value: "changeCategoryTo_T",
@@ -126,6 +138,9 @@
     }
   ), radioItems) %}
 
+  {% if (category == "R") %}
+    {{ warningCategoryOpenConditions | safe }}
+  {% endif %}
   {{ govukRadios({
     name: "supervisorDecision",
     fieldset: {

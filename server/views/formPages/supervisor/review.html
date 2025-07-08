@@ -102,15 +102,3 @@
 </div>
 
 {% endblock %}
-
-{% set warningCategoryOpenConditions %}
-{% set categoryOpenConditionsText = "Making this category change means that the categoriser will have to provide more information." %}
-  {% include "../../partials/warningIndeterminate.html" %}
-  {{ govukWarningText({
-    text: categoryOpenConditionsText,
-    iconFallbackText: "Warning",
-    attributes: { 'id': 'openConditionsInfoMessage' },
-    classes: "forms-warning-text warning-overrides background-white"
-  }) }}
-
-{% endset %}

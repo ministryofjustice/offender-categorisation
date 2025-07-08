@@ -25,7 +25,7 @@ const SECURITY_BUTTON_SUBMIT = 'submit'
 const SECURITY_BUTTON_RETURN = 'return'
 
 const SUPERVISOR_DECISION_AGREE = 'agreeWithCategoryDecision'
-export const SUPERVISOR_DECISION_CHANGE_TO = 'changeCategoryTo_'
+const SUPERVISOR_DECISION_CHANGE_TO = 'changeCategoryTo_'
 const SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION = 'requestMoreInformation'
 
 const CATEGORY_B = 'B'
@@ -763,6 +763,18 @@ module.exports = function Index({
         formName: form,
         logUpdate: true,
       })
+
+      if (OPEN_CONDITIONS_CATEGORIES.includes(formResponseChanges.supervisorOverriddenCategory)) {
+        await formService.requiresOpenConditions(bookingId, req.user.username)
+
+        if (userInput.catType === CatType.RECAT.name) {
+          await formService.deleteFormData({
+            bookingId: parseInt(bookingId, 10),
+            formSection: 'recat',
+            formName: 'decision',
+          })
+        }
+      }
 
       return res.redirect(redirectUrl)
     }),
