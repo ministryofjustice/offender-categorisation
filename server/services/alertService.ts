@@ -1,6 +1,6 @@
 import logger = require('../../log')
 
-import { transformDataToEscapeProfile, EscapeProfile } from '../utils/alertServiceHelpers'
+import { mapAlertToEscapeProfile, EscapeProfile } from '../utils/escapeProfileMapper'
 
 export default class CreateAlertService {
   // eslint-disable-next-line no-empty-function
@@ -10,7 +10,7 @@ export default class CreateAlertService {
     try {
       const alertsApiClient = this.alertsApiClientBuilder(user)
       const response = await alertsApiClient.getActivePrisonerEscapeAlerts(offenderNo)
-      const escapeProfile = transformDataToEscapeProfile(response.content)
+      const escapeProfile = mapAlertToEscapeProfile(response.content)
       return escapeProfile
     } catch (error) {
       logger.error(error)

@@ -29,7 +29,7 @@ const summariseEscapeAlerts = (alerts: Alert[]): SummarisedAlertData[] => {
   }))
 }
 
-export const transformDataToEscapeProfile = (data: Alert[]): EscapeProfile => {
+export const mapAlertToEscapeProfile = (data: Alert[]): EscapeProfile => {
   const activeEscapeListAlerts = filterForEscapeAlert(data, ESCAPE_LIST_ALERT_CODE, ESCAPE_LIST_HEIGHTENED_ALERT_CODE)
   const activeEscapeRiskAlerts = filterForEscapeAlert(data, ESCAPE_RISK_ALERT_CODE)
 

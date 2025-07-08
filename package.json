@@ -2,7 +2,7 @@
   "name": "offender-categorisation",
   "version": "0.0.1",
   "scripts": {
-    "start": "export $(cat .env.groovy) && node dist/server.js | bunyan -o short",
+    "start": "node dist/server.js | bunyan -o short",
     "start:dev": "npm run build && DEBUG=gov-starter-server* TOKEN_VERIFICATION_API_ENABLED=false && concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-sass\"",
     "start:dev:env": "export $(cat .env) && npm run start:dev",
     "start:dev:env-test": "export $(cat .env.groovy) && npm run start:dev",

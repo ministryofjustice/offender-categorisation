@@ -1,6 +1,6 @@
-import { transformDataToEscapeProfile } from './alertServiceHelpers'
+import { mapAlertToEscapeProfile } from './escapeProfileMapper'
 
-describe('transformDataToEscapeProfile', () => {
+describe('mapAlertToEscapeProfile', () => {
   it('returns object with default values when input is an empty array', () => {
     const expectedEscapeProfile = {
       activeEscapeList: false,
@@ -10,7 +10,7 @@ describe('transformDataToEscapeProfile', () => {
       riskType: 'ESCAPE',
     }
 
-    expect(transformDataToEscapeProfile([])).toEqual(expectedEscapeProfile)
+    expect(mapAlertToEscapeProfile([])).toEqual(expectedEscapeProfile)
   })
 
   it('returns an object with the correct values if the input has an escape list alert', () => {
@@ -36,7 +36,7 @@ describe('transformDataToEscapeProfile', () => {
       riskType: 'ESCAPE',
     }
 
-    expect(transformDataToEscapeProfile(escapeListAlertData)).toEqual(expectedEscapeProfile)
+    expect(mapAlertToEscapeProfile(escapeListAlertData)).toEqual(expectedEscapeProfile)
   })
 
   it('returns an object with the correct values if the input has an escape list heightened alert code', () => {
@@ -62,7 +62,7 @@ describe('transformDataToEscapeProfile', () => {
       riskType: 'ESCAPE',
     }
 
-    expect(transformDataToEscapeProfile(escapeListAlertData)).toEqual(expectedEscapeProfile)
+    expect(mapAlertToEscapeProfile(escapeListAlertData)).toEqual(expectedEscapeProfile)
   })
 
   it('returns an object with the correct values if the input has an escape risk alert', () => {
@@ -88,7 +88,7 @@ describe('transformDataToEscapeProfile', () => {
       riskType: 'ESCAPE',
     }
 
-    expect(transformDataToEscapeProfile(escapeRiskAlertData)).toEqual(expectedEscapeProfile)
+    expect(mapAlertToEscapeProfile(escapeRiskAlertData)).toEqual(expectedEscapeProfile)
   })
 
   it('returns an object with the correct values if the input has both an escape risk alert and an escape list alert', () => {
@@ -125,6 +125,6 @@ describe('transformDataToEscapeProfile', () => {
       riskType: 'ESCAPE',
     }
 
-    expect(transformDataToEscapeProfile(bothEscapeAlertsData)).toEqual(expectedEscapeProfile)
+    expect(mapAlertToEscapeProfile(bothEscapeAlertsData)).toEqual(expectedEscapeProfile)
   })
 })
