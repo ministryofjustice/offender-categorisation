@@ -490,21 +490,22 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     if (isYoungOffender(data.details)) {
       return 'I'
     }
-    const isCatBDueToPreviousCatA = data.history && data.history.catAType
-    const isCatBDueToSecurity = data.ratings && data.ratings.securityBack && data.ratings.securityBack.catB === 'Yes'
+
+    const isCatBDueToPreviousCatA = data.history?.catAType
+    const isCatBDueToSecurity = data.ratings?.securityBack?.catB === 'Yes'
     const isCatBDueToViolence =
-      (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) || // Visor: not MVP
-      (data.violenceProfile && data.violenceProfile.provisionalCategorisation === 'B') // note: Qs on page ignored (info only)
-    const isCatBDueToEscape =
-      // The other Q on the escape page is info only
-      data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes'
-    // need to change this
-    const isCatBDueToExtremism =
-      (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'B') ||
-      (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
-    const isCatBDueToSeriousFurtherCharges =
-      data.ratings && data.ratings.furtherCharges && data.ratings.furtherCharges.furtherChargesCatB === 'Yes'
-    const isCatBDueToLife = data.lifeProfile && data.lifeProfile.provisionalCategorisation === 'B'
+      data.violenceProfile?.veryHighRiskViolentOffender || // Visor: not MVP
+      data.violenceProfile?.provisionalCategorisation === 'B' // note: Qs on page ignored (info only)
+
+    // The other Q on the escape page is info only
+    const isCatBDueToEscape = data.ratings?.escapeRating?.escapeCatB === 'Yes'
+
+    const hasPreviousTerrorismOffences = data.ratings?.extremismRating?.previousTerrorismOffences === 'Yes'
+    const isCatBDueToExtremism = data.extremismProfile?.increasedRiskOfExtremism || hasPreviousTerrorismOffences
+
+    const isCatBDueToSeriousFurtherCharges = data.ratings?.furtherCharges?.furtherChargesCatB === 'Yes'
+    const isCatBDueToLife = data.lifeProfile?.provisionalCategorisation === 'B'
+
     if (
       isCatBDueToPreviousCatA ||
       isCatBDueToSecurity ||
