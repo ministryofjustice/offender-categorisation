@@ -7,12 +7,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import static com.github.tomakehurst.wiremock.client.WireMock.get
 
 class PathfinderApi extends WireMockRule {
+    
     PathfinderApi() {
         super(8081);
     }
 
     void stubGetExtremismProfile(String offenderNo, Number band) {
-        this.stubFor(get("/pathfinder/offender/${offenderNo}")
+        this.stubFor(get("/pathfinder/offender/" + offenderNo)
         .willReturn(aResponse()
         .withStatus(200)
         .withHeader('Content-Type', 'application/json')
