@@ -50,7 +50,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    pathfinderApi.stubGetExtremismProfile('B2345YZ, '1)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
 
     then: 'the completed text is displayed'
