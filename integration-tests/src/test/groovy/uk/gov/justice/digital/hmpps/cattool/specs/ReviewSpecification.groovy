@@ -50,7 +50,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ, '1)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
 
     then: 'the completed text is displayed'
@@ -95,7 +95,7 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
                                provisionalCategorisation: 'C']
     response.violenceProfile == [nomsId                 : 'B2345YZ', riskType: 'VIOLENCE', displayAssaults: false, numberOfAssaults: 5, notifySafetyCustodyLead: true,
                                  numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3, provisionalCategorisation: 'C', veryHighRiskViolentOffender: true]
-    response.extremismProfile == [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: true, provisionalCategorisation: 'C']
+    response.extremismProfile == [notifyRegionalCTLead: true, increasedRiskOfExtremism: true]
     response.lifeProfile == [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'C']
   }
 
@@ -119,7 +119,7 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
     elite2Api.stubOffenceHistory('B2345YZ')
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 1)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     at new TasklistPage(bookingId: '12')
     continueButton.click()

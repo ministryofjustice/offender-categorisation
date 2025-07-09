@@ -7,6 +7,7 @@ import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.AllocationApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.PathfinderApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.PrisonerSearchApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.model.DatabaseUtils
@@ -28,6 +29,9 @@ abstract class AbstractSpecification extends GebReportingSpec {
 
   @Rule
   protected AllocationApi allocationApi = new AllocationApi()
+
+  @Rule
+  protected PathfinderApi pathfinderApi = new PathfinderApi()
 
   @Rule
   protected PrisonerSearchApi prisonerSearchApi = new PrisonerSearchApi()
