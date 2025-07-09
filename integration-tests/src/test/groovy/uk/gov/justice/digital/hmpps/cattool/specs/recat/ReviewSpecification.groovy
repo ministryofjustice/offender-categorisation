@@ -51,7 +51,7 @@ class ReviewSpecification extends AbstractSpecification {
     when: 'The continue link is selected'
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
@@ -115,7 +115,7 @@ class ReviewSpecification extends AbstractSpecification {
     at TasklistRecatPage
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
@@ -152,7 +152,7 @@ class ReviewSpecification extends AbstractSpecification {
     at TasklistRecatPage
     riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
