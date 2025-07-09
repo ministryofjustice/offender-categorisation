@@ -51,7 +51,7 @@ describe('Security Input', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      band: 1,
+      band: 4,
     })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',

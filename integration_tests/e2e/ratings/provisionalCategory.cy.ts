@@ -46,11 +46,7 @@ describe('Provisional Category', () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        band: 1,
-      })
-      cy.task('stubGetExtremismProfile', {
-        offenderNo: 'B2345YZ',
-        band: 1,
+        band: 4,
       })
       cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
       cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })

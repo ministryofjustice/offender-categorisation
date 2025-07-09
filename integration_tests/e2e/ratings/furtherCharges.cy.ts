@@ -147,7 +147,7 @@ describe('Further Charges', () => {
         furtherChargesPage.validateFurtherChargesCategoryBAppropriateTextBox({ isVisible: false })
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
           expect(result.rows[0].form_response).to.deep.eq({
             ratings: {
               furtherCharges: { furtherCharges: 'No' },
@@ -183,7 +183,7 @@ describe('Further Charges', () => {
           })
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-            expect(result.rows[0].status).to.eq(Status.STARTED.name)
+            expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
             expect(result.rows[0].form_response).to.deep.eq({
               ratings: {
                 furtherCharges: {
@@ -222,7 +222,7 @@ describe('Further Charges', () => {
           })
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-            expect(result.rows[0].status).to.eq(Status.STARTED.name)
+            expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
             expect(result.rows[0].form_response).to.deep.eq({
               ratings: {
                 furtherCharges: {

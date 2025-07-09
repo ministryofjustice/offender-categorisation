@@ -50,7 +50,7 @@ describe('Tasklist', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: offenderNumber,
-      band: 1,
+      band: 4,
     })
   })
 

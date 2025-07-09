@@ -125,7 +125,7 @@ describe('Security Input', () => {
       it('should display error if no security input text is given', () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          band: 1,
+          band: 4,
         })
         stubLoginAndBrowseToCategoriserSecurityInputPage()
 
@@ -146,7 +146,7 @@ describe('Security Input', () => {
         beforeEach(() => {
           cy.task('stubGetExtremismProfile', {
             offenderNo: 'B2345YZ',
-            band: 1,
+            band: 4,
           })
 
           stubLoginAndBrowseToCategoriserSecurityInputPage()

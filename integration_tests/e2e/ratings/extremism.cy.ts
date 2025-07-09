@@ -144,7 +144,7 @@ describe('Extremism', () => {
         extremismPage.validatePreviousTerrorismOffencesTextBox({ isVisible: true, expectedText: 'Some risk text' })
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
           expect(result.rows[0].form_response).to.deep.eq({
             ratings: {
               extremismRating: { previousTerrorismOffences: 'Yes', previousTerrorismOffencesText: 'Some risk text' },

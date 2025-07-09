@@ -99,7 +99,7 @@ describe('Open Conditions', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      band: 1,
+      band: 4,
     })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
@@ -242,11 +242,8 @@ describe('Open Conditions', () => {
         risk_profile: {
           socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
           extremismProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'EXTREMISM',
             notifyRegionalCTLead: false,
-            increasedRiskOfExtremism: true,
-            provisionalCategorisation: 'C',
+            increasedRiskOfExtremism: false,
           },
         },
         prison_id: 'LEI',
@@ -401,11 +398,8 @@ describe('Open Conditions', () => {
             veryHighRiskViolentOffender: true,
           },
           extremismProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'EXTREMISM',
             notifyRegionalCTLead: false,
-            increasedRiskOfExtremism: true,
-            provisionalCategorisation: 'C',
+            increasedRiskOfExtremism: false,
           },
         },
         prison_id: 'LEI',
