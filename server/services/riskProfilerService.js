@@ -22,16 +22,6 @@ module.exports = function createRiskProfilerService(riskProfilerClientBuilder) {
       }
     },
 
-    async getEscapeProfile(offenderNo, context) {
-      try {
-        const riskProfilerClient = riskProfilerClientBuilder(context)
-        return await riskProfilerClient.getEscapeProfile(offenderNo)
-      } catch (error) {
-        logger.error(error, 'Error during getEscapeProfile')
-        throw error
-      }
-    },
-
     async getExtremismProfile(offenderNo, context, previousOffences) {
       try {
         const riskProfilerClient = riskProfilerClientBuilder(context)

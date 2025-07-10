@@ -15,6 +15,7 @@ const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
 const allocationClientBuilder = require('./data/allocationManagerApi')
 const prisonerSearchClientBuilder = require('./data/prisonerSearchApi')
 const dpsFeComponentsClientBuilder = require('./data/dpsFeComponentsClientBuilder')
+const { alertsApiClientBuilder } = require('./data/alertsApi/alertsApiClient')
 const risksAndNeedsClientBuilder = require('./data/risksAndNeeds/risksAndNeedsApi').default
 const probationOffenderSearchClientBuilder =
   require('./data/probationOffenderSearch/probationOffenderSearchApiClient').default
@@ -27,6 +28,7 @@ const createUserService = require('./services/userService')
 const createRiskProfilerService = require('./services/riskProfilerService')
 const createSqsService = require('./services/sqsService')
 const createDpsFeComponentService = require('./services/dpsFeComponentService')
+const CreateAlertService = require('./services/alertService').default
 
 // pass in dependencies of service
 const formService = createFormService(formClient, formApiClientBuilder)
@@ -43,6 +45,7 @@ const userService = createUserService(nomisClientBuilder)
 const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
 const sqsService = createSqsService(offendersService, formService)
 const frontEndComponentsService = createDpsFeComponentService(dpsFeComponentsClientBuilder)
+const alertService = new CreateAlertService(alertsApiClientBuilder)
 
 const app = createApp({
   formService,
@@ -52,6 +55,7 @@ const app = createApp({
   riskProfilerService,
   statsService,
   frontEndComponentsService,
+  alertService,
 })
 
 module.exports = { app, sqsService }

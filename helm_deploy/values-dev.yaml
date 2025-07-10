@@ -1,5 +1,4 @@
 generic-service:
-
   replicaCount: 2
 
   image:
@@ -10,7 +9,7 @@ generic-service:
 
   ingress:
     enable_allowlist: true
-    hosts: [ dev.offender-categorisation.service.justice.gov.uk ]
+    hosts: [dev.offender-categorisation.service.justice.gov.uk]
 
   env:
     ENVIRONMENT: dev
@@ -23,6 +22,7 @@ generic-service:
     RISKS_AND_NEEDS_ENDPOINT_URL: https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/
     PROBATION_OFFENDER_SEARCH_ENDPOINT_URL: https://probation-offender-search-dev.hmpps.service.justice.gov.uk/
     OFFENDER_CATEGORISATION_API_ENDPOINT_URL: https://hmpps-offender-categorisation-api-dev.hmpps.service.justice.gov.uk/
+    ALERTS_ENDPOINT_URL: https://alerts-api-dev.hmpps.service.justice.gov.uk/
     DPS_URL: https://digital-dev.prison.service.justice.gov.uk/
     SUPPORT_URL: https://support-dev.hmpps.service.justice.gov.uk/
     COMPONENT_API_URL: https://frontend-components-dev.hmpps.service.justice.gov.uk

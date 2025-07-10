@@ -26,6 +26,7 @@ module.exports = function Index({
   userService,
   riskProfilerService,
   authenticationMiddleware,
+  alertService,
 }) {
   const router = express.Router()
 
@@ -59,7 +60,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
       const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
+      const escapeProfile = await alertService.getEscapeProfile(offenderNo, res.locals)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
         res.locals,
@@ -93,7 +94,7 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
       const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
+      const escapeProfile = await alertService.getEscapeProfile(offenderNo, res.locals)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         offenderNo,
         res.locals,
