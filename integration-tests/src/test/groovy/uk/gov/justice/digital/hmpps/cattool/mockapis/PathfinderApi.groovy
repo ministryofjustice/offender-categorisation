@@ -14,7 +14,7 @@ class PathfinderApi extends WireMockRule {
   }
 
   void stubGetExtremismProfile(String offenderno, Number band) {
-    this.stubFor(get(urlMatching("/pathfinder/offender/\\w+"))
+    this.stubFor(get(urlMatching(".*"))
       .willReturn(aResponse()
         .withStatus(200)
         .withHeader("Content-Type", "application/json")
