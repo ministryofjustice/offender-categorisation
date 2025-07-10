@@ -456,7 +456,7 @@ export const config = {
       timeout: {
         response: Number(
           get({
-            name: 'ALERTS_TIMEOUT_RESPONSE',
+            name: 'PATHFINDER_API_ENDPOINT_TIMEOUT_RESPONSE',
             fallback: DEFAULT_TIMEOUTS.response,
             log: true,
             requireInProduction: false,
@@ -464,7 +464,7 @@ export const config = {
         ),
         deadline: Number(
           get({
-            name: 'ALERTS_TIMEOUT_DEADLINE',
+            name: 'PATHFINDER_API_ENDPOINT_TIMEOUT_DEADLINE',
             fallback: DEFAULT_TIMEOUTS.deadline,
             log: true,
             requireInProduction: false,

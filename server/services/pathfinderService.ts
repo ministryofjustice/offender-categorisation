@@ -1,18 +1,17 @@
 import { ExtremismProfile } from '../data/pathfinderApi/escapeProfile.dto'
 import logger = require('../../log')
 
-import { transformDataToExtremismProfile } from '../utils/pathfinderServiceHelpers'
+import { mapDataToExtremismProfile } from '../utils/extremismProfileMapper'
 
 export default class CreatePathfinderService {
   // eslint-disable-next-line no-empty-function
   constructor(private readonly pathfinderApiClientBuilder) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async getExtremismProfile(offenderNo: string, user: { username: string }): Promise<ExtremismProfile> {
     try {
       const pathfinderApiClient = this.pathfinderApiClientBuilder(user)
       const response = await pathfinderApiClient.getPathfinderData(offenderNo)
-      const extremismProfile = transformDataToExtremismProfile(response?.band)
+      const extremismProfile = mapDataToExtremismProfile(response?.band)
 
       return extremismProfile
     } catch (error) {

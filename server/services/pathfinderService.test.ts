@@ -1,11 +1,11 @@
-import { transformDataToExtremismProfile } from '../utils/pathfinderServiceHelpers'
+import { mapDataToExtremismProfile } from '../utils/extremismProfileMapper'
 import logger = require('../../log')
 import CreatePathfinderService from './pathfinderService'
 
-jest.mock('../utils/pathfinderServiceHelpers')
+jest.mock('../utils/extremismProfileMapper')
 jest.mock('../../log')
 
-const mockTransformDataToProfile = jest.mocked(transformDataToExtremismProfile)
+const mockTransformDataToProfile = jest.mocked(mapDataToExtremismProfile)
 const mockedLogger = jest.mocked(logger)
 
 const mockGetPathfinderData = jest.fn()
