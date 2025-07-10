@@ -5,6 +5,7 @@ import groovy.json.JsonOutput
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import static com.github.tomakehurst.wiremock.client.WireMock.get
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 
 class PathfinderApi extends WireMockRule {
 
@@ -13,7 +14,7 @@ class PathfinderApi extends WireMockRule {
   }
 
   void stubGetExtremismProfile(String offenderno, Number band) {
-    this.stubFor(get("/pathfinder/something-else/${offenderno}")
+    this.stubFor(get(urlMatching("/pathfinder/offender/\\w+"))
       .willReturn(aResponse()
         .withStatus(200)
         .withHeader("Content-Type", "application/json")
