@@ -9,7 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get
 class PathfinderApi extends WireMockRule {
 
   PathfinderApi() {
-    super(8081);
+    super(8090);
   }
 
   void stubGetExtremismProfile(String offenderno, Number band) {
