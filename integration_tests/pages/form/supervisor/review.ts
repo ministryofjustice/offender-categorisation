@@ -11,8 +11,8 @@ type AgreeWithProvisionalCategoryChoiceValues =
   | typeof agreeWithProvisionalCategoryRadioChoiceHtmlSelectors.NO
 
 const whichCategoryIsMoreAppropriateRadioChoiceHtmlSelectors = {
-  YOI_OPEN: '#overriddenCategoryJ',
-  CONSIDER_FOR_CLOSED: '#overriddenCategoryR',
+  YOI_OPEN: '#changeCategoryTo_J',
+  CONSIDER_FOR_CLOSED: '#changeCategoryTo_R',
 } as const
 
 export type WhichCategoryIsMoreAppropriateChoice = keyof typeof whichCategoryIsMoreAppropriateRadioChoiceHtmlSelectors
@@ -21,7 +21,12 @@ type WhichCategoryIsMoreAppropriateChoiceValues =
   | typeof whichCategoryIsMoreAppropriateRadioChoiceHtmlSelectors.CONSIDER_FOR_CLOSED
 
 const SELECTORS = {
-  CATEGORISER_RECOMMENDED_CATEGORY: '#categoriser-recommended-category',
+  AGREE_WITH_CATEGORY_DECISION: '#agreeWithCategoryDecision',
+  CHANGE_TO_CATEGORY_T: '#changeCategoryTo_T',
+  CHANGE_TO_CATEGORY_J: '#changeCategoryTo_J',
+  CHANGE_TO_CATEGORY_I: '#changeCategoryTo_I',
+  CHANGE_TO_CATEGORY_R: '#changeCategoryTo_R',
+  GIVE_BACK_TO_CATEGORISER: '#requestMoreInformation',
   INDETERMINATE_WARNING: '#indeterminateWarning',
   OPEN_CONDITIONS: {
     INFO_MESSAGE: '#openConditionsInfoMessage',
@@ -41,7 +46,18 @@ const SELECTORS = {
     TEXT_ERROR: '#supervisorOverriddenCategoryText-error',
     TEXTAREA: '#supervisorOverriddenCategoryText',
   },
-}
+} as const
+
+export const supervisorDecisionRadioButtonChoices = {
+  AGREE_WITH_CATEGORY_DECISION: '#agreeWithCategoryDecision',
+  CHANGE_TO_CATEGORY_T: '#changeCategoryTo_T',
+  CHANGE_TO_CATEGORY_J: '#changeCategoryTo_J',
+  CHANGE_TO_CATEGORY_I: '#changeCategoryTo_I',
+  CHANGE_TO_CATEGORY_R: '#changeCategoryTo_R',
+  GIVE_BACK_TO_CATEGORISER: '#requestMoreInformation',
+} as const
+
+type SupervisorDecisionRadioButtonChoice = keyof typeof supervisorDecisionRadioButtonChoices
 
 export default class SupervisorReviewPage extends Page {
   private static _bookingId: number
@@ -62,9 +78,13 @@ export default class SupervisorReviewPage extends Page {
   giveBackToCategoriserButton = (bookingId: number): PageElement =>
     cy.get(`a[href="/form/supervisor/confirmBack/${bookingId}"]`).contains('Give back to categoriser')
 
-  submitButton = (): PageElement => cy.get('button[type="submit"]').contains('Submit')
+  submitButton = (): PageElement => cy.get('button[type="submit"]').contains('Continue')
 
   selectAgreeWithProvisionalCategoryRadioButton = (
+    selectedTextValue: AgreeWithProvisionalCategoryChoice,
+  ): PageElement => cy.get(agreeWithProvisionalCategoryRadioChoiceHtmlSelectors[selectedTextValue]).click()
+
+  selectSubmitTheCategorisationWithRecommendedCategoryRadioButton = (
     selectedTextValue: AgreeWithProvisionalCategoryChoice,
   ): PageElement => cy.get(agreeWithProvisionalCategoryRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
@@ -152,8 +172,32 @@ export default class SupervisorReviewPage extends Page {
     super.validateErrorMessages(errorMessages)
   }
 
-  validateCategorisersRecommendedCategory(expectedMessage: string) {
-    cy.get(SELECTORS.CATEGORISER_RECOMMENDED_CATEGORY).should('contain.text', expectedMessage)
+  agreeWithCategoryDecisionRadioButton() {
+    return cy.get(SELECTORS.AGREE_WITH_CATEGORY_DECISION)
+  }
+
+  changeToCategoryTRadioButton() {
+    return cy.get(SELECTORS.CHANGE_TO_CATEGORY_T)
+  }
+
+  changeToCategoryJRadioButton() {
+    return cy.get(SELECTORS.CHANGE_TO_CATEGORY_J)
+  }
+
+  changeToCategoryIRadioButton() {
+    return cy.get(SELECTORS.CHANGE_TO_CATEGORY_I)
+  }
+
+  supervisorDecisionRadioButton(supervisorDecisionRadioButtonChoice: SupervisorDecisionRadioButtonChoice) {
+    return cy.get(supervisorDecisionRadioButtonChoices[supervisorDecisionRadioButtonChoice])
+  }
+
+  giveBackToCategoriserRadioButton() {
+    return cy.get(SELECTORS.GIVE_BACK_TO_CATEGORISER)
+  }
+
+  agreeWithCategoryDecision(): PageElement {
+    return cy.get(SELECTORS.OVERRIDE_CATEGORY.CAT_C_RADIO_BUTTON)
   }
 
   overrideCatC(): PageElement {

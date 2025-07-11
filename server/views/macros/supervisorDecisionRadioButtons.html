@@ -17,6 +17,7 @@
   {% set radioItems = [
     {
       value: "agreeWithCategoryDecision",
+      id: "agreeWithCategoryDecision",
       text: "Submit the categorisation with the recommended category",
       hint: {
         text: "This requires no additional reviews or assessments."
@@ -28,7 +29,12 @@
   {% set sendBackToCategoriserHintText = "You will also have the option to send back to the categoriser." %}
   {% set categoriserNeedsToProvideMoreInformationHintText = "The categoriser will have to provide more information." %}
   {% set openConditionsIndeterminateWarning %}
-    {% include "../partials/warningIndeterminate.html" %}
+    {{ govukWarningText({
+      text: 'This person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.',
+      iconFallbackText: "Warning",
+      attributes: { 'id': 'indeterminateWarning' },
+      classes: "forms-warning-text warning-overrides govuk-!-padding-right-4"
+    }) }}
   {% endset %}
 
   {% if isYoungOffender %}
@@ -36,14 +42,15 @@
       {% set radioItems = (radioItems.push(
         {
           value: "changeCategoryTo_J",
+          id: "changeCategoryTo_J",
           text: "Change the category to YOI Open",
           hint: {
-          text: categoriserNeedsToProvideMoreInformationHintText
-        },
+            text: categoriserNeedsToProvideMoreInformationHintText
+          },
           checked: supervisorDecision === "changeCategoryTo_J",
           conditional: {
-          html: openConditionsIndeterminateWarning if isIndeterminateSentence else ""
-        }
+            html: openConditionsIndeterminateWarning
+          }  if isIndeterminateSentence == true
         }
       ), radioItems) %}
     {% endif %}
@@ -51,10 +58,11 @@
       {% set radioItems = (radioItems.push(
         {
           value: "changeCategoryTo_I",
+          id: "changeCategoryTo_I",
           text: "Change the category to YOI Closed",
           hint: {
-          text: sendBackToCategoriserHintText
-        },
+            text: sendBackToCategoriserHintText
+          },
           checked: supervisorDecision === "changeCategoryTo_I"
         }
       ), radioItems) %}
@@ -65,14 +73,15 @@
       {% set radioItems = (radioItems.push(
         {
           value: "changeCategoryTo_T",
+          id: "changeCategoryTo_T",
           text: "Change the category to Open",
           hint: {
-          text: categoriserNeedsToProvideMoreInformationHintText
-        },
+            text: categoriserNeedsToProvideMoreInformationHintText
+          },
           checked: supervisorDecision === "changeCategoryTo_T",
           conditional: {
-          html: openConditionsIndeterminateWarning if isIndeterminateSentence else ""
-        }
+            html: openConditionsIndeterminateWarning
+          } if isIndeterminateSentence == true
         }
       ), radioItems) %}
     {% endif %}
@@ -80,10 +89,11 @@
       {% set radioItems = (radioItems.push(
         {
           value: "changeCategoryTo_R",
+          id: "changeCategoryTo_R",
           text: "Change the category to Closed",
           hint: {
-          text: sendBackToCategoriserHintText
-        },
+            text: sendBackToCategoriserHintText
+          },
           checked: supervisorDecision === "changeCategoryTo_R"
         }
       ), radioItems) %}
@@ -93,6 +103,7 @@
       {% set radioItems = (radioItems.push(
         {
           value: "changeCategoryTo_B",
+          id: "changeCategoryTo_B",
           text: "Change the category to B",
           hint: {
             text: sendBackToCategoriserHintText
@@ -105,6 +116,7 @@
       {% set radioItems = (radioItems.push(
         {
           value: "changeCategoryTo_C",
+          id: "changeCategoryTo_C",
           text: "Change the category to C",
           hint: {
             text: sendBackToCategoriserHintText
@@ -117,14 +129,15 @@
       {% set radioItems = (radioItems.push(
         {
           value: "changeCategoryTo_D",
+          id: "changeCategoryTo_D",
           text: "Change the category to D",
           hint: {
             text: categoriserNeedsToProvideMoreInformationHintText
           },
           checked: supervisorDecision === "changeCategoryTo_D",
           conditional: {
-            html: openConditionsIndeterminateWarning if isIndeterminateSentence else ""
-          }
+            html: openConditionsIndeterminateWarning
+          } if isIndeterminateSentence == true
         }
       ), radioItems) %}
     {% endif %}
@@ -133,6 +146,7 @@
   {% set radioItems = (radioItems.push(
     {
       value: "requestMoreInformation",
+      id: "requestMoreInformation",
       text: "Request more information from the categoriser",
       checked: supervisorDecision === 'requestMoreInformation'
     }

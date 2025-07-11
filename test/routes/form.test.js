@@ -12,10 +12,6 @@ const security = require('../../server/config/security')
 const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
-const context = {
-  featureFlags: makeTestFeatureFlagDto(),
-  user: { token: 'ABCDEF', username: 'me' },
-}
 
 const formConfig = {
   ratings,

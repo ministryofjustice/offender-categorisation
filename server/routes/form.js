@@ -529,7 +529,7 @@ module.exports = function Index({
 
       const newData = R.assocPath(['supervisor', 'confirmBack', 'isRead'], false, userInput)
 
-      await formService.update({
+      const newFormData = await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
@@ -538,6 +538,16 @@ module.exports = function Index({
         formName: form,
         transactionalClient: transactionalDbClient,
       })
+
+      if (OPEN_CONDITIONS_CATEGORIES.includes(newFormData.supervisor.review.supervisorOverriddenCategory)) {
+        await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
+        await formService.deleteFormData({
+          bookingId,
+          formSection: newFormData.recat ? 'recat' : 'ratings',
+          formName: 'decision',
+          transactionalClient: transactionalDbClient,
+        })
+      }
 
       await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
 
@@ -763,18 +773,6 @@ module.exports = function Index({
         formName: form,
         logUpdate: true,
       })
-
-      if (OPEN_CONDITIONS_CATEGORIES.includes(formResponseChanges.supervisorOverriddenCategory)) {
-        await formService.requiresOpenConditions(bookingId, req.user.username)
-
-        if (userInput.catType === CatType.RECAT.name) {
-          await formService.deleteFormData({
-            bookingId: parseInt(bookingId, 10),
-            formSection: 'recat',
-            formName: 'decision',
-          })
-        }
-      }
 
       return res.redirect(redirectUrl)
     }),

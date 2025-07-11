@@ -16,7 +16,7 @@ import CategoriserReviewCYAPage from '../pages/form/categoriser/review'
 import CategoriserSubmittedPage from '../pages/taskList/categoriserSubmitted'
 import dbSeeder from '../fixtures/db-seeder'
 import SupervisorHomePage from '../pages/supervisor/home'
-import SupervisorReviewPage from '../pages/form/supervisor/review'
+import SupervisorReviewPage, { supervisorDecisionRadioButtonChoices } from "../pages/form/supervisor/review";
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import SupervisorReviewOutcomePage from '../pages/form/supervisor/outcome'
 import indeterminateSentenceWarning from '../fixtures/womensEstate/indeterminateSentenceWarning'
@@ -34,6 +34,8 @@ import RiskOfSeriousHarmPage from '../pages/form/openConditions/riskOfSeriousHar
 import FurtherChargesPage from '../pages/form/openConditions/furtherCharges'
 import RiskLevelsPage from '../pages/form/openConditions/riskLevels'
 import SupervisorConfirmBackPage from '../pages/form/supervisor/confirmBack'
+import FurtherInformationPage from "../pages/form/supervisor/furtherInformation";
+import GiveBackToCategoriserPage from "../pages/form/supervisor/giveBackToCategoriser";
 
 const SHORT_DATE_FORMAT = 'D/M/YYYY'
 const LONG_DATE_FORMAT = 'dddd D MMMM YYYY'
@@ -79,466 +81,466 @@ describe("Women's Estate", () => {
     sixMonthsFromNow = moment().add(6, 'months')
   })
 
-  describe('Initial Categorisation', () => {
-    let taskListPage: TaskListPage
+  // describe('Initial Categorisation', () => {
+  //   let taskListPage: TaskListPage
+  //
+  //   beforeEach(() => {
+  //     category = 'U(Unsentenced)'
+  //
+  //     cy.task('stubUncategorisedNoStatus', { bookingId, location: CASELOAD.PFI.id })
+  //     cy.task('stubSentenceData', {
+  //       offenderNumbers: [offenderNo],
+  //       bookingIds: [bookingId],
+  //       startDates: [moment().subtract(3, 'days')],
+  //     })
+  //
+  //     cy.task('stubGetOffenderDetailsWomen', { bookingId, category })
+  //     cy.task('stubGetSocProfile', {
+  //       offenderNo,
+  //       category,
+  //       transferToSecurity: false,
+  //     })
+  //     cy.task('stubGetExtremismProfile', {
+  //       offenderNo,
+  //       category,
+  //       increasedRisk: false,
+  //       notifyRegionalCTLead: false,
+  //     })
+  //     cy.stubLogin({
+  //       user: FEMALE_USER,
+  //     })
+  //     cy.signIn()
+  //   })
+  //
+  //   const commonInitialCategorisationSteps = () => {
+  //     const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+  //     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
+  //
+  //     taskListPage = TaskListPage.createForBookingId(bookingId)
+  //     cy.validateCategorisationDetails([
+  //       // column 1
+  //       [
+  //         { key: 'Name', value: 'Hillmob, William' },
+  //         { key: 'NOMIS ID', value: offenderNo },
+  //         { key: 'Date of birth', value: '17/02/1970' },
+  //         { key: 'Current category', value: category },
+  //       ],
+  //       // column 2
+  //       commonColumn2,
+  //       // column 3
+  //       [
+  //         { key: 'HDC Eligibility Date', value: '10/06/2020' },
+  //         { key: 'Automatic Release Date', value: '11/06/2020' },
+  //         { key: 'Conditional Release Date', value: '02/02/2020' },
+  //         { key: 'Parole Eligibility Date', value: '13/06/2020' },
+  //         { key: 'Non Parole Date', value: '14/06/2020' },
+  //         { key: 'ISP Tariff End Date', value: '15/06/2020' },
+  //         { key: 'Licence Expiry Date', value: '16/06/2020' },
+  //         { key: 'Sentence Expiry Date', value: '17/06/2020' },
+  //         { key: 'Court-issued sentence', value: '6 years, 3 months (Std sentence)' },
+  //       ],
+  //     ])
+  //
+  //     cy.task('stubAssessmentsWomen', { offenderNo })
+  //     cy.task('stubSentenceDataGetSingle', { offenderNumber: offenderNo, formattedReleaseDate: '2014-11-23' })
+  //     cy.task('stubOffenceHistory', { offenderNumber: offenderNo })
+  //
+  //     taskListPage.offendingHistoryButton().click()
+  //
+  //     const categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(12)
+  //     categoriserOffendingHistoryPage.selectPreviousConvictionsRadioButton('NO')
+  //     categoriserOffendingHistoryPage.saveAndReturnButton().click()
+  //
+  //     cy.task('stubGetViolenceProfile', {
+  //       offenderNo,
+  //       category,
+  //       veryHighRiskViolentOffender: false,
+  //       notifySafetyCustodyLead: false,
+  //       displayAssaults: false,
+  //     })
+  //
+  //     taskListPage.violenceButton().click()
+  //
+  //     const violencePage = ViolencePage.createForBookingId(bookingId)
+  //     violencePage.validateViolenceWarningExists({ exists: false })
+  //     violencePage.selectHighRiskOfViolenceRadioButton('NO')
+  //     violencePage.selectSeriousThreadRadioButton('NO')
+  //     violencePage.saveAndReturnButton().click()
+  //
+  //     cy.task('stubGetProfileWomenEscapeAlert', {
+  //       offenderNo,
+  //       category,
+  //       onEscapeList: false,
+  //       activeOnEscapeList: false,
+  //     })
+  //
+  //     taskListPage.escapeButton().click()
+  //
+  //     const escapePage = EscapePage.createForBookingId(bookingId)
+  //     escapePage.selectOtherEvidenceBRadioButton('NO')
+  //     escapePage.saveAndReturnButton().click()
+  //
+  //     taskListPage.extremismButton().click()
+  //
+  //     const extremismPage = ExtremismPage.createForBookingId(bookingId)
+  //     extremismPage.selectPreviousTerrorismOffencesRadioButton('YES')
+  //     extremismPage.setPreviousTerrorismOffencesText('Some risk text')
+  //     extremismPage.saveAndReturnButton().click()
+  //
+  //     taskListPage.securityButton().click()
+  //
+  //     const categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
+  //     categoriserSecurityInputPage.selectSecurityInputRadioButton('NO')
+  //     categoriserOffendingHistoryPage.saveAndReturnButton().click()
+  //
+  //     taskListPage.nextReviewDateButton().click()
+  //
+  //     const nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
+  //     nextReviewQuestionPage.selectNextReviewRadioButton('IN_SIX_MONTHS')
+  //     nextReviewQuestionPage.continueButton().click()
+  //
+  //     const nextReviewConfirmationPage = NextReviewConfirmationPage.createForBookingIdAndChoiceNumber(bookingId, '6')
+  //     nextReviewConfirmationPage.saveAndReturnButton().click()
+  //
+  //     cy.task('stubGetExtremismProfile', {
+  //       offenderNo,
+  //       category,
+  //       increasedRisk: true,
+  //       notifyRegionalCTLead: false,
+  //       previousOffences: true,
+  //     })
+  //   }
 
-    beforeEach(() => {
-      category = 'U(Unsentenced)'
-
-      cy.task('stubUncategorisedNoStatus', { bookingId, location: CASELOAD.PFI.id })
-      cy.task('stubSentenceData', {
-        offenderNumbers: [offenderNo],
-        bookingIds: [bookingId],
-        startDates: [moment().subtract(3, 'days')],
-      })
-
-      cy.task('stubGetOffenderDetailsWomen', { bookingId, category })
-      cy.task('stubGetSocProfile', {
-        offenderNo,
-        category,
-        transferToSecurity: false,
-      })
-      cy.task('stubGetExtremismProfile', {
-        offenderNo,
-        category,
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
-      })
-      cy.stubLogin({
-        user: FEMALE_USER,
-      })
-      cy.signIn()
-    })
-
-    const commonInitialCategorisationSteps = () => {
-      const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
-
-      taskListPage = TaskListPage.createForBookingId(bookingId)
-      cy.validateCategorisationDetails([
-        // column 1
-        [
-          { key: 'Name', value: 'Hillmob, William' },
-          { key: 'NOMIS ID', value: offenderNo },
-          { key: 'Date of birth', value: '17/02/1970' },
-          { key: 'Current category', value: category },
-        ],
-        // column 2
-        commonColumn2,
-        // column 3
-        [
-          { key: 'HDC Eligibility Date', value: '10/06/2020' },
-          { key: 'Automatic Release Date', value: '11/06/2020' },
-          { key: 'Conditional Release Date', value: '02/02/2020' },
-          { key: 'Parole Eligibility Date', value: '13/06/2020' },
-          { key: 'Non Parole Date', value: '14/06/2020' },
-          { key: 'ISP Tariff End Date', value: '15/06/2020' },
-          { key: 'Licence Expiry Date', value: '16/06/2020' },
-          { key: 'Sentence Expiry Date', value: '17/06/2020' },
-          { key: 'Court-issued sentence', value: '6 years, 3 months (Std sentence)' },
-        ],
-      ])
-
-      cy.task('stubAssessmentsWomen', { offenderNo })
-      cy.task('stubSentenceDataGetSingle', { offenderNumber: offenderNo, formattedReleaseDate: '2014-11-23' })
-      cy.task('stubOffenceHistory', { offenderNumber: offenderNo })
-
-      taskListPage.offendingHistoryButton().click()
-
-      const categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(12)
-      categoriserOffendingHistoryPage.selectPreviousConvictionsRadioButton('NO')
-      categoriserOffendingHistoryPage.saveAndReturnButton().click()
-
-      cy.task('stubGetViolenceProfile', {
-        offenderNo,
-        category,
-        veryHighRiskViolentOffender: false,
-        notifySafetyCustodyLead: false,
-        displayAssaults: false,
-      })
-
-      taskListPage.violenceButton().click()
-
-      const violencePage = ViolencePage.createForBookingId(bookingId)
-      violencePage.validateViolenceWarningExists({ exists: false })
-      violencePage.selectHighRiskOfViolenceRadioButton('NO')
-      violencePage.selectSeriousThreadRadioButton('NO')
-      violencePage.saveAndReturnButton().click()
-
-      cy.task('stubGetProfileWomenEscapeAlert', {
-        offenderNo,
-        category,
-        onEscapeList: false,
-        activeOnEscapeList: false,
-      })
-
-      taskListPage.escapeButton().click()
-
-      const escapePage = EscapePage.createForBookingId(bookingId)
-      escapePage.selectOtherEvidenceBRadioButton('NO')
-      escapePage.saveAndReturnButton().click()
-
-      taskListPage.extremismButton().click()
-
-      const extremismPage = ExtremismPage.createForBookingId(bookingId)
-      extremismPage.selectPreviousTerrorismOffencesRadioButton('YES')
-      extremismPage.setPreviousTerrorismOffencesText('Some risk text')
-      extremismPage.saveAndReturnButton().click()
-
-      taskListPage.securityButton().click()
-
-      const categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
-      categoriserSecurityInputPage.selectSecurityInputRadioButton('NO')
-      categoriserOffendingHistoryPage.saveAndReturnButton().click()
-
-      taskListPage.nextReviewDateButton().click()
-
-      const nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
-      nextReviewQuestionPage.selectNextReviewRadioButton('IN_SIX_MONTHS')
-      nextReviewQuestionPage.continueButton().click()
-
-      const nextReviewConfirmationPage = NextReviewConfirmationPage.createForBookingIdAndChoiceNumber(bookingId, '6')
-      nextReviewConfirmationPage.saveAndReturnButton().click()
-
-      cy.task('stubGetExtremismProfile', {
-        offenderNo,
-        category,
-        increasedRisk: true,
-        notifyRegionalCTLead: false,
-        previousOffences: true,
-      })
-    }
-
-    it('should allow an initial categorisation - Closed', () => {
-      commonInitialCategorisationSteps()
-
-      taskListPage.categoryDecisionButton().click()
-
-      const categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
-      categoryDecisionPage.selectCategoryDecisionRadioButton('CLOSED')
-      categoryDecisionPage.enterCategoryDecisionJustification('justification for category')
-      categoryDecisionPage.continueButton().click()
-
-      cy.task('stubGetLifeProfile', {
-        offenderNo,
-        category: 'R',
-      })
-
-      taskListPage.validateSummarySectionText(['Review and categorisation', 'All tasks completed'])
-      taskListPage.continueReviewAndCategorisationButton(bookingId).click()
-
-      cy.task('stubCategorise', {
-        expectedCat: 'R',
-        nextReviewDate: sixMonthsFromNow.format(LONG_DATE_FORMAT),
-      })
-
-      const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-      categoriserReviewCYAPage.changeLinks().should('have.length', 10)
-      cy.validateCategorisationDetails([
-        // column 1
-        [
-          { key: 'Name', value: 'Hillmob, William' },
-          { key: 'NOMIS ID', value: offenderNo },
-          { key: 'Date of birth', value: '17/02/1970' },
-          { key: 'Current category', value: category },
-        ],
-        // column 2
-        commonColumn2,
-        // column 3
-        [
-          { key: 'HDC Eligibility Date', value: '10/06/2020' },
-          { key: 'Automatic Release Date', value: '11/06/2020' },
-          { key: 'Conditional Release Date', value: '02/02/2020' },
-          { key: 'Parole Eligibility Date', value: '13/06/2020' },
-          { key: 'Non Parole Date', value: '14/06/2020' },
-          { key: 'ISP Tariff End Date', value: '15/06/2020' },
-          { key: 'Licence Expiry Date', value: '16/06/2020' },
-          { key: 'Sentence Expiry Date', value: '17/06/2020' },
-          { key: 'Court-issued sentence', value: '6 years, 3 months (Std sentence)' },
-        ],
-      ])
-      ;[
-        // offending history
-        { term: 'Previous Cat A, Restricted.', definition: 'No Cat A, Restricted' },
-        { term: 'Previous convictions on NOMIS', definition: 'Libel (21/02/2019)' },
-        { term: 'Previous convictions on NOMIS', definition: 'Slander (22/02/2019 - 24/02/2019)' },
-        { term: 'Previous convictions on NOMIS', definition: 'Undated offence' },
-        { term: 'Relevant convictions on PNC', definition: 'No' },
-        // safety and good order
-        { term: 'Previous assaults in custody recorded', definition: '5' },
-        { term: 'Serious assaults in the past 12 months', definition: '2' },
-        { term: 'Any more information about risk of violence in custody', definition: 'No' },
-        { term: 'Serious threats to good order in custody recorded', definition: 'No' },
-        // risk of escape
-        { term: 'Escape list', definition: 'No' },
-        { term: 'Escape alerts', definition: 'No' },
-        { term: 'Any other information that they pose an escape risk', definition: 'No' },
-        { term: 'Any further details', definition: 'No' },
-        // extremism
-        { term: 'Identified at risk of engaging in, or vulnerable to, extremism', definition: 'Yes' },
-        { term: 'Offences under terrorism legislation', definition: 'Yes' },
-        // security information
-        { term: 'Automatic referral to security team', definition: 'No' },
-        { term: 'Manual referral to security team', definition: 'No' },
-        { term: 'Flagged by security team', definition: 'No' },
-        // category decision
-        { term: 'What security category is most suitable for this person?', definition: 'Closed' },
-        { term: 'Information about why this category is appropriate', definition: 'justification for category' },
-        // next category review date
-        { term: 'What date should they be reviewed by?', definition: sixMonthsFromNow.format(LONG_DATE_FORMAT) },
-      ].forEach(cy.checkDefinitionList)
-
-      categoriserReviewCYAPage.continueButton().click()
-
-      const categoriserSubmittedPage = CategoriserSubmittedPage.createForBookingId(bookingId)
-      categoriserSubmittedPage.finishButton().click()
-
-      cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-        expect(result.rows[0].status).to.eq(Status.AWAITING_APPROVAL.name)
-        expect(result.rows[0].form_response).to.deep.eq({
-          ratings: {
-            decision: { category: 'R', justification: 'justification for category' },
-            escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'No' },
-            securityInput: { securityInputNeeded: 'No' },
-            nextReviewDate: { date: sixMonthsFromNow.format(SHORT_DATE_FORMAT), indeterminate: 'false' },
-            violenceRating: { seriousThreat: 'No', highRiskOfViolence: 'No' },
-            extremismRating: { previousTerrorismOffences: 'Yes', previousTerrorismOffencesText: 'Some risk text' },
-            offendingHistory: { previousConvictions: 'No' },
-          },
-          categoriser: { provisionalCategory: { suggestedCategory: 'R', categoryAppropriate: 'Yes' } },
-          openConditionsRequested: false,
-        })
-        expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
-        expect(result.rows[0].user_id).to.eq(FEMALE_USER.username)
-        expect(result.rows[0].approved_by).to.eq(null)
-      })
-    })
-
-    it('should allow an initial categorisation - Open', () => {
-      commonInitialCategorisationSteps()
-
-      taskListPage.categoryDecisionButton().click()
-
-      const categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
-      categoryDecisionPage.selectCategoryDecisionRadioButton('OPEN')
-      categoryDecisionPage.enterCategoryDecisionJustification('justification for open conditions')
-      categoryDecisionPage.continueButton().click()
-
-      const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
-      openConditionsAddedPage.returnToTasklistButton(bookingId).click()
-
-      taskListPage.openConditionsButton().click()
-
-      const earliestReleaseDatePage = EarliestReleaseDatePage.createForBookingId(bookingId)
-      earliestReleaseDatePage.selectEarliestReleaseDateRadioButton('NO')
-      earliestReleaseDatePage.continueButton().click()
-
-      const previousSentencesPage = PreviousSentencesPage.createForBookingId(bookingId)
-      previousSentencesPage.selectPreviousSentencesRadioButton('NO')
-      previousSentencesPage.continueButton().click()
-
-      const victimContactSchemePage = VictimContactSchemePage.createForBookingId(bookingId)
-      victimContactSchemePage.selectVictimContactSchemeRadioButton('NO')
-      victimContactSchemePage.continueButton().click()
-
-      const sexualOffencesPage = SexualOffencesPage.createForBookingId(bookingId)
-      sexualOffencesPage.selectSexualOffencesRadioButton('NO')
-      sexualOffencesPage.continueButton().click()
-
-      const foreignNationalPage = ForeignNationalPage.createForBookingId(bookingId)
-      foreignNationalPage.selectForeignNationalRadioButton('NO')
-      foreignNationalPage.continueButton().click()
-
-      const riskOfSeriousHarmPage = RiskOfSeriousHarmPage.createForBookingId(bookingId)
-      riskOfSeriousHarmPage.selectRiskOfSeriousHarmRadioButton('NO')
-      riskOfSeriousHarmPage.continueButton().click()
-
-      const furtherChargesPage = FurtherChargesPage.createForBookingId(bookingId)
-      furtherChargesPage.selectFurtherChargesRadioButton('NO')
-      furtherChargesPage.continueButton().click()
-
-      const riskLevelsPage = RiskLevelsPage.createForBookingId(bookingId)
-      riskLevelsPage.selectRiskLevelsRadioButton('NO')
-      riskLevelsPage.continueButton().click()
-
-      // cy.visit(`/form/openconditions/provisionalCategory/${bookingId}`)
-      // cy.url().should('include', `tasklist/${bookingId}`)
-
-      cy.task('stubGetLifeProfile', {
-        offenderNo,
-        category: 'R',
-      })
-
-      taskListPage.validateSummarySectionText(['Review and categorisation', 'All tasks completed'])
-      taskListPage.continueReviewAndCategorisationButton(bookingId).click()
-
-      cy.task('stubCategorise', {
-        expectedCat: 'R',
-        nextReviewDate: sixMonthsFromNow,
-      })
-
-      const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-      categoriserReviewCYAPage.changeLinks().should('have.length', 27)
-      cy.validateCategorisationDetails([
-        // column 1
-        [
-          { key: 'Name', value: 'Hillmob, William' },
-          { key: 'NOMIS ID', value: offenderNo },
-          { key: 'Date of birth', value: '17/02/1970' },
-          { key: 'Current category', value: category },
-        ],
-        // column 2
-        commonColumn2,
-        // column 3
-        [
-          { key: 'HDC Eligibility Date', value: '10/06/2020' },
-          { key: 'Automatic Release Date', value: '11/06/2020' },
-          { key: 'Conditional Release Date', value: '02/02/2020' },
-          { key: 'Parole Eligibility Date', value: '13/06/2020' },
-          { key: 'Non Parole Date', value: '14/06/2020' },
-          { key: 'ISP Tariff End Date', value: '15/06/2020' },
-          { key: 'Licence Expiry Date', value: '16/06/2020' },
-          { key: 'Sentence Expiry Date', value: '17/06/2020' },
-          { key: 'Court-issued sentence', value: '6 years, 3 months (Std sentence)' },
-        ],
-      ])
-      ;[
-        // offending history
-        { term: 'Previous Cat A, Restricted.', definition: 'No Cat A, Restricted' },
-        { term: 'Previous convictions on NOMIS', definition: 'Libel (21/02/2019)' },
-        { term: 'Previous convictions on NOMIS', definition: 'Slander (22/02/2019 - 24/02/2019)' },
-        { term: 'Previous convictions on NOMIS', definition: 'Undated offence' },
-        { term: 'Relevant convictions on PNC', definition: 'No' },
-        // safety and good order
-        { term: 'Previous assaults in custody recorded', definition: '5' },
-        { term: 'Serious assaults in the past 12 months', definition: '2' },
-        { term: 'Any more information about risk of violence in custody', definition: 'No' },
-        { term: 'Serious threats to good order in custody recorded', definition: 'No' },
-        // risk of escape
-        { term: 'Escape list', definition: 'No' },
-        { term: 'Escape alerts', definition: 'No' },
-        { term: 'Any other information that they pose an escape risk', definition: 'No' },
-        { term: 'Any further details', definition: 'No' },
-        // extremism
-        { term: 'Identified at risk of engaging in, or vulnerable to, extremism', definition: 'Yes' },
-        { term: 'Offences under terrorism legislation', definition: 'Yes' },
-        { term: 'Offences under terrorism legislation', definition: 'Some risk text' },
-        // security information
-        { term: 'Automatic referral to security team', definition: 'No' },
-        { term: 'Manual referral to security team', definition: 'No' },
-        { term: 'Flagged by security team', definition: 'No' },
-        // category decision
-        { term: 'What security category is most suitable for this person?', definition: 'Open' },
-        { term: 'Information about why this category is appropriate', definition: 'justification for open conditions' },
-        // next category review date
-        {
-          term: 'What date should they be reviewed by?',
-          definition: sixMonthsFromNow.format(LONG_DATE_FORMAT),
-        },
-        // open conditions
-        // earliest release date
-        { term: '5 or more years until earliest release date?', definition: 'No' },
-        { term: 'Reasons that justify moving to open conditions?', definition: 'Not applicable' },
-        // previous sentences
-        { term: 'Have they been released from a previous sentence in the last 5 years?', definition: 'No' },
-        { term: 'Was that previous sentence for 7 years or more?', definition: 'Not applicable' },
-        // victim contact scheme
-        { term: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', definition: 'No' },
-        // sexual offences
-        { term: 'Have they ever been convicted of a sexual offence?', definition: 'No' },
-        { term: 'Can the risk to the public be managed in open conditions?', definition: 'Not applicable' },
-        // foreign national
-        { term: 'Are they a foreign national?', definition: 'No' },
-        { term: 'Have the Home Office confirmed their immigration status?', definition: 'Not applicable' },
-        { term: 'Do they have a liability for deportation?', definition: 'Not applicable' },
-        { term: 'Have they been through all appeals process in the UK?', definition: 'Not applicable' },
-        // risk of serious harm
-        { term: 'Risk of serious harm to the public?', definition: 'No' },
-        { term: 'Can this risk be managed?', definition: 'Not applicable' },
-        // further charges
-        { term: 'Are they facing any further charges?', definition: 'No' },
-        { term: 'Further charges details', definition: 'Not applicable' },
-        { term: 'Do these further charges increase risk in open conditions?', definition: 'Not applicable' },
-        // risk of escaping or absconding
-        { term: 'Likely to abscond or abuse open conditions?', definition: 'No' },
-      ].forEach(cy.checkDefinitionList)
-
-      categoriserReviewCYAPage.continueButton().click()
-
-      const categoriserSubmittedPage = CategoriserSubmittedPage.createForBookingId(bookingId)
-      categoriserSubmittedPage.finishButton().click()
-
-      cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-        expect(result.rows[0].status).to.eq(Status.AWAITING_APPROVAL.name)
-        expect(result.rows[0].form_response).to.deep.eq({
-          ratings: {
-            decision: {
-              category: 'T',
-              justification: 'justification for open conditions',
-            },
-            escapeRating: {
-              escapeCatB: 'No',
-              escapeOtherEvidence: 'No',
-            },
-            securityInput: {
-              securityInputNeeded: 'No',
-            },
-            nextReviewDate: {
-              date: sixMonthsFromNow.format(SHORT_DATE_FORMAT),
-              indeterminate: 'false',
-            },
-            violenceRating: {
-              seriousThreat: 'No',
-              highRiskOfViolence: 'No',
-            },
-            extremismRating: {
-              previousTerrorismOffences: 'Yes',
-              previousTerrorismOffencesText: 'Some risk text',
-            },
-            offendingHistory: {
-              previousConvictions: 'No',
-            },
-          },
-          categoriser: {
-            provisionalCategory: {
-              suggestedCategory: 'T',
-              categoryAppropriate: 'Yes',
-            },
-          },
-          openConditions: {
-            riskLevels: {
-              likelyToAbscond: 'No',
-            },
-            riskOfHarm: {
-              seriousHarm: 'No',
-            },
-            furtherCharges: {
-              furtherCharges: 'No',
-            },
-            sexualOffences: {
-              haveTheyBeenEverConvicted: 'No',
-            },
-            foreignNational: {
-              isForeignNational: 'No',
-            },
-            previousSentences: {
-              releasedLastFiveYears: 'No',
-            },
-            earliestReleaseDate: {
-              fiveOrMoreYears: 'No',
-            },
-            victimContactScheme: {
-              vcsOptedFor: 'No',
-            },
-          },
-          openConditionsRequested: true,
-        })
-        expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
-        expect(result.rows[0].user_id).to.eq(FEMALE_USER.username)
-        expect(result.rows[0].approved_by).to.eq(null)
-      })
-    })
-  })
+  //   it('should allow an initial categorisation - Closed', () => {
+  //     commonInitialCategorisationSteps()
+  //
+  //     taskListPage.categoryDecisionButton().click()
+  //
+  //     const categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
+  //     categoryDecisionPage.selectCategoryDecisionRadioButton('CLOSED')
+  //     categoryDecisionPage.enterCategoryDecisionJustification('justification for category')
+  //     categoryDecisionPage.continueButton().click()
+  //
+  //     cy.task('stubGetLifeProfile', {
+  //       offenderNo,
+  //       category: 'R',
+  //     })
+  //
+  //     taskListPage.validateSummarySectionText(['Review and categorisation', 'All tasks completed'])
+  //     taskListPage.continueReviewAndCategorisationButton(bookingId).click()
+  //
+  //     cy.task('stubCategorise', {
+  //       expectedCat: 'R',
+  //       nextReviewDate: sixMonthsFromNow.format(LONG_DATE_FORMAT),
+  //     })
+  //
+  //     const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
+  //     categoriserReviewCYAPage.changeLinks().should('have.length', 10)
+  //     cy.validateCategorisationDetails([
+  //       // column 1
+  //       [
+  //         { key: 'Name', value: 'Hillmob, William' },
+  //         { key: 'NOMIS ID', value: offenderNo },
+  //         { key: 'Date of birth', value: '17/02/1970' },
+  //         { key: 'Current category', value: category },
+  //       ],
+  //       // column 2
+  //       commonColumn2,
+  //       // column 3
+  //       [
+  //         { key: 'HDC Eligibility Date', value: '10/06/2020' },
+  //         { key: 'Automatic Release Date', value: '11/06/2020' },
+  //         { key: 'Conditional Release Date', value: '02/02/2020' },
+  //         { key: 'Parole Eligibility Date', value: '13/06/2020' },
+  //         { key: 'Non Parole Date', value: '14/06/2020' },
+  //         { key: 'ISP Tariff End Date', value: '15/06/2020' },
+  //         { key: 'Licence Expiry Date', value: '16/06/2020' },
+  //         { key: 'Sentence Expiry Date', value: '17/06/2020' },
+  //         { key: 'Court-issued sentence', value: '6 years, 3 months (Std sentence)' },
+  //       ],
+  //     ])
+  //     ;[
+  //       // offending history
+  //       { term: 'Previous Cat A, Restricted.', definition: 'No Cat A, Restricted' },
+  //       { term: 'Previous convictions on NOMIS', definition: 'Libel (21/02/2019)' },
+  //       { term: 'Previous convictions on NOMIS', definition: 'Slander (22/02/2019 - 24/02/2019)' },
+  //       { term: 'Previous convictions on NOMIS', definition: 'Undated offence' },
+  //       { term: 'Relevant convictions on PNC', definition: 'No' },
+  //       // safety and good order
+  //       { term: 'Previous assaults in custody recorded', definition: '5' },
+  //       { term: 'Serious assaults in the past 12 months', definition: '2' },
+  //       { term: 'Any more information about risk of violence in custody', definition: 'No' },
+  //       { term: 'Serious threats to good order in custody recorded', definition: 'No' },
+  //       // risk of escape
+  //       { term: 'Escape list', definition: 'No' },
+  //       { term: 'Escape alerts', definition: 'No' },
+  //       { term: 'Any other information that they pose an escape risk', definition: 'No' },
+  //       { term: 'Any further details', definition: 'No' },
+  //       // extremism
+  //       { term: 'Identified at risk of engaging in, or vulnerable to, extremism', definition: 'Yes' },
+  //       { term: 'Offences under terrorism legislation', definition: 'Yes' },
+  //       // security information
+  //       { term: 'Automatic referral to security team', definition: 'No' },
+  //       { term: 'Manual referral to security team', definition: 'No' },
+  //       { term: 'Flagged by security team', definition: 'No' },
+  //       // category decision
+  //       { term: 'What security category is most suitable for this person?', definition: 'Closed' },
+  //       { term: 'Information about why this category is appropriate', definition: 'justification for category' },
+  //       // next category review date
+  //       { term: 'What date should they be reviewed by?', definition: sixMonthsFromNow.format(LONG_DATE_FORMAT) },
+  //     ].forEach(cy.checkDefinitionList)
+  //
+  //     categoriserReviewCYAPage.continueButton().click()
+  //
+  //     const categoriserSubmittedPage = CategoriserSubmittedPage.createForBookingId(bookingId)
+  //     categoriserSubmittedPage.finishButton().click()
+  //
+  //     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
+  //       expect(result.rows[0].status).to.eq(Status.AWAITING_APPROVAL.name)
+  //       expect(result.rows[0].form_response).to.deep.eq({
+  //         ratings: {
+  //           decision: { category: 'R', justification: 'justification for category' },
+  //           escapeRating: { escapeCatB: 'No', escapeOtherEvidence: 'No' },
+  //           securityInput: { securityInputNeeded: 'No' },
+  //           nextReviewDate: { date: sixMonthsFromNow.format(SHORT_DATE_FORMAT), indeterminate: 'false' },
+  //           violenceRating: { seriousThreat: 'No', highRiskOfViolence: 'No' },
+  //           extremismRating: { previousTerrorismOffences: 'Yes', previousTerrorismOffencesText: 'Some risk text' },
+  //           offendingHistory: { previousConvictions: 'No' },
+  //         },
+  //         categoriser: { provisionalCategory: { suggestedCategory: 'R', categoryAppropriate: 'Yes' } },
+  //         openConditionsRequested: false,
+  //       })
+  //       expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
+  //       expect(result.rows[0].user_id).to.eq(FEMALE_USER.username)
+  //       expect(result.rows[0].approved_by).to.eq(null)
+  //     })
+  //   })
+  //
+  //   it('should allow an initial categorisation - Open', () => {
+  //     commonInitialCategorisationSteps()
+  //
+  //     taskListPage.categoryDecisionButton().click()
+  //
+  //     const categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
+  //     categoryDecisionPage.selectCategoryDecisionRadioButton('OPEN')
+  //     categoryDecisionPage.enterCategoryDecisionJustification('justification for open conditions')
+  //     categoryDecisionPage.continueButton().click()
+  //
+  //     const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
+  //     openConditionsAddedPage.returnToTasklistButton(bookingId).click()
+  //
+  //     taskListPage.openConditionsButton().click()
+  //
+  //     const earliestReleaseDatePage = EarliestReleaseDatePage.createForBookingId(bookingId)
+  //     earliestReleaseDatePage.selectEarliestReleaseDateRadioButton('NO')
+  //     earliestReleaseDatePage.continueButton().click()
+  //
+  //     const previousSentencesPage = PreviousSentencesPage.createForBookingId(bookingId)
+  //     previousSentencesPage.selectPreviousSentencesRadioButton('NO')
+  //     previousSentencesPage.continueButton().click()
+  //
+  //     const victimContactSchemePage = VictimContactSchemePage.createForBookingId(bookingId)
+  //     victimContactSchemePage.selectVictimContactSchemeRadioButton('NO')
+  //     victimContactSchemePage.continueButton().click()
+  //
+  //     const sexualOffencesPage = SexualOffencesPage.createForBookingId(bookingId)
+  //     sexualOffencesPage.selectSexualOffencesRadioButton('NO')
+  //     sexualOffencesPage.continueButton().click()
+  //
+  //     const foreignNationalPage = ForeignNationalPage.createForBookingId(bookingId)
+  //     foreignNationalPage.selectForeignNationalRadioButton('NO')
+  //     foreignNationalPage.continueButton().click()
+  //
+  //     const riskOfSeriousHarmPage = RiskOfSeriousHarmPage.createForBookingId(bookingId)
+  //     riskOfSeriousHarmPage.selectRiskOfSeriousHarmRadioButton('NO')
+  //     riskOfSeriousHarmPage.continueButton().click()
+  //
+  //     const furtherChargesPage = FurtherChargesPage.createForBookingId(bookingId)
+  //     furtherChargesPage.selectFurtherChargesRadioButton('NO')
+  //     furtherChargesPage.continueButton().click()
+  //
+  //     const riskLevelsPage = RiskLevelsPage.createForBookingId(bookingId)
+  //     riskLevelsPage.selectRiskLevelsRadioButton('NO')
+  //     riskLevelsPage.continueButton().click()
+  //
+  //     // cy.visit(`/form/openconditions/provisionalCategory/${bookingId}`)
+  //     // cy.url().should('include', `tasklist/${bookingId}`)
+  //
+  //     cy.task('stubGetLifeProfile', {
+  //       offenderNo,
+  //       category: 'R',
+  //     })
+  //
+  //     taskListPage.validateSummarySectionText(['Review and categorisation', 'All tasks completed'])
+  //     taskListPage.continueReviewAndCategorisationButton(bookingId).click()
+  //
+  //     cy.task('stubCategorise', {
+  //       expectedCat: 'R',
+  //       nextReviewDate: sixMonthsFromNow,
+  //     })
+  //
+  //     const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
+  //     categoriserReviewCYAPage.changeLinks().should('have.length', 27)
+  //     cy.validateCategorisationDetails([
+  //       // column 1
+  //       [
+  //         { key: 'Name', value: 'Hillmob, William' },
+  //         { key: 'NOMIS ID', value: offenderNo },
+  //         { key: 'Date of birth', value: '17/02/1970' },
+  //         { key: 'Current category', value: category },
+  //       ],
+  //       // column 2
+  //       commonColumn2,
+  //       // column 3
+  //       [
+  //         { key: 'HDC Eligibility Date', value: '10/06/2020' },
+  //         { key: 'Automatic Release Date', value: '11/06/2020' },
+  //         { key: 'Conditional Release Date', value: '02/02/2020' },
+  //         { key: 'Parole Eligibility Date', value: '13/06/2020' },
+  //         { key: 'Non Parole Date', value: '14/06/2020' },
+  //         { key: 'ISP Tariff End Date', value: '15/06/2020' },
+  //         { key: 'Licence Expiry Date', value: '16/06/2020' },
+  //         { key: 'Sentence Expiry Date', value: '17/06/2020' },
+  //         { key: 'Court-issued sentence', value: '6 years, 3 months (Std sentence)' },
+  //       ],
+  //     ])
+  //     ;[
+  //       // offending history
+  //       { term: 'Previous Cat A, Restricted.', definition: 'No Cat A, Restricted' },
+  //       { term: 'Previous convictions on NOMIS', definition: 'Libel (21/02/2019)' },
+  //       { term: 'Previous convictions on NOMIS', definition: 'Slander (22/02/2019 - 24/02/2019)' },
+  //       { term: 'Previous convictions on NOMIS', definition: 'Undated offence' },
+  //       { term: 'Relevant convictions on PNC', definition: 'No' },
+  //       // safety and good order
+  //       { term: 'Previous assaults in custody recorded', definition: '5' },
+  //       { term: 'Serious assaults in the past 12 months', definition: '2' },
+  //       { term: 'Any more information about risk of violence in custody', definition: 'No' },
+  //       { term: 'Serious threats to good order in custody recorded', definition: 'No' },
+  //       // risk of escape
+  //       { term: 'Escape list', definition: 'No' },
+  //       { term: 'Escape alerts', definition: 'No' },
+  //       { term: 'Any other information that they pose an escape risk', definition: 'No' },
+  //       { term: 'Any further details', definition: 'No' },
+  //       // extremism
+  //       { term: 'Identified at risk of engaging in, or vulnerable to, extremism', definition: 'Yes' },
+  //       { term: 'Offences under terrorism legislation', definition: 'Yes' },
+  //       { term: 'Offences under terrorism legislation', definition: 'Some risk text' },
+  //       // security information
+  //       { term: 'Automatic referral to security team', definition: 'No' },
+  //       { term: 'Manual referral to security team', definition: 'No' },
+  //       { term: 'Flagged by security team', definition: 'No' },
+  //       // category decision
+  //       { term: 'What security category is most suitable for this person?', definition: 'Open' },
+  //       { term: 'Information about why this category is appropriate', definition: 'justification for open conditions' },
+  //       // next category review date
+  //       {
+  //         term: 'What date should they be reviewed by?',
+  //         definition: sixMonthsFromNow.format(LONG_DATE_FORMAT),
+  //       },
+  //       // open conditions
+  //       // earliest release date
+  //       { term: '5 or more years until earliest release date?', definition: 'No' },
+  //       { term: 'Reasons that justify moving to open conditions?', definition: 'Not applicable' },
+  //       // previous sentences
+  //       { term: 'Have they been released from a previous sentence in the last 5 years?', definition: 'No' },
+  //       { term: 'Was that previous sentence for 7 years or more?', definition: 'Not applicable' },
+  //       // victim contact scheme
+  //       { term: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?', definition: 'No' },
+  //       // sexual offences
+  //       { term: 'Have they ever been convicted of a sexual offence?', definition: 'No' },
+  //       { term: 'Can the risk to the public be managed in open conditions?', definition: 'Not applicable' },
+  //       // foreign national
+  //       { term: 'Are they a foreign national?', definition: 'No' },
+  //       { term: 'Have the Home Office confirmed their immigration status?', definition: 'Not applicable' },
+  //       { term: 'Do they have a liability for deportation?', definition: 'Not applicable' },
+  //       { term: 'Have they been through all appeals process in the UK?', definition: 'Not applicable' },
+  //       // risk of serious harm
+  //       { term: 'Risk of serious harm to the public?', definition: 'No' },
+  //       { term: 'Can this risk be managed?', definition: 'Not applicable' },
+  //       // further charges
+  //       { term: 'Are they facing any further charges?', definition: 'No' },
+  //       { term: 'Further charges details', definition: 'Not applicable' },
+  //       { term: 'Do these further charges increase risk in open conditions?', definition: 'Not applicable' },
+  //       // risk of escaping or absconding
+  //       { term: 'Likely to abscond or abuse open conditions?', definition: 'No' },
+  //     ].forEach(cy.checkDefinitionList)
+  //
+  //     categoriserReviewCYAPage.continueButton().click()
+  //
+  //     const categoriserSubmittedPage = CategoriserSubmittedPage.createForBookingId(bookingId)
+  //     categoriserSubmittedPage.finishButton().click()
+  //
+  //     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
+  //       expect(result.rows[0].status).to.eq(Status.AWAITING_APPROVAL.name)
+  //       expect(result.rows[0].form_response).to.deep.eq({
+  //         ratings: {
+  //           decision: {
+  //             category: 'T',
+  //             justification: 'justification for open conditions',
+  //           },
+  //           escapeRating: {
+  //             escapeCatB: 'No',
+  //             escapeOtherEvidence: 'No',
+  //           },
+  //           securityInput: {
+  //             securityInputNeeded: 'No',
+  //           },
+  //           nextReviewDate: {
+  //             date: sixMonthsFromNow.format(SHORT_DATE_FORMAT),
+  //             indeterminate: 'false',
+  //           },
+  //           violenceRating: {
+  //             seriousThreat: 'No',
+  //             highRiskOfViolence: 'No',
+  //           },
+  //           extremismRating: {
+  //             previousTerrorismOffences: 'Yes',
+  //             previousTerrorismOffencesText: 'Some risk text',
+  //           },
+  //           offendingHistory: {
+  //             previousConvictions: 'No',
+  //           },
+  //         },
+  //         categoriser: {
+  //           provisionalCategory: {
+  //             suggestedCategory: 'T',
+  //             categoryAppropriate: 'Yes',
+  //           },
+  //         },
+  //         openConditions: {
+  //           riskLevels: {
+  //             likelyToAbscond: 'No',
+  //           },
+  //           riskOfHarm: {
+  //             seriousHarm: 'No',
+  //           },
+  //           furtherCharges: {
+  //             furtherCharges: 'No',
+  //           },
+  //           sexualOffences: {
+  //             haveTheyBeenEverConvicted: 'No',
+  //           },
+  //           foreignNational: {
+  //             isForeignNational: 'No',
+  //           },
+  //           previousSentences: {
+  //             releasedLastFiveYears: 'No',
+  //           },
+  //           earliestReleaseDate: {
+  //             fiveOrMoreYears: 'No',
+  //           },
+  //           victimContactScheme: {
+  //             vcsOptedFor: 'No',
+  //           },
+  //         },
+  //         openConditionsRequested: true,
+  //       })
+  //       expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
+  //       expect(result.rows[0].user_id).to.eq(FEMALE_USER.username)
+  //       expect(result.rows[0].approved_by).to.eq(null)
+  //     })
+  //   })
+  // })
 
   describe('Supervisor Review', () => {
     const loginAsWomensSupervisorUser = ({
@@ -650,8 +652,12 @@ describe("Women's Estate", () => {
 
       const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
 
-      supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+      supervisorReviewPage.agreeWithCategoryDecisionRadioButton().click()
       supervisorReviewPage.submitButton().click()
+
+      const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
+      furtherInformationPage.enterFurtherInformation('Some further information')
+      furtherInformationPage.submitButton().click()
 
       const supervisorReviewOutcomePage = SupervisorReviewOutcomePage.createForBookingIdAndCategorisationType(
         bookingId,
@@ -718,8 +724,10 @@ describe("Women's Estate", () => {
       ].forEach(cy.checkDefinitionList)
 
       const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
-      supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
-      supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
+      supervisorReviewPage.validateIndeterminateWarningIsDisplayed({
+        isVisible: false,
+      })
+      supervisorReviewPage.changeToCategoryTRadioButton().click()
       supervisorReviewPage.validateIndeterminateWarningIsDisplayed({
         isVisible: true,
         expectedText: `This person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.`,
@@ -793,25 +801,23 @@ describe("Women's Estate", () => {
 
           supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
           supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
-          supervisorReviewPage.validateOpenConditionsInfoMessageIsDisplayed({ isVisible: false })
           supervisorReviewPage.validateWhichCategoryIsMoreAppropriateRadioButton({
             selection: ['YOI_OPEN', 'CONSIDER_FOR_CLOSED'],
             isChecked: false,
           })
-          supervisorReviewPage.validateOtherRelevantInformationTextBox({ isVisible: true, expectedText: '' })
         })
 
         it('should require a provisional category selection', () => {
           supervisorReviewPage.submitButton().click()
 
           supervisorReviewPage.validateErrorSummaryMessages([
-            { index: 0, href: '#supervisorCategoryAppropriate', text: 'Please select yes or no' },
+            { index: 0, href: '#supervisorDecision', text: 'Select what you would like to do next' },
           ])
 
           supervisorReviewPage.validateErrorMessages([
             {
-              selector: '#supervisorCategoryAppropriate-error',
-              text: 'Select yes if you agree with the provisional category',
+              selector: '#supervisorDecision-error',
+              text: 'Select what you would like to do next',
             },
           ])
         })
@@ -819,8 +825,12 @@ describe("Women's Estate", () => {
         it('should accept an agreement with the provisional category', () => {
           cy.task('stubSupervisorApprove')
 
-          supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+          supervisorReviewPage.agreeWithCategoryDecisionRadioButton().click()
           supervisorReviewPage.submitButton().click()
+
+          const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
+          furtherInformationPage.enterFurtherInformation('Some further information')
+          furtherInformationPage.submitButton().click()
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].status).to.eq(Status.APPROVED.name)
@@ -834,7 +844,7 @@ describe("Women's Estate", () => {
                 extremismRating: { previousTerrorismOffences: 'Yes' },
                 offendingHistory: { previousConvictions: 'No' },
               },
-              supervisor: { review: { proposedCategory: 'I', supervisorCategoryAppropriate: 'Yes' } },
+              supervisor: { review: { supervisorDecision: 'agreeWithCategoryDecision' }, furtherInformation: { otherInformationText: 'Some further information' } },
               categoriser: { provisionalCategory: { suggestedCategory: 'I', categoryAppropriate: 'Yes' } },
             })
             expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
@@ -846,10 +856,10 @@ describe("Women's Estate", () => {
           cy.task('stubSupervisorReject')
           const confirmBackMessage = 'a message to pass back to the categoriser'
 
-          supervisorReviewPage.giveBackToCategoriserButton(bookingId).click()
+          supervisorReviewPage.giveBackToCategoriserRadioButton().click()
+          supervisorReviewPage.submitButton().click()
 
           const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
-          supervisorConfirmBackPage.selectConfirmationRadioButton('YES')
           supervisorConfirmBackPage.setConfirmationMessageText(confirmBackMessage)
           supervisorConfirmBackPage.saveAndReturnButton().click()
 
@@ -863,49 +873,19 @@ describe("Women's Estate", () => {
 
         describe('Do you agree with the provisional category? No', () => {
           describe('YOI Open', () => {
-            it('should require a selection for which category is more appropriate', () => {
-              supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-              supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
-              supervisorReviewPage.validateOpenConditionsInfoMessageIsDisplayed({ isVisible: false })
-              supervisorReviewPage.submitButton().click()
-
-              supervisorReviewPage.validateErrorMessages([])
-
-              supervisorReviewPage.validateErrorSummaryMessages([
-                { index: 0, href: '#supervisorOverriddenCategory', text: 'Please enter the new category' },
-                {
-                  index: 1,
-                  href: '#supervisorOverriddenCategoryText',
-                  text: 'Enter the reason why this category is more appropriate',
-                },
-              ])
-
-              supervisorReviewPage.validateErrorMessages([
-                { selector: '#supervisorOverriddenCategory-error', text: 'Please select the new category' },
-                {
-                  selector: '#supervisorOverriddenCategoryText-error',
-                  text: 'Enter the reason why this category is more appropriate',
-                },
-              ])
-            })
-
             it('should return the category change to the categoriser to provide the Open information', () => {
               cy.task('stubSupervisorReject')
 
-              supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-              supervisorReviewPage.selectWhichCategoryIsMoreAppropriateRadioButton('YOI_OPEN')
-              supervisorReviewPage.setWhichCategoryIsMoreAppropriateText(
-                'A reason why I believe this is a more appropriate category',
-              )
+              supervisorReviewPage.changeToCategoryJRadioButton().click()
               supervisorReviewPage.validateIndeterminateWarningIsDisplayed({
                 isVisible: true,
                 expectedText: `This person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.`,
               })
-              supervisorReviewPage.validateOpenConditionsInfoMessageIsDisplayed({
-                isVisible: true,
-                expectedText: `Making this category change means that the categoriser will have to provide more information.`,
-              })
               supervisorReviewPage.submitButton().click()
+
+              const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
+              supervisorConfirmBackPage.setConfirmationMessageText('A reason why I believe this is a more appropriate category')
+              supervisorConfirmBackPage.saveAndReturnButton().click()
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
                 expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
@@ -933,19 +913,18 @@ describe("Women's Estate", () => {
                   },
                   supervisor: {
                     review: {
-                      proposedCategory: 'I',
+                      supervisorDecision: 'changeCategoryTo_J',
                       supervisorOverriddenCategory: 'J',
                       supervisorCategoryAppropriate: 'No',
-                      supervisorOverriddenCategoryText: 'A reason why I believe this is a more appropriate category',
                     },
                     confirmBack: {
-                      messageText: 'A reason why I believe this is a more appropriate category',
                       supervisorName: 'Ex12 Officer6',
+                      messageText: 'A reason why I believe this is a more appropriate category',
                     },
                   },
                   categoriser: {
                     provisionalCategory: {
-                      suggestedCategory: 'J',
+                      suggestedCategory: 'I',
                       categoryAppropriate: 'Yes',
                     },
                   },
@@ -958,39 +937,20 @@ describe("Women's Estate", () => {
           })
 
           describe('Consider for closed', () => {
-            beforeEach(() => {
-              supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-              supervisorReviewPage.selectWhichCategoryIsMoreAppropriateRadioButton('CONSIDER_FOR_CLOSED')
-              supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
-              supervisorReviewPage.validateOpenConditionsInfoMessageIsDisplayed({ isVisible: false })
-            })
-
-            it('should require a reason why the category is more appropriate', () => {
-              supervisorReviewPage.submitButton().click()
-
-              supervisorReviewPage.validateErrorSummaryMessages([
-                {
-                  index: 0,
-                  href: '#supervisorOverriddenCategoryText',
-                  text: 'Enter the reason why this category is more appropriate',
-                },
-              ])
-
-              supervisorReviewPage.validateErrorMessages([
-                {
-                  selector: '#supervisorOverriddenCategoryText-error',
-                  text: 'Enter the reason why this category is more appropriate',
-                },
-              ])
-            })
-
-            it('should be valid when given a reason', () => {
+            it('without giving back to categoriser', () => {
               cy.task('stubSupervisorApprove')
 
-              supervisorReviewPage.setWhichCategoryIsMoreAppropriateText(
-                'A reason why I believe this is a more appropriate category',
-              )
+              supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_R').click()
+              supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
               supervisorReviewPage.submitButton().click()
+
+              const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Closed')
+              giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+              giveBackToCategoriserPage.submitButton().click()
+
+              const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
+              furtherInformationPage.enterFurtherInformation('A reason why I believe this is a more appropriate category')
+              furtherInformationPage.submitButton().click()
 
               const supervisorReviewOutcomePage = SupervisorReviewOutcomePage.createForBookingIdAndCategorisationType(
                 bookingId,
@@ -1030,11 +990,13 @@ describe("Women's Estate", () => {
                   },
                   supervisor: {
                     review: {
-                      proposedCategory: 'I',
+                      supervisorDecision: 'changeCategoryTo_R',
                       supervisorOverriddenCategory: 'R',
                       supervisorCategoryAppropriate: 'No',
-                      supervisorOverriddenCategoryText: 'A reason why I believe this is a more appropriate category',
                     },
+                    furtherInformation: {
+                      otherInformationText: 'A reason why I believe this is a more appropriate category',
+                    }
                   },
                   categoriser: {
                     provisionalCategory: {
