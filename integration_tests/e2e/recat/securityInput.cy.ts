@@ -55,9 +55,7 @@ describe('Security Input', () => {
     })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
+      alertCode: 'XER',
     })
     cy.task('stubGetViolenceProfile', {
       offenderNo: 'B2345YZ',

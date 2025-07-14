@@ -103,9 +103,7 @@ describe('Open Conditions', () => {
     })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
+      alertCode: 'XEL',
     })
     cy.task('stubGetViolenceProfile', {
       offenderNo: 'B2345YZ',
@@ -240,7 +238,12 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          socProfile: {
+            nomsId: 'B2345YZ',
+            riskType: 'SOC',
+            transferToSecurity: false,
+            provisionalCategorisation: 'C',
+          },
           extremismProfile: {
             notifyRegionalCTLead: false,
             increasedRiskOfExtremism: false,
@@ -351,40 +354,11 @@ describe('Open Conditions', () => {
         risk_profile: {
           socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
           escapeProfile: {
-            nomsId: 'B2345YZ',
             riskType: 'ESCAPE',
             activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
           },
           violenceProfile: {
             nomsId: 'B2345YZ',
@@ -561,40 +535,11 @@ describe('Open Conditions', () => {
             provisionalCategorisation: 'C',
           },
           escapeProfile: {
-            nomsId: 'B2345YZ',
             riskType: 'ESCAPE',
             activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
           },
           violenceProfile: {
             nomsId: 'B2345YZ',
@@ -904,40 +849,11 @@ describe('Open Conditions', () => {
             provisionalCategorisation: 'C',
           },
           escapeProfile: {
-            nomsId: 'B2345YZ',
             riskType: 'ESCAPE',
             activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
           },
           violenceProfile: {
             nomsId: 'B2345YZ',
@@ -1199,40 +1115,11 @@ describe('Open Conditions', () => {
         risk_profile: {
           socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
           escapeProfile: {
-            nomsId: 'B2345YZ',
             riskType: 'ESCAPE',
             activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
           },
           violenceProfile: {
             nomsId: 'B2345YZ',
@@ -1574,40 +1461,11 @@ describe('Open Conditions', () => {
           ],
           socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
           escapeProfile: {
-            nomsId: 'B2345YZ',
             riskType: 'ESCAPE',
             activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
           },
           violenceProfile: {
             nomsId: 'B2345YZ',

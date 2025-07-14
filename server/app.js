@@ -48,6 +48,7 @@ module.exports = function createApp({
   statsService,
   frontEndComponentsService,
   pathfinderService,
+  alertService,
 }) {
   const app = express()
 
@@ -153,6 +154,7 @@ module.exports = function createApp({
     config.apis.allocationManager.url,
     config.apis.prisonerSearch.url,
     config.apis.pathfinderApi.url,
+    config.apis.alertsApi.url,
   )
   app.get('/health', (req, res, next) => {
     health((err, result) => {
@@ -277,6 +279,7 @@ module.exports = function createApp({
       authenticationMiddleware,
       riskProfilerService,
       pathfinderService,
+      alertService,
     }),
   )
   app.use(
@@ -288,6 +291,7 @@ module.exports = function createApp({
       authenticationMiddleware,
       riskProfilerService,
       pathfinderService,
+      alertService,
     }),
   )
 
@@ -305,6 +309,7 @@ module.exports = function createApp({
     userService,
     riskProfilerService,
     pathfinderService,
+    alertService,
     authenticationMiddleware,
   })
   app.use('/form/recat/', recatRouter)
@@ -332,6 +337,7 @@ module.exports = function createApp({
     riskProfilerService,
     authenticationMiddleware,
     pathfinderService,
+    alertService,
   })
   app.use('/form/', formRouter)
   app.use('/supervisor/', formRouter)

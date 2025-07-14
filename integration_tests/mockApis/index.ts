@@ -8,6 +8,7 @@ import dpsComponents from './dpsComponents'
 import probationOffenderSearchApi from './probationOffenderSearchApi'
 import formApi from './formApi'
 import pathfinderApi from './pathfinderApi'
+import alertsApi from './alertsApi'
 
 export default {
   ...allocationManager,
@@ -20,4 +21,5 @@ export default {
   ...probationOffenderSearchApi,
   ...formApi,
   ...pathfinderApi,
+  ...alertsApi,
 }

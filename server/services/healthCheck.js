@@ -46,6 +46,7 @@ module.exports = function healthcheckFactory(
   allocationUrl,
   prisonerSearchUrl,
   pathfinderApiUrl,
+  alertsApiUrl,
 ) {
   const checks = [
     service('auth', `${authUrl}/ping`),
@@ -54,6 +55,7 @@ module.exports = function healthcheckFactory(
     service('allocation', `${allocationUrl}health`),
     service('prisonerSearch', `${prisonerSearchUrl}health/ping`),
     service('pathfinderApi', `${pathfinderApiUrl}health/ping`),
+    service('alertsApi', `${alertsApiUrl}health/ping`),
     db,
   ]
 

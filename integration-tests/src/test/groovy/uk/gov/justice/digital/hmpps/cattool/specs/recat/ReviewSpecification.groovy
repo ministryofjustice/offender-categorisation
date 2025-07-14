@@ -49,7 +49,7 @@ class ReviewSpecification extends AbstractSpecification {
     summarySection[1].text() == 'All tasks completed'
 
     when: 'The continue link is selected'
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
@@ -64,7 +64,7 @@ class ReviewSpecification extends AbstractSpecification {
       'Age 21',
       'Categorisation date Category decision Review location\n24/03/2013 B LPI prison\n08/06/2012 A LPI prison',
       'This person has not been reported as the perpetrator in any assaults in custody before',
-      'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
+      'This person is considered an escape risk\nE-List: 2025-01-01\nEscape Risk Alert: 2025-01-01',
       'This person is at risk of engaging in, or vulnerable to, extremism.',
       'offence Details text']
     securityInputSummary*.text() == ['No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
@@ -85,7 +85,7 @@ class ReviewSpecification extends AbstractSpecification {
     data.nomis_sequence_no == 4
     def json = riskProfile.toString()
     json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
-    json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'
+    json.contains '"escapeProfile": {"riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true, "escapeListAlerts": [{"alertCode": "XEL", "dateCreated": "2025-01-01"}], "escapeRiskAlerts": [{"alertCode": "XER", "dateCreated": "2025-01-01"}]}'
     json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "numberOfNonSeriousAssaults": 3, "veryHighRiskViolentOffender": false}'
     json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}'
   }
@@ -113,7 +113,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
@@ -150,7 +150,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
