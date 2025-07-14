@@ -5,7 +5,7 @@ const stubGetExtremismProfile = ({ offenderNo, band }: { offenderNo: string; ban
   stubFor({
     request: {
       method: 'GET',
-      urlPattern: `/pathfinder-api/pathfinder/offender/${offenderNo}`,
+      urlPattern: `/pathfinder-api/pathfinder/nominal/noms-id/${offenderNo}`,
     },
     response: {
       status: 200,

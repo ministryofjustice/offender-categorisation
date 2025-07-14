@@ -34,7 +34,7 @@ describe('pathfinderApiClientBuilder', () => {
   describe('getPathfinderData', () => {
     it('should return data from the pathfinder api', async () => {
       const testResponse = { band: 3 }
-      fakeApi.get('/pathfinder/offender/123').reply(200, testResponse)
+      fakeApi.get('/pathfinder/nominal/noms-id/123').reply(200, testResponse)
 
       const output = await client.getPathfinderData('123')
       expect(output).toEqual(testResponse)

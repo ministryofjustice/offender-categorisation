@@ -1,5 +1,4 @@
 export interface PathfinderDataDto {
-  // is this optional
   band?: number
 }
 
