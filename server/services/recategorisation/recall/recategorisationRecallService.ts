@@ -2,7 +2,7 @@ import { RecategorisationPrisonerSearchDto } from '../prisonerSearch/recategoris
 import { RecalledOffenderData } from './recalledOffenderData'
 import logger from '../../../../log'
 
-const ADMISSION_TYPE = 'ADM'
+export const ADMISSION_TYPE = 'ADM'
 
 const getRecalledOffenderData = async (
   offenderNumber: string,

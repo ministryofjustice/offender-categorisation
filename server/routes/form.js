@@ -539,10 +539,10 @@ module.exports = function Index({
         transactionalClient: transactionalDbClient,
       })
 
-      if (OPEN_CONDITIONS_CATEGORIES.includes(newFormData.supervisor.review.supervisorOverriddenCategory)) {
+      if (OPEN_CONDITIONS_CATEGORIES.includes(newFormData?.supervisor?.review?.supervisorOverriddenCategory)) {
         await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
         await formService.deleteFormData({
-          bookingId,
+          bookingId: parseInt(bookingId, 10),
           formSection: newFormData.recat ? 'recat' : 'ratings',
           formName: 'decision',
           transactionalClient: transactionalDbClient,

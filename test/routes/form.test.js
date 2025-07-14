@@ -1609,12 +1609,14 @@ describe('GET /recat/review', () => {
 describe('POST /supervisor/review', () => {
   test('Should delete recat decision if overriding to open conditions', () => {
     const userInput = {
-      supervisorDecision: 'changeCategoryTo_D',
+      messageText: 'something',
       catType: 'RECAT',
     }
 
+    formService.update.mockReturnValue({ recat: {}, supervisor: { review: { supervisorOverriddenCategory: 'D' } } })
+
     return request(app)
-      .post(`/supervisor/review/12345`)
+      .post(`/supervisor/confirmBack/12345`)
       .send(userInput)
       .expect(302)
       .expect(() => {
@@ -1626,6 +1628,7 @@ describe('POST /supervisor/review', () => {
           bookingId: 12345,
           formName: 'decision',
           formSection: 'recat',
+          transactionalClient: mockTransactionalClient,
         })
       })
   })
@@ -1661,12 +1664,14 @@ describe('POST /supervisor/review', () => {
   test('should delete recat decision if overriding to open conditions - female', () => {
     mockFemalePrison()
     const userInput = {
-      supervisorDecision: 'changeCategoryTo_T',
+      messageText: 'something',
       catType: 'RECAT',
     }
 
+    formService.update.mockReturnValue({ recat: {}, supervisor: { review: { supervisorOverriddenCategory: 'D' } } })
+
     return request(app)
-      .post(`/supervisor/review/12345`)
+      .post(`/supervisor/confirmBack/12345`)
       .send(userInput)
       .expect(302)
       .expect(() => {
@@ -1678,6 +1683,7 @@ describe('POST /supervisor/review', () => {
           bookingId: 12345,
           formName: 'decision',
           formSection: 'recat',
+          transactionalClient: mockTransactionalClient,
         })
       })
   })
