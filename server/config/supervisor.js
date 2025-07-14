@@ -63,7 +63,7 @@ module.exports = {
       {
         messageText: {
           responseType: 'requiredString',
-          validationMessage: 'Please enter a message for the categorisor',
+          validationMessage: 'Enter your message for the categoriser',
         },
       },
     ],

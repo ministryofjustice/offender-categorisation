@@ -1,9 +1,9 @@
-export default [
+export default (categoryDecision = 'R') => [
   {
     id: -1,
     form_response: {
       ratings: {
-        decision: { category: 'R' },
+        decision: { category: categoryDecision },
         escapeRating: { escapeOtherEvidence: 'No' },
         securityInput: { securityInputNeeded: 'No' },
         nextReviewDate: { date: '14/12/2019' },
@@ -11,7 +11,7 @@ export default [
         extremismRating: { previousTerrorismOffences: 'Yes' },
         offendingHistory: { previousConvictions: 'No' },
       },
-      categoriser: { provisionalCategory: { suggestedCategory: 'R', categoryAppropriate: 'Yes' } },
+      categoriser: { provisionalCategory: { suggestedCategory: categoryDecision, categoryAppropriate: 'Yes' } },
     },
     booking_id: 700,
     user_id: 'null',
