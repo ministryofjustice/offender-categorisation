@@ -44,7 +44,7 @@ abstract class AbstractSpecification extends GebReportingSpec {
   protected OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
     .extensions(new ResponseTemplateTransformer(false)))
 
-  protected TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi, allocationApi, prisonerSearchApi, pathfinderApi)
+  protected TestFixture fixture = new TestFixture(browser, elite2Api, oauthApi, riskProfilerApi, allocationApi, prisonerSearchApi)
   protected DatabaseUtils db = new DatabaseUtils()
 
   static final TODAY = LocalDate.now()
