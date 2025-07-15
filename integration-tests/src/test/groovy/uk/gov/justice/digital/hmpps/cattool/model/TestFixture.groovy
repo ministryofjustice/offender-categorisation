@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.PrisonerSearchApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.PathfinderApi
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
@@ -27,6 +28,7 @@ class TestFixture {
   AllocationApi allocationApi
   PrisonerSearchApi prisonerSearchApi
   OauthApi oauthApi
+  PathfinderApi pathfinderApi
 
   UserAccount currentUser
 
