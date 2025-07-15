@@ -12,7 +12,7 @@ class RiskProfilerApi extends WireMockRule {
     super(8082)
   }
 
-  void stubForTasklists(String offenderno, String category, boolean transferToSecurity = false, boolean increasedRisk = false, boolean notifyRegionalCTLead = false) {
+  void stubForTasklists(String offenderno, String category, boolean transferToSecurity = false) {
     stubGetSocProfile(offenderno, category, transferToSecurity)
   }
 

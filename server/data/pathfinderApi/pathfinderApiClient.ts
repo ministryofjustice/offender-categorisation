@@ -28,9 +28,7 @@ export const pathfinderApiClientBuilder = (user: User) => {
   return {
     async getPathfinderData(offenderNo: string): Promise<PathfinderDataDto> {
       const path = `${apiUrl}pathfinder/nominal/noms-id/${offenderNo}`
-      const response = await apiGet({ path })
-
-      return response
+      return apiGet({ path })
     },
   }
 

@@ -210,7 +210,7 @@ class TestFixture {
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', multipleSentences)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
-    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     browser.selectSecondPrisoner()
   }
 
@@ -224,7 +224,7 @@ class TestFixture {
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
     riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
-    pathfinderApi.stubGetExtremismProfile('ON700', 1)
+    pathfinderApi.stubGetExtremismProfile('ON700', 3)
     browser.selectFirstPrisoner()
   }
 
@@ -237,7 +237,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, indeterminateSentence)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
-    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     browser.selectFirstPrisoner()
   }
 
@@ -250,7 +250,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetailsWomen(700, 'ON700', false, indeterminateSentence, 'R')
     riskProfilerApi.stubForTasklists('ON700', 'R', transferToSecurity)
-    pathfinderApi.stubGetExtremismProfile('ON700', 1)
+    pathfinderApi.stubGetExtremismProfile('ON700', 3)
 
     browser.waitFor {
       browser.selectFirstPrisoner()
@@ -267,7 +267,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, false, 'I')
     riskProfilerApi.stubForTasklists('C0001AA', 'I', transferToSecurity)
-    pathfinderApi.stubGetExtremismProfile('C0001AA', 1)
+    pathfinderApi.stubGetExtremismProfile('C0001AA', 4)
     browser.selectFirstPrisoner() // should be Tim, Tiny, booking 21
   }
 
@@ -280,7 +280,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, true, 'I')
     riskProfilerApi.stubForTasklists('C0001AA', 'C', transferToSecurity)
-    pathfinderApi.stubGetExtremismProfile('C0001AA', 1)
+    pathfinderApi.stubGetExtremismProfile('C0001AA', 3)
     browser.selectFirstPrisoner()
   }
 

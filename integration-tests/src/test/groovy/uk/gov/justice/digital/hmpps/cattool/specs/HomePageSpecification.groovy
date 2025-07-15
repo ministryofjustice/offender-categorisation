@@ -228,7 +228,7 @@ class HomePageSpecification extends AbstractSpecification {
 
     categorisationHomeLink.click()
     at CategoriserHomePage
-    statuses == ['Started (Api User)']
+    statuses == ['Automatically referred to Security']
 
     when: 'A second user views the uncategorised list'
 
@@ -241,7 +241,7 @@ class HomePageSpecification extends AbstractSpecification {
     at CategoriserHomePage
 
     then: 'The uncategorised list is displayed with the assigned user text'
-    statuses == ["Started (Hpa User)"]
+    statuses == ["Automatically referred to Security"]
     startButtons[0].text() == 'Edit'
   }
 

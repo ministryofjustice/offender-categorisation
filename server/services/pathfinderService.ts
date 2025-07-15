@@ -11,9 +11,7 @@ export default class CreatePathfinderService {
     try {
       const pathfinderApiClient = this.pathfinderApiClientBuilder(user)
       const response = await pathfinderApiClient.getPathfinderData(offenderNo)
-      const extremismProfile = mapDataToExtremismProfile(response?.band)
-
-      return extremismProfile
+      return mapDataToExtremismProfile(response?.band)
     } catch (error) {
       if (error.status === 404) {
         return { notifyRegionalCTLead: false, increasedRiskOfExtremism: false }

@@ -42,7 +42,7 @@ class ReviewSpecification extends AbstractSpecification {
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
-    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     selectFirstPrisoner() // has been sorted to top of list!
     at(new TasklistPage(bookingId: '12'))
 
@@ -111,7 +111,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubOffenceHistory('B2345YZ')
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     at new TasklistPage(bookingId: '12')
     continueButton.click()
