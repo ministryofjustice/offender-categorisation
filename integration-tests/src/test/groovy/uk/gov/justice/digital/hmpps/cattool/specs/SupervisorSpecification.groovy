@@ -239,6 +239,7 @@ class SupervisorSpecification extends AbstractSpecification {
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     selectFirstPrisoner() // has been sorted to top of list!
     at TasklistPage
     supervisorMessageButton.click()

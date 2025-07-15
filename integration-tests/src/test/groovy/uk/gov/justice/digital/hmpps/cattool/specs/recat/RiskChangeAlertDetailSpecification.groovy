@@ -36,6 +36,7 @@ class RiskChangeAlertDetailSpecification extends AbstractSpecification {
 
     elite2Api.stubGetOffenderDetails(12, 'B2345XY')
     riskProfilerApi.stubForTasklists('B2345XY', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     answerYes.click()
     submitButton.click()
 

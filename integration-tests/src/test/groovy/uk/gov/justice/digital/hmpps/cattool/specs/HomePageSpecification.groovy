@@ -211,6 +211,7 @@ class HomePageSpecification extends AbstractSpecification {
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(678, "ON678")
     riskProfilerApi.stubForTasklists('ON678', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('ON678', 1)
     selectFirstPrisoner() // selects B2345YZ
     at(new TasklistPage(bookingId: '678'))
     headerValue*.text() == ['ON678', '17/02/1970', 'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']

@@ -35,6 +35,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     recatButton.click()
 
@@ -165,6 +166,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     editButton.click()
 
@@ -305,6 +307,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
 
@@ -337,6 +340,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
 
@@ -371,6 +375,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     editButton.click()
 
