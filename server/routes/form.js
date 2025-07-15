@@ -570,9 +570,6 @@ module.exports = function Index({
 
       await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
 
-      const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-      console.log(JSON.stringify(categorisationRecord))
-
       const nextPath = '/supervisorHome'
       res.redirect(`${nextPath}`)
     }),
