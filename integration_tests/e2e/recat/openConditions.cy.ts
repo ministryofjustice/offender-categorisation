@@ -1518,16 +1518,14 @@ describe('Open Conditions', () => {
           },
           supervisor: {
             review: {
-              proposedCategory: 'D',
-              otherInformationText: 'super other info 1super other info 1 + 2',
-              previousOverrideCategoryText: 'super overriding C to D reason text',
-              supervisorCategoryAppropriate: 'Yes',
+              supervisorDecision: 'agreeWithCategoryDecision',
             },
             confirmBack: {
               isRead: true,
               messageText: 'super overriding C to D reason text',
               supervisorName: 'Test User',
             },
+            furtherInformation: {otherInformationText: 'super other info 1 + 2'},
           },
           openConditions: {
             tprs: { tprsSelected: 'No' },
@@ -1676,9 +1674,6 @@ describe('Open Conditions', () => {
       'The supervisor also recommends open category',
     ])
     approvedViewRecatPage.validateCommentsVisibility({ areVisible: true })
-    approvedViewRecatPage.validatePreviousSupervisorComments({
-      expectedComments: 'super overriding C to D reason text',
-    })
     approvedViewRecatPage.validateOtherSupervisorComments({
       expectedComments: 'super other info 1 + 2',
     })

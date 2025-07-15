@@ -180,7 +180,7 @@ describe('Supervisor Review', () => {
 
     const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
 
-    supervisorReviewPage.agreeWithCategoryDecisionRadioButton().click()
+    supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
     supervisorReviewPage.submitButton().click()
 
     const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
@@ -418,7 +418,7 @@ describe('Supervisor Review', () => {
       it('should accept an agreement with the provisional category', () => {
         cy.task('stubSupervisorApprove')
 
-        supervisorReviewPage.agreeWithCategoryDecisionRadioButton().click()
+        supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
         supervisorReviewPage.submitButton().click()
 
         const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
@@ -449,7 +449,7 @@ describe('Supervisor Review', () => {
         cy.task('stubSupervisorReject')
         const confirmBackMessage = 'a message to pass back to the categoriser'
 
-        supervisorReviewPage.giveBackToCategoriserRadioButton().click()
+        supervisorReviewPage.supervisorDecisionRadioButton('GIVE_BACK_TO_CATEGORISER').click()
         supervisorReviewPage.submitButton().click()
 
         const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
@@ -469,7 +469,7 @@ describe('Supervisor Review', () => {
           it('should return the category change to the categoriser to provide the Open information', () => {
             cy.task('stubSupervisorReject')
 
-            supervisorReviewPage.changeToCategoryJRadioButton().click()
+            supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_J').click()
             supervisorReviewPage.validateIndeterminateWarningIsDisplayed({
               isVisible: true,
               expectedText: `This person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.`,
