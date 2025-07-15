@@ -26,6 +26,9 @@ import SupervisorReviewOutcomePage from '../../pages/form/supervisor/outcome'
 import SupervisorMessagePage from '../../pages/form/supervisor/message'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
+import GiveBackToCategoriserPage from "../../pages/form/supervisor/giveBackToCategoriser";
+import FurtherInformationPage from "../../pages/form/supervisor/furtherInformation";
+import SupervisorConfirmBackPage from "../../pages/form/supervisor/confirmBack";
 
 type DbQueryResult = { rowCount: number; rows: any[] }
 
@@ -725,9 +728,13 @@ describe('Open Conditions', () => {
     cy.task('stubSupervisorApprove')
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends open category')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+    cy.contains('The categoriser recommends open category')
+    supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
     supervisorReviewPage.submitButton().click()
+
+    const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
+    furtherInformationPage.enterFurtherInformation('super other info 1')
+    furtherInformationPage.submitButton().click()
 
     // 'Data is stored correctly'
 
@@ -741,7 +748,7 @@ describe('Open Conditions', () => {
       expect(dbRecord.status).equals('APPROVED')
       expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D', justification: 'category justification text' })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
-        review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
+        review: { supervisorDecision: 'agreeWithCategoryDecision' }, furtherInformation: { otherInformationText: 'super other info 1' },
       })
 
       return true
@@ -770,7 +777,7 @@ describe('Open Conditions', () => {
       'The categoriser recommends open category',
       'The supervisor also recommends open category',
     ])
-    approvedViewRecatPage.validateCommentsVisibility({ areVisible: false })
+    approvedViewRecatPage.validateCommentsVisibility({ areVisible: true })
   })
 
   it('recategoriser sets D, supervisor overrides to C', () => {
@@ -1062,12 +1069,17 @@ describe('Open Conditions', () => {
     cy.task('stubSupervisorApprove')
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends open category')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-    supervisorReviewPage.overrideCatC().click()
-    supervisorReviewPage.enterOverrideReason('super changed D to C')
-    supervisorReviewPage.enterOtherInformationText('super other info')
+    cy.contains('The categoriser recommends open category')
+    supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_C').click()
     supervisorReviewPage.submitButton().click()
+
+    const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(12, 'Category C')
+    giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+    giveBackToCategoriserPage.submitButton().click()
+
+    const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
+    furtherInformationPage.enterFurtherInformation('super other info')
+    furtherInformationPage.submitButton().click()
 
     // 'Data is stored correctly'
 
@@ -1082,12 +1094,13 @@ describe('Open Conditions', () => {
       expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D', justification: 'category justification text' })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
         review: {
-          proposedCategory: 'D',
-          otherInformationText: 'super other info',
+          supervisorDecision: 'changeCategoryTo_C',
           supervisorOverriddenCategory: 'C',
           supervisorCategoryAppropriate: 'No',
-          supervisorOverriddenCategoryText: 'super changed D to C',
         },
+        furtherInformation: {
+          otherInformationText: 'super other info',
+        }
       })
 
       return true
@@ -1117,9 +1130,6 @@ describe('Open Conditions', () => {
       'The recommended category was changed from open category to Category C',
     ])
     approvedViewRecatPage.validateCommentsVisibility({ areVisible: true })
-    approvedViewRecatPage.validateSupervisorComments({
-      expectedComments: 'super changed D to C',
-    })
     approvedViewRecatPage.validateOtherSupervisorComments({
       expectedComments: 'super other info',
     })
@@ -1316,12 +1326,12 @@ describe('Open Conditions', () => {
     cy.task('stubSupervisorReject')
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends Category C')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-    supervisorReviewPage.overrideCatD().click()
-    supervisorReviewPage.enterOverrideReason('super overriding C to D reason text')
-    supervisorReviewPage.enterOtherInformationText('super other info 1')
+    supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_D').click()
     supervisorReviewPage.submitButton().click()
+
+    const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(12)
+    supervisorConfirmBackPage.setConfirmationMessageText('super overriding C to D reason text')
+    supervisorConfirmBackPage.saveAndReturnButton().click()
 
     // 'supervisor is returned to home'
     Page.verifyOnPage(SupervisorHomePage)
@@ -1342,6 +1352,7 @@ describe('Open Conditions', () => {
     const supervisorMessagePage = Page.verifyOnPage(SupervisorMessagePage)
     supervisorMessagePage.validateMessages([
       { question: 'Supervisor', expectedAnswer: 'Test User' },
+      { question: 'Proposed change', expectedAnswer: 'Change the category to D' },
       { question: 'Message', expectedAnswer: 'super overriding C to D reason text' },
     ])
     supervisorMessagePage.saveAndReturnButton().click()
@@ -1469,10 +1480,13 @@ describe('Open Conditions', () => {
     cy.task('stubSupervisorApprove')
 
     Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends open category')
-    supervisorReviewPage.enterOtherInformationText('super other info 1 + 2')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+    cy.contains('The categoriser recommends open category')
+    supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
     supervisorReviewPage.submitButton().click()
+
+    const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
+    furtherInformationPage.enterFurtherInformation('super other info 1 + 2')
+    furtherInformationPage.submitButton().click()
 
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
     supervisorReviewOutcomePage.finishButton().click()

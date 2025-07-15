@@ -1092,7 +1092,6 @@ describe("Women's Estate", () => {
                   },
                   categoriser: {
                     provisionalCategory: {
-                      suggestedCategory: 'I',
                       categoryAppropriate: 'Yes',
                     },
                   },

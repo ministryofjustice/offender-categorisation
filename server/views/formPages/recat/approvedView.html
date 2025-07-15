@@ -34,7 +34,7 @@
     <div class="govuk-!-width-two-thirds">
     {% set categoriserCat = data.recat.decision.category %}
     {% set superCat = data.supervisor.review.supervisorOverriddenCategory if data.supervisor.review.supervisorCategoryAppropriate == 'No' %}
-    {% set superOtherComments = data.supervisor.review.otherInformationText %}
+    {% set superOtherComments = data.supervisor.furtherInformation.otherInformationText %}
     {% set superPreviousOverrideComments = data.supervisor.review.previousOverrideCategoryText %}
     {% set currentCat = superCat or categoriserCat %}
 
@@ -76,7 +76,7 @@
       </div>
     {% endif %}
 
-    {% if superCat or superOtherComments or superPreviousOverrideComments %}
+    {% if (superCat and data.supervisor.review.supervisorOverriddenCategoryText) or superOtherComments or superPreviousOverrideComments %}
       <div class="govuk-!-margin-bottom-6">
         <label for="overriddenText-2" class="govuk-!-font-weight-bold">Comments</label>
         {% if superCat %}

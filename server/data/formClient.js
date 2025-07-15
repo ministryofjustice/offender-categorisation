@@ -203,7 +203,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateRecordWithNomisSeqNumber(bookingId, seq, transactionalClient) {
+  updateRecordWithNomisSeqNumber(bookingId, seq, transactionalClient = db) {
     logger.info(`updateRecordWithNomisSeqNumber called for booking id ${bookingId} and seq ${seq}`)
     const query = {
       text: `update form f set nomis_sequence_no = $1 where f.booking_id = $2 ${sequenceClause}`,
@@ -221,7 +221,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateRiskProfileData(bookingId, data, transactionalClient) {
+  updateRiskProfileData(bookingId, data, transactionalClient = db) {
     logger.info(`updateRiskProfileData called for booking id ${bookingId}`)
     const query = {
       text: `update form f set risk_profile = $1 where f.booking_id = $2 ${sequenceClause}`,

@@ -540,16 +540,38 @@ module.exports = function Index({
       })
 
       if (OPEN_CONDITIONS_CATEGORIES.includes(newFormData?.supervisor?.review?.supervisorOverriddenCategory)) {
+        if (newFormData.recat) {
+          await formService.deleteFormData({
+            bookingId: parseInt(bookingId, 10),
+            formSection: 'recat',
+            formName: 'decision',
+            transactionalClient: transactionalDbClient,
+          })
+        } else {
+          const existingCatDecision = R.path(['ratings', 'decision'], newFormData)
+          const updatedFormResponse = R.assocPath(
+            ['categoriser', 'provisionalCategory'],
+            {
+              suggestedCategory: userInput.supervisorOverriddenCategory,
+              categoryAppropriate: 'Yes',
+              otherInformationText: newFormData.categoriser.provisionalCategory.otherInformationText,
+              justification: newFormData.categoriser.provisionalCategory.justification,
+            },
+            newFormData,
+          )
+          // delete ratings.decision if present
+          if (existingCatDecision) {
+            delete updatedFormResponse.ratings.decision
+          }
+          await formService.updateFormData(bookingId, updatedFormResponse, transactionalDbClient)
+        }
         await formService.requiresOpenConditions(bookingId, req.user.username, transactionalDbClient)
-        await formService.deleteFormData({
-          bookingId: parseInt(bookingId, 10),
-          formSection: newFormData.recat ? 'recat' : 'ratings',
-          formName: 'decision',
-          transactionalClient: transactionalDbClient,
-        })
       }
 
       await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
+
+      const categorisationRecord = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+      console.log(JSON.stringify(categorisationRecord))
 
       const nextPath = '/supervisorHome'
       res.redirect(`${nextPath}`)

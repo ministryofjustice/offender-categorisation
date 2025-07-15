@@ -51,6 +51,9 @@ const SELECTORS = {
 export const supervisorDecisionRadioButtonChoices = {
   AGREE_WITH_CATEGORY_DECISION: '#agreeWithCategoryDecision',
   CHANGE_TO_CATEGORY_T: '#changeCategoryTo_T',
+  CHANGE_TO_CATEGORY_D: '#changeCategoryTo_D',
+  CHANGE_TO_CATEGORY_C: '#changeCategoryTo_C',
+  CHANGE_TO_CATEGORY_B: '#changeCategoryTo_B',
   CHANGE_TO_CATEGORY_J: '#changeCategoryTo_J',
   CHANGE_TO_CATEGORY_I: '#changeCategoryTo_I',
   CHANGE_TO_CATEGORY_R: '#changeCategoryTo_R',
@@ -98,11 +101,11 @@ export default class SupervisorReviewPage extends Page {
     selection,
     isChecked,
   }: {
-    selection: WhichCategoryIsMoreAppropriateChoice[]
+    selection: SupervisorDecisionRadioButtonChoice[]
     isChecked: boolean
   }) =>
     this.validateRadioButtonSelections(
-      selection.map(selectedTextValue => whichCategoryIsMoreAppropriateRadioChoiceHtmlSelectors[selectedTextValue]),
+      selection.map(selectedTextValue => supervisorDecisionRadioButtonChoices[selectedTextValue]),
       isChecked,
     )
 

@@ -27,6 +27,9 @@ import CategoriserAwaitingApprovalViewPage from '../pages/categoriser/awaitingap
 import OpenConditionsAdded from '../pages/openConditionsAdded'
 import OpenConditionsNotRecommended from '../pages/form/openConditions/notRecommendedPage'
 import ProvisionalCategoryOpenPage from '../pages/form/categoriser/provisionalOpenCategory'
+import FurtherInformationPage from "../pages/form/supervisor/furtherInformation";
+import SupervisorConfirmBackPage from "../pages/form/supervisor/confirmBack";
+import GiveBackToCategoriserPage from "../pages/form/supervisor/giveBackToCategoriser";
 
 describe('Open conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -707,11 +710,16 @@ describe('Open conditions', () => {
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
     cy.task('stubSupervisorApprove')
 
-    supervisorReviewPage.enterOtherInformationText('super other info')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-    supervisorReviewPage.enterOverriddenCategoryText('super changed D to C')
-    supervisorReviewPage.overrideCatC().click()
+    supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_C').click()
     supervisorReviewPage.submitButton().click()
+
+    const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(12, 'Category C')
+    giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+    giveBackToCategoriserPage.submitButton().click()
+
+    const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
+    furtherInformationPage.enterFurtherInformation('super other info')
+    furtherInformationPage.submitButton().click()
 
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
     supervisorReviewOutcomePage.finishButton().click()
@@ -733,7 +741,6 @@ describe('Open conditions', () => {
       'The recommended category was changed from Category B to open category',
       'The recommended category was changed from open category to Category C',
     ])
-    approvedViewPage.comments().contains('super changed D to C')
     approvedViewPage.comments().contains('super other info')
 
     approvedViewPage.otherInformationSummary().contains('categoriser relevant info 1')
@@ -788,11 +795,13 @@ describe('Open conditions', () => {
       startDates: [new Date('2019-01-28')],
     })
 
-    supervisorReviewPage2.selectAgreeWithProvisionalCategoryRadioButton('NO')
-    supervisorReviewPage2.overrideCatD().click()
-    supervisorReviewPage2.enterOverrideReason('super overriding C to D reason text')
-    supervisorReviewPage2.enterOtherInformationText('super other info 1')
+    supervisorReviewPage2.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_D').click()
     supervisorReviewPage2.submitButton().click()
+
+    const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(12)
+    supervisorConfirmBackPage.setConfirmationMessageText('super overriding C to D reason text')
+    supervisorConfirmBackPage.saveAndReturnButton().click()
+
     /*
     supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
 */
@@ -820,6 +829,7 @@ describe('Open conditions', () => {
     const supervisorMessagePage = Page.verifyOnPage(SupervisorMessagePage)
     supervisorMessagePage.validateMessages([
       { question: 'Supervisor', expectedAnswer: 'Test User' },
+      { question: 'Proposed change', expectedAnswer: 'Change the category to D' },
       { question: 'Message', expectedAnswer: 'super overriding C to D reason text' },
     ])
     supervisorMessagePage.saveAndReturnButton().click()
@@ -885,8 +895,12 @@ describe('Open conditions', () => {
     supHomePage.startReviewForPrisoner(12)
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+    supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
     supervisorReviewPage.submitButton().click()
+
+    const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
+    furtherInformationPage.enterFurtherInformation('super other info 1')
+    furtherInformationPage.submitButton().click()
 
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
     supervisorReviewOutcomePage.finishButton().click()
@@ -908,10 +922,6 @@ describe('Open conditions', () => {
       'The categoriser recommends open category',
       'The supervisor also recommends open category',
     ])
-
-    approvedViewPage.validatePreviousSupervisorComments({
-      expectedComments: 'super overriding C to D reason text',
-    })
 
     approvedViewPage.validateOtherSupervisorComments({
       expectedComments: 'super other info 1',

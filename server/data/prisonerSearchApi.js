@@ -36,6 +36,7 @@ module.exports = context => {
     },
 
     async getPrisonersByBookingIds(bookingIds) {
+      console.log(bookingIds)
       if (bookingIds.length === 0) return []
       const path = `${apiUrl}prisoner-search/booking-ids`
       // Unfortunately prisoner search currently restricts requests to a maximum of 1000 records
