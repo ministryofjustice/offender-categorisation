@@ -72,9 +72,7 @@ describe('Escape Risk', () => {
   it('should display an alert and extra question when the offender is on the escape list', () => {
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: false,
+      alertCode: 'XEL',
     })
 
     stubLoginAndBrowseToEscapePage()
@@ -85,21 +83,13 @@ describe('Escape Risk', () => {
 
     escapePage.validateInfoVisibility({ isVisible: false })
 
-    escapePage.validateAlerts([
-      'E-List: First xel comment 2016-09-14',
-      `E-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)`,
-      'Escape Risk Alert: First xer comment 2016-09-16',
-    ])
-
     escapePage.validateFormTextContains('Do you think this information means they should be in Cat B?')
   })
 
   it('should display an info message when the offender is not on the escape list', () => {
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: false,
-      activeOnEscapeList: false,
+      alertCode: 'ABC',
     })
 
     stubLoginAndBrowseToEscapePage()
@@ -116,9 +106,7 @@ describe('Escape Risk', () => {
     it('should show a validation error on empty form submission', () => {
       cy.task('stubGetEscapeProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        onEscapeList: true,
-        activeOnEscapeList: false,
+        alertCode: 'XEL',
       })
 
       stubLoginAndBrowseToEscapePage()
@@ -140,9 +128,7 @@ describe('Escape Risk', () => {
     it(`should handle validation when prisoner is not on the escape list`, () => {
       cy.task('stubGetEscapeProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        onEscapeList: false,
-        activeOnEscapeList: false,
+        alertCode: 'ABC',
       })
 
       stubLoginAndBrowseToEscapePage()
@@ -162,9 +148,7 @@ describe('Escape Risk', () => {
     it(`should handle validation when prisoner is on the escape list`, () => {
       cy.task('stubGetEscapeProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        onEscapeList: true,
-        activeOnEscapeList: false,
+        alertCode: 'XER',
       })
 
       stubLoginAndBrowseToEscapePage()
@@ -188,9 +172,7 @@ describe('Escape Risk', () => {
     it('should record a valid form submission', () => {
       cy.task('stubGetEscapeProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        onEscapeList: false,
-        activeOnEscapeList: true,
+        alertCode: 'XEL',
       })
 
       stubLoginAndBrowseToEscapePage()
@@ -258,11 +240,9 @@ describe('Escape Risk', () => {
       })
       cy.task('stubAssessmentsWomen', { offenderNo: 'ON700' })
       cy.task('stubSentenceDataGetSingle', { offenderNumber: 'ON700', formattedReleaseDate: '2014-11-23' })
-      cy.task('stubGetProfileWomenEscapeAlert', {
+      cy.task('stubGetEscapeProfile', {
         offenderNo: 'ON700',
-        category: 'U(Unsentenced)',
-        onEscapeList: true,
-        activeOnEscapeList: true,
+        alertCode: 'XEL',
       })
 
       stubLoginAndBrowseToEscapePage({
@@ -274,12 +254,6 @@ describe('Escape Risk', () => {
       escapePage.validateWarningText('This person is considered an escape risk')
 
       escapePage.validateInfoVisibility({ isVisible: false })
-
-      escapePage.validateAlerts([
-        'E-List: First xel comment 2016-09-14',
-        `E-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)`,
-        'Escape Risk Alert: First xer comment 2016-09-16',
-      ])
 
       escapePage.validCategoryBQuestionVisibility({ isVisible: false })
     })

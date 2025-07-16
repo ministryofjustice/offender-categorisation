@@ -165,7 +165,7 @@ describe("Women's Estate", () => {
       violencePage.selectSeriousThreadRadioButton('NO')
       violencePage.saveAndReturnButton().click()
 
-      cy.task('stubGetProfileWomenEscapeAlert', {
+      cy.task('stubGetEscapeProfile', {
         offenderNo,
         category,
         onEscapeList: false,
