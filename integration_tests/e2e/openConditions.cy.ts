@@ -404,8 +404,6 @@ describe('Open conditions', () => {
     ])
   })
 
-  // STOP //
-
   it('The happy path is correct for categoriser overriding to D, all no', () => {
     provisionalCategoryPage.appropriateNo().click()
     provisionalCategoryPage.overriddenCategoryD().click()
