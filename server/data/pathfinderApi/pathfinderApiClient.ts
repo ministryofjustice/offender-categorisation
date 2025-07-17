@@ -5,7 +5,7 @@ import { getApiClientToken } from '../../authentication/clientCredentials'
 import logger from '../../../log'
 import { getSanitisedError } from '../../getSanitisedError'
 import { User } from '../user'
-import { PathfinderDataDto } from './escapeProfile.dto'
+import { PathfinderDataDto } from './extremismProfile.dto'
 
 const timeoutSpec = {
   response: config.apis.pathfinderApi.timeout.response,

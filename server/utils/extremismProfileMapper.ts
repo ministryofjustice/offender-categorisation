@@ -1,4 +1,4 @@
-import { ExtremismProfile } from '../data/pathfinderApi/escapeProfile.dto'
+import { ExtremismProfile } from '../data/pathfinderApi/extremismProfile.dto'
 
 const notifyRegionalCTLeadBands = [1, 2, 3]
 const increasedRiskOfExtremismBands = [1, 2]

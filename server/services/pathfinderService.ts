@@ -1,4 +1,4 @@
-import { ExtremismProfile } from '../data/pathfinderApi/escapeProfile.dto'
+import { ExtremismProfile } from '../data/pathfinderApi/extremismProfile.dto'
 import logger = require('../../log')
 
 import { mapDataToExtremismProfile } from '../utils/extremismProfileMapper'
