@@ -663,6 +663,7 @@ describe("Women's Estate", () => {
         CATEGORISATION_TYPE.INITIAL,
       )
       supervisorReviewOutcomePage.finishButton().should('be.visible')
+      supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     })
 
     it('should display the indeterminate sentence warning as appropriate', () => {
@@ -1001,6 +1002,7 @@ describe("Women's Estate", () => {
                 CATEGORISATION_TYPE.INITIAL,
               )
               supervisorReviewOutcomePage.finishButton().should('be.visible')
+              supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
                 expect(result.rows[0].status).to.eq(Status.APPROVED.name)

@@ -700,6 +700,7 @@ describe('Open Conditions', () => {
 
     // 'the approved view page is shown'
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     supervisorReviewOutcomePage.finishButton().click()
 
     cy.task('stubCategorised', {
@@ -1023,6 +1024,7 @@ describe('Open Conditions', () => {
 
     // 'the approved view page is shown'
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     supervisorReviewOutcomePage.finishButton().click()
 
     cy.task('stubCategorised', {
@@ -1374,6 +1376,7 @@ describe('Open Conditions', () => {
     supervisorReviewPage.submitButton().click()
 
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     supervisorReviewOutcomePage.finishButton().click()
 
     // 'Data is stored correctly'
