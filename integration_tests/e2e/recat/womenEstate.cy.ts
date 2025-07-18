@@ -187,6 +187,14 @@ describe("Women's estate recategorisation", () => {
     cy.get('#lowerCategory').type('lower category text')
     cy.get('#higherCategory').type('higher category text')
     cy.get('#otherRelevant-2').click()
+
+    cy.contains('Is there any other relevant information you would like to record?')
+    cy.contains('You can include any representations from the prisoner here.')
+    cy.contains('pregnancy, including their expected delivery date')
+    cy.contains('drugs, alcohol, or other dependencies')
+    cy.contains('domestic violence or family issues')
+    cy.contains('separation from children or if they\'re a primary carer')
+
     cy.get('button[type="submit"]').contains('Save and return').click()
 
     taskListPage.decisionButton().click()
