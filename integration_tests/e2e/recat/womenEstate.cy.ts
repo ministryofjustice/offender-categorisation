@@ -190,6 +190,7 @@ describe("Women's estate recategorisation", () => {
 
     cy.contains('Is there any other relevant information you would like to record?')
     cy.contains('You can include any representations from the prisoner here.')
+    cy.contains('If known, include information about:')
     cy.contains('pregnancy, including their expected delivery date')
     cy.contains('drugs, alcohol, or other dependencies')
     cy.contains('domestic violence or family issues')
