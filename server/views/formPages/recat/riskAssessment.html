@@ -101,20 +101,16 @@
 
   {% set otherRelevantHintText %}
     {% if isInWomensEstate %}
-      <div id="otherRelevant-hint" style="color: rgb(11, 12, 12);">
         <p>You can include any representations from the prisoner here.<p>
         <p>If known, include information about:</p>
           <ul>
-            <li>pregnancy, including their expected delivery date</li>
-            <li>drugs, alcohol, or other dependencies</li>
-            <li>domestic violence or family issues</li>
-            <li>separation from children or if they're a primary carer</li>
+            <li style="color: #0b0c0c !important;">pregnancy, including their expected delivery date</li>
+            <li style="color: #0b0c0c !important;">drugs, alcohol, or other dependencies</li>
+            <li style="color: #0b0c0c !important;">domestic violence or family issues</li>
+            <li style="color: #0b0c0c !important;">separation from children or if they're a primary carer</li>
           </ul>
-      </div>
     {% else %}
-      <div id="otherRelevant-hint" class="govuk-hint">
         For example you can include any representations from the prisoner here
-      </div>
     {% endif %}
   {% endset %}
 
