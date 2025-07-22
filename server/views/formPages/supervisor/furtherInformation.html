@@ -35,6 +35,11 @@
     name="supervisorOverriddenCategory"
     value="{{ data.supervisor.review.supervisorDecision.slice(-1) if data.supervisor.review.supervisorDecision.startsWith("changeCategoryTo_") else ''}}"
   />
+  <input
+    type="hidden"
+    name="supervisorOverriddenCategoryText"
+    value="{{ data.supervisor.changeCategory.supervisorOverriddenCategoryText }}"
+  />
 
 </div>
 {% endblock %}

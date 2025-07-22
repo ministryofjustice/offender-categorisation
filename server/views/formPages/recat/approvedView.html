@@ -76,11 +76,14 @@
       </div>
     {% endif %}
 
-    {% if (superCat and data.supervisor.review.supervisorOverriddenCategoryText) or superOtherComments or superPreviousOverrideComments %}
+    {% set supervisorOverriddenCategoryText = data.supervisor.review.supervisorOverriddenCategoryText if data.supervisor.review.supervisorOverriddenCategoryText else data.supervisor.changeCategory.supervisorOverriddenCategoryText %}
+
+
+      {% if (superCat and supervisorOverriddenCategoryText) or superOtherComments or superPreviousOverrideComments %}
       <div class="govuk-!-margin-bottom-6">
         <label for="overriddenText-2" class="govuk-!-font-weight-bold">Comments</label>
-        {% if superCat and data.supervisor.review.supervisorOverriddenCategoryText %}
-          <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}</div>
+        {% if superCat and supervisorOverriddenCategoryText %}
+          <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ supervisorOverriddenCategoryText }}</div>
         {% endif %}
         {% if superPreviousOverrideComments %}
           <div class="forms-comments-text govuk-!-margin-bottom-1" id="previous-overriddenText">{{ superPreviousOverrideComments }}</div>
