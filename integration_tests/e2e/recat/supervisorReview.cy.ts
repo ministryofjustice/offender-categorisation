@@ -213,6 +213,20 @@ describe('Supervisor Review', () => {
     giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
     giveBackToCategoriserPage.submitButton().click()
 
+    giveBackToCategoriserPage.validateErrorSummaryMessages([
+      { index: 0, href: '#supervisorOverriddenCategoryText', text: 'Enter the reason why this category is more appropriate' },
+    ])
+
+    giveBackToCategoriserPage.validateErrorMessages([
+      {
+        selector: '#supervisorOverriddenCategoryText-error',
+        text: 'Enter the reason why this category is more appropriate',
+      },
+    ])
+
+    cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
+    giveBackToCategoriserPage.submitButton().click()
+
     const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
     furtherInformationPage.enterFurtherInformation('Some further information')
     furtherInformationPage.submitButton().click()
@@ -224,6 +238,10 @@ describe('Supervisor Review', () => {
           supervisorDecision: 'changeCategoryTo_B',
           supervisorOverriddenCategory: 'B',
           supervisorCategoryAppropriate: 'No',
+        },
+        changeCategory: {
+          giveBackToCategoriser: 'No',
+          supervisorOverriddenCategoryText: 'some justification of category change'
         },
         furtherInformation: {
           otherInformationText: 'Some further information'
@@ -262,6 +280,9 @@ describe('Supervisor Review', () => {
           supervisorDecision: 'changeCategoryTo_B',
           supervisorOverriddenCategory: 'B',
           supervisorCategoryAppropriate: 'No',
+        },
+        changeCategory: {
+          giveBackToCategoriser: 'Yes',
         },
         confirmBack: {
           supervisorName: 'Test User',
@@ -538,6 +559,7 @@ describe('Supervisor Review', () => {
 
             const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Category C')
             giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+            cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
             giveBackToCategoriserPage.submitButton().click()
 
             const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
@@ -585,6 +607,10 @@ describe('Supervisor Review', () => {
                     supervisorDecision: 'changeCategoryTo_C',
                     supervisorOverriddenCategory: 'C',
                     supervisorCategoryAppropriate: 'No',
+                  },
+                  changeCategory: {
+                    giveBackToCategoriser: 'No',
+                    supervisorOverriddenCategoryText: 'some justification of category change'
                   },
                   furtherInformation: {
                     otherInformationText: 'A reason why I believe this is a more appropriate category',

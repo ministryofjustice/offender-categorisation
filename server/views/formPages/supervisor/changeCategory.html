@@ -2,6 +2,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 {% from "../../macros/proposedCategoryChangeText.html" import proposedCategoryChangeText %}
+{% from "textarea/macro.njk" import govukTextarea %}
 
 {% set pageTitle = "Change category" %}
 {% set greenButtonText = "Continue" %}
@@ -37,7 +38,7 @@
       }) }}
     {% endset %}
 
-    <h1 class="govuk-heading-l mainHeading">{{ pageTitle }} to {{ proposedCategoryChangeText(data.supervisor.review.supervisorDecision) }}</h1>
+    <h1 class="govuk-heading-l mainHeading">{{ pageTitle }} to {{ proposedCategoryChangeText(data.supervisor.review.supervisorDecision) }} {{ giveBackToCategoriser }}</h1>
     {{ govukRadios({
       name: "giveBackToCategoriser",
       fieldset: {
@@ -52,15 +53,17 @@
         text: "Select if you want to send the review back the categoriser"
       } if (errors | findError('giveBackToCategoriser')),
       items: [{
-        value: "true",
-        text: "Yes"
+        value: "Yes",
+        text: "Yes",
+        checked: data.supervisor.changeCategory.giveBackToCategoriser === 'Yes' or giveBackToCategoriser === 'Yes'
       },
       {
-        value: "false",
+        value: "No",
         text: "No",
         conditional: {
-          html: overriddenCategoryTextHtml
-        }
+          html: justifyChangeHtml
+        },
+        checked: data.supervisor.changeCategory.giveBackToCategoriser === 'No' or giveBackToCategoriser === 'No'
       }]
     }) }}
 

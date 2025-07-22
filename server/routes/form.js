@@ -19,24 +19,17 @@ const openConditions = require('../config/openConditions')
 const cancel = require('../config/cancel')
 
 const CatType = require('../utils/catTypeEnum')
+const {
+  CATEGORY,
+  OPEN_CONDITIONS_CATEGORIES,
+  SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION,
+  SUPERVISOR_DECISION_CHANGE_TO,
+  SUPERVISOR_DECISION_AGREE,
+} = require('../data/categories')
 const asyncMiddleware = require('../middleware/asyncMiddleware').default
 
 const SECURITY_BUTTON_SUBMIT = 'submit'
 const SECURITY_BUTTON_RETURN = 'return'
-
-const SUPERVISOR_DECISION_AGREE = 'agreeWithCategoryDecision'
-const SUPERVISOR_DECISION_CHANGE_TO = 'changeCategoryTo_'
-const SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION = 'requestMoreInformation'
-
-const CATEGORY_B = 'B'
-const CATEGORY_C = 'C'
-const CATEGORY_D = 'D'
-const CATEGORY_J = 'J'
-const CATEGORY_I = 'I'
-const CATEGORY_R = 'R'
-const CATEGORY_T = 'T'
-
-const OPEN_CONDITIONS_CATEGORIES = [CATEGORY_D, CATEGORY_J, CATEGORY_T]
 
 const formConfig = {
   ratings,
@@ -710,29 +703,29 @@ module.exports = function Index({
 
       const validSupervisorDecisionValues = [SUPERVISOR_DECISION_AGREE, SUPERVISOR_DECISION_REQUEST_MORE_INFORMATION]
       if (isYoungOffender) {
-        if (currentCategory !== CATEGORY_I) {
-          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_I)
+        if (currentCategory !== CATEGORY.I) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY.I)
         }
-        if (currentCategory !== CATEGORY_J) {
-          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_J)
+        if (currentCategory !== CATEGORY.J) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY.J)
         }
       }
       if (isInWomensEstate) {
-        if (currentCategory !== CATEGORY_T) {
-          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_T)
+        if (currentCategory !== CATEGORY.T) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY.T)
         }
-        if (currentCategory !== CATEGORY_R) {
-          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_R)
+        if (currentCategory !== CATEGORY.R) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY.R)
         }
       } else {
-        if (currentCategory !== CATEGORY_B) {
-          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_B)
+        if (currentCategory !== CATEGORY.B) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY.B)
         }
-        if (currentCategory !== CATEGORY_C) {
-          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_C)
+        if (currentCategory !== CATEGORY.C) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY.C)
         }
-        if (currentCategory !== CATEGORY_D) {
-          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY_D)
+        if (currentCategory !== CATEGORY.D) {
+          validSupervisorDecisionValues.push(SUPERVISOR_DECISION_CHANGE_TO + CATEGORY.D)
         }
       }
 
@@ -844,16 +837,16 @@ module.exports = function Index({
       const validation = joi
         .object({
           giveBackToCategoriser: joi
-            .bool()
+            .string()
+            .valid('Yes', 'No')
             .required()
             .messages({ 'any.required': 'Select if you want to send the review back the categoriser' }),
           supervisorOverriddenCategoryText: joi.when('giveBackToCategoriser', {
-            is: false,
-            then: joi
-              .string()
-              .required()
-              .messages({ 'any.required': 'Enter the reason why this category is more appropriate' }),
-            otherwise: joi.any().optional(),
+            is: 'No',
+            then: joi.string().trim().required().messages({
+              'any.required': 'Enter the reason why this category is more appropriate',
+              'string.empty': 'Enter the reason why this category is more appropriate',
+            }),
           }),
         })
         .validate(req.body, { stripUnknown: true, abortEarly: false })
@@ -866,24 +859,35 @@ module.exports = function Index({
             href: `#${error.context.label}`,
           })),
         )
-        return res.redirect(`/form/supervisor/change-category/${bookingId}`)
+
+        const result = await buildFormData(res, req, 'supervisor', 'review', req.params.bookingId)
+        return res.render('formPages/supervisor/changeCategory', {
+          ...result,
+          giveBackToCategoriser: validation.value.giveBackToCategoriser,
+        })
       }
 
       const section = 'supervisor'
       const form = 'changeCategory'
       const formPageConfig = formConfig[section][form]
+      const dataToStore = {
+        giveBackToCategoriser: validation.value.giveBackToCategoriser,
+      }
+      if (dataToStore.giveBackToCategoriser === 'No') {
+        dataToStore.supervisorOverriddenCategoryText = validation.value.supervisorOverriddenCategoryText
+      }
 
       await formService.update({
         bookingId: parseInt(bookingId, 10),
         userId: req.user.username,
         config: formPageConfig,
-        userInput: validation.value,
+        userInput: dataToStore,
         formSection: section,
         formName: form,
         logUpdate: true,
       })
 
-      if (validation.value.giveBackToCategoriser) {
+      if (validation.value.giveBackToCategoriser === 'Yes') {
         return res.redirect(`/form/supervisor/confirmBack/${bookingId}`)
       }
       return res.redirect(`/form/supervisor/further-information/${bookingId}`)

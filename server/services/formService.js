@@ -9,7 +9,10 @@ const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpe
 const { config: conf } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
-const { SUPERVISOR_DECISION_CHANGE_TO, OPEN_CONDITIONS_CATEGORIES } = require('../routes/form')
+const {
+  OPEN_CONDITIONS_CATEGORIES,
+  SUPERVISOR_DECISION_CHANGE_TO,
+} = require('../data/categories')
 
 function dataIfExists(data) {
   return data.rows[0]

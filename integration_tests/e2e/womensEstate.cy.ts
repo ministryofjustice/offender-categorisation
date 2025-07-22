@@ -773,6 +773,7 @@ describe("Women's Estate", () => {
 
       const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Closed')
       giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+      cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
       giveBackToCategoriserPage.submitButton().click()
 
       const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
@@ -786,6 +787,10 @@ describe("Women's Estate", () => {
             supervisorDecision: 'changeCategoryTo_R',
             supervisorOverriddenCategory: 'R',
             supervisorCategoryAppropriate: 'No',
+          },
+          changeCategory: {
+            giveBackToCategoriser: 'No',
+            supervisorOverriddenCategoryText: 'some justification of category change'
           },
           furtherInformation: {
             otherInformationText: 'Some further information'
@@ -1113,6 +1118,7 @@ describe("Women's Estate", () => {
 
               const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Closed')
               giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+              cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
               giveBackToCategoriserPage.submitButton().click()
 
               const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
@@ -1160,6 +1166,10 @@ describe("Women's Estate", () => {
                       supervisorDecision: 'changeCategoryTo_R',
                       supervisorOverriddenCategory: 'R',
                       supervisorCategoryAppropriate: 'No',
+                    },
+                    changeCategory: {
+                      giveBackToCategoriser: 'No',
+                      supervisorOverriddenCategoryText: 'some justification of category change'
                     },
                     furtherInformation: {
                       otherInformationText: 'A reason why I believe this is a more appropriate category',
