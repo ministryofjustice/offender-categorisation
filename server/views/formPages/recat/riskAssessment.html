@@ -99,6 +99,21 @@
     html: guidance
   }) }}
 
+  {% set otherRelevantHintText %}
+    {% if isInWomensEstate %}
+        <p>You can include any representations from the prisoner here.<p>
+        <p>If known, include information about:</p>
+          <ul>
+            <li style="color: #0b0c0c !important;">pregnancy, including their expected delivery date</li>
+            <li style="color: #0b0c0c !important;">drugs, alcohol, or other dependencies</li>
+            <li style="color: #0b0c0c !important;">domestic violence or family issues</li>
+            <li style="color: #0b0c0c !important;">separation from children or if they're a primary carer</li>
+          </ul>
+    {% else %}
+        For example you can include any representations from the prisoner here
+    {% endif %}
+  {% endset %}
+
   {{ govukRadios({
     name: "otherRelevant",
     fieldset: {
@@ -108,7 +123,7 @@
       }
     },
     hint: {
-      text: "For example you can include any representations from the prisoner here"
+      html: otherRelevantHintText
     },
     errorMessage: {
       text: "Please select yes or no"
