@@ -847,6 +847,14 @@ module.exports = function Index({
             .bool()
             .required()
             .messages({ 'any.required': 'Select if you want to send the review back the categoriser' }),
+          supervisorOverriddenCategoryText: joi.when('giveBackToCategoriser', {
+            is: false,
+            then: joi
+              .string()
+              .required()
+              .messages({ 'any.required': 'Enter the reason why this category is more appropriate' }),
+            otherwise: joi.any().optional(),
+          }),
         })
         .validate(req.body, { stripUnknown: true, abortEarly: false })
 
@@ -860,6 +868,20 @@ module.exports = function Index({
         )
         return res.redirect(`/form/supervisor/change-category/${bookingId}`)
       }
+
+      const section = 'supervisor'
+      const form = 'changeCategory'
+      const formPageConfig = formConfig[section][form]
+
+      await formService.update({
+        bookingId: parseInt(bookingId, 10),
+        userId: req.user.username,
+        config: formPageConfig,
+        userInput: validation.value,
+        formSection: section,
+        formName: form,
+        logUpdate: true,
+      })
 
       if (validation.value.giveBackToCategoriser) {
         return res.redirect(`/form/supervisor/confirmBack/${bookingId}`)

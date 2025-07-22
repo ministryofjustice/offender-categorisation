@@ -9,7 +9,7 @@ const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpe
 const { config: conf } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
-const { SUPERVISOR_DECISION_CHANGE_TO } = require('../routes/form')
+const { SUPERVISOR_DECISION_CHANGE_TO, OPEN_CONDITIONS_CATEGORIES } = require('../routes/form')
 
 function dataIfExists(data) {
   return data.rows[0]
@@ -94,13 +94,15 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
-    const newCategorisationForm = buildCategorisationForm({
-      formObject: currentCategorisation.formObject || {},
-      fieldMap: config.fields,
-      userInput,
-      formSection,
-      formName,
-    })
+    const newCategorisationForm = removeFieldsThatAreNoLongerRelevant(
+      buildCategorisationForm({
+        formObject: currentCategorisation.formObject || {},
+        fieldMap: config.fields,
+        userInput,
+        formSection,
+        formName,
+      }),
+    )
 
     if (validateStatusIfProvided(currentCategorisation.status, status)) {
       if (logUpdate) {
@@ -118,6 +120,18 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         calculateStatus(currentCategorisation.status, status),
         transactionalClient,
       )
+    }
+    return newCategorisationForm
+  }
+
+  function removeFieldsThatAreNoLongerRelevant(categorisationForm) {
+    const newCategorisationForm = JSON.parse(JSON.stringify(categorisationForm))
+    if (
+      !newCategorisationForm?.supervisor?.review?.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO) ||
+      OPEN_CONDITIONS_CATEGORIES.includes(newCategorisationForm?.supervisor?.review?.supervisorOverriddenCategory)
+    ) {
+      delete newCategorisationForm?.supervisor?.changeCategory
+      delete newCategorisationForm?.supervisor?.furtherInformation
     }
     return newCategorisationForm
   }

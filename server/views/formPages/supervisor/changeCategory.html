@@ -17,6 +17,26 @@
 {% block formItems %}
   <div class="govuk-body-s">
 
+    {% set justifyChangeHtml %}
+      {{ govukTextarea({
+        name: "supervisorOverriddenCategoryText",
+        type: "myTextWhatsThisFor",
+        id: "supervisorOverriddenCategoryText",
+        attributes: {
+          'maxlength': 50000
+        },
+        label: {
+          text: "Enter the reason why this category is more appropriate"
+        },
+        hint: {
+          text: "Your comments will be disclosed to the prisoner"
+        },
+        errorMessage: {
+          text: "Enter the reason why this category is more appropriate"
+        } if (errors | findError('supervisorOverriddenCategoryText'))
+      }) }}
+    {% endset %}
+
     <h1 class="govuk-heading-l mainHeading">{{ pageTitle }} to {{ proposedCategoryChangeText(data.supervisor.review.supervisorDecision) }}</h1>
     {{ govukRadios({
       name: "giveBackToCategoriser",
@@ -37,7 +57,10 @@
       },
       {
         value: "false",
-        text: "No"
+        text: "No",
+        conditional: {
+          html: overriddenCategoryTextHtml
+        }
       }]
     }) }}
 

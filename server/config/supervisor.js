@@ -36,8 +36,13 @@ module.exports = {
   changeCategory: {
     fields: [
       {
-        otherInformationText: {
-          responseType: 'optionalString',
+        giveBackToCategoriser: {
+          responseType: 'requiredString',
+        },
+      },
+      {
+        supervisorOverriddenCategoryText: {
+          responseType: 'requiredStringIf_giveBackToCategoriser_No',
         },
       },
     ],
