@@ -17,7 +17,6 @@ const {
   dateConverter,
   dateConverterToISO,
   getNamesFromString,
-  add10BusinessDays,
   get10BusinessDays,
 } = require('../utils/utils')
 const { sortByDateTime, sortByStatus } = require('./offenderSort')
@@ -32,7 +31,7 @@ const {
 const { isReviewOverdue } = require('./reviewStatusCalculator')
 const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
 const { getRecalledOffendersData } = require('./recategorisation/recall/recategorisationRecallService')
-const { FIXED_TERM_RECALL_DAYS_LIMIT } = require('./recategorisation/recall/recalledOffenderData')
+const { FIXED_TERM_RECALL_DAYS_LIMIT, NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE } = require('./recategorisation/recall/recalledOffenderData')
 
 const dirname = process.cwd()
 
@@ -808,8 +807,10 @@ module.exports = function createOffendersService(
           ) {
             return null
           }
-          // Recalls are due a recategorisation within 10 business days of the recall date rather then the original next review date
-          reviewDueDate = add10BusinessDays(recalledOffenderData.get(nomisRecord.offenderNo).recallDate)
+          // Recalls are due a recategorisation within 10 days of the recall date rather then the original next review date
+          reviewDueDate = moment(recalledOffenderData.get(nomisRecord.offenderNo).recallDate)
+            .add(NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE, 'day')
+            .format('YYYY-MM-DD')
         }
 
         if (

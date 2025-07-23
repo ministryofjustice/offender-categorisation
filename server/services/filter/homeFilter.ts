@@ -22,8 +22,10 @@ import { ProbationOffenderSearchApiClient } from '../../data/probationOffenderSe
 import { RisksAndNeedsApiClient } from '../../data/risksAndNeeds/risksAndNeedsApi'
 import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
 import logger from '../../../log'
-import { RecalledOffenderData } from '../recategorisation/recall/recalledOffenderData'
-import { add10BusinessDays } from '../../utils/utils'
+import {
+  NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
+  RecalledOffenderData,
+} from '../recategorisation/recall/recalledOffenderData'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
@@ -253,7 +255,9 @@ export const filterListOfPrisoners = async (
             currentPrisonerSearchData.recall &&
             recalledOffenderData.get(prisoner.offenderNo).recallDate
           ) {
-            nextReviewDate = add10BusinessDays(recalledOffenderData.get(prisoner.offenderNo).recallDate)
+            nextReviewDate = moment(recalledOffenderData.get(prisoner.offenderNo).recallDate)
+              .add(NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE, 'day')
+              .format('YYYY-MM-DD')
           }
           if (!isReviewOverdue(nextReviewDate)) {
             return false
