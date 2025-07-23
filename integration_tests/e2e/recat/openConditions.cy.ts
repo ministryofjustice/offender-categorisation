@@ -1075,6 +1075,7 @@ describe('Open Conditions', () => {
 
     const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(12, 'Category C')
     giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+    cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
     giveBackToCategoriserPage.submitButton().click()
 
     const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
@@ -1097,6 +1098,10 @@ describe('Open Conditions', () => {
           supervisorDecision: 'changeCategoryTo_C',
           supervisorOverriddenCategory: 'C',
           supervisorCategoryAppropriate: 'No',
+        },
+        changeCategory: {
+          giveBackToCategoriser: 'No',
+          supervisorOverriddenCategoryText: 'some justification of category change'
         },
         furtherInformation: {
           otherInformationText: 'super other info',

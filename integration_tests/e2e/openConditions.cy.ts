@@ -715,6 +715,7 @@ describe('Open conditions', () => {
 
     const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(12, 'Category C')
     giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+    cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
     giveBackToCategoriserPage.submitButton().click()
 
     const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
