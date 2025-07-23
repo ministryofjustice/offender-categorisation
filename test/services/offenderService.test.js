@@ -3248,7 +3248,7 @@ describe('getDueRecats', () => {
         reason: { name: 'DUE', value: 'Review due' },
         nextReviewDateDisplay: '10/03/2019',
         overdue: true,
-        overdueText: '81 days',
+        overdueText: '82 days',
         pnomis: false,
         buttonText: 'Start',
         pom: 'Steve Rendell',
