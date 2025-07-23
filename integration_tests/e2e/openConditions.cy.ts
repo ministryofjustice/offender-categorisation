@@ -30,6 +30,7 @@ import ProvisionalCategoryOpenPage from '../pages/form/categoriser/provisionalOp
 import FurtherInformationPage from "../pages/form/supervisor/furtherInformation";
 import SupervisorConfirmBackPage from "../pages/form/supervisor/confirmBack";
 import GiveBackToCategoriserPage from "../pages/form/supervisor/giveBackToCategoriser";
+import GiveBackToCategoriserOutcome from "../pages/form/supervisor/giveBackToCategoriserOutcome";
 
 describe('Open conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -802,6 +803,13 @@ describe('Open conditions', () => {
     const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(12)
     supervisorConfirmBackPage.setConfirmationMessageText('super overriding C to D reason text')
     supervisorConfirmBackPage.saveAndReturnButton().click()
+
+    const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+      12,
+      CATEGORISATION_TYPE.INITIAL,
+    )
+    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
+    giveBackToCategoriserOutcomePage.finishButton().should('be.visible').click()
 
     /*
     supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()

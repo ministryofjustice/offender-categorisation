@@ -1,0 +1,29 @@
+{% set mainClasses = 'govuk-!-width-two-thirds' %}
+{% extends "../partials/layout.html" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "panel/macro.njk" import govukPanel %}
+
+{% set pageTitle = "Review sent back to categoriser" %}
+
+{% block beforeContent %}
+
+  {% include "../partials/breadCrumb.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+  {{ govukPanel({
+    titleText: "Sent back to categoriser"
+  }) }}
+  <p>This assessment has been sent back to the categoriser.</p>
+  <h2>What happens next</h2>
+  <p>The categoriser will review your comments and complete the assessment.</p>
+
+  {% include "../partials/dcsSurveyLink.html" %}
+  {{ govukButton({
+    text: "Finish",
+    href: "/"
+  }) }}
+
+{% endblock %}

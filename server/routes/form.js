@@ -563,8 +563,9 @@ module.exports = function Index({
 
       await offendersService.backToCategoriser(res.locals, bookingId, transactionalDbClient)
 
-      const nextPath = '/supervisorHome'
-      res.redirect(`${nextPath}`)
+      const nextPath = '/tasklist/supervisor/sent-back-to-categoriser/'
+      const catTypeArgument = userInput.catType ? `?catType=${userInput.catType}` : ''
+      res.redirect(`${nextPath}${bookingId}${catTypeArgument}`)
     }),
   )
 

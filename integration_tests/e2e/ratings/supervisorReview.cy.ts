@@ -13,6 +13,7 @@ import { FormDbJson } from "../../fixtures/db-key-convertor";
 import SupervisorConfirmBackPage from "../../pages/form/supervisor/confirmBack";
 import Status from '../../../server/utils/statusEnum'
 import youngOffender from "../../fixtures/categoriser/youngOffender";
+import GiveBackToCategoriserOutcome from "../../pages/form/supervisor/giveBackToCategoriserOutcome";
 
 const commonColumn2 = [
   {
@@ -268,6 +269,13 @@ describe('Supervisor Review', () => {
     supervisorConfirmBackPage.setConfirmationMessageText('A reason why I believe this is a more appropriate category')
     supervisorConfirmBackPage.saveAndReturnButton().click()
 
+    const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+      bookingId,
+      CATEGORISATION_TYPE.INITIAL,
+    )
+    giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
+    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
+
     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
       expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
       expect(result.rows[0].form_response.supervisor).to.deep.eq({
@@ -319,6 +327,13 @@ describe('Supervisor Review', () => {
     supervisorConfirmBackPage.setConfirmationMessageText('A reason why I believe this is a more appropriate category')
     supervisorConfirmBackPage.saveAndReturnButton().click()
 
+    const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+      bookingId,
+      CATEGORISATION_TYPE.INITIAL,
+    )
+    giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
+    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
+
     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
       expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
       expect(result.rows[0].form_response.supervisor).to.deep.eq({
@@ -367,6 +382,13 @@ describe('Supervisor Review', () => {
 
     supervisorConfirmBackPage.setConfirmationMessageText('Give me more information')
     supervisorConfirmBackPage.saveAndReturnButton().click()
+
+    const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+      bookingId,
+      CATEGORISATION_TYPE.INITIAL,
+    )
+    giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
+    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
 
     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
       expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
@@ -473,6 +495,13 @@ describe('Supervisor Review', () => {
         supervisorConfirmBackPage.setConfirmationMessageText(confirmBackMessage)
         supervisorConfirmBackPage.saveAndReturnButton().click()
 
+        const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+          bookingId,
+          CATEGORISATION_TYPE.INITIAL,
+        )
+        giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
+        giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
+
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
           expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
           expect(result.rows[0].assigned_user_id).to.eq(CATEGORISER_USER.username)
@@ -496,6 +525,13 @@ describe('Supervisor Review', () => {
             const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
             supervisorConfirmBackPage.setConfirmationMessageText('A reason why I believe this is a more appropriate category')
             supervisorConfirmBackPage.saveAndReturnButton().click()
+
+            const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+              bookingId,
+              CATEGORISATION_TYPE.INITIAL,
+            )
+            giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
+            giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
 
             cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
               expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)

@@ -29,6 +29,7 @@ import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
 import GiveBackToCategoriserPage from "../../pages/form/supervisor/giveBackToCategoriser";
 import FurtherInformationPage from "../../pages/form/supervisor/furtherInformation";
 import SupervisorConfirmBackPage from "../../pages/form/supervisor/confirmBack";
+import GiveBackToCategoriserOutcome from "../../pages/form/supervisor/giveBackToCategoriserOutcome";
 
 type DbQueryResult = { rowCount: number; rows: any[] }
 
@@ -1337,6 +1338,13 @@ describe('Open Conditions', () => {
     const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(12)
     supervisorConfirmBackPage.setConfirmationMessageText('super overriding C to D reason text')
     supervisorConfirmBackPage.saveAndReturnButton().click()
+
+    const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+      12,
+      CATEGORISATION_TYPE.RECAT,
+    )
+    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
+    giveBackToCategoriserOutcomePage.finishButton().should('be.visible').click()
 
     // 'supervisor is returned to home'
     Page.verifyOnPage(SupervisorHomePage)
