@@ -31,7 +31,10 @@ const {
 const { isReviewOverdue } = require('./reviewStatusCalculator')
 const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
 const { getRecalledOffendersData } = require('./recategorisation/recall/recategorisationRecallService')
-const { FIXED_TERM_RECALL_DAYS_LIMIT, NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE } = require('./recategorisation/recall/recalledOffenderData')
+const {
+  FIXED_TERM_RECALL_DAYS_LIMIT,
+  NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
+} = require('./recategorisation/recall/recalledOffenderData')
 
 const dirname = process.cwd()
 
