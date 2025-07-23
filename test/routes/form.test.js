@@ -1720,12 +1720,12 @@ describe('POST /supervisor/review', () => {
 })
 
 describe('POST /supervisor/confirmBack', () => {
-  test('redirects to supervisor home if confirmed', () =>
+  test('redirects to outcome page home if confirmed', () =>
     request(app)
       .post('/supervisor/confirmBack/12345')
       .send({ messageText: 'Something' })
       .expect(302)
-      .expect('Location', `/supervisorHome`)
+      .expect('Location', `/tasklist/supervisor/sent-back-to-categoriser/12345`)
       .expect(() => {
         expect(offendersService.backToCategoriser).toBeCalledWith(expect.anything(), '12345', mockTransactionalClient)
       }))
