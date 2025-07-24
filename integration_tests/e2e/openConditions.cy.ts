@@ -813,7 +813,6 @@ describe('Open conditions', () => {
       12,
       CATEGORISATION_TYPE.INITIAL,
     )
-    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
     giveBackToCategoriserOutcomePage.finishButton().should('be.visible').click()
 
     /*

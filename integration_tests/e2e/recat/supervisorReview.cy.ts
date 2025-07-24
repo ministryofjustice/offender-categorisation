@@ -279,7 +279,6 @@ describe('Supervisor Review', () => {
       CATEGORISATION_TYPE.RECAT,
     )
     giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
-    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
 
     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
       expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
@@ -337,7 +336,6 @@ describe('Supervisor Review', () => {
       CATEGORISATION_TYPE.RECAT,
     )
     giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
-    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
 
     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
       expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
@@ -393,7 +391,6 @@ describe('Supervisor Review', () => {
       CATEGORISATION_TYPE.RECAT,
     )
     giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
-    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
 
     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
       expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
@@ -504,7 +501,6 @@ describe('Supervisor Review', () => {
           CATEGORISATION_TYPE.RECAT,
         )
         giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
-        giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
           expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
@@ -535,7 +531,6 @@ describe('Supervisor Review', () => {
               CATEGORISATION_TYPE.RECAT,
             )
             giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
-            giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
 
             cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
               expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)

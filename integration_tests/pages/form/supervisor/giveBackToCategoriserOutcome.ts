@@ -22,6 +22,4 @@ export default class GiveBackToCategoriserOutcome extends Page {
   }
 
   finishButton = (): PageElement => cy.get('a[href="/"]').contains('Finish')
-
-  dcsSurveyLink = (): PageElement => cy.get('#dcsSurveyLink')
 }

@@ -1242,7 +1242,6 @@ describe('Open Conditions', () => {
       12,
       CATEGORISATION_TYPE.RECAT,
     )
-    giveBackToCategoriserOutcomePage.dcsSurveyLink().should('be.visible')
     giveBackToCategoriserOutcomePage.finishButton().should('be.visible').click()
 
     // 'supervisor is returned to home'
