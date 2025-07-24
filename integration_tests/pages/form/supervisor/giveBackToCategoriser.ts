@@ -15,7 +15,7 @@ export default class GiveBackToCategoriserPage extends Page {
   }
 
   constructor(changeCategoryToText: string) {
-    super(`Change category to ${changeCategoryToText}`)
+    super(changeCategoryToText)
   }
 
   static createForBookingId = (bookingId: number, changeCategoryToText: string) => {

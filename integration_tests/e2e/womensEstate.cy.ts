@@ -776,7 +776,7 @@ describe("Women's Estate", () => {
       supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_R').click()
       supervisorReviewPage.submitButton().click()
 
-      const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Closed')
+      const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change category to Closed')
       giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
       cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
       giveBackToCategoriserPage.submitButton().click()
@@ -1145,7 +1145,7 @@ describe("Women's Estate", () => {
               supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
               supervisorReviewPage.submitButton().click()
 
-              const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Closed')
+              const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change category to Closed')
               giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
               cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
               giveBackToCategoriserPage.submitButton().click()

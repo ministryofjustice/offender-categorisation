@@ -209,7 +209,7 @@ describe('Supervisor Review', () => {
     supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_B').click()
     supervisorReviewPage.submitButton().click()
 
-    const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Category B')
+    const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change to Category B')
     giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
     giveBackToCategoriserPage.submitButton().click()
 
@@ -265,7 +265,7 @@ describe('Supervisor Review', () => {
     supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_B').click()
     supervisorReviewPage.submitButton().click()
 
-    const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Category B')
+    const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change to Category B')
     giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('YES')
     giveBackToCategoriserPage.submitButton().click()
 
@@ -587,7 +587,7 @@ describe('Supervisor Review', () => {
             supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
             supervisorReviewPage.submitButton().click()
 
-            const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Category C')
+            const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change to Category C')
             giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
             cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
             giveBackToCategoriserPage.submitButton().click()

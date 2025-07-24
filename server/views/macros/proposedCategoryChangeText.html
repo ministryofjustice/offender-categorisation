@@ -1,16 +1,18 @@
-{% macro proposedCategoryChangeText(supervisorDecision, includeTheWordCategory = true) %}
+{% macro proposedCategoryChangeText(supervisorDecision, fullText = true) %}
+
+  {% set changeCategoryToText = "Change category to" %}
 
   {% switch supervisorDecision %}
   {% case 'changeCategoryTo_I' %}
-    YOI Closed
+    {{ changeCategoryToText if fullText else "" }} YOI Closed
   {% case 'changeCategoryTo_J' %}
-    YOI Open
+    {{ changeCategoryToText if fullText else "" }} YOI Open
   {% case 'changeCategoryTo_T' %}
-    Open
+    {{ changeCategoryToText if fullText else "" }} Open
   {% case 'changeCategoryTo_R' %}
-    Closed
+    {{ changeCategoryToText if fullText else "" }} Closed
   {% default %}
-    {{ "Category" if includeTheWordCategory else "" }} {{ supervisorDecision.slice(-1) }}
+    {{ "Change to Category" if fullText else "" }} {{ supervisorDecision.slice(-1) }}
   {% endswitch %}
 
 {% endmacro %}
