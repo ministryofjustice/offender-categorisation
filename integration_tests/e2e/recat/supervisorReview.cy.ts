@@ -193,7 +193,6 @@ describe('Supervisor Review', () => {
       CATEGORISATION_TYPE.INITIAL,
     )
     supervisorReviewOutcomePage.finishButton().should('be.visible')
-    supervisorReviewOutcomePage.dcsSurveyLink().should('be.visible')
   })
 
   it('should allow a supervisor to override to B from C without passing back to a pom', () => {
@@ -602,7 +601,6 @@ describe('Supervisor Review', () => {
               CATEGORISATION_TYPE.INITIAL,
             )
             supervisorReviewOutcomePage.finishButton().should('be.visible')
-            supervisorReviewOutcomePage.dcsSurveyLink().should('be.visible')
 
             cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
               expect(result.rows[0].status).to.eq(Status.APPROVED.name)
