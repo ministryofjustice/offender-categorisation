@@ -38,7 +38,7 @@
       }) }}
     {% endset %}
 
-    <h1 class="govuk-heading-l mainHeading">Change to {{ proposedCategoryChangeText(data.supervisor.review.supervisorDecision) }}</h1>
+    <h1 class="govuk-heading-l mainHeading">{{ proposedCategoryChangeText(data.supervisor.review.supervisorDecision) }}</h1>
     {{ govukRadios({
       name: "giveBackToCategoriser",
       fieldset: {
