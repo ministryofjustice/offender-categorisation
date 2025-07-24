@@ -75,6 +75,7 @@ const DEFAULTS = {
   RISKS_AND_NEEDS_ENDPOINT_URL: 'http://localhost:8086/',
   PROBATION_OFFENDER_SEARCH_ENDPOINT_URL: 'http://localhost:8087/',
   OFFENDER_CATEGORISATION_API_ENDPOINT_URL: 'http://localhost:8088/',
+  ALERTS_ENDPOINT_URL: 'http://localhost:8089/',
   COMPONENT_API_URL: 'http://localhost:8085/components',
   COMPONENT_API_TIMEOUT_RESPONSE: 20000,
   COMPONENT_API_TIMEOUT_DEADLINE: 20000,
@@ -437,6 +438,33 @@ export const config = {
         deadline: Number(
           get({
             name: 'PRISONER_SEARCH_TIMEOUT_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+      },
+      agent: DEFAULT_HTTP_AGENT,
+    },
+    alertsApi: {
+      url: get({
+        name: 'ALERTS_ENDPOINT_URL',
+        fallback: DEFAULTS.ALERTS_ENDPOINT_URL,
+        log: true,
+        requireInProduction: false,
+      }),
+      timeout: {
+        response: Number(
+          get({
+            name: 'ALERTS_TIMEOUT_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'ALERTS_TIMEOUT_DEADLINE',
             fallback: DEFAULT_TIMEOUTS.deadline,
             log: true,
             requireInProduction: false,

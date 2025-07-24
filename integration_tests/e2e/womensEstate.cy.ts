@@ -118,6 +118,9 @@ describe("Women's Estate", () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
+
+      taskListPage.smartSurveyLink().should('be.visible')
+
       cy.validateCategorisationDetails([
         // column 1
         [
@@ -168,7 +171,7 @@ describe("Women's Estate", () => {
       violencePage.selectSeriousThreadRadioButton('NO')
       violencePage.saveAndReturnButton().click()
 
-      cy.task('stubGetProfileWomenEscapeAlert', {
+      cy.task('stubGetEscapeProfile', {
         offenderNo,
         category,
         onEscapeList: false,
@@ -618,7 +621,9 @@ describe("Women's Estate", () => {
       loginAsWomensSupervisorUser({ youngOffender: false, indeterminateSentence: false })
 
       const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+      supervisorHomePage.smartSurveyLink().should('be.visible')
       supervisorHomePage.startReviewForPrisoner(bookingId)
+
       cy.validateCategorisationDetails([
         // column 1
         [
@@ -688,7 +693,6 @@ describe("Women's Estate", () => {
         CATEGORISATION_TYPE.INITIAL,
       )
       supervisorReviewOutcomePage.finishButton().should('be.visible')
-      supervisorReviewOutcomePage.dcsSurveyLink().should('be.visible')
     })
 
     it('should display the indeterminate sentence warning as appropriate', () => {
@@ -1159,7 +1163,6 @@ describe("Women's Estate", () => {
                 CATEGORISATION_TYPE.INITIAL,
               )
               supervisorReviewOutcomePage.finishButton().should('be.visible')
-              supervisorReviewOutcomePage.dcsSurveyLink().should('be.visible')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
                 expect(result.rows[0].status).to.eq(Status.APPROVED.name)

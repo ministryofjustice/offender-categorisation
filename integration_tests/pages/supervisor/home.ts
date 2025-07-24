@@ -17,4 +17,6 @@ export default class SupervisorHomePage extends BaseSupervisorPage {
       tableRowsSelector: 'table#offenderTable > tbody > tr',
       expectedValues,
     })
+
+  smartSurveyLink = () => cy.get('#smartSurveyLink')
 }

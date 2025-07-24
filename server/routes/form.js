@@ -46,6 +46,7 @@ module.exports = function Index({
   userService,
   riskProfilerService,
   authenticationMiddleware,
+  alertService,
 }) {
   const router = express.Router()
 
@@ -106,7 +107,7 @@ module.exports = function Index({
       const form = 'escapeRating'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(result.data.details.offenderNo, res.locals)
+      const escapeProfile = await alertService.getEscapeProfile(result.data.details.offenderNo, res.locals)
       const data = { ...result.data, escapeProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     }),
@@ -156,7 +157,7 @@ module.exports = function Index({
       const history = await offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId)
       const offences = await offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo)
 
-      const escapeProfile = await riskProfilerService.getEscapeProfile(result.data.details.offenderNo, res.locals)
+      const escapeProfile = await alertService.getEscapeProfile(result.data.details.offenderNo, res.locals)
       const extremismProfile = await riskProfilerService.getExtremismProfile(
         result.data.details.offenderNo,
         res.locals,
@@ -175,6 +176,7 @@ module.exports = function Index({
         violenceProfile,
         lifeProfile,
       }
+
       const dataToDisplay = {
         ...result.data,
         history,
@@ -348,6 +350,7 @@ module.exports = function Index({
     if (sequenceNo && Number.isNaN(parseInt(sequenceNo, 10))) {
       throw new Error('Invalid sequenceNo')
     }
+
     const formData = sequenceNo
       ? await formService.getCategorisationRecordUsingSequence(bookingId, sequenceNo, transactionalDbClient)
       : await formService.getCategorisationRecord(bookingId, transactionalDbClient)

@@ -33,11 +33,6 @@ module.exports = context => {
       logger.debug(`getViolenceProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
       return apiGet({ path })
     },
-    getEscapeProfile(offenderNo) {
-      const path = `${apiUrl}escape/${offenderNo}`
-      logger.debug(`getEscapeProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
-      return apiGet({ path })
-    },
     getExtremismProfile(offenderNo, previousOffences) {
       const path = `${apiUrl}extremism/${offenderNo}?previousOffences=${previousOffences}`
       logger.debug(

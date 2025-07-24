@@ -47,6 +47,7 @@ module.exports = function createApp({
   riskProfilerService,
   statsService,
   frontEndComponentsService,
+  alertService,
 }) {
   const app = express()
 
@@ -151,6 +152,7 @@ module.exports = function createApp({
     config.apis.riskProfiler.url,
     config.apis.allocationManager.url,
     config.apis.prisonerSearch.url,
+    config.apis.alertsApi.url,
   )
   app.get('/health', (req, res, next) => {
     health((err, result) => {
@@ -268,7 +270,14 @@ module.exports = function createApp({
   app.use('/', homeRouter)
   app.use(
     '/tasklist/',
-    createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService }),
+    createTasklistRouter({
+      formService,
+      offendersService,
+      userService,
+      authenticationMiddleware,
+      riskProfilerService,
+      alertService,
+    }),
   )
   app.use(
     '/tasklistRecat/',
@@ -278,6 +287,7 @@ module.exports = function createApp({
       userService,
       authenticationMiddleware,
       riskProfilerService,
+      alertService,
     }),
   )
 
@@ -294,6 +304,7 @@ module.exports = function createApp({
     offendersService,
     userService,
     riskProfilerService,
+    alertService,
     authenticationMiddleware,
   })
   app.use('/form/recat/', recatRouter)
@@ -320,6 +331,7 @@ module.exports = function createApp({
     userService,
     riskProfilerService,
     authenticationMiddleware,
+    alertService,
   })
   app.use('/form/', formRouter)
   app.use('/supervisor/', formRouter)
