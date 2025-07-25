@@ -436,7 +436,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     const answers = fieldMap ? fieldMap.reduce(answersFromMapReducer(userInput), {}) : {}
 
     if (userInput.supervisorDecision && userInput.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
-      answers.supervisorOverriddenCategory = userInput.supervisorDecision.slice(-1)
+      answers.supervisorOverriddenCategory = getCategoryFromSupervisorDecisionString(userInput.supervisorDecision)
     }
 
     return {
@@ -446,6 +446,19 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         [formName]: answers,
       },
     }
+  }
+
+  /**
+   * The last letter of the supervisor decision is the category code e.g. 'B' or
+   * 'C' when the supervisor decision starts with SUPERVISOR_DECISION_CHANGE_TO
+   * @param supervisorDecision string
+   * @returns string
+   */
+  function getCategoryFromSupervisorDecisionString(supervisorDecision) {
+    if (supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
+      return supervisorDecision.slice(-1)
+    }
+    throw Error(`Cannot get category from supervisorDecision ${supervisorDecision}`)
   }
 
   function answersFromMapReducer(userInput) {
@@ -981,5 +994,6 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     recordNextReview,
     getNextReview,
     deletePendingCategorisations,
+    getCategoryFromSupervisorDecisionString,
   }
 }

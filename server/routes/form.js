@@ -770,13 +770,17 @@ module.exports = function Index({
         redirectUrl = `/form/supervisor/confirmBack/${bookingId}`
       }
       if (validation.value.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
-        const overrideCategory = validation.value.supervisorDecision.slice(-1)
+        const overrideCategory = formService.getCategoryFromSupervisorDecisionString(
+          validation.value.supervisorDecision,
+        )
         if (OPEN_CONDITIONS_CATEGORIES.includes(overrideCategory)) {
           redirectUrl = `/form/supervisor/confirmBack/${bookingId}`
         } else {
           redirectUrl = `/form/supervisor/change-category/${bookingId}`
         }
-        formResponseChanges.supervisorOverriddenCategory = validation.value.supervisorDecision.slice(-1)
+        formResponseChanges.supervisorOverriddenCategory = formService.getCategoryFromSupervisorDecisionString(
+          validation.value.supervisorDecision,
+        )
         formResponseChanges.supervisorCategoryAppropriate = 'No'
       }
 

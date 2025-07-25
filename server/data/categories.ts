@@ -10,6 +10,6 @@ export const CATEGORY = {
   I: 'I',
   R: 'R',
   T: 'T',
-}
+} as const
 
 export const OPEN_CONDITIONS_CATEGORIES = [CATEGORY.D, CATEGORY.J, CATEGORY.T]
