@@ -12,9 +12,8 @@ class RiskProfilerApi extends WireMockRule {
     super(8082)
   }
 
-  void stubForTasklists(String offenderno, String category, boolean transferToSecurity = false, boolean increasedRisk = false, boolean notifyRegionalCTLead = false) {
+  void stubForTasklists(String offenderno, String category, boolean transferToSecurity = false) {
     stubGetSocProfile(offenderno, category, transferToSecurity)
-    stubGetExtremismProfile(offenderno, category, increasedRisk, notifyRegionalCTLead)
   }
 
   void stubGetSocProfile(String offenderno, String category, boolean transferToSecurity) {
@@ -112,19 +111,6 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
                                                                   dateCreated         : "2016-09-16",
                                                                   expired             : false,
                                                                   active              : true],]]))))
-  }
-
-
-  void stubGetExtremismProfile(String offenderno, String category, boolean increasedRisk, boolean notifyRegionalCTLead, boolean previousOffences = false) {
-    this.stubFor(get("/risk-profile/extremism/$offenderno?previousOffences=$previousOffences")
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withHeader('Content-Type', 'application/json')
-        .withBody(JsonOutput.toJson([nomsId                   : offenderno,
-                                     riskType                 : 'EXTREMISM',
-                                     provisionalCategorisation: category,
-                                     increasedRiskOfExtremism : increasedRisk,
-                                     notifyRegionalCTLead     : notifyRegionalCTLead]))))
   }
 
   void stubGetLifeProfile(String offenderno, String category) {

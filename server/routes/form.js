@@ -46,6 +46,7 @@ module.exports = function Index({
   userService,
   riskProfilerService,
   authenticationMiddleware,
+  pathfinderService,
   alertService,
 }) {
   const router = express.Router()
@@ -120,11 +121,7 @@ module.exports = function Index({
       const form = 'extremismRating'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const extremismProfile = await riskProfilerService.getExtremismProfile(
-        result.data.details.offenderNo,
-        res.locals,
-        false, // don't yet have the answer the question - will be populated correctly in the review route
-      )
+      const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
       const data = { ...result.data, extremismProfile }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     }),
@@ -156,15 +153,8 @@ module.exports = function Index({
 
       const history = await offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId)
       const offences = await offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo)
-
+      const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
       const escapeProfile = await alertService.getEscapeProfile(result.data.details.offenderNo, res.locals)
-      const extremismProfile = await riskProfilerService.getExtremismProfile(
-        result.data.details.offenderNo,
-        res.locals,
-        result.data.ratings &&
-          result.data.ratings.extremismRating &&
-          result.data.ratings.extremismRating.previousTerrorismOffences === 'Yes',
-      )
       const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
       const lifeProfile = await riskProfilerService.getLifeProfile(result.data.details.offenderNo, res.locals)
 

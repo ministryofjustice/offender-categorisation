@@ -46,7 +46,6 @@ const riskProfilerService = {
   getSecurityProfile: jest.fn(),
   getViolenceProfile: jest.fn(),
   getEscapeProfile: jest.fn(),
-  getExtremismProfile: jest.fn(),
   getLifeProfile: jest.fn(),
 }
 
@@ -69,6 +68,10 @@ const userService = {
   getUserByUserId: jest.fn(),
 }
 
+const pathfinderService = {
+  getExtremismProfile: jest.fn(),
+}
+
 const alertService = {
   getEscapeProfile: jest.fn(),
 }
@@ -78,6 +81,7 @@ const formRoute = createRouter({
   offendersService,
   userService,
   riskProfilerService,
+  pathfinderService,
   alertService,
   authenticationMiddleware,
 })
@@ -124,7 +128,7 @@ beforeEach(() => {
   userService.getUser.mockResolvedValue({})
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
   riskProfilerService.getViolenceProfile.mockResolvedValue({})
-  riskProfilerService.getExtremismProfile.mockResolvedValue({})
+  pathfinderService.getExtremismProfile.mockResolvedValue({})
   alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
@@ -1318,7 +1322,7 @@ describe('GET /ratings/extremism', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
-        expect(riskProfilerService.getExtremismProfile).toBeCalledTimes(1)
+        expect(pathfinderService.getExtremismProfile).toBeCalledTimes(1)
       }),
   )
 })
@@ -1332,7 +1336,7 @@ describe('GET /categoriser/review', () => {
     riskProfilerService.getViolenceProfile.mockResolvedValue({
       violenceFlag: true,
     })
-    riskProfilerService.getExtremismProfile.mockResolvedValue({
+    pathfinderService.getExtremismProfile.mockResolvedValue({
       exFlag: true,
     })
     formService.getCategorisationRecord.mockResolvedValue({

@@ -103,9 +103,7 @@ describe("Women's Estate", () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo,
-        category,
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
       cy.stubLogin({
         user: FEMALE_USER,
@@ -208,10 +206,7 @@ describe("Women's Estate", () => {
 
       cy.task('stubGetExtremismProfile', {
         offenderNo,
-        category,
-        increasedRisk: true,
-        notifyRegionalCTLead: false,
-        previousOffences: true,
+        band: 1,
       })
     }
 
@@ -578,9 +573,7 @@ describe("Women's Estate", () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo,
-        category,
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
       cy.task('stubAssessmentsWomen', { offenderNo })
       cy.task('stubAgencyDetails', { agency: CASELOAD.PFI.id })

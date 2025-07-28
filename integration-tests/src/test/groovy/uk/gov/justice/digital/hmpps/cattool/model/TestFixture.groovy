@@ -4,6 +4,7 @@ import geb.Browser
 import uk.gov.justice.digital.hmpps.cattool.mockapis.AllocationApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
+import uk.gov.justice.digital.hmpps.cattool.mockapis.PathfinderApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.PrisonerSearchApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
@@ -27,6 +28,7 @@ class TestFixture {
   AllocationApi allocationApi
   PrisonerSearchApi prisonerSearchApi
   OauthApi oauthApi
+  PathfinderApi pathfinderApi
 
   UserAccount currentUser
 
@@ -163,13 +165,22 @@ class TestFixture {
   public static final MINI_HEADER1 = ['Hillmob, William', 'ON700', '17/02/1970', 'Closed']
 
 
-  TestFixture(Browser browser, Elite2Api elite2Api, OauthApi oauthApi, RiskProfilerApi riskProfilerApi1, AllocationApi allocationApi1, PrisonerSearchApi prisonerSearchApi) {
+  TestFixture(
+    Browser browser,
+    Elite2Api elite2Api,
+    OauthApi oauthApi,
+    RiskProfilerApi riskProfilerApi1,
+    AllocationApi allocationApi1,
+    PrisonerSearchApi prisonerSearchApi,
+    PathfinderApi pathfinderApi
+  ) {
     this.browser = browser
     this.elite2Api = elite2Api
     this.riskProfilerApi = riskProfilerApi1
     this.allocationApi = allocationApi1
     this.prisonerSearchApi = prisonerSearchApi
     this.oauthApi = oauthApi
+    this.pathfinderApi = pathfinderApi
   }
 
   def loginAs(UserAccount user) {
@@ -199,6 +210,7 @@ class TestFixture {
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', multipleSentences)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     browser.selectSecondPrisoner()
   }
 
@@ -212,6 +224,7 @@ class TestFixture {
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
     riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
+    pathfinderApi.stubGetExtremismProfile('ON700', 3)
     browser.selectFirstPrisoner()
   }
 
@@ -224,6 +237,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, indeterminateSentence)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     browser.selectFirstPrisoner()
   }
 
@@ -236,6 +250,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetailsWomen(700, 'ON700', false, indeterminateSentence, 'R')
     riskProfilerApi.stubForTasklists('ON700', 'R', transferToSecurity)
+    pathfinderApi.stubGetExtremismProfile('ON700', 3)
 
     browser.waitFor {
       browser.selectFirstPrisoner()
@@ -252,6 +267,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, false, 'I')
     riskProfilerApi.stubForTasklists('C0001AA', 'I', transferToSecurity)
+    pathfinderApi.stubGetExtremismProfile('C0001AA', 4)
     browser.selectFirstPrisoner() // should be Tim, Tiny, booking 21
   }
 
@@ -264,6 +280,7 @@ class TestFixture {
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, true, 'I')
     riskProfilerApi.stubForTasklists('C0001AA', 'C', transferToSecurity)
+    pathfinderApi.stubGetExtremismProfile('C0001AA', 3)
     browser.selectFirstPrisoner()
   }
 
