@@ -1,37 +1,55 @@
 module.exports = {
   review: {
+    fields: [
+      {
+        supervisorDecision: {
+          responseType: 'requiredString',
+          validationMessage: 'Select what you would like to do next',
+        },
+      },
+      {
+        supervisorOverriddenCategory: {
+          responseType: 'optionalString',
+        },
+      },
+      {
+        supervisorCategoryAppropriate: {
+          responseType: 'optionalString',
+        },
+      },
+    ],
+    validate: true,
+  },
+  furtherInformation: {
     nextPath: {
       path: '/tasklist/supervisor/outcome/',
     },
     fields: [
       {
-        supervisorCategoryAppropriate: {
-          responseType: 'requiredString',
-          validationMessage: 'Please select yes or no',
+        otherInformationText: {
+          responseType: 'optionalString',
         },
       },
+    ],
+    validate: true,
+  },
+  changeCategory: {
+    fields: [
       {
-        supervisorOverriddenCategory: {
-          responseType: 'requiredStringIf_supervisorCategoryAppropriate_No',
-          validationMessage: 'Please enter the new category',
+        giveBackToCategoriser: {
+          responseType: 'requiredString',
         },
       },
       {
         supervisorOverriddenCategoryText: {
-          responseType: 'requiredStringIf_supervisorCategoryAppropriate_No',
-          validationMessage: 'Enter the reason why this category is more appropriate',
+          responseType: 'requiredStringIf_giveBackToCategoriser_No',
         },
       },
-      {
-        previousOverrideCategoryText: {
-          responseType: 'optionalString',
-        },
-      },
-      {
-        proposedCategory: {
-          responseType: 'optionalString',
-        },
-      },
+    ],
+    validate: true,
+  },
+  giveBackToCategoriser: {
+    fields: [
       {
         otherInformationText: {
           responseType: 'optionalString',
@@ -48,15 +66,9 @@ module.exports = {
         },
       },
       {
-        confirmation: {
-          responseType: 'requiredString',
-          validationMessage: 'Please select yes or no',
-        },
-      },
-      {
         messageText: {
-          responseType: 'requiredStringIf_confirmation_Yes',
-          validationMessage: 'Please enter a message for the categorisor',
+          responseType: 'requiredString',
+          validationMessage: 'Enter your message for the categoriser',
         },
       },
     ],

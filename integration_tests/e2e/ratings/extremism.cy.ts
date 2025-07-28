@@ -65,9 +65,7 @@ describe('Extremism', () => {
     it('should display the expected page when increasedRisk is true', () => {
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: true,
-        notifyRegionalCTLead: false,
+        band: 1,
       })
 
       stubLoginAndBrowseToExtremismPage()
@@ -84,9 +82,7 @@ describe('Extremism', () => {
     it('should display the expected page when increasedRisk is false', () => {
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
 
       stubLoginAndBrowseToExtremismPage()
@@ -107,9 +103,7 @@ describe('Extremism', () => {
     it('should show a validation error on empty form submission', () => {
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
 
       stubLoginAndBrowseToExtremismPage()
@@ -130,9 +124,7 @@ describe('Extremism', () => {
       it("should record a 'yes' decision", () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: true,
-          notifyRegionalCTLead: false,
+          band: 1,
         })
 
         stubLoginAndBrowseToExtremismPage()
@@ -152,7 +144,7 @@ describe('Extremism', () => {
         extremismPage.validatePreviousTerrorismOffencesTextBox({ isVisible: true, expectedText: 'Some risk text' })
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
           expect(result.rows[0].form_response).to.deep.eq({
             ratings: {
               extremismRating: { previousTerrorismOffences: 'Yes', previousTerrorismOffencesText: 'Some risk text' },
@@ -164,9 +156,7 @@ describe('Extremism', () => {
       it("should record a 'no' decision", () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: false,
-          notifyRegionalCTLead: false,
+          band: 4,
         })
 
         stubLoginAndBrowseToExtremismPage()
@@ -215,18 +205,14 @@ describe('Extremism', () => {
       it('validates when has previous terrorism offences', () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: true,
-          notifyRegionalCTLead: false,
+          band: 1,
         })
       })
 
       it('validates when does not have previous terrorism offences', () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: false,
-          notifyRegionalCTLead: false,
+          band: 4,
         })
       })
     })

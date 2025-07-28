@@ -1,0 +1,174 @@
+{% from "radios/macro.njk" import govukRadios %}
+{% from "warning-text/macro.njk" import govukWarningText %}
+
+{% macro supervisorDecisionRadioButtons(isYoungOffender, isFemaleEstate, category, supervisorDecision, errors, isIndeterminateSentence, isRecategorisation = false) %}
+
+  {% set warningCategoryOpenConditions %}
+    {% set categoryOpenConditionsText = "Making this category change means that the categoriser will have to provide more information." %}
+    {% include "../partials/warningIndeterminate.html" %}
+    {{ govukWarningText({
+      text: categoryOpenConditionsText,
+      iconFallbackText: "Warning",
+      attributes: { 'id': 'openConditionsInfoMessage' },
+      classes: "forms-warning-text warning-overrides background-white"
+    }) }}
+  {% endset %}
+
+  {% set radioItems = [
+    {
+      value: "agreeWithCategoryDecision",
+      id: "agreeWithCategoryDecision",
+      text: "Submit the categorisation with the recommended category",
+      hint: {
+        text: "This requires no additional reviews or assessments."
+      },
+      checked: supervisorDecision === 'agreeWithCategoryDecision'
+    }
+  ] %}
+
+  {% set sendBackToCategoriserHintText = "You will also have the option to send back to the categoriser." %}
+  {% set categoriserNeedsToProvideMoreInformationHintText = "The categoriser will have to provide more information." %}
+  {% set openConditionsIndeterminateWarning %}
+    {{ govukWarningText({
+      text: 'This person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.',
+      iconFallbackText: "Warning",
+      attributes: { 'id': 'indeterminateWarning' },
+      classes: "forms-warning-text warning-overrides govuk-!-padding-right-4"
+    }) }}
+  {% endset %}
+
+  {% if isYoungOffender %}
+    {% if category !== 'J' %}
+      {% set radioItems = (radioItems.push(
+        {
+          value: "changeCategoryTo_J",
+          id: "changeCategoryTo_J",
+          text: "Change the category to YOI Open",
+          hint: {
+            text: categoriserNeedsToProvideMoreInformationHintText
+          },
+          checked: supervisorDecision === "changeCategoryTo_J",
+          conditional: {
+            html: openConditionsIndeterminateWarning
+          }  if isIndeterminateSentence == true
+        }
+      ), radioItems) %}
+    {% endif %}
+    {% if category !== 'I' %}
+      {% set radioItems = (radioItems.push(
+        {
+          value: "changeCategoryTo_I",
+          id: "changeCategoryTo_I",
+          text: "Change the category to YOI Closed",
+          hint: {
+            text: sendBackToCategoriserHintText
+          },
+          checked: supervisorDecision === "changeCategoryTo_I"
+        }
+      ), radioItems) %}
+    {% endif %}
+  {% endif %}
+  {% if isFemaleEstate %}
+    {% if category !== 'T' and ((not isYoungOffender) or isRecategorisation) %}
+      {% set radioItems = (radioItems.push(
+        {
+          value: "changeCategoryTo_T",
+          id: "changeCategoryTo_T",
+          text: "Change the category to Open",
+          hint: {
+            text: categoriserNeedsToProvideMoreInformationHintText
+          },
+          checked: supervisorDecision === "changeCategoryTo_T",
+          conditional: {
+            html: openConditionsIndeterminateWarning
+          } if isIndeterminateSentence == true
+        }
+      ), radioItems) %}
+    {% endif %}
+    {% if category !== 'R' %}
+      {% set radioItems = (radioItems.push(
+        {
+          value: "changeCategoryTo_R",
+          id: "changeCategoryTo_R",
+          text: "Change the category to Closed",
+          hint: {
+            text: sendBackToCategoriserHintText
+          },
+          checked: supervisorDecision === "changeCategoryTo_R"
+        }
+      ), radioItems) %}
+    {% endif %}
+  {% else %}
+    {% if category !== "B" %}
+      {% set radioItems = (radioItems.push(
+        {
+          value: "changeCategoryTo_B",
+          id: "changeCategoryTo_B",
+          text: "Change the category to B",
+          hint: {
+            text: sendBackToCategoriserHintText
+          },
+          checked: supervisorDecision === "changeCategoryTo_B"
+        }
+      ), radioItems) %}
+    {% endif %}
+    {% if category !== "C" %}
+      {% set radioItems = (radioItems.push(
+        {
+          value: "changeCategoryTo_C",
+          id: "changeCategoryTo_C",
+          text: "Change the category to C",
+          hint: {
+            text: sendBackToCategoriserHintText
+          },
+          checked: supervisorDecision === "changeCategoryTo_C"
+        }
+      ), radioItems) %}
+    {% endif %}
+    {% if category !== "D" %}
+      {% set radioItems = (radioItems.push(
+        {
+          value: "changeCategoryTo_D",
+          id: "changeCategoryTo_D",
+          text: "Change the category to D",
+          hint: {
+            text: categoriserNeedsToProvideMoreInformationHintText
+          },
+          checked: supervisorDecision === "changeCategoryTo_D",
+          conditional: {
+            html: openConditionsIndeterminateWarning
+          } if isIndeterminateSentence == true
+        }
+      ), radioItems) %}
+    {% endif %}
+  {% endif %}
+
+  {% set radioItems = (radioItems.push(
+    {
+      value: "requestMoreInformation",
+      id: "requestMoreInformation",
+      text: "Request more information from the categoriser",
+      checked: supervisorDecision === 'requestMoreInformation'
+    }
+  ), radioItems) %}
+
+  {% if (category == "R") %}
+    {{ warningCategoryOpenConditions | safe }}
+  {% endif %}
+  {{ govukRadios({
+    name: "supervisorDecision",
+    fieldset: {
+      legend: {
+        text: "What would you like to do next?",
+        isPageHeading: false,
+        classes: "govuk-heading-m govuk-!-font-weight-bold"
+      },
+      classes: "govuk-!-margin-top-7"
+    },
+    errorMessage: {
+      text: "Select what you would like to do next"
+    } if (errors | findError('supervisorDecision')),
+    items: radioItems
+  }) }}
+
+{% endmacro %}

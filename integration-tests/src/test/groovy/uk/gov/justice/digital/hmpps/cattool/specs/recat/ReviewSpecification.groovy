@@ -51,7 +51,7 @@ class ReviewSpecification extends AbstractSpecification {
     when: 'The continue link is selected'
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
@@ -65,7 +65,7 @@ class ReviewSpecification extends AbstractSpecification {
       'Categorisation date Category decision Review location\n24/03/2013 B LPI prison\n08/06/2012 A LPI prison',
       'This person has not been reported as the perpetrator in any assaults in custody before',
       'This person is considered an escape risk\nE-List: 2025-01-01\nEscape Risk Alert: 2025-01-01',
-      'This person is at risk of engaging in, or vulnerable to, extremism.',
+      'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
       'offence Details text']
     securityInputSummary*.text() == ['No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['lower security category text', 'higher security category text', 'Yes\nother relevant information']
@@ -87,7 +87,7 @@ class ReviewSpecification extends AbstractSpecification {
     json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
     json.contains '"escapeProfile": {"riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true, "escapeListAlerts": [{"alertCode": "XEL", "dateCreated": "2025-01-01"}], "escapeRiskAlerts": [{"alertCode": "XER", "dateCreated": "2025-01-01"}]}'
     json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "numberOfNonSeriousAssaults": 3, "veryHighRiskViolentOffender": false}'
-    json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}'
+    json.contains '"extremismProfile": {}'
   }
 
   def "The recat review page can be displayed without security input"() {
@@ -115,7 +115,7 @@ class ReviewSpecification extends AbstractSpecification {
     at TasklistRecatPage
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 
@@ -152,7 +152,7 @@ class ReviewSpecification extends AbstractSpecification {
     at TasklistRecatPage
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     continueButton.click()
 

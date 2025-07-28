@@ -64,9 +64,7 @@ describe('Next Review', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 1,
     })
 
     cy.task('stubAgencyDetails', { agency: 'LPI' })
@@ -203,7 +201,7 @@ describe('Next Review', () => {
         taskListPage.nextReviewDateButton().click()
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
           expect(result.rows[0].cat_type).to.eq(CATEGORISATION_TYPE.INITIAL)
           expect(result.rows[0].user_id).to.eq(CATEGORISER_USER.username)
           expect(result.rows[0].assigned_user_id).to.eq(CATEGORISER_USER.username)
