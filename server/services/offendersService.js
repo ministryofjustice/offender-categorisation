@@ -818,7 +818,7 @@ module.exports = function createOffendersService(
               toDate(recalledOffenderData.get(nomisRecord.offenderNo).recallDate),
               NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
             ),
-            'YYYY-MM-DD',
+            'yyyy-MM-dd',
           )
         }
 
