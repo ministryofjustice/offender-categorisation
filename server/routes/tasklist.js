@@ -12,6 +12,7 @@ module.exports = function Index({
   userService,
   authenticationMiddleware,
   riskProfilerService,
+  pathfinderService,
 }) {
   const router = express.Router()
 
@@ -85,6 +86,7 @@ module.exports = function Index({
         bookingId,
         transactionalDbClient,
         categorisationRecord,
+        pathfinderService,
       })
 
       const data = {
@@ -109,6 +111,18 @@ module.exports = function Index({
       const catType =
         req.query.catType && req.query.catType.toLowerCase() === 'recat' ? 'supervisorRecat' : 'supervisorInitial'
       res.render('pages/supervisorReviewOutcome', {
+        data: { surveyParameters: `${catType}=true&host=${req.hostname}` },
+      })
+    }),
+  )
+  router.get(
+    '/supervisor/sent-back-to-categoriser/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
+      const user = await userService.getUser(res.locals)
+      res.locals.user = { ...user, ...res.locals.user }
+      const catType =
+        req.query.catType && req.query.catType.toLowerCase() === 'recat' ? 'supervisorRecat' : 'supervisorInitial'
+      res.render('pages/supervisorReviewSentBackToCategoriser', {
         data: { surveyParameters: `${catType}=true&host=${req.hostname}` },
       })
     }),

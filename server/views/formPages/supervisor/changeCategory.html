@@ -1,0 +1,71 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "../../macros/breadCrumb.html" import breadCrumb %}
+{% from "../../macros/proposedCategoryChangeText.html" import proposedCategoryChangeText %}
+{% from "textarea/macro.njk" import govukTextarea %}
+
+{% set pageTitle = "Change category" %}
+{% set greenButtonText = "Continue" %}
+
+{% block navigation %}
+  {% set breadCrumbList = [
+    {href: '/', title: 'Categorisation dashboard'},
+    {href: '/form/supervisor/review/'+ data.details.bookingId, title: 'Approve category'}
+  ] %}
+  {{ breadCrumb(breadCrumbList) }}
+{% endblock %}
+
+{% block formItems %}
+  <div class="govuk-body-s">
+
+    {% set justifyChangeHtml %}
+      {{ govukTextarea({
+        name: "supervisorOverriddenCategoryText",
+        type: "myTextWhatsThisFor",
+        id: "supervisorOverriddenCategoryText",
+        attributes: {
+          'maxlength': 50000
+        },
+        label: {
+          text: "Enter the reason why this category is more appropriate"
+        },
+        hint: {
+          text: "Your comments may be disclosed to the prisoner."
+        },
+        errorMessage: {
+          text: "Enter the reason why this category is more appropriate"
+        } if (errors | findError('supervisorOverriddenCategoryText'))
+      }) }}
+    {% endset %}
+
+    <h1 class="govuk-heading-l mainHeading">{{ proposedCategoryChangeText(data.supervisor.review.supervisorDecision) }}</h1>
+    {{ govukRadios({
+      name: "giveBackToCategoriser",
+      fieldset: {
+        legend: {
+          text: "Do you want to send this back to the categoriser once you have changed the category?",
+          isPageHeading: false,
+          classes: "govuk-heading-m"
+        },
+        classes: "govuk-!-margin-top-7"
+      },
+      errorMessage: {
+        text: "Select if you want to send the review back the categoriser"
+      } if (errors | findError('giveBackToCategoriser')),
+      items: [{
+        value: "Yes",
+        text: "Yes",
+        checked: data.supervisor.changeCategory.giveBackToCategoriser === 'Yes' or giveBackToCategoriser === 'Yes'
+      },
+      {
+        value: "No",
+        text: "No",
+        conditional: {
+          html: justifyChangeHtml
+        },
+        checked: data.supervisor.changeCategory.giveBackToCategoriser === 'No' or giveBackToCategoriser === 'No'
+      }]
+    }) }}
+
+  </div>
+{% endblock %}

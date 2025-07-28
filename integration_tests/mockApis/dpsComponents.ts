@@ -103,7 +103,7 @@ const stubHeaderSuccess = () =>
           '</header>\n' +
           '\n',
         css: ['https://frontend-components-dev.hmpps.service.justice.gov.uk/assets/stylesheets/header.css'],
-        javascript: ['https://example.com/a-fake.js', 'https://example.com/another-fake.js'],
+        javascript: [],
       },
     },
   })

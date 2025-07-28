@@ -34,7 +34,7 @@ class TasklistSpecification extends AbstractSpecification {
     data.status == ["STARTED"]
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
     response == [socProfile      : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
-                 extremismProfile: [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'C'],
+                 extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false],
                  escapeProfile   : [nomsId: "Dummy"]]
   }
 

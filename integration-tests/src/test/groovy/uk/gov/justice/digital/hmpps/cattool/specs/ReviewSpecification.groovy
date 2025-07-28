@@ -42,6 +42,7 @@ class ReviewSpecification extends AbstractSpecification {
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     selectFirstPrisoner() // has been sorted to top of list!
     at(new TasklistPage(bookingId: '12'))
 
@@ -50,7 +51,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubOffenceHistory('B2345YZ')
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
 
     then: 'the completed text is displayed'
@@ -86,7 +87,7 @@ class ReviewSpecification extends AbstractSpecification {
     response.escapeProfile == [riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true, escapeListAlerts: [[alertCode: 'XEL', dateCreated: '2025-01-01']], escapeRiskAlerts: [[alertCode: 'XER', dateCreated: '2025-01-01']]]
     response.violenceProfile == [nomsId                 : 'B2345YZ', riskType: 'VIOLENCE', displayAssaults: false, numberOfAssaults: 5, notifySafetyCustodyLead: true,
                                  numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3, provisionalCategorisation: 'C', veryHighRiskViolentOffender: true]
-    response.extremismProfile == [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: true, provisionalCategorisation: 'C']
+    response.extremismProfile == [notifyRegionalCTLead: true, increasedRiskOfExtremism: true]
     response.lifeProfile == [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'C']
   }
 
@@ -110,7 +111,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubOffenceHistory('B2345YZ')
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     at new TasklistPage(bookingId: '12')
     continueButton.click()

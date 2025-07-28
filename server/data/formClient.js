@@ -203,7 +203,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateRecordWithNomisSeqNumber(bookingId, seq, transactionalClient) {
+  updateRecordWithNomisSeqNumber(bookingId, seq, transactionalClient = db) {
     logger.info(`updateRecordWithNomisSeqNumber called for booking id ${bookingId} and seq ${seq}`)
     const query = {
       text: `update form f set nomis_sequence_no = $1 where f.booking_id = $2 ${sequenceClause}`,
@@ -212,7 +212,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateFormData(bookingId, formResponse, transactionalClient) {
+  updateFormData(bookingId, formResponse, transactionalClient = db) {
     logger.info(`updateFormData for booking id ${bookingId}`)
     const query = {
       text: `update form f set form_response = $1 where f.booking_id = $2 ${sequenceClause}`,
@@ -221,7 +221,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateRiskProfileData(bookingId, data, transactionalClient) {
+  updateRiskProfileData(bookingId, data, transactionalClient = db) {
     logger.info(`updateRiskProfileData called for booking id ${bookingId}`)
     const query = {
       text: `update form f set risk_profile = $1 where f.booking_id = $2 ${sequenceClause}`,
@@ -239,7 +239,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  supervisorApproval(formResponse, bookingId, userId, transactionalClient) {
+  supervisorApproval(formResponse, bookingId, userId, transactionalClient = db) {
     logger.info(`recording supervisor approval for booking id ${bookingId} and user ${userId}`)
     const query = {
       text: `update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 ${sequenceClause}`,
@@ -266,7 +266,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  update(formResponse, bookingId, status, transactionalClient) {
+  update(formResponse, bookingId, status, transactionalClient = db) {
     logger.info(`updating record for booking id ${bookingId}`)
     const query = {
       text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
@@ -343,7 +343,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  setSecurityReferralStatus(offenderNo, status, transactionalClient) {
+  setSecurityReferralStatus(offenderNo, status, transactionalClient = db) {
     logger.info(`setSecurityReferralStatus for ${offenderNo} to ${status}`)
     const query = {
       text: `update security_referral set status=$2 where offender_no=$1`,

@@ -16,7 +16,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     alertsApi.stubGetEscapeAlerts('B2345YZ', false, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
 
@@ -60,7 +60,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, true)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
 
@@ -87,7 +87,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
 

@@ -33,13 +33,6 @@ module.exports = context => {
       logger.debug(`getViolenceProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
       return apiGet({ path })
     },
-    getExtremismProfile(offenderNo, previousOffences) {
-      const path = `${apiUrl}extremism/${offenderNo}?previousOffences=${previousOffences}`
-      logger.debug(
-        `getExtremismProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo} and previousOffences ${previousOffences}`,
-      )
-      return apiGet({ path })
-    },
     getLifeProfile(offenderNo) {
       const path = `${apiUrl}life/${offenderNo}`
       logger.debug(`getLifeProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)

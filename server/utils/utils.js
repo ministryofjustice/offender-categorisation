@@ -211,6 +211,7 @@ const setFemaleCaseLoads = caseLoads => {
 }
 
 const isOpenCategory = cat => {
+  // TODO replace with consts
   return ['D', 'J', 'T'].includes(cat)
 }
 
