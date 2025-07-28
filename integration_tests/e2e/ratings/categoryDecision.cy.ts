@@ -38,9 +38,7 @@ describe('Category Decision', () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'ON700',
-        category: 'U(Unsentenced)',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
 
       cy.stubLogin({
@@ -63,7 +61,9 @@ describe('Category Decision', () => {
 
         categoryDecisionPage.errorSummaries().contains('Select the category that is most suitable for this prisoner')
         categoryDecisionPage.errors().contains('Select the category that is most suitable for this prisoner')
-        categoryDecisionPage.errorSummaries().contains('You must enter information about why the category is appropriate')
+        categoryDecisionPage
+          .errorSummaries()
+          .contains('You must enter information about why the category is appropriate')
         categoryDecisionPage.errors().contains('You must enter information about why the category is appropriate')
       })
 
@@ -129,9 +129,7 @@ describe('Category Decision', () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'C0001AA',
-        category: 'U(Unsentenced)',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
 
       cy.stubLogin({
@@ -154,7 +152,9 @@ describe('Category Decision', () => {
 
         categoryDecisionPage.errorSummaries().contains('Select the category that is most suitable for this prisoner')
         categoryDecisionPage.errors().contains('Select the category that is most suitable for this prisoner')
-        categoryDecisionPage.errorSummaries().contains('You must enter information about why the category is appropriate')
+        categoryDecisionPage
+          .errorSummaries()
+          .contains('You must enter information about why the category is appropriate')
         categoryDecisionPage.errors().contains('You must enter information about why the category is appropriate')
       })
 

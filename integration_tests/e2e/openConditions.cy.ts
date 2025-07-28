@@ -816,8 +816,8 @@ describe('Open conditions', () => {
     giveBackToCategoriserOutcomePage.finishButton().should('be.visible').click()
 
     /*
-    supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
-*/
+      supervisorReviewPage1.validateIndeterminateWarningIsDisplayed()
+  */
 
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345XY', 'B2345YZ'],
@@ -863,10 +863,7 @@ describe('Open conditions', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
-      previousOffences: false,
+      band: 4,
     })
 
     taskListPage2.openConditionsButton().should('exist')
@@ -940,8 +937,8 @@ describe('Open conditions', () => {
 
     approvedViewPage.otherInformationSummary().contains('categoriser relevant info for accept')
     /*
-    approvedViewPage.commentLabel().size() == 1
-*/
+      approvedViewPage.commentLabel().size() == 1
+  */
   })
 
   function setUpStubs() {
@@ -958,9 +955,7 @@ describe('Open conditions', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
@@ -992,10 +987,7 @@ describe('Open conditions', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
-      previousOffences: true,
+      band: 1,
     })
   }
 

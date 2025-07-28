@@ -26,6 +26,7 @@ module.exports = function Index({
   userService,
   riskProfilerService,
   authenticationMiddleware,
+  pathfinderService,
   alertService,
 }) {
   const router = express.Router()
@@ -60,12 +61,9 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
       const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
+
+      const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
       const escapeProfile = await alertService.getEscapeProfile(offenderNo, res.locals)
-      const extremismProfile = await riskProfilerService.getExtremismProfile(
-        offenderNo,
-        res.locals,
-        false, // not used for recat (contributes towards recommended category)
-      )
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
       const offenderDpsCaseNotesLink = offenderCaseNotesLink(offenderNo)
       const offenderDpsAdjudicationsLink = offenderAdjudicationLink(offenderNo)
@@ -94,13 +92,8 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
       const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
+      const extremismProfile = pathfinderService.getExtremismProfile(offenderNo, res.locals)
       const escapeProfile = await alertService.getEscapeProfile(offenderNo, res.locals)
-      const extremismProfile = await riskProfilerService.getExtremismProfile(
-        offenderNo,
-        res.locals,
-        false, // contributes towards recommended category, only used in initial categorisations
-      )
-
       const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
 
       const dataToStore = {

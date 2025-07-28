@@ -12,6 +12,7 @@ module.exports = function Index({
   userService,
   authenticationMiddleware,
   riskProfilerService,
+  pathfinderService,
 }) {
   const router = express.Router()
 
@@ -85,6 +86,7 @@ module.exports = function Index({
         bookingId,
         transactionalDbClient,
         categorisationRecord,
+        pathfinderService,
       })
 
       const data = {

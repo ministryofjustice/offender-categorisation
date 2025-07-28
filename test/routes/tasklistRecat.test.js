@@ -23,7 +23,6 @@ const formService = {
 
 const riskProfilerService = {
   getSecurityProfile: jest.fn(),
-  getExtremismProfile: jest.fn(),
 }
 
 const offendersService = {
@@ -36,12 +35,17 @@ const userService = {
   getUser: jest.fn(),
 }
 
+const pathfinderService = {
+  getExtremismProfile: jest.fn(),
+}
+
 const tasklistRoute = createRouter({
   formService,
   offendersService,
   userService,
   authenticationMiddleware,
   riskProfilerService,
+  pathfinderService,
 })
 
 let app
@@ -168,7 +172,7 @@ describe('GET /tasklistRecat/', () => {
       provisionalCategorisation: 'B',
     }
     riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
-    riskProfilerService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
+    pathfinderService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
       securityReferredDate: `${todayISO}`,

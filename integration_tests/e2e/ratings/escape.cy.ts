@@ -44,9 +44,7 @@ describe('Escape Risk', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 1,
     })
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
@@ -201,7 +199,7 @@ describe('Escape Risk', () => {
       escapePage.saveAndReturnButton().click()
 
       cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-        expect(result.rows[0].status).to.eq(Status.STARTED.name)
+        expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
         expect(result.rows[0].form_response).to.deep.eq({
           ratings: {
             escapeRating: {
@@ -234,9 +232,7 @@ describe('Escape Risk', () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'ON700',
-        category: 'U(Unsentenced)',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
       cy.task('stubAssessmentsWomen', { offenderNo: 'ON700' })
       cy.task('stubSentenceDataGetSingle', { offenderNumber: 'ON700', formattedReleaseDate: '2014-11-23' })

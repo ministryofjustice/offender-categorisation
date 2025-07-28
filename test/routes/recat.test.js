@@ -44,6 +44,7 @@ const formService = {
 const riskProfilerService = {
   getSecurityProfile: jest.fn(),
   getViolenceProfile: jest.fn(),
+  getEscapeProfile: jest.fn(),
   getExtremismProfile: jest.fn(),
 }
 
@@ -60,6 +61,10 @@ const offendersService = {
 
 const userService = {
   getUser: jest.fn(),
+}
+
+const pathfinderService = {
+  getExtremismProfile: jest.fn(),
 }
 
 const alertService = {
@@ -92,6 +97,7 @@ const formRoute = createRouter({
   offendersService,
   userService,
   riskProfilerService,
+  pathfinderService,
   alertService,
   authenticationMiddleware,
 })
@@ -126,7 +132,7 @@ beforeEach(() => {
   userService.getUser.mockResolvedValue({})
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
   riskProfilerService.getViolenceProfile.mockResolvedValue({})
-  riskProfilerService.getExtremismProfile.mockResolvedValue({})
+  pathfinderService.getExtremismProfile.mockResolvedValue({})
   alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
@@ -374,9 +380,7 @@ describe('recat', () => {
   })
 
   test('GET /form/recat/review extremism profile - increasedRiskOfExtremism', () => {
-    riskProfilerService.getExtremismProfile.mockReturnValue({
-      nomsId: '123AD',
-      riskType: 'EXTREMISM',
+    pathfinderService.getExtremismProfile.mockReturnValue({
       increasedRiskOfExtremism: true,
       notifyRegionalCTLead: true,
     })
@@ -393,9 +397,7 @@ describe('recat', () => {
   })
 
   test('GET /form/recat/review extremism profile - all fine', () => {
-    riskProfilerService.getExtremismProfile.mockReturnValue({
-      nomsId: '123AD',
-      riskType: 'EXTREMISM',
+    pathfinderService.getExtremismProfile.mockReturnValue({
       increasedRiskOfExtremism: false,
       notifyRegionalCTLead: false,
     })
