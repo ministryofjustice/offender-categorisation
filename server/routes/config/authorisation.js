@@ -9,7 +9,7 @@ module.exports = {
   '/dashboard(Initial|Recat)(\\?.+)?': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/categoryHistory/\\d+': { authorised: ['BOOKING_ID_IN_CASELOAD'] },
   '/tasklist/\\d+(\\?.+)?': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
-  '/tasklist/supervisor/(outcome/)?\\d+.+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
+  '/tasklist/supervisor/(outcome|sent-back-to-categoriser)/?\\d+.+': { authorised: ['ROLE_APPROVE_CATEGORISATION'] },
   '/tasklist/categoriserSubmitted/\\d+': { authorised: ['ROLE_CREATE_CATEGORISATION'] },
   '/tasklistRecat/\\d+(\\?.+)?': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
   '/tasklistRecat/recategoriserSubmitted/\\d+?': { authorised: ['ROLE_CREATE_RECATEGORISATION'] },
