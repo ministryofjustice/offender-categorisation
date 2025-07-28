@@ -5,7 +5,8 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "../../macros/breadCrumb.html" import breadCrumb %}
 
-{% set pageTitle = "Confirm status change" %}
+{% set pageTitle = "Message for the categoriser" %}
+{% set greenButtonText = "Give back to categoriser" %}
 
 {% block navigation %}
 
@@ -21,67 +22,18 @@
   <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 </div>
 
-{% set messageHtml %}
-
   {{ govukTextarea({
     name: "messageText",
     type: "messageText",
     id: "messageText",
-    attributes: { 'maxlength': 50000 },
     label: {
-      text: "Please enter a message for the categorisor"
+      text: "Enter a message for the categorisor"
     },
+    hint: { text: "Your comments may be disclosed to the prisoner." },
     value: data.supervisor.confirmBack.messageText,
     errorMessage: {
-      text: "Please enter a message"
+      text: "Enter your message for the categoriser"
     } if (errors | findError('messageText'))
-  }) }}
-
-{% endset %}
-
-{{ govukRadios({
-  name: "confirmation",
-  fieldset: {
-    legend: {
-      text: "Are you sure you want to send this case back to the categoriser?",
-      isPageHeading: false
-    }
-  },
-  errorMessage: {
-    text: "Select yes to return this case to the Categoriser To do list"
-  } if (errors | findError('confirmation')),
-  items: [
-    {
-      value: 'Yes',
-      text: 'Yes',
-      checked: data.supervisor.confirmBack.confirmation === 'Yes',
-      conditional: { html:messageHtml }
-    },
-    {
-      value: 'No',
-      text: 'No',
-      checked: data.supervisor.confirmBack.confirmation === 'No'
-    }
-  ]
-}) }}
-
-  {% set guidance %}
-
-    <div>Send the categorisation back to the categoriser when you want them to make any changes to their answers. For example, if they have included any information that must not be shared with the prisoner.</div>
-    <div>Do not send the categorisation back to the categoriser if you want to change the category. You can change the category from the bottom of the Approve category page.</div>
-    <br/>
-    <div class="govuk-!-font-weight-bold">What will happen when I send back to the categoriser?</div>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>The categorisation will reappear on the categoriser to do list so they can edit it and make any changes.</li>
-      <li>The categorisation will be removed from the supervisor’s to do list.</li>
-      <li>The categoriser will need to submit the categorisation again for final approval.</li>
-    </ul>
-
-  {% endset %}
-
-  {{ govukDetails({
-    summaryText: "When should I do this?",
-    html: guidance
   }) }}
 
 {% endblock %}
