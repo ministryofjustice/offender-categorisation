@@ -1,9 +1,9 @@
-export default (categoryDecision = 'R') => [
+export default [
   {
     id: -1,
     form_response: {
       ratings: {
-        decision: { category: categoryDecision },
+        decision: { category: 'I' },
         escapeRating: { escapeOtherEvidence: 'No' },
         securityInput: { securityInputNeeded: 'No' },
         nextReviewDate: { date: '14/12/2019' },
@@ -11,26 +11,19 @@ export default (categoryDecision = 'R') => [
         extremismRating: { previousTerrorismOffences: 'Yes' },
         offendingHistory: { previousConvictions: 'No' },
       },
-      categoriser: { provisionalCategory: { suggestedCategory: categoryDecision, categoryAppropriate: 'Yes' } },
+      categoriser: { provisionalCategory: { suggestedCategory: 'I', categoryAppropriate: 'Yes' } },
     },
-    booking_id: 700,
+    booking_id: 12,
     user_id: 'null',
     status: 'AWAITING_APPROVAL',
-    assigned_user_id: 'FEMALE_USER',
+    assigned_user_id: 'CATEGORISER_USER',
     referred_date: null,
     referred_by: 'null',
     sequence_no: 1,
-    risk_profile: {
-      history: { catType: 'No CatA', finalCat: 'Cat R' },
-      offences: [
-        { bookingId: 700, offenceDate: '2019-02-21', offenceDescription: 'Libel' },
-        { bookingId: 700, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander' },
-        { bookingId: 700, offenceDescription: 'Undated offence' },
-      ],
-    },
-    prison_id: 'PFI',
+    risk_profile: null,
+    prison_id: 'LEI',
     offender_no: 'dummy',
-    start_date: '2023-05-23 15:24:57.820000 +00:00',
+    start_date: '2023-05-23 15:27:59.090000 +00:00',
     security_reviewed_by: 'null',
     security_reviewed_date: null,
     approval_date: null,
