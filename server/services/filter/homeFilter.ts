@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { addDays, format, toDate } from 'date-fns'
 import { RecategorisationPrisonerSearchDto } from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
 import {
   ESCAPE_LIST_ALERT_CODE,
@@ -255,9 +256,13 @@ export const filterListOfPrisoners = async (
             currentPrisonerSearchData.recall &&
             recalledOffenderData.get(prisoner.offenderNo).recallDate
           ) {
-            nextReviewDate = moment(recalledOffenderData.get(prisoner.offenderNo).recallDate)
-              .add(NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE, 'day')
-              .format('YYYY-MM-DD')
+            nextReviewDate = format(
+              addDays(
+                toDate(recalledOffenderData.get(prisoner.offenderNo).recallDate),
+                NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
+              ),
+              'YYYY-MM-DD',
+            )
           }
           if (!isReviewOverdue(nextReviewDate)) {
             return false

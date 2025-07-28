@@ -1,6 +1,6 @@
 const path = require('path')
 const moment = require('moment')
-const { toDate, differenceInDays } = require('date-fns')
+const { toDate, differenceInDays, format, addDays } = require('date-fns')
 const logger = require('../../log')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
@@ -810,10 +810,16 @@ module.exports = function createOffendersService(
           ) {
             return null
           }
-          // Recalls are due a recategorisation within 10 days of the recall date rather then the original next review date
-          reviewDueDate = moment(recalledOffenderData.get(nomisRecord.offenderNo).recallDate)
-            .add(NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE, 'day')
-            .format('YYYY-MM-DD')
+          // Recalls are due a recategorisation within 10 days of the recall date
+          // rather than the original next review date, e.g. if they are recalled on
+          // date x then the recat is due on x + 10 days, and overdue on the 11th day
+          reviewDueDate = format(
+            addDays(
+              toDate(recalledOffenderData.get(nomisRecord.offenderNo).recallDate),
+              NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
+            ),
+            'YYYY-MM-DD',
+          )
         }
 
         if (
