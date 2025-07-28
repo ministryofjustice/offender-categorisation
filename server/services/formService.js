@@ -9,13 +9,14 @@ const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpe
 const { config: conf } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
+const { OPEN_CONDITIONS_CATEGORIES, SUPERVISOR_DECISION_CHANGE_TO } = require('../data/categories')
 
 function dataIfExists(data) {
   return data.rows[0]
 }
 
 module.exports = function createFormService(formClient, formApiClientBuilder) {
-  async function getCategorisationRecord(bookingId, transactionalClient) {
+  async function getCategorisationRecord(bookingId, transactionalClient = undefined) {
     try {
       const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
       return dataIfExists(data) || {}
@@ -88,18 +89,20 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     formSection,
     formName,
     status,
-    transactionalClient,
+    transactionalClient = undefined,
     logUpdate,
   }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
-    const newCategorisationForm = buildCategorisationForm({
-      formObject: currentCategorisation.formObject || {},
-      fieldMap: config.fields,
-      userInput,
-      formSection,
-      formName,
-    })
+    const newCategorisationForm = removeFieldsThatAreNoLongerRelevant(
+      buildCategorisationForm({
+        formObject: currentCategorisation.formObject || {},
+        fieldMap: config.fields,
+        userInput,
+        formSection,
+        formName,
+      }),
+    )
 
     if (validateStatusIfProvided(currentCategorisation.status, status)) {
       if (logUpdate) {
@@ -117,6 +120,18 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         calculateStatus(currentCategorisation.status, status),
         transactionalClient,
       )
+    }
+    return newCategorisationForm
+  }
+
+  function removeFieldsThatAreNoLongerRelevant(categorisationForm) {
+    const newCategorisationForm = JSON.parse(JSON.stringify(categorisationForm))
+    if (
+      !newCategorisationForm?.supervisor?.review?.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO) ||
+      OPEN_CONDITIONS_CATEGORIES.includes(newCategorisationForm?.supervisor?.review?.supervisorOverriddenCategory)
+    ) {
+      delete newCategorisationForm?.supervisor?.changeCategory
+      delete newCategorisationForm?.supervisor?.furtherInformation
     }
     return newCategorisationForm
   }
@@ -147,6 +162,8 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       formSection,
       formName,
     })
+
+    delete newCategorisationForm?.supervisor?.review?.supervisorDecision
 
     log.info(
       `Updating Categorisation for booking Id: ${bookingId}, offender No: ${
@@ -206,7 +223,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     formSection,
     formName,
     userId,
-    transactionalClient,
+    transactionalClient = undefined,
   }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
@@ -418,6 +435,10 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
     const answers = fieldMap ? fieldMap.reduce(answersFromMapReducer(userInput), {}) : {}
 
+    if (userInput.supervisorDecision && userInput.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
+      answers.supervisorOverriddenCategory = getCategoryFromSupervisorDecisionString(userInput.supervisorDecision)
+    }
+
     return {
       ...formObject,
       [formSection]: {
@@ -425,6 +446,19 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         [formName]: answers,
       },
     }
+  }
+
+  /**
+   * The last letter of the supervisor decision is the category code e.g. 'B' or
+   * 'C' when the supervisor decision starts with SUPERVISOR_DECISION_CHANGE_TO
+   * @param supervisorDecision string
+   * @returns string
+   */
+  function getCategoryFromSupervisorDecisionString(supervisorDecision) {
+    if (supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
+      return supervisorDecision.slice(-1)
+    }
+    throw Error(`Cannot get category from supervisorDecision ${supervisorDecision}`)
   }
 
   function answersFromMapReducer(userInput) {
@@ -962,5 +996,6 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     recordNextReview,
     getNextReview,
     deletePendingCategorisations,
+    getCategoryFromSupervisorDecisionString,
   }
 }
