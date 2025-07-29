@@ -22,4 +22,5 @@ export default class SupervisorReviewOutcomePage extends Page {
   }
 
   finishButton = (): PageElement => cy.get('a[href="/"]').contains('Finish')
+  smartSurveyLink = (): PageElement => cy.get('#smartSurveyLink')
 }
