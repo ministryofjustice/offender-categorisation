@@ -35,6 +35,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     recatButton.click()
 
@@ -42,7 +43,7 @@ class LandingPageSpecification extends AbstractSpecification {
     at TasklistRecatPage
     currentUrl.contains '/tasklistRecat/12'
     def data = db.getData(12)
-    data.status == ["STARTED"]
+    data.status == ["SECURITY_AUTO"]
     data.review_reason == ["MANUAL"]
   }
 
@@ -165,6 +166,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     editButton.click()
 
@@ -305,6 +307,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
 
@@ -312,7 +315,7 @@ class LandingPageSpecification extends AbstractSpecification {
     at TasklistPage
     currentUrl.contains '/tasklist/12?reason=MANUAL'
     def data = db.getData(12)
-    data.status == ["STARTED"]
+    data.status == ["SECURITY_AUTO"]
     data.cat_type == ["INITIAL"]
     data.review_reason == ["MANUAL"]
   }
@@ -337,6 +340,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
 
@@ -344,7 +348,7 @@ class LandingPageSpecification extends AbstractSpecification {
     at TasklistPage
     currentUrl.contains '/tasklist/12?reason=MANUAL'
     def data = db.getData(12)
-    data.status == ["STARTED"]
+    data.status == ["SECURITY_AUTO"]
     data.cat_type == ["INITIAL"]
     data.review_reason == ["MANUAL"]
   }
@@ -371,6 +375,7 @@ class LandingPageSpecification extends AbstractSpecification {
 
     when: 'It is clicked'
     riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     editButton.click()
 

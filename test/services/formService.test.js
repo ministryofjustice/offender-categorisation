@@ -552,7 +552,7 @@ describe('computeSuggestedCat', () => {
     ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}                   | ${'B'}
     ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}         | ${'B'}
     ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }} | ${'B'}
-    ${{ extremismProfile: { provisionalCategorisation: 'B' } }}               | ${'B'}
+    ${{ extremismProfile: { increasedRiskOfExtremism: true } }}               | ${'B'}
     ${{ lifeProfile: { provisionalCategorisation: 'B' } }}                    | ${'B'}
     ${nearMisses}                                                             | ${'C'}
   `('should return cat $category for data: $data', ({ data, category }) => {

@@ -16,7 +16,7 @@ import CategoriserReviewCYAPage from '../pages/form/categoriser/review'
 import CategoriserSubmittedPage from '../pages/taskList/categoriserSubmitted'
 import dbSeeder from '../fixtures/db-seeder'
 import SupervisorHomePage from '../pages/supervisor/home'
-import SupervisorReviewPage from '../pages/form/supervisor/review'
+import SupervisorReviewPage, { supervisorDecisionRadioButtonChoices } from "../pages/form/supervisor/review";
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import SupervisorReviewOutcomePage from '../pages/form/supervisor/outcome'
 import indeterminateSentenceWarning from '../fixtures/womensEstate/indeterminateSentenceWarning'
@@ -34,6 +34,9 @@ import RiskOfSeriousHarmPage from '../pages/form/openConditions/riskOfSeriousHar
 import FurtherChargesPage from '../pages/form/openConditions/furtherCharges'
 import RiskLevelsPage from '../pages/form/openConditions/riskLevels'
 import SupervisorConfirmBackPage from '../pages/form/supervisor/confirmBack'
+import FurtherInformationPage from "../pages/form/supervisor/furtherInformation";
+import GiveBackToCategoriserPage from "../pages/form/supervisor/giveBackToCategoriser";
+import GiveBackToCategoriserOutcome from "../pages/form/supervisor/giveBackToCategoriserOutcome";
 
 const SHORT_DATE_FORMAT = 'D/M/YYYY'
 const LONG_DATE_FORMAT = 'dddd D MMMM YYYY'
@@ -100,9 +103,7 @@ describe("Women's Estate", () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo,
-        category,
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
       cy.stubLogin({
         user: FEMALE_USER,
@@ -205,10 +206,7 @@ describe("Women's Estate", () => {
 
       cy.task('stubGetExtremismProfile', {
         offenderNo,
-        category,
-        increasedRisk: true,
-        notifyRegionalCTLead: false,
-        previousOffences: true,
+        band: 1,
       })
     }
 
@@ -575,9 +573,7 @@ describe("Women's Estate", () => {
       })
       cy.task('stubGetExtremismProfile', {
         offenderNo,
-        category,
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
       cy.task('stubAssessmentsWomen', { offenderNo })
       cy.task('stubAgencyDetails', { agency: CASELOAD.PFI.id })
@@ -589,8 +585,31 @@ describe("Women's Estate", () => {
       cy.signIn()
     }
 
+    it('should require a supervisor decision', () => {
+      dbSeeder(initialCategorisation())
+
+      loginAsWomensSupervisorUser({ youngOffender: false, indeterminateSentence: false })
+
+      const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+      supervisorHomePage.startReviewForPrisoner(bookingId)
+      const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
+
+      supervisorReviewPage.submitButton().click()
+
+      supervisorReviewPage.validateErrorSummaryMessages([
+        { index: 0, href: '#supervisorDecision', text: 'Select what you would like to do next' },
+      ])
+
+      supervisorReviewPage.validateErrorMessages([
+        {
+          selector: '#supervisorDecision-error',
+          text: 'Select what you would like to do next',
+        },
+      ])
+    })
+
     it('should allow a supervisor to approve a categorisation', () => {
-      dbSeeder(initialCategorisation)
+      dbSeeder(initialCategorisation())
 
       loginAsWomensSupervisorUser({ youngOffender: false, indeterminateSentence: false })
 
@@ -655,8 +674,12 @@ describe("Women's Estate", () => {
 
       const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
 
-      supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+      supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
       supervisorReviewPage.submitButton().click()
+
+      const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
+      furtherInformationPage.enterFurtherInformation('Some further information')
+      furtherInformationPage.submitButton().click()
 
       const supervisorReviewOutcomePage = SupervisorReviewOutcomePage.createForBookingIdAndCategorisationType(
         bookingId,
@@ -722,11 +745,175 @@ describe("Women's Estate", () => {
       ].forEach(cy.checkDefinitionList)
 
       const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
-      supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
-      supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
+      supervisorReviewPage.validateIndeterminateWarningIsDisplayed({
+        isVisible: false,
+      })
+      supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_T').click()
       supervisorReviewPage.validateIndeterminateWarningIsDisplayed({
         isVisible: true,
         expectedText: `This person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.`,
+      })
+    })
+
+    it('should allow a supervisor to override to closed without passing back to a categoriser', () => {
+      dbSeeder(initialCategorisation('T'))
+
+      loginAsWomensSupervisorUser({ youngOffender: false, indeterminateSentence: false })
+
+      const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+      supervisorHomePage.startReviewForPrisoner(bookingId)
+      cy.task('stubSupervisorApprove')
+
+      const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
+
+      supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_R').click()
+      supervisorReviewPage.submitButton().click()
+
+      const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change category to Closed')
+      giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+      cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
+      giveBackToCategoriserPage.submitButton().click()
+
+      const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
+      furtherInformationPage.enterFurtherInformation('Some further information')
+      furtherInformationPage.submitButton().click()
+
+      cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
+        expect(result.rows[0].status).to.eq(Status.APPROVED.name)
+        expect(result.rows[0].form_response.supervisor).to.deep.eq({
+          review: {
+            supervisorDecision: 'changeCategoryTo_R',
+            supervisorOverriddenCategory: 'R',
+            supervisorCategoryAppropriate: 'No',
+          },
+          changeCategory: {
+            giveBackToCategoriser: 'No',
+            supervisorOverriddenCategoryText: 'some justification of category change'
+          },
+          furtherInformation: {
+            otherInformationText: 'Some further information'
+          }
+        })
+        expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
+        expect(result.rows[0].approved_by).to.eq(WOMEN_SUPERVISOR_USER.username)
+      })
+    })
+
+    it('should allow a supervisor to override to open, having to pass back to a categoriser to complete open conditions', () => {
+      dbSeeder(initialCategorisation())
+
+      loginAsWomensSupervisorUser({ youngOffender: false, indeterminateSentence: false })
+
+      const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+      supervisorHomePage.startReviewForPrisoner(bookingId)
+      cy.task('stubSupervisorReject')
+
+      const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
+
+      supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_T').click()
+      supervisorReviewPage.submitButton().click()
+
+      const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
+      supervisorConfirmBackPage.saveAndReturnButton().click()
+
+      supervisorReviewPage.validateErrorSummaryMessages([
+        { index: 0, href: '#messageText', text: 'Enter your message for the categoriser' },
+      ])
+
+      supervisorReviewPage.validateErrorMessages([
+        {
+          selector: '#messageText-error',
+          text: 'Enter your message for the categoriser',
+        },
+      ])
+
+      supervisorConfirmBackPage.setConfirmationMessageText('A reason why I believe this is a more appropriate category')
+      supervisorConfirmBackPage.saveAndReturnButton().click()
+
+      const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+        bookingId,
+        CATEGORISATION_TYPE.INITIAL,
+      )
+      giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
+
+      cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
+        expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
+        expect(result.rows[0].form_response.supervisor).to.deep.eq({
+          review: {
+            supervisorDecision: 'changeCategoryTo_T',
+              supervisorOverriddenCategory: 'T',
+              supervisorCategoryAppropriate: 'No',
+          },
+          confirmBack: {
+            supervisorName: 'Ex12 Officer6',
+              messageText: 'A reason why I believe this is a more appropriate category',
+          },
+        },)
+        expect(result.rows[0].form_response.openConditionsRequested).to.eq(true)
+        expect(result.rows[0].form_response.ratings.decision).to.eq(undefined)
+      })
+    })
+
+    it('should allow a supervisor to request more information from the categoriser', () => {
+      dbSeeder(initialCategorisation())
+
+      loginAsWomensSupervisorUser({ youngOffender: false, indeterminateSentence: false })
+
+      const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
+      supervisorHomePage.startReviewForPrisoner(bookingId)
+      cy.task('stubSupervisorReject')
+
+      const supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
+
+      supervisorReviewPage.supervisorDecisionRadioButton('GIVE_BACK_TO_CATEGORISER').click()
+      supervisorReviewPage.submitButton().click()
+
+      const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
+      supervisorConfirmBackPage.saveAndReturnButton().click()
+
+      supervisorReviewPage.validateErrorSummaryMessages([
+        { index: 0, href: '#messageText', text: 'Enter your message for the categoriser' },
+      ])
+
+      supervisorReviewPage.validateErrorMessages([
+        {
+          selector: '#messageText-error',
+          text: 'Enter your message for the categoriser',
+        },
+      ])
+
+      supervisorConfirmBackPage.setConfirmationMessageText('Give me more information')
+      supervisorConfirmBackPage.saveAndReturnButton().click()
+
+      const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+        bookingId,
+        CATEGORISATION_TYPE.INITIAL,
+      )
+      giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
+
+      cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
+        expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
+        expect(result.rows[0].form_response).to.deep.eq({
+          ratings: {
+            decision: { category: 'R' },
+            escapeRating: { escapeOtherEvidence: 'No' },
+            securityInput: { securityInputNeeded: 'No' },
+            nextReviewDate: { date: '14/12/2019' },
+            violenceRating: { seriousThreat: 'No', highRiskOfViolence: 'No' },
+            extremismRating: { previousTerrorismOffences: 'Yes' },
+            offendingHistory: { previousConvictions: 'No' },
+          },
+          supervisor: {
+            review: {
+              supervisorDecision: 'requestMoreInformation'
+            },
+            confirmBack: {
+              messageText: 'Give me more information',
+              supervisorName: "Ex12 Officer6",
+            }
+          },
+          categoriser: { provisionalCategory: { suggestedCategory: 'R', categoryAppropriate: 'Yes' } }
+        })
       })
     })
 
@@ -797,25 +984,23 @@ describe("Women's Estate", () => {
 
           supervisorReviewPage = SupervisorReviewPage.createForBookingId(bookingId)
           supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
-          supervisorReviewPage.validateOpenConditionsInfoMessageIsDisplayed({ isVisible: false })
           supervisorReviewPage.validateWhichCategoryIsMoreAppropriateRadioButton({
-            selection: ['YOI_OPEN', 'CONSIDER_FOR_CLOSED'],
+            selection: ['CHANGE_TO_CATEGORY_J', 'CHANGE_TO_CATEGORY_R'],
             isChecked: false,
           })
-          supervisorReviewPage.validateOtherRelevantInformationTextBox({ isVisible: true, expectedText: '' })
         })
 
         it('should require a provisional category selection', () => {
           supervisorReviewPage.submitButton().click()
 
           supervisorReviewPage.validateErrorSummaryMessages([
-            { index: 0, href: '#supervisorCategoryAppropriate', text: 'Please select yes or no' },
+            { index: 0, href: '#supervisorDecision', text: 'Select what you would like to do next' },
           ])
 
           supervisorReviewPage.validateErrorMessages([
             {
-              selector: '#supervisorCategoryAppropriate-error',
-              text: 'Select yes if you agree with the provisional category',
+              selector: '#supervisorDecision-error',
+              text: 'Select what you would like to do next',
             },
           ])
         })
@@ -823,8 +1008,12 @@ describe("Women's Estate", () => {
         it('should accept an agreement with the provisional category', () => {
           cy.task('stubSupervisorApprove')
 
-          supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+          supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
           supervisorReviewPage.submitButton().click()
+
+          const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
+          furtherInformationPage.enterFurtherInformation('Some further information')
+          furtherInformationPage.submitButton().click()
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].status).to.eq(Status.APPROVED.name)
@@ -838,7 +1027,7 @@ describe("Women's Estate", () => {
                 extremismRating: { previousTerrorismOffences: 'Yes' },
                 offendingHistory: { previousConvictions: 'No' },
               },
-              supervisor: { review: { proposedCategory: 'I', supervisorCategoryAppropriate: 'Yes' } },
+              supervisor: { review: { supervisorDecision: 'agreeWithCategoryDecision' }, furtherInformation: { otherInformationText: 'Some further information' } },
               categoriser: { provisionalCategory: { suggestedCategory: 'I', categoryAppropriate: 'Yes' } },
             })
             expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
@@ -850,12 +1039,18 @@ describe("Women's Estate", () => {
           cy.task('stubSupervisorReject')
           const confirmBackMessage = 'a message to pass back to the categoriser'
 
-          supervisorReviewPage.giveBackToCategoriserButton(bookingId).click()
+          supervisorReviewPage.supervisorDecisionRadioButton('GIVE_BACK_TO_CATEGORISER').click()
+          supervisorReviewPage.submitButton().click()
 
           const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
-          supervisorConfirmBackPage.selectConfirmationRadioButton('YES')
           supervisorConfirmBackPage.setConfirmationMessageText(confirmBackMessage)
           supervisorConfirmBackPage.saveAndReturnButton().click()
+
+          const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+            bookingId,
+            CATEGORISATION_TYPE.INITIAL,
+          )
+          giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
             expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
@@ -867,49 +1062,25 @@ describe("Women's Estate", () => {
 
         describe('Do you agree with the provisional category? No', () => {
           describe('YOI Open', () => {
-            it('should require a selection for which category is more appropriate', () => {
-              supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-              supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
-              supervisorReviewPage.validateOpenConditionsInfoMessageIsDisplayed({ isVisible: false })
-              supervisorReviewPage.submitButton().click()
-
-              supervisorReviewPage.validateErrorMessages([])
-
-              supervisorReviewPage.validateErrorSummaryMessages([
-                { index: 0, href: '#supervisorOverriddenCategory', text: 'Please enter the new category' },
-                {
-                  index: 1,
-                  href: '#supervisorOverriddenCategoryText',
-                  text: 'Enter the reason why this category is more appropriate',
-                },
-              ])
-
-              supervisorReviewPage.validateErrorMessages([
-                { selector: '#supervisorOverriddenCategory-error', text: 'Please select the new category' },
-                {
-                  selector: '#supervisorOverriddenCategoryText-error',
-                  text: 'Enter the reason why this category is more appropriate',
-                },
-              ])
-            })
-
             it('should return the category change to the categoriser to provide the Open information', () => {
               cy.task('stubSupervisorReject')
 
-              supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-              supervisorReviewPage.selectWhichCategoryIsMoreAppropriateRadioButton('YOI_OPEN')
-              supervisorReviewPage.setWhichCategoryIsMoreAppropriateText(
-                'A reason why I believe this is a more appropriate category',
-              )
+              supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_J').click()
               supervisorReviewPage.validateIndeterminateWarningIsDisplayed({
                 isVisible: true,
                 expectedText: `This person is serving an indeterminate sentence, and local establishments are not responsible for assessing their suitability for open conditions. You should categorise them to open conditions only if the Parole Board or Public Protection Casework Section has decided they are suitable.`,
               })
-              supervisorReviewPage.validateOpenConditionsInfoMessageIsDisplayed({
-                isVisible: true,
-                expectedText: `Making this category change means that the categoriser will have to provide more information.`,
-              })
               supervisorReviewPage.submitButton().click()
+
+              const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
+              supervisorConfirmBackPage.setConfirmationMessageText('A reason why I believe this is a more appropriate category')
+              supervisorConfirmBackPage.saveAndReturnButton().click()
+
+              const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+                bookingId,
+                CATEGORISATION_TYPE.INITIAL,
+              )
+              giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
                 expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
@@ -937,19 +1108,17 @@ describe("Women's Estate", () => {
                   },
                   supervisor: {
                     review: {
-                      proposedCategory: 'I',
+                      supervisorDecision: 'changeCategoryTo_J',
                       supervisorOverriddenCategory: 'J',
                       supervisorCategoryAppropriate: 'No',
-                      supervisorOverriddenCategoryText: 'A reason why I believe this is a more appropriate category',
                     },
                     confirmBack: {
-                      messageText: 'A reason why I believe this is a more appropriate category',
                       supervisorName: 'Ex12 Officer6',
+                      messageText: 'A reason why I believe this is a more appropriate category',
                     },
                   },
                   categoriser: {
                     provisionalCategory: {
-                      suggestedCategory: 'J',
                       categoryAppropriate: 'Yes',
                     },
                   },
@@ -962,39 +1131,21 @@ describe("Women's Estate", () => {
           })
 
           describe('Consider for closed', () => {
-            beforeEach(() => {
-              supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-              supervisorReviewPage.selectWhichCategoryIsMoreAppropriateRadioButton('CONSIDER_FOR_CLOSED')
-              supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
-              supervisorReviewPage.validateOpenConditionsInfoMessageIsDisplayed({ isVisible: false })
-            })
-
-            it('should require a reason why the category is more appropriate', () => {
-              supervisorReviewPage.submitButton().click()
-
-              supervisorReviewPage.validateErrorSummaryMessages([
-                {
-                  index: 0,
-                  href: '#supervisorOverriddenCategoryText',
-                  text: 'Enter the reason why this category is more appropriate',
-                },
-              ])
-
-              supervisorReviewPage.validateErrorMessages([
-                {
-                  selector: '#supervisorOverriddenCategoryText-error',
-                  text: 'Enter the reason why this category is more appropriate',
-                },
-              ])
-            })
-
-            it('should be valid when given a reason', () => {
+            it('without giving back to categoriser', () => {
               cy.task('stubSupervisorApprove')
 
-              supervisorReviewPage.setWhichCategoryIsMoreAppropriateText(
-                'A reason why I believe this is a more appropriate category',
-              )
+              supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_R').click()
+              supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
               supervisorReviewPage.submitButton().click()
+
+              const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change category to Closed')
+              giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+              cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
+              giveBackToCategoriserPage.submitButton().click()
+
+              const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
+              furtherInformationPage.enterFurtherInformation('A reason why I believe this is a more appropriate category')
+              furtherInformationPage.submitButton().click()
 
               const supervisorReviewOutcomePage = SupervisorReviewOutcomePage.createForBookingIdAndCategorisationType(
                 bookingId,
@@ -1033,11 +1184,17 @@ describe("Women's Estate", () => {
                   },
                   supervisor: {
                     review: {
-                      proposedCategory: 'I',
+                      supervisorDecision: 'changeCategoryTo_R',
                       supervisorOverriddenCategory: 'R',
                       supervisorCategoryAppropriate: 'No',
-                      supervisorOverriddenCategoryText: 'A reason why I believe this is a more appropriate category',
                     },
+                    changeCategory: {
+                      giveBackToCategoriser: 'No',
+                      supervisorOverriddenCategoryText: 'some justification of category change'
+                    },
+                    furtherInformation: {
+                      otherInformationText: 'A reason why I believe this is a more appropriate category',
+                    }
                   },
                   categoriser: {
                     provisionalCategory: {

@@ -38,9 +38,7 @@ describe('Offending History', () => {
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
 
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })

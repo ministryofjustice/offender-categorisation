@@ -26,7 +26,7 @@ export default class SupervisorConfirmBackPage extends Page {
   }
 
   constructor() {
-    super('Confirm status change')
+    super('Message for the categoriser')
   }
 
   static createForBookingId = (bookingId: number) => {
@@ -34,7 +34,7 @@ export default class SupervisorConfirmBackPage extends Page {
     return new SupervisorConfirmBackPage()
   }
 
-  saveAndReturnButton = (): PageElement => cy.get('button[type="submit"]').contains('Save and return')
+  saveAndReturnButton = (): PageElement => cy.get('button[type="submit"]').contains('Give back to categoriser')
 
   validateErrorSummaryMessages(
     errorSummaryMessages: {
