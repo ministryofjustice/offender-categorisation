@@ -702,6 +702,7 @@ describe('Open conditions', () => {
 
     CategoriserSubmittedPage.createForBookingId(12)
     const categoriserSubmittedPage1 = Page.verifyOnPage(CategoriserSubmittedPage)
+    categoriserSubmittedPage1.smartSurveyLink().should('be.visible')
 
     categoriserSubmittedPage1.signOut().click()
 
@@ -730,6 +731,7 @@ describe('Open conditions', () => {
     furtherInformationPage.submitButton().click()
 
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     supervisorReviewOutcomePage.finishButton().click()
 
     const supervisorHomePage1 = Page.verifyOnPage(SupervisorHomePage)
@@ -911,6 +913,7 @@ describe('Open conditions', () => {
     furtherInformationPage.submitButton().click()
 
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     supervisorReviewOutcomePage.finishButton().click()
 
     const supHomePage1 = Page.verifyOnPage(SupervisorHomePage)
