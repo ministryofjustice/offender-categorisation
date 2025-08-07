@@ -9,7 +9,7 @@ const {
   sanitisePrisonName,
   removeLeadingZerosFromDate,
   dateConverterWithoutLeadingZeros,
-  formatDate,
+  formatDateForValidation,
 } = require('../utils/utils')
 const { handleCsrf } = require('../utils/routes')
 const validation = require('../utils/fieldValidation')
@@ -176,7 +176,7 @@ module.exports = function Index({ formService, offendersService, userService, au
       const { category, authority, placement, comment } = req.body
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
-      req.body.nextReviewDate = formatDate(req.body.nextReviewDate)
+      req.body.nextReviewDate = formatDateForValidation(req.body.nextReviewDate)
       const details = await offendersService.getOffenderDetails(res.locals, bookingIdInt)
       const { nextReviewDate } = req.body
 

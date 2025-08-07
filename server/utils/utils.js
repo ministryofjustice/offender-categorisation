@@ -217,9 +217,9 @@ const isOpenCategory = cat => {
 
 const removeLeadingZerosFromDate = date => date.replace(/^0+/, '')?.replace(/\/0/g, '/')
 
-const formatDate = date => {
+const formatDateForValidation = date => {
   if (!date.day || !date.month || !date.year) {
-    return ''
+    return undefined
   }
 
   return `${date.day}/${date.month}/${date.year}`
@@ -261,5 +261,5 @@ module.exports = {
   // exposed for test purposes
   isBlank,
   removeLeadingZerosFromDate,
-  formatDate,
+  formatDateForValidation,
 }
