@@ -24,6 +24,7 @@ generic-service:
     OFFENDER_CATEGORISATION_API_ENDPOINT_URL: https://hmpps-offender-categorisation-api-dev.hmpps.service.justice.gov.uk/
     PATHFINDER_API_ENDPOINT_URL: https://dev-api.pathfinder.service.justice.gov.uk/
     ALERTS_ENDPOINT_URL: https://alerts-api-dev.hmpps.service.justice.gov.uk/
+    ADJUDICATIONS_ENDPOINT_URL: https://manage-offences-api-dev.hmpps.service.justice.gov.uk/
     DPS_URL: https://digital-dev.prison.service.justice.gov.uk/
     SUPPORT_URL: https://support-dev.hmpps.service.justice.gov.uk/
     COMPONENT_API_URL: https://frontend-components-dev.hmpps.service.justice.gov.uk

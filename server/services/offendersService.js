@@ -136,6 +136,7 @@ module.exports = function createOffendersService(
   prisonerSearchClientBuilder,
   risksAndNeedsClientBuilder,
   probationOffenderSearchClientBuilder,
+  adjudicationsApiClientBuilder,
 ) {
   async function getUncategorisedOffenders(context, user, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -145,6 +146,7 @@ module.exports = function createOffendersService(
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
       const risksAndNeedsClient = risksAndNeedsClientBuilder(context.user)
       const probationOffenderSearchClient = probationOffenderSearchClientBuilder(context.user)
+      const adjudicationsApiClient = adjudicationsApiClientBuilder(context.user)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
 
       const dbManualInProgress = await formService.getCategorisationRecords(
@@ -211,12 +213,12 @@ module.exports = function createOffendersService(
         allRecords,
         new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])),
         null,
-        nomisClient,
         agencyId,
         pomMap,
         user.staffId,
         risksAndNeedsClient,
         probationOffenderSearchClient,
+        adjudicationsApiClient,
       )
 
       const decoratedResults = await Promise.all(
@@ -729,6 +731,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
+    adjudicationsApiClient,
     filters = {},
     withSi1481Changes = false,
   ) {
@@ -767,12 +770,12 @@ module.exports = function createOffendersService(
       allOffenders,
       prisonerSearchData,
       recalledOffenderData,
-      nomisClient,
       agencyId,
       pomMap,
       user.staffId,
       risksAndNeedsClient,
       probationOffenderSearchClient,
+      adjudicationsApiClient,
       withSi1481Changes,
     )
 
@@ -965,6 +968,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
+    adjudicationsApiClient,
     filters = {},
   ) {
     const u21From = moment()
@@ -995,12 +999,12 @@ module.exports = function createOffendersService(
       eliteCategorisationResultsU21,
       u21map,
       null,
-      nomisClient,
       agencyId,
       pomMap,
       user.staffId,
       risksAndNeedsClient,
       probationOffenderSearchClient,
+      adjudicationsApiClient,
     )
 
     return Promise.all(
@@ -1070,6 +1074,7 @@ module.exports = function createOffendersService(
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
       const risksAndNeedsClient = risksAndNeedsClientBuilder(context.user)
       const probationOffenderSearchClient = probationOffenderSearchClientBuilder(context.user)
+      const adjudicationsApiClient = adjudicationsApiClientBuilder(context.user)
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
         getDueRecats(
@@ -1080,6 +1085,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
+          adjudicationsApiClient,
           filters,
           withSi1481Changes,
         ),
@@ -1091,6 +1097,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
+          adjudicationsApiClient,
           filters,
         ),
         formService.getSecurityReferrals(agencyId),

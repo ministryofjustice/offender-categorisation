@@ -54,6 +54,10 @@ const probationOffenderSearchApiClient = {
   matchPrisoners: jest.fn(),
 }
 
+const adjudicationsApiClientClient = {
+  getAdjudications: jest.fn(),
+}
+
 const formService = {
   getCategorisationRecord: jest.fn(),
   getSecurityReferredOffenders: jest.fn(),
@@ -81,6 +85,7 @@ const allocationClientBuilder = () => allocationClient
 const prisonerSearchClientBuilder = () => prisonerSearchClient
 const risksAndNeedsClientBuilder = () => risksAndNeedsClient
 const probationOffenderSearchClientBuilder = () => probationOffenderSearchApiClient
+const adjudicationsApiClientBuilder = () => adjudicationsApiClientClient
 
 let service
 
@@ -92,6 +97,7 @@ beforeEach(() => {
     prisonerSearchClientBuilder,
     risksAndNeedsClientBuilder,
     probationOffenderSearchClientBuilder,
+    adjudicationsApiClientBuilder,
   )
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
