@@ -3233,6 +3233,7 @@ describe('getDueRecats', () => {
       prisonerSearchClient,
       null,
       null,
+      null,
       {},
       true,
     )
@@ -3382,6 +3383,7 @@ describe('getDueRecats', () => {
       nomisClient,
       allocationClient,
       prisonerSearchClient,
+      null,
       null,
       null,
       {},
