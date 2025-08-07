@@ -217,6 +217,14 @@ const isOpenCategory = cat => {
 
 const removeLeadingZerosFromDate = date => date.replace(/^0+/, '')?.replace(/\/0/g, '/')
 
+const formatDate = date => {
+  if (!date.day || !date.month || !date.year) {
+    return ''
+  }
+
+  return `${date.day}/${date.month}/${date.year}`
+}
+
 module.exports = {
   dateConverter,
   dateConverterWithoutLeadingZeros,
@@ -253,4 +261,5 @@ module.exports = {
   // exposed for test purposes
   isBlank,
   removeLeadingZerosFromDate,
+  formatDate,
 }
