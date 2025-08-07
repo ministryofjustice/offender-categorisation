@@ -65,7 +65,6 @@ describe('assessment', () => {
   test('get form page', () => {
     formService.getCategorisationRecord.mockResolvedValue({})
     formService.getLiteCategorisation.mockResolvedValue({})
-    const sixMonths = moment().add(6, 'months').format('D/M/YYYY')
     return request(app)
       .get(`/12`)
       .expect(200)
@@ -74,15 +73,12 @@ describe('assessment', () => {
         expect(res.text).toContain('Other category assessment</h1>')
         expect(res.text).toContain('<option value="RECP">Reception</option>')
         expect(res.text).toContain('<option value="SECUR">Security</option>')
-        expect(res.text).toMatch(
-          new RegExp(
-            `<input\\s+class="govuk-input govuk-!-width-full"\\s+id="nextReviewDate"\\s+name="nextReviewDate"\\s+type="text"\\s+value="${sixMonths}"\\s*>`,
-            's',
-          ),
-        )
-
         expect(res.text).toContain('<option value="SYI">Shrewsbury (HMP)</option>')
         expect(res.text).toContain('<option value="MDI">Moorland</option>')
+
+        expect(res.text).toMatch(/<input[^>]*id="nextReviewDateDay"[^>]*>/)
+        expect(res.text).toMatch(/<input[^>]*id="nextReviewDateMonth"[^>]*>/)
+        expect(res.text).toMatch(/<input[^>]*id="nextReviewDateYear"[^>]*>/)
       })
   })
 
@@ -111,14 +107,24 @@ describe('assessment', () => {
   })
 
   test('Post form page', () => {
-    const futureDate = moment().add(5, 'months').format('D/M/YYYY')
+    const futureDate = moment().add(5, 'months')
+
+    const futureDateFormInput = {
+      day: futureDate.date().toString(),
+      month: (futureDate.month() + 1).toString(),
+      year: futureDate.year().toString(),
+    }
+
+    const expectedDate = moment().add(5, 'months').format('D/M/YYYY')
+
     const userInput = {
       category: 'R',
       authority: 'RECP',
-      nextReviewDate: futureDate,
+      nextReviewDate: futureDateFormInput,
       placement: 'SYI',
       comment: 'some text some text',
     }
+
     return request(app)
       .post(`/12345`)
       .send(userInput)
@@ -129,6 +135,7 @@ describe('assessment', () => {
           context: mockContext,
           bookingId: 12345,
           ...userInput,
+          nextReviewDate: expectedDate,
           offenderNo: 'A1000EE',
           prisonId: 'BXI',
           transactionalClient: mockTransactionalClient,

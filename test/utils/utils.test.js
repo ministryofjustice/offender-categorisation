@@ -18,6 +18,7 @@ const {
   getNamesFromString,
   dateConverter,
   dateConverterToISO,
+  formatDateForValidation,
 } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
@@ -317,5 +318,37 @@ describe('dateConverterToISO', () => {
     it("returns the literal string 'Invalid date' when given an invalid date", () => {
       expect(dateConverterToISO('01/13/2022')).toBe('Invalid date')
     })
+  })
+})
+
+describe('formatDateForValidation', () => {
+  it('should format date correctly without leading zeros', () => {
+    const input = { day: '7', month: '3', year: '2026' }
+    expect(formatDateForValidation(input)).toBe('7/3/2026')
+  })
+
+  it('should format date correctly with leading zeros', () => {
+    const input = { day: '07', month: '03', year: '2026' }
+    expect(formatDateForValidation(input)).toBe('07/03/2026')
+  })
+
+  it('should return an empty string when day is missing', () => {
+    const input = { day: '', month: '3', year: '2026' }
+    expect(formatDateForValidation(input)).toBe(undefined)
+  })
+
+  test('should return an empty string when month is missing', () => {
+    const input = { day: '7', month: '', year: '2026' }
+    expect(formatDateForValidation(input)).toBe(undefined)
+  })
+
+  test('should return an empty string when year is missing', () => {
+    const input = { day: '7', month: '3', year: '' }
+    expect(formatDateForValidation(input)).toBe(undefined)
+  })
+
+  test('should return an empty string when the day, month and year are missing', () => {
+    const input = { day: '', month: '3', year: '' }
+    expect(formatDateForValidation(input)).toBe(undefined)
   })
 })
