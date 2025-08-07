@@ -40,7 +40,15 @@
     {% set overriddenCatText = data.categoriser.provisionalCategory.overriddenCategoryText %}
     {% set categoriserCat = overriddenCat or cat %}
     {% set superCat = data.supervisor.review.supervisorOverriddenCategory if data.supervisor.review.supervisorCategoryAppropriate == 'No' %}
-    {% set superOtherComments = data.supervisor.furtherInformation.otherInformationText %}
+
+    {% if data.supervisor and data.supervisor.furtherInformation and data.supervisor.furtherInformation.otherInformationText %}
+      {% set superOtherComments = data.supervisor.furtherInformation.otherInformationText %}
+    {% elseif data.supervisor and data.supervisor.review and data.supervisor.review.otherInformationText %}
+      {% set superOtherComments = data.supervisor.review.otherInformationText %}
+    {% else %}
+      {% set superOtherComments = '' %}
+    {% endif %}
+
     {% set superPreviousOverrideComments = data.supervisor.review.previousOverrideCategoryText %}
     {% set currentCat = superCat or overriddenCat or cat %}
 

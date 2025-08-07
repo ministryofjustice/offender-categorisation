@@ -17,4 +17,5 @@ export default class CategoriserSubmittedPage extends Page {
   }
 
   finishButton = (): PageElement => cy.get('a[href="/"]').contains('Finish')
+  smartSurveyLink = (): PageElement => cy.get('#smartSurveyLink')
 }

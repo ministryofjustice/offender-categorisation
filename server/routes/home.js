@@ -8,7 +8,7 @@ const { handleCsrf, redirectUsingRole } = require('../utils/routes')
 const CatType = require('../utils/catTypeEnum')
 const dashboard = require('../config/dashboard')
 const { inProgress, extractNextReviewDate } = require('../utils/functionalHelpers')
-const { dateConverterToISO, isOpenCategory, isFemalePrisonId } = require('../utils/utils')
+const { dateConverterToISO, isOpenCategory } = require('../utils/utils')
 const securityConfig = require('../config/security')
 const StatsType = require('../utils/statsTypeEnum')
 const logger = require('../../log')
@@ -93,8 +93,6 @@ module.exports = function Index({
       delete validation.value.sortAttribute
       delete validation.value.sortDirection
 
-      const isInWomensEstate = isFemalePrisonId(user.activeCaseLoadId)
-
       const offenders = res.locals.user.activeCaseLoad
         ? await offendersService.getUncategorisedOffenders(res.locals, user, validation.value)
         : []
@@ -110,7 +108,6 @@ module.exports = function Index({
         hideHomeFilter: req.session.hideCategoriserHomeFilter ?? false,
         sortAttribute,
         sortDirection,
-        isInWomensEstate,
       })
     }),
   )
@@ -176,10 +173,8 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      const isInWomensEstate = isFemalePrisonId(user.activeCaseLoadId)
       const offenders = res.locals.user.activeCaseLoad ? await offendersService.getUnapprovedOffenders(res.locals) : []
-
-      res.render('pages/supervisorHome', { offenders, isInWomensEstate })
+      res.render('pages/supervisorHome', { offenders })
     }),
   )
 
@@ -189,10 +184,8 @@ module.exports = function Index({
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
 
-      const isInWomensEstate = isFemalePrisonId(user.activeCaseLoadId)
       const offenders = res.locals.user.activeCaseLoad ? await offendersService.getReferredOffenders(res.locals) : []
-
-      res.render('pages/securityHome', { offenders, isInWomensEstate })
+      res.render('pages/securityHome', { offenders })
     }),
   )
 
@@ -228,7 +221,6 @@ module.exports = function Index({
     res.locals.user = { ...user, ...res.locals.user }
 
     const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
-
     if (validation.error) {
       logger.error('Recategoriser home page submitted with invalid filters.', validation.error)
       return res.render('pages/error', {
@@ -248,8 +240,6 @@ module.exports = function Index({
     const sortDirection = validation.value.sortDirection ?? 'none'
     delete validation.value.sortAttribute
     delete validation.value.sortDirection
-
-    const isInWomensEstate = isFemalePrisonId(user.activeCaseLoadId)
 
     const offenders = user.activeCaseLoad
       ? await offendersService.getRecategoriseOffenders(res.locals, user, validation.value, withSi1481Changes)
@@ -276,7 +266,6 @@ module.exports = function Index({
       hideHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
       sortAttribute,
       sortDirection,
-      isInWomensEstate,
     })
   }
 
