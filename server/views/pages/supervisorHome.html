@@ -1,4 +1,4 @@
-{% set mainClasses = 'govuk-!-padding-top-0 cat-fit-content' %}
+{% set mainClasses = 'cat-fit-content' %}
 {% extends "../partials/layout.html" %}
 
 {% from "button/macro.njk" import govukButton %}
@@ -14,12 +14,6 @@
 {% endblock %}
 
 {% block content %}
-
-  <div class="govuk-!-padding-top-7">
-    {% if isInWomensEstate %}
-      {% include "../partials/smartSurveyTag.html" %}
-    {% endif %}
-  </div>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">

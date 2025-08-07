@@ -127,7 +127,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   function removeFieldsThatAreNoLongerRelevant(categorisationForm) {
     const newCategorisationForm = JSON.parse(JSON.stringify(categorisationForm))
     if (
-      !newCategorisationForm?.supervisor?.review?.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO) ||
+      !newCategorisationForm?.supervisor?.review?.supervisorDecision?.startsWith?.(SUPERVISOR_DECISION_CHANGE_TO) ||
       OPEN_CONDITIONS_CATEGORIES.includes(newCategorisationForm?.supervisor?.review?.supervisorOverriddenCategory)
     ) {
       delete newCategorisationForm?.supervisor?.changeCategory

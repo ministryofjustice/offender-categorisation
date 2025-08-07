@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { addDays, format, toDate } from 'date-fns'
 import { RecategorisationPrisonerSearchDto } from '../recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto'
 import {
   ESCAPE_LIST_ALERT_CODE,
@@ -22,9 +23,11 @@ import { ProbationOffenderSearchApiClient } from '../../data/probationOffenderSe
 import { RisksAndNeedsApiClient } from '../../data/risksAndNeeds/risksAndNeedsApi'
 import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
 import logger from '../../../log'
-import { RecalledOffenderData } from '../recategorisation/recall/recalledOffenderData'
-import { add10BusinessDays } from '../../utils/utils'
 import { AdjudicationsApiClient } from '../../data/adjudicationsApi/adjudicationsApiClient'
+import {
+  NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
+  RecalledOffenderData,
+} from '../recategorisation/recall/recalledOffenderData'
 
 export const SUITABILIGY_FOR_OPEN_CONDITIONS = 'suitabilityForOpenConditions'
 export const DUE_DATE = 'dueDate'
@@ -270,7 +273,13 @@ export const filterListOfPrisoners = async (
             currentPrisonerSearchData.recall &&
             recalledOffenderData.get(prisoner.offenderNo).recallDate
           ) {
-            nextReviewDate = add10BusinessDays(recalledOffenderData.get(prisoner.offenderNo).recallDate)
+            nextReviewDate = format(
+              addDays(
+                toDate(recalledOffenderData.get(prisoner.offenderNo).recallDate),
+                NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
+              ),
+              'yyyy-MM-dd',
+            )
           }
           if (!isReviewOverdue(nextReviewDate)) {
             return false
