@@ -155,6 +155,7 @@ module.exports = function createApp({
     config.apis.prisonerSearch.url,
     config.apis.pathfinderApi.url,
     config.apis.alertsApi.url,
+    config.apis.adjudicationsApi.url,
   )
   app.get('/health', (req, res, next) => {
     health((err, result) => {
