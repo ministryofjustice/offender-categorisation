@@ -76,7 +76,6 @@ describe('Lite Categories', () => {
 
       liteCategoriesPage = LiteCategoriesPage.createForBookingId(bookingId)
       liteCategoriesPage.validateWarningVisibility({ isVisible: false })
-      liteCategoriesPage.getReAssessmentDate().should('have.value', sixMonthsFromNow.format(SHORT_DATE_FORMAT))
     })
 
     it('should have the expected lite categorisation options', () => {
@@ -108,17 +107,20 @@ describe('Lite Categories', () => {
       })
 
       it('should require a re-assessment date', () => {
-        liteCategoriesPage.clearReAssessmentDate()
         liteCategoriesPage.submitButton().click()
       })
 
       it('should require a valid date for the re-assessment date string', () => {
-        liteCategoriesPage.setReAssessmentDate('INVALID')
+        liteCategoriesPage.setReAssessmentDateDay('INVALID')
+        liteCategoriesPage.setReAssessmentDateMonth('INVALID')
+        liteCategoriesPage.setReAssessmentDateYear('INVALID')
         liteCategoriesPage.submitButton().click()
       })
 
       it('should require the re-assessment date is in the future', () => {
-        liteCategoriesPage.setReAssessmentDate('21/11/2019')
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2016')
         liteCategoriesPage.submitButton().click()
       })
     })
@@ -142,6 +144,9 @@ describe('Lite Categories', () => {
       })
 
       it('should handle a valid submission', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
         liteCategoriesPage.submitButton().click()
 
         LiteCategoriesConfirmedPage.createForBookingId(bookingId)
@@ -155,7 +160,7 @@ describe('Lite Categories', () => {
           expect(data.prison_id).eq('LEI')
           expect(data.assessed_by).eq('CATEGORISER_USER')
           expect(data.assessment_committee).eq('RECP')
-          expect(data.next_review_date).eq(sixMonthsFromNow.toISOString())
+          expect(data.next_review_date).eq('2099-01-12T00:00:00.000Z')
           expect(data.assessment_comment).eq('comment')
           expect(data.placement_prison_id).eq('BXI')
         })
@@ -178,6 +183,9 @@ describe('Lite Categories', () => {
       })
 
       it('should not allow a second categorisation to begin when a categorisation is already in progress', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
         liteCategoriesPage.submitButton().click()
 
         LiteCategoriesConfirmedPage.createForBookingId(bookingId)
@@ -190,6 +198,9 @@ describe('Lite Categories', () => {
       })
 
       it('should not be available for a re-categorisation', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
         liteCategoriesPage.submitButton().click()
 
         const liteCategoriesConfirmedPage = Page.verifyOnPage(LiteCategoriesConfirmedPage)
@@ -210,6 +221,9 @@ describe('Lite Categories', () => {
       })
 
       it('should display the expected status to the categoriser', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
         liteCategoriesPage.submitButton().click()
 
         cy.visit(CategoriserHomePage.baseUrl)
@@ -236,6 +250,9 @@ describe('Lite Categories', () => {
       })
 
       it('should prevent a further submission when the submit button is clicked', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
         liteCategoriesPage.submitButton().click()
 
         cy.visit(`/tasklist/${bookingId}`)
