@@ -9,6 +9,7 @@ const {
   sanitisePrisonName,
   removeLeadingZerosFromDate,
   dateConverterWithoutLeadingZeros,
+  formatDateForValidation,
 } = require('../utils/utils')
 const { handleCsrf } = require('../utils/routes')
 const validation = require('../utils/fieldValidation')
@@ -172,10 +173,12 @@ module.exports = function Index({ formService, offendersService, userService, au
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
       const bookingIdInt = parseInt(bookingId, 10)
-      const { category, authority, nextReviewDate, placement, comment } = req.body
+      const { category, authority, placement, comment } = req.body
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
+      req.body.nextReviewDate = formatDateForValidation(req.body.nextReviewDate)
       const details = await offendersService.getOffenderDetails(res.locals, bookingIdInt)
+      const { nextReviewDate } = req.body
 
       const tomorrow = moment().add(1, 'd').format('MM/DD/YYYY')
 
@@ -185,10 +188,12 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const schema = joi.object(fieldOptions)
 
-      if (req.body.nextReviewDate) {
-        req.body.nextReviewDate = removeLeadingZerosFromDate(req.body.nextReviewDate)
+      if (nextReviewDate) {
+        req.body.nextReviewDate = removeLeadingZerosFromDate(nextReviewDate)
       }
+
       const joiErrors = schema.validate(req.body, { stripUnknown: true, abortEarly: false })
+
       const errors = validation.mapJoiErrors(joiErrors, [
         {
           nextReviewDate: {
