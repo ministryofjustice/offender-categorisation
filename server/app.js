@@ -11,7 +11,6 @@ const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
-const { getSanitisedError } = require('./getSanitisedError')
 require('./catToolSerialisers') // do not remove, logging requires it!
 const auth = require('./authentication/auth')
 const healthFactory = require('./services/healthCheck')
@@ -23,7 +22,6 @@ const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
 const setUpWebSecurity = require('./utils/setUpWebSecurity')
-const logger = require('../log')
 const nunjucksSetup = require('./utils/nunjucksSetup')
 const { config } = require('./config')
 const createOpenConditionsRouter = require('./routes/openConditions')
@@ -40,7 +38,6 @@ const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
 module.exports = function createApp({
-  signInService,
   formService,
   offendersService,
   userService,
@@ -52,13 +49,15 @@ module.exports = function createApp({
 }) {
   const app = express()
 
-  auth.init(signInService)
+  // Authentication Configuration
+  auth.init()
 
   app.set('json spaces', 2)
-
   // Configure Express for running behind proxies
   // https://expressjs.com/en/guide/behind-proxies.html
   app.set('trust proxy', true)
+  // Server Configuration
+  app.set('port', process.env.PORT || 3000)
 
   app.get('/ping', (req, res) => {
     return res.send('pong')
@@ -68,15 +67,11 @@ module.exports = function createApp({
   app.set('view engine', 'html')
 
   setUpEnvironmentName(app)
-
   nunjucksSetup(app, path)
-
-  // Server Configuration
-  app.set('port', process.env.PORT || 3000)
-
   app.use(setUpWebSecurity())
   app.use(addRequestId)
 
+  // should be moved to setUpWebSession middleware
   const client = redis.createClient({
     port: config.redis.port,
     password: config.redis.auth_token,
@@ -95,6 +90,7 @@ module.exports = function createApp({
     }),
   )
 
+  // Authentication strategy using Oauth2
   app.use(passport.initialize())
   app.use(passport.session())
 
@@ -188,35 +184,6 @@ module.exports = function createApp({
     app.use(csurf())
   }
 
-  // JWT token refresh
-  app.use(async (req, res, next) => {
-    if (req.originalUrl.startsWith('/sign-out')) {
-      return next() // don't try to refresh token on sign-out route
-    }
-    if (req.user) {
-      const timeToRefresh = new Date() > req.user.refreshTime
-      if (timeToRefresh) {
-        try {
-          const newToken = await signInService.getRefreshedToken(req.user)
-          req.user.token = newToken.token
-          req.user.refreshToken = newToken.refreshToken
-          logger.info(`existing refreshTime in the past by ${new Date() - req.user.refreshTime}`)
-          logger.info(
-            `updating time by ${newToken.refreshTime - req.user.refreshTime} from ${req.user.refreshTime} to ${
-              newToken.refreshTime
-            }`,
-          )
-          req.user.refreshTime = newToken.refreshTime
-        } catch (error) {
-          const sanitisedError = getSanitisedError(error)
-          logger.error(sanitisedError, `Token refresh error: ${req.user.username}`)
-          return res.redirect('/sign-out')
-        }
-      }
-    }
-    return next()
-  })
-
   // Update a value in the cookie so that the set-cookie will be sent.
   // Only changes every minute so that it's not sent with every request.
   app.use((req, res, next) => {
@@ -239,15 +206,17 @@ module.exports = function createApp({
     return res.render('accessibility-statement', { user })
   })
 
-  app.get('/login', passport.authenticate('oauth2'))
+  // TODO move to setUpAuthentication middleware
+  app.get('/sign-in', passport.authenticate('oauth2'))
 
-  app.get('/login/callback', (req, res, next) =>
+  app.get('/sign-in/callback', (req, res, next) =>
     passport.authenticate('oauth2', {
       successReturnToOrRedirect: req.session.returnTo || '/',
       failureRedirect: '/autherror',
     })(req, res, next),
   )
 
+  // session.destroy() is called on sign-out
   app.use('/sign-out', (req, res, next) => {
     if (req.user) {
       req.logout(err => {

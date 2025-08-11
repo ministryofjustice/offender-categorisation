@@ -1,7 +1,5 @@
 const querystring = require('querystring')
 const superagent = require('superagent')
-const Agent = require('agentkeepalive')
-const { HttpsAgent } = require('agentkeepalive')
 const redis = require('redis')
 const { promisify } = require('util')
 const logger = require('../../log')
@@ -32,12 +30,6 @@ const timeoutSpec = {
   response: config.apis.riskProfiler.timeout.response,
   deadline: config.apis.riskProfiler.timeout.deadline,
 }
-const agentOptions = {
-  maxSockets: config.apis.oauth2.agent.maxSockets,
-  maxFreeSockets: config.apis.oauth2.agent.maxFreeSockets,
-  freeSocketTimeout: config.apis.oauth2.agent.freeSocketTimeout,
-}
-const keepaliveAgent = oauthUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
 function generateOauthClientToken(
   clientId = config.apis.oauth2.apiClientId,
@@ -51,6 +43,14 @@ function generate(clientId, clientSecret) {
   return `Basic ${token}`
 }
 
+function generateAdminClientToken(
+  clientId = config.apis.oauth2.apiClientAdminId,
+  clientSecret = config.apis.oauth2.apiClientAdminSecret,
+) {
+  const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
+  return `Basic ${token}`
+}
+
 async function getApiClientToken(username) {
   const redisKey = username || '%ANONYMOUS%'
   const tokenFromRedis = await getRedisAsync(redisKey)
@@ -58,7 +58,7 @@ async function getApiClientToken(username) {
     return { body: { access_token: tokenFromRedis } }
   }
 
-  const oauthRiskProfilerClientToken = generateOauthClientToken()
+  const catClientToken = generateAdminClientToken()
 
   const oauthRequest = username
     ? querystring.stringify({ grant_type: 'client_credentials', username })
@@ -70,9 +70,8 @@ async function getApiClientToken(username) {
 
   const newToken = await superagent
     .post(oauthUrl)
-    .set('Authorization', oauthRiskProfilerClientToken)
+    .set('Authorization', catClientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
-    .agent(keepaliveAgent)
     .send(oauthRequest)
     .timeout(timeoutSpec)
 

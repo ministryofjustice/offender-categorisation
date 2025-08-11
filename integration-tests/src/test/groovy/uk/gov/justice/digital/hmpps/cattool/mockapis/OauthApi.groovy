@@ -20,7 +20,7 @@ class OauthApi extends WireMockRule {
     this.stubFor(
       get(urlMatching('/auth/oauth/authorize\\?response_type=code&redirect_uri=.+&state=.+&client_id=categorisationtool'))
         .willReturn(aResponse().withBody('<html><body>Login page<h1>Sign in</h1></body></html>')
-        .withHeader('Location', "http://localhost:3000/login/callback?code=codexxxx&state=stateyyyy")
+        .withHeader('Location', "http://localhost:3000//sign-in/callback?code=codexxxx&state=stateyyyy")
         // .withTransformers("response-template")
       ))
     this.stubFor(

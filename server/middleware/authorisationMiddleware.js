@@ -63,7 +63,7 @@ module.exports = (userService, offendersService) => async (req, res, next) => {
   }
   // No session: get one created
   req.session.returnTo = req.originalUrl
-  return res.redirect('/login')
+  return res.redirect('/sign-in')
 }
 
 const buildApplicationRoles = roles => {
