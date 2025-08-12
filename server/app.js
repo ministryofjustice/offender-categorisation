@@ -12,7 +12,7 @@ const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
 require('./catToolSerialisers') // do not remove, logging requires it!
-const auth = require('./authentication/auth')
+const auth = require('./authentication/auth').default
 const healthFactory = require('./services/healthCheck')
 const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
