@@ -64,7 +64,7 @@ const DEFAULTS = {
   // OAuth
   NOMIS_AUTH_URL: 'http://localhost:9090/auth',
   NOMIS_AUTH_EXTERNAL_URL: 'http://localhost:9090/auth',
-  API_CLIENT_ID: 'categorisation-tool-client-1',
+  API_CLIENT_ID: 'categorisationtool',
   API_CLIENT_SECRET: 'clientsecret',
   SYSTEM_CLIENT_ID: 'categorisation-tool-system-client-1',
   SYSTEM_CLIENT_SECRET: 'systemsecret',
