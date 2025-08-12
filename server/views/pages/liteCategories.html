@@ -31,7 +31,7 @@
 <div class="govuk-!-width-two-thirds">
 
   <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">{{ pageTitle }}</h1>
-  <p>Create a category assessment, exactly as in P-Nomis.</p>
+  <p>Create a category assessment, exactly as in NOMIS.</p>
   {% if inProgress(data) or liteInProgress %}
 
     {{ govukWarningText({
@@ -44,7 +44,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         {{ govukButton({
-        text: "Return to Todo list",
+        text: "Return to dashboard",
         href: "/",
         classes: "grey-button"
         }) }}
@@ -96,7 +96,7 @@
         ],
         fieldset: {
             legend: {
-              text: 'Re-Assessment Date',
+              text: 'Reassessment date',
               isPageHeading: false
             }
           },
@@ -106,7 +106,7 @@
       {{ govukSelect({
         id: 'placement',
         name: 'placement',
-        label: { text: 'Recommended Placement' },
+        label: { text: 'Recommended placement' },
         items: prisonList,
         value: placement
       }) }}
