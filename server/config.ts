@@ -340,14 +340,13 @@ export const config = {
         requireInProduction: false,
       }),
       agent: DEFAULT_HTTP_AGENT,
-      // matches our apps but suggested name is systemClientId
-      apiClientAdminId: get({
+      systemClientId: get({
         name: 'SYSTEM_CLIENT_ID',
         fallback: DEFAULTS.SYSTEM_CLIENT_ID,
         log: true,
         requireInProduction: false,
       }),
-      apiClientAdminSecret: get({
+      systemClientSecret: get({
         name: 'SYSTEM_CLIENT_SECRET',
         fallback: DEFAULTS.SYSTEM_CLIENT_SECRET,
         log: false,

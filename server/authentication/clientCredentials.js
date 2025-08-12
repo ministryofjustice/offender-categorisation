@@ -44,8 +44,8 @@ function generate(clientId, clientSecret) {
 }
 
 function generateAdminClientToken(
-  clientId = config.apis.oauth2.apiClientAdminId,
-  clientSecret = config.apis.oauth2.apiClientAdminSecret,
+  clientId = config.apis.oauth2.systemClientId,
+  clientSecret = config.apis.oauth2.systemClientSecret,
 ) {
   const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
   return `Basic ${token}`
