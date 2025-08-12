@@ -64,10 +64,10 @@ const DEFAULTS = {
   // OAuth
   NOMIS_AUTH_URL: 'http://localhost:9090/auth',
   NOMIS_AUTH_EXTERNAL_URL: 'http://localhost:9090/auth',
-  API_CLIENT_ID: 'categorisationtool', // TODO change to categorisationtool-client-1
+  API_CLIENT_ID: 'categorisation-tool-client-1',
   API_CLIENT_SECRET: 'clientsecret',
-  API_CLIENT_ADMIN_ID: 'categorisationtool-admin',
-  API_CLIENT_ADMIN_SECRET: 'client-secret',
+  SYSTEM_CLIENT_ID: 'categorisation-tool-system-client-1',
+  SYSTEM_CLIENT_SECRET: 'systemsecret',
 
   // API
   ELITE2API_ENDPOINT_URL: 'http://localhost:8080/',
@@ -342,14 +342,14 @@ export const config = {
       agent: DEFAULT_HTTP_AGENT,
       // matches our apps but suggested name is systemClientId
       apiClientAdminId: get({
-        name: 'API_CLIENT_ADMIN_ID',
-        fallback: DEFAULTS.API_CLIENT_ADMIN_ID,
+        name: 'SYSTEM_CLIENT_ID',
+        fallback: DEFAULTS.SYSTEM_CLIENT_ID,
         log: true,
         requireInProduction: false,
       }),
       apiClientAdminSecret: get({
-        name: 'API_CLIENT_ADMIN_SECRET',
-        fallback: DEFAULTS.API_CLIENT_ADMIN_SECRET,
+        name: 'SYSTEM_CLIENT_SECRET',
+        fallback: DEFAULTS.SYSTEM_CLIENT_SECRET,
         log: false,
         requireInProduction: false,
       }),
