@@ -293,7 +293,7 @@ class TestFixture {
     def stateParam = requests[-1].request.queryParams['state']
     def state = stateParam ? stateParam.values[0] : requests[-2].request.queryParams['state'].values[0]
     // Simulate auth server calling the callback, which then gets a token (from wiremock) and goes to homepage
-    browser.go "/sign-in/callback?code=codexxxx&state=$state"
+    browser.go "/login/callback?code=codexxxx&state=$state"
   }
 
   def logout() {

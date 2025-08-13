@@ -207,9 +207,9 @@ module.exports = function createApp({
   })
 
   // TODO move to setUpAuthentication middleware
-  app.get('/sign-in', passport.authenticate('oauth2'))
+  app.get('/login', passport.authenticate('oauth2'))
 
-  app.get('/sign-in/callback', (req, res, next) =>
+  app.get('/login/callback', (req, res, next) =>
     passport.authenticate('oauth2', {
       successReturnToOrRedirect: req.session.returnTo || '/',
       failureRedirect: '/autherror',

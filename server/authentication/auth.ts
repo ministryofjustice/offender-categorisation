@@ -20,7 +20,7 @@ const authenticationMiddleware = () => {
       return next()
     }
     req.session.returnTo = req.originalUrl
-    return res.redirect('/sign-in')
+    return res.redirect('/login')
   }
 }
 
@@ -31,7 +31,7 @@ function init(): void {
       tokenURL: `${config.apis.oauth2.url}/oauth/token`,
       clientID: config.apis.oauth2.apiClientId,
       clientSecret: config.apis.oauth2.apiClientSecret,
-      callbackURL: `${config.domain}/sign-in/callback`,
+      callbackURL: `${config.domain}/login/callback`,
       state: true,
       customHeaders: { Authorization: clientCredentials.generateOauthClientToken() },
     },

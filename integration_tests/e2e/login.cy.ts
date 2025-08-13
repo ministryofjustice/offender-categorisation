@@ -19,7 +19,7 @@ context('SignIn', () => {
   })
 
   it('Unauthenticated user navigating to sign in page directed to auth', () => {
-    cy.visit('/sign-in')
+    cy.visit('/login')
     Page.verifyOnPage(AuthSignInPage)
   })
 
