@@ -43,13 +43,13 @@ function generate(clientId, clientSecret) {
   return `Basic ${token}`
 }
 
-// function generateSystemClientToken(
-//   clientId = config.apis.oauth2.systemClientId,
-//   clientSecret = config.apis.oauth2.systemClientSecret,
-// ) {
-//   const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
-//   return `Basic ${token}`
-// }
+function generateSystemClientToken(
+  clientId = config.apis.oauth2.systemClientId,
+  clientSecret = config.apis.oauth2.systemClientSecret,
+) {
+  const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
+  return `Basic ${token}`
+}
 
 async function getApiClientToken(username) {
   const redisKey = username || '%ANONYMOUS%'
@@ -58,7 +58,7 @@ async function getApiClientToken(username) {
     return { body: { access_token: tokenFromRedis } }
   }
 
-  const catClientToken = generateOauthClientToken()
+  const catClientToken = generateSystemClientToken()
 
   const oauthRequest = username
     ? querystring.stringify({ grant_type: 'client_credentials', username })
