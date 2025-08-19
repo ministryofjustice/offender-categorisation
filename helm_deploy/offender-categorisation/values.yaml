@@ -60,6 +60,7 @@ generic-service:
       CLIENT_CREDS_CLIENT_SECRET: "CLIENT_CREDS_CLIENT_SECRET"
       SESSION_SECRET: "SESSION_SECRET"
       GOOGLE_TAG_MANAGER_TAG: "GOOGLE_TAG_MANAGER_TAG"
+      USE_NEW_AUTH: "USE_NEW_AUTH"
 
     rp-sqs-instance-output:
       RP_QUEUE_URL: "sqs_rpc_url"
