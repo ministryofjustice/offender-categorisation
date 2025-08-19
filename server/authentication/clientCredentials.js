@@ -32,10 +32,14 @@ const timeoutSpec = {
 }
 
 function generateOauthClientToken(
-  clientId = config.apis.oauth2.apiClientId,
-  clientSecret = config.apis.oauth2.apiClientSecret,
+  clientId = config.apis.oauth2.authCodeClientId,
+  clientSecret = config.apis.oauth2.authCodeClientSecret,
 ) {
-  return generate(clientId, clientSecret)
+  try {
+    return generate(clientId, clientSecret)
+  } catch (error) {
+    return generate(config.apis.oauth2.apiClientId, config.apis.oauth2.apiClientSecret)
+  }
 }
 
 function generate(clientId, clientSecret) {
@@ -44,8 +48,8 @@ function generate(clientId, clientSecret) {
 }
 
 function generateSystemClientToken(
-  clientId = config.apis.oauth2.systemClientId,
-  clientSecret = config.apis.oauth2.systemClientSecret,
+  clientId = config.apis.oauth2.clientCredsClientId,
+  clientSecret = config.apis.oauth2.clientCredsClientSecret,
 ) {
   const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
   return `Basic ${token}`
@@ -58,25 +62,49 @@ async function getApiClientToken(username) {
     return { body: { access_token: tokenFromRedis } }
   }
 
-  const catClientToken = generateSystemClientToken()
+  try {
+    const catClientToken = generateOauthClientToken()
 
-  const oauthRequest = username
-    ? querystring.stringify({ grant_type: 'client_credentials', username })
-    : querystring.stringify({ grant_type: 'client_credentials' })
+    const oauthRequest = username
+      ? querystring.stringify({ grant_type: 'client_credentials', username })
+      : querystring.stringify({ grant_type: 'client_credentials' })
 
-  logger.info(
-    `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`,
-  )
+    logger.info(
+      `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.clientCredsClientId}' and user '${username}'`,
+    )
 
-  const newToken = await superagent
-    .post(oauthUrl)
-    .set('Authorization', catClientToken)
-    .set('content-type', 'application/x-www-form-urlencoded')
-    .send(oauthRequest)
-    .timeout(timeoutSpec)
+    const newToken = await superagent
+      .post(oauthUrl)
+      .set('Authorization', catClientToken)
+      .set('content-type', 'application/x-www-form-urlencoded')
+      .send(oauthRequest)
+      .timeout(timeoutSpec)
 
-  // set TTL slightly less than expiry of token
-  await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
+    // set TTL slightly less than expiry of token
+    await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
 
-  return newToken
+    return newToken
+  } catch (error) {
+    const catClientToken = generateSystemClientToken()
+
+    const oauthRequest = username
+      ? querystring.stringify({ grant_type: 'client_credentials', username })
+      : querystring.stringify({ grant_type: 'client_credentials' })
+
+    logger.info(
+      `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`,
+    )
+
+    const newToken = await superagent
+      .post(oauthUrl)
+      .set('Authorization', catClientToken)
+      .set('content-type', 'application/x-www-form-urlencoded')
+      .send(oauthRequest)
+      .timeout(timeoutSpec)
+
+    // set TTL slightly less than expiry of token
+    await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
+
+    return newToken
+  }
 }

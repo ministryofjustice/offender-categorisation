@@ -66,8 +66,10 @@ const DEFAULTS = {
   NOMIS_AUTH_EXTERNAL_URL: 'http://localhost:9090/auth',
   API_CLIENT_ID: 'categorisationtool',
   API_CLIENT_SECRET: 'clientsecret',
-  SYSTEM_CLIENT_ID: 'categorisation-tool-system-client-1',
-  SYSTEM_CLIENT_SECRET: 'systemsecret',
+  AUTH_CODE_CLIENT_ID: 'categorisationtool',
+  AUTH_CODE_CLIENT_SECRET: 'clientsecret',
+  CLIENT_CREDS_CLIENT_ID: 'categorisation-tool-system-client-1',
+  CLIENT_CREDS_CLIENT_SECRET: 'systemsecret',
 
   // API
   ELITE2API_ENDPOINT_URL: 'http://localhost:8080/',
@@ -339,16 +341,28 @@ export const config = {
         log: false,
         requireInProduction: false,
       }),
-      agent: DEFAULT_HTTP_AGENT,
-      systemClientId: get({
-        name: 'SYSTEM_CLIENT_ID',
-        fallback: DEFAULTS.SYSTEM_CLIENT_ID,
+      authCodeClientId: get({
+        name: 'AUTH_CODE_CLIENT_ID',
+        fallback: DEFAULTS.AUTH_CODE_CLIENT_ID,
         log: true,
         requireInProduction: false,
       }),
-      systemClientSecret: get({
-        name: 'SYSTEM_CLIENT_SECRET',
-        fallback: DEFAULTS.SYSTEM_CLIENT_SECRET,
+      authCodeClientSecret: get({
+        name: 'AUTH_CODE_CLIENT_SECRET',
+        fallback: DEFAULTS.AUTH_CODE_CLIENT_SECRET,
+        log: false,
+        requireInProduction: false,
+      }),
+      agent: DEFAULT_HTTP_AGENT,
+      clientCredsClientId: get({
+        name: 'CLIENT_CREDS_CLIENT_ID',
+        fallback: DEFAULTS.CLIENT_CREDS_CLIENT_ID,
+        log: true,
+        requireInProduction: false,
+      }),
+      clientCredsClientSecret: get({
+        name: 'CLIENT_CREDS_CLIENT_SECRET',
+        fallback: DEFAULTS.CLIENT_CREDS_CLIENT_SECRET,
         log: false,
         requireInProduction: false,
       }),
