@@ -60,8 +60,8 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
-      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
 
+      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
       const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
       const escapeProfile = await alertService.getEscapeProfile(offenderNo, res.locals)
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
@@ -131,9 +131,19 @@ module.exports = function Index({
     }),
   )
 
+  router.get('/previousRiskAssessments/:bookingId', async (req, res) => {
+    const { bookingId } = req.params
+    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+
+    const data = { details }
+
+    res.render('formPages/recat/previousRiskAssessments/previousRiskAssessmentsQuestion', { data })
+  })
+
   router.get(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+      // can i use this instead for prisonerBackground
       const { form, bookingId } = req.params
       const section = 'recat'
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
@@ -142,22 +152,27 @@ module.exports = function Index({
   )
 
   const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient) => {
+    // update the oasys stuff to just refer to previous risk assessments
+    // add new section in form config
     const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
     if (!formData || !formData.formObject) {
       throw new Error('No categorisation found for this booking id')
     }
+
     res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
-
     const pageData = res.locals.formObject
+
     if (!pageData[section]) {
       pageData[section] = {}
     }
+
     pageData[section][form] = { ...pageData[section][form], ...firstItem(req.flash('userInput')) }
 
     const errors = req.flash('errors')
@@ -211,6 +226,7 @@ module.exports = function Index({
         formName: form,
         transactionalClient: transactionalDbClient,
       })
+
       await formService.referToSecurityIfRequested(
         bookingId,
         req.user.username,
@@ -219,6 +235,7 @@ module.exports = function Index({
       )
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+
       res.redirect(`${nextPath}${bookingId}`)
     }),
   )

@@ -640,6 +640,7 @@ describe('Testing oasys input page routing', () => {
         expect(res.text).toContain(expectedContent)
       }),
   )
+
   test('Oasys Validation error redirect to page', () => {
     request(app).post(`/oasysInput/866018`).expect(302).expect('Location', 'form/recat/oasysInput/866018')
   })

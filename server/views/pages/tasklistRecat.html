@@ -76,12 +76,12 @@
               {% set buttonClasses = buttonClassesDefault + " grey-button" if oasysInputCompleted else buttonClassesDefault %}
               {{ govukButton({
               text: "Edit" if oasysInputCompleted else "Start",
-              href: "/form/recat/oasysInput/" + data.details.bookingId,
+              href: "/form/recat/previousRiskAssessments/" + data.details.bookingId,
               classes: buttonClasses,
               attributes:
               { 'id': 'oasysInputButton' }
               }) }}
-              <div class="govuk-heading-m">Offender Assessment System (OASys)</div>
+              <div class="govuk-heading-m">Previous risk assessments</div>
               <div class="govuk-!-margin-top-2">{% if oasysInputCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
 
