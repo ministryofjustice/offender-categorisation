@@ -1,7 +1,7 @@
 const querystring = require('querystring')
 const superagent = require('superagent')
 const redis = require('redis')
-// const { promisify } = require('util')
+const { promisify } = require('util')
 const logger = require('../../log')
 const { config } = require('../config')
 
@@ -22,8 +22,8 @@ client.on('error', error => {
   logger.error(error, `Redis error`)
 })
 
-// const getRedisAsync = promisify(client.get).bind(client)
-// const setRedisAsync = promisify(client.set).bind(client)
+const getRedisAsync = promisify(client.get).bind(client)
+const setRedisAsync = promisify(client.set).bind(client)
 
 const oauthUrl = `${config.apis.oauth2.url}/oauth/token`
 const timeoutSpec = {
@@ -56,11 +56,11 @@ function generateSystemClientToken(
 }
 
 async function getApiClientToken(username) {
-  // const redisKey = username || '%ANONYMOUS%'
-  // const tokenFromRedis = await getRedisAsync(redisKey)
-  // if (tokenFromRedis) {
-  //   return { body: { access_token: tokenFromRedis } }
-  // }
+  const redisKey = username || '%ANONYMOUS%'
+  const tokenFromRedis = await getRedisAsync(redisKey)
+  if (tokenFromRedis) {
+    return { body: { access_token: tokenFromRedis } }
+  }
 
   let catClientToken
 
@@ -88,7 +88,7 @@ async function getApiClientToken(username) {
     .timeout(timeoutSpec)
 
   // set TTL slightly less than expiry of token
-  // await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
+  await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
 
   return newToken
 }
