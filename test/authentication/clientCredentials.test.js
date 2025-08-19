@@ -21,10 +21,19 @@ afterEach(() => {
 
 describe('generateAuthClientToken', () => {
   it('Token can be generated', () => {
+    config.featureFlags.auth.useNewAuth = true
     expect(generateOauthClientToken('bob', 'password1')).toBe('Basic Ym9iOnBhc3N3b3JkMQ==')
   })
 
+  it('uses legacy API_CLIENT_ID/SECRET when useNewAuth is false', () => {
+    config.featureFlags.auth.useNewAuth = false
+    const token = generateOauthClientToken('bob', 'password1')
+    const decoded = Buffer.from(token.substring(6), 'base64').toString('utf-8')
+    expect(decoded).toBe(`${config.apis.oauth2.apiClientId}:${config.apis.oauth2.apiClientSecret}`)
+  })
+
   it('Token can be generated with special characters', () => {
+    config.featureFlags.auth.useNewAuth = true
     const value = generateOauthClientToken('bob', "p@'s&sw/o$+ rd1")
     const decoded = Buffer.from(value.substring(6), 'base64').toString('utf-8')
     expect(decoded).toBe("bob:p@'s&sw/o$+ rd1")

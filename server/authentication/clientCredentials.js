@@ -32,10 +32,14 @@ const timeoutSpec = {
 }
 
 function generateOauthClientToken(
-  clientId = config.apis.oauth2.apiClientId,
-  clientSecret = config.apis.oauth2.apiClientSecret,
+  clientId = config.apis.oauth2.authCodeClientId,
+  clientSecret = config.apis.oauth2.authCodeClientSecret,
 ) {
-  return generate(clientId, clientSecret)
+  if (config.featureFlags.auth.useNewAuth) {
+    return generate(clientId, clientSecret)
+  }
+
+  return generate(config.apis.oauth2.apiClientId, config.apis.oauth2.apiClientSecret)
 }
 
 function generate(clientId, clientSecret) {
@@ -44,8 +48,8 @@ function generate(clientId, clientSecret) {
 }
 
 function generateSystemClientToken(
-  clientId = config.apis.oauth2.systemClientId,
-  clientSecret = config.apis.oauth2.systemClientSecret,
+  clientId = config.apis.oauth2.clientCredsClientId,
+  clientSecret = config.apis.oauth2.clientCredsClientSecret,
 ) {
   const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
   return `Basic ${token}`
@@ -58,15 +62,23 @@ async function getApiClientToken(username) {
     return { body: { access_token: tokenFromRedis } }
   }
 
-  const catClientToken = generateSystemClientToken()
+  let catClientToken
+
+  if (config.featureFlags.auth.useNewAuth) {
+    catClientToken = generateSystemClientToken()
+  } else {
+    catClientToken = generateOauthClientToken()
+  }
 
   const oauthRequest = username
     ? querystring.stringify({ grant_type: 'client_credentials', username })
     : querystring.stringify({ grant_type: 'client_credentials' })
 
-  logger.info(
-    `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`,
-  )
+  const clientIdInUse = config.featureFlags.auth.useNewAuth
+    ? config.apis.oauth2.clientCredsClientId
+    : config.apis.oauth2.apiClientId
+
+  logger.info(`Oauth request '${oauthRequest}' for client id '${clientIdInUse}' and user '${username}'`)
 
   const newToken = await superagent
     .post(oauthUrl)
