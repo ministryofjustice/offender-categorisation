@@ -7,9 +7,7 @@
 {% block beforeContent %}
 
   {% block navigation %}
-
     {% include "../../../partials/breadCrumbTaskListRecat.html" %}
-
   {% endblock %}
 
   {% include "../../../partials/offenderBanner.html" %}
@@ -18,64 +16,62 @@
 
 {% block content %}
 
-{% set pageTitle = "Previous risk assessments" %}
+    {% set pageTitle = "Previous risk assessments" %}
 
-{% block formItems %}
+    {% block formItems %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        Have they had a recent, full OASys assessment?
+                    </legend>
 
-            <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                    Have they had a recent, full OASys assessment?
-                </legend>
+                    {{ govukWarningText({
+                        text: "Prisoners serving a sentence (or those recalled) for 10 months or more must have an up-to-date OASys assessment",
+                        iconFallbackText: "Warning",
+                        classes: "govuk-!-margin-top-3"
+                    }) }}
 
-                {{ govukWarningText({
-                    text: "Prisoners serving a sentence (or those recalled) for 10 months or more must have an up-to-date OASys assessment",
-                    iconFallbackText: "Warning",
-                    classes: "govuk-!-margin-top-3"
+                    {{ govukRadios({
+                        name: "haveTheyHadRecentOasysAssessment",
+                        items: [
+                        {
+                            value: "yes",
+                            text: "Yes, they have a full, up-to-date OASys assessment"
+                        },
+                        {
+                            value: "no",
+                            text: "No, their OASys assessment is not full or recent"
+                        },
+                        {
+                            value: "notRequired",
+                            text: "No, an OASys assessment is not required"
+                        }
+                        ]
+                    }) }}
+                </fieldset>
+
+                {% set guidanceWhenOasysNotRequired %}
+                    <p>An OASys is not required if:</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>they have a custodial sentence of less than 10 months</li>
+                        <li>they are recalled for a period of less than 10 months</li>
+                    </ul>
+                {% endset %}
+
+                {{ govukDetails({
+                    summaryText: "When OASys assessments are not required",
+                    html: guidanceWhenOasysNotRequired
                 }) }}
 
-                {{ govukRadios({
-                    name: "haveTheyHadRecentOasysAssessment",
-                    items: [
-                    {
-                        value: "yes",
-                        text: "Yes, they have a full, up-to-date OASys assessment"
-                    },
-                    {
-                        value: "no",
-                        text: "No, their OASys assessment is not full or recent"
-                    },
-                    {
-                        value: "notRequired",
-                        text: "No, an OASys assessment is not required"
-                    }
-                    ]
+                {{ govukButton({
+                text: "Continue"
                 }) }}
-            </fieldset>
-
-            {% set guidanceWhenOasysNotRequired %}
-                <p>An OASys is not required if:</p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>they have a custodial sentence of less than 10 months</li>
-                    <li>they are recalled for a period of less than 10 months</li>
-                </ul>
-            {% endset %}
-
-             {{ govukDetails({
-                summaryText: "When OASys assessments are not required",
-                html: guidanceWhenOasysNotRequired
-            }) }}
-
-            {{ govukButton({
-               text: "Continue"
-            }) }}
-            
+                
+            </div>
         </div>
-    </div>
-
-{% endblock %}
+    {% endblock %}
 
 {% endblock %}
