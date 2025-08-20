@@ -1,4 +1,5 @@
 {% extends "../../../partials/layout.html" %}
+{% from "moj/components/interruption-card/macro.njk" import interruptionCard %}
 
 {% block beforeContent %}
 
@@ -12,12 +13,19 @@
 
 {% block content %}
 
-{% set pageTitle = "You must complete an OASys for this person" %}
+  {% set pageTitle = "You must complete an OASys for this person" %}
 
-{% block formItems %}
+  {% set primaryUrl = "/tasklistRecat/" + data.details.bookingId %}
 
-<h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
-
-{% endblock %}
+  {% call interruptionCard({
+    heading: "You must complete an OASys for this person",
+    primaryAction: {
+      text: "Go back to tasklist",
+      href: primaryUrl
+    }
+    }) -%}
+    <p>A prisoner serving a sentence or recall period of 10 months or more must have an up-to-date OASys.</p>
+    <p>If they do not have a recent, full assessment, you'll need to create one.</p>
+  {%- endcall %}
 
 {% endblock %}
