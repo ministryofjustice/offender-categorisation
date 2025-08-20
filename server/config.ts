@@ -64,13 +64,10 @@ const DEFAULTS = {
   // OAuth
   NOMIS_AUTH_URL: 'http://localhost:9090/auth',
   NOMIS_AUTH_EXTERNAL_URL: 'http://localhost:9090/auth',
-  API_CLIENT_ID: 'categorisationtool',
-  API_CLIENT_SECRET: 'clientsecret',
   AUTH_CODE_CLIENT_ID: 'categorisationtool',
   AUTH_CODE_CLIENT_SECRET: 'clientsecret',
   CLIENT_CREDS_CLIENT_ID: 'categorisation-tool-system-client-1',
   CLIENT_CREDS_CLIENT_SECRET: 'systemsecret',
-  USE_NEW_AUTH: 'false',
 
   // API
   ELITE2API_ENDPOINT_URL: 'http://localhost:8080/',
@@ -330,18 +327,6 @@ export const config = {
         response: DEFAULT_TIMEOUTS.response,
         deadline: DEFAULT_TIMEOUTS.deadline,
       },
-      apiClientId: get({
-        name: 'API_CLIENT_ID',
-        fallback: DEFAULTS.API_CLIENT_ID,
-        log: true,
-        requireInProduction: false,
-      }),
-      apiClientSecret: get({
-        name: 'API_CLIENT_SECRET',
-        fallback: DEFAULTS.API_CLIENT_SECRET,
-        log: false,
-        requireInProduction: false,
-      }),
       authCodeClientId: get({
         name: 'AUTH_CODE_CLIENT_ID',
         fallback: DEFAULTS.AUTH_CODE_CLIENT_ID,
@@ -693,15 +678,6 @@ export const config = {
           requireInProduction: false,
         }),
       },
-    },
-    auth: {
-      useNewAuth:
-        get({
-          name: 'USE_NEW_AUTH',
-          fallback: DEFAULTS.USE_NEW_AUTH,
-          log: true,
-          requireInProduction: true,
-        }) === 'true',
     },
   },
   // App insights

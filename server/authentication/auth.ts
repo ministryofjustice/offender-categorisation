@@ -25,16 +25,12 @@ const authenticationMiddleware = () => {
 }
 
 function init(): void {
-  const useNew = config.featureFlags.auth.useNewAuth
-  const clientId = useNew ? config.apis.oauth2.authCodeClientId : config.apis.oauth2.apiClientId
-  const clientSecret = useNew ? config.apis.oauth2.authCodeClientSecret : config.apis.oauth2.apiClientSecret
-
   const strategy = new Strategy(
     {
       authorizationURL: `${config.apis.oauth2.externalUrl}/oauth/authorize`,
       tokenURL: `${config.apis.oauth2.url}/oauth/token`,
-      clientID: clientId,
-      clientSecret,
+      clientID: config.apis.oauth2.authCodeClientId,
+      clientSecret: config.apis.oauth2.authCodeClientSecret,
       callbackURL: `${config.domain}/login/callback`,
       state: true,
       customHeaders: { Authorization: clientCredentials.generateOauthClientToken() },
