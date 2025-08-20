@@ -70,7 +70,6 @@ const DEFAULTS = {
   AUTH_CODE_CLIENT_SECRET: 'clientsecret',
   CLIENT_CREDS_CLIENT_ID: 'categorisation-tool-system-client-1',
   CLIENT_CREDS_CLIENT_SECRET: 'systemsecret',
-  USE_NEW_AUTH: 'false',
 
   // API
   ELITE2API_ENDPOINT_URL: 'http://localhost:8080/',
@@ -693,15 +692,6 @@ export const config = {
           requireInProduction: false,
         }),
       },
-    },
-    auth: {
-      useNewAuth:
-        get({
-          name: 'USE_NEW_AUTH',
-          fallback: DEFAULTS.USE_NEW_AUTH,
-          log: true,
-          requireInProduction: true,
-        }) === 'true',
     },
   },
   // App insights
