@@ -135,9 +135,21 @@ module.exports = function Index({
     const { bookingId } = req.params
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
 
-    const data = { details }
+    const data = { details, bookingId }
 
-    res.render('formPages/recat/previousRiskAssessments/previousRiskAssessmentsQuestion', { data })
+    res.render('formPages/recat/previousRiskAssessments/previousRiskAssessmentsInput', { data })
+  })
+
+  router.get('/previousRiskAssessments/oasysInput/:bookingId', async (req, res) => {
+    res.render('formPages/recat/previousRiskAssessments/oasysInput')
+  })
+
+  router.get('/previousRiskAssessments/oasysRequired/:bookingId', async (req, res) => {
+    res.render('formPages/recat/previousRiskAssessments/oasysRequired')
+  })
+
+  router.get('/previousRiskAssessments/bcstInput/:bookingId', async (req, res) => {
+    res.render('formPages/recat/previousRiskAssessments/bcstInput')
   })
 
   router.get(
@@ -409,6 +421,24 @@ module.exports = function Index({
       res.redirect(`${nextPath}${bookingId}`)
     }),
   )
+
+  router.post('/previousRiskAssessments/:bookingId', async (req, res) => {
+    console.log('here!!!')
+    const { bookingId } = req.params
+    const prevOasysAssessmentAnswer = req.body.haveTheyHadRecentOasysAssessment
+    const baseUrl = '/form/recat/previousRiskAssessments'
+
+    if (prevOasysAssessmentAnswer === 'yes') {
+      console.log('inside redirect')
+      res.redirect(`${baseUrl}/oasysInput/${bookingId}`)
+    } else if (prevOasysAssessmentAnswer === 'no') {
+      res.redirect(`${baseUrl}/oasysRequired/${bookingId}`)
+    } else if (prevOasysAssessmentAnswer === 'notRequired') {
+      res.redirect(`${baseUrl}/bcstInput/${bookingId}`)
+    }
+
+    console.log(prevOasysAssessmentAnswer, '<-- prev oasys ass answer')
+  })
 
   router.post(
     '/review/:bookingId',

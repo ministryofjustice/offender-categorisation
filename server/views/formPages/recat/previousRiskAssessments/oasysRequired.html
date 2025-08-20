@@ -1,0 +1,23 @@
+{% extends "../../../partials/layout.html" %}
+
+{% block beforeContent %}
+
+  {% block navigation %}
+    {% include "../../../partials/breadCrumbTaskListRecat.html" %}
+  {% endblock %}
+
+  {% include "../../../partials/offenderBanner.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+{% set pageTitle = "You must complete an OASys for this person" %}
+
+{% block formItems %}
+
+<h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
+
+{% endblock %}
+
+{% endblock %}
