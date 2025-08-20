@@ -166,6 +166,17 @@ module.exports = {
     ],
     validate: true,
   },
+  previousRiskAssessments: {
+    fields: [
+      {
+        haveTheyHadRecentOasysAssessment: {
+          responseType: 'requiredString',
+          validationMessage: 'Please select an option',
+        },
+      },
+    ],
+    validate: true,
+  },
   oasysInput: {
     nextPath: {
       path: '/tasklistRecat/',

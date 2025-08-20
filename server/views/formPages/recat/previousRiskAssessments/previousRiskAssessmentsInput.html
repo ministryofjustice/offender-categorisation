@@ -38,6 +38,10 @@
 
                             {{ govukRadios({
                                 name: "haveTheyHadRecentOasysAssessment",
+                                id: "haveTheyHadRecentOasysAssessment",
+                                errorMessage: {
+                                    text: "Please select an option"
+                                } if (errors | findError('haveTheyHadRecentOasysAssessment')),
                                 items: [
                                 {
                                     value: "yes",
