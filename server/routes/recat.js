@@ -160,8 +160,6 @@ module.exports = function Index({
   )
 
   const buildFormData = async (res, req, section, form, bookingId, transactionalDbClient) => {
-    // update the oasys stuff to just refer to previous risk assessments
-    // add new section in form config
     const user = await userService.getUser(res.locals)
     res.locals.user = { ...user, ...res.locals.user }
 
@@ -174,17 +172,12 @@ module.exports = function Index({
     res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
-    // section is recat
-    // form id is 3
-
     const backLink = req.get('Referrer')
     const pageData = res.locals.formObject
 
     if (!pageData[section]) {
       pageData[section] = {}
     }
-
-    // after setting adds recat: {} to form data
 
     pageData[section][form] = { ...pageData[section][form], ...firstItem(req.flash('userInput')) }
 
@@ -213,6 +206,9 @@ module.exports = function Index({
     }
     if (body.oasysRelevantInfo === 'No') {
       delete updated.oasysInputText
+    }
+    if (body.bcstRelevantInfo === 'No') {
+      delete updated.bcstInputText
     }
     return updated
   }
@@ -444,27 +440,6 @@ module.exports = function Index({
       res.redirect(`${baseUrl}/oasysRequired/${bookingId}`)
     } else if (prevOasysAssessmentAnswer === 'notRequired') {
       res.redirect(`${baseUrl}/bcstInput/${bookingId}`)
-    }
-  })
-
-  router.post('/previousRiskAssessments/oasysInput/:bookingId', async (req, res) => {
-    const { bookingId } = req.params
-    const section = 'recat'
-    const form = 'oasysInput'
-    const formPageConfig = formConfig[section][form]
-    const userInput = clearConditionalFields(req.body)
-
-    const valid = formService.isValid(
-      formPageConfig,
-      req,
-      res,
-      `/form/${section}/previousRiskAssessments/${form}/${bookingId}`,
-      userInput,
-    )
-
-    if (!valid) {
-      // eslint-disable-next-line no-useless-return
-      return
     }
   })
 
