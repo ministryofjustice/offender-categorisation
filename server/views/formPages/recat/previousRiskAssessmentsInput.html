@@ -1,4 +1,4 @@
-{% extends "../../../partials/layout.html" %}
+{% extends "../../partials/layout.html" %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
@@ -7,10 +7,10 @@
 {% block beforeContent %}
 
   {% block navigation %}
-    {% include "../../../partials/breadCrumbTaskListRecat.html" %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
   {% endblock %}
 
-  {% include "../../../partials/offenderBanner.html" %}
+  {% include "../../partials/offenderBanner.html" %}
 
 {% endblock %}
 

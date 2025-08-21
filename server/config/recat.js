@@ -183,13 +183,6 @@ module.exports = {
     },
     fields: [
       {
-        date: {
-          responseType: 'todayOrPastDate',
-          validationMessage: '',
-          errorMessagePrefix: 'Completion date of the latest full review',
-        },
-      },
-      {
         oasysRelevantInfo: {
           responseType: 'requiredString',
           validationMessage:
@@ -199,6 +192,27 @@ module.exports = {
       {
         oasysInputText: {
           responseType: 'requiredStringIf_oasysRelevantInfo_Yes',
+          validationMessage: 'Enter any information relevant to their categorisation',
+        },
+      },
+    ],
+    validate: true,
+  },
+  bcstInput: {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    fields: [
+      {
+        bcstRelevantInfo: {
+          responseType: 'requiredString',
+          validationMessage:
+            'Select yes if there was any information in the review that is relevant to the recategorisation',
+        },
+      },
+      {
+        bcstInputText: {
+          responseType: 'requiredStringIf_bcstRelevantInfo_Yes',
           validationMessage: 'Enter any information relevant to their categorisation',
         },
       },

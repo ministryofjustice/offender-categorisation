@@ -138,42 +138,20 @@ module.exports = function Index({
 
     const data = { details, bookingId }
 
-    res.render('formPages/recat/previousRiskAssessments/previousRiskAssessmentsInput', { data, errors })
+    res.render('formPages/recat/previousRiskAssessmentsInput', { data, errors })
   })
 
-  router.get('/previousRiskAssessments/oasysInput/:bookingId', async (req, res) => {
+  router.get('/oasysRequired/:bookingId', async (req, res) => {
     const { bookingId } = req.params
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-    const errors = req.flash('errors')
-
     const data = { details, bookingId }
 
-    res.render('formPages/recat/previousRiskAssessments/oasysInput', { data, errors })
-  })
-
-  router.get('/previousRiskAssessments/oasysRequired/:bookingId', async (req, res) => {
-    const { bookingId } = req.params
-    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-
-    const data = { details, bookingId }
-
-    res.render('formPages/recat/previousRiskAssessments/oasysRequired', { data })
-  })
-
-  router.get('/previousRiskAssessments/bcstInput/:bookingId', async (req, res) => {
-    const { bookingId } = req.params
-    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-    const errors = req.flash('errors')
-
-    const data = { details, bookingId }
-
-    res.render('formPages/recat/previousRiskAssessments/bcstInput', { data, errors })
+    res.render('formPages/recat/oasysRequired', { data })
   })
 
   router.get(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      // can i use this instead for prisonerBackground
       const { form, bookingId } = req.params
       const section = 'recat'
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
@@ -196,12 +174,17 @@ module.exports = function Index({
     res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
+    // section is recat
+    // form id is 3
+
     const backLink = req.get('Referrer')
     const pageData = res.locals.formObject
 
     if (!pageData[section]) {
       pageData[section] = {}
     }
+
+    // after setting adds recat: {} to form data
 
     pageData[section][form] = { ...pageData[section][form], ...firstItem(req.flash('userInput')) }
 
@@ -449,7 +432,7 @@ module.exports = function Index({
     const userInput = { ...req.body }
     const prevOasysAssessmentAnswer = userInput.haveTheyHadRecentOasysAssessment
 
-    const baseUrl = '/form/recat/previousRiskAssessments'
+    const baseUrl = '/form/recat'
 
     if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
       return
@@ -461,6 +444,27 @@ module.exports = function Index({
       res.redirect(`${baseUrl}/oasysRequired/${bookingId}`)
     } else if (prevOasysAssessmentAnswer === 'notRequired') {
       res.redirect(`${baseUrl}/bcstInput/${bookingId}`)
+    }
+  })
+
+  router.post('/previousRiskAssessments/oasysInput/:bookingId', async (req, res) => {
+    const { bookingId } = req.params
+    const section = 'recat'
+    const form = 'oasysInput'
+    const formPageConfig = formConfig[section][form]
+    const userInput = clearConditionalFields(req.body)
+
+    const valid = formService.isValid(
+      formPageConfig,
+      req,
+      res,
+      `/form/${section}/previousRiskAssessments/${form}/${bookingId}`,
+      userInput,
+    )
+
+    if (!valid) {
+      // eslint-disable-next-line no-useless-return
+      return
     }
   })
 

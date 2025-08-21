@@ -28,7 +28,7 @@
 
   {% set supervisorMessageCompleted = data.supervisor.confirmBack.messageText and data.supervisor.confirmBack.isRead %}
   {% set prisonerBackgroundCompleted = data.recat.prisonerBackground.offenceDetails %}
-  {% set oasysInputCompleted = data.recat.oasysInput.date %}
+  {% set oasysInputCompleted = data.recat.oasysInput.oasysRelevantInfo %}
   {% set securityInputCompleted = data.recat.securityInput.securityNoteNeeded or data.recat.securityBack %}
   {% set riskAssessmentCompleted = data.recat.riskAssessment.otherRelevant %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}

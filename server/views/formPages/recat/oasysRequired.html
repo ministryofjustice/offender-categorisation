@@ -1,13 +1,13 @@
-{% extends "../../../partials/layout.html" %}
+{% extends "../../partials/layout.html" %}
 {% from "moj/components/interruption-card/macro.njk" import interruptionCard %}
 
 {% block beforeContent %}
 
   {% block navigation %}
-    {% include "../../../partials/breadcrumbPreviousRiskAssessments.html" %}
+    {% include "../../partials/breadcrumbPreviousRiskAssessments.html" %}
   {% endblock %}
 
-  {% include "../../../partials/offenderBanner.html" %}
+  {% include "../../partials/offenderBanner.html" %}
 
 {% endblock %}
 
