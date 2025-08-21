@@ -161,7 +161,13 @@ module.exports = function Index({
   })
 
   router.get('/previousRiskAssessments/bcstInput/:bookingId', async (req, res) => {
-    res.render('formPages/recat/previousRiskAssessments/bcstInput')
+    const { bookingId } = req.params
+    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+    const errors = req.flash('errors')
+
+    const data = { details, bookingId }
+
+    res.render('formPages/recat/previousRiskAssessments/bcstInput', { data, errors })
   })
 
   router.get(
