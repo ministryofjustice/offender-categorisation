@@ -28,7 +28,7 @@
 
   {% set supervisorMessageCompleted = data.supervisor.confirmBack.messageText and data.supervisor.confirmBack.isRead %}
   {% set prisonerBackgroundCompleted = data.recat.prisonerBackground.offenceDetails %}
-  {% set oasysInputCompleted = data.recat.oasysInput.oasysRelevantInfo or data.recat.bcstInput.bcstRelevantInfo %}
+  {% set prevRiskAssessmentsCompleted = data.recat.oasysInput.oasysRelevantInfo or data.recat.bcstInput.bcstRelevantInfo %}
   {% set securityInputCompleted = data.recat.securityInput.securityNoteNeeded or data.recat.securityBack %}
   {% set riskAssessmentCompleted = data.recat.riskAssessment.otherRelevant %}
   {% set openConditionsCompleted = data.openConditions.riskLevels.likelyToAbscond %}
@@ -36,7 +36,7 @@
   {% set openConditionsRequested = data.openConditionsRequested %}
   {% set decisionCompleted = data.recat.decision.category %}
   {% set allSectionsCompleted = (supervisorMessageCompleted or not data.supervisor.confirmBack.messageText)
-     and prisonerBackgroundCompleted and oasysInputCompleted and securityInputCompleted and not locked
+     and prisonerBackgroundCompleted and prevRiskAssessmentsCompleted and securityInputCompleted and not locked
      and decisionCompleted and riskAssessmentCompleted
      and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
@@ -73,16 +73,16 @@
             </li>
 
             <li class="app-task-list__item">
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if oasysInputCompleted else buttonClassesDefault %}
+              {% set buttonClasses = buttonClassesDefault + " grey-button" if prevRiskAssessmentsCompleted else buttonClassesDefault %}
               {{ govukButton({
-              text: "Edit" if oasysInputCompleted else "Start",
+              text: "Edit" if prevRiskAssessmentsCompleted else "Start",
               href: "/form/recat/previousRiskAssessments/" + data.details.bookingId,
               classes: buttonClasses,
               attributes:
               { 'id': 'oasysInputButton' }
               }) }}
               <div class="govuk-heading-m">Previous risk assessments</div>
-              <div class="govuk-!-margin-top-2">{% if oasysInputCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
+              <div class="govuk-!-margin-top-2">{% if prevRiskAssessmentsCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
             </li>
 
             <li class="app-task-list__item" id="securitySection">
