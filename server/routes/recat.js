@@ -8,6 +8,7 @@ const {
   offenderCaseNotesLink,
   offenderAdjudicationLink,
   isFemalePrisonId,
+  formatLength,
 } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
@@ -428,16 +429,22 @@ module.exports = function Index({
     const section = 'recat'
     const form = 'previousRiskAssessments'
     const formPageConfig = formConfig[section][form]
-
     const { bookingId } = req.params
     const userInput = { ...req.body }
-    const prevOasysAssessmentAnswer = userInput.haveTheyHadRecentOasysAssessment
 
+    const prevOasysAssessmentAnswer = userInput.haveTheyHadRecentOasysAssessment
     const baseUrl = '/form/recat'
 
     if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
       return
     }
+
+    const { sentence } = await offendersService.getOffenderDetails(res.locals, bookingId)
+    const sentenceLength = formatLength(sentence?.list[0])
+
+    log.info(
+      `Categoriser selecting previous oasys assessment answer: Option: ${prevOasysAssessmentAnswer}, Release Date: ${sentence?.releaseDate}, Sentence Length: ${sentenceLength}`,
+    )
 
     if (prevOasysAssessmentAnswer === 'yes') {
       res.redirect(`${baseUrl}/oasysInput/${bookingId}`)
