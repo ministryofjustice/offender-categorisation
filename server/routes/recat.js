@@ -488,6 +488,7 @@ module.exports = function Index({
       const userInput = clearConditionalFields(req.body)
 
       const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
+
       if (!valid) {
         return
       }

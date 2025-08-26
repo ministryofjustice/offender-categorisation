@@ -102,6 +102,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         formSection,
         formName,
       }),
+      formName,
     )
 
     if (validateStatusIfProvided(currentCategorisation.status, status)) {
@@ -114,6 +115,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
           )}`,
         )
       }
+
       await formClient.update(
         newCategorisationForm,
         bookingId,
@@ -124,8 +126,9 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     return newCategorisationForm
   }
 
-  function removeFieldsThatAreNoLongerRelevant(categorisationForm) {
+  function removeFieldsThatAreNoLongerRelevant(categorisationForm, formName) {
     const newCategorisationForm = JSON.parse(JSON.stringify(categorisationForm))
+
     if (
       !newCategorisationForm?.supervisor?.review?.supervisorDecision?.startsWith?.(SUPERVISOR_DECISION_CHANGE_TO) ||
       OPEN_CONDITIONS_CATEGORIES.includes(newCategorisationForm?.supervisor?.review?.supervisorOverriddenCategory)
@@ -133,6 +136,17 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       delete newCategorisationForm?.supervisor?.changeCategory
       delete newCategorisationForm?.supervisor?.furtherInformation
     }
+
+    // Remove mututally exclusive prev risk assessment fields
+
+    if (formName === 'oasysInput') {
+      delete newCategorisationForm?.recat?.bcstInput
+    }
+
+    if (formName === 'bcstInput') {
+      delete newCategorisationForm?.recat?.oasysInput
+    }
+
     return newCategorisationForm
   }
 
