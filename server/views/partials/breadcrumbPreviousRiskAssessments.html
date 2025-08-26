@@ -1,0 +1,9 @@
+{% from "../macros/breadCrumb.html" import breadCrumb %}
+
+{% set breadCrumbList = [ 
+    { href: '/', title: 'Categorisation dashboard' }, 
+    { href: '/tasklistRecat/'+ data.details.bookingId, title: 'Category task list' },
+    { href: '/form/recat/previousRiskAssessments/' + data.details.bookingId, title: 'Previous risk assessments'} 
+] %}
+
+{{ breadCrumb(breadCrumbList) }}

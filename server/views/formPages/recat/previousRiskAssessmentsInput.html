@@ -1,0 +1,86 @@
+{% extends "../../partials/layout.html" %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block beforeContent %}
+
+  {% block navigation %}
+    {% include "../../partials/breadCrumbTaskListRecat.html" %}
+  {% endblock %}
+
+  {% include "../../partials/offenderBanner.html" %}
+
+{% endblock %}
+
+{% block content %}
+
+    {% set pageTitle = "Previous risk assessments" %}
+
+    {% block formItems %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+                    <form action="/form/recat/previousRiskAssessments/{{ data.bookingId }}" method="post">
+                        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                Have they had a recent, full OASys assessment?
+                            </legend>
+
+                            {{ govukWarningText({
+                                text: "Prisoners serving a sentence (or those recalled) for 10 months or more must have an up-to-date OASys assessment",
+                                iconFallbackText: "Warning",
+                                classes: "govuk-!-margin-top-3"
+                            }) }}
+
+                            {{ govukRadios({
+                                name: "haveTheyHadRecentOasysAssessment",
+                                id: "haveTheyHadRecentOasysAssessment",
+                                errorMessage: {
+                                    text: "Please select an option"
+                                } if (errors | findError('haveTheyHadRecentOasysAssessment')),
+                                items: [
+                                {
+                                    value: "yes",
+                                    text: "Yes, they have a full, up-to-date OASys assessment",
+                                    checked: data.formData.formObject.recat.oasysInput
+                                },
+                                {
+                                    value: "no",
+                                    text: "No, their OASys assessment is not full or recent"
+                                },
+                                {
+                                    value: "notRequired",
+                                    text: "No, an OASys assessment is not required",
+                                    checked: data.formData.formObject.recat.bcstInput
+                                }
+                                ]
+                            }) }}
+                        </fieldset>
+
+                        {% set guidanceWhenOasysNotRequired %}
+                            <p>An OASys is not required if:</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li>they have a custodial sentence of less than 10 months</li>
+                                <li>they are recalled for a period of less than 10 months</li>
+                            </ul>
+                        {% endset %}
+
+                        {{ govukDetails({
+                            summaryText: "When OASys assessments are not required",
+                            html: guidanceWhenOasysNotRequired
+                        }) }}
+
+                        {{ govukButton({
+                        text: "Continue"
+                        }) }}
+                    </form>
+                
+            </div>
+        </div>
+    {% endblock %}
+
+{% endblock %}
