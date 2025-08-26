@@ -1,19 +1,19 @@
-import { CASELOAD } from "../../factory/caseload";
-import { CATEGORISER_USER, SUPERVISOR_USER } from "../../factory/user";
-import dbSeeder from "../../fixtures/db-seeder";
-import initialCategorisation from "../../fixtures/recategoriser/initialCategorisation";
-import Page from "../../pages/page";
-import SupervisorHomePage from "../../pages/supervisor/home";
-import SupervisorReviewPage from "../../pages/form/supervisor/review";
-import FurtherInformationPage from "../../pages/form/supervisor/furtherInformation";
-import SupervisorReviewOutcomePage from "../../pages/form/supervisor/outcome";
-import { CATEGORISATION_TYPE } from "../../support/categorisationType";
-import GiveBackToCategoriserPage from "../../pages/form/supervisor/giveBackToCategoriser";
-import { FormDbJson } from "../../fixtures/db-key-convertor";
-import SupervisorConfirmBackPage from "../../pages/form/supervisor/confirmBack";
+import { CASELOAD } from '../../factory/caseload'
+import { CATEGORISER_USER, SUPERVISOR_USER } from '../../factory/user'
+import dbSeeder from '../../fixtures/db-seeder'
+import initialCategorisation from '../../fixtures/recategoriser/initialCategorisation'
+import Page from '../../pages/page'
+import SupervisorHomePage from '../../pages/supervisor/home'
+import SupervisorReviewPage from '../../pages/form/supervisor/review'
+import FurtherInformationPage from '../../pages/form/supervisor/furtherInformation'
+import SupervisorReviewOutcomePage from '../../pages/form/supervisor/outcome'
+import { CATEGORISATION_TYPE } from '../../support/categorisationType'
+import GiveBackToCategoriserPage from '../../pages/form/supervisor/giveBackToCategoriser'
+import { FormDbJson } from '../../fixtures/db-key-convertor'
+import SupervisorConfirmBackPage from '../../pages/form/supervisor/confirmBack'
 import Status from '../../../server/utils/statusEnum'
-import youngOffender from "../../fixtures/categoriser/youngOffender";
-import GiveBackToCategoriserOutcome from "../../pages/form/supervisor/giveBackToCategoriserOutcome";
+import youngOffender from '../../fixtures/categoriser/youngOffender'
+import GiveBackToCategoriserOutcome from '../../pages/form/supervisor/giveBackToCategoriserOutcome'
 
 const commonColumn2 = [
   {
@@ -50,9 +50,9 @@ describe('Supervisor Review', () => {
   })
 
   const loginAsSupervisorUser = ({
-                                   youngOffender = false,
-                                   indeterminateSentence = false,
-                                 }: {
+    youngOffender = false,
+    indeterminateSentence = false,
+  }: {
     youngOffender: boolean
     indeterminateSentence: boolean
   }) => {
@@ -150,14 +150,27 @@ describe('Supervisor Review', () => {
     ;[
       // Prisoner Background
       { term: 'Reason for review', definition: 'Review due' },
-      { term: 'Categorisation history', definition: 'Categorisation date Category decision Review location 24/03/2013 B LPI prison 08/06/2012 A LPI prison' },
-      { term: 'Safety and good order', definition: 'This person has not been reported as the perpetrator in any assaults in custody before' },
-      { term: 'Risk of escape', definition: 'This person is not on the E-List and does not have an Escape Risk Alert.' },
-      { term: 'Extremism', definition: 'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.' },
+      {
+        term: 'Categorisation history',
+        definition:
+          'Categorisation date Category decision Review location 24/03/2013 B LPI prison 08/06/2012 A LPI prison',
+      },
+      {
+        term: 'Safety and good order',
+        definition: 'This person has not been reported as the perpetrator in any assaults in custody before',
+      },
+      {
+        term: 'Risk of escape',
+        definition: 'This person is not on the E-List and does not have an Escape Risk Alert.',
+      },
+      {
+        term: 'Extremism',
+        definition:
+          'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
+      },
       { term: 'Offence details for active sentences', definition: 'test' },
       // OASYS
-      { term: 'Completion date of the latest full review that is in OASys', definition: '04/05/2025' },
-      { term: 'Was there any information in the review that is relevant to the recategorisation?', definition: 'No' },
+      { term: 'Was there any information in their OASYs that is relevant to the recategorisation?', definition: 'No' },
 
       // Security information
       { term: 'Automatic referral to security team', definition: 'No' },
@@ -166,7 +179,10 @@ describe('Supervisor Review', () => {
       { term: 'Security comments', definition: 'test' },
       // risk assessment
       { term: 'Could they be managed in a lower security category?', definition: 'test' },
-      { term: 'Should they remain in their current security category? Or be put in a higher security category?', definition: 'test' },
+      {
+        term: 'Should they remain in their current security category? Or be put in a higher security category?',
+        definition: 'test',
+      },
       { term: 'Other relevant information', definition: 'No' },
       // category decision
       { term: 'What security category is most suitable for this person?', definition: 'Category C' },
@@ -214,7 +230,11 @@ describe('Supervisor Review', () => {
     giveBackToCategoriserPage.submitButton().click()
 
     giveBackToCategoriserPage.validateErrorSummaryMessages([
-      { index: 0, href: '#supervisorOverriddenCategoryText', text: 'Enter the reason why this category is more appropriate' },
+      {
+        index: 0,
+        href: '#supervisorOverriddenCategoryText',
+        text: 'Enter the reason why this category is more appropriate',
+      },
     ])
 
     giveBackToCategoriserPage.validateErrorMessages([
@@ -241,11 +261,11 @@ describe('Supervisor Review', () => {
         },
         changeCategory: {
           giveBackToCategoriser: 'No',
-          supervisorOverriddenCategoryText: 'some justification of category change'
+          supervisorOverriddenCategoryText: 'some justification of category change',
         },
         furtherInformation: {
-          otherInformationText: 'Some further information'
-        }
+          otherInformationText: 'Some further information',
+        },
       })
       expect(result.rows[0].approved_by).to.eq(SUPERVISOR_USER.username)
     })
@@ -348,7 +368,7 @@ describe('Supervisor Review', () => {
           supervisorName: 'Test User',
           messageText: 'A reason why I believe this is a more appropriate category',
         },
-      },)
+      })
       expect(result.rows[0].form_response.openConditionsRequested).to.eq(true)
       expect(result.rows[0].form_response.recat.decision).to.eq(undefined)
     })
@@ -392,6 +412,7 @@ describe('Supervisor Review', () => {
     giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
 
     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
+      console.log(result.rows[0].form_response, '<-- form response')
       expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
       expect(result.rows[0].form_response).to.deep.eq({
         recat: {
@@ -405,12 +426,12 @@ describe('Supervisor Review', () => {
         security: { review: { securityReview: 'test' } },
         supervisor: {
           review: {
-            supervisorDecision: 'requestMoreInformation'
+            supervisorDecision: 'requestMoreInformation',
           },
           confirmBack: {
             messageText: 'Give me more information',
-            supervisorName: "Test User",
-          }
+            supervisorName: 'Test User',
+          },
         },
       })
     })
@@ -476,7 +497,10 @@ describe('Supervisor Review', () => {
               extremismRating: { previousTerrorismOffences: 'Yes' },
               offendingHistory: { previousConvictions: 'No' },
             },
-            supervisor: { review: { supervisorDecision: 'agreeWithCategoryDecision' }, furtherInformation: { otherInformationText: 'Some further information' } },
+            supervisor: {
+              review: { supervisorDecision: 'agreeWithCategoryDecision' },
+              furtherInformation: { otherInformationText: 'Some further information' },
+            },
             categoriser: { provisionalCategory: { suggestedCategory: 'I', categoryAppropriate: 'Yes' } },
           })
           expect(result.rows[0].assigned_user_id).to.eq(CATEGORISER_USER.username)
@@ -522,13 +546,13 @@ describe('Supervisor Review', () => {
             supervisorReviewPage.submitButton().click()
 
             const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
-            supervisorConfirmBackPage.setConfirmationMessageText('A reason why I believe this is a more appropriate category')
+            supervisorConfirmBackPage.setConfirmationMessageText(
+              'A reason why I believe this is a more appropriate category',
+            )
             supervisorConfirmBackPage.saveAndReturnButton().click()
 
-            const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
-              bookingId,
-              CATEGORISATION_TYPE.RECAT,
-            )
+            const giveBackToCategoriserOutcomePage =
+              GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(bookingId, CATEGORISATION_TYPE.RECAT)
             giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
 
             cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
@@ -587,7 +611,10 @@ describe('Supervisor Review', () => {
             supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
             supervisorReviewPage.submitButton().click()
 
-            const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change to Category C')
+            const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(
+              bookingId,
+              'Change to Category C',
+            )
             giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
             cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
             giveBackToCategoriserPage.submitButton().click()
@@ -639,11 +666,11 @@ describe('Supervisor Review', () => {
                   },
                   changeCategory: {
                     giveBackToCategoriser: 'No',
-                    supervisorOverriddenCategoryText: 'some justification of category change'
+                    supervisorOverriddenCategoryText: 'some justification of category change',
                   },
                   furtherInformation: {
                     otherInformationText: 'A reason why I believe this is a more appropriate category',
-                  }
+                  },
                 },
                 categoriser: {
                   provisionalCategory: {

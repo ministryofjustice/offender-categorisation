@@ -79,7 +79,7 @@
               href: "/form/recat/previousRiskAssessments/" + data.details.bookingId,
               classes: buttonClasses,
               attributes:
-              { 'id': 'oasysInputButton' }
+              { 'id': 'prevRiskAssessmentInputButton' }
               }) }}
               <div class="govuk-heading-m">Previous risk assessments</div>
               <div class="govuk-!-margin-top-2">{% if prevRiskAssessmentsCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
@@ -164,8 +164,7 @@
               {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
               {{ govukButton({
                 text: "Continue",
-                href: "/form/recat/review/" + data.details.bookingId if allSectionsCompleted,
-                disabled: not allSectionsCompleted,
+                href: "/form/recat/review/" + data.details.bookingId,
                 classes: "govuk-button tableButton app-task-list__task-completed"
               }) }}
               <div class="govuk-heading-m">Check and submit</div>
