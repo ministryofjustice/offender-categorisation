@@ -131,15 +131,20 @@ module.exports = function Index({
     }),
   )
 
-  router.get('/previousRiskAssessments/:bookingId', async (req, res) => {
-    const { bookingId } = req.params
-    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-    const errors = req.flash('errors')
+  router.get(
+    '/previousRiskAssessments/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const errors = req.flash('errors')
 
-    const data = { details, bookingId }
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
 
-    res.render('formPages/recat/previousRiskAssessmentsInput', { data, errors })
-  })
+      const data = { details, bookingId, formData }
+
+      res.render('formPages/recat/previousRiskAssessmentsInput', { data, errors })
+    }),
+  )
 
   router.get('/oasysRequired/:bookingId', async (req, res) => {
     const { bookingId } = req.params

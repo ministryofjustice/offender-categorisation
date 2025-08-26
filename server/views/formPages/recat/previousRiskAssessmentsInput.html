@@ -45,7 +45,8 @@
                                 items: [
                                 {
                                     value: "yes",
-                                    text: "Yes, they have a full, up-to-date OASys assessment"
+                                    text: "Yes, they have a full, up-to-date OASys assessment",
+                                    checked: data.formData.formObject.recat.oasysInput
                                 },
                                 {
                                     value: "no",
@@ -53,7 +54,8 @@
                                 },
                                 {
                                     value: "notRequired",
-                                    text: "No, an OASys assessment is not required"
+                                    text: "No, an OASys assessment is not required",
+                                    checked: data.formData.formObject.recat.bcstInput
                                 }
                                 ]
                             }) }}
