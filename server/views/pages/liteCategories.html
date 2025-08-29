@@ -4,6 +4,7 @@
 {% from "warning-text/macro.njk" import govukWarningText %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "input/macro.njk" import govukInput %}
+{% from "date-input/macro.njk" import govukDateInput %}
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 
@@ -30,7 +31,7 @@
 <div class="govuk-!-width-two-thirds">
 
   <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">{{ pageTitle }}</h1>
-  <p>Create a category assessment, exactly as in P-Nomis.</p>
+  <p>Create a category assessment, exactly as in NOMIS.</p>
   {% if inProgress(data) or liteInProgress %}
 
     {{ govukWarningText({
@@ -43,7 +44,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         {{ govukButton({
-        text: "Return to Todo list",
+        text: "Return to dashboard",
         href: "/",
         classes: "grey-button"
         }) }}
@@ -63,45 +64,49 @@
 
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-    <div class="govuk-grid-row govuk-body-s">
+    <div class="govuk-grid-row">
       <div class="govuk-grid-column-one-third">
-      {{ govukSelect({
-        id: 'category',
-        name: 'category',
-        label: { text: 'Category' },
-        items: cats,
-        classes: 'govuk-!-width-full',
-        value: category
-      }) }}
+        {{ govukSelect({
+          id: 'category',
+          name: 'category',
+          label: { text: 'Category' },
+          items: cats,
+          classes: 'govuk-!-width-full',
+          value: category
+        }) }}
       </div>
       <div class="govuk-grid-column-one-third">
-      {{ govukSelect({
-        id: 'authority',
-        name: 'authority',
-        label: { text: 'Authority' },
-        items: committees,
-        classes: 'govuk-!-width-full'
-      }) }}
-      </div>
-      <div class="govuk-grid-column-one-third">
-      {{ govukInput({
-        id: 'nextReviewDate',
-        name: 'nextReviewDate',
-        label: { text: 'Re-Assessment Date' },
-        errorMessage: {
-          text: 'Enter a valid date that is after today'
-        } if (errors | findError('nextReviewDate')),
-        classes: 'govuk-!-width-full',
-        value: nextReviewDate
-      }) }}
+        {{ govukSelect({
+          id: 'authority',
+          name: 'authority',
+          label: { text: 'Authority' },
+          items: committees,
+          classes: 'govuk-!-width-full'
+        }) }}
       </div>
     </div>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-     {{ govukSelect({
+      {{ govukDateInput({
+        id: "nextReviewDate",
+        items: [
+            {"id": "nextReviewDateDay", label: "Day", "name": "nextReviewDate[day]", value: nextReviewDate.day, "classes": "govuk-input--width-2"},
+            {"id": "nextReviewDateMonth", label: "Month", "name": "nextReviewDate[month]", value: nextReviewDate.month, "classes": "govuk-input--width-2"},
+            {"id": "nextReviewDateYear", label: "Year", "name": "nextReviewDate[year]", value: nextReviewDate.year, "classes": "govuk-input--width-4"}
+        ],
+        fieldset: {
+            legend: {
+              text: 'Reassessment date',
+              isPageHeading: false
+            }
+          },
+        errorMessage: errors | findError('nextReviewDate')
+      }) }}
+
+      {{ govukSelect({
         id: 'placement',
         name: 'placement',
-        label: { text: 'Recommended Placement' },
+        label: { text: 'Recommended placement' },
         items: prisonList,
         value: placement
       }) }}

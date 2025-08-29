@@ -25,7 +25,6 @@ const { adjudicationsApiClientBuilder } = require('./data/adjudicationsApi/adjud
 const createFormService = require('./services/formService')
 const createStatsService = require('./services/statsService')
 const createOffendersService = require('./services/offendersService')
-const createSignInService = require('./authentication/signInService')
 const createUserService = require('./services/userService')
 const createRiskProfilerService = require('./services/riskProfilerService')
 const createSqsService = require('./services/sqsService')
@@ -55,7 +54,6 @@ const alertService = new CreateAlertService(alertsApiClientBuilder)
 const app = createApp({
   formService,
   offendersService,
-  signInService: createSignInService(),
   userService,
   riskProfilerService,
   statsService,
