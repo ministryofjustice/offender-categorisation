@@ -1582,27 +1582,6 @@ const getOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
     },
   })
 
-const stubAdjudicationHearings = ({
-  agencyId,
-  fromDate,
-  toDate,
-}: {
-  agencyId: string
-  fromDate: string
-  toDate: string
-}): SuperAgentRequest =>
-  stubFor({
-    request: {
-      method: 'POST',
-      url: `/elite2/api/offenders/adjudication-hearings?agencyId=${agencyId}&fromDate=${fromDate}&toDate=${toDate}`,
-    },
-    response: {
-      status: 200,
-      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: [],
-    },
-  })
-
 export default {
   stubAgencyDetails,
   stubAgenciesPrison,
@@ -1638,6 +1617,5 @@ export default {
   verifySupervisorApprove,
   verifyUpdateNextReviewDate,
   stubRecategorise,
-  stubAdjudicationHearings,
   getOffenderStub,
 }

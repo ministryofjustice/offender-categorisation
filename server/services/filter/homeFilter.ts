@@ -23,6 +23,7 @@ import { ProbationOffenderSearchApiClient } from '../../data/probationOffenderSe
 import { RisksAndNeedsApiClient } from '../../data/risksAndNeeds/risksAndNeedsApi'
 import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
 import logger from '../../../log'
+import { AdjudicationsApiClient } from '../../data/adjudicationsApi/adjudicationsApiClient'
 import {
   NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
   RecalledOffenderData,
@@ -106,27 +107,43 @@ const getDateNMonthsAgo = (n: number) => {
  * three calls to the endpoint and concatenate the data.
  *
  * @param prisoners
- * @param nomisClient
  * @param agencyId
+ * @param adjudicationsApiClient
  */
 const loadAdjudicationsData = async (
   prisoners,
-  nomisClient,
   agencyId: string,
+  adjudicationsApiClient: AdjudicationsApiClient,
 ): Promise<NomisAdjudicationHearingDto[]> => {
-  const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
-  if (prisonerNumbers.length <= 0) {
+  const offenderNumbersToBookingIds = Object.fromEntries(
+    prisoners.map(probationOffenderSearchOffender => [
+      probationOffenderSearchOffender.offenderNo,
+      probationOffenderSearchOffender.bookingId,
+    ]),
+  )
+  if (Object.keys(offenderNumbersToBookingIds).length <= 0) {
     return []
   }
   const dateThreeMonthsAgo = getDateNMonthsAgo(3)
-  const dateTwoMonthsAgo = getDateNMonthsAgo(2)
-  const dateOneMonthAgo = getDateNMonthsAgo(1)
-  const [adjudicationsThreeMonthsAgo, adjudicationsTwoMonthsAgo, adjudicationsLastMonth] = await Promise.all([
-    nomisClient.getOffenderAdjudications(prisonerNumbers, dateThreeMonthsAgo, dateTwoMonthsAgo, agencyId),
-    nomisClient.getOffenderAdjudications(prisonerNumbers, dateTwoMonthsAgo, dateOneMonthAgo, agencyId),
-    nomisClient.getOffenderAdjudications(prisonerNumbers, dateOneMonthAgo, moment().format('YYYY-MM-DD'), agencyId),
-  ])
-  return [...adjudicationsThreeMonthsAgo, ...adjudicationsTwoMonthsAgo, ...adjudicationsLastMonth]
+  const offenderNumbersWithAdjudications = []
+  const BATCH_SIZE = 50
+  for (let range = 0; range < Object.keys(offenderNumbersToBookingIds).length; range += BATCH_SIZE) {
+    const offenderNumberBatch = Object.keys(offenderNumbersToBookingIds).slice(range, range + BATCH_SIZE)
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      // eslint-disable-next-line no-loop-func
+      offenderNumberBatch.map(async offenderNumber => {
+        const adjudicationDto = await adjudicationsApiClient.getAdjudications(
+          offenderNumbersToBookingIds[offenderNumber],
+          dateThreeMonthsAgo,
+        )
+        if (adjudicationDto?.adjudicationCount > 0) {
+          offenderNumbersWithAdjudications.push(offenderNumber)
+        }
+      }),
+    )
+  }
+  return offenderNumbersWithAdjudications
 }
 
 const getOffenderNumbersWithLowRoshScore = async (
@@ -177,12 +194,12 @@ export const filterListOfPrisoners = async (
   prisoners,
   prisonerSearchData: Map<number, RecategorisationPrisonerSearchDto>,
   recalledOffenderData: Map<string, RecalledOffenderData> | null,
-  nomisClient,
   agencyId: string,
   pomMap: Map<string, PrisonerAllocationDto>,
   userStaffId: number,
   risksAndNeedsClient: RisksAndNeedsApiClient,
   probationOffenderSearchClient: ProbationOffenderSearchApiClient,
+  adjudicationsApiClient: AdjudicationsApiClient,
   withSi1481Changes = false,
 ) => {
   const allFilterArrays = Object.values(filters)
@@ -282,7 +299,7 @@ export const filterListOfPrisoners = async (
   })
   let adjudicationsDataPromise
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
-    adjudicationsDataPromise = loadAdjudicationsData(filteredPrisoners, nomisClient, agencyId)
+    adjudicationsDataPromise = loadAdjudicationsData(filteredPrisoners, agencyId, adjudicationsApiClient)
   }
   let offenderNumbersWithLowRoshScorePromise
   if (allFilters.includes(LOW_ROSH)) {
@@ -292,15 +309,14 @@ export const filterListOfPrisoners = async (
       probationOffenderSearchClient,
     )
   }
-  const [adjudicationsData, offenderNumbersWithLowRoshScore] = await Promise.all([
+  const [prisonerNumbersWithAdjudications, offenderNumbersWithLowRoshScore] = await Promise.all([
     adjudicationsDataPromise,
     offenderNumbersWithLowRoshScorePromise,
   ])
 
   if (allFilters.includes(NO_ADJUDICATIONS_IN_THE_LAST_3_MONTHS)) {
-    const offenderNumbersWithAdjudications = adjudicationsData.map(adjudicationsDatum => adjudicationsDatum.offenderNo)
     filteredPrisoners = filteredPrisoners.filter(prisoner => {
-      return !offenderNumbersWithAdjudications.includes(prisoner.offenderNo)
+      return !prisonerNumbersWithAdjudications.includes(prisoner.offenderNo)
     })
   }
   if (allFilters.includes(LOW_ROSH)) {

@@ -79,6 +79,7 @@ const DEFAULTS = {
   OFFENDER_CATEGORISATION_API_ENDPOINT_URL: 'http://localhost:8088/',
   PATHFINDER_API_ENDPOINT_URL: 'http://localhost:8090/',
   ALERTS_ENDPOINT_URL: 'http://localhost:8089/',
+  ADJUDICATIONS_ENDPOINT_URL: 'http://localhost:8091/',
   COMPONENT_API_URL: 'http://localhost:8085/components',
   COMPONENT_API_TIMEOUT_RESPONSE: 20000,
   COMPONENT_API_TIMEOUT_DEADLINE: 20000,
@@ -480,6 +481,33 @@ export const config = {
         deadline: Number(
           get({
             name: 'ALERTS_TIMEOUT_DEADLINE',
+            fallback: DEFAULT_TIMEOUTS.deadline,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+      },
+      agent: DEFAULT_HTTP_AGENT,
+    },
+    adjudicationsApi: {
+      url: get({
+        name: 'ADJUDICATIONS_ENDPOINT_URL',
+        fallback: DEFAULTS.ADJUDICATIONS_ENDPOINT_URL,
+        log: true,
+        requireInProduction: false,
+      }),
+      timeout: {
+        response: Number(
+          get({
+            name: 'ADJUDICATIONS_TIMEOUT_RESPONSE',
+            fallback: DEFAULT_TIMEOUTS.response,
+            log: true,
+            requireInProduction: false,
+          }),
+        ),
+        deadline: Number(
+          get({
+            name: 'ADJUDICATIONS_TIMEOUT_DEADLINE',
             fallback: DEFAULT_TIMEOUTS.deadline,
             log: true,
             requireInProduction: false,

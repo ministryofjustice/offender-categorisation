@@ -166,19 +166,16 @@ describe('Recategoriser Home page', () => {
       })
       it('should show deselect all initially when page is submitted with all filters selected', () => {
         cy.task('stubAdjudicationHearings', {
-          agencyId: 'LEI',
+          bookingId: 80,
           fromDate: moment().subtract(3, 'months').format('YYYY-MM-DD'),
-          toDate: moment().subtract(2, 'months').format('YYYY-MM-DD'),
         })
         cy.task('stubAdjudicationHearings', {
-          agencyId: 'LEI',
+          bookingId: 81,
           fromDate: moment().subtract(2, 'months').format('YYYY-MM-DD'),
-          toDate: moment().subtract(1, 'months').format('YYYY-MM-DD'),
         })
         cy.task('stubAdjudicationHearings', {
-          agencyId: 'LEI',
+          bookingId: 82,
           fromDate: moment().subtract(1, 'months').format('YYYY-MM-DD'),
-          toDate: moment().format('YYYY-MM-DD'),
         })
         cy.task('stubMatchPrisoners')
         const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)

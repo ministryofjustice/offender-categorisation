@@ -20,6 +20,7 @@ const { alertsApiClientBuilder } = require('./data/alertsApi/alertsApiClient')
 const risksAndNeedsClientBuilder = require('./data/risksAndNeeds/risksAndNeedsApi').default
 const probationOffenderSearchClientBuilder =
   require('./data/probationOffenderSearch/probationOffenderSearchApiClient').default
+const { adjudicationsApiClientBuilder } = require('./data/adjudicationsApi/adjudicationsApiClient')
 
 const createFormService = require('./services/formService')
 const createStatsService = require('./services/statsService')
@@ -41,6 +42,7 @@ const offendersService = createOffendersService(
   prisonerSearchClientBuilder,
   risksAndNeedsClientBuilder,
   probationOffenderSearchClientBuilder,
+  adjudicationsApiClientBuilder,
 )
 const userService = createUserService(nomisClientBuilder)
 const riskProfilerService = createRiskProfilerService(riskProfilerClientBuilder)
