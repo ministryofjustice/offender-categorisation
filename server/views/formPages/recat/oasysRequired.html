@@ -15,17 +15,19 @@
 
   {% set pageTitle = "You must complete an OASys for this person" %}
 
-  {% set primaryUrl = "/tasklistRecat/" + data.details.bookingId %}
+  {% set tasklistUrl = "/tasklistRecat/" + data.details.bookingId %}
 
-  {% call interruptionCard({
-    heading: "You must complete an OASys for this person",
-    primaryAction: {
-      text: "Go back to tasklist",
-      href: primaryUrl
-    }
-    }) -%}
-    <p>A prisoner serving a sentence or recall period of 10 months or more must have an up-to-date OASys.</p>
-    <p>If they do not have a recent, full assessment, you'll need to create one.</p>
-  {%- endcall %}
+  <div class="moj-interruption-card">
+  <div class="moj-interruption-card__content">
+    <h1 class="moj-interruption-card__heading">You must complete an OASys for this person</h1>
+    <div class="moj-interruption-card__body">
+      <p>A prisoner serving a sentence or recall period of 10 months or more must have an up-to-date OASys.</p>
+      <p>If they do not have a recent, full assessment, you'll need to create one.</p>
+    </div>
+    <div class="govuk-button-group moj-interruption-card__actions">
+      <a class="govuk-link govuk-link--inverse" href={{ tasklistUrl }}>Go back to application</a>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

@@ -3,7 +3,6 @@ import { RECATEGORISER_USER } from '../../factory/user'
 import Page from '../../pages/page'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
 import TasklistRecatPage from '../../pages/tasklistRecat/tasklistRecat'
-import PrevRiskAssessmentsInputPage from '../../pages/form/recat/prevRiskAssessments/prevRiskAssessmentsInputPage'
 import { FormDbJson } from '../../fixtures/db-key-convertor'
 
 describe('Previous Risk Assessments', () => {
