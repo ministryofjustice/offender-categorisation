@@ -164,7 +164,8 @@
               {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
               {{ govukButton({
                 text: "Continue",
-                href: "/form/recat/review/" + data.details.bookingId,
+                href: "/form/recat/review/" + data.details.bookingId if allSectionsCompleted,
+                disabled: not allSectionsCompleted,
                 classes: "govuk-button tableButton app-task-list__task-completed"
               }) }}
               <div class="govuk-heading-m">Check and submit</div>
