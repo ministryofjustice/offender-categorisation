@@ -412,7 +412,6 @@ describe('Supervisor Review', () => {
     giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
 
     cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-      console.log(result.rows[0].form_response, '<-- form response')
       expect(result.rows[0].status).to.eq(Status.SUPERVISOR_BACK.name)
       expect(result.rows[0].form_response).to.deep.eq({
         recat: {
