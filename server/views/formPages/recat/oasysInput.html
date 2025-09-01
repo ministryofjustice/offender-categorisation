@@ -4,102 +4,61 @@
 {% from "details/macro.njk" import govukDetails %}
 {% from "input/macro.njk" import govukInput %}
 
-{% set pageTitle = "Offender Assessment System (OASys)" %}
+{% set pageTitle = "Check their OASys assessment" %}
 
 {% block navigation %}
 
-{% include "../../partials/breadCrumbTaskListRecat.html" %}
+{% include "../../partials/breadcrumbPreviousRiskAssessments.html" %}
 
 {% endblock %}
 
 {% block formItems %}
 
 <h1 id="oasysInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
-<p>
-  You should check OASys for a recent full review. If there is not a recent full review you will need to create one. Refer to Offender Management in Custody (OMIC) guidelines for more information.</p>
+
+<p>Prisoners serving a sentence of 10 months or more must have an up-to-date OASys. If there is not a recent, full assessment you will need to create one.</p>
+<p>Refer to Offender Management in Custody (OMIC) guidelines for more information.</p>
+
 {% set oasysInputTextHtml %}
 
   {{ govukTextarea({
-    name: "oasysInputText",
-    type: "oasysInputText",
-    id: "oasysInputText",
-    attributes: { 'maxlength': 50000 },
-    label: {
-      text: "Enter any relevant information"
-    },
-    value: data.recat.oasysInput.oasysInputText,
-    errorMessage: {
-      text: (errors | findError('oasysInputText')).text
-      } if (errors | findError('oasysInputText'))
-    })
+      name: "oasysInputText",
+      type: "oasysInputText",
+      id: "oasysInputText",
+      label: { text: "Enter any relevant information" },
+      hint: { text: "Include any measures taken to mitigate the risk." },    
+      value: data.recat.oasysInput.oasysInputText,
+      errorMessage: {
+          text: (errors | findError('oasysInputText')).text
+              } if (errors | findError('oasysInputText'))
+      })
   }}
 
 {% endset -%}
 
-{{ govukInput({
-  id: "reviewDate",
-  name: "date",
-  label: {
-    text: "Completion date of the latest full review"
+  {{ govukRadios({
+      name: "oasysRelevantInfo",
+      fieldset: {
+          legend: {
+          html: '<h2 class="govuk-heading-m">Was there any information in their OASys that is relevant to the recategorisation?</h2>'
+          }
   },
   errorMessage: {
-    text: (errors | findError('date')).text
-  } if (errors | findError('date')),
-  hint: {
-    text: "For example, 2/11/2021"
-  },
-  classes: "dateInputWidth",
-  value: data.recat.oasysInput.date
-  })
-}}
-
-{% set oasysInputTextHtml %}
-
-  {{ govukTextarea({
-    name: "oasysInputText",
-    type: "oasysInputText",
-    id: "oasysInputText",
-    attributes: { 'maxlength': 50000 },
-    label: {
-      text: "Enter any relevant information"
-    },
-    value: data.recat.oasysInput.oasysInputText,
-    errorMessage: {
-      text: (errors | findError('oasysInputText')).text
-    } if (errors | findError('oasysInputText')),
-    hint: {
-      text: "Include any measures taken to mitigate the risk"
-    }
-  }) }}
-
-{% endset -%}
-
-  {{ govukRadios({
-    name: "oasysRelevantInfo",
-    fieldset: {
-      legend: {
-        text: "Was there any information in the review that is relevant to the recategorisation?",
-        isPageHeading: false
-      }
-    },
-    errorMessage: {
       text: (errors | findError('oasysRelevantInfo')).text
-    } if (errors | findError('oasysRelevantInfo')),
-    items: [
+  } if (errors | findError('oasysRelevantInfo')),
+  items: [
       {
-        value: "Yes",
-        text: "Yes",
-        checked: data.recat.oasysInput.oasysRelevantInfo === 'Yes',
-        conditional: {
-          html:oasysInputTextHtml
-        }
+      value: "Yes",
+      text: "Yes",
+      checked: data.recat.oasysInput.oasysRelevantInfo === 'Yes',
+      conditional: { html: oasysInputTextHtml }
       },
       {
-        value: "No",
-        checked: data.recat.oasysInput.oasysRelevantInfo === 'No',
-        text: "No"
+      value: "No",
+      checked: data.recat.oasysInput.oasysRelevantInfo === 'No',
+      text: "No"
       }
-    ]
+  ]
   }) }}
 
 {% endblock %}

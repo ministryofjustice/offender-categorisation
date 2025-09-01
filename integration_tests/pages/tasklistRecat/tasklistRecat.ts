@@ -13,7 +13,7 @@ export default class TasklistRecatPage extends Page {
   }
 
   prisonerBackgroundButton = (): PageElement => cy.get('#prisonerBackgroundButton')
-  oasysInputButton = (): PageElement => cy.get('#oasysInputButton')
+  prevRiskAssessmentInputButton = (): PageElement => cy.get('#prevRiskAssessmentInputButton')
   securityButton = (): PageElement => cy.get('#securityButton')
   riskAssessmentButton = (): PageElement => cy.get('#riskAssessmentButton')
   decisionButton = (): PageElement => cy.get('#decisionButton')

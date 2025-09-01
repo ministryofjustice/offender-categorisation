@@ -112,33 +112,58 @@
   ]
 }) }}
 
-<h2 class="govuk-heading-m no-print">Offender Assessment System (OASys) check</h2>
+{% set hasOasysAssessment = data.recat.oasysInput.oasysRelevantInfo %}
+
+  {% set checkOasysAssessment = {
+      classes: 'no-print',
+      key: { text: "Have they had a recent, full OASys assessment?" },
+      value: { text: "Yes, they have a full, up-to-date OASys assessment" if hasOasysAssessment else "No, an OASys assessment is not required" },
+      actions: { classes: 'no-print',
+        items: [{
+          href: '/form/recat/previousRiskAssessments/' + data.details.bookingId,
+          text: "Change",
+          visuallyHiddenText: "Previous risk assessments"
+        }] if showChangeLinks else []
+      }
+  } %}
+
+  {% set oasysInfo = {
+    classes: 'no-print',
+    key: { text: "Was there any information in their OASYs that is relevant to the recategorisation?" },
+    value: { html: formatAnswerNoDetails(data.recat.oasysInput.oasysRelevantInfo, data.recat.oasysInput.oasysInputText) },
+    actions: { classes: 'no-print',
+      items: [{
+        href: '/form/recat/oasysInput/' + data.details.bookingId,
+        text: "Change",
+        visuallyHiddenText: "Oasys assessment"
+      }] if showChangeLinks else []
+    }
+  } %}
+
+  {% set bcstInfo = {
+    classes: 'no-print',
+    key: { text: "Was there any information in their BCST part 1 assessment that is relevant to the recategorisation?" },
+    value: { html: formatAnswerNoDetails(  data.recat.bcstInput.bcstRelevantInfo, data.recat.bcstInput.bcstInputText) },
+    actions: { classes: 'no-print',
+      items: [{
+        href: '/form/recat/bcstInput/' + data.details.bookingId,
+        text: "Change",
+        visuallyHiddenText: "Previous risk assessments"
+      }] if showChangeLinks else []
+    }
+  } %}
+
+  {% if hasOasysAssessment %}
+    {% set prevRiskAssessmentsRows = [checkOasysAssessment, oasysInfo] %}
+  {% else %}
+    {% set prevRiskAssessmentsRows = [checkOasysAssessment, bcstInfo] %}
+  {% endif %}  
+  
+
+<h2 class="govuk-heading-m no-print">Previous risk assessments</h2>
 {{ govukSummaryList({
   classes: 'govuk-!-margin-bottom-9 print-full-width oasysInputSummary',
-  rows: [
-      {
-        key: { text: "Completion date of the latest full review that is in OASys" },
-        value: { text: data.recat.oasysInput.date },
-        actions: { items: [{
-            value: { classes: 'no-print'},
-            href: '/form/recat/oasysInput/' + data.details.bookingId,
-            text: "Change",
-            visuallyHiddenText: "Assessment"
-          }] if showChangeLinks else []
-        }
-      },
-      {
-        key: { text: "Was there any information in the review that is relevant to the recategorisation?" },
-        value: { html: formatAnswerNoDetails(data.recat.oasysInput.oasysRelevantInfo, data.recat.oasysInput.oasysInputText) },
-        actions: { items: [{
-            value: { classes: 'no-print'},
-            href: '/form/recat/oasysInput/' + data.details.bookingId,
-            text: "Change",
-            visuallyHiddenText: "Assessment"
-          }] if showChangeLinks else []
-        }
-      }
-    ]
+  rows: prevRiskAssessmentsRows
   })
 }}
 
