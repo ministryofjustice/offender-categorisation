@@ -627,7 +627,7 @@ describe('POST /form/recat/review', () => {
   })
 })
 
-describe.only('Testing previous risk assessments routing', () => {
+describe('Testing previous risk assessments routing', () => {
   test.each`
     path                               | expectedContent
     ${'previousRiskAssessments/12345'} | ${'Previous risk assessments'}
