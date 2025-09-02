@@ -8,6 +8,7 @@ const {
   offenderCaseNotesLink,
   offenderAdjudicationLink,
   isFemalePrisonId,
+  formatLength,
 } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
@@ -60,8 +61,8 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
-      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
 
+      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
       const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
       const escapeProfile = await alertService.getEscapeProfile(offenderNo, res.locals)
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
@@ -132,6 +133,29 @@ module.exports = function Index({
   )
 
   router.get(
+    '/previousRiskAssessments/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
+      const { bookingId } = req.params
+      const errors = req.flash('errors')
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+      const data = { details, bookingId, formData }
+
+      res.render('formPages/recat/previousRiskAssessmentsInput', { data, errors })
+    }),
+  )
+
+  router.get('/oasysRequired/:bookingId', async (req, res) => {
+    const { bookingId } = req.params
+    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+    const data = { details, bookingId }
+
+    res.render('formPages/recat/oasysRequired', { data })
+  })
+
+  router.get(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
@@ -146,18 +170,21 @@ module.exports = function Index({
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
     if (!formData || !formData.formObject) {
       throw new Error('No categorisation found for this booking id')
     }
+
     res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
-
     const pageData = res.locals.formObject
+
     if (!pageData[section]) {
       pageData[section] = {}
     }
+
     pageData[section][form] = { ...pageData[section][form], ...firstItem(req.flash('userInput')) }
 
     const errors = req.flash('errors')
@@ -186,6 +213,9 @@ module.exports = function Index({
     if (body.oasysRelevantInfo === 'No') {
       delete updated.oasysInputText
     }
+    if (body.bcstRelevantInfo === 'No') {
+      delete updated.bcstInputText
+    }
     return updated
   }
 
@@ -211,6 +241,7 @@ module.exports = function Index({
         formName: form,
         transactionalClient: transactionalDbClient,
       })
+
       await formService.referToSecurityIfRequested(
         bookingId,
         req.user.username,
@@ -219,6 +250,7 @@ module.exports = function Index({
       )
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+
       res.redirect(`${nextPath}${bookingId}`)
     }),
   )
@@ -393,6 +425,36 @@ module.exports = function Index({
     }),
   )
 
+  router.post('/previousRiskAssessments/:bookingId', async (req, res) => {
+    const section = 'recat'
+    const form = 'previousRiskAssessments'
+    const formPageConfig = formConfig[section][form]
+    const { bookingId } = req.params
+    const userInput = { ...req.body }
+
+    const prevOasysAssessmentAnswer = userInput.haveTheyHadRecentOasysAssessment
+    const baseUrl = '/form/recat'
+
+    if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
+      return
+    }
+
+    const { sentence } = await offendersService.getOffenderDetails(res.locals, bookingId)
+    const sentenceLength = formatLength(sentence?.list[0])
+
+    log.info(
+      `Categoriser selecting previous oasys assessment answer: Option: ${prevOasysAssessmentAnswer}, Release Date: ${sentence?.releaseDate}, Sentence Length: ${sentenceLength}`,
+    )
+
+    if (prevOasysAssessmentAnswer === 'yes') {
+      res.redirect(`${baseUrl}/oasysInput/${bookingId}`)
+    } else if (prevOasysAssessmentAnswer === 'no') {
+      res.redirect(`${baseUrl}/oasysRequired/${bookingId}`)
+    } else if (prevOasysAssessmentAnswer === 'notRequired') {
+      res.redirect(`${baseUrl}/bcstInput/${bookingId}`)
+    }
+  })
+
   router.post(
     '/review/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
@@ -438,6 +500,7 @@ module.exports = function Index({
       const userInput = clearConditionalFields(req.body)
 
       const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
+
       if (!valid) {
         return
       }

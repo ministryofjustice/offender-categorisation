@@ -106,9 +106,10 @@ describe("Women's estate recategorisation", () => {
     cy.get('#offenceDetails').type('offenceDetails text')
     cy.get('button[type="submit"]').contains('Save and return').click()
 
-    taskListPage.oasysInputButton().click()
+    taskListPage.prevRiskAssessmentInputButton().click()
     checkPrisonerHeaderSummary()
-    cy.get('#reviewDate').type('17/6/2020')
+    cy.get('#haveTheyHadRecentOasysAssessment').click()
+    cy.get('button[type="submit"]').contains('Continue').click()
     cy.get('#oasysRelevantInfo-2').click()
     cy.get('button[type="submit"]').contains('Save and return').click()
 
@@ -192,7 +193,7 @@ describe("Women's estate recategorisation", () => {
     cy.contains('pregnancy, including their expected delivery date')
     cy.contains('drugs, alcohol, or other dependencies')
     cy.contains('domestic violence or family issues')
-    cy.contains('separation from children or if they\'re a primary carer')
+    cy.contains("separation from children or if they're a primary carer")
 
     cy.get('button[type="submit"]').contains('Save and return').click()
 

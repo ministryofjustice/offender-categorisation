@@ -131,6 +131,7 @@ module.exports = function Index({
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
         isInWomensEstate: isFemalePrisonId(details.prisonId),
       }
+
       return res.render('pages/tasklistRecat', { data, backLink, reason })
     }),
   )

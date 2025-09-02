@@ -627,10 +627,13 @@ describe('POST /form/recat/review', () => {
   })
 })
 
-describe('Testing oasys input page routing', () => {
+describe('Testing previous risk assessments routing', () => {
   test.each`
-    path                  | expectedContent
-    ${'oasysInput/12345'} | ${'Offender Assessment System (OASys)'}
+    path                               | expectedContent
+    ${'previousRiskAssessments/12345'} | ${'Previous risk assessments'}
+    ${'oasysInput/12345'}              | ${'Check their OASys assessment'}
+    ${'bcstInput/12345'}               | ${'Check their Basic Custody Screening Tool part 1 assessment'}
+    ${'oasysRequired/12345'}           | ${'You must complete an OASys for this person'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
@@ -640,6 +643,7 @@ describe('Testing oasys input page routing', () => {
         expect(res.text).toContain(expectedContent)
       }),
   )
+
   test('Oasys Validation error redirect to page', () => {
     request(app).post(`/oasysInput/866018`).expect(302).expect('Location', 'form/recat/oasysInput/866018')
   })
