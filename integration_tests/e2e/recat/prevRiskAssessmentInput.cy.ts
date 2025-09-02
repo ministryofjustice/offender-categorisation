@@ -188,7 +188,7 @@ describe('Previous Risk Assessments', () => {
       cy.contains('button', 'Save and return').click()
       cy.contains(
         'p.govuk-error-message',
-        'Select yes if there was any information in the review that is relevant to the recategorisation',
+        'Select yes if there was any information in the assessment that is relevant to the recategorisation',
       )
     })
   })
