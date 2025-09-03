@@ -32,9 +32,12 @@ function formatValue(value, label) {
 }
 
 const formatLength = sentenceTerms => {
+  if (!sentenceTerms) return ''
+
   if (sentenceTerms.lifeSentence) {
     return 'Life'
   }
+
   const years = formatValue(sentenceTerms.years, 'year')
   const months = formatValue(sentenceTerms.months, 'month')
   const weeks = formatValue(sentenceTerms.weeks, 'week')
