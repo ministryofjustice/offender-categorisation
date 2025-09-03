@@ -186,7 +186,7 @@ module.exports = {
         oasysRelevantInfo: {
           responseType: 'requiredString',
           validationMessage:
-            'Select yes if there was any information in the review that is relevant to the recategorisation',
+            'Select yes if there was any information in the assessment that is relevant to the recategorisation',
         },
       },
       {
@@ -207,7 +207,7 @@ module.exports = {
         bcstRelevantInfo: {
           responseType: 'requiredString',
           validationMessage:
-            'Select yes if there was any information in the review that is relevant to the recategorisation',
+            'Select yes if there was any information in the assessment that is relevant to the recategorisation',
         },
       },
       {
