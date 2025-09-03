@@ -225,22 +225,6 @@ const formatDateForValidation = date => {
   return `${date.day}/${date.month}/${date.year}`
 }
 
-const tasklistStatus = isComplete => {
-  if (isComplete) {
-    return {
-      text: 'Completed',
-    }
-  }
-  return {
-    tag: {
-      text: 'Not yet started',
-      classes: 'govuk-tag--blue',
-    },
-  }
-}
-
-// create a func for security status
-
 module.exports = {
   dateConverter,
   dateConverterWithoutLeadingZeros,
@@ -278,5 +262,4 @@ module.exports = {
   isBlank,
   removeLeadingZerosFromDate,
   formatDateForValidation,
-  tasklistStatus,
 }

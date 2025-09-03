@@ -1,5 +1,4 @@
 {% extends "../partials/layout.html" %}
-{% from "govuk/components/task-list/macro.njk" import govukTaskList %}
 {% from "button/macro.njk" import govukButton %}
 
 {% set pageTitle = "Categorisation task list" %}
@@ -45,423 +44,212 @@
      and nextReviewDateCompleted and ( (not openConditionsRequested) or openConditionsCompleted)%}
   {% set buttonClassesDefault = "govuk-button tableButton app-task-list__task-completed" %}
 
-  {% set tasklistItems = [
-      {
-        title: {
-          text: "Offending history"
-        },
-        href: "/form/ratings/offendingHistory/" + data.details.bookingId,
-        status: tasklistStatus(offendingHistoryCompleted)
-      },
-      {
-        title: {
-          text: "Safety and good order"
-        },
-        href:  "/form/ratings/violenceRating/" + data.details.bookingId,
-        status: tasklistStatus(violenceRatingCompleted)
-      },
-      {
-        title: {
-          text: "Risk of escape"
-        },
-        href: "/form/ratings/escapeRating/" + data.details.bookingId,
-        status: tasklistStatus(escapeRatingCompleted)
-      },
-      {
-        title: {
-          text: "Extremism"
-        },
-        href: "/form/ratings/extremismRating/" + data.details.bookingId,
-        status: tasklistStatus(extremismRatingCompleted)
-      },
-      {
-        title: {
-          text: "Category decision"
-        },
-        href: "/form/ratings/decision/" + data.details.bookingId,
-        status: tasklistStatus(decisionCompleted)
-      },
-      {
-        title: {
-          text: "Set next category review date"
-        },
-        href: "/form/nextReviewDate/nextReviewDateEditing/" + data.details.bookingId if nextReviewDateCompleted else
-              "/form/nextReviewDate/nextReviewDateQuestion/" + data.details.bookingId,
-        status: tasklistStatus(nextReviewDateCompleted)
-      }
-    ] %}
-
-    {% if data.supervisor.confirmBack.messageText %}
-      {% set tasklistItems = [{
-        title: {
-          text: "View message from supervisor"
-        },
-        href: "/form/supervisor/supervisorMessage/" + data.details.bookingId
-      }] | concat(tasklistItems) %}
-    {% endif %}
-
   <div class="govuk-grid-row govuk-!-width-two-thirds">
     <div class="govuk-grid-column-full">
       <ul class="govuk-task-list">
         
-            {% if data.supervisor.confirmBack.messageText %}
-              <li class="govuk-task-list__item govuk-task-list__item--with-link" id="supervisorMessageSection">
-                <div class="govuk-task-list__name-and-hint">
-                  <a class="govuk-link govuk-task-list__link" href="/form/supervisor/supervisorMessage/{{data.details.bookingId}}">
-                    Message from supervisor
-                  </a>
-                </div>
-                  <div class="govuk-task-list__status" id="message-from-supervisor-status">
-                    {% if supervisorMessageCompleted %}
-                      Completed
-                    {% else %}
-                      <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
-                    {% endif %}
-                  </div>
-              </li>
-            {% endif %}
-
-              <li class="govuk-task-list__item govuk-task-list__item--with-link" id="offendingHistorySection">
-                <div class="govuk-task-list__name-and-hint">
-                  <a class="govuk-link govuk-task-list__link" href="/form/ratings/offendingHistory/{{data.details.bookingId}}">
-                    Offending history
-                  </a>
-                </div>
-                  <div class="govuk-task-list__status" id="offendingHistoryStatus">
-                    {% if offendingHistoryCompleted %}
-                      Completed
-                    {% else %}
-                      <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
-                    {% endif %}
-                  </div>
-              </li>
-
-            {% if not data.isInWomensEstate %}
-              <li class="govuk-task-list__item govuk-task-list__item--with-link" id="furtherChargesSection">
-                <div class="govuk-task-list__name-and-hint">
-                  <a class="govuk-link govuk-task-list__link" href="/form/ratings/furtherCharges/{{data.details.bookingId}}">
-                    Further charges
-                  </a>
-                </div>
-                <div class="govuk-task-list__status" id="furtherChargesStatus">
-                  {% if furtherChargesCompleted %}
-                    Completed
-                  {% else %}
-                    <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
-                  {% endif %}
-                </div>
-              </li>
-            {% endif %}
-
-            <li class="govuk-task-list__item govuk-task-list__item--with-link" id="safetyAndGoodOrderSection">
-              <div class="govuk-task-list__name-and-hint">
-                <a class="govuk-link govuk-task-list__link" href="/form/ratings/violenceRating/{{data.details.bookingId}}">
-                  Safety and good order
-                </a>
-              </div>
-                <div class="govuk-task-list__status" id="safetyAndGoodOrderStatus">
-                  {% if violenceRatingCompleted %}
-                    Completed
-                  {% else %}
-                    <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
-                  {% endif %}
-                </div>
-            </li>
-
-            <li class="govuk-task-list__item govuk-task-list__item--with-link" id="escapeRiskSection">
-              <div class="govuk-task-list__name-and-hint">
-                <a class="govuk-link govuk-task-list__link" href="/form/ratings/escapeRating/{{data.details.bookingId}}">
-                  Risk of escape
-                </a>
-              </div>
-                <div class="govuk-task-list__status" id="escapeRiskStatus">
-                  {% if escapeRatingCompleted %}
-                    Completed
-                  {% else %}
-                    <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
-                  {% endif %}
-                </div>
-            </li>
-
-            <li class="govuk-task-list__item govuk-task-list__item--with-link" id="extremismSection">
-              <div class="govuk-task-list__name-and-hint">
-                <a class="govuk-link govuk-task-list__link" href="/form/ratings/extremismRating/{{data.details.bookingId}}">
-                  Extremism
-                </a>
-              </div>
-                <div class="govuk-task-list__status" id="extremismStatus">
-                  {% if extremismRatingCompleted %}
-                    Completed
-                  {% else %}
-                    <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
-                  {% endif %}
-                </div>
-            </li>
-
-            <li class="govuk-task-list__item govuk-task-list__item--with-link" id="securitySection">
-              <div class="govuk-task-list__name-and-hint">
-                {% if locked %}
-                    <p class="govuk-body govuk-!-margin-bottom-0">Security information</p>
-                    <p class="govuk-task-list__hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}</p>
+        {% if data.supervisor.confirmBack.messageText %}
+          <li class="govuk-task-list__item govuk-task-list__item--with-link" id="supervisorMessageSection">
+            <div class="govuk-task-list__name-and-hint">
+              <a class="govuk-link govuk-task-list__link" href="/form/supervisor/supervisorMessage/{{data.details.bookingId}}">
+                Message from supervisor
+              </a>
+            </div>
+              <div class="govuk-task-list__status" id="message-from-supervisor-status">
+                {% if supervisorMessageCompleted %}
+                  Completed
                 {% else %}
-                    <a class="govuk-link govuk-task-list__link"
-                      href="{% if backFromSecurity %}/form/ratings/securityBack/{{ data.details.bookingId }}{% else %}/form/ratings/securityInput/{{ data.details.bookingId }}{% endif %}"
-                    >
-                      Security information
-                    </a>
+                  <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
                 {% endif %}
               </div>
+          </li>
+        {% endif %}
 
-              <div class="govuk-task-list__status" id="securityStatus">
-                {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
-                {% if locked %}
-                  <strong class="govuk-tag govuk-tag--light-blue">In progress</strong>
-                {% else %}
-                  {% if backFromSecurity %}
-                    Completed
-                  {% else %}
-                    <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
-                  {% endif %}
-                {% endif %}
+        <li class="govuk-task-list__item govuk-task-list__item--with-link" id="offendingHistorySection">
+          <div class="govuk-task-list__name-and-hint">
+            <a class="govuk-link govuk-task-list__link" href="/form/ratings/offendingHistory/{{data.details.bookingId}}">
+              Offending history
+            </a>
+          </div>
+            <div class="govuk-task-list__status" id="offendingHistoryStatus">
+              {% if offendingHistoryCompleted %}
+                Completed
+              {% else %}
+                <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+              {% endif %}
+            </div>
+        </li>
+
+        {% if not data.isInWomensEstate %}
+          <li class="govuk-task-list__item govuk-task-list__item--with-link" id="furtherChargesSection">
+            <div class="govuk-task-list__name-and-hint">
+              <a class="govuk-link govuk-task-list__link" href="/form/ratings/furtherCharges/{{data.details.bookingId}}">
+                Further charges
+              </a>
+            </div>
+            <div class="govuk-task-list__status" id="furtherChargesStatus">
+              {% if furtherChargesCompleted %}
+                Completed
+              {% else %}
+                <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+              {% endif %}
+            </div>
+          </li>
+        {% endif %}
+
+        <li class="govuk-task-list__item govuk-task-list__item--with-link" id="safetyAndGoodOrderSection">
+          <div class="govuk-task-list__name-and-hint">
+            <a class="govuk-link govuk-task-list__link" href="/form/ratings/violenceRating/{{data.details.bookingId}}">
+              Safety and good order
+            </a>
+          </div>
+            <div class="govuk-task-list__status" id="safetyAndGoodOrderStatus">
+              {% if violenceRatingCompleted %}
+                Completed
+              {% else %}
+                <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+              {% endif %}
+            </div>
+        </li>
+
+        <li class="govuk-task-list__item govuk-task-list__item--with-link" id="escapeRiskSection">
+          <div class="govuk-task-list__name-and-hint">
+            <a class="govuk-link govuk-task-list__link" href="/form/ratings/escapeRating/{{data.details.bookingId}}">
+              Risk of escape
+            </a>
+          </div>
+            <div class="govuk-task-list__status" id="escapeRiskStatus">
+              {% if escapeRatingCompleted %}
+                Completed
+              {% else %}
+                <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+              {% endif %}
+            </div>
+        </li>
+
+        <li class="govuk-task-list__item govuk-task-list__item--with-link" id="extremismSection">
+          <div class="govuk-task-list__name-and-hint">
+            <a class="govuk-link govuk-task-list__link" href="/form/ratings/extremismRating/{{data.details.bookingId}}">
+              Extremism
+            </a>
+          </div>
+            <div class="govuk-task-list__status" id="extremismStatus">
+              {% if extremismRatingCompleted %}
+                Completed
+              {% else %}
+                <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+              {% endif %}
+            </div>
+        </li>
+
+        <li class="govuk-task-list__item govuk-task-list__item--with-link" id="securitySection">
+          <div class="govuk-task-list__name-and-hint">
+            {% if locked %}
+                <p class="govuk-body govuk-!-margin-bottom-0">Security information</p>
+                <p class="govuk-task-list__hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}</p>
+            {% else %}
+                <a class="govuk-link govuk-task-list__link"
+                  href="{% if backFromSecurity %}/form/ratings/securityBack/{{ data.details.bookingId }}{% else %}/form/ratings/securityInput/{{ data.details.bookingId }}{% endif %}"
+                >
+                  Security information
+                </a>
+            {% endif %}
+          </div>
+
+          <div class="govuk-task-list__status" id="securityStatus">
+            {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
+            {% if locked %}
+              <strong class="govuk-tag govuk-tag--light-blue">In progress</strong>
+            {% else %}
+              {% if securityInputCompleted %}
+                Completed
+              {% else %}
+                <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+              {% endif %}
+            {% endif %}
+          </div>
+        </li>
+
+        {% if data.isInWomensEstate %}
+          <li class="govuk-task-list__item govuk-task-list__item--with-link" id="categoryDecisionSection">
+            <div class="govuk-task-list__name-and-hint">
+              <a class="govuk-link govuk-task-list__link" href="/form/ratings/decision/{{data.details.bookingId}}">
+                Category decision
+              </a>
+            </div>
+            <div class="govuk-task-list__status" id="categoryDecisionStatus">
+              {% if decisionCompleted %}
+                Completed
+              {% else %}
+                <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+              {% endif %}
+            </div>
+        </li>
+        {% endif %}
+
+        {% if openConditionsRequested %}
+          <li class="govuk-task-list__item govuk-task-list__item--with-link" id="openConditionsSection">
+            <div class="govuk-task-list__name-and-hint">
+              <a class="govuk-link govuk-task-list__link"
+              href="{% if data.isInWomensEstate %}/form/openConditions/earliestReleaseDate/{{ data.details.bookingId }}{% else %}/form/openConditions/tprs/{{ data.details.bookingId }}{% endif %}"
+              >
+                Open conditions
+              </a>
+            </div>
+            <div class="govuk-task-list__status" id="openConditionsStatus">
+              {% if openConditionsCompleted %}
+                Completed
+              {% else %}
+                <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+              {% endif %}
+            </div>
+        </li>
+        {% endif %}
+
+        <li class="govuk-task-list__item govuk-task-list__item--with-link" id="nextReviewDateSection">
+          <div class="govuk-task-list__name-and-hint">
+            <a class="govuk-link govuk-task-list__link"
+            href="{% if nextReviewDateCompleted %}/form/nextReviewDate/nextReviewDateEditing/{{ data.details.bookingId }}{% else %}/form/nextReviewDate/nextReviewDateQuestion/{{ data.details.bookingId }}{% endif %}"
+            >
+              Set next category review date
+            </a>
+          </div>
+          <div class="govuk-task-list__status" id="nextReviewDateStatus">
+            {% if nextReviewDateCompleted %}
+              Completed
+            {% else %}
+              <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+            {% endif %}
+          </div>
+        </li>
+
+        <li class="govuk-task-list__item govuk-task-list__item--with-link" id="reviewAndCategorisationSection">
+          {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
+          <div class="govuk-task-list__name-and-hint">
+            {% if allSectionsCompleted %}
+              <a class="govuk-link govuk-task-list__link" href="/form/categoriser/review/{{data.details.bookingId}}">
+                Check and submit
+              </a>
+            {% else %}
+              <p class="govuk-body govuk-!-margin-bottom-0">Check and submit</p>
+            {% endif %}
+          </div>
+
+          <div class="govuk-task-list__status" id="reviewAndCategorisationStatus">
+            {% if allSectionsCompleted %}
+              <strong class="govuk-tag govuk-tag--blue">Not yet started</strong>
+            {% else %}
+              <div class="govuk-task-list__status--cannot-start-yet">
+                Cannot start yet
               </div>
-            </li>
-
-            {% if data.isInWomensEstate %}
-            <li class="app-task-list__item">
-              {% set buttonTextEx = "Edit" if decisionCompleted else "Start" %}
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if decisionCompleted else buttonClassesDefault %}
-              {{ govukButton({
-                text: buttonTextEx,
-                href: "/form/ratings/decision/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: {  'id': 'decisionButton' }
-                })
-              }}
-              <div class="govuk-heading-m">Category decision</div>
-              <div class="govuk-!-margin-top-2">{% if decisionCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
             {% endif %}
-
-            {% if openConditionsRequested %}
-            <li class="app-task-list__item" id="openConditionsSection">
-              {% set buttonTextSec = "Edit" if openConditionsCompleted else "Start" %}
-                {% set buttonClasses = buttonClassesDefault + " grey-button" if openConditionsCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                text: buttonTextSec,
-                href: "/form/openConditions/earliestReleaseDate/" + data.details.bookingId if data.isInWomensEstate else "/form/openConditions/tprs/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: { 'id': 'openConditionsButton' }
-                })
-              }}
-              <div class="govuk-heading-m">Open conditions</div>
-              <div class="govuk-!-margin-top-2">{% if openConditionsCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-            {% endif %}
-
-            <li class="app-task-list__item" id="nextReviewDateSection">
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if nextReviewDateCompleted else buttonClassesDefault %}
-              {{ govukButton({
-                text: "Edit" if nextReviewDateCompleted else "Start",
-                href: "/form/nextReviewDate/nextReviewDateEditing/" + data.details.bookingId if nextReviewDateCompleted else
-                      "/form/nextReviewDate/nextReviewDateQuestion/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: { 'id': 'nextReviewDateButton' }
-              }) }}
-              <div class="govuk-heading-m">Set next category review date</div>
-              <div class="govuk-!-margin-top-2">{% if nextReviewDateCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-
-
-            <li id="review" class="app-task-list__item">
-              {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
-              {{ govukButton({
-                text: "Continue",
-                href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
-                disabled: not allSectionsCompleted,
-                classes: "govuk-button tableButton app-task-list__task-completed"
-              }) }}
-              <div class="govuk-heading-m">Review and categorisation</div>
-              <div class="govuk-!-margin-top-2">{{ completionText }}</div>
-            </li>
-          
-        
-
-        <li>
-          <a href="/form/cancel/{{ data.details.bookingId }}" id="cancelLink">Cancel this categorisation</a>
+          </div>
         </li>
       </ul>
+
+      <a href="/form/cancel/{{ data.details.bookingId }}" id="cancelLink">Cancel this categorisation</a>
+
     </div>
   </div>
 
-  <div class="govuk-grid-row govuk-!-width-two-thirds">
-    <div class="govuk-grid-column-full">
-      <ul class="app-task-list">
-        <li>
-          <ul class="app-task-list__items">
-            {% if data.supervisor.confirmBack.messageText %}
-              <li class="app-task-list__item" id="supervisorMessageSection">
-                {% set buttonClasses = buttonClassesDefault + " grey-button" if supervisorMessageCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                  text: "View" if supervisorMessageCompleted else "Start",
-                  href: "/form/supervisor/supervisorMessage/" + data.details.bookingId,
-                  classes: buttonClasses,
-                  attributes: { 'id': 'supervisorMessageButton' }
-                }) }}
-                <div class="govuk-heading-m">Message from supervisor</div>
-                <div class="govuk-!-margin-top-2">{% if supervisorMessageCompleted %}Completed{% else %}Not yet confirmed{% endif %}</div>
-              </li>
-            {% endif %}
-            <li class="app-task-list__item">
-              {% set buttonTextOH = "Edit" if offendingHistoryCompleted else "Start" %}
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if offendingHistoryCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                text: buttonTextOH,
-                href: "/form/ratings/offendingHistory/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: { 'id': 'offendingHistoryButton' }
-                }) }}
-                <div class="govuk-heading-m">Offending history</div>
-                <div class="govuk-!-margin-top-2">{% if offendingHistoryCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-            {% if not data.isInWomensEstate %}
-            <li class="app-task-list__item">
-              {% set buttonTextFC = "Edit" if furtherChargesCompleted else "Start" %}
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if furtherChargesCompleted else buttonClassesDefault %}
-              {{ govukButton({
-              text: buttonTextFC,
-              href: "/form/ratings/furtherCharges/" + data.details.bookingId,
-              classes: buttonClasses,
-              attributes: { 'id': 'furtherChargesButton' }
-              }) }}
-              <div class="govuk-heading-m">Further charges</div>
-              <div class="govuk-!-margin-top-2">{% if furtherChargesCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-            {% endif %}
-            <li class="app-task-list__item">
-              {% set buttonTextV = "Edit" if violenceRatingCompleted else "Start" %}
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if violenceRatingCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                text: buttonTextV,
-                href: "/form/ratings/violenceRating/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: { 'id': 'violenceButton' }
-                }) }}
-                <div class="govuk-heading-m">Safety and good order</div>
-                <div class="govuk-!-margin-top-2">{% if violenceRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-            <li class="app-task-list__item ">
-              {% set buttonTextE = "Edit" if escapeRatingCompleted else "Start" %}
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if escapeRatingCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                text: buttonTextE,
-                href: "/form/ratings/escapeRating/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: { 'id': 'escapeButton' }
-                }) }}
-                <div class="govuk-heading-m">Risk of escape</div>
-                <div class="govuk-!-margin-top-2">{% if escapeRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-            <li class="app-task-list__item">
-              {% set buttonTextEx = "Edit" if extremismRatingCompleted else "Start" %}
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if extremismRatingCompleted else buttonClassesDefault %}
-              {{ govukButton({
-                text: buttonTextEx,
-                href: "/form/ratings/extremismRating/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: { 'id': 'extremismButton' }
-              }) }}
-              <div class="govuk-heading-m">Extremism</div>
-              <div class="govuk-!-margin-top-2">{% if extremismRatingCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-            <li class="app-task-list__item" id="securitySection">
-              {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
-              {% set buttonTextSec = "Edit" if securityInputCompleted else "Start" %}
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if securityInputCompleted else buttonClassesDefault %}
-              {{ govukButton({
-                text: buttonTextSec,
-                href: null if locked else ("/form/ratings/securityBack/" + data.details.bookingId if backFromSecurity else "/form/ratings/securityInput/" + data.details.bookingId),
-                disabled: locked,
-                classes: buttonClasses,
-                attributes: { 'id': 'securityButton' }
-                })
-              }}
-              <div class="govuk-heading-m">Security information</div>
-              <div class="govuk-!-margin-top-2">{% if locked or backFromSecurity %}{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}{% elseif securityInputCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-
-            {% if data.isInWomensEstate %}
-            <li class="app-task-list__item">
-              {% set buttonTextEx = "Edit" if decisionCompleted else "Start" %}
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if decisionCompleted else buttonClassesDefault %}
-              {{ govukButton({
-                text: buttonTextEx,
-                href: "/form/ratings/decision/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: {  'id': 'decisionButton' }
-                })
-              }}
-              <div class="govuk-heading-m">Category decision</div>
-              <div class="govuk-!-margin-top-2">{% if decisionCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-            {% endif %}
-
-            {% if openConditionsRequested %}
-            <li class="app-task-list__item" id="openConditionsSection">
-              {% set buttonTextSec = "Edit" if openConditionsCompleted else "Start" %}
-                {% set buttonClasses = buttonClassesDefault + " grey-button" if openConditionsCompleted else buttonClassesDefault %}
-                {{ govukButton({
-                text: buttonTextSec,
-                href: "/form/openConditions/earliestReleaseDate/" + data.details.bookingId if data.isInWomensEstate else "/form/openConditions/tprs/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: { 'id': 'openConditionsButton' }
-                })
-              }}
-              <div class="govuk-heading-m">Open conditions</div>
-              <div class="govuk-!-margin-top-2">{% if openConditionsCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-            {% endif %}
-
-            <li class="app-task-list__item" id="nextReviewDateSection">
-              {% set buttonClasses = buttonClassesDefault + " grey-button" if nextReviewDateCompleted else buttonClassesDefault %}
-              {{ govukButton({
-                text: "Edit" if nextReviewDateCompleted else "Start",
-                href: "/form/nextReviewDate/nextReviewDateEditing/" + data.details.bookingId if nextReviewDateCompleted else
-                      "/form/nextReviewDate/nextReviewDateQuestion/" + data.details.bookingId,
-                classes: buttonClasses,
-                attributes: { 'id': 'nextReviewDateButton' }
-              }) }}
-              <div class="govuk-heading-m">Set next category review date</div>
-              <div class="govuk-!-margin-top-2">{% if nextReviewDateCompleted %}Completed{% else %}Not yet checked{% endif %}</div>
-            </li>
-
-
-            <li id="review" class="app-task-list__item">
-              {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
-              {{ govukButton({
-                text: "Continue",
-                href: "/form/categoriser/review/" + data.details.bookingId if allSectionsCompleted,
-                disabled: not allSectionsCompleted,
-                classes: "govuk-button tableButton app-task-list__task-completed"
-              }) }}
-              <div class="govuk-heading-m">Review and categorisation</div>
-              <div class="govuk-!-margin-top-2">{{ completionText }}</div>
-            </li>
-          </ul>
-        </li>
-
-        <li>
-          <a href="/form/cancel/{{ data.details.bookingId }}" id="cancelLink">Cancel this categorisation</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="govuk-grid-row govuk-!-width-two-thirds govuk-!-margin-top-6">
-    <div class="govuk-grid-column-full">
-      {{ govukTaskList({
-          idPrefix: "categorisation-tasklist",
-          items: tasklistItems
-        }) }}
-    </div>
-  </div>
 {% endblock %}

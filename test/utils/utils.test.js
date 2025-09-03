@@ -19,7 +19,6 @@ const {
   dateConverter,
   dateConverterToISO,
   formatDateForValidation,
-  tasklistStatus,
 } = require('../../server/utils/utils')
 
 describe('filterJsonObjectForLogging', () => {
@@ -351,17 +350,5 @@ describe('formatDateForValidation', () => {
   test('should return an empty string when the day, month and year are missing', () => {
     const input = { day: '', month: '3', year: '' }
     expect(formatDateForValidation(input)).toBe(undefined)
-  })
-})
-
-describe.only('tasklistStatus', () => {
-  it('returns the correct object if isComplete is true', () => {
-    const expectedObject = { text: 'Completed' }
-    expect(tasklistStatus(true)).toEqual(expectedObject)
-  })
-
-  it('returns the correct object if isComplete is false', () => {
-    const expectedObject = { tag: { text: 'Not yet started', classes: 'govuk-tag--blue' } }
-    expect(tasklistStatus(false)).toEqual(expectedObject)
   })
 })

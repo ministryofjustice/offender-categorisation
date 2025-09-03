@@ -14,7 +14,6 @@ const {
   replaceCatLabel,
   choosingHigherCategory,
   offenderLink,
-  tasklistStatus,
   dpsUrl,
   isOpenCategory,
 } = require('./utils')
@@ -74,7 +73,6 @@ module.exports = (app, path) => {
     .addGlobal('extractNextReviewDate', extractNextReviewDate)
     .addGlobal('isOpenCategory', isOpenCategory)
     .addGlobal('removeFilterFromFullUrl', removeFilterFromFullUrl)
-    .addGlobal('tasklistStatus', tasklistStatus)
     .addFilter('initialiseName', fullName => {
       // this check is for the authError page
       if (!fullName) {
