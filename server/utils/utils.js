@@ -32,8 +32,6 @@ function formatValue(value, label) {
 }
 
 const formatLength = sentenceTerms => {
-  if (!sentenceTerms) return ''
-
   if (sentenceTerms.lifeSentence) {
     return 'Life'
   }
