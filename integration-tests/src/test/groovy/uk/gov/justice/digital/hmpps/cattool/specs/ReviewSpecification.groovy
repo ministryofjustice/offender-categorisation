@@ -55,8 +55,7 @@ class ReviewSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
 
     then: 'the completed text is displayed'
-    summarySection[0].text() == 'Review and categorisation'
-    summarySection[1].text() == 'All tasks completed'
+    summarySection[0].text() == 'Check and submit'
 
     when: 'The continue link is selected'
     continueButton.click()
@@ -114,7 +113,7 @@ class ReviewSpecification extends AbstractSpecification {
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     at new TasklistPage(bookingId: '12')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewPage

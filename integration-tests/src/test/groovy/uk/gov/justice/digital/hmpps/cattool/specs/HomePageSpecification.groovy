@@ -218,7 +218,7 @@ class HomePageSpecification extends AbstractSpecification {
     elite2Api.stubAssessments(['ON678'])
     elite2Api.stubSentenceDataGetSingle('ON678', '2014-11-23')
     elite2Api.stubOffenceHistory('ON678')
-    offendingHistoryButton.click()
+    offendingHistoryLink.click()
     at(new CategoriserOffendingHistoryPage(bookingId: '12'))
     previousConvictionsNo.click()
     saveButton.click()

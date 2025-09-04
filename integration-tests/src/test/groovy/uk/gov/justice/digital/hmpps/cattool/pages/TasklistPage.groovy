@@ -20,14 +20,18 @@ class TasklistPage extends Page {
     sentenceTableRow2(required: false) { $('table#sentences tr', 2).find('td') }
     logoutLink { $('a', href: '/sign-out') }
     supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
-    offendingHistoryButton { $('#offendingHistoryButton') }
+    offendingHistoryLink { $('#offendingHistoryLink') }
     furtherChargesButton { $('#furtherChargesButton') }
     securityButton { $('#securityButton') }
+    securityLink { $('#securityLink') }
+    securityLinkDisabled { $('#securityLinkDisabled') }
     openConditionsButton(required: false) { $('#openConditionsButton') }
     nextReviewDateButton { $('#nextReviewDateButton') }
 
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button:disabled') }
+    checkAndSubmitLink { $('#checkAndSubmitLink') }
+    checkAndSubmitLinkDisabled { $('#checkAndSubmitLinkDisabled') }
     violenceButton { $('#violenceButton') }
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }

@@ -145,7 +145,7 @@
         <li class="govuk-task-list__item govuk-task-list__item--with-link" id="securitySection">
           <div class="govuk-task-list__name-and-hint">
             {% if locked %}
-                <p class="govuk-body govuk-!-margin-bottom-0">Security information</p>
+                <p class="govuk-body govuk-!-margin-bottom-0" id="securityLinkDisabled">Security information</p>
                 <p class="govuk-task-list__hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}</p>
             {% else %}
                 <a class="govuk-link govuk-task-list__link" id="securityLink"
@@ -227,11 +227,11 @@
           {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
           <div class="govuk-task-list__name-and-hint">
             {% if allSectionsCompleted %}
-              <a class="govuk-link govuk-task-list__link" href="/form/categoriser/review/{{data.details.bookingId}}">
+              <a class="govuk-link govuk-task-list__link" id="checkAndSubmitLink" href="/form/categoriser/review/{{data.details.bookingId}}">
                 Check and submit
               </a>
             {% else %}
-              <p class="govuk-body govuk-!-margin-bottom-0">Check and submit</p>
+              <p class="govuk-body govuk-!-margin-bottom-0" id="checkandSubmitLinkDisabled">Check and submit</p>
             {% endif %}
           </div>
 
