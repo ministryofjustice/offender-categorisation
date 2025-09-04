@@ -220,7 +220,6 @@
         </li>
 
         <li class="govuk-task-list__item govuk-task-list__item--with-link" id="reviewAndCategorisationSection">
-          {% set completionText = "All tasks completed" if allSectionsCompleted else "Tasks not yet complete" %}
           <div class="govuk-task-list__name-and-hint">
             {% if allSectionsCompleted %}
               <a class="govuk-link govuk-task-list__link" id="checkAndSubmitLink" href="/form/categoriser/review/{{data.details.bookingId}}">

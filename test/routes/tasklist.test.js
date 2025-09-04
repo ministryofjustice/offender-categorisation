@@ -101,7 +101,7 @@ describe('GET /tasklist/', () => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
-        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Complete a categorisation')
         expect(res.text).toContain('Offending history')
         expect(res.text).toContain('Not yet started')
         expect(res.text).toContain('Further charges')
@@ -141,7 +141,7 @@ describe('GET /tasklist/', () => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
-        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Complete a categorisation')
         expect(res.text).toContain('Offending history')
         expect(res.text).toContain('Not yet started')
         expect(res.text).not.toContain('Further charges')
@@ -193,7 +193,7 @@ describe('GET /tasklist/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Complete a categorisation')
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
         expect(res.text).toContain('href="/form/ratings/offendingHistory/12345"')
 
@@ -224,7 +224,7 @@ describe('GET /tasklist/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Complete a categorisation')
         expect(res.text).not.toContain(`Automatically referred to Security`)
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
       })
