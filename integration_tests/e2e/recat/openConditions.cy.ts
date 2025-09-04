@@ -26,10 +26,10 @@ import SupervisorReviewOutcomePage from '../../pages/form/supervisor/outcome'
 import SupervisorMessagePage from '../../pages/form/supervisor/message'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
-import GiveBackToCategoriserPage from "../../pages/form/supervisor/giveBackToCategoriser";
-import FurtherInformationPage from "../../pages/form/supervisor/furtherInformation";
-import SupervisorConfirmBackPage from "../../pages/form/supervisor/confirmBack";
-import GiveBackToCategoriserOutcome from "../../pages/form/supervisor/giveBackToCategoriserOutcome";
+import GiveBackToCategoriserPage from '../../pages/form/supervisor/giveBackToCategoriser'
+import FurtherInformationPage from '../../pages/form/supervisor/furtherInformation'
+import SupervisorConfirmBackPage from '../../pages/form/supervisor/confirmBack'
+import GiveBackToCategoriserOutcome from '../../pages/form/supervisor/giveBackToCategoriserOutcome'
 
 type DbQueryResult = { rowCount: number; rows: any[] }
 
@@ -129,7 +129,7 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     // Decision page
     const decisionPage = Page.verifyOnPage(DecisionPage)
@@ -142,10 +142,10 @@ describe('Open Conditions', () => {
     openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
     // 'the tasklist recat page is displayed with open conditions section added'
-    tasklistRecatPage.openConditionsButton().should('exist')
+    tasklistRecatPage.openConditionsLink().should('exist')
 
     // 'open conditions task is selected'
-    tasklistRecatPage.openConditionsButton().click()
+    tasklistRecatPage.openConditionsLink().click()
     const tprsPage = Page.verifyOnPage(TprsPage)
 
     // 'the TPRS page is displayed'
@@ -288,10 +288,10 @@ describe('Open Conditions', () => {
     openConditionsNotRecommendedPage.continueButton().click()
 
     // 'tasklist page is displayed without the open conditions section and the cat data is cleared'
-    tasklistRecatPage.openConditionsButton().should('not.exist')
+    tasklistRecatPage.openConditionsLink().should('not.exist')
 
     // 'a new cat entered and the tasklistRecat continue button is clicked'
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     decisionPage.catCOption().click()
     decisionPage.enterCategoryDecisionJustification('category justification text')
@@ -408,7 +408,7 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
@@ -421,10 +421,10 @@ describe('Open Conditions', () => {
     openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
     // 'the tasklist recat page is displayed with open conditions section added'
-    tasklistRecatPage.openConditionsButton().should('exist')
+    tasklistRecatPage.openConditionsLink().should('exist')
 
     // 'open conditions forms are completed'
-    tasklistRecatPage.openConditionsButton().click()
+    tasklistRecatPage.openConditionsLink().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.selectTprsRadioButton('NO')
@@ -456,7 +456,7 @@ describe('Open Conditions', () => {
     riskOfEscapingOrAbscondingPage.continueButton().click()
 
     // 'tasklist page is displayed with the open conditions section completed'
-    tasklistRecatPage.openConditionsButton().should('contain.text', 'Edit')
+    tasklistRecatPage.openConditionsLink().should('contain.text', 'Edit')
     tasklistRecatPage.checkAndSubmitButton(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
@@ -683,7 +683,8 @@ describe('Open Conditions', () => {
         justification: 'category justification text',
       })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
-        review: { supervisorDecision: 'agreeWithCategoryDecision' }, furtherInformation: { otherInformationText: 'super other info 1' },
+        review: { supervisorDecision: 'agreeWithCategoryDecision' },
+        furtherInformation: { otherInformationText: 'super other info 1' },
       })
 
       return true
@@ -721,7 +722,7 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
@@ -734,10 +735,10 @@ describe('Open Conditions', () => {
     openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
     // 'the tasklist recat page is displayed with open conditions section added'
-    tasklistRecatPage.openConditionsButton().should('exist')
+    tasklistRecatPage.openConditionsLink().should('exist')
 
     // 'open conditions forms are completed'
-    tasklistRecatPage.openConditionsButton().click()
+    tasklistRecatPage.openConditionsLink().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.selectTprsRadioButton('NO')
@@ -769,7 +770,7 @@ describe('Open Conditions', () => {
     riskOfEscapingOrAbscondingPage.continueButton().click()
 
     // 'tasklist page is displayed with the open conditions section completed'
-    tasklistRecatPage.openConditionsButton().should('contain.text', 'Edit')
+    tasklistRecatPage.openConditionsLink().should('contain.text', 'Edit')
     tasklistRecatPage.checkAndSubmitButton(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
@@ -1008,11 +1009,11 @@ describe('Open Conditions', () => {
         },
         changeCategory: {
           giveBackToCategoriser: 'No',
-          supervisorOverriddenCategoryText: 'some justification of category change'
+          supervisorOverriddenCategoryText: 'some justification of category change',
         },
         furtherInformation: {
           otherInformationText: 'super other info',
-        }
+        },
       })
 
       return true
@@ -1053,7 +1054,7 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
@@ -1230,7 +1231,7 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     // 'the categoriser looks at the supervisor message'
-    tasklistRecatPage.supervisorMessageButton().click()
+    tasklistRecatPage.supervisorMessageLink().click()
 
     // 'the supervisor message is available'
     const supervisorMessagePage = Page.verifyOnPage(SupervisorMessagePage)
@@ -1243,7 +1244,7 @@ describe('Open Conditions', () => {
 
     // 'the recategoriser chooses cat D instead of C'
     Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
@@ -1256,8 +1257,8 @@ describe('Open Conditions', () => {
     openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
     // 'open conditions forms are accessed by categoriser'
-    tasklistRecatPage.openConditionsButton().should('exist')
-    tasklistRecatPage.openConditionsButton().click()
+    tasklistRecatPage.openConditionsLink().should('exist')
+    tasklistRecatPage.openConditionsLink().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.selectTprsRadioButton('NO')
@@ -1410,7 +1411,7 @@ describe('Open Conditions', () => {
               messageText: 'super overriding C to D reason text',
               supervisorName: 'Test User',
             },
-            furtherInformation: {otherInformationText: 'super other info 1 + 2'},
+            furtherInformation: { otherInformationText: 'super other info 1 + 2' },
           },
           openConditions: {
             tprs: { tprsSelected: 'No' },
@@ -1535,7 +1536,7 @@ describe('Open Conditions', () => {
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-      tasklistRecatPage.decisionButton().click()
+      tasklistRecatPage.categoryDecisionLink().click()
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ' })
@@ -1555,7 +1556,7 @@ describe('Open Conditions', () => {
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-      tasklistRecatPage.decisionButton().click()
+      tasklistRecatPage.categoryDecisionLink().click()
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.checkConditionalReleaseDateInsetText('2020-02-02')
@@ -1575,7 +1576,7 @@ describe('Open Conditions', () => {
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-      tasklistRecatPage.decisionButton().click()
+      tasklistRecatPage.categoryDecisionLink().click()
 
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ', isVisible: false })
@@ -1593,7 +1594,7 @@ describe('Open Conditions', () => {
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-      tasklistRecatPage.decisionButton().click()
+      tasklistRecatPage.categoryDecisionLink().click()
 
       // Decision page
       const decisionPage = Page.verifyOnPage(DecisionPage)
@@ -1606,10 +1607,10 @@ describe('Open Conditions', () => {
       openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
       // 'the tasklist recat page is displayed with open conditions section added'
-      tasklistRecatPage.openConditionsButton().should('exist')
+      tasklistRecatPage.openConditionsLink().should('exist')
 
       // 'open conditions task is selected'
-      tasklistRecatPage.openConditionsButton().click()
+      tasklistRecatPage.openConditionsLink().click()
       const tprsPage = Page.verifyOnPage(TprsPage)
 
       // 'the TPRS page is displayed'

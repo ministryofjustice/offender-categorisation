@@ -12,14 +12,14 @@ export default class TasklistRecatPage extends Page {
     super('Category review task list')
   }
 
-  prisonerBackgroundButton = (): PageElement => cy.get('#prisonerBackgroundButton')
-  prevRiskAssessmentInputButton = (): PageElement => cy.get('#prevRiskAssessmentInputButton')
-  securityButton = (): PageElement => cy.get('#securityButton')
-  riskAssessmentButton = (): PageElement => cy.get('#riskAssessmentButton')
-  decisionButton = (): PageElement => cy.get('#decisionButton')
-  nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
-  openConditionsButton = (): PageElement => cy.get('#openConditionsButton')
-  supervisorMessageButton = (): PageElement => cy.get('#supervisorMessageButton')
+  prisonerBackgroundLink = (): PageElement => cy.get('#prisonerBackgroundLink')
+  prevRiskAssessmentsLink = (): PageElement => cy.get('#prevRiskAssessmentsLink')
+  securityLink = (): PageElement => cy.get('#securityLink')
+  riskAssessmentLink = (): PageElement => cy.get('#riskAssessmentLink')
+  categoryDecisionLink = (): PageElement => cy.get('#categoryDecisionLink')
+  nextReviewDateLink = (): PageElement => cy.get('#nextReviewDateLink')
+  openConditionsLink = (): PageElement => cy.get('#openConditionsLink')
+  supervisorMessageLink = (): PageElement => cy.get('#supervisorMessageLink')
 
   static createForBookingId = (bookingId: number) => {
     this._bookingId = bookingId

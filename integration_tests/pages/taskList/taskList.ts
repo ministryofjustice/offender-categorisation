@@ -16,19 +16,11 @@ export default class TaskListPage extends Page {
   escapeLink = (): PageElement => cy.get('#escapeLink')
   extremismLink = (): PageElement => cy.get('#extremismLink')
   furtherChargesLink = (): PageElement => cy.get('#furtherChargesLink')
-  // delete below when doing recat
-  nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
   nextReviewDateLink = (): PageElement => cy.get('#nextReviewDateLink')
   offendingHistoryLink = (): PageElement => cy.get('#offendingHistoryLink')
-  // delete below when doing recat
-  openConditionsButton = (): PageElement => cy.get('#openConditionsButton')
   openConditionsLink = (): PageElement => cy.get('#openConditionsLink')
-  // delete below when doing recat
-  securityButton = (): PageElement => cy.get('#securityButton')
   securityLink = (): PageElement => cy.get('#securityLink')
   violenceLink = (): PageElement => cy.get('#violenceLink')
-  // delete below when doing recat
-  supervisorMessageButton = (): PageElement => cy.get('#supervisorMessageButton')
   supervisorMessageLink = (): PageElement => cy.get('#supervisorMessageLink')
 
   static createForBookingId = (bookingId: number) => {
