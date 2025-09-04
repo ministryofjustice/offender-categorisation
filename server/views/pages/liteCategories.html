@@ -8,7 +8,7 @@
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 
-{% set pageTitle = "Other category assessment" %}
+{% set pageTitle = "Change security category" %}
 
 {% block beforeContent %}
 
@@ -31,7 +31,7 @@
 <div class="govuk-!-width-two-thirds">
 
   <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">{{ pageTitle }}</h1>
-  <p>Create a category assessment, exactly as in NOMIS.</p>
+  <p>Change this prisoner’s category outside of the standard assessment process, for example to category A or unclassified.</p>
   {% if inProgress(data) or liteInProgress %}
 
     {{ govukWarningText({
@@ -64,27 +64,21 @@
 
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-third">
-        {{ govukSelect({
-          id: 'category',
-          name: 'category',
-          label: { text: 'Category' },
-          items: cats,
-          classes: 'govuk-!-width-full',
-          value: category
-        }) }}
-      </div>
-      <div class="govuk-grid-column-one-third">
-        {{ govukSelect({
-          id: 'authority',
-          name: 'authority',
-          label: { text: 'Authority' },
-          items: committees,
-          classes: 'govuk-!-width-full'
-        }) }}
-      </div>
-    </div>
+    {{ govukSelect({
+      id: 'category',
+      name: 'category',
+      label: { text: 'Category' },
+      items: cats,
+      value: category,
+      errorMessage: errors | findError('category')
+    }) }}
+    {{ govukSelect({
+      id: 'authority',
+      name: 'authority',
+      label: { text: 'Authority' },
+      items: committees,
+      errorMessage: errors | findError('authority')
+    }) }}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
       {{ govukDateInput({
@@ -94,6 +88,9 @@
             {"id": "nextReviewDateMonth", label: "Month", "name": "nextReviewDate[month]", value: nextReviewDate.month, "classes": "govuk-input--width-2"},
             {"id": "nextReviewDateYear", label: "Year", "name": "nextReviewDate[year]", value: nextReviewDate.year, "classes": "govuk-input--width-4"}
         ],
+        hint: {
+          text: "For example, 27 3 2024"
+        },
         fieldset: {
             legend: {
               text: 'Reassessment date',
@@ -108,7 +105,8 @@
         name: 'placement',
         label: { text: 'Recommended placement' },
         items: prisonList,
-        value: placement
+        value: placement,
+        errorMessage: errors | findError('placement')
       }) }}
 
       {{ govukTextarea({
