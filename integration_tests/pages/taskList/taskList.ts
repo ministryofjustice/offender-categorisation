@@ -12,16 +12,24 @@ export default class TaskListPage extends Page {
     super('Categorisation task list')
   }
 
-  categoryDecisionButton = (): PageElement => cy.get('#decisionButton')
-  escapeButton = (): PageElement => cy.get('#escapeButton')
-  extremismButton = (): PageElement => cy.get('#extremismButton')
-  furtherChargesButton = (): PageElement => cy.get('#furtherChargesButton')
+  categoryDecisionLink = (): PageElement => cy.get('#decisionLink')
+  escapeLink = (): PageElement => cy.get('#escapeLink')
+  extremismLink = (): PageElement => cy.get('#extremismLink')
+  furtherChargesLink = (): PageElement => cy.get('#furtherChargesLink')
+  // delete below when doing recat
   nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
-  offendingHistoryButton = (): PageElement => cy.get('#offendingHistoryButton')
+  nextReviewDateLink = (): PageElement => cy.get('#nextReviewDateLink')
+  offendingHistoryLink = (): PageElement => cy.get('#offendingHistoryLink')
+  // delete below when doing recat
   openConditionsButton = (): PageElement => cy.get('#openConditionsButton')
+  openConditionsLink = (): PageElement => cy.get('#openConditionsLink')
+  // delete below when doing recat
   securityButton = (): PageElement => cy.get('#securityButton')
-  violenceButton = (): PageElement => cy.get('#violenceButton')
+  securityLink = (): PageElement => cy.get('#securityLink')
+  violenceLink = (): PageElement => cy.get('#violenceLink')
+  // delete below when doing recat
   supervisorMessageButton = (): PageElement => cy.get('#supervisorMessageButton')
+  supervisorMessageLink = (): PageElement => cy.get('#supervisorMessageLink')
 
   static createForBookingId = (bookingId: number) => {
     this._bookingId = bookingId
@@ -43,11 +51,6 @@ export default class TaskListPage extends Page {
     cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
   }
 
-  validateSummarySectionText = (expectedText: string[]) =>
-    expectedText.forEach(text => {
-      cy.get('#review').should('contain.text', text)
-    })
-
-  continueReviewAndCategorisationButton = (bookingId: number, expectedButtonText = 'Continue') =>
-    cy.contains(`a[href="/form/categoriser/review/${bookingId}"]`, expectedButtonText)
+  checkAndSubmitCategorisationLink = (bookingId: number, expectedLinkText = 'Check and submit') =>
+    cy.contains(`a[href="/form/categoriser/review/${bookingId}"]`, expectedLinkText)
 }

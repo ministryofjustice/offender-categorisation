@@ -16,7 +16,7 @@ import CategoriserReviewCYAPage from '../pages/form/categoriser/review'
 import CategoriserSubmittedPage from '../pages/taskList/categoriserSubmitted'
 import dbSeeder from '../fixtures/db-seeder'
 import SupervisorHomePage from '../pages/supervisor/home'
-import SupervisorReviewPage, { supervisorDecisionRadioButtonChoices } from "../pages/form/supervisor/review";
+import SupervisorReviewPage, { supervisorDecisionRadioButtonChoices } from '../pages/form/supervisor/review'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import SupervisorReviewOutcomePage from '../pages/form/supervisor/outcome'
 import indeterminateSentenceWarning from '../fixtures/womensEstate/indeterminateSentenceWarning'
@@ -34,9 +34,9 @@ import RiskOfSeriousHarmPage from '../pages/form/openConditions/riskOfSeriousHar
 import FurtherChargesPage from '../pages/form/openConditions/furtherCharges'
 import RiskLevelsPage from '../pages/form/openConditions/riskLevels'
 import SupervisorConfirmBackPage from '../pages/form/supervisor/confirmBack'
-import FurtherInformationPage from "../pages/form/supervisor/furtherInformation";
-import GiveBackToCategoriserPage from "../pages/form/supervisor/giveBackToCategoriser";
-import GiveBackToCategoriserOutcome from "../pages/form/supervisor/giveBackToCategoriserOutcome";
+import FurtherInformationPage from '../pages/form/supervisor/furtherInformation'
+import GiveBackToCategoriserPage from '../pages/form/supervisor/giveBackToCategoriser'
+import GiveBackToCategoriserOutcome from '../pages/form/supervisor/giveBackToCategoriserOutcome'
 
 const SHORT_DATE_FORMAT = 'D/M/YYYY'
 const LONG_DATE_FORMAT = 'dddd D MMMM YYYY'
@@ -144,7 +144,7 @@ describe("Women's Estate", () => {
       cy.task('stubSentenceDataGetSingle', { offenderNumber: offenderNo, formattedReleaseDate: '2014-11-23' })
       cy.task('stubOffenceHistory', { offenderNumber: offenderNo })
 
-      taskListPage.offendingHistoryButton().click()
+      taskListPage.offendingHistoryLink().click()
 
       const categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(12)
       categoriserOffendingHistoryPage.selectPreviousConvictionsRadioButton('NO')
@@ -158,7 +158,7 @@ describe("Women's Estate", () => {
         displayAssaults: false,
       })
 
-      taskListPage.violenceButton().click()
+      taskListPage.violenceLink().click()
 
       const violencePage = ViolencePage.createForBookingId(bookingId)
       violencePage.validateViolenceWarningExists({ exists: false })
@@ -173,26 +173,26 @@ describe("Women's Estate", () => {
         activeOnEscapeList: false,
       })
 
-      taskListPage.escapeButton().click()
+      taskListPage.escapeLink().click()
 
       const escapePage = EscapePage.createForBookingId(bookingId)
       escapePage.selectOtherEvidenceBRadioButton('NO')
       escapePage.saveAndReturnButton().click()
 
-      taskListPage.extremismButton().click()
+      taskListPage.extremismLink().click()
 
       const extremismPage = ExtremismPage.createForBookingId(bookingId)
       extremismPage.selectPreviousTerrorismOffencesRadioButton('YES')
       extremismPage.setPreviousTerrorismOffencesText('Some risk text')
       extremismPage.saveAndReturnButton().click()
 
-      taskListPage.securityButton().click()
+      taskListPage.securityLink().click()
 
       const categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
       categoriserSecurityInputPage.selectSecurityInputRadioButton('NO')
       categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-      taskListPage.nextReviewDateButton().click()
+      taskListPage.nextReviewDateLink().click()
 
       const nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
       nextReviewQuestionPage.selectNextReviewRadioButton('IN_SIX_MONTHS')
@@ -210,7 +210,7 @@ describe("Women's Estate", () => {
     it('should allow an initial categorisation - Closed', () => {
       commonInitialCategorisationSteps()
 
-      taskListPage.categoryDecisionButton().click()
+      taskListPage.categoryDecisionLink().click()
 
       const categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
       categoryDecisionPage.selectCategoryDecisionRadioButton('CLOSED')
@@ -222,8 +222,7 @@ describe("Women's Estate", () => {
         category: 'R',
       })
 
-      taskListPage.validateSummarySectionText(['Review and categorisation', 'All tasks completed'])
-      taskListPage.continueReviewAndCategorisationButton(bookingId).click()
+      taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
 
       cy.task('stubCategorise', {
         expectedCat: 'R',
@@ -315,7 +314,7 @@ describe("Women's Estate", () => {
     it('should allow an initial categorisation - Open', () => {
       commonInitialCategorisationSteps()
 
-      taskListPage.categoryDecisionButton().click()
+      taskListPage.categoryDecisionLink().click()
 
       const categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
       categoryDecisionPage.selectCategoryDecisionRadioButton('OPEN')
@@ -325,7 +324,7 @@ describe("Women's Estate", () => {
       const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
       openConditionsAddedPage.returnToTasklistButton(bookingId).click()
 
-      taskListPage.openConditionsButton().click()
+      taskListPage.openConditionsLink().click()
 
       const earliestReleaseDatePage = EarliestReleaseDatePage.createForBookingId(bookingId)
       earliestReleaseDatePage.selectEarliestReleaseDateRadioButton('NO')
@@ -367,8 +366,7 @@ describe("Women's Estate", () => {
         category: 'R',
       })
 
-      taskListPage.validateSummarySectionText(['Review and categorisation', 'All tasks completed'])
-      taskListPage.continueReviewAndCategorisationButton(bookingId).click()
+      taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
 
       cy.task('stubCategorise', {
         expectedCat: 'R',
@@ -765,7 +763,10 @@ describe("Women's Estate", () => {
       supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_R').click()
       supervisorReviewPage.submitButton().click()
 
-      const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change category to Closed')
+      const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(
+        bookingId,
+        'Change category to Closed',
+      )
       giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
       cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
       giveBackToCategoriserPage.submitButton().click()
@@ -784,11 +785,11 @@ describe("Women's Estate", () => {
           },
           changeCategory: {
             giveBackToCategoriser: 'No',
-            supervisorOverriddenCategoryText: 'some justification of category change'
+            supervisorOverriddenCategoryText: 'some justification of category change',
           },
           furtherInformation: {
-            otherInformationText: 'Some further information'
-          }
+            otherInformationText: 'Some further information',
+          },
         })
         expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
         expect(result.rows[0].approved_by).to.eq(WOMEN_SUPERVISOR_USER.username)
@@ -837,14 +838,14 @@ describe("Women's Estate", () => {
         expect(result.rows[0].form_response.supervisor).to.deep.eq({
           review: {
             supervisorDecision: 'changeCategoryTo_T',
-              supervisorOverriddenCategory: 'T',
-              supervisorCategoryAppropriate: 'No',
+            supervisorOverriddenCategory: 'T',
+            supervisorCategoryAppropriate: 'No',
           },
           confirmBack: {
             supervisorName: 'Ex12 Officer6',
-              messageText: 'A reason why I believe this is a more appropriate category',
+            messageText: 'A reason why I believe this is a more appropriate category',
           },
-        },)
+        })
         expect(result.rows[0].form_response.openConditionsRequested).to.eq(true)
         expect(result.rows[0].form_response.ratings.decision).to.eq(undefined)
       })
@@ -901,14 +902,14 @@ describe("Women's Estate", () => {
           },
           supervisor: {
             review: {
-              supervisorDecision: 'requestMoreInformation'
+              supervisorDecision: 'requestMoreInformation',
             },
             confirmBack: {
               messageText: 'Give me more information',
-              supervisorName: "Ex12 Officer6",
-            }
+              supervisorName: 'Ex12 Officer6',
+            },
           },
-          categoriser: { provisionalCategory: { suggestedCategory: 'R', categoryAppropriate: 'Yes' } }
+          categoriser: { provisionalCategory: { suggestedCategory: 'R', categoryAppropriate: 'Yes' } },
         })
       })
     })
@@ -1023,7 +1024,10 @@ describe("Women's Estate", () => {
                 extremismRating: { previousTerrorismOffences: 'Yes' },
                 offendingHistory: { previousConvictions: 'No' },
               },
-              supervisor: { review: { supervisorDecision: 'agreeWithCategoryDecision' }, furtherInformation: { otherInformationText: 'Some further information' } },
+              supervisor: {
+                review: { supervisorDecision: 'agreeWithCategoryDecision' },
+                furtherInformation: { otherInformationText: 'Some further information' },
+              },
               categoriser: { provisionalCategory: { suggestedCategory: 'I', categoryAppropriate: 'Yes' } },
             })
             expect(result.rows[0].assigned_user_id).to.eq(FEMALE_USER.username)
@@ -1069,13 +1073,16 @@ describe("Women's Estate", () => {
               supervisorReviewPage.submitButton().click()
 
               const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(bookingId)
-              supervisorConfirmBackPage.setConfirmationMessageText('A reason why I believe this is a more appropriate category')
+              supervisorConfirmBackPage.setConfirmationMessageText(
+                'A reason why I believe this is a more appropriate category',
+              )
               supervisorConfirmBackPage.saveAndReturnButton().click()
 
-              const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
-                bookingId,
-                CATEGORISATION_TYPE.INITIAL,
-              )
+              const giveBackToCategoriserOutcomePage =
+                GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+                  bookingId,
+                  CATEGORISATION_TYPE.INITIAL,
+                )
               giveBackToCategoriserOutcomePage.finishButton().should('be.visible')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
@@ -1134,13 +1141,18 @@ describe("Women's Estate", () => {
               supervisorReviewPage.validateIndeterminateWarningIsDisplayed({ isVisible: false })
               supervisorReviewPage.submitButton().click()
 
-              const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(bookingId, 'Change category to Closed')
+              const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(
+                bookingId,
+                'Change category to Closed',
+              )
               giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
               cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
               giveBackToCategoriserPage.submitButton().click()
 
               const furtherInformationPage = FurtherInformationPage.createForBookingId(bookingId)
-              furtherInformationPage.enterFurtherInformation('A reason why I believe this is a more appropriate category')
+              furtherInformationPage.enterFurtherInformation(
+                'A reason why I believe this is a more appropriate category',
+              )
               furtherInformationPage.submitButton().click()
 
               const supervisorReviewOutcomePage = SupervisorReviewOutcomePage.createForBookingIdAndCategorisationType(
@@ -1187,11 +1199,11 @@ describe("Women's Estate", () => {
                     },
                     changeCategory: {
                       giveBackToCategoriser: 'No',
-                      supervisorOverriddenCategoryText: 'some justification of category change'
+                      supervisorOverriddenCategoryText: 'some justification of category change',
                     },
                     furtherInformation: {
                       otherInformationText: 'A reason why I believe this is a more appropriate category',
-                    }
+                    },
                   },
                   categoriser: {
                     provisionalCategory: {

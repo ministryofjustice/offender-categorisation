@@ -51,7 +51,7 @@
         {% if data.supervisor.confirmBack.messageText %}
           <li class="govuk-task-list__item govuk-task-list__item--with-link" id="supervisorMessageSection">
             <div class="govuk-task-list__name-and-hint">
-              <a class="govuk-link govuk-task-list__link" href="/form/supervisor/supervisorMessage/{{data.details.bookingId}}">
+              <a class="govuk-link govuk-task-list__link" id="supervisorMessageLink" href="/form/supervisor/supervisorMessage/{{data.details.bookingId}}">
                 Message from supervisor
               </a>
             </div>
@@ -67,7 +67,7 @@
 
         <li class="govuk-task-list__item govuk-task-list__item--with-link" id="offendingHistorySection">
           <div class="govuk-task-list__name-and-hint">
-            <a class="govuk-link govuk-task-list__link" href="/form/ratings/offendingHistory/{{data.details.bookingId}}">
+            <a class="govuk-link govuk-task-list__link" id="offendingHistoryLink" href="/form/ratings/offendingHistory/{{data.details.bookingId}}">
               Offending history
             </a>
           </div>
@@ -83,7 +83,7 @@
         {% if not data.isInWomensEstate %}
           <li class="govuk-task-list__item govuk-task-list__item--with-link" id="furtherChargesSection">
             <div class="govuk-task-list__name-and-hint">
-              <a class="govuk-link govuk-task-list__link" href="/form/ratings/furtherCharges/{{data.details.bookingId}}">
+              <a class="govuk-link govuk-task-list__link" id="furtherChargesLink" href="/form/ratings/furtherCharges/{{data.details.bookingId}}">
                 Further charges
               </a>
             </div>
@@ -99,7 +99,7 @@
 
         <li class="govuk-task-list__item govuk-task-list__item--with-link" id="safetyAndGoodOrderSection">
           <div class="govuk-task-list__name-and-hint">
-            <a class="govuk-link govuk-task-list__link" href="/form/ratings/violenceRating/{{data.details.bookingId}}">
+            <a class="govuk-link govuk-task-list__link" id="violenceLink" href="/form/ratings/violenceRating/{{data.details.bookingId}}">
               Safety and good order
             </a>
           </div>
@@ -114,7 +114,7 @@
 
         <li class="govuk-task-list__item govuk-task-list__item--with-link" id="escapeRiskSection">
           <div class="govuk-task-list__name-and-hint">
-            <a class="govuk-link govuk-task-list__link" href="/form/ratings/escapeRating/{{data.details.bookingId}}">
+            <a class="govuk-link govuk-task-list__link" id="escapeLink" href="/form/ratings/escapeRating/{{data.details.bookingId}}">
               Risk of escape
             </a>
           </div>
@@ -129,7 +129,7 @@
 
         <li class="govuk-task-list__item govuk-task-list__item--with-link" id="extremismSection">
           <div class="govuk-task-list__name-and-hint">
-            <a class="govuk-link govuk-task-list__link" href="/form/ratings/extremismRating/{{data.details.bookingId}}">
+            <a class="govuk-link govuk-task-list__link" id="extremismLink" href="/form/ratings/extremismRating/{{data.details.bookingId}}">
               Extremism
             </a>
           </div>
@@ -148,7 +148,7 @@
                 <p class="govuk-body govuk-!-margin-bottom-0">Security information</p>
                 <p class="govuk-task-list__hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}</p>
             {% else %}
-                <a class="govuk-link govuk-task-list__link"
+                <a class="govuk-link govuk-task-list__link" id="securityLink"
                   href="{% if backFromSecurity %}/form/ratings/securityBack/{{ data.details.bookingId }}{% else %}/form/ratings/securityInput/{{ data.details.bookingId }}{% endif %}"
                 >
                   Security information
@@ -173,7 +173,7 @@
         {% if data.isInWomensEstate %}
           <li class="govuk-task-list__item govuk-task-list__item--with-link" id="categoryDecisionSection">
             <div class="govuk-task-list__name-and-hint">
-              <a class="govuk-link govuk-task-list__link" href="/form/ratings/decision/{{data.details.bookingId}}">
+              <a class="govuk-link govuk-task-list__link" id="decisionLink" href="/form/ratings/decision/{{data.details.bookingId}}">
                 Category decision
               </a>
             </div>
@@ -190,7 +190,7 @@
         {% if openConditionsRequested %}
           <li class="govuk-task-list__item govuk-task-list__item--with-link" id="openConditionsSection">
             <div class="govuk-task-list__name-and-hint">
-              <a class="govuk-link govuk-task-list__link"
+              <a class="govuk-link govuk-task-list__link" id="openConditionsLink"
               href="{% if data.isInWomensEstate %}/form/openConditions/earliestReleaseDate/{{ data.details.bookingId }}{% else %}/form/openConditions/tprs/{{ data.details.bookingId }}{% endif %}"
               >
                 Open conditions
@@ -208,7 +208,7 @@
 
         <li class="govuk-task-list__item govuk-task-list__item--with-link" id="nextReviewDateSection">
           <div class="govuk-task-list__name-and-hint">
-            <a class="govuk-link govuk-task-list__link"
+            <a class="govuk-link govuk-task-list__link" id="nextReviewDateLink"
             href="{% if nextReviewDateCompleted %}/form/nextReviewDate/nextReviewDateEditing/{{ data.details.bookingId }}{% else %}/form/nextReviewDate/nextReviewDateQuestion/{{ data.details.bookingId }}{% endif %}"
             >
               Set next category review date

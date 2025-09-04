@@ -60,7 +60,7 @@ describe('Further Charges', () => {
     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
-    taskListPage.furtherChargesButton().click()
+    taskListPage.furtherChargesLink().click()
   })
 
   describe('form submission', () => {
@@ -137,7 +137,7 @@ describe('Further Charges', () => {
 
         furtherChargesPage.saveAndReturnButton().click()
 
-        taskListPage.furtherChargesButton().click()
+        taskListPage.furtherChargesLink().click()
 
         furtherChargesPage.validateFurtherChargesRadioButton({
           selection: ['NO'],
@@ -165,7 +165,7 @@ describe('Further Charges', () => {
 
           furtherChargesPage.saveAndReturnButton().click()
 
-          taskListPage.furtherChargesButton().click()
+          taskListPage.furtherChargesLink().click()
 
           furtherChargesPage.validateFurtherChargesRadioButton({
             selection: ['YES'],
@@ -204,7 +204,7 @@ describe('Further Charges', () => {
 
           furtherChargesPage.saveAndReturnButton().click()
 
-          taskListPage.furtherChargesButton().click()
+          taskListPage.furtherChargesLink().click()
 
           furtherChargesPage.validateFurtherChargesRadioButton({
             selection: ['YES'],
