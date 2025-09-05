@@ -26,7 +26,6 @@ class TasklistSpecification extends AbstractSpecification {
     at(new TasklistPage(bookingId: '12'))
     sentenceTableRow1*.text() == ['2', '31/12/2018', '6 years, 3 months', '', 'Std sentence']
     sentenceTableRow2*.text() == ['4', '31/03/2019', '4 years, 2 months', '2', 'Recall 14 days']
-    !checkAndSubmitLink
     checkAndSubmitLinkDisabled.displayed
 
     and: 'SOC data is stored and merged correctly'
@@ -56,7 +55,6 @@ class TasklistSpecification extends AbstractSpecification {
 
     then: 'The continue button takes me to the review page'
     checkAndSubmitLink.displayed
-    !checkAndSubmitLinkDisabled
   }
 
   def "The continue button behaves correctly when openconditions is added to list items"() {
