@@ -22,7 +22,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     when: 'I go to the Next Review Date Question page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    nextReviewDateButton.click()
+    nextReviewDateLink.click()
 
     then: 'The page is displayed'
     at NextReviewDateQuestionPage

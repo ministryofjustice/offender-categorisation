@@ -26,10 +26,12 @@ class TasklistRecatPage extends Page {
     decisionButton { $('#decisionButton') }
     openConditionsButton(required: false) { $('#openConditionsButton') }
     nextReviewDateButton { $('#nextReviewDateButton') }
+    nextReviewDateLink { $('#nextReviewDateLink') }
+    checkAndSubmitLink { $('#checkAndSubmitLink') }
+    checkAndSubmitLinkDisabled { $('#checkAndSubmitLinkDisabled') }
 
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button:disabled') }
-    checkAndSubmitLinkDisabled { $('#checkAndSubmitLinkDisabled') }
     securityLink { $('#securityLink') }
     securityLinkDisabled { $('#securityLinkDisabled') }
     categorisationHomeLink { $('a', text: 'Categorisation dashboard') }

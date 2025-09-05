@@ -73,7 +73,7 @@ class TasklistSpecification extends AbstractSpecification {
 
     Thread.sleep(10000)
     then: 'The continue button takes me to the review page'
-    $('#checkAndSubmitLinkDisabled').displayed
+    checkAndSubmitLink.displayed
   }
 
   def "The tasklist page displays an alert when status is transferred to security"() {

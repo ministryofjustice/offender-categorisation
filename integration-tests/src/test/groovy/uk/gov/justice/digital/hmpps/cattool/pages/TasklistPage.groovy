@@ -28,11 +28,11 @@ class TasklistPage extends Page {
     openConditionsButton(required: false) { $('#openConditionsButton') }
     nextReviewDateButton { $('#nextReviewDateButton') }
     nextReviewDateLink { $('#nextReviewDateLink') }
+    checkAndSubmitLink(required: false) { $('a#checkAndSubmitLink') }
+    checkAndSubmitLinkDisabled(required: false) { $('#checkAndSubmitLinkDisabled') }
 
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button:disabled') }
-    checkAndSubmitLink(required: false) { $('a#checkAndSubmitLink') }
-    checkAndSubmitLinkDisabled(required: false) { $('#checkAndSubmitLinkDisabled') }
     violenceButton { $('#violenceButton') }
     escapeButton { $('#escapeButton') }
     extremismButton { $('#extremismButton') }

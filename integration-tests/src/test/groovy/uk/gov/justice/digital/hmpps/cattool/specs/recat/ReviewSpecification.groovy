@@ -44,7 +44,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
 
-    then: 'the completed text is displayed'
+    then: 'the check and submit link is displayed'
     checkAndSubmitLink.displayed
 
     when: 'The continue link is selected'
@@ -116,7 +116,7 @@ class ReviewSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewRecatPage
@@ -153,7 +153,7 @@ class ReviewSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with security flagged showing as "yes"'
     at ReviewRecatPage
