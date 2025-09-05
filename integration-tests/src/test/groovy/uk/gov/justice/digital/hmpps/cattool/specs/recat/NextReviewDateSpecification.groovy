@@ -120,7 +120,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
     go '/12'
     at LandingPage
-    nextReviewButton.click()
+    nextReviewDateButton.click()
 
     then: 'The page is displayed with Nomis next-review-date'
     at NextReviewDateStandalonePage
