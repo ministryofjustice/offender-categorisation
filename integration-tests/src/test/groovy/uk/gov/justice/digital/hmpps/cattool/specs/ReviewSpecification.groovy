@@ -54,11 +54,8 @@ class ReviewSpecification extends AbstractSpecification {
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
 
-    then: 'the completed text is displayed'
-    summarySection[0].text() == 'Check and submit'
-
-    when: 'The continue link is selected'
-    continueButton.click()
+    and: 'The continue link is selected'
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewPage

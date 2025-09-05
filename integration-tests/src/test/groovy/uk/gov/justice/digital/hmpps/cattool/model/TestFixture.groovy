@@ -132,8 +132,7 @@ class TestFixture {
                                      '14/06/2020',
                                      '15/06/2020',
                                      '16/06/2020',
-                                     '17/06/2020',
-                                     '6 years, 3 months (Std sentence)']
+                                     '17/06/2020']
   public static final MINI_HEADER = ['Hillmob, Ant', 'B2345YZ', '17/02/1970', 'C']
 
   public static final FULL_HEADER1 = ['ON700', '17/02/1970', 'U(Unsentenced)',
@@ -147,8 +146,7 @@ class TestFixture {
                                       '14/06/2020',
                                       '15/06/2020',
                                       '16/06/2020',
-                                      '17/06/2020',
-                                      '6 years, 3 months (Std sentence)']
+                                      '17/06/2020']
   public static final FULL_HEADER2 = ['ON700', '17/02/1970', 'Closed',
                                       'C-04-02', 'Coventry',
                                       'Latvian',
@@ -160,8 +158,7 @@ class TestFixture {
                                       '14/06/2020',
                                       '15/06/2020',
                                       '16/06/2020',
-                                      '17/06/2020',
-                                      '6 years, 3 months (Std sentence)']
+                                      '17/06/2020']
   public static final MINI_HEADER1 = ['Hillmob, William', 'ON700', '17/02/1970', 'Closed']
 
 
