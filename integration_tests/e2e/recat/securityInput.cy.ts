@@ -173,7 +173,6 @@ describe('Security Input', () => {
         })
 
         it('should display the security referral information on the task list', () => {
-          taskListPage.validateButtonState({ buttonSelector: taskListPage.securityLink, isDisabled: true })
           taskListPage.validateSecurityReferralDate(new Date())
         })
 

@@ -28,19 +28,11 @@ export default class TaskListPage extends Page {
     return new TaskListPage()
   }
 
-  validateButtonState({ buttonSelector, isDisabled }: { buttonSelector: () => PageElement; isDisabled: boolean }) {
-    buttonSelector().should(isDisabled ? 'be.disabled' : 'not.be.disabled')
-  }
-
   validateSecurityReferralDate = (date: Date) => {
     cy.get('#securitySection').should(
       'contain.text',
       `Manually referred to Security (${moment(date).format('DD/MM/yyyy')})`,
     )
-  }
-
-  validateSecurityCompletedDate = (date: Date) => {
-    cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
   }
 
   checkAndSubmitCategorisationLink = (bookingId: number, expectedLinkText = 'Check and submit') =>

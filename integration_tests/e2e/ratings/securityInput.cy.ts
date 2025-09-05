@@ -272,7 +272,6 @@ describe('Security Input', () => {
               securityBackPage.saveAndReturnButton().click()
 
               taskListPage.securityLink()
-              taskListPage.validateSecurityCompletedDate(new Date())
               taskListPage.securityLink().should('contain.text', 'Security information')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {

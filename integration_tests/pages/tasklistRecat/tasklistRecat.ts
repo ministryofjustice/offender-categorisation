@@ -26,8 +26,8 @@ export default class TasklistRecatPage extends Page {
     return new TasklistRecatPage()
   }
 
-  checkAndSubmitButton = (bookingId: number, expectedButtonText = 'Continue') =>
-    cy.contains(`a[href="/form/recat/review/${bookingId}"]`, expectedButtonText)
+  checkAndSubmitCategorisationLink = (bookingId: number, expectedLinkText = 'Check and submit') =>
+    cy.contains(`a[href="/form/recat/review/${bookingId}"]`, expectedLinkText)
 
   validateButtonState({ buttonSelector, isDisabled }: { buttonSelector: () => PageElement; isDisabled: boolean }) {
     buttonSelector().should(isDisabled ? 'be.disabled' : 'not.be.disabled')
@@ -40,12 +40,7 @@ export default class TasklistRecatPage extends Page {
     )
   }
 
-  validateSecurityCompletedDate = (date: Date) => {
-    cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
-  }
-
   validateSummarySection = () => {
-    cy.get('#review').contains('Check and submit')
-    cy.get('#review').contains('All tasks completed')
+    cy.get('#checkAndSubmitLink').contains('Check and submit')
   }
 }

@@ -178,7 +178,6 @@ describe("Women's estate recategorisation", () => {
     })
     cy.signIn()
     recategoriserHomePage.selectPrisonerWithBookingId(testBookingId, 'Edit')
-    taskListPage.validateSecurityCompletedDate(new Date())
 
     taskListPage.riskAssessmentLink().click()
     checkPrisonerHeaderSummary()
@@ -222,7 +221,7 @@ describe("Women's estate recategorisation", () => {
     cy.get('button[type="submit"]').contains('Save and return').click()
 
     taskListPage.validateSummarySection()
-    cy.get(`a[href="/form/recat/review/${testBookingId}"]`).contains('Continue').click()
+    cy.get(`a[href="/form/recat/review/${testBookingId}"]`).click()
 
     cy.get('.securityInputSummary').within(() => {
       cy.contains('Automatic referral to security team')

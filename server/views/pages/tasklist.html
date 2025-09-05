@@ -139,6 +139,7 @@
         </li>
 
         <li class="govuk-task-list__item govuk-task-list__item--with-link" id="securitySection">
+          {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
           <div class="govuk-task-list__name-and-hint">
             {% if locked %}
                 <p class="govuk-body govuk-!-margin-bottom-0" id="securityLinkDisabled">Security information</p>
@@ -153,7 +154,6 @@
           </div>
 
           <div class="govuk-task-list__status" id="securityStatus">
-            {% set backFromSecurity = (data.status === 'SECURITY_BACK' or data.status === 'APPROVED' or data.status === 'AWAITING_APPROVAL') %}
             {% if locked %}
               <strong class="govuk-tag govuk-tag--light-blue">In progress</strong>
             {% else %}

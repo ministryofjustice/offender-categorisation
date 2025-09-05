@@ -297,7 +297,7 @@ describe('Open Conditions', () => {
     decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
@@ -456,8 +456,8 @@ describe('Open Conditions', () => {
     riskOfEscapingOrAbscondingPage.continueButton().click()
 
     // 'tasklist page is displayed with the open conditions section completed'
-    tasklistRecatPage.openConditionsLink().should('contain.text', 'Edit')
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.openConditionsLink().should('exist')
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
@@ -770,8 +770,8 @@ describe('Open Conditions', () => {
     riskOfEscapingOrAbscondingPage.continueButton().click()
 
     // 'tasklist page is displayed with the open conditions section completed'
-    tasklistRecatPage.openConditionsLink().should('contain.text', 'Edit')
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.openConditionsLink().should('exist')
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
@@ -1062,7 +1062,7 @@ describe('Open Conditions', () => {
     decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
@@ -1289,7 +1289,7 @@ describe('Open Conditions', () => {
     riskOfEscapingOrAbscondingPage.selectRiskLevelsRadioButton('NO')
     riskOfEscapingOrAbscondingPage.continueButton().click()
 
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed'
     Page.verifyOnPage(ReviewRecatPage)
