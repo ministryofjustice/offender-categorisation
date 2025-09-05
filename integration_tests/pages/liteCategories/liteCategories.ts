@@ -37,7 +37,7 @@ export default class LiteCategoriesPage extends Page {
   }
 
   constructor() {
-    super('Other category assessment')
+    super('Change security category')
   }
 
   static createForBookingId = (bookingId: number) => {
@@ -104,6 +104,7 @@ export default class LiteCategoriesPage extends Page {
 
   validateAvailableCategoryOptions = () => {
     const expected = [
+      { value: '', text: 'Choose category' },
       { value: 'U', text: 'Unsentenced' },
       { value: 'Z', text: 'Unclass' },
       { value: 'A', text: 'Cat A' },

@@ -440,7 +440,7 @@ module.exports = function Index({
     }
 
     const { sentence } = await offendersService.getOffenderDetails(res.locals, bookingId)
-    const sentenceLength = formatLength(sentence?.list[0])
+    const sentenceLength = sentence?.list?.[0] ? formatLength(sentence.list[0]) : ''
 
     log.info(
       `Categoriser selecting previous oasys assessment answer: Option: ${prevOasysAssessmentAnswer}, Release Date: ${sentence?.releaseDate}, Sentence Length: ${sentenceLength}`,
