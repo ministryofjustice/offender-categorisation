@@ -27,7 +27,7 @@ const getPrisonList = (prisonListFromApi, isWomensEstatePrisoner, current) => {
   if (!current) {
     prisonList.push({
       value: '',
-      text: 'Choose recommended placement',
+      text: 'Choose placement',
       disabled: true,
       selected: true,
     })

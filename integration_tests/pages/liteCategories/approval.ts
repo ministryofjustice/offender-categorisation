@@ -36,34 +36,18 @@ export default class LiteCategoriesApprovalPage extends Page {
     return new LiteCategoriesApprovalPage()
   }
 
-  clearApprovalDate = () => this.getApprovalDate().clear()
-  getApprovalDate = () => cy.get(SELECTORS.APPROVAL_DATE.INPUT)
-  setApprovalDate = (text: string) => this.clearApprovalDate().type(text)
-
   getDepartment = () => cy.get(SELECTORS.DEPARTMENT.INPUT)
   setDepartment = (text: string) => this.getDepartment().select(text)
 
   getApprovedCategory = () => cy.get(SELECTORS.APPROVED_CATEGORY.INPUT)
   setApprovedCategory = (text: string) => this.getApprovedCategory().select(text)
 
-  clearApprovedCategoryComment = () => this.getApprovedCategoryComment().clear()
-  getApprovedCategoryComment = () => cy.get(SELECTORS.APPROVED_CATEGORY.COMMENT.INPUT)
-  setApprovedCategoryComment = (text: string) => this.clearApprovedCategoryComment().type(text)
-
   getApprovedPlacement = () => cy.get(SELECTORS.APPROVED_PLACEMENT.INPUT)
   setApprovedPlacement = (text: string) => this.getApprovedPlacement().select(text)
-
-  clearApprovedPlacementComment = () => this.getApprovedPlacementComment().clear()
-  getApprovedPlacementComment = () => cy.get(SELECTORS.APPROVED_PLACEMENT.COMMENT.INPUT)
-  setApprovedPlacementComment = (text: string) => this.clearApprovedPlacementComment().type(text)
 
   clearApprovedComment = () => this.getApprovedComment().clear()
   getApprovedComment = () => cy.get(SELECTORS.APPROVED_COMMENT.INPUT)
   setApprovedComment = (text: string) => this.clearApprovedComment().type(text)
-
-  clearNextReviewDate = () => this.getNextReviewDate().clear()
-  getNextReviewDate = () => cy.get(SELECTORS.NEXT_REVIEW_DATE.INPUT)
-  setNextReviewDate = (text: string) => this.clearNextReviewDate().type(text)
 
   submitButton = (): PageElement => cy.get(SELECTORS.BUTTON.SUBMIT).contains('Submit')
 
