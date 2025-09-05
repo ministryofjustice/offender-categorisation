@@ -20,7 +20,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     alertsApi.stubGetEscapeAlerts('B2345YZ', false, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
 
-    prisonerBackgroundButton.click()
+    prisonerBackgroundLink.click()
 
     then: 'The page is displayed'
     at PrisonerBackgroundPage
@@ -38,7 +38,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     offenceDetails << 'offenceDetails text'
     submitButton.click()
     at TasklistRecatPage
-    prisonerBackgroundButton.click()
+    prisonerBackgroundLink.click()
     at PrisonerBackgroundPage
 
     then: "data is correctly retrieved"
@@ -64,7 +64,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
 
-    prisonerBackgroundButton.click()
+    prisonerBackgroundLink.click()
 
     at PrisonerBackgroundPage
     submitButton.click()
@@ -91,7 +91,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
 
-    prisonerBackgroundButton.click()
+    prisonerBackgroundLink.click()
     at PrisonerBackgroundPage
 
     then: 'Cat history is displayed in a new tab'

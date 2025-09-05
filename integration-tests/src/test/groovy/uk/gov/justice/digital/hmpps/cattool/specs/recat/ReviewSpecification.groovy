@@ -45,8 +45,7 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubOffenceHistory('B2345YZ')
 
     then: 'the completed text is displayed'
-    summarySection[0].text() == 'Check and submit'
-    summarySection[1].text() == 'All tasks completed'
+    checkAndSubmitLink.displayed
 
     when: 'The continue link is selected'
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)

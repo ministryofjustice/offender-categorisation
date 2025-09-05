@@ -19,15 +19,19 @@ class TasklistRecatPage extends Page {
 
     supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
     fastrackEligibilityButton(required: false) { $('#fastrackEligibilityButton') }
-    prisonerBackgroundButton { $('#prisonerBackgroundButton') }
+    prisonerBackgroundLink { $('#prisonerBackgroundLink') }
     securityButton { $('#securityButton') }
     riskAssessmentButton { $('#riskAssessmentButton') }
+    riskAssessmentLink { $('#riskAssessmentLink') }
     decisionButton { $('#decisionButton') }
     openConditionsButton(required: false) { $('#openConditionsButton') }
     nextReviewDateButton { $('#nextReviewDateButton') }
 
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button:disabled') }
+    checkAndSubmitLinkDisabled { $('#checkAndSubmitLinkDisabled') }
+    securityLink { $('#securityLink') }
+    securityLinkDisabled { $('#securityLinkDisabled') }
     categorisationHomeLink { $('a', text: 'Categorisation dashboard') }
     summarySection(required: true) { $('#review div') }
     oasysInputButton(required: true) { $('#oasysInputButton') }

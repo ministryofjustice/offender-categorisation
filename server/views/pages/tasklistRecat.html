@@ -92,7 +92,7 @@
           <div class="govuk-task-list__name-and-hint">
             {% if locked %}
                 <p class="govuk-body govuk-!-margin-bottom-0" id="securityLinkDisabled">Security information</p>
-                <p class="govuk-task-list__hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}</p>
+                <p id="securityInfo" class="govuk-task-list__hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}</p>
             {% else %}
                 <a class="govuk-link govuk-task-list__link" id="securityLink"
                   href="{% if backFromSecurity %}/form/recat/securityBack/{{ data.details.bookingId }}{% else %}/form/recat/securityInput/{{ data.details.bookingId }}{% endif %}"
@@ -202,8 +202,10 @@
             {% endif %}
           </div>
         </li>
-
       </ul>
+
+      <a href="/form/cancel/{{ data.details.bookingId }}" id="cancelLink">Cancel this categorisation</a>
+
     </div>
   </div>
 
