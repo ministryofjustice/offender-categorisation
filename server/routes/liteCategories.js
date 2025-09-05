@@ -171,11 +171,12 @@ module.exports = function Index({ formService, offendersService, userService, au
       const isInWomensEstate = isFemalePrisonId(details.prisonId)
       const cats = getCatList(isInWomensEstate, rawAssessmentData.category)
       const category = cats.find(c => c.value === rawAssessmentData.category)
-      const categoryDisplay = category ? category.text : rawAssessmentData.category
+      const categoryDisplay = category && category.value !== '' ? category.text : rawAssessmentData.category
 
       const committees = getCommitteeList(rawAssessmentData.assessmentCommittee)
       const committee = committees.find(c => c.value === rawAssessmentData.assessmentCommittee)
-      const assessmentCommitteeDisplay = committee ? committee.text : rawAssessmentData.assessmentCommittee
+      const assessmentCommitteeDisplay =
+        committee && committee.value !== '' ? committee.text : rawAssessmentData.assessmentCommittee
 
       const assessedBy = await userService.getUserByUserId(res.locals, rawAssessmentData.assessedBy)
       const assessedByDisplay = assessedBy
@@ -184,7 +185,7 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       const prisonList = getPrisonList(prisonListFromApi, isInWomensEstate, rawAssessmentData.placementPrisonId)
       const prison = prisonList.find(p => p.value === rawAssessmentData.placementPrisonId)
-      const placementPrisonIdDisplay = prison ? prison.text : rawAssessmentData.placementPrisonId
+      const placementPrisonIdDisplay = prison && prison.value !== '' ? prison.text : rawAssessmentData.placementPrisonId
 
       const liteInProgress = rawAssessmentData.bookingId && !rawAssessmentData.approvedDate
       const sameUser = res.locals.user.username === rawAssessmentData.assessedBy
@@ -372,10 +373,11 @@ module.exports = function Index({ formService, offendersService, userService, au
         const prisonList = getPrisonList(prisonListFromApi, isInWomensEstate, formValidation.value.approvedPlacement)
 
         const category = cats.find(c => c.value === assessmentData.category)
-        const categoryDisplay = category ? category.text : assessmentData.category
+        const categoryDisplay = category && category.value !== '' ? category.text : assessmentData.category
 
         const committee = committees.find(c => c.value === assessmentData.assessmentCommittee)
-        const assessmentCommitteeDisplay = committee ? committee.text : assessmentData.assessmentCommittee
+        const assessmentCommitteeDisplay =
+          committee && committee.value !== '' ? committee.text : assessmentData.assessmentCommittee
 
         const assessedBy = await userService.getUserByUserId(res.locals, assessmentData.assessedBy)
         const assessedByDisplay = assessedBy
@@ -383,7 +385,7 @@ module.exports = function Index({ formService, offendersService, userService, au
           : assessmentData.assessedBy
 
         const prison = prisonList.find(p => p.value === assessmentData.placementPrisonId)
-        const placementPrisonIdDisplay = prison ? prison.text : assessmentData.placementPrisonId
+        const placementPrisonIdDisplay = prison && prison.value !== '' ? prison.text : assessmentData.placementPrisonId
 
         const assessmentDataForDisplay = {
           categoryDisplay,

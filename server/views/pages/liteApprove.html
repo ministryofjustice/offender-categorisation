@@ -159,14 +159,16 @@
       id: 'supervisorCategory',
       name: 'supervisorCategory',
       label: { text: 'Approved category' },
-      items: cats
+      items: cats,
+      errorMessage: errors | findError('supervisorCategory')
     }) }}
 
     {{ govukSelect({
       id: 'approvedCommittee',
       name: 'approvedCommittee',
       label: { text: 'Approved authority' },
-      items: committees
+      items: committees,
+      errorMessage: errors | findError('approvedCommittee')
     }) }}
 
     {{ govukDateInput({
@@ -192,7 +194,8 @@
       id: 'approvedPlacement',
       name: 'approvedPlacement',
       label: { text: 'Approved placement' },
-      items: prisonList
+      items: prisonList,
+      errorMessage: errors | findError('approvedPlacement')
     }) }}
 
     {{ govukTextarea({
