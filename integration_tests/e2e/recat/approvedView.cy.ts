@@ -161,6 +161,30 @@ describe('Approved View', () => {
     recatApprovedViewPage = Page.verifyOnPage(RecatApprovedViewPage)
 
     const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
+
+    ;[
+      {
+        columnName: 'Line',
+        expectedValues: ['2'],
+      },
+      {
+        columnName: 'Start',
+        expectedValues: ['31/12/2018'],
+      },
+      {
+        columnName: 'Length of sentence',
+        expectedValues: ['6 years, 3 months'],
+      },
+      {
+        columnName: 'Consecutive to (line)',
+        expectedValues: [''],
+      },
+      {
+        columnName: 'Type',
+        expectedValues: ['Std sentence'],
+      },
+    ].forEach(cy.checkTableColumnTextValues)
+
     approvedViewRecatPage.validateCategorisationWarnings([
       'Category C',
       'The categoriser recommends Category C',
@@ -170,14 +194,17 @@ describe('Approved View', () => {
       {
         columnName: 'Categorisation date',
         expectedValues: ['24/03/2013', '08/06/2012'],
+        tableIndex: 1,
       },
       {
         columnName: 'Category decision',
         expectedValues: ['B', 'A'],
+        tableIndex: 1,
       },
       {
         columnName: 'Review location',
         expectedValues: ['LPI prison', 'LPI prison'],
+        tableIndex: 1,
       },
     ].forEach(cy.checkTableColumnTextValues)
 

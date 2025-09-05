@@ -68,7 +68,7 @@ describe('Previous Risk Assessments', () => {
     recategoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TasklistRecatPage.createForBookingId(bookingId)
-    taskListPage.prevRiskAssessmentInputButton().click()
+    taskListPage.prevRiskAssessmentsLink().click()
   }
 
   describe('should record a valid form submission', () => {
@@ -132,7 +132,7 @@ describe('Previous Risk Assessments', () => {
         })
       })
 
-      taskListPage.prevRiskAssessmentInputButton().click()
+      taskListPage.prevRiskAssessmentsLink().click()
       cy.get('input[name="haveTheyHadRecentOasysAssessment"][value="notRequired"]').should('be.checked')
       cy.get('#haveTheyHadRecentOasysAssessment').click()
       cy.get('button[type="submit"]').contains('Continue').click()

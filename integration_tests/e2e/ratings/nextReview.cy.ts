@@ -82,7 +82,7 @@ describe('Next Review', () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
-      taskListPage.nextReviewDateButton().click()
+      taskListPage.nextReviewDateLink().click()
 
       nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
       nextReviewQuestionPage.checkPrisonerReviewGuidance()
@@ -135,7 +135,7 @@ describe('Next Review', () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
-      taskListPage.nextReviewDateButton().click()
+      taskListPage.nextReviewDateLink().click()
 
       nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
       nextReviewQuestionPage.checkPrisonerReviewGuidance()
@@ -198,7 +198,7 @@ describe('Next Review', () => {
       afterEach(() => {
         nextReviewConfirmationPage.saveAndReturnButton().click()
 
-        taskListPage.nextReviewDateButton().click()
+        taskListPage.nextReviewDateLink().click()
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
           expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)

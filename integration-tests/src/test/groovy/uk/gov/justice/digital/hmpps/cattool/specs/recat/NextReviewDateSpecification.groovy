@@ -22,7 +22,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     when: 'I go to the Next Review Date Question page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    nextReviewDateButton.click()
+    nextReviewDateLink.click()
 
     then: 'The page is displayed'
     at NextReviewDateQuestionPage
@@ -39,7 +39,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     when: 'Populated date is used, saved and accessed'
     submitButton.click()
     at TasklistRecatPage
-    nextReviewDateButton.click()
+    nextReviewDateLink.click()
     at NextReviewDateEditingPage
 
     then: "data is correctly populated"
@@ -68,7 +68,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     when: 'I go to the Next Review Date Question page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    nextReviewDateButton.click()
+    nextReviewDateLink.click()
 
     then: 'The page is displayed'
     at NextReviewDateQuestionPage
@@ -120,7 +120,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
     go '/12'
     at LandingPage
-    nextReviewDateButton.click()
+    nextReviewButton.click()
 
     then: 'The page is displayed with Nomis next-review-date'
     at NextReviewDateStandalonePage

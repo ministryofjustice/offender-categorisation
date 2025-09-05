@@ -58,7 +58,7 @@ describe('Extremism', () => {
     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
-    taskListPage.extremismButton().click()
+    taskListPage.extremismLink().click()
   }
 
   describe('increased risk variations', () => {
@@ -134,7 +134,7 @@ describe('Extremism', () => {
         extremismPage.setPreviousTerrorismOffencesText('Some risk text')
         extremismPage.saveAndReturnButton().click()
 
-        taskListPage.extremismButton().click()
+        taskListPage.extremismLink().click()
 
         extremismPage.validatePreviousTerrorismOffencesRadioButton({
           selection: ['YES'],
@@ -165,7 +165,7 @@ describe('Extremism', () => {
         extremismPage.selectPreviousTerrorismOffencesRadioButton('NO')
         extremismPage.saveAndReturnButton().click()
 
-        taskListPage.extremismButton().click()
+        taskListPage.extremismLink().click()
 
         extremismPage.validatePreviousTerrorismOffencesRadioButton({
           selection: ['NO'],

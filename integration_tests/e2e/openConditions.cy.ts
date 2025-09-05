@@ -27,10 +27,10 @@ import CategoriserAwaitingApprovalViewPage from '../pages/categoriser/awaitingap
 import OpenConditionsAdded from '../pages/openConditionsAdded'
 import OpenConditionsNotRecommended from '../pages/form/openConditions/notRecommendedPage'
 import ProvisionalCategoryOpenPage from '../pages/form/categoriser/provisionalOpenCategory'
-import FurtherInformationPage from "../pages/form/supervisor/furtherInformation";
-import SupervisorConfirmBackPage from "../pages/form/supervisor/confirmBack";
-import GiveBackToCategoriserPage from "../pages/form/supervisor/giveBackToCategoriser";
-import GiveBackToCategoriserOutcome from "../pages/form/supervisor/giveBackToCategoriserOutcome";
+import FurtherInformationPage from '../pages/form/supervisor/furtherInformation'
+import SupervisorConfirmBackPage from '../pages/form/supervisor/confirmBack'
+import GiveBackToCategoriserPage from '../pages/form/supervisor/giveBackToCategoriser'
+import GiveBackToCategoriserOutcome from '../pages/form/supervisor/giveBackToCategoriserOutcome'
 
 describe('Open conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -120,7 +120,7 @@ describe('Open conditions', () => {
     categoriserHomePage.selectPrisonerWithBookingId(12, 'Edit')
 
     taskListPage = TaskListPage.createForBookingId(12)
-    taskListPage.continueReviewAndCategorisationButton(12).click()
+    taskListPage.checkAndSubmitCategorisationLink(12).click()
     categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12, 'you continue')
     categoriserReviewCYAPage.continueButton('Continue').click()
     provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(12)
@@ -136,8 +136,8 @@ describe('Open conditions', () => {
     const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
     openConditionsAddedPage.returnToTasklistButton(12).click()
 
-    taskListPage.openConditionsButton().should('exist')
-    taskListPage.openConditionsButton().click()
+    taskListPage.openConditionsLink().should('exist')
+    taskListPage.openConditionsLink().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.continueButton().click()
@@ -358,9 +358,9 @@ describe('Open conditions', () => {
     })
 
     const taskListPage1 = Page.verifyOnPage(TaskListPage)
-    taskListPage1.openConditionsButton().should('not.exist')
+    taskListPage1.openConditionsLink().should('not.exist')
 
-    taskListPage1.continueReviewAndCategorisationButton(12).click()
+    taskListPage1.checkAndSubmitCategorisationLink(12).click()
 
     categoriserReviewCYAPage.changeLinks().should('have.length', 10)
 
@@ -421,8 +421,8 @@ describe('Open conditions', () => {
 
     completeOpenConditionsWorkflow(taskListPage)
 
-    taskListPage.openConditionsButton().should('exist')
-    taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
+    taskListPage.openConditionsLink().should('exist')
+    taskListPage.checkAndSubmitCategorisationLink(12).click()
 
     categoriserReviewCYAPage.validateOffendingHistorySummary([
       { question: 'Previous Cat A, Restricted.', expectedAnswer: 'Cat A (2012)' },
@@ -545,8 +545,8 @@ describe('Open conditions', () => {
 
     completeOpenConditionsWorkflow(taskListPage)
 
-    taskListPage.openConditionsButton().should('exist')
-    taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
+    taskListPage.openConditionsLink().should('exist')
+    taskListPage.checkAndSubmitCategorisationLink(12).click()
 
     categoriserReviewCYAPage.validateOffendingHistorySummary([
       { question: 'Previous Cat A, Restricted.', expectedAnswer: 'Cat A (2012)' },
@@ -670,8 +670,8 @@ describe('Open conditions', () => {
 
     completeOpenConditionsWorkflow(taskListPage)
 
-    taskListPage.openConditionsButton().should('exist')
-    taskListPage.continueReviewAndCategorisationButton(12, 'Continue').click()
+    taskListPage.openConditionsLink().should('exist')
+    taskListPage.checkAndSubmitCategorisationLink(12).click()
 
     categoriserReviewCYAPage.continueButton('Continue').click()
 
@@ -839,7 +839,7 @@ describe('Open conditions', () => {
     categoriserHomePage.selectPrisonerWithBookingId(12, 'Edit')
 
     const taskListPage1 = TaskListPage.createForBookingId(12)
-    taskListPage1.supervisorMessageButton().click()
+    taskListPage1.supervisorMessageLink().click()
 
     const supervisorMessagePage = Page.verifyOnPage(SupervisorMessagePage)
     supervisorMessagePage.validateMessages([
@@ -868,8 +868,8 @@ describe('Open conditions', () => {
       band: 4,
     })
 
-    taskListPage2.openConditionsButton().should('exist')
-    taskListPage2.continueReviewAndCategorisationButton(12).click()
+    taskListPage2.openConditionsLink().should('exist')
+    taskListPage2.checkAndSubmitCategorisationLink(12).click()
 
     const categoriserReviewCYAPage1 = CategoriserReviewCYAPage.createForBookingId(12, 'you continue')
     categoriserReviewCYAPage1.continueButton('Continue').click()
@@ -995,7 +995,7 @@ describe('Open conditions', () => {
   }
 
   function completeOpenConditionsWorkflow(taskListPage: TaskListPage) {
-    taskListPage.openConditionsButton().click()
+    taskListPage.openConditionsLink().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.selectTprsRadioButton('NO')
