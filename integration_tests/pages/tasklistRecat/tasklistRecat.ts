@@ -9,7 +9,7 @@ export default class TasklistRecatPage extends Page {
   }
 
   constructor() {
-    super('Category review task list')
+    super('Complete a categorisation review')
   }
 
   prisonerBackgroundLink = (): PageElement => cy.get('#prisonerBackgroundLink')

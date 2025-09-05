@@ -9,7 +9,7 @@ class TasklistPage extends Page {
   static url = '/tasklist/' + bookingId
 
   static at = {
-    headingText == 'Categorisation task list'
+    headingText == 'Complete a categorisation'
   }
 
   static content = {

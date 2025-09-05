@@ -7,7 +7,7 @@ class TasklistRecatPage extends Page {
   static url = '/tasklistRecat'
 
   static at = {
-    headingText == 'Category review task list'
+    headingText == 'Complete a categorisation reviewt'
   }
 
   static content = {

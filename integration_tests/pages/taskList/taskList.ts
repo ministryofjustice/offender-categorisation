@@ -9,7 +9,7 @@ export default class TaskListPage extends Page {
   }
 
   constructor() {
-    super('Categorisation task list')
+    super('Complete a categorisation')
   }
 
   categoryDecisionLink = (): PageElement => cy.get('#decisionLink')

@@ -68,7 +68,7 @@ describe('Previous Risk Assessments', () => {
     recategoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TasklistRecatPage.createForBookingId(bookingId)
-    taskListPage.prevRiskAssessmentInputLink().click()
+    taskListPage.prevRiskAssessmentsLink().click()
   }
 
   describe('should record a valid form submission', () => {
