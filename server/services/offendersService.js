@@ -1563,11 +1563,9 @@ module.exports = function createOffendersService(
     sequence,
     approvedDate,
     supervisorCategory,
-    approvedCategoryComment,
     approvedCommittee,
     nextReviewDate,
     approvedPlacement,
-    approvedPlacementComment,
     approvedComment,
     transactionalClient,
   }) {
@@ -1589,9 +1587,7 @@ module.exports = function createOffendersService(
         approvedCommittee,
         nextReviewDate: nextReviewDateConverted,
         approvedPlacement,
-        approvedPlacementComment,
         approvedComment,
-        approvedCategoryComment,
         transactionalClient,
       })
       return nomisClient.createSupervisorApproval({
@@ -1599,11 +1595,9 @@ module.exports = function createOffendersService(
         assessmentSeq: sequence,
 
         category: supervisorCategory,
-        approvedCategoryComment,
         reviewCommitteeCode: approvedCommittee,
         nextReviewDate: nextReviewDateConverted,
         approvedPlacementAgencyId: approvedPlacement,
-        approvedPlacementText: approvedPlacementComment,
         evaluationDate: approvedDateConverted,
         committeeCommentText: approvedComment,
       })
