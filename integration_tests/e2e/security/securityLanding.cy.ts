@@ -123,7 +123,6 @@ describe('Security Landing', () => {
 
     recategoriserHomePage.selectPrisonerWithBookingId(testBookingId)
     cy.contains(`Flagged to be referred to Security (${moment().format('DD/MM/YYYY')})`)
-    cy.get('#securityButton').should('be.disabled')
 
     cy.task('getSecurityReferral', { offenderNumber: testOffenderNumber }).then(
       (result: { rows: SecurityReferralDbRow[] }) => {

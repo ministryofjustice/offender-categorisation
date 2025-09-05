@@ -7,7 +7,7 @@ class TasklistRecatPage extends Page {
   static url = '/tasklistRecat'
 
   static at = {
-    headingText == 'Category review task list'
+    headingText == 'Complete a categorisation review'
   }
 
   static content = {
@@ -19,15 +19,21 @@ class TasklistRecatPage extends Page {
 
     supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
     fastrackEligibilityButton(required: false) { $('#fastrackEligibilityButton') }
-    prisonerBackgroundButton { $('#prisonerBackgroundButton') }
+    prisonerBackgroundLink { $('#prisonerBackgroundLink') }
     securityButton { $('#securityButton') }
     riskAssessmentButton { $('#riskAssessmentButton') }
+    riskAssessmentLink { $('#riskAssessmentLink') }
     decisionButton { $('#decisionButton') }
     openConditionsButton(required: false) { $('#openConditionsButton') }
     nextReviewDateButton { $('#nextReviewDateButton') }
+    nextReviewDateLink { $('#nextReviewDateLink') }
+    checkAndSubmitLink { $('#checkAndSubmitLink') }
+    checkAndSubmitLinkDisabled { $('#checkAndSubmitLinkDisabled') }
 
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button:disabled') }
+    securityLink { $('#securityLink') }
+    securityLinkDisabled { $('#securityLinkDisabled') }
     categorisationHomeLink { $('a', text: 'Categorisation dashboard') }
     summarySection(required: true) { $('#review div') }
     oasysInputButton(required: true) { $('#oasysInputButton') }
