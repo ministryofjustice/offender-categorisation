@@ -28,7 +28,7 @@ export default class LiteCategoriesApprovalPage extends Page {
   }
 
   constructor() {
-    super('Other category approval')
+    super('Approve security category')
   }
 
   static createForBookingId = (bookingId: number) => {

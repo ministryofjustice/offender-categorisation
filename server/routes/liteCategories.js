@@ -197,6 +197,8 @@ module.exports = function Index({ formService, offendersService, userService, au
         ...rawAssessmentData,
       }
 
+      const today = moment()
+
       res.render(`pages/liteApprove`, {
         bookingId,
         liteInProgress,
@@ -206,7 +208,11 @@ module.exports = function Index({ formService, offendersService, userService, au
         cats,
         committees,
         prisonList,
-        approvedDate: moment().format('D/M/YYYY'),
+        approvedDate: {
+          day: today.date().toString(),
+          month: (today.month() + 1).toString(),
+          year: today.year().toString(),
+        },
         data: { details },
       })
     }),
