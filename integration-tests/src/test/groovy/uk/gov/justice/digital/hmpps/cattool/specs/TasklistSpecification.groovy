@@ -73,7 +73,7 @@ class TasklistSpecification extends AbstractSpecification {
 
     Thread.sleep(10000)
     then: 'The continue button takes me to the review page'
-    checkAndSubmitLink.displayed
+    checkAndSubmitLinkDisabled.displayed
   }
 
   def "The tasklist page displays an alert when status is transferred to security"() {
@@ -89,7 +89,7 @@ class TasklistSpecification extends AbstractSpecification {
     securityLinkDisabled.displayed
     def today = LocalDate.now().format('dd/MM/yyyy')
     $('#securitySection').text().contains("Automatically referred to Security ($today)")
-    checkAndSubmitLink.displayed
+    checkAndSubmitLinkDisabled.displayed
 
     when: 'a security user views their homepage'
     prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2019-01-28'])

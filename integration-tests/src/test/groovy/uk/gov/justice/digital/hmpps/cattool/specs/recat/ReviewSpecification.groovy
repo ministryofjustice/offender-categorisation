@@ -52,7 +52,7 @@ class ReviewSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage

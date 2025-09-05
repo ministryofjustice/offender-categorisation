@@ -120,7 +120,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
     go '/12'
     at LandingPage
-    nextReviewDateLink.click()
+    nextReviewButton.click()
 
     then: 'The page is displayed with Nomis next-review-date'
     at NextReviewDateStandalonePage
@@ -177,7 +177,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ')
     go '/12'
     at LandingPage
-    nextReviewDateLink.click()
+    nextReviewDateButton.click()
 
     then: 'The page is displayed with existing date'
     at NextReviewDateStandalonePage
@@ -216,7 +216,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     at LandingPage
 
     then: 'the next review button is not present'
-    !nextReviewDateLink.displayed
+    !nextReviewDateButton.displayed
 
     when: 'I force the next review page'
     via NextReviewDateStandalonePage, '12'
