@@ -7,6 +7,7 @@ import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
+import moment from 'moment'
 
 describe('Approved View', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -58,7 +59,7 @@ describe('Approved View', () => {
       assignedUserId: null,
       approvedBy: null,
       review_reason: 'AGE',
-      approvalDate: '2025-03-06',
+      approvalDate: moment().subtract(2, 'months').format('YYYY-MM-DD'),
     })
 
     cy.task('insertFormTableDbRow', {
@@ -145,7 +146,15 @@ describe('Approved View', () => {
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.validateToDoTableData([
-      ['B2345YZ', '06/03/2025', '', 'Lastname_supervisor_user, Firstname_supervisor_user', '', 'Recat', 'View'],
+      [
+        'B2345YZ',
+        moment().subtract(2, 'months').format('DD/MM/YYYY'),
+        '',
+        'Lastname_supervisor_user, Firstname_supervisor_user',
+        '',
+        'Recat',
+        'View',
+      ],
       [
         'Scramble, TimB2345XY',
         '21/02/2019',
