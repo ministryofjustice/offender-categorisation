@@ -59,7 +59,7 @@ describe('Violence', () => {
     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
-    taskListPage.violenceButton().click()
+    taskListPage.violenceLink().click()
   }
 
   describe('form submission', () => {
@@ -135,7 +135,7 @@ describe('Violence', () => {
 
         violencePage.saveAndReturnButton().click()
 
-        taskListPage.violenceButton().click()
+        taskListPage.violenceLink().click()
 
         violencePage.validateHighRiskOfViolenceRadioButtons({
           selection: ['YES'],

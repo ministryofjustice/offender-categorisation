@@ -12,7 +12,7 @@ class RiskAssessmentSpecification extends AbstractSpecification {
     when: 'I go to the Higher Security Review page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    riskAssessmentButton.click()
+    riskAssessmentLink.click()
 
     then: 'The page is displayed'
     at RiskAssessmentPage
@@ -25,7 +25,7 @@ class RiskAssessmentSpecification extends AbstractSpecification {
     otherRelevantText << 'other relevant text'
     submitButton.click()
     at TasklistRecatPage
-    riskAssessmentButton.click()
+    riskAssessmentLink.click()
     at RiskAssessmentPage
 
     then: "data is correctly retrieved"
@@ -47,7 +47,7 @@ class RiskAssessmentSpecification extends AbstractSpecification {
     when: 'I submit the page with empty details'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    riskAssessmentButton.click()
+    riskAssessmentLink.click()
 
     at RiskAssessmentPage
     submitButton.click()

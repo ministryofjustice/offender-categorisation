@@ -77,7 +77,7 @@ describe('Security Input', () => {
     recategoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TasklistRecatPage.createForBookingId(bookingId)
-    taskListPage.securityButton().click()
+    taskListPage.securityLink().click()
   }
 
   describe('form submission', () => {
@@ -173,7 +173,6 @@ describe('Security Input', () => {
         })
 
         it('should display the security referral information on the task list', () => {
-          taskListPage.validateButtonState({ buttonSelector: taskListPage.securityButton, isDisabled: true })
           taskListPage.validateSecurityReferralDate(new Date())
         })
 
@@ -254,7 +253,7 @@ describe('Security Input', () => {
 
             recategoriserHomePage.selectPrisonerWithBookingId(bookingId, 'Edit')
 
-            taskListPage.securityButton().click()
+            taskListPage.securityLink().click()
 
             securityBackPage = CategoriserSecurityBackPage.createForBookingId(bookingId)
             securityBackPage.validateNoteFromSecurity(['Some security input text', 'security info text'])
