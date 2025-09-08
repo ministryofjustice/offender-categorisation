@@ -99,6 +99,9 @@
                 >
                   Security information
                 </a>
+                {% if backFromSecurity %}
+                  <p id="securityInfo" class="govuk-task-list__hint govuk-!-margin-bottom-0 govuk-!-margin-top-1">{{Status[data.status].value + ' (' + data.securityReferredDate + ')'}}</p>
+                {% endif %}
             {% endif %}
           </div>
 
