@@ -36,245 +36,245 @@ describe('Lite Categories', () => {
     sixMonthsFromNow = moment().add(6, 'months').startOf('day')
   })
 
-  // describe('A categoriser user can create an assessment', () => {
-  //   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
-  //
-  //   beforeEach(() => {
-  //     cy.task('stubAgencyDetails', { agency: CASELOAD.LPI.id })
-  //     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-  //
-  //     cy.task('stubUncategorised')
-  //     sentenceStartDates = {
-  //       B2345XY: new Date('2019-01-31'),
-  //       B2345YZ: new Date('2019-01-28'),
-  //     }
-  //
-  //     cy.task('stubSentenceData', {
-  //       offenderNumbers: ['B2345XY', 'B2345YZ'],
-  //       bookingIds: [11, bookingId],
-  //       startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
-  //     })
-  //
-  //     cy.task('stubGetOffenderDetails', {
-  //       bookingId,
-  //       offenderNo: 'B2345YZ',
-  //       youngOffender: false,
-  //       indeterminateSentence: false,
-  //     })
-  //
-  //     cy.task('stubAgenciesPrison')
-  //
-  //     cy.stubLogin({
-  //       user: CATEGORISER_USER,
-  //     })
-  //     cy.signIn()
-  //
-  //     cy.visit(`/${bookingId}`)
-  //
-  //     categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
-  //     categoriserLandingPage.liteCategoriesButton().click()
-  //
-  //     liteCategoriesPage = LiteCategoriesPage.createForBookingId(bookingId)
-  //     liteCategoriesPage.validateWarningVisibility({ isVisible: false })
-  //   })
-  //
-  //   it('should have the expected lite categorisation options', () => {
-  //     liteCategoriesPage.validateAvailableCategoryOptions()
-  //   })
-  //
-  //   it('error validation', () => {
-  //     liteCategoriesPage.submitButton().click()
-  //     liteCategoriesPage.validateErrorSummaryMessages([
-  //       { index: 0, href: '#category', text: 'Select a category' },
-  //       { index: 1, href: '#authority', text: 'Select an authority' },
-  //       { index: 2, href: '#nextReviewDate', text: 'Enter a valid date that is after today' },
-  //       { index: 3, href: '#placement', text: 'Select a recommended placement' },
-  //     ])
-  //   })
-  //
-  //   describe('Re-assessment date validation', () => {
-  //     beforeEach(() => {
-  //       liteCategoriesPage.setCategory('A')
-  //       liteCategoriesPage.setAuthority('GOV')
-  //       liteCategoriesPage.setRecommendedPlacement('BXI')
-  //       liteCategoriesPage.setComment('comment text')
-  //     })
-  //
-  //     afterEach(() => {
-  //       liteCategoriesPage.validateErrorSummaryMessages([
-  //         { index: 0, href: '#nextReviewDate', text: 'Enter a valid date that is after today' },
-  //       ])
-  //
-  //       liteCategoriesPage.validateErrorMessages([
-  //         { selector: '#nextReviewDate-error', text: 'Enter a valid date that is after today' },
-  //       ])
-  //
-  //       // ensure other field values are preserved
-  //       liteCategoriesPage.getCategory().should('have.value', 'A')
-  //       liteCategoriesPage.getAuthority().should('have.value', 'GOV')
-  //       liteCategoriesPage.getRecommendedPlacement().should('have.value', 'BXI')
-  //       liteCategoriesPage.getComment().should('have.text', 'comment text')
-  //     })
-  //
-  //     it('should require a re-assessment date', () => {
-  //       liteCategoriesPage.submitButton().click()
-  //     })
-  //
-  //     it('should require a valid date for the re-assessment date string', () => {
-  //       liteCategoriesPage.setReAssessmentDateDay('INVALID')
-  //       liteCategoriesPage.setReAssessmentDateMonth('INVALID')
-  //       liteCategoriesPage.setReAssessmentDateYear('INVALID')
-  //       liteCategoriesPage.submitButton().click()
-  //     })
-  //
-  //     it('should require the re-assessment date is in the future', () => {
-  //       liteCategoriesPage.setReAssessmentDateDay('12')
-  //       liteCategoriesPage.setReAssessmentDateMonth('01')
-  //       liteCategoriesPage.setReAssessmentDateYear('2016')
-  //       liteCategoriesPage.submitButton().click()
-  //     })
-  //   })
-  //
-  //   describe('on valid submission', () => {
-  //     beforeEach(() => {
-  //       cy.task('stubCategorise', {
-  //         bookingId,
-  //         category: 'V',
-  //         committee: 'RECP',
-  //         nextReviewDate: sixMonthsFromNow.format('yyyy-MM-dd'),
-  //         comment: 'comment',
-  //         placementAgencyId: 'BXI',
-  //         sequenceNumber: 1,
-  //       })
-  //
-  //       liteCategoriesPage.setCategory('V')
-  //       liteCategoriesPage.setAuthority('RECP')
-  //       liteCategoriesPage.setRecommendedPlacement('BXI')
-  //       liteCategoriesPage.setComment('comment')
-  //     })
-  //
-  //     it('should handle a valid submission', () => {
-  //       liteCategoriesPage.setReAssessmentDateDay('12')
-  //       liteCategoriesPage.setReAssessmentDateMonth('01')
-  //       liteCategoriesPage.setReAssessmentDateYear('2099')
-  //       liteCategoriesPage.submitButton().click()
-  //
-  //       LiteCategoriesConfirmedPage.createForBookingId(bookingId)
-  //
-  //       cy.task('selectLiteCategoryTableDbRow', { bookingId }).then((result: { rows: LiteCategoryDbRow[] }) => {
-  //         const data = result.rows[0]
-  //
-  //         expect(data.sequence).eq(1)
-  //         expect(data.category).eq('V')
-  //         expect(data.offender_no).eq('B2345YZ')
-  //         expect(data.prison_id).eq('LEI')
-  //         expect(data.assessed_by).eq('CATEGORISER_USER')
-  //         expect(data.assessment_committee).eq('RECP')
-  //         expect(data.next_review_date).eq('2099-01-12T00:00:00.000Z')
-  //         expect(data.assessment_comment).eq('comment')
-  //         expect(data.placement_prison_id).eq('BXI')
-  //       })
-  //     })
-  //
-  //     it('should disable the submit button when pressed', () => {
-  //       liteCategoriesPage.submitButton().should('have.attr', 'data-prevent-double-click', 'true')
-  //       liteCategoriesPage.submitButton().should('not.have.attr', 'data-clicked', 'true')
-  //       liteCategoriesPage.submitButton().should('not.have.attr', 'disabled', 'disabled')
-  //       liteCategoriesPage.submitButton().should('not.have.attr', 'aria-disabled', 'true')
-  //
-  //       // a total hack to fake a form submission as every other attempt
-  //       // immediately redirected before running the desired assertions
-  //       cy.get('form').then(form => form[0].dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })))
-  //
-  //       liteCategoriesPage.submitButton().should('have.attr', 'data-prevent-double-click', 'true')
-  //       liteCategoriesPage.submitButton().should('have.attr', 'data-clicked', 'true')
-  //       liteCategoriesPage.submitButton().should('have.attr', 'disabled', 'disabled')
-  //       liteCategoriesPage.submitButton().should('have.attr', 'aria-disabled', 'true')
-  //     })
-  //
-  //     it('should not allow a second categorisation to begin when a categorisation is already in progress', () => {
-  //       liteCategoriesPage.setReAssessmentDateDay('12')
-  //       liteCategoriesPage.setReAssessmentDateMonth('01')
-  //       liteCategoriesPage.setReAssessmentDateYear('2099')
-  //       liteCategoriesPage.submitButton().click()
-  //
-  //       LiteCategoriesConfirmedPage.createForBookingId(bookingId)
-  //
-  //       cy.visit(`/${bookingId}`)
-  //       categoriserLandingPage.liteCategoriesButton().click()
-  //
-  //       liteCategoriesPage.validateWarningVisibility({ isVisible: true })
-  //       liteCategoriesPage.validateWarningText('A categorisation is already in progress for this person.')
-  //     })
-  //
-  //     it('should not be available for a re-categorisation', () => {
-  //       liteCategoriesPage.setReAssessmentDateDay('12')
-  //       liteCategoriesPage.setReAssessmentDateMonth('01')
-  //       liteCategoriesPage.setReAssessmentDateYear('2099')
-  //       liteCategoriesPage.submitButton().click()
-  //
-  //       const liteCategoriesConfirmedPage = Page.verifyOnPage(LiteCategoriesConfirmedPage)
-  //       liteCategoriesConfirmedPage.signOut().click()
-  //
-  //       cy.stubLogin({
-  //         user: RECATEGORISER_USER,
-  //       })
-  //       cy.signIn()
-  //
-  //       cy.visit(`/tasklistRecat/${bookingId}`)
-  //
-  //       const errorPage = Page.verifyOnPage(ErrorPage)
-  //       errorPage.checkErrorMessage({
-  //         heading: 'Error: This prisoner has an unapproved categorisation in the "Other categories" section',
-  //         body: '',
-  //       })
-  //     })
-  //
-  //     it('should display the expected status to the categoriser', () => {
-  //       liteCategoriesPage.setReAssessmentDateDay('12')
-  //       liteCategoriesPage.setReAssessmentDateMonth('01')
-  //       liteCategoriesPage.setReAssessmentDateYear('2099')
-  //       liteCategoriesPage.submitButton().click()
-  //
-  //       cy.visit(CategoriserHomePage.baseUrl)
-  //
-  //       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-  //       categoriserHomePage.validateToDoTableData([
-  //         [
-  //           calculateOverdueText(sentenceStartDates.B2345YZ),
-  //           'Pitstop, PenelopeB2345XY',
-  //           moment().diff(moment(sentenceStartDates['B2345YZ']).startOf('day'), 'days').toString(),
-  //           'Not categorised',
-  //           'Engelbert Humperdinck',
-  //           'OTHER',
-  //         ],
-  //         [
-  //           calculateOverdueText(sentenceStartDates.B2345XY),
-  //           'Hillmob, AntB2345YZ',
-  //           moment().diff(moment(sentenceStartDates['B2345XY']).startOf('day'), 'days').toString(),
-  //           'Awaiting approval',
-  //           'Engelbert Humperdinck',
-  //           'PNOMIS',
-  //         ],
-  //       ])
-  //     })
-  //
-  //     it('should prevent a further submission when the submit button is clicked', () => {
-  //       liteCategoriesPage.setReAssessmentDateDay('12')
-  //       liteCategoriesPage.setReAssessmentDateMonth('01')
-  //       liteCategoriesPage.setReAssessmentDateYear('2099')
-  //       liteCategoriesPage.submitButton().click()
-  //
-  //       cy.visit(`/tasklist/${bookingId}`)
-  //
-  //       const errorPage = Page.verifyOnPage(ErrorPage)
-  //       errorPage.checkErrorMessage({
-  //         heading: 'Error: This prisoner has an unapproved categorisation in the "Other categories" section',
-  //         body: '',
-  //       })
-  //     })
-  //   })
-  // })
+  describe('A categoriser user can create an assessment', () => {
+    let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
+
+    beforeEach(() => {
+      cy.task('stubAgencyDetails', { agency: CASELOAD.LPI.id })
+      cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
+
+      cy.task('stubUncategorised')
+      sentenceStartDates = {
+        B2345XY: new Date('2019-01-31'),
+        B2345YZ: new Date('2019-01-28'),
+      }
+
+      cy.task('stubSentenceData', {
+        offenderNumbers: ['B2345XY', 'B2345YZ'],
+        bookingIds: [11, bookingId],
+        startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
+      })
+
+      cy.task('stubGetOffenderDetails', {
+        bookingId,
+        offenderNo: 'B2345YZ',
+        youngOffender: false,
+        indeterminateSentence: false,
+      })
+
+      cy.task('stubAgenciesPrison')
+
+      cy.stubLogin({
+        user: CATEGORISER_USER,
+      })
+      cy.signIn()
+
+      cy.visit(`/${bookingId}`)
+
+      categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
+      categoriserLandingPage.liteCategoriesButton().click()
+
+      liteCategoriesPage = LiteCategoriesPage.createForBookingId(bookingId)
+      liteCategoriesPage.validateWarningVisibility({ isVisible: false })
+    })
+
+    it('should have the expected lite categorisation options', () => {
+      liteCategoriesPage.validateAvailableCategoryOptions()
+    })
+
+    it('error validation', () => {
+      liteCategoriesPage.submitButton().click()
+      liteCategoriesPage.validateErrorSummaryMessages([
+        { index: 0, href: '#category', text: 'Select a category' },
+        { index: 1, href: '#authority', text: 'Select an authority' },
+        { index: 2, href: '#nextReviewDate', text: 'Enter a valid date that is after today' },
+        { index: 3, href: '#placement', text: 'Select a recommended placement' },
+      ])
+    })
+
+    describe('Re-assessment date validation', () => {
+      beforeEach(() => {
+        liteCategoriesPage.setCategory('A')
+        liteCategoriesPage.setAuthority('GOV')
+        liteCategoriesPage.setRecommendedPlacement('BXI')
+        liteCategoriesPage.setComment('comment text')
+      })
+
+      afterEach(() => {
+        liteCategoriesPage.validateErrorSummaryMessages([
+          { index: 0, href: '#nextReviewDate', text: 'Enter a valid date that is after today' },
+        ])
+
+        liteCategoriesPage.validateErrorMessages([
+          { selector: '#nextReviewDate-error', text: 'Enter a valid date that is after today' },
+        ])
+
+        // ensure other field values are preserved
+        liteCategoriesPage.getCategory().should('have.value', 'A')
+        liteCategoriesPage.getAuthority().should('have.value', 'GOV')
+        liteCategoriesPage.getRecommendedPlacement().should('have.value', 'BXI')
+        liteCategoriesPage.getComment().should('have.text', 'comment text')
+      })
+
+      it('should require a re-assessment date', () => {
+        liteCategoriesPage.submitButton().click()
+      })
+
+      it('should require a valid date for the re-assessment date string', () => {
+        liteCategoriesPage.setReAssessmentDateDay('INVALID')
+        liteCategoriesPage.setReAssessmentDateMonth('INVALID')
+        liteCategoriesPage.setReAssessmentDateYear('INVALID')
+        liteCategoriesPage.submitButton().click()
+      })
+
+      it('should require the re-assessment date is in the future', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2016')
+        liteCategoriesPage.submitButton().click()
+      })
+    })
+
+    describe('on valid submission', () => {
+      beforeEach(() => {
+        cy.task('stubCategorise', {
+          bookingId,
+          category: 'V',
+          committee: 'RECP',
+          nextReviewDate: sixMonthsFromNow.format('yyyy-MM-dd'),
+          comment: 'comment',
+          placementAgencyId: 'BXI',
+          sequenceNumber: 1,
+        })
+
+        liteCategoriesPage.setCategory('V')
+        liteCategoriesPage.setAuthority('RECP')
+        liteCategoriesPage.setRecommendedPlacement('BXI')
+        liteCategoriesPage.setComment('comment')
+      })
+
+      it('should handle a valid submission', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
+        liteCategoriesPage.submitButton().click()
+
+        LiteCategoriesConfirmedPage.createForBookingId(bookingId)
+
+        cy.task('selectLiteCategoryTableDbRow', { bookingId }).then((result: { rows: LiteCategoryDbRow[] }) => {
+          const data = result.rows[0]
+
+          expect(data.sequence).eq(1)
+          expect(data.category).eq('V')
+          expect(data.offender_no).eq('B2345YZ')
+          expect(data.prison_id).eq('LEI')
+          expect(data.assessed_by).eq('CATEGORISER_USER')
+          expect(data.assessment_committee).eq('RECP')
+          expect(data.next_review_date).eq('2099-01-12T00:00:00.000Z')
+          expect(data.assessment_comment).eq('comment')
+          expect(data.placement_prison_id).eq('BXI')
+        })
+      })
+
+      it('should disable the submit button when pressed', () => {
+        liteCategoriesPage.submitButton().should('have.attr', 'data-prevent-double-click', 'true')
+        liteCategoriesPage.submitButton().should('not.have.attr', 'data-clicked', 'true')
+        liteCategoriesPage.submitButton().should('not.have.attr', 'disabled', 'disabled')
+        liteCategoriesPage.submitButton().should('not.have.attr', 'aria-disabled', 'true')
+
+        // a total hack to fake a form submission as every other attempt
+        // immediately redirected before running the desired assertions
+        cy.get('form').then(form => form[0].dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })))
+
+        liteCategoriesPage.submitButton().should('have.attr', 'data-prevent-double-click', 'true')
+        liteCategoriesPage.submitButton().should('have.attr', 'data-clicked', 'true')
+        liteCategoriesPage.submitButton().should('have.attr', 'disabled', 'disabled')
+        liteCategoriesPage.submitButton().should('have.attr', 'aria-disabled', 'true')
+      })
+
+      it('should not allow a second categorisation to begin when a categorisation is already in progress', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
+        liteCategoriesPage.submitButton().click()
+
+        LiteCategoriesConfirmedPage.createForBookingId(bookingId)
+
+        cy.visit(`/${bookingId}`)
+        categoriserLandingPage.liteCategoriesButton().click()
+
+        liteCategoriesPage.validateWarningVisibility({ isVisible: true })
+        liteCategoriesPage.validateWarningText('A categorisation is already in progress for this person.')
+      })
+
+      it('should not be available for a re-categorisation', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
+        liteCategoriesPage.submitButton().click()
+
+        const liteCategoriesConfirmedPage = Page.verifyOnPage(LiteCategoriesConfirmedPage)
+        liteCategoriesConfirmedPage.signOut().click()
+
+        cy.stubLogin({
+          user: RECATEGORISER_USER,
+        })
+        cy.signIn()
+
+        cy.visit(`/tasklistRecat/${bookingId}`)
+
+        const errorPage = Page.verifyOnPage(ErrorPage)
+        errorPage.checkErrorMessage({
+          heading: 'Error: This prisoner has an unapproved categorisation in the "Other categories" section',
+          body: '',
+        })
+      })
+
+      it('should display the expected status to the categoriser', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
+        liteCategoriesPage.submitButton().click()
+
+        cy.visit(CategoriserHomePage.baseUrl)
+
+        const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
+        categoriserHomePage.validateToDoTableData([
+          [
+            calculateOverdueText(sentenceStartDates.B2345YZ),
+            'Pitstop, PenelopeB2345XY',
+            moment().diff(moment(sentenceStartDates['B2345YZ']).startOf('day'), 'days').toString(),
+            'Not categorised',
+            'Engelbert Humperdinck',
+            'OTHER',
+          ],
+          [
+            calculateOverdueText(sentenceStartDates.B2345XY),
+            'Hillmob, AntB2345YZ',
+            moment().diff(moment(sentenceStartDates['B2345XY']).startOf('day'), 'days').toString(),
+            'Awaiting approval',
+            'Engelbert Humperdinck',
+            'PNOMIS',
+          ],
+        ])
+      })
+
+      it('should prevent a further submission when the submit button is clicked', () => {
+        liteCategoriesPage.setReAssessmentDateDay('12')
+        liteCategoriesPage.setReAssessmentDateMonth('01')
+        liteCategoriesPage.setReAssessmentDateYear('2099')
+        liteCategoriesPage.submitButton().click()
+
+        cy.visit(`/tasklist/${bookingId}`)
+
+        const errorPage = Page.verifyOnPage(ErrorPage)
+        errorPage.checkErrorMessage({
+          heading: 'Error: This prisoner has an unapproved categorisation in the "Other categories" section',
+          body: '',
+        })
+      })
+    })
+  })
 
   describe('supervisor view', () => {
     let supervisorDashboardHomePage: SupervisorDashboardHomePage
