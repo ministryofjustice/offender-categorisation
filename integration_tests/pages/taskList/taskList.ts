@@ -9,27 +9,23 @@ export default class TaskListPage extends Page {
   }
 
   constructor() {
-    super('Categorisation task list')
+    super('Complete a categorisation')
   }
 
-  categoryDecisionButton = (): PageElement => cy.get('#decisionButton')
-  escapeButton = (): PageElement => cy.get('#escapeButton')
-  extremismButton = (): PageElement => cy.get('#extremismButton')
-  furtherChargesButton = (): PageElement => cy.get('#furtherChargesButton')
-  nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
-  offendingHistoryButton = (): PageElement => cy.get('#offendingHistoryButton')
-  openConditionsButton = (): PageElement => cy.get('#openConditionsButton')
-  securityButton = (): PageElement => cy.get('#securityButton')
-  violenceButton = (): PageElement => cy.get('#violenceButton')
-  supervisorMessageButton = (): PageElement => cy.get('#supervisorMessageButton')
+  categoryDecisionLink = (): PageElement => cy.get('#decisionLink')
+  escapeLink = (): PageElement => cy.get('#escapeLink')
+  extremismLink = (): PageElement => cy.get('#extremismLink')
+  furtherChargesLink = (): PageElement => cy.get('#furtherChargesLink')
+  nextReviewDateLink = (): PageElement => cy.get('#nextReviewDateLink')
+  offendingHistoryLink = (): PageElement => cy.get('#offendingHistoryLink')
+  openConditionsLink = (): PageElement => cy.get('#openConditionsLink')
+  securityLink = (): PageElement => cy.get('#securityLink')
+  violenceLink = (): PageElement => cy.get('#violenceLink')
+  supervisorMessageLink = (): PageElement => cy.get('#supervisorMessageLink')
 
   static createForBookingId = (bookingId: number) => {
     this._bookingId = bookingId
     return new TaskListPage()
-  }
-
-  validateButtonState({ buttonSelector, isDisabled }: { buttonSelector: () => PageElement; isDisabled: boolean }) {
-    buttonSelector().should(isDisabled ? 'be.disabled' : 'not.be.disabled')
   }
 
   validateSecurityReferralDate = (date: Date) => {
@@ -39,15 +35,6 @@ export default class TaskListPage extends Page {
     )
   }
 
-  validateSecurityCompletedDate = (date: Date) => {
-    cy.get('#securitySection').should('contain.text', `Completed Security (${moment(date).format('DD/MM/yyyy')})`)
-  }
-
-  validateSummarySectionText = (expectedText: string[]) =>
-    expectedText.forEach(text => {
-      cy.get('#review').should('contain.text', text)
-    })
-
-  continueReviewAndCategorisationButton = (bookingId: number, expectedButtonText = 'Continue') =>
-    cy.contains(`a[href="/form/categoriser/review/${bookingId}"]`, expectedButtonText)
+  checkAndSubmitCategorisationLink = (bookingId: number, expectedLinkText = 'Check and submit') =>
+    cy.contains(`a[href="/form/categoriser/review/${bookingId}"]`, expectedLinkText)
 }

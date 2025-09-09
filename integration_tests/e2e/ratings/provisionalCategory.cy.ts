@@ -123,7 +123,7 @@ describe('Provisional Category', () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId, 'Edit')
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
-      taskListPage.continueReviewAndCategorisationButton(bookingId).click()
+      taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
       const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId, 'you continue')
       categoriserReviewCYAPage.continueButton('Continue').click()
       provisionalCategoryPage = ProvisionalCategoryPage.createForBookingId(bookingId)
@@ -207,7 +207,7 @@ describe('Provisional Category', () => {
         provisionalCategoryPage.submitButton().click()
         cy.get('h1').contains('Open conditions assessment added to your task list')
         cy.get(`a[href*="/tasklist/${bookingId}"]`).click()
-        taskListPage.openConditionsButton().should('exist')
+        taskListPage.openConditionsLink().should('exist')
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
           expect(result.rows[0].form_response.categoriser.provisionalCategory).to.deep.eq({
