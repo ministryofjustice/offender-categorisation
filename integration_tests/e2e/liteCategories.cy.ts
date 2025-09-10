@@ -82,6 +82,16 @@ describe('Lite Categories', () => {
       liteCategoriesPage.validateAvailableCategoryOptions()
     })
 
+    it('error validation', () => {
+      liteCategoriesPage.submitButton().click()
+      liteCategoriesPage.validateErrorSummaryMessages([
+        { index: 0, href: '#category', text: 'Select a category' },
+        { index: 1, href: '#authority', text: 'Select an authority' },
+        { index: 2, href: '#nextReviewDate', text: 'Enter a valid date that is after today' },
+        { index: 3, href: '#placement', text: 'Select a recommended placement' },
+      ])
+    })
+
     describe('Re-assessment date validation', () => {
       beforeEach(() => {
         liteCategoriesPage.setCategory('A')
@@ -315,8 +325,13 @@ describe('Lite Categories', () => {
       supervisorDashboardHomePage.approveOtherCategoriesApprovalButton({ bookingId }).click()
 
       liteApprovalPage = LiteCategoriesApprovalPage.createForBookingId(bookingId)
-      liteApprovalPage.getApprovalDate().should('have.value', moment().format(SHORT_DATE_FORMAT))
-      liteApprovalPage.getNextReviewDate().should('have.value', sixMonthsFromNow.format(SHORT_DATE_FORMAT))
+      cy.get('#approvedDateDay').should('have.value', moment().format('D'))
+      cy.get('#approvedDateMonth').should('have.value', moment().format('M'))
+      cy.get('#approvedDateYear').should('have.value', moment().format('YYYY'))
+
+      cy.get('#approvedNextReviewDateDay').should('have.value', sixMonthsFromNow.format('D'))
+      cy.get('#approvedNextReviewDateMonth').should('have.value', sixMonthsFromNow.format('M'))
+      cy.get('#approvedNextReviewDateYear').should('have.value', sixMonthsFromNow.format('YYYY'))
     })
 
     it('should have the expected lite categorisation approved category options', () => {
@@ -333,17 +348,22 @@ describe('Lite Categories', () => {
         })
 
         it('should require an approval date', () => {
-          liteApprovalPage.clearApprovalDate()
+          cy.get('#approvedDateDay').clear()
+          cy.get('#approvedDateMonth').clear()
+          cy.get('#approvedDateYear').clear()
           liteApprovalPage.submitButton().click()
         })
 
         it('should require a valid approval date string', () => {
-          liteApprovalPage.setApprovalDate('some invalid value')
+          cy.get('#approvedDateDay').type('invalid')
           liteApprovalPage.submitButton().click()
         })
 
         it('should require the approval date that is today or earlier', () => {
-          liteApprovalPage.setApprovalDate(moment().add(1, 'day').format(SHORT_DATE_FORMAT))
+          const testDate = moment().add(1, 'day')
+          cy.get('#approvedDateDay').clear().type(testDate.format('D'))
+          cy.get('#approvedDateMonth').type(testDate.format('M'))
+          cy.get('#approvedDateYear').type(testDate.format('YYYY'))
           liteApprovalPage.submitButton().click()
         })
       })
@@ -351,38 +371,47 @@ describe('Lite Categories', () => {
       describe('next review date', () => {
         afterEach(() => {
           liteApprovalPage.validateErrorSummaryMessages([
-            { href: '#nextReviewDate', index: 0, text: 'Enter a valid date that is after today' },
+            { href: '#approvedNextReviewDate', index: 0, text: 'Enter a valid date that is after today' },
           ])
           liteApprovalPage.validateErrorMessages([
-            { selector: '#nextReviewDate-error', text: 'Enter a valid future date' },
+            { selector: '#approvedNextReviewDate-error', text: 'Enter a valid date that is after today' },
           ])
         })
 
         it('should require a next review date', () => {
-          liteApprovalPage.clearNextReviewDate()
+          cy.get('#approvedNextReviewDateDay').clear()
+          cy.get('#approvedNextReviewDateMonth').clear()
+          cy.get('#approvedNextReviewDateYear').clear()
           liteApprovalPage.submitButton().click()
         })
 
         it('should require a valid next review date string', () => {
-          liteApprovalPage.setNextReviewDate('some invalid value')
+          cy.get('#approvedNextReviewDateDay').type('invalid')
           liteApprovalPage.submitButton().click()
         })
 
         it('should require the next review date that is after today', () => {
-          liteApprovalPage.setNextReviewDate(moment().format(SHORT_DATE_FORMAT))
+          const testDate = moment()
+          cy.get('#approvedNextReviewDateDay').clear().type(testDate.format('D'))
+          cy.get('#approvedNextReviewDateMonth').type(testDate.format('M'))
+          cy.get('#approvedNextReviewDateYear').clear().type(testDate.format('M'))
           liteApprovalPage.submitButton().click()
         })
       })
     })
 
     it('should handle a valid form submission', () => {
-      liteApprovalPage.setApprovalDate('29/4/2020')
+      cy.get('#approvedDateDay').clear().type('29')
+      cy.get('#approvedDateMonth').clear().type('4')
+      cy.get('#approvedDateYear').clear().type('2020')
       liteApprovalPage.setApprovedCategory('A')
-      liteApprovalPage.setApprovedCategoryComment('approved category comment')
       liteApprovalPage.setDepartment('GOV')
       liteApprovalPage.setApprovedPlacement('SYI')
-      liteApprovalPage.setApprovedPlacementComment('approved placement comment')
-      liteApprovalPage.setNextReviewDate(moment().add(1, 'year').format(SHORT_DATE_FORMAT))
+
+      const testDate = moment().add(1, 'year')
+      cy.get('#approvedNextReviewDateDay').clear().type(testDate.format('D'))
+      cy.get('#approvedNextReviewDateMonth').clear().type(testDate.format('M'))
+      cy.get('#approvedNextReviewDateYear').clear().type(testDate.format('YYYY'))
       liteApprovalPage.setApprovedComment('approved comment')
 
       cy.task('stubSupervisorApprove')
@@ -400,9 +429,7 @@ describe('Lite Categories', () => {
         expect(data.approved_committee).eq('GOV')
         expect(data.next_review_date).eq(moment().add(1, 'year').startOf('day').toISOString())
         expect(data.approved_placement_prison_id).eq('SYI')
-        expect(data.approved_placement_comment).eq('approved placement comment')
         expect(data.approved_comment).eq('approved comment')
-        expect(data.approved_category_comment).eq('approved category comment')
       })
     })
   })
@@ -458,7 +485,12 @@ describe('Lite Categories', () => {
       })
 
       const liteApprovalPage = LiteCategoriesApprovalPage.createForBookingId(bookingId)
-      liteApprovalPage.setNextReviewDate(moment().add(1, 'year').format(SHORT_DATE_FORMAT))
+      const testDate = moment().add(1, 'year')
+      cy.get('#approvedNextReviewDateDay').clear().type(testDate.format('D'))
+      cy.get('#approvedNextReviewDateMonth').clear().type(testDate.format('M'))
+      cy.get('#approvedNextReviewDateYear').clear().type(testDate.format('YYYY'))
+      liteApprovalPage.setDepartment('GOV')
+      liteApprovalPage.setApprovedPlacement('SYI')
       liteApprovalPage.submitButton().click()
 
       const liteCategorisationAlreadyApprovedPage = LiteCategoriesAlreadyApprovedPage.createForBookingId(bookingId)

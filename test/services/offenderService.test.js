@@ -1330,11 +1330,9 @@ describe('Lite', () => {
       sequence: 6,
       approvedDate: '15/04/2020',
       supervisorCategory: 'E',
-      approvedCategoryComment: 'approvedCategoryComment',
       approvedCommittee: 'SECUR',
       nextReviewDate: '14/03/2020',
       approvedPlacement: 'BMI',
-      approvedPlacementComment: 'approvedPlacementComment',
       approvedComment: 'approvedComment',
       transactionalClient: mockTransactionalClient,
     })
@@ -1349,20 +1347,16 @@ describe('Lite', () => {
       approvedCommittee: 'SECUR',
       nextReviewDate: '2020-03-14',
       approvedPlacement: 'BMI',
-      approvedPlacementComment: 'approvedPlacementComment',
       approvedComment: 'approvedComment',
-      approvedCategoryComment: 'approvedCategoryComment',
       transactionalClient: mockTransactionalClient,
     })
     expect(nomisClient.createSupervisorApproval).toBeCalledWith({
       bookingId,
       assessmentSeq: 6,
       category: 'E',
-      approvedCategoryComment: 'approvedCategoryComment',
       reviewCommitteeCode: 'SECUR',
       nextReviewDate: '2020-03-14',
       approvedPlacementAgencyId: 'BMI',
-      approvedPlacementText: 'approvedPlacementComment',
       evaluationDate: '2020-04-15',
       committeeCommentText: 'approvedComment',
     })

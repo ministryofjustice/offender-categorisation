@@ -351,10 +351,15 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       return {}
     }
     const nextReviewDate = moment(data.rows[0].nextReviewDate)
+    const inputNextReviewDate = {
+      day: nextReviewDate.date().toString(),
+      month: (nextReviewDate.month() + 1).toString(),
+      year: nextReviewDate.year().toString(),
+    }
     return {
       ...data.rows[0],
       displayNextReviewDate: nextReviewDate.format('DD/MM/YYYY'),
-      inputNextReviewDate: nextReviewDate.format('D/M/YYYY'),
+      inputNextReviewDate,
       displayCreatedDate: moment(data.rows[0].createdDate).format('DD/MM/YYYY'),
     }
   }
@@ -374,9 +379,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     approvedCommittee,
     nextReviewDate,
     approvedPlacement,
-    approvedPlacementComment,
     approvedComment,
-    approvedCategoryComment,
     transactionalClient,
   }) {
     return formClient.approveLiteCategorisation({
@@ -389,9 +392,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       approvedCommittee,
       nextReviewDate,
       approvedPlacement,
-      approvedPlacementComment,
       approvedComment,
-      approvedCategoryComment,
       transactionalClient,
     })
   }
