@@ -64,7 +64,7 @@ describe('Escape Risk', () => {
     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
-    taskListPage.escapeButton().click()
+    taskListPage.escapeLink().click()
   }
 
   it('should display an alert and extra question when the offender is on the escape list', () => {
@@ -182,7 +182,7 @@ describe('Escape Risk', () => {
       escapePage.setCatBText('escape cat b explanation')
       escapePage.saveAndReturnButton().click()
 
-      taskListPage.escapeButton().click()
+      taskListPage.escapeLink().click()
 
       escapePage.validateShouldBeInCategoryBRadioButton({
         selection: ['YES'],

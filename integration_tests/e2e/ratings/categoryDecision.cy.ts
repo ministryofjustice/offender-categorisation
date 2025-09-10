@@ -50,7 +50,7 @@ describe('Category Decision', () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
-      taskListPage.categoryDecisionButton().click()
+      taskListPage.categoryDecisionLink().click()
 
       categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
     })
@@ -141,7 +141,7 @@ describe('Category Decision', () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
-      taskListPage.categoryDecisionButton().click()
+      taskListPage.categoryDecisionLink().click()
 
       categoryDecisionPage = CategoryDecisionPage.createForBookingId(bookingId)
     })

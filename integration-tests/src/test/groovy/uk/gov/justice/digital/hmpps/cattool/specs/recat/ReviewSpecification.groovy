@@ -44,16 +44,15 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
 
-    then: 'the completed text is displayed'
-    summarySection[0].text() == 'Check and submit'
-    summarySection[1].text() == 'All tasks completed'
+    then: 'the check and submit link is displayed'
+    checkAndSubmitLink.displayed
 
     when: 'The continue link is selected'
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage
@@ -117,7 +116,7 @@ class ReviewSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewRecatPage
@@ -154,7 +153,7 @@ class ReviewSpecification extends AbstractSpecification {
     riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with security flagged showing as "yes"'
     at ReviewRecatPage

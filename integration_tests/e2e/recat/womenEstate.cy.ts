@@ -93,7 +93,7 @@ describe("Women's estate recategorisation", () => {
     recategoriserHomePage.selectPrisonerWithBookingId(testBookingId)
 
     taskListPage = TasklistRecatPage.createForBookingId(testBookingId)
-    taskListPage.prisonerBackgroundButton().click()
+    taskListPage.prisonerBackgroundLink().click()
 
     cy.get('#extremismInfo').contains(
       'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
@@ -106,20 +106,19 @@ describe("Women's estate recategorisation", () => {
     cy.get('#offenceDetails').type('offenceDetails text')
     cy.get('button[type="submit"]').contains('Save and return').click()
 
-    taskListPage.prevRiskAssessmentInputButton().click()
+    taskListPage.prevRiskAssessmentsLink().click()
     checkPrisonerHeaderSummary()
     cy.get('#haveTheyHadRecentOasysAssessment').click()
     cy.get('button[type="submit"]').contains('Continue').click()
     cy.get('#oasysRelevantInfo-2').click()
     cy.get('button[type="submit"]').contains('Save and return').click()
 
-    taskListPage.securityButton().click()
+    taskListPage.securityLink().click()
     const recategoriserSecurityInputPage = RecategoriserSecurityInputPage.createForBookingId(testBookingId)
     recategoriserSecurityInputPage.validateSecurityIsRequired()
     recategoriserSecurityInputPage.selectSecurityInputRadioButton('NO')
     recategoriserSecurityInputPage.submitButton().click()
 
-    taskListPage.securityButton().should('be.disabled')
     cy.task('selectFormTableDbRow', { bookingId: testBookingId }).then((result: { rows: FormDbJson[] }) => {
       expect(result.rows[0].cat_type).to.eq(CatType.RECAT.name)
       expect(result.rows[0].status).to.eq(Status.SECURITY_MANUAL.name)
@@ -179,9 +178,8 @@ describe("Women's estate recategorisation", () => {
     })
     cy.signIn()
     recategoriserHomePage.selectPrisonerWithBookingId(testBookingId, 'Edit')
-    taskListPage.validateSecurityCompletedDate(new Date())
 
-    taskListPage.riskAssessmentButton().click()
+    taskListPage.riskAssessmentLink().click()
     checkPrisonerHeaderSummary()
     cy.get('#lowerCategory').type('lower category text')
     cy.get('#higherCategory').type('higher category text')
@@ -197,7 +195,7 @@ describe("Women's estate recategorisation", () => {
 
     cy.get('button[type="submit"]').contains('Save and return').click()
 
-    taskListPage.decisionButton().click()
+    taskListPage.categoryDecisionLink().click()
     checkPrisonerHeaderSummary()
     cy.get('#openOption').click()
     cy.get('#justification').type('justification text')
@@ -205,17 +203,17 @@ describe("Women's estate recategorisation", () => {
     const openConditionsAddedPage = Page.verifyOnPage(OpenConditionsAdded)
     openConditionsAddedPage.returnToRecatTasklistButton(testBookingId).click()
 
-    taskListPage.openConditionsButton().click()
+    taskListPage.openConditionsLink().click()
 
     EarliestReleaseDatePage.createForBookingId(testBookingId)
     cy.visit(`/tasklistRecat/${testBookingId}`)
 
-    taskListPage.decisionButton().click()
+    taskListPage.categoryDecisionLink().click()
     cy.get('#closedOption').click()
     cy.get('#justification').type('justification text')
     cy.get('button[type="submit"]').contains('Save and return').click()
 
-    taskListPage.nextReviewDateButton().click()
+    taskListPage.nextReviewDateLink().click()
     checkPrisonerHeaderSummary()
     cy.get('#nextDateChoice').click()
     cy.get('button[type="submit"]').contains('Continue').click()
@@ -223,7 +221,7 @@ describe("Women's estate recategorisation", () => {
     cy.get('button[type="submit"]').contains('Save and return').click()
 
     taskListPage.validateSummarySection()
-    cy.get(`a[href="/form/recat/review/${testBookingId}"]`).contains('Continue').click()
+    cy.get(`a[href="/form/recat/review/${testBookingId}"]`).click()
 
     cy.get('.securityInputSummary').within(() => {
       cy.contains('Automatic referral to security team')

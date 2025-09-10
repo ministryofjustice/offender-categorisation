@@ -28,8 +28,6 @@ class TasklistRecatSpecification extends AbstractSpecification {
     headerValue*.text() == fixture.FULL_HEADER
     headerLink.text() == 'Hillmob, Ant'
     headerLink.@href == 'http://localhost:3000/prisoner/B2345YZ'
-    !continueButton
-    continueButtonDisabled.displayed
 
     and: 'SOC data is stored and merged correctly'
     def data = db.getData(12)
@@ -114,12 +112,9 @@ class TasklistRecatSpecification extends AbstractSpecification {
     at TasklistRecatPage
 
     then: 'the prisoner start button is locked'
-    securityButton.tag() == 'button'
-    securityButton.@disabled
+    securityLinkDisabled.displayed
     def today = LocalDate.now().format('dd/MM/yyyy')
-    $('#securitySection').text().contains("Automatically referred to Security ($today)")
-    summarySection[0].text() == 'Check and submit'
-    summarySection[1].text() == 'Tasks not yet complete'
+    $('#securityInfo').text().contains("Automatically referred to Security ($today)")
   }
 
   def "The recat tasklist correctly creates a subsequent database sequence when init record present"() {

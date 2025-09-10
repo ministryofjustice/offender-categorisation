@@ -89,7 +89,13 @@ describe('Approved view', () => {
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
       formResponse: {
-        categoriser: { provisionalCategory: { suggestedCategory: 'C', categoryAppropriate: 'Yes', justification: 'test justification' } },
+        categoriser: {
+          provisionalCategory: {
+            suggestedCategory: 'C',
+            categoryAppropriate: 'Yes',
+            justification: 'test justification',
+          },
+        },
         supervisor: { review: { supervisorCategoryAppropriate: 'Yes' } },
       },
       securityReviewedBy: null,
@@ -143,9 +149,32 @@ describe('Approved view', () => {
         { key: 'ISP Tariff End Date', value: '15/06/2020' },
         { key: 'Licence Expiry Date', value: '16/06/2020' },
         { key: 'Sentence Expiry Date', value: '17/06/2020' },
-        { key: 'Court-issued sentence', value: '6 years, 3 months (Std sentence)' },
       ],
     ])
+
+    // test court issued sentence table
+    ;[
+      {
+        columnName: 'Line',
+        expectedValues: ['2'],
+      },
+      {
+        columnName: 'Start',
+        expectedValues: ['31/12/2018'],
+      },
+      {
+        columnName: 'Length of sentence',
+        expectedValues: ['6 years, 3 months'],
+      },
+      {
+        columnName: 'Consecutive to (line)',
+        expectedValues: [''],
+      },
+      {
+        columnName: 'Type',
+        expectedValues: ['Std sentence'],
+      },
+    ].forEach(cy.checkTableColumnTextValues)
 
     formApprovedView.validateCategorisationWarnings([
       'Category C',
@@ -214,7 +243,10 @@ describe('Approved view', () => {
       expectedComments: `Here are the supervisor's comments on why the category was changed`,
     })
     formApprovedView.validateOtherInformationSummary([
-      { question: 'Information about why this category is appropriate', expectedAnswer: "Here are the categoriser's comments on why the category was changed" },
+      {
+        question: 'Information about why this category is appropriate',
+        expectedAnswer: "Here are the categoriser's comments on why the category was changed",
+      },
     ])
 
     formApprovedView.validateOpenConditionsHeadingVisibility({ isVisible: true })
@@ -268,7 +300,10 @@ describe('Approved view', () => {
     navigateToView()
 
     formApprovedView.validateOtherInformationSummary([
-      { question: 'Other relevant information', expectedAnswer: "Here are the categoriser's comments on why the category was changed" },
+      {
+        question: 'Other relevant information',
+        expectedAnswer: "Here are the categoriser's comments on why the category was changed",
+      },
     ])
   })
 
