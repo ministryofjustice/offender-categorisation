@@ -136,25 +136,6 @@
 
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-    {{ govukDateInput({
-      id: "approvedDate",
-      items: [
-        {"id": "approvedDateDay", label: "Day", "name": "approvedDate[day]", value: approvedDate.day, "classes": "govuk-input--width-2"},
-        {"id": "approvedDateMonth", label: "Month", "name": "approvedDate[month]", value: approvedDate.month, "classes": "govuk-input--width-2"},
-        {"id": "approvedDateYear", label: "Year", "name": "approvedDate[year]", value: approvedDate.year, "classes": "govuk-input--width-4"}
-      ],
-      hint: {
-        text: "For example, 27 3 2024"
-      },
-      fieldset: {
-        legend: {
-          text: 'Approval Date',
-          isPageHeading: false
-        }
-      },
-      errorMessage: errors | findError('approvedDate')
-    }) }}
-
     {{ govukSelect({
       id: 'supervisorCategory',
       name: 'supervisorCategory',
@@ -201,7 +182,6 @@
     {{ govukTextarea({
       id: 'approvedComment',
       name: 'approvedComment',
-      rows: 2,
       attributes: { 'maxLength': 240 },
       label: { text: 'Comments (optional)' },
       value: approvedComment
@@ -210,6 +190,24 @@
     {{ govukButton({
       text: 'Submit',
       attributes: {  }
+    }) }}
+    {{ govukDateInput({
+      id: "approvedDate",
+      items: [
+        {"id": "approvedDateDay", label: "Day", "name": "approvedDate[day]", value: approvedDate.day, "classes": "govuk-input--width-2"},
+        {"id": "approvedDateMonth", label: "Month", "name": "approvedDate[month]", value: approvedDate.month, "classes": "govuk-input--width-2"},
+        {"id": "approvedDateYear", label: "Year", "name": "approvedDate[year]", value: approvedDate.year, "classes": "govuk-input--width-4"}
+      ],
+      hint: {
+        text: "For example, 27 3 2024"
+      },
+      fieldset: {
+        legend: {
+          text: 'Approval Date',
+          isPageHeading: false
+        }
+      },
+      errorMessage: errors | findError('approvedDate')
     }) }}
   </form>
   {% endif %}
