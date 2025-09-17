@@ -7,6 +7,7 @@ import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
+import moment from 'moment'
 
 describe('Approved View', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -58,7 +59,7 @@ describe('Approved View', () => {
       assignedUserId: null,
       approvedBy: null,
       review_reason: 'AGE',
-      approvalDate: '2025-03-06',
+      approvalDate: moment().subtract(2, 'months').format('YYYY-MM-DD'),
     })
 
     cy.task('insertFormTableDbRow', {
@@ -145,7 +146,15 @@ describe('Approved View', () => {
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.validateToDoTableData([
-      ['B2345YZ', '06/03/2025', '', 'Lastname_supervisor_user, Firstname_supervisor_user', '', 'Recat', 'View'],
+      [
+        'B2345YZ',
+        moment().subtract(2, 'months').format('DD/MM/YYYY'),
+        '',
+        'Lastname_supervisor_user, Firstname_supervisor_user',
+        '',
+        'Recat',
+        'View',
+      ],
       [
         'Scramble, TimB2345XY',
         '21/02/2019',
@@ -161,6 +170,30 @@ describe('Approved View', () => {
     recatApprovedViewPage = Page.verifyOnPage(RecatApprovedViewPage)
 
     const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
+
+    ;[
+      {
+        columnName: 'Line',
+        expectedValues: ['2'],
+      },
+      {
+        columnName: 'Start',
+        expectedValues: ['31/12/2018'],
+      },
+      {
+        columnName: 'Length of sentence',
+        expectedValues: ['6 years, 3 months'],
+      },
+      {
+        columnName: 'Consecutive to (line)',
+        expectedValues: [''],
+      },
+      {
+        columnName: 'Type',
+        expectedValues: ['Std sentence'],
+      },
+    ].forEach(cy.checkTableColumnTextValues)
+
     approvedViewRecatPage.validateCategorisationWarnings([
       'Category C',
       'The categoriser recommends Category C',
@@ -170,14 +203,17 @@ describe('Approved View', () => {
       {
         columnName: 'Categorisation date',
         expectedValues: ['24/03/2013', '08/06/2012'],
+        tableIndex: 1,
       },
       {
         columnName: 'Category decision',
         expectedValues: ['B', 'A'],
+        tableIndex: 1,
       },
       {
         columnName: 'Review location',
         expectedValues: ['LPI prison', 'LPI prison'],
+        tableIndex: 1,
       },
     ].forEach(cy.checkTableColumnTextValues)
 

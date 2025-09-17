@@ -58,7 +58,7 @@ describe('Offending History', () => {
     cy.get('a[href*="/tasklist/12"]').click()
 
     taskListPage = TaskListPage.createForBookingId(12)
-    taskListPage.offendingHistoryButton().click()
+    taskListPage.offendingHistoryLink().click()
 
     categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(12)
   }
@@ -129,7 +129,7 @@ describe('Offending History', () => {
         categoriserOffendingHistoryPage.validatePreviousConvictionsTextBox({ isVisible: false })
         categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-        taskListPage.offendingHistoryButton().click()
+        taskListPage.offendingHistoryLink().click()
 
         categoriserOffendingHistoryPage.validatePreviousConvictionRadioButtons({
           selection: ['YES'],
@@ -152,7 +152,7 @@ describe('Offending History', () => {
         categoriserOffendingHistoryPage.setPreviousConvictionsText('some convictions details')
         categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-        taskListPage.offendingHistoryButton().click()
+        taskListPage.offendingHistoryLink().click()
 
         categoriserOffendingHistoryPage.validatePreviousConvictionRadioButtons({
           selection: ['NO'],

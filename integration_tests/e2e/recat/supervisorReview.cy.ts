@@ -144,9 +144,31 @@ describe('Supervisor Review', () => {
         { key: 'ISP Tariff End Date', value: '15/06/2020' },
         { key: 'Licence Expiry Date', value: '16/06/2020' },
         { key: 'Sentence Expiry Date', value: '17/06/2020' },
-        { key: 'Court-issued sentence', value: '6 years, 3 months (Std sentence)' },
       ],
     ])
+    // Court-issued sentence
+    ;[
+      {
+        columnName: 'Line',
+        expectedValues: ['2'],
+      },
+      {
+        columnName: 'Start',
+        expectedValues: ['31/12/2018'],
+      },
+      {
+        columnName: 'Length of sentence',
+        expectedValues: ['6 years, 3 months'],
+      },
+      {
+        columnName: 'Consecutive to (line)',
+        expectedValues: [''],
+      },
+      {
+        columnName: 'Type',
+        expectedValues: ['Std sentence'],
+      },
+    ].forEach(cy.checkTableColumnTextValues)
     ;[
       // Prisoner Background
       { term: 'Reason for review', definition: 'Review due' },
