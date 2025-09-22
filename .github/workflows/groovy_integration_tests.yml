@@ -1,0 +1,100 @@
+name: Groovy Integration Tests
+
+on:
+  workflow_call:
+    inputs:
+      node_version_file:
+        description: 'Node version file for setup-node'
+        required: false
+        type: string
+        default: '.nvmrc'
+
+permissions:
+  contents: read
+
+jobs:
+  groovy_integration_tests:
+    name: Run Groovy integration tests
+    runs-on: ubuntu-latest
+    env:
+      RP_QUEUE_ACCESS_KEY_ID: dummy
+      RP_QUEUE_SECRET_ACCESS_KEY: dummy
+      RP_DL_QUEUE_ACCESS_KEY_ID: dummy
+      RP_DL_QUEUE_SECRET_ACCESS_KEY: dummy
+      EVENT_QUEUE_ACCESS_KEY_ID: dummy
+      EVENT_QUEUE_SECRET_ACCESS_KEY: dummy
+      EVENT_DL_QUEUE_ACCESS_KEY_ID: dummy
+      EVENT_DL_QUEUE_SECRET_ACCESS_KEY: dummy
+      POSTGRES_USER: form-builder
+      POSTGRES_DB: form-builder
+      SERVICES: sqs
+      PERSISTENCE: /tmp/localstack/data
+      TMP_DIR: /tmp
+      AWS_DEFAULT_REGION: eu-west-2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ inputs.node_version_file }}
+
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+
+      - name: Install Chrome
+        run: sudo apt-get update && sudo apt-get install -y google-chrome-stable
+      - name: Install Chromedriver
+        run: sudo apt-get install -y chromium-chromedriver
+
+      - name: Start Postgres
+        run: docker run -d --name pg -e POSTGRES_USER=form-builder -e POSTGRES_DB=form-builder -p 5432:5432 postgres:14.3
+      - name: Start Redis
+        run: docker run -d --name redis -p 6379:6379 redis
+      - name: Start LocalStack
+        run: |
+          docker run -d --name localstack \
+            -e SERVICES=sqs \
+            -e PERSISTENCE=/tmp/localstack/data \
+            -e TMP_DIR=/tmp \
+            -p 4566:4566 localstack/localstack:3.0.0
+
+      - name: Wait for LocalStack
+        run: sleep 10
+
+      - run: |
+          aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name event
+          aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name risk_profiler_change
+          aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name event_dlq
+          aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name risk_profiler_change_dlq
+
+      - run: nohup npm start &
+
+      - run: sleep 5
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: gradle-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties', 'integration-tests/build.gradle') }}
+
+      - name: Run Groovy integration tests
+        run: |
+          chmod +x gradlew
+          ./gradlew build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: groovy_integration_test_reports
+          path: |
+            integration-tests/build/reports
+            integration-tests/build/geb-reports
+            integration-tests/build/test-results
+
+      - name: Fail if Groovy tests failed
+        if: failure()
+        run: exit 1
