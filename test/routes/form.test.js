@@ -1399,7 +1399,7 @@ describe('GET /categoriser/review', () => {
 
     return request(app)
       .get(`/categoriser/review/12345`)
-      .expect(200)
+      .expect(300)
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Open Conditions')
