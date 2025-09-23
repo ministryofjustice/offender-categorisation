@@ -31,11 +31,12 @@ jobs:
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_unit_tests.yml@v2 # WORKFLOW_VERSION
     needs: [node_build]
     secrets: inherit
-  node_integration_tests:
-    name: node integration tests
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_integration_tests.yml@v2 # WORKFLOW_VERSION
+  cypress_integration_tests:
+    uses: ./.github/workflows/cypress_integration_tests.yml
     needs: [node_build, node_unit_tests]
     secrets: inherit
+    with:
+      node_version_file: '.nvmrc'
   groovy_integration_tests:
     uses: ./.github/workflows/groovy_integration_tests.yml
     needs: [node_build, node_unit_tests]
@@ -56,7 +57,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
-      - node_integration_tests
+      - cypress_integration_tests
       - node_unit_tests
       - groovy_integration_tests
     with:

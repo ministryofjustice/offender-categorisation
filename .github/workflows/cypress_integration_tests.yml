@@ -1,0 +1,96 @@
+name: Cypress Integration Tests
+
+on:
+  workflow_call:
+    inputs:
+      node_version_file:
+        description: 'Passed to setup-node action to specify where to source the version of node from'
+        required: false
+        type: string
+        default: '.nvmrc'
+permissions:
+  contents: read
+jobs:
+  integration_tests_cypress:
+    name: Cypress Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14.3
+        env:
+          POSTGRES_USER: form-builder
+          POSTGRES_DB: form-builder
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U form-builder"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+      localstack:
+        image: localstack/localstack:3.0.0
+        env:
+          SERVICES: sqs
+          PERSISTENCE: /tmp/localstack/data
+          TMP_DIR: /private
+          AWS_DEFAULT_REGION: eu-west-2
+        ports:
+          - 4566:4566
+    env:
+      RP_QUEUE_ACCESS_KEY_ID: 'dummy'
+      RP_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+      RP_DL_QUEUE_ACCESS_KEY_ID: 'dummy'
+      RP_DL_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+      EVENT_QUEUE_ACCESS_KEY_ID: 'dummy'
+      EVENT_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+      EVENT_DL_QUEUE_ACCESS_KEY_ID: 'dummy'
+      EVENT_DL_QUEUE_SECRET_ACCESS_KEY: 'dummy'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ inputs.node_version_file }}
+      - uses: aws-actions/setup-aws-cli@v2
+        with:
+          aws-region: eu-west-2
+      - run: sudo apt-get update && sudo apt-get install -y libxss1
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-cache-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-cache-
+      - run: npm --version && npm ci
+      - run: curl -o wiremock.jar https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.27.1/wiremock-standalone-2.27.1.jar
+      - run: java -jar wiremock.jar --port 9091
+      - run: |
+          echo "Waiting for Localstack..."
+          for i in {1..30}; do
+            curl -s http://localhost:4566/_localstack/health && break
+            sleep 2
+          done
+      - run: |
+          export AWS_PAGER=""
+          aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event
+          aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change
+          aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event_dlq
+          aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
+      - run: npm run start-feature
+      - run: sleep 5
+      - run: npm run int-test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cypress_test_results
+          path: test_results
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cypress_videos
+          path: integration-tests/videos
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cypress_screenshots
+          path: integration-tests/screenshots
