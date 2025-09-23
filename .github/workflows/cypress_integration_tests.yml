@@ -86,7 +86,12 @@ jobs:
         run: npm run start-feature &
 
       - name: Wait for Node app to start
-        run: sleep 5
+        run: |
+          for i in {1..20}; do
+           nc -z localhost 3007 && break
+           echo "Waiting for app to start..."
+           sleep 2
+          done
 
       - name: Run Cypress integration tests
         run: npm run int-test
