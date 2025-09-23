@@ -84,6 +84,10 @@ jobs:
 
       - name: Run the node app
         run: npm run start-feature &
+      - name: check running processes
+        run: ps aux | grep node
+      - name: check port listening
+        run: lsof -i :3007 || netstat -tulpn | grep 3007
 
       - name: Wait for Node app to start
         run: |
@@ -91,7 +95,7 @@ jobs:
            nc -z localhost 3007 && break
            echo "Waiting for app to start..."
            sleep 2
-          done
+          don
 
       - name: Run Cypress integration tests
         run: npm run int-test
