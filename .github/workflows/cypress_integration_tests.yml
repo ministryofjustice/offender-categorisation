@@ -25,6 +25,9 @@ jobs:
       EVENT_QUEUE_SECRET_ACCESS_KEY: dummy
       EVENT_DL_QUEUE_ACCESS_KEY_ID: dummy
       EVENT_DL_QUEUE_SECRET_ACCESS_KEY: dummy
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+      AWS_DEFAULT_REGION: eu-west-2
     services:
       redis:
         image: redis
