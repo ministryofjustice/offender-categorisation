@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       node_version_file:
-        description: 'Passed to setup-node action to specify where to source the version of node from'
+        description: Node version file
         required: false
         type: string
         default: '.nvmrc'
@@ -25,27 +25,37 @@ jobs:
       EVENT_QUEUE_SECRET_ACCESS_KEY: dummy
       EVENT_DL_QUEUE_ACCESS_KEY_ID: dummy
       EVENT_DL_QUEUE_SECRET_ACCESS_KEY: dummy
-      POSTGRES_USER: form-builder
-      POSTGRES_DB: form-builder
-      SERVICES: sqs
-      PERSISTENCE: /tmp/localstack/data
-      TMP_DIR: /private
-      AWS_DEFAULT_REGION: eu-west-2
-      AWS_ACCESS_KEY_ID: dummy
-      AWS_SECRET_ACCESS_KEY: dummy
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+      postgres:
+        image: postgres:14.3
+        env:
+          POSTGRES_USER: form-builder
+          POSTGRES_DB: form-builder
+        ports:
+          - 5432:5432
+      localstack:
+        image: localstack/localstack:3.0.0
+        env:
+          SERVICES: sqs
+          PERSISTENCE: /tmp/localstack/data
+          TMP_DIR: /private
+          AWS_DEFAULT_REGION: eu-west-2
+        ports:
+          - 4566:4566
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install missing OS dependency
-        run: sudo apt-get install -y libxss1
-
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: ${{ inputs.node_version_file }}
 
-      - name: Restore node_modules cache
+      - name: Restore npm cache
         uses: actions/cache@v4
         with:
           path: |
@@ -53,58 +63,35 @@ jobs:
             ~/.cache/Cypress
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Get wiremock
+      - name: Download Wiremock
         run: curl -o wiremock.jar https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.27.1/wiremock-standalone-2.27.1.jar
 
-      - name: Run wiremock
-        run: java -jar wiremock.jar --port 9091 &
-
-      - name: Start localstack
+      - name: Start services and app
         run: |
-          docker run -d -p 4566:4566 -p 4571:4571 \
-          -e SERVICES=sqs \
-          -e PERSISTENCE=/tmp/localstack/data \
-          -e TMP_DIR=/private \
-          -e AWS_DEFAULT_REGION=eu-west-2 \
-          localstack/localstack:3.0.0
+          nohup java -jar wiremock.jar --port 9091 &
+          nohup npm run start-feature &
+          # Wait for the Node app to be ready
+          for i in {1..30}; do
+            if nc -z localhost 3007; then
+              echo "Node app is ready"
+              break
+            fi
+            echo "Waiting for Node app..."
+            sleep 2
+          done
 
-      - name: Wait for localstack
-        run: sleep 5
-
-      - name: Create localstack queues
-        run: |
-          export AWS_PAGER=""
-          aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event
-          aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change
-          aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event_dlq
-          aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
-
-      - name: Run the node app
-        run: npm run start-feature &
-      - name: check running processes
-        run: ps aux | grep node
-      - name: check port listening
-        run: lsof -i :3007 || netstat -tulpn | grep 3007
-
-      - name: Wait for Node app to start
-        run: |
-          for i in {1..20}; do
-           nc -z localhost 3007 && break
-           echo "Waiting for app to start..."
-           sleep 2
-          don
-
-      - name: Run Cypress integration tests
+      - name: Run Cypress tests
         run: npm run int-test
 
-      - name: Upload test results
+      - name: Upload Cypress artifacts
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: cypress_test_artifacts
+          name: cypress_artifacts
           path: |
-            test_results
             integration-tests/videos
             integration-tests/screenshots
+            test_results
