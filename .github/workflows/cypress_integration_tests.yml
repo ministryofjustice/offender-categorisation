@@ -1,10 +1,10 @@
-name: Cypress Integration Tests
+name: Integration tests
 
 on:
   workflow_call:
     inputs:
       node_version_file:
-        description: Node version file
+        description: 'Passed to setup-node action to specify where to source the version of node from'
         required: false
         type: string
         default: '.nvmrc'
@@ -13,85 +13,69 @@ permissions:
   contents: read
 
 jobs:
-  integration_tests_cypress:
-    name: Run Cypress integration tests
+  integration_test:
+    name: Run the integration tests
     runs-on: ubuntu-latest
-    env:
-      RP_QUEUE_ACCESS_KEY_ID: dummy
-      RP_QUEUE_SECRET_ACCESS_KEY: dummy
-      RP_DL_QUEUE_ACCESS_KEY_ID: dummy
-      RP_DL_QUEUE_SECRET_ACCESS_KEY: dummy
-      EVENT_QUEUE_ACCESS_KEY_ID: dummy
-      EVENT_QUEUE_SECRET_ACCESS_KEY: dummy
-      EVENT_DL_QUEUE_ACCESS_KEY_ID: dummy
-      EVENT_DL_QUEUE_SECRET_ACCESS_KEY: dummy
-    services:
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-      postgres:
-        image: postgres:14.3
-        env:
-          POSTGRES_USER: form-builder
-          POSTGRES_DB: form-builder
-        ports:
-          - 5432:5432
-      localstack:
-        image: localstack/localstack:3.0.0
-        env:
-          SERVICES: sqs
-          PERSISTENCE: /tmp/localstack/data
-          TMP_DIR: /private
-          AWS_DEFAULT_REGION: eu-west-2
-        ports:
-          - 4566:4566
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Node.js
+      - name: Use Node.js ${{ inputs.node_version_file }}
         uses: actions/setup-node@v4
         with:
           node-version-file: ${{ inputs.node_version_file }}
-
-      - name: Restore npm cache
-        uses: actions/cache@v4
+      - name: download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: npm_build_artifacts
+      - name: restore cache
+        id: restore-cache
+        uses: actions/cache/restore@v4
+        env:
+          cache-name: node-modules
         with:
           path: |
             ./node_modules
             ~/.cache/Cypress
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Download Wiremock
-        run: curl -o wiremock.jar https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.27.1/wiremock-standalone-2.27.1.jar
-
-      - name: Start services and app
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Init testing framework if necessary
+        run: npm run int-test-init:ci --if-present
+      - name: Get wiremock
+        shell: bash
+        run: |
+          curl -o wiremock.jar https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.1/wiremock-standalone-3.9.1.jar
+      - name: Prepare and run integration tests
+        id: integration-tests
+        shell: bash
         run: |
           nohup java -jar wiremock.jar --port 9091 &
           nohup npm run start-feature &
-          # Wait for the Node app to be ready
-          for i in {1..30}; do
-            if nc -z localhost 3007; then
-              echo "Node app is ready"
-              break
-            fi
-            echo "Waiting for Node app..."
-            sleep 2
-          done
-
-      - name: Run Cypress tests
-        run: npm run int-test
-
-      - name: Upload Cypress artifacts
+          sleep 5
+          npm run int-test
+      - name: upload results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: cypress_artifacts
+          name: npm_integration_test_artifacts
           path: |
-            integration-tests/videos
-            integration-tests/screenshots
-            test_results
+            integration_tests/videos/
+            integration_tests/screenshots/
+            coverage/
+            test_results/
+            ctrf/
+      - name: publish test report
+        if: ${{ !cancelled() && github.event.repository.visibility == 'public' }}
+        uses: dorny/test-reporter@v2
+        with:
+          artifact: npm_integration_test_artifacts
+          name: Test Report
+          path: 'test_results/**/*.xml'
+          reporter: java-junit
+          fail-on-empty: false
+          fail-on-error: false
+          list-suites: 'failed'
+          list-tests: 'failed'
+      - name: fail the action if the tests failed
+        if: ${{ steps.integration-tests.outcome == 'failure' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.setFailed('Integration tests failed')
