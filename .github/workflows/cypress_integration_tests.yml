@@ -14,42 +14,71 @@ permissions:
 
 jobs:
   integration_tests_cypress:
-    name: Cypress Integration Tests
+    name: Run Cypress integration tests
     runs-on: ubuntu-latest
+    env:
+      RP_QUEUE_ACCESS_KEY_ID: dummy
+      RP_QUEUE_SECRET_ACCESS_KEY: dummy
+      RP_DL_QUEUE_ACCESS_KEY_ID: dummy
+      RP_DL_QUEUE_SECRET_ACCESS_KEY: dummy
+      EVENT_QUEUE_ACCESS_KEY_ID: dummy
+      EVENT_QUEUE_SECRET_ACCESS_KEY: dummy
+      EVENT_DL_QUEUE_ACCESS_KEY_ID: dummy
+      EVENT_DL_QUEUE_SECRET_ACCESS_KEY: dummy
+      POSTGRES_USER: form-builder
+      POSTGRES_DB: form-builder
+      SERVICES: sqs
+      PERSISTENCE: /tmp/localstack/data
+      TMP_DIR: /private
+      AWS_DEFAULT_REGION: eu-west-2
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set working directory
-        run: cd ~/app
+
       - name: Install AWS CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip curl
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install
           aws --version
-      - name: Use Node.js ${{ inputs.node_version_file }}
+
+      - name: Install missing OS dependency
+        run: sudo apt-get install -y libxss1
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: ${{ inputs.node_version_file }}
-      - name: Attach workspace
-        run: echo "Workspace attach simulated for GitHub Actions"
-      - name: Install missing OS dependency
-        run: sudo apt-get install -y libxss1
+
       - name: Restore node_modules cache
         uses: actions/cache@v4
         with:
-          path: ./node_modules
+          path: |
+            ./node_modules
+            ~/.cache/Cypress
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+
       - name: Install dependencies
         run: npm ci
-      - name: Download Wiremock
+
+      - name: Get wiremock
         run: curl -o wiremock.jar https://repo1.maven.org/maven2/com/github/tomakehurst/wiremock-standalone/2.27.1/wiremock-standalone-2.27.1.jar
-      - name: Run Wiremock
-        run: nohup java -jar wiremock.jar --port 9091 &
-      - name: Wait for Localstack
+
+      - name: Run wiremock
+        run: java -jar wiremock.jar --port 9091 &
+
+      - name: Start localstack
+        run: |
+          docker run -d -p 4566:4566 -p 4571:4571 \
+          -e SERVICES=sqs \
+          -e PERSISTENCE=/tmp/localstack/data \
+          -e TMP_DIR=/private \
+          -e AWS_DEFAULT_REGION=eu-west-2 \
+          localstack/localstack:3.0.0
+
+      - name: Wait for localstack
         run: sleep 5
+
       - name: Create localstack queues
         run: |
           export AWS_PAGER=""
@@ -57,33 +86,21 @@ jobs:
           aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change
           aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event_dlq
           aws --endpoint-url http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
-      - name: Start Node app
-        run: nohup npm run start-feature &
+
+      - name: Run the node app
+        run: npm run start-feature &
+
       - name: Wait for Node app to start
         run: sleep 5
+
       - name: Run Cypress integration tests
         run: npm run int-test
-      - name: Upload test artifacts
+
+      - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
-          name: integration-tests-artifacts
+          name: cypress_test_artifacts
           path: |
             test_results
             integration-tests/videos
             integration-tests/screenshots
-
-    env:
-      RP_QUEUE_ACCESS_KEY_ID: 'dummy'
-      RP_QUEUE_SECRET_ACCESS_KEY: 'dummy'
-      RP_DL_QUEUE_ACCESS_KEY_ID: 'dummy'
-      RP_DL_QUEUE_SECRET_ACCESS_KEY: 'dummy'
-      EVENT_QUEUE_ACCESS_KEY_ID: 'dummy'
-      EVENT_QUEUE_SECRET_ACCESS_KEY: 'dummy'
-      EVENT_DL_QUEUE_ACCESS_KEY_ID: 'dummy'
-      EVENT_DL_QUEUE_SECRET_ACCESS_KEY: 'dummy'
-      POSTGRES_USER: form-builder
-      POSTGRES_DB: form-builder
-      SERVICES: sqs
-      PERSISTENCE: /tmp/localstack/data
-      TMP_DIR: /private
-      AWS_DEFAULT_REGION: eu-west-2
