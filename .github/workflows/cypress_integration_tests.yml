@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   integration_test:
-    name: Run the integration tests
+    name: Run the cypress integration tests
     runs-on: ubuntu-latest
     env:
       RP_QUEUE_ACCESS_KEY_ID: dummy
@@ -46,6 +46,14 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+      localstack:
+        image: localstack/localstack:3.0.0
+        env:
+          SERVICES: sqs
+          PERSISTENCE: /tmp/localstack/data
+          TMP_DIR: /private
+        ports:
+          - 4566:4566
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ inputs.node_version_file }}
@@ -72,6 +80,14 @@ jobs:
         shell: bash
         run: |
           curl -o wiremock.jar https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.1/wiremock-standalone-3.9.1.jar
+      - name: Create localstack queues
+        shell: bash
+        run: |
+          export AWS_PAGER=""
+            aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event
+            aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change
+            aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name event_dlq
+            aws --endpoint-url=http://localhost:4566 --region eu-west-2 sqs create-queue --queue-name risk_profiler_change_dlq
       - name: Prepare and run integration tests
         id: integration-tests
         shell: bash
