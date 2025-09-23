@@ -37,12 +37,12 @@ jobs:
     secrets: inherit
     with:
       node_version_file: '.nvmrc'
-  # groovy_integration_tests:
-  #   uses: ./.github/workflows/groovy_integration_tests.yml
-  #   needs: [node_build, node_unit_tests]
-  #   secrets: inherit
-  #   with:
-  #     node_version_file: '.nvmrc'
+  groovy_integration_tests:
+    uses: ./.github/workflows/groovy_integration_tests.yml
+    needs: [node_build, node_unit_tests]
+    secrets: inherit
+    with:
+      node_version_file: '.nvmrc'
   helm_lint:
     strategy:
       matrix:
