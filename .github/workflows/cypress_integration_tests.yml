@@ -16,6 +16,15 @@ jobs:
   integration_test:
     name: Run the integration tests
     runs-on: ubuntu-latest
+    env:
+      RP_QUEUE_ACCESS_KEY_ID: dummy
+      RP_QUEUE_SECRET_ACCESS_KEY: dummy
+      RP_DL_QUEUE_ACCESS_KEY_ID: dummy
+      RP_DL_QUEUE_SECRET_ACCESS_KEY: dummy
+      EVENT_QUEUE_ACCESS_KEY_ID: dummy
+      EVENT_QUEUE_SECRET_ACCESS_KEY: dummy
+      EVENT_DL_QUEUE_ACCESS_KEY_ID: dummy
+      EVENT_DL_QUEUE_SECRET_ACCESS_KEY: dummy
     services:
       redis:
         image: redis
