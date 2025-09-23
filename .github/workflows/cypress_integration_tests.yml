@@ -31,6 +31,8 @@ jobs:
       PERSISTENCE: /tmp/localstack/data
       TMP_DIR: /private
       AWS_DEFAULT_REGION: eu-west-2
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
