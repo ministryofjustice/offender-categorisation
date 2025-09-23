@@ -22,12 +22,18 @@ jobs:
         ports:
           - 6379:6379
       postgres:
-        image: postgres:14.3
+        image: postgres:15.7
         env:
           POSTGRES_USER: form-builder
           POSTGRES_DB: form-builder
+          POSTGRES_PASSWORD: form-builder
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d document-management"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ inputs.node_version_file }}
