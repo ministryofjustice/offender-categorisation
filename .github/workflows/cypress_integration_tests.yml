@@ -21,6 +21,13 @@ jobs:
         image: redis
         ports:
           - 6379:6379
+      postgres:
+        image: postgres:14.3
+        env:
+          POSTGRES_USER: form-builder
+          POSTGRES_DB: form-builder
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ inputs.node_version_file }}
