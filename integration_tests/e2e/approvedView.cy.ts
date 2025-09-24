@@ -363,7 +363,7 @@ describe('Approved view', () => {
     cy.visit(`/${ApprovedViewPage.baseUrl}/12?sequenceNo=1`)
 
     formApprovedView.validateCategorisationWarnings([
-      'Category FFF',
+      'Category B',
       'The categoriser recommends Category B',
       'The supervisor also recommends Category B',
     ])
