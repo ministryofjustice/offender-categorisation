@@ -57,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: update apt packages
-        run: sudo apt-get udpdate
+        run: sudo apt-get update
       - name: install google chrome
         run: |
           sudo apt-get update
