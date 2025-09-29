@@ -1,4 +1,4 @@
-name: Integration tests
+name: Cypress integration tests
 
 on:
   workflow_call:
