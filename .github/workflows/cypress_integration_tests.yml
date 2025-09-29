@@ -107,7 +107,7 @@ jobs:
             coverage/
             test_results/
             ctrf/
-      - name: publish test report
+      - name: publish cypress test report
         if: ${{ !cancelled() && github.event.repository.visibility == 'public' }}
         uses: dorny/test-reporter@v2
         with:
