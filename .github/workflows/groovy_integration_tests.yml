@@ -62,6 +62,10 @@ jobs:
           node-version-file: ${{ inputs.node_version_file }}
       - name: update apt packages
         run: sudo apt-get update
+      - name: install google chrome
+        uses: browser-actions/setup-chrome@v1
+      - name: install chromedriver
+        uses: nanasess/setup-chromedriver@v2
       - name: download artifacts
         uses: actions/download-artifact@v4
         with:
