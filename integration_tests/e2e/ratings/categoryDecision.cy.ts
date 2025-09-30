@@ -154,7 +154,7 @@ describe('Category Decision', () => {
         categoryDecisionPage.errors().contains('Select the category that is most suitable for this prisoner')
         categoryDecisionPage
           .errorSummaries()
-          .contains('You must enter information about why the category is appropriate--')
+          .contains('You must enter information about why the category is appropriate')
         categoryDecisionPage.errors().contains('You must enter information about why the category is appropriate')
       })
 
