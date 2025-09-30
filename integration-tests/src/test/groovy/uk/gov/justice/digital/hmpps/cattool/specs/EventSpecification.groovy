@@ -100,7 +100,7 @@ class EventSpecification extends AbstractSpecification {
       rc.id == [1, 2]
       rc.prison_id == ['MDI', 'LEI']
 
-      db.getSecurityData('A1234AA').prison_id == ['LEI']
+      db.getSecurityData('A1234AA').prison_id == ['LEII']
       db.getSecurityData('A1234AB').prison_id == ['MDI']
     }
   }
