@@ -91,6 +91,8 @@ jobs:
       - name: Prepare and run integration tests
         id: integration-tests
         shell: bash
+        env:
+          CYPRESS_MOCHA_FILE: test_results/cypress/results-[specName].xml
         run: |
           nohup java -jar wiremock.jar --port 9091 &
           nohup npm run start-feature &
