@@ -60,12 +60,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ${{ inputs.node_version_file }}
-      - name: update apt packages
-        run: sudo apt-get update
-      - name: set up chrome
-        uses: browser-actions/setup-chrome@v1
-      - name: set up chromedriver
-        uses: nanasess/setup-chromedriver@v2
       - name: download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -105,7 +99,7 @@ jobs:
         id: groovy-tests
         run: |
           chmod +x gradlew
-          ./gradlew build
+          ./gradlew build -Dgeb.env=chromeHeadless
       - name: upload groovy test results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
