@@ -62,18 +62,10 @@ jobs:
           node-version-file: ${{ inputs.node_version_file }}
       - name: update apt packages
         run: sudo apt-get update
-      - name: install google chrome
+      - name: set up chrome
         uses: browser-actions/setup-chrome@v1
-      - name: install matching chromedriver
-        run: |
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-          echo "Detected Chrome version: $CHROME_VERSION"
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%.*}")
-          echo "Using Chromedriver version: $CHROMEDRIVER_VERSION"
-          curl -s -Lo chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-          unzip -o chromedriver.zip -d /usr/local/bin
-          rm chromedriver.zip
-          chromedriver --version
+      - name: set up chromedriver
+        uses: nanasess/setup-chromedriver@v2
       - name: download artifacts
         uses: actions/download-artifact@v4
         with:
