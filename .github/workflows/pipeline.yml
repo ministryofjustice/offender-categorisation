@@ -63,6 +63,7 @@ jobs:
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
+      docker_multiplatform: false
       push: ${{ inputs.push || true }}
   deploy_dev:
     name: Deploy to the dev environment
