@@ -7,33 +7,17 @@ waiting {
     timeout = 2
 }
 
-environments {
-    if (System.getenv("CI")) {
-        chromeHeadless {
-        driver = {
-            ChromeOptions options = new ChromeOptions()
-            options.addArguments('headless')
-            new ChromeDriver(options)
-        }
+if (System.getenv("CI")) {
+    driver = {
+        ChromeOptions options = new ChromeOptions()
+        options.addArguments('headless') 
+        options.addArguments('disable-gpu')
+        options.addArguments('no-sandbox') 
+        options.addArguments('disable-dev-shm-usage')
+        new ChromeDriver(options)
     }
-    } else {
-        chrome {
-        driver = { new ChromeDriver() }
-    }
-
-    chromeHeadless {
-        driver = {
-            ChromeOptions options = new ChromeOptions()
-            options.addArguments('headless')
-            new ChromeDriver(options)
-            }
-        }
-    }
-}
-
-// Default if geb.env is not set to one of 'chrome', or 'chromeHeadless'
-if (!System.getenv("CI") && !System.getProperty("geb.env")) {
-    driver = { new ChromeDriver() } 
+} else {
+    driver = { new ChromeDriver() }
 }
 
 baseUrl = "http://localhost:3000/"
