@@ -8,7 +8,16 @@ waiting {
 }
 
 environments {
-    chrome {
+    if (System.getenv("CI")) {
+        chromeHeadless {
+        driver = {
+            ChromeOptions options = new ChromeOptions()
+            options.addArguments('headless')
+            new ChromeDriver(options)
+        }
+    }
+    } else {
+        chrome {
         driver = { new ChromeDriver() }
     }
 
@@ -17,6 +26,7 @@ environments {
             ChromeOptions options = new ChromeOptions()
             options.addArguments('headless')
             new ChromeDriver(options)
+            }
         }
     }
 }
