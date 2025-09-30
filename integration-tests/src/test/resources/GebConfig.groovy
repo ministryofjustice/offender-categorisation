@@ -32,8 +32,8 @@ environments {
 }
 
 // Default if geb.env is not set to one of 'chrome', or 'chromeHeadless'
-driver = {
-    new ChromeDriver()
+if (!System.getenv("CI") && !System.getProperty("geb.env")) {
+    driver = { new ChromeDriver() } 
 }
 
 baseUrl = "http://localhost:3000/"
