@@ -1,13 +1,15 @@
 import superagent from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
 import moment from 'moment'
-import { getApiClientToken } from '../authentication/clientCredentials'
-import { config } from '../config'
-import logger from '../../log'
-import { getSanitisedError } from '../getSanitisedError'
+import { getApiClientToken } from '../../authentication/clientCredentials'
+import { config } from '../../config'
+import logger from '../../../log'
+import { getSanitisedError } from '../../getSanitisedError'
+import { ViperDto } from './viper.dto'
 
 export type FormApiClient = {
   submitSecurityReview(bookingId: number, submitted: boolean, securityReview: string | undefined): Promise<boolean>
+  getViperData(prisonerNumber: string): Promise<ViperDto>
 }
 
 const timeoutSpec = {
@@ -26,6 +28,7 @@ const keepaliveAgent = apiUrl.startsWith('https') ? new HttpsAgent(agentOptions)
 
 export const formApiClientBuilder = (username: string): FormApiClient => {
   const clientPost = clientPostBuilder(username)
+  const clientGet = clientGetBuilder(username)
 
   return {
     submitSecurityReview: async (
@@ -42,6 +45,10 @@ export const formApiClientBuilder = (username: string): FormApiClient => {
           securityReview,
         },
       })
+    },
+    getViperData: async (prisonerNumber: string): Promise<ViperDto> => {
+      const path = `${apiUrl}risk/viper/${prisonerNumber}`
+      return clientGet({ path })
     },
   }
 }
@@ -71,6 +78,32 @@ function clientPostBuilder(username: string) {
     } catch (error) {
       const sanitisedError = getSanitisedError(error)
       logger.error({ ...sanitisedError, path }, 'Error in Client POST')
+      throw sanitisedError
+    }
+  }
+}
+
+function clientGetBuilder(username: string) {
+  return async ({ path = '', query = '', headers = {}, responseType = '' } = {}) => {
+    try {
+      const clientToken = await getApiClientToken(username)
+
+      const result = await superagent
+        .get(path)
+        .query(query)
+        .set('Authorization', `Bearer ${clientToken.body.access_token}`)
+        .set(headers)
+        .agent(keepaliveAgent)
+        .responseType(responseType)
+        .timeout(timeoutSpec)
+
+      return result.body
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return {}
+      }
+      const sanitisedError = getSanitisedError(error)
+      logger.error({ sanitisedError, path, query }, 'Error in client GET')
       throw sanitisedError
     }
   }

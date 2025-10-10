@@ -95,8 +95,15 @@ module.exports = function Index({
       const form = 'violenceRating'
       const { bookingId } = req.params
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
-      const data = { ...result.data, violenceProfile }
+
+      const assaultIncidents = await offendersService.getCountOfAssaultIncidents(
+        res.locals,
+        result.data.details.offenderNo,
+      )
+
+      const viper = formService.getViperData(req.user.username, result.data.details.offenderNo)
+
+      const data = { ...result.data, ...assaultIncidents, viper }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     }),
   )
@@ -155,7 +162,10 @@ module.exports = function Index({
       const offences = await offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo)
       const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
       const escapeProfile = await alertService.getEscapeProfile(result.data.details.offenderNo, res.locals)
-      const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
+      const violenceProfile = await offendersService.getCountOfAssaultIncidents(
+        res.locals,
+        result.data.details.offenderNo,
+      )
       const lifeProfile = await riskProfilerService.getLifeProfile(result.data.details.offenderNo, res.locals)
 
       const dataToStore = {

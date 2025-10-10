@@ -10,6 +10,7 @@ const { config: conf } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
 const { OPEN_CONDITIONS_CATEGORIES, SUPERVISOR_DECISION_CHANGE_TO } = require('../data/categories')
+const { getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents } = require('./incidents/incidentService')
 
 function dataIfExists(data) {
   return data.rows[0]
@@ -956,6 +957,11 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     }
   }
 
+  const getViperData = async (userId, offenderNo) => {
+    const formApiClient = formApiClientBuilder(userId)
+    return formApiClient.getViperData(offenderNo)
+  }
+
   return {
     getCategorisationRecord,
     update,
@@ -1012,5 +1018,6 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     getNextReview,
     deletePendingCategorisations,
     getCategoryFromSupervisorDecisionString,
+    getViperData,
   }
 }
