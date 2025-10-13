@@ -33,7 +33,7 @@ describe('liteCategoriesPrisonerPartition', () => {
     const prisonerData = [
       {
         bookingId: 1,
-        status: 'ACTIVE OUT',
+        status: 'INACTIVE OUT',
       },
       {
         bookingId: 2,
@@ -50,7 +50,7 @@ describe('liteCategoriesPrisonerPartition', () => {
     const prisonerData = [
       {
         bookingId: 1,
-        status: 'ACTIVE OUT',
+        status: 'INACTIVE OUT',
       },
       {
         bookingId: 2,
