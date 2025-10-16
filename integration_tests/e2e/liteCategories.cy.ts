@@ -555,7 +555,7 @@ describe('Lite Categories', () => {
         bookingIds: [11, 12],
         startDates: ['28/01/2019', '2019-01-31'],
         releaseDates: ['01/01/2001'],
-        status: ['ACTIVE OUT', 'ACTIVE IN'],
+        status: ['INACTIVE OUT', 'ACTIVE IN'],
       })
 
       supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
@@ -572,7 +572,7 @@ describe('Lite Categories', () => {
         bookingIds: [11, 12],
         startDates: ['28/01/2019', '2019-01-31'],
         releaseDates: [undefined, '01/01/2000'],
-        status: ['ACTIVE IN', 'ACTIVE OUT'],
+        status: ['ACTIVE IN', 'INACTIVE OUT'],
       })
 
       supervisorDashboardHomePage = Page.verifyOnPage(SupervisorDashboardHomePage)
