@@ -15,8 +15,10 @@ jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
 
 const createRouter = require('../../server/routes/recat')
 const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
-const { makeTestViperDto } = require("../../server/data/formApi/viper/viper.dto.test-factory");
-const { makeTestCountOfAssaultIncidents } = require("../../server/services/incidents/countOfAssaultIncidents.test-factory");
+const { makeTestViperDto } = require('../../server/data/formApi/viper/viper.dto.test-factory')
+const {
+  makeTestCountOfAssaultIncidents,
+} = require('../../server/services/incidents/countOfAssaultIncidents.test-factory')
 
 const formConfig = {
   recat,
@@ -42,10 +44,6 @@ const formService = {
   recordNomisSeqNumber: jest.fn(),
   categoriserDecision: jest.fn(),
   getViperData: jest.fn(),
-}
-
-const riskProfilerService = {
-  getSecurityProfile: jest.fn(),
 }
 
 const offendersService = {
@@ -97,7 +95,6 @@ const formRoute = createRouter({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   pathfinderService,
   alertService,
   authenticationMiddleware,
@@ -133,7 +130,6 @@ beforeEach(() => {
   offendersService.getPrisonerBackground.mockResolvedValue({})
   offendersService.getCountOfAssaultIncidents.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
-  riskProfilerService.getSecurityProfile.mockResolvedValue({})
   pathfinderService.getExtremismProfile.mockResolvedValue({})
   alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
@@ -175,7 +171,6 @@ describe('recat', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.text).toContain(expectedContent)
-          expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
         }),
     )
     test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {

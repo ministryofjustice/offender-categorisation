@@ -26,7 +26,6 @@ module.exports = function Index({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   authenticationMiddleware,
   pathfinderService,
   alertService,
