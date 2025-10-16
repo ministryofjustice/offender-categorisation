@@ -49,7 +49,8 @@ class ReviewSpecification extends AbstractSpecification {
 
     when: 'The continue link is selected'
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     checkAndSubmitLink.click()
@@ -85,7 +86,7 @@ class ReviewSpecification extends AbstractSpecification {
     def json = riskProfile.toString()
     json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
     json.contains '"escapeProfile": {"riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true, "escapeListAlerts": [{"alertCode": "XEL", "dateCreated": "2025-01-01"}], "escapeRiskAlerts": [{"alertCode": "XER", "dateCreated": "2025-01-01"}]}'
-    json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "numberOfNonSeriousAssaults": 3, "veryHighRiskViolentOffender": false}'
+    json.contains '"violenceProfile": {"riskType": "VIOLENCE", "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "numberOfNonSeriousAssaults": 3}'
     json.contains '"extremismProfile": {}'
   }
 
@@ -113,7 +114,8 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     checkAndSubmitLink.click()
@@ -150,7 +152,8 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
     checkAndSubmitLink.click()

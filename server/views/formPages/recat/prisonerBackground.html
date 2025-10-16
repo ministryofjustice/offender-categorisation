@@ -54,10 +54,10 @@
 
 <h1 class="govuk-heading-s">Safety and good order</h1>
 
-  {% if data.violenceProfile.displayAssaults %}
+  {% if data.countOfAssaults > 0 %}
     {% set warningText %}
-      This person has been reported as the perpetrator in {{ data.violenceProfile.numberOfAssaults }} assaults in custody before,
-      including {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults and {{ data.violenceProfile.numberOfNonSeriousAssaults }} non-serious assaults in the past 12 months.
+      This person has been reported as the perpetrator in {{ data.countOfAssaults }} assaults in custody before,
+      including {{ data.countOfSeriousAssaults }} serious assaults and {{ data.countOfNonSeriousAssaults }} non-serious assaults in the past 12 months.
       You should consider the dates and context of these assaults in your assessment.
     {% endset %}
     {{ govukWarningText({
@@ -66,14 +66,16 @@
       classes: "forms-warning-text warning-overrides govuk-!-padding-right-1",
       attributes: {  'id': 'violenceWarning' }
     }) }}
-  {% elif data.violenceProfile.notifySafetyCustodyLead %}
+  {% endif %}
+  {% if data.viper.aboveThreshold %}
     {{ govukWarningText({
       text: 'Please notify your safer custody lead about this prisoner',
       iconFallbackText: "Warning",
       classes: "forms-warning-text warning-overrides",
       attributes: {  'id': 'violenceNotifyWarning' }
     }) }}
-  {% else %}
+  {% endif %}
+  {% if not (data.viper.aboveThreshold or data.countOfAssaults > 0) %}
     {{ govukInsetText({
       text: "This person has not been reported as the perpetrator in any assaults in custody before.",
       attributes: {  'id': 'violenceInfo' }

@@ -23,8 +23,10 @@ export const QUESTION_ANSWER_YES = 'YES'
 export interface NomisIncidentDto {
   incidentStatus: string
   reportTime: string
-  responses: {
-    question: string
-    answer: string
-  }[]
+  responses: NomisIncidentDtoResponse[]
+}
+
+export interface NomisIncidentDtoResponse {
+  question: string
+  answer: string
 }

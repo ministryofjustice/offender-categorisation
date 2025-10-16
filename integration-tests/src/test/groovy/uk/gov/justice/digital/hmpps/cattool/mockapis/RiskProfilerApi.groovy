@@ -27,22 +27,6 @@ class RiskProfilerApi extends WireMockRule {
                                      transferToSecurity       : transferToSecurity]))))
   }
 
-  void stubGetViolenceProfile(String offenderno, String category, boolean veryHighRiskViolentOffender, boolean notifySafetyCustodyLead, boolean displayAssaults) {
-    this.stubFor(get("/risk-profile/violence/${offenderno}")
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withHeader('Content-Type', 'application/json')
-        .withBody(JsonOutput.toJson([nomsId                     : offenderno,
-                                     riskType                   : 'VIOLENCE',
-                                     provisionalCategorisation  : category,
-                                     veryHighRiskViolentOffender: veryHighRiskViolentOffender,
-                                     notifySafetyCustodyLead    : notifySafetyCustodyLead,
-                                     displayAssaults            : displayAssaults,
-                                     numberOfAssaults           : 5,
-                                     numberOfSeriousAssaults    : 2,
-                                     numberOfNonSeriousAssaults : 3]))))
-  }
-
   void stubGetEscapeProfile(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
     this.stubFor(get("/risk-profile/escape/${offenderno}")
       .willReturn(aResponse()

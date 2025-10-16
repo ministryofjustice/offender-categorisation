@@ -10,7 +10,8 @@ const { config: conf } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
 const { OPEN_CONDITIONS_CATEGORIES, SUPERVISOR_DECISION_CHANGE_TO } = require('../data/categories')
-const { getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents } = require('./incidents/incidentService')
+
+const MINIMUM_NUMBER_OF_ASSAULTS_TO_CONSIDER_FOR_CATEGORY_B = 5
 
 function dataIfExists(data) {
   return data.rows[0]
@@ -544,8 +545,9 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     const isCatBDueToPreviousCatA = data.history?.catAType
     const isCatBDueToSecurity = data.ratings?.securityBack?.catB === 'Yes'
     const isCatBDueToViolence =
-      data.violenceProfile?.veryHighRiskViolentOffender || // Visor: not MVP
-      data.violenceProfile?.provisionalCategorisation === 'B' // note: Qs on page ignored (info only)
+      data.violenceProfile?.notifySafetyCustodyLead &&
+      data.violenceProfile?.numberOfAssaults >= MINIMUM_NUMBER_OF_ASSAULTS_TO_CONSIDER_FOR_CATEGORY_B &&
+      data.violenceProfile?.numberOfNonSeriousAssaults > 0
 
     // The other Q on the escape page is info only
     const isCatBDueToEscape = data.ratings?.escapeRating?.escapeCatB === 'Yes'

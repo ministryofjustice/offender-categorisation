@@ -174,7 +174,7 @@ module.exports = context => {
       ]
         .map(participationRole => `participationRoles=${participationRole}`)
         .join('&')
-      const path = `${apiUrl}/api/offenders/${offenderNo}/incidents?${incidentTypeQueryParams}&${participationRoleQueryParams}`
+      const path = `${apiUrl}api/offenders/${offenderNo}/incidents?${incidentTypeQueryParams}&${participationRoleQueryParams}`
       return nomisClientGet({ path })
     },
   }

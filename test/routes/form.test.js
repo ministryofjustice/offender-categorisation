@@ -10,6 +10,11 @@ const supervisor = require('../../server/config/supervisor')
 const categoriser = require('../../server/config/categoriser')
 const security = require('../../server/config/security')
 const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
+const { makeTestViperDto } = require('../../server/data/formApi/viper/viper.dto.test-factory')
+const {
+  makeTestCountOfAssaultIncidents,
+} = require('../../server/services/incidents/countOfAssaultIncidents.test-factory')
+const { makeTestViolenceProfile } = require('../../server/utils/violenceProfile/violenceProfile.test-factory')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 
@@ -40,12 +45,11 @@ const formService = {
   getSecurityReferral: jest.fn(),
   cancelOpenConditions: jest.fn(),
   categoriserDecision: jest.fn(),
+  getViperData: jest.fn(),
 }
 
 const riskProfilerService = {
   getSecurityProfile: jest.fn(),
-  getViolenceProfile: jest.fn(),
-  getEscapeProfile: jest.fn(),
   getLifeProfile: jest.fn(),
 }
 
@@ -61,6 +65,7 @@ const offendersService = {
   getOptionalAssessmentAgencyDescription: jest.fn(),
   requiredCatType: jest.fn(),
   backToCategoriser: jest.fn(),
+  getCountOfAssaultIncidents: jest.fn(),
 }
 
 const userService = {
@@ -121,13 +126,14 @@ beforeEach(() => {
   formService.isValid.mockResolvedValue(true)
   formService.recordNomisSeqNumber.mockReturnValue({})
   formService.getSecurityReferral.mockReturnValue({})
+  formService.getViperData.mockReturnValue({})
   offendersService.createOrUpdateCategorisation.mockReturnValue({ bookingId: 12, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
+  offendersService.getCountOfAssaultIncidents.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
   riskProfilerService.getSecurityProfile.mockResolvedValue({})
-  riskProfilerService.getViolenceProfile.mockResolvedValue({})
   pathfinderService.getExtremismProfile.mockResolvedValue({})
   alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
@@ -1276,7 +1282,8 @@ describe('GET /ratings/violence', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-        expect(riskProfilerService.getViolenceProfile).toBeCalledTimes(1)
+        expect(offendersService.getCountOfAssaultIncidents).toBeCalledTimes(1)
+        expect(formService.getViperData).toBeCalledTimes(1)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
         expect(res.text).toContain(
           'This person has not been reported as the perpetrator in any assaults in custody before.',
@@ -1286,16 +1293,18 @@ describe('GET /ratings/violence', () => {
   )
 
   test('violence flag logic - assaults and notify', () => {
-    riskProfilerService.getViolenceProfile.mockResolvedValue({
-      nomsId: '1234AN',
-      riskType: 'VIOLENCE',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: true,
-      displayAssaults: true,
-      numberOfAssaults: 5,
-      numberOfSeriousAssaults: 2,
-      numberOfNonSeriousAssaults: 3,
-    })
+    formService.getViperData.mockResolvedValue(
+      makeTestViperDto({
+        aboveThreshold: true,
+      }),
+    )
+    offendersService.getCountOfAssaultIncidents.mockResolvedValue(
+      makeTestCountOfAssaultIncidents({
+        countOfAssaults: 5,
+        countOfSeriousAssaults: 2,
+        countOfNonSeriousAssaults: 3,
+      }),
+    )
     return request(app)
       .get(`/ratings/violenceRating/12345`)
       .expect(200)
@@ -1333,9 +1342,18 @@ describe('GET /categoriser/review', () => {
     alertService.getEscapeProfile.mockResolvedValue({
       flagA: 'B2345XY',
     })
-    riskProfilerService.getViolenceProfile.mockResolvedValue({
-      violenceFlag: true,
-    })
+    formService.getViperData.mockResolvedValue(
+      makeTestViperDto({
+        aboveThreshold: true,
+      }),
+    )
+    offendersService.getCountOfAssaultIncidents.mockResolvedValue(
+      makeTestCountOfAssaultIncidents({
+        countOfAssaults: 5,
+        countOfSeriousAssaults: 2,
+        countOfNonSeriousAssaults: 3,
+      }),
+    )
     pathfinderService.getExtremismProfile.mockResolvedValue({
       exFlag: true,
     })
@@ -1370,9 +1388,12 @@ describe('GET /categoriser/review', () => {
             extremismProfile: {
               exFlag: true,
             },
-            violenceProfile: {
-              violenceFlag: true,
-            },
+            violenceProfile: makeTestViolenceProfile({
+              notifyRegionalCTLead: true,
+              numberOfAssaults: 5,
+              numberOfSeriousAssaults: 2,
+              numberOfNonSeriousAssaults: 3,
+            }),
             history: {
               catARisk: true,
             },

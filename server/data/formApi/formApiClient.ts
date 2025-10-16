@@ -5,7 +5,7 @@ import { getApiClientToken } from '../../authentication/clientCredentials'
 import { config } from '../../config'
 import logger from '../../../log'
 import { getSanitisedError } from '../../getSanitisedError'
-import { ViperDto } from './viper.dto'
+import { ViperDto } from './viper/viper.dto'
 
 export type FormApiClient = {
   submitSecurityReview(bookingId: number, submitted: boolean, securityReview: string | undefined): Promise<boolean>
