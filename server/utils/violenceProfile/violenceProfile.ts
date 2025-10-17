@@ -1,7 +1,7 @@
 export const RISK_TYPE_VIOLENCE = 'VIOLENCE'
 
 export interface ViolenceProfile {
-  notifyRegionalCTLead: boolean
+  notifySafetyCustodyLead: boolean
   numberOfAssaults: number
   numberOfSeriousAssaults: number
   numberOfNonSeriousAssaults: number

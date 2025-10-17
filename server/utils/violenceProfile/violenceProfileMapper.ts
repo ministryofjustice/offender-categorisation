@@ -6,7 +6,7 @@ export const mapDataToViolenceProfile = (
   viperData?: ViperDto,
   countOfAssaultIncidents?: CountOfAssaultIncidents,
 ): ViolenceProfile => ({
-  notifyRegionalCTLead: viperData?.aboveThreshold ?? false,
+  notifySafetyCustodyLead: viperData?.aboveThreshold ?? false,
   numberOfAssaults: countOfAssaultIncidents?.countOfAssaults ?? 0,
   numberOfSeriousAssaults: countOfAssaultIncidents?.countOfSeriousAssaults ?? 0,
   numberOfNonSeriousAssaults: countOfAssaultIncidents?.countOfNonSeriousAssaults ?? 0,

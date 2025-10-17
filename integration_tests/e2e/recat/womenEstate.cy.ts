@@ -71,7 +71,7 @@ describe("Women's estate recategorisation", () => {
       aboveThreshold: false,
     })
     cy.task('stubGetAssaultIncidents', {
-      prisonerNumber: 'B2345YZ',
+      prisonerNumber: testOffenderNumber,
       assaultIncidents: []
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })

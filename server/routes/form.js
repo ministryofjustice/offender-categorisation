@@ -95,14 +95,12 @@ module.exports = function Index({
       const section = 'ratings'
       const form = 'violenceRating'
       const { bookingId } = req.params
-      const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
 
-      const assaultIncidents = await offendersService.getCountOfAssaultIncidents(
-        res.locals,
-        result.data.details.offenderNo,
-      )
-
-      const viper = await formService.getViperData(req.user.username, result.data.details.offenderNo)
+      const [result, assaultIncidents, viper] = await Promise.all([
+        buildFormData(res, req, section, form, bookingId, transactionalDbClient),
+        offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
+        formService.getViperData(req.user.username, result.data.details.offenderNo),
+      ])
 
       const data = { ...result.data, ...assaultIncidents, viper }
       res.render(`formPages/${section}/${form}`, { ...result, data })

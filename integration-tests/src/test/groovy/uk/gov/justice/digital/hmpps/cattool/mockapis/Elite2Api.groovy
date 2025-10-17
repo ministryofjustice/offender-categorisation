@@ -1268,7 +1268,7 @@ class Elite2Api extends WireMockRule {
   }
 
   def stubGetAssaultIncidents(prisonerNumber) {
-    this.stubFor(get("/elite2/api/offenders/$prisonerNumber/incidents?incidentType=ASSAULT&incidentType=ASSAULTS3&participationRoles=ACTINV&participationRoles=ASSIAL&participationRoles=FIGHT&participationRoles=IMPED&participationRoles=PERP&participationRoles=SUSASS&participationRoles=SUSINV")
+    this.stubFor(get("/api/offenders/$prisonerNumber/incidents?incidentType=ASSAULT&incidentType=ASSAULTS3&participationRoles=ACTINV&participationRoles=ASSIAL&participationRoles=FIGHT&participationRoles=IMPED&participationRoles=PERP&participationRoles=SUSASS&participationRoles=SUSINV")
       .willReturn(aResponse()
         .withBody(JsonOutput.toJson([
           [incidentStatus: 'SOMETHING', reportTime: LocalDate.now().minusDays(2).format('yyyy-MM-dd'), responses: [[question: 'WAS THIS A SEXUAL ASSAULT', answer: 'YES']]],

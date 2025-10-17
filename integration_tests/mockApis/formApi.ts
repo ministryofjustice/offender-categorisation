@@ -19,7 +19,7 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        url: `/risk/viper/${prisonerNumber}`,
+        url: `/offender-categorisation-api/risk/viper/${prisonerNumber}`,
       },
       response: {
         status: 200,
