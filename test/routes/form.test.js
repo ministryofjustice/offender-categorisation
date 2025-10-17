@@ -1389,7 +1389,7 @@ describe('GET /categoriser/review', () => {
               exFlag: true,
             },
             violenceProfile: makeTestViolenceProfile({
-              notifyRegionalCTLead: true,
+              notifySafetyCustodyLead: true,
               numberOfAssaults: 5,
               numberOfSeriousAssaults: 2,
               numberOfNonSeriousAssaults: 3,
