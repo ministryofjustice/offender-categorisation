@@ -65,7 +65,7 @@ class ReviewSpecification extends AbstractSpecification {
       'Categorisation date Category decision Review location\n24/03/2013 B LPI prison\n08/06/2012 A LPI prison',
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
       'This person is considered an escape risk\nE-List: 2025-01-01\nEscape Risk Alert: 2025-01-01',
-      'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
+      'This person is at risk of engaging in, or vulnerable to, extremism.',
       'offence Details text']
     securityInputSummary*.text() == ['No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
     riskAssessmentSummary*.text() == ['lower security category text', 'higher security category text', 'Yes\nother relevant information']
