@@ -16,7 +16,7 @@ describe('mapDataToViolenceProfile', () => {
       ),
     ).toEqual(
       makeTestViolenceProfile({
-        notifyRegionalCTLead: true,
+        notifySafetyCustodyLead: true,
         numberOfAssaults: 5,
         numberOfSeriousAssaults: 2,
         numberOfNonSeriousAssaults: 3,
@@ -36,7 +36,7 @@ describe('mapDataToViolenceProfile', () => {
       ),
     ).toEqual(
       makeTestViolenceProfile({
-        notifyRegionalCTLead: false,
+        notifySafetyCustodyLead: false,
         numberOfAssaults: 5,
         numberOfSeriousAssaults: 2,
         numberOfNonSeriousAssaults: 3,
@@ -56,7 +56,7 @@ describe('mapDataToViolenceProfile', () => {
       ),
     ).toEqual(
       makeTestViolenceProfile({
-        notifyRegionalCTLead: false,
+        notifySafetyCustodyLead: false,
         numberOfAssaults: 5,
         numberOfSeriousAssaults: 2,
         numberOfNonSeriousAssaults: 3,
@@ -67,7 +67,7 @@ describe('mapDataToViolenceProfile', () => {
   it('maps valid viper object but undefined countOfAssaultsAndIncidents object to violence profile', () => {
     expect(mapDataToViolenceProfile(makeTestViperDto({ aboveThreshold: true }), undefined)).toEqual(
       makeTestViolenceProfile({
-        notifyRegionalCTLead: true,
+        notifySafetyCustodyLead: true,
         numberOfAssaults: 0,
         numberOfSeriousAssaults: 0,
         numberOfNonSeriousAssaults: 0,
