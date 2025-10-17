@@ -87,7 +87,7 @@ class ReviewSpecification extends AbstractSpecification {
     json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
     json.contains '"escapeProfile": {"riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true, "escapeListAlerts": [{"alertCode": "XEL", "dateCreated": "2025-01-01"}], "escapeRiskAlerts": [{"alertCode": "XER", "dateCreated": "2025-01-01"}]}'
     json.contains '"violenceProfile": {"riskType": "VIOLENCE", "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "numberOfNonSeriousAssaults": 3}'
-    json.contains '"extremismProfile": {}'
+    json.contains '"extremismProfile": {"notifyRegionalCTLead": true, "increasedRiskOfExtremism": true}'
   }
 
   def "The recat review page can be displayed without security input"() {
