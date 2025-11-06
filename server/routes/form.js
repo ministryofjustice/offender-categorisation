@@ -26,6 +26,7 @@ const {
   SUPERVISOR_DECISION_CHANGE_TO,
   SUPERVISOR_DECISION_AGREE,
 } = require('../data/categories')
+const { mapDataToViolenceProfile } = require('../utils/violenceProfile/violenceProfileMapper')
 const asyncMiddleware = require('../middleware/asyncMiddleware').default
 
 const SECURITY_BUTTON_SUBMIT = 'submit'
@@ -94,9 +95,15 @@ module.exports = function Index({
       const section = 'ratings'
       const form = 'violenceRating'
       const { bookingId } = req.params
+
       const result = await buildFormData(res, req, section, form, bookingId, transactionalDbClient)
-      const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
-      const data = { ...result.data, violenceProfile }
+
+      const [assaultIncidents, viper] = await Promise.all([
+        offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
+        formService.getViperData(req.user.username, result.data.details.offenderNo),
+      ])
+
+      const data = { ...result.data, ...assaultIncidents, viper }
       res.render(`formPages/${section}/${form}`, { ...result, data })
     }),
   )
@@ -151,11 +158,16 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'categoriser', 'review', bookingId, transactionalDbClient)
 
-      const history = await offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId)
-      const offences = await offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo)
-      const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
-      const escapeProfile = await alertService.getEscapeProfile(result.data.details.offenderNo, res.locals)
-      const violenceProfile = await riskProfilerService.getViolenceProfile(result.data.details.offenderNo, res.locals)
+      const [history, offences, extremismProfile, escapeProfile, assaultIncidents, viper] = await Promise.all([
+        offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId),
+        offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo),
+        pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals),
+        alertService.getEscapeProfile(result.data.details.offenderNo, res.locals),
+        offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
+        formService.getViperData(req.user.username, result.data.details.offenderNo),
+      ])
+
+      const violenceProfile = mapDataToViolenceProfile(viper, assaultIncidents)
       const lifeProfile = await riskProfilerService.getLifeProfile(result.data.details.offenderNo, res.locals)
 
       const dataToStore = {

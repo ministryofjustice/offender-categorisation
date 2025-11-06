@@ -50,7 +50,8 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
 
@@ -81,8 +82,7 @@ class ReviewSpecification extends AbstractSpecification {
                           [bookingId: 12, offenceDescription: 'Undated offence']]
     response.socProfile == [nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C']
     response.escapeProfile == [riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true, escapeListAlerts: [[alertCode: 'XEL', dateCreated: '2025-01-01']], escapeRiskAlerts: [[alertCode: 'XER', dateCreated: '2025-01-01']]]
-    response.violenceProfile == [nomsId                 : 'B2345YZ', riskType: 'VIOLENCE', displayAssaults: false, numberOfAssaults: 5, notifySafetyCustodyLead: true,
-                                 numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3, provisionalCategorisation: 'C', veryHighRiskViolentOffender: true]
+    response.violenceProfile == [riskType: 'VIOLENCE', numberOfAssaults: 5, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3]
     response.extremismProfile == [notifyRegionalCTLead: true, increasedRiskOfExtremism: true]
     response.lifeProfile == [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'C']
   }
@@ -106,7 +106,8 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
     at new TasklistPage(bookingId: '12')

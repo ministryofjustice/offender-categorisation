@@ -277,7 +277,6 @@ module.exports = function createApp({
     formService,
     offendersService,
     userService,
-    riskProfilerService,
     pathfinderService,
     alertService,
     authenticationMiddleware,
