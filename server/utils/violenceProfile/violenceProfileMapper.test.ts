@@ -10,8 +10,8 @@ describe('mapDataToViolenceProfile', () => {
         makeTestViperDto({ aboveThreshold: true }),
         makeTestCountOfAssaultIncidents({
           countOfAssaults: 5,
-          countOfSeriousAssaults: 2,
-          countOfNonSeriousAssaults: 3,
+          countOfRecentSeriousAssaults: 2,
+          countOfRecentNonSeriousAssaults: 3,
         }),
       ),
     ).toEqual(
@@ -30,8 +30,8 @@ describe('mapDataToViolenceProfile', () => {
         makeTestViperDto({ aboveThreshold: false }),
         makeTestCountOfAssaultIncidents({
           countOfAssaults: 5,
-          countOfSeriousAssaults: 2,
-          countOfNonSeriousAssaults: 3,
+          countOfRecentSeriousAssaults: 2,
+          countOfRecentNonSeriousAssaults: 3,
         }),
       ),
     ).toEqual(
@@ -50,8 +50,8 @@ describe('mapDataToViolenceProfile', () => {
         undefined,
         makeTestCountOfAssaultIncidents({
           countOfAssaults: 5,
-          countOfSeriousAssaults: 2,
-          countOfNonSeriousAssaults: 3,
+          countOfRecentSeriousAssaults: 2,
+          countOfRecentNonSeriousAssaults: 3,
         }),
       ),
     ).toEqual(

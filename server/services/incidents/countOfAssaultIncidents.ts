@@ -1,5 +1,5 @@
 export interface CountOfAssaultIncidents {
   countOfAssaults: number
-  countOfSeriousAssaults: number
-  countOfNonSeriousAssaults: number
+  countOfRecentSeriousAssaults: number
+  countOfRecentNonSeriousAssaults: number
 }

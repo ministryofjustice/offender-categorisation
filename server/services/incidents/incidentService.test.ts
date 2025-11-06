@@ -14,8 +14,8 @@ describe('getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents', () =>
     expect(getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents([])).toEqual(
       makeTestCountOfAssaultIncidents({
         countOfAssaults: 0,
-        countOfSeriousAssaults: 0,
-        countOfNonSeriousAssaults: 0,
+        countOfRecentSeriousAssaults: 0,
+        countOfRecentNonSeriousAssaults: 0,
       }),
     )
   })
@@ -66,9 +66,9 @@ describe('getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents', () =>
       ]),
     ).toEqual(
       makeTestCountOfAssaultIncidents({
-        countOfAssaults: 2,
-        countOfSeriousAssaults: 1,
-        countOfNonSeriousAssaults: 1,
+        countOfAssaults: 3,
+        countOfRecentSeriousAssaults: 1,
+        countOfRecentNonSeriousAssaults: 1,
       }),
     )
   })

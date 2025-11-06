@@ -340,8 +340,8 @@ describe('recat', () => {
     offendersService.getCountOfAssaultIncidents.mockResolvedValue(
       makeTestCountOfAssaultIncidents({
         countOfAssaults: 5,
-        countOfSeriousAssaults: 2,
-        countOfNonSeriousAssaults: 4,
+        countOfRecentSeriousAssaults: 2,
+        countOfRecentNonSeriousAssaults: 4,
       }),
     )
     return request(app)

@@ -1301,8 +1301,8 @@ describe('GET /ratings/violence', () => {
     offendersService.getCountOfAssaultIncidents.mockResolvedValue(
       makeTestCountOfAssaultIncidents({
         countOfAssaults: 5,
-        countOfSeriousAssaults: 2,
-        countOfNonSeriousAssaults: 3,
+        countOfRecentSeriousAssaults: 2,
+        countOfRecentNonSeriousAssaults: 3,
       }),
     )
     return request(app)
@@ -1350,8 +1350,8 @@ describe('GET /categoriser/review', () => {
     offendersService.getCountOfAssaultIncidents.mockResolvedValue(
       makeTestCountOfAssaultIncidents({
         countOfAssaults: 5,
-        countOfSeriousAssaults: 2,
-        countOfNonSeriousAssaults: 3,
+        countOfRecentSeriousAssaults: 2,
+        countOfRecentNonSeriousAssaults: 3,
       }),
     )
     pathfinderService.getExtremismProfile.mockResolvedValue({

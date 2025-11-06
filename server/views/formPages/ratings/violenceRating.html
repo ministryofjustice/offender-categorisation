@@ -52,7 +52,7 @@
   {% if data.countOfAssaults > 0 %}
     {% set warningText %}
       This person has been reported as the perpetrator in {{ data.countOfAssaults }} assaults in custody before,
-      including {{ data.countOfSeriousAssaults }} serious assaults and {{ data.countOfNonSeriousAssaults }} non-serious assaults in the past 12 months.
+      including {{ data.countOfRecentSeriousAssaults }} serious assaults and {{ data.countOfRecentNonSeriousAssaults }} non-serious assaults in the past 12 months.
       You should consider the dates and context of these assaults in your assessment.
     {% endset %}
     {{ govukWarningText({

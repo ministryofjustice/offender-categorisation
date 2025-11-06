@@ -8,7 +8,7 @@ export const mapDataToViolenceProfile = (
 ): ViolenceProfile => ({
   notifySafetyCustodyLead: viperData?.aboveThreshold ?? false,
   numberOfAssaults: countOfAssaultIncidents?.countOfAssaults ?? 0,
-  numberOfSeriousAssaults: countOfAssaultIncidents?.countOfSeriousAssaults ?? 0,
-  numberOfNonSeriousAssaults: countOfAssaultIncidents?.countOfNonSeriousAssaults ?? 0,
+  numberOfSeriousAssaults: countOfAssaultIncidents?.countOfRecentSeriousAssaults ?? 0,
+  numberOfNonSeriousAssaults: countOfAssaultIncidents?.countOfRecentNonSeriousAssaults ?? 0,
   riskType: RISK_TYPE_VIOLENCE,
 })
