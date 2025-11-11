@@ -180,7 +180,7 @@ module.exports = function Index({
 
       if (hasLifeSentence) {
         dataToStore.lifeProfile = {
-          life: true
+          life: true,
         }
       }
 
