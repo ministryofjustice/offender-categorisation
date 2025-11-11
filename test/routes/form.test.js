@@ -61,6 +61,7 @@ const offendersService = {
   requiredCatType: jest.fn(),
   backToCategoriser: jest.fn(),
   getCountOfAssaultIncidents: jest.fn(),
+  hasLifeSentence: jest.fn(),
 }
 
 const userService = {
@@ -1366,6 +1367,7 @@ describe('GET /categoriser/review', () => {
     offendersService.getOffenceHistory.mockResolvedValue({
       offence: 'details',
     })
+    offendersService.hasLifeSentence.mockResolvedValue(false)
 
     return request(app)
       .get('/categoriser/review/12345')

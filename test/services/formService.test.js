@@ -537,7 +537,7 @@ describe('computeSuggestedCat', () => {
       securityBack: { catB: 'No' },
       extremismRating: { previousTerrorismOffences: 'No' },
     },
-    lifeProfile: { provisionalCategorisation: 'C' },
+    lifeProfile: { life: false },
   }
   const dateOfBirth = moment().subtract(20, 'years')
   test.each`
@@ -554,7 +554,8 @@ describe('computeSuggestedCat', () => {
     ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}                                              | ${'B'}
     ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }}                                      | ${'B'}
     ${{ extremismProfile: { increasedRiskOfExtremism: true } }}                                                    | ${'B'}
-    ${{ lifeProfile: { provisionalCategorisation: 'B' } }}                                                         | ${'B'}
+    ${{ lifeProfile: { life: true } }}                                                                             | ${'B'}
+    ${{ lifeProfile: { life: false } }}                                                                            | ${'C'}
     ${nearMisses}                                                                                                  | ${'C'}
   `('should return cat $category for data: $data', ({ data, category }) => {
     expect(service.computeSuggestedCat(data)).toEqual(category)

@@ -176,9 +176,12 @@ module.exports = function Index({
         escapeProfile,
         extremismProfile,
         violenceProfile,
-        lifeProfile: {
-          life: hasLifeSentence,
-        },
+      }
+
+      if (hasLifeSentence) {
+        dataToStore.lifeProfile = {
+          life: true
+        }
       }
 
       const dataToDisplay = {
