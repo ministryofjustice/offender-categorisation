@@ -53,7 +53,7 @@ class ReviewSpecification extends AbstractSpecification {
     formApi.stubGetViperData('B2345YZ', true)
     elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
-    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], [date12])
 
     and: 'The continue link is selected'
     checkAndSubmitLink.click()
@@ -109,7 +109,7 @@ class ReviewSpecification extends AbstractSpecification {
     formApi.stubGetViperData('B2345YZ', true)
     elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
-    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2020-01-01'])
     at new TasklistPage(bookingId: '12')
     checkAndSubmitLink.click()
 

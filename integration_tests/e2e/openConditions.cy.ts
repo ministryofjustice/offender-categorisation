@@ -31,6 +31,7 @@ import FurtherInformationPage from '../pages/form/supervisor/furtherInformation'
 import SupervisorConfirmBackPage from '../pages/form/supervisor/confirmBack'
 import GiveBackToCategoriserPage from '../pages/form/supervisor/giveBackToCategoriser'
 import GiveBackToCategoriserOutcome from '../pages/form/supervisor/giveBackToCategoriserOutcome'
+import moment from "moment/moment";
 
 describe('Open conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -970,9 +971,12 @@ describe('Open conditions', () => {
     cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
     cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
-    cy.task('stubGetLifeProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
+    cy.task('stubSentenceData', {
+      offenderNumbers: ['B2345YZ'],
+      bookingIds: [ 12],
+      startDates: [
+        moment().subtract(1, 'days').format('yyyy-MM-dd'),
+      ],
     })
     cy.task('stubAgencyDetails', { agency: 'LEI' })
   }
