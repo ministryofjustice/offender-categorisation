@@ -17,6 +17,7 @@
     "clean": "rm -rf assets/stylesheets/* .port.tmp *.log dist build/* uploads/* test-results.xml",
     "lint": "eslint . --cache --max-warnings 0",
     "test": "jest --detectOpenHandles --runInBand --forceExit",
+    "test:ci": "npm run test",
     "migrate": "knex migrate:latest",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
@@ -49,13 +50,14 @@
       [
         "jest-junit",
         {
-          "outputDirectory": "test-results/jest/"
+          "outputDirectory": "test_results",
+          "outputName": "jest.xml"
         }
       ],
       [
         "./node_modules/jest-html-reporter",
         {
-          "outputPath": "test-results/unit-test-reports.html"
+          "outputPath": "test_results/unit-test-reports.html"
         }
       ]
     ],
