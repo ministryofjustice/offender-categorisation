@@ -45,7 +45,6 @@ module.exports = function Index({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   authenticationMiddleware,
   pathfinderService,
   alertService,
@@ -166,7 +165,7 @@ module.exports = function Index({
           alertService.getEscapeProfile(result.data.details.offenderNo, res.locals),
           offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
           formService.getViperData(req.user.username, result.data.details.offenderNo),
-          offendersService.hasLifeSentence(res.locals, parseInt(bookingId)),
+          offendersService.hasLifeSentence(res.locals, parseInt(bookingId, 10)),
         ])
 
       const violenceProfile = mapDataToViolenceProfile(viper, assaultIncidents)
