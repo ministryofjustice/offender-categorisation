@@ -16,6 +16,7 @@ const recat = require('../config/recat')
 const Status = require('../utils/statusEnum')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
+const { mapDataToViolenceProfile } = require('../utils/violenceProfile/violenceProfileMapper')
 
 const formConfig = {
   recat,
@@ -25,7 +26,6 @@ module.exports = function Index({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   authenticationMiddleware,
   pathfinderService,
   alertService,
@@ -62,20 +62,24 @@ module.exports = function Index({
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
 
-      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
-      const extremismProfile = await pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals)
-      const escapeProfile = await alertService.getEscapeProfile(offenderNo, res.locals)
+      const [assaultIncidents, viper, extremismProfile, escapeProfile, categorisations] = await Promise.all([
+        offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
+        formService.getViperData(req.user.username, result.data.details.offenderNo),
+        pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals),
+        alertService.getEscapeProfile(offenderNo, res.locals),
+        offendersService.getPrisonerBackground(res.locals, offenderNo),
+      ])
+
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
       const offenderDpsCaseNotesLink = offenderCaseNotesLink(offenderNo)
       const offenderDpsAdjudicationsLink = offenderAdjudicationLink(offenderNo)
-
-      const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
 
       const data = {
         ...result.data,
         categorisations,
         escapeProfile,
-        violenceProfile,
+        ...assaultIncidents,
+        viper,
         extremismProfile,
         offenderDpsAlertsLink,
         offenderDpsCaseNotesLink,
@@ -92,10 +96,16 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
-      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
-      const extremismProfile = pathfinderService.getExtremismProfile(offenderNo, res.locals)
-      const escapeProfile = await alertService.getEscapeProfile(offenderNo, res.locals)
-      const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
+
+      const [assaultIncidents, viper, extremismProfile, escapeProfile, categorisations] = await Promise.all([
+        offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
+        formService.getViperData(req.user.username, result.data.details.offenderNo),
+        pathfinderService.getExtremismProfile(offenderNo, res.locals),
+        alertService.getEscapeProfile(offenderNo, res.locals),
+        offendersService.getPrisonerBackground(res.locals, offenderNo),
+      ])
+
+      const violenceProfile = mapDataToViolenceProfile(viper, assaultIncidents)
 
       const dataToStore = {
         escapeProfile,

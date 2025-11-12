@@ -86,12 +86,13 @@ describe('Tasklist', () => {
     furtherChargesPage.selectFurtherChargesRadioButton('NO')
     furtherChargesPage.saveAndReturnButton().click()
 
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: offenderNumber,
-      category: 'C',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: offenderNumber,
+      aboveThreshold: false,
+    })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: offenderNumber,
+      assaultIncidents: []
     })
     cy.task('stubGetSocProfile', {
       offenderNo: offenderNumber,
