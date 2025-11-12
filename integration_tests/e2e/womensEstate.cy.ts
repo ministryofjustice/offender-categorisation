@@ -173,12 +173,13 @@ describe("Women's Estate", () => {
       categoriserOffendingHistoryPage.selectPreviousConvictionsRadioButton('NO')
       categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-      cy.task('stubGetViolenceProfile', {
-        offenderNo,
-        category,
-        veryHighRiskViolentOffender: false,
-        notifySafetyCustodyLead: false,
-        displayAssaults: false,
+      cy.task('stubGetViperData', {
+        prisonerNumber: offenderNo,
+        aboveThreshold: false,
+      })
+      cy.task('stubGetAssaultIncidents', {
+        prisonerNumber: offenderNo,
+        assaultIncidents: []
       })
 
       taskListPage.violenceLink().click()
@@ -307,8 +308,8 @@ describe("Women's Estate", () => {
         { term: 'Previous convictions on NOMIS', definition: 'Undated offence' },
         { term: 'Relevant convictions on PNC', definition: 'No' },
         // safety and good order
-        { term: 'Previous assaults in custody recorded', definition: '5' },
-        { term: 'Serious assaults in the past 12 months', definition: '2' },
+        { term: 'Previous assaults in custody recorded', definition: '0' },
+        { term: 'Serious assaults in the past 12 months', definition: '0' },
         { term: 'Any more information about risk of violence in custody', definition: 'No' },
         { term: 'Serious threats to good order in custody recorded', definition: 'No' },
         // risk of escape
@@ -473,8 +474,8 @@ describe("Women's Estate", () => {
         { term: 'Previous convictions on NOMIS', definition: 'Undated offence' },
         { term: 'Relevant convictions on PNC', definition: 'No' },
         // safety and good order
-        { term: 'Previous assaults in custody recorded', definition: '5' },
-        { term: 'Serious assaults in the past 12 months', definition: '2' },
+        { term: 'Previous assaults in custody recorded', definition: '0' },
+        { term: 'Serious assaults in the past 12 months', definition: '0' },
         { term: 'Any more information about risk of violence in custody', definition: 'No' },
         { term: 'Serious threats to good order in custody recorded', definition: 'No' },
         // risk of escape

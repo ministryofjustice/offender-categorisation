@@ -18,7 +18,8 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     elite2Api.stubAgencyDetails('LPI')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     alertsApi.stubGetEscapeAlerts('B2345YZ', false, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
+    formApi.stubGetViperData('B2345YZ', false)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
 
     prisonerBackgroundLink.click()
 
@@ -62,7 +63,8 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     elite2Api.stubAgencyDetails('LPI')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
 
     prisonerBackgroundLink.click()
 
@@ -89,7 +91,8 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     elite2Api.stubAgencyDetails('LPI')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
+    formApi.stubGetViperData('B2345YZ', false)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
 
     prisonerBackgroundLink.click()
     at PrisonerBackgroundPage

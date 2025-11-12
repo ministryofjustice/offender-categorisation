@@ -1266,4 +1266,18 @@ class Elite2Api extends WireMockRule {
         .withHeader('Content-Type', 'application/json')
         .withStatus(200)))
   }
+
+  def stubGetAssaultIncidents(prisonerNumber) {
+    this.stubFor(get("/api/offenders/$prisonerNumber/incidents?incidentType=ASSAULT&incidentType=ASSAULTS3&participationRoles=ACTINV&participationRoles=ASSIAL&participationRoles=FIGHT&participationRoles=IMPED&participationRoles=PERP&participationRoles=SUSASS&participationRoles=SUSINV")
+      .willReturn(aResponse()
+        .withBody(JsonOutput.toJson([
+          [incidentStatus: 'SOMETHING', reportTime: LocalDate.now().minusDays(2).format('yyyy-MM-dd'), responses: [[question: 'WAS THIS A SEXUAL ASSAULT', answer: 'YES']]],
+          [incidentStatus: 'SOMETHING', reportTime: LocalDate.now().minusDays(2).format('yyyy-MM-dd'), responses: [[question: 'WAS THIS A SEXUAL ASSAULT', answer: 'YES']]],
+          [incidentStatus: 'SOMETHING', reportTime: LocalDate.now().minusDays(2).format('yyyy-MM-dd'), responses: [[question: 'SOMETHING', answer: 'YES']]],
+          [incidentStatus: 'SOMETHING', reportTime: LocalDate.now().minusDays(2).format('yyyy-MM-dd'), responses: [[question: 'SOMETHING', answer: 'YES']]],
+          [incidentStatus: 'SOMETHING', reportTime: LocalDate.now().minusDays(2).format('yyyy-MM-dd'), responses: [[question: 'SOMETHING', answer: 'YES']]],
+        ]))
+        .withHeader('Content-Type', 'application/json')
+        .withStatus(200)))
+  }
 }

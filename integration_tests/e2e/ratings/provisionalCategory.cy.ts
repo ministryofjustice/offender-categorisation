@@ -57,12 +57,13 @@ describe('Provisional Category', () => {
         onEscapeList: true,
         activeOnEscapeList: false,
       })
-      cy.task('stubGetViolenceProfile', {
-        offenderNo: 'B2345YZ',
-        category: 'C',
-        veryHighRiskViolentOffender: false,
-        notifySafetyCustodyLead: false,
-        displayAssaults: false,
+      cy.task('stubGetViperData', {
+        prisonerNumber: 'B2345YZ',
+        aboveThreshold: false,
+      })
+      cy.task('stubGetAssaultIncidents', {
+        prisonerNumber: 'B2345YZ',
+        assaultIncidents: []
       })
       cy.task('stubGetLifeProfile', {
         offenderNo: 'B2345YZ',

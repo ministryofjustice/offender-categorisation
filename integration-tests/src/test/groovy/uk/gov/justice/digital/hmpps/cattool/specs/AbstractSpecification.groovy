@@ -7,6 +7,7 @@ import org.junit.Rule
 import uk.gov.justice.digital.hmpps.cattool.mockapis.AlertsApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.AllocationApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
+import uk.gov.justice.digital.hmpps.cattool.mockapis.FormApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.PathfinderApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.PrisonerSearchApi
@@ -39,6 +40,9 @@ abstract class AbstractSpecification extends GebReportingSpec {
 
   @Rule
   protected PrisonerSearchApi prisonerSearchApi = new PrisonerSearchApi()
+
+  @Rule
+  protected FormApi formApi = new FormApi()
 
   @Rule
   protected OauthApi oauthApi = new OauthApi(new WireMockConfiguration()
