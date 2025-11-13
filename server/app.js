@@ -303,7 +303,6 @@ module.exports = function createApp({
     formService,
     offendersService,
     userService,
-    riskProfilerService,
     authenticationMiddleware,
     pathfinderService,
     alertService,

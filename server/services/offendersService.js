@@ -36,6 +36,7 @@ const {
   NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
 } = require('./recategorisation/recall/recalledOffenderData')
 const { getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents } = require('./incidents/incidentService')
+const { LIFE_IMPRISONMENT_STATUSES, MURDER_OFFENCE_DESCRIPTION_PREFACE } = require('../data/prisonerSearch/booking')
 
 const dirname = process.cwd()
 
@@ -1814,6 +1815,25 @@ module.exports = function createOffendersService(
     return getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents(assaultIncidents)
   }
 
+  const hasLifeSentence = async (context, bookingId) => {
+    const nomisClient = nomisClientBuilder(context)
+    const prisonerSearchClient = prisonerSearchClientBuilder(context)
+    const [sentenceTerms, bookingDetails, mainOffences] = await Promise.all([
+      nomisClient.getSentenceTerms(bookingId),
+      prisonerSearchClient.getPrisonersByBookingIds([bookingId]),
+      nomisClient.getMainOffence(bookingId),
+    ])
+
+    return (
+      sentenceTerms.find(sentence => sentence.lifeSentence) !== undefined ||
+      bookingDetails.find(bookingDetail => LIFE_IMPRISONMENT_STATUSES.includes(bookingDetail.imprisonmentStatus)) !==
+        undefined ||
+      mainOffences.find(mainOffence =>
+        mainOffence.offenceDescription.startsWith(MURDER_OFFENCE_DESCRIPTION_PREFACE),
+      ) !== undefined
+    )
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -1867,5 +1887,6 @@ module.exports = function createOffendersService(
     isAwaitingApprovalOrSecurity,
     isRejectedBySupervisorSuitableForDisplay,
     getCountOfAssaultIncidents,
+    hasLifeSentence,
   }
 }
