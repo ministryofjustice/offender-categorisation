@@ -1,16 +1,17 @@
-import superagent from "superagent";
-import Agent, { HttpsAgent } from "agentkeepalive";
-import { config } from "../../config";
-import { getApiClientToken } from "../../authentication/clientCredentials";
-import logger from "../../../log";
-import { getSanitisedError } from "../../getSanitisedError";
+import superagent from 'superagent'
+import Agent, { HttpsAgent } from 'agentkeepalive'
+import { config } from '../../config'
+import { getApiClientToken } from '../../authentication/clientCredentials'
+import logger from '../../../log'
+import { getSanitisedError } from '../../getSanitisedError'
 import {
   ESCAPE_LIST_ALERT_CODE,
   ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
-  ESCAPE_RISK_ALERT_CODE, OCGM_ALERT_CODE
-} from "../prisonerSearch/alert/prisonerSearchAlert.dto";
-import { EscapeAlertDto } from "./escapeAlert.dto";
-import { User } from "../user";
+  ESCAPE_RISK_ALERT_CODE,
+  OCGM_ALERT_CODE,
+} from '../prisonerSearch/alert/prisonerSearchAlert.dto'
+import { EscapeAlertDto } from './escapeAlert.dto'
+import { User } from '../user'
 
 const timeoutSpec = {
   response: config.apis.alertsApi.timeout.response,

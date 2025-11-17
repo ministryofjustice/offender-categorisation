@@ -41,7 +41,6 @@ module.exports = function createApp({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   statsService,
   frontEndComponentsService,
   pathfinderService,
