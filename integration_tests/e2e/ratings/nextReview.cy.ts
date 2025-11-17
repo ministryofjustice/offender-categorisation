@@ -53,9 +53,8 @@ describe('Next Review', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
 

@@ -31,9 +31,8 @@ describe('Category Decision', () => {
       })
 
       cy.task('stubGetOffenderDetailsWomen', { bookingId, category: 'ON700' })
-      cy.task('stubGetSocProfile', {
+      cy.task('stubGetOcgmAlert', {
         offenderNo: 'ON700',
-        category: 'U(Unsentenced)',
         transferToSecurity: false,
       })
       cy.task('stubGetExtremismProfile', {
@@ -122,9 +121,8 @@ describe('Category Decision', () => {
         category: 'U(Unsentenced)',
         youngOffender: true,
       })
-      cy.task('stubGetSocProfile', {
+      cy.task('stubGetOcgmAlert', {
         offenderNo: 'C0001AA',
-        category: 'U(Unsentenced)',
         transferToSecurity: false,
       })
       cy.task('stubGetExtremismProfile', {

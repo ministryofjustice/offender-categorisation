@@ -86,7 +86,7 @@ function extractAssessmentDate(details) {
 
 async function addSocProfile({
   res,
-  riskProfilerService,
+  alertService,
   details,
   formService,
   bookingId,
@@ -98,7 +98,10 @@ async function addSocProfile({
   let { status } = categorisationRecord
   // only load the soc profile once - then it is saved against the record
   if (isFirstVisit(res)) {
-    const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals)
+    const ocgmAlert = await alertService.prisonerHasActiveOcgmAlert(details.offenderNo, res.locals)
+    const socProfile = {
+      transferToSecurity: ocgmAlert,
+    }
     const extremismProfile = await pathfinderService.getExtremismProfile(details.offenderNo, res.locals)
     await formService.mergeRiskProfileData(bookingId, { socProfile, extremismProfile }, transactionalDbClient)
 

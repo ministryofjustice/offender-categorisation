@@ -1,12 +1,13 @@
 package uk.gov.justice.digital.hmpps.cattool.model
 
 import geb.Browser
+import uk.gov.justice.digital.hmpps.cattool.mockapis.AlertsApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.AllocationApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.Elite2Api
 import uk.gov.justice.digital.hmpps.cattool.mockapis.OauthApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.PathfinderApi
 import uk.gov.justice.digital.hmpps.cattool.mockapis.PrisonerSearchApi
-import uk.gov.justice.digital.hmpps.cattool.mockapis.RiskProfilerApi
+
 import uk.gov.justice.digital.hmpps.cattool.pages.CategoriserHomePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
@@ -16,7 +17,6 @@ import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER_USER
-import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_RECAT_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_USER
 
@@ -24,11 +24,11 @@ class TestFixture {
 
   Browser browser
   Elite2Api elite2Api
-  RiskProfilerApi riskProfilerApi
   AllocationApi allocationApi
   PrisonerSearchApi prisonerSearchApi
   OauthApi oauthApi
   PathfinderApi pathfinderApi
+  AlertsApi alertsApi
 
   UserAccount currentUser
 
@@ -166,18 +166,18 @@ class TestFixture {
     Browser browser,
     Elite2Api elite2Api,
     OauthApi oauthApi,
-    RiskProfilerApi riskProfilerApi1,
     AllocationApi allocationApi1,
     PrisonerSearchApi prisonerSearchApi,
-    PathfinderApi pathfinderApi
+    PathfinderApi pathfinderApi,
+    AlertsApi alertsApi
   ) {
     this.browser = browser
     this.elite2Api = elite2Api
-    this.riskProfilerApi = riskProfilerApi1
     this.allocationApi = allocationApi1
     this.prisonerSearchApi = prisonerSearchApi
     this.oauthApi = oauthApi
     this.pathfinderApi = pathfinderApi
+    this.alertsApi = alertsApi
   }
 
   def loginAs(UserAccount user) {
@@ -206,7 +206,7 @@ class TestFixture {
     loginAs(CATEGORISER_USER)
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', multipleSentences)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     browser.selectSecondPrisoner()
   }
@@ -220,7 +220,7 @@ class TestFixture {
     loginAs(FEMALE_USER)
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetailsWomen(700, "ON700")
-    riskProfilerApi.stubForTasklists('ON700', 'U(Unsentenced)', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('ON700', 3)
     browser.selectFirstPrisoner()
   }
@@ -233,25 +233,9 @@ class TestFixture {
     loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, indeterminateSentence)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', transferToSecurity)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', transferToSecurity)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     browser.selectFirstPrisoner()
-  }
-
-  def gotoTasklistRecatForWomen(transferToSecurity = false, indeterminateSentence = false) {
-    elite2Api.stubRecategoriseWomen()
-    prisonerSearchApi.stubGetPrisonerSearchPrisonersWomen()
-    prisonerSearchApi.stubSentenceData(['ON700', 'ON701'], [700, 701], [LocalDate.now().toString(), LocalDate.now().toString()])
-
-    loginAs(FEMALE_RECAT_USER)
-    browser.at RecategoriserHomePage
-    elite2Api.stubGetOffenderDetailsWomen(700, 'ON700', false, indeterminateSentence, 'R')
-    riskProfilerApi.stubForTasklists('ON700', 'R', transferToSecurity)
-    pathfinderApi.stubGetExtremismProfile('ON700', 3)
-
-    browser.waitFor {
-      browser.selectFirstPrisoner()
-    }
   }
 
 
@@ -263,22 +247,9 @@ class TestFixture {
     loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, false, 'I')
-    riskProfilerApi.stubForTasklists('C0001AA', 'I', transferToSecurity)
+    alertsApi.stubGetActiveOcgmAlerts('C0001AA', transferToSecurity)
     pathfinderApi.stubGetExtremismProfile('C0001AA', 4)
     browser.selectFirstPrisoner() // should be Tim, Tiny, booking 21
-  }
-
-  def gotoTasklistRecatForCatIIndeterminate(transferToSecurity = false) {
-    elite2Api.stubRecategoriseWithCatI()
-    prisonerSearchApi.stubGetPrisonerSearchPrisoners(['1998-07-24', '1998-08-15'])
-    prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
-
-    loginAs(RECATEGORISER_USER)
-    browser.at RecategoriserHomePage
-    elite2Api.stubGetOffenderDetails(21, 'C0001AA', true, true, 'I')
-    riskProfilerApi.stubForTasklists('C0001AA', 'C', transferToSecurity)
-    pathfinderApi.stubGetExtremismProfile('C0001AA', 3)
-    browser.selectFirstPrisoner()
   }
 
   def simulateLogin() {

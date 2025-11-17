@@ -53,9 +53,8 @@ describe("Women's estate recategorisation", () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: testOffenderNumber,
-      category: 'T',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {

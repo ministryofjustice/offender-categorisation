@@ -41,7 +41,7 @@ class ReviewSpecification extends AbstractSpecification {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     selectFirstPrisoner() // has been sorted to top of list!
     at(new TasklistPage(bookingId: '12'))

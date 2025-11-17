@@ -35,7 +35,7 @@ class RiskChangeAlertDetailSpecification extends AbstractSpecification {
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
 
     elite2Api.stubGetOffenderDetails(12, 'B2345XY')
-    riskProfilerApi.stubForTasklists('B2345XY', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345XY', 3)
     answerYes.click()
     submitButton.click()

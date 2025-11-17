@@ -128,7 +128,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     // TODO: was not in the to-do list so have to go directly, BUT NOW IS with wrong button label 'edit'
     to TasklistRecatPage, '12', reason: 'DUE'
@@ -166,7 +166,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     via TasklistRecatPage, '12'
 
