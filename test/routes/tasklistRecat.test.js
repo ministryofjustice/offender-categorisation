@@ -167,7 +167,7 @@ describe('GET /tasklistRecat/', () => {
     const sampleExtremismProfile = {
       provisionalCategorisation: 'B',
     }
-    alertService.prisonerHasActiveOcgmAlert(true)
+    alertService.prisonerHasActiveOcgmAlert.mockResolvedValue(true)
     pathfinderService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
