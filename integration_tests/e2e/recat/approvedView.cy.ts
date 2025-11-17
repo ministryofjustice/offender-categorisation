@@ -98,7 +98,7 @@ describe('Approved View', () => {
     cy.task('updateRiskProfile', {
       bookingId: 12,
       riskProfile: {
-        socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false },
+        socProfile: { transferToSecurity: false },
         violenceProfile: {
           nomsId: 'B2345YZ',
           riskType: 'VIOLENCE',

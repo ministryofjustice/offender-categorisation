@@ -53,10 +53,7 @@ context('Security', () => {
       bookingId: 13,
       riskProfile: {
         socProfile: {
-          nomsId: 'G1110GX',
-          riskType: 'SOC',
           transferToSecurity: true,
-          provisionalCategorisation: 'C',
         },
       },
     })

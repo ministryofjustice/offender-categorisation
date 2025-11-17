@@ -32,7 +32,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     and: 'SOC data is stored and merged correctly'
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile      : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
+    response == [socProfile      : [transferToSecurity: false],
                  extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false]
     ]
     def row = data[0]
@@ -63,7 +63,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     and: 'data is stored correctly'
     def data = db.getData(21)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile      : [nomsId: 'C0001AA', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'I'],
+    response == [socProfile      : [transferToSecurity: false],
                  extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false]
     ]
     def row = data[0]
