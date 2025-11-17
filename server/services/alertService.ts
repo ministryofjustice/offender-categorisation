@@ -19,8 +19,8 @@ export default class CreateAlertService {
   async prisonerHasActiveOcgmAlert(offenderNo: string, user: { username: string }): Promise<boolean> {
     try {
       const alertsApiClient = this.alertsApiClientBuilder(user)
-      const response = await alertsApiClient.getActiveOCGMAlerts(offenderNo)
-      return !response.content.isEmpty()
+      const response = await alertsApiClient.getActiveOcgmAlerts(offenderNo)
+      return response.content?.length > 0
     } catch (error) {
       logger.error(error)
       throw error

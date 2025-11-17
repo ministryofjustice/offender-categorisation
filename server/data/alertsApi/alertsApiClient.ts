@@ -10,7 +10,7 @@ import {
   ESCAPE_RISK_ALERT_CODE,
   OCGM_ALERT_CODE,
 } from '../prisonerSearch/alert/prisonerSearchAlert.dto'
-import { EscapeAlertDto } from './escapeAlert.dto'
+import { AlertDto } from './alertDto'
 import { User } from '../user'
 
 const timeoutSpec = {
@@ -32,12 +32,12 @@ export const alertsApiClientBuilder = (user: User) => {
   const apiGet = alertsApiGetBuilder(user.username)
 
   return {
-    async getActivePrisonerEscapeAlerts(offenderNo: string): Promise<EscapeAlertDto[]> {
+    async getActivePrisonerEscapeAlerts(offenderNo: string): Promise<AlertDto[]> {
       const path = `${apiUrl}prisoners/${offenderNo}/alerts`
       const query = `isActive=true&alertCode=${ESCAPE_RISK_ALERT_CODE},${ESCAPE_LIST_ALERT_CODE},${ESCAPE_LIST_HEIGHTENED_ALERT_CODE}`
       return apiGet({ path, query })
     },
-    async getActiveOCGMAlerts(offenderNo: string): Promise<EscapeAlertDto[]> {
+    async getActiveOcgmAlerts(offenderNo: string): Promise<AlertDto[]> {
       const path = `${apiUrl}prisoners/${offenderNo}/alerts`
       const query = `isActive=true&alertCode=${OCGM_ALERT_CODE}`
       return apiGet({ path, query })

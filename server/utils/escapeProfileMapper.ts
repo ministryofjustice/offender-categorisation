@@ -4,7 +4,7 @@ import {
   ESCAPE_LIST_HEIGHTENED_ALERT_CODE,
 } from '../data/prisonerSearch/alert/prisonerSearchAlert.dto'
 
-import { Alert } from '../data/alertsApi/escapeAlert.dto'
+import { Alert } from '../data/alertsApi/alertDto'
 
 interface SummarisedAlertData {
   alertCode: string
