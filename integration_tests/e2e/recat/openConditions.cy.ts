@@ -243,10 +243,7 @@ describe('Open Conditions', () => {
         sequence_no: 1,
         risk_profile: {
           socProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'SOC',
             transferToSecurity: false,
-            provisionalCategorisation: 'C',
           },
           extremismProfile: {
             notifyRegionalCTLead: false,

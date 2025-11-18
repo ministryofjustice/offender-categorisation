@@ -206,7 +206,7 @@ class TestFixture {
     loginAs(CATEGORISER_USER)
     browser.at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false, false, 'C', multipleSentences)
-    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', transferToSecurity)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     browser.selectSecondPrisoner()
   }
