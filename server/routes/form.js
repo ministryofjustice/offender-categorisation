@@ -45,7 +45,6 @@ module.exports = function Index({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   authenticationMiddleware,
   pathfinderService,
   alertService,
@@ -158,17 +157,18 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'categoriser', 'review', bookingId, transactionalDbClient)
 
-      const [history, offences, extremismProfile, escapeProfile, assaultIncidents, viper] = await Promise.all([
-        offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId),
-        offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo),
-        pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals),
-        alertService.getEscapeProfile(result.data.details.offenderNo, res.locals),
-        offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
-        formService.getViperData(req.user.username, result.data.details.offenderNo),
-      ])
+      const [history, offences, extremismProfile, escapeProfile, assaultIncidents, viper, hasLifeSentence] =
+        await Promise.all([
+          offendersService.getCatAInformation(res.locals, result.data.details.offenderNo, bookingId),
+          offendersService.getOffenceHistory(res.locals, result.data.details.offenderNo),
+          pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals),
+          alertService.getEscapeProfile(result.data.details.offenderNo, res.locals),
+          offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
+          formService.getViperData(req.user.username, result.data.details.offenderNo),
+          offendersService.hasLifeSentence(res.locals, parseInt(bookingId, 10)),
+        ])
 
       const violenceProfile = mapDataToViolenceProfile(viper, assaultIncidents)
-      const lifeProfile = await riskProfilerService.getLifeProfile(result.data.details.offenderNo, res.locals)
 
       const dataToStore = {
         history,
@@ -176,7 +176,12 @@ module.exports = function Index({
         escapeProfile,
         extremismProfile,
         violenceProfile,
-        lifeProfile,
+      }
+
+      if (hasLifeSentence) {
+        dataToStore.lifeProfile = {
+          life: true,
+        }
       }
 
       const dataToDisplay = {

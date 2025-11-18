@@ -53,7 +53,7 @@ class ReviewSpecification extends AbstractSpecification {
     formApi.stubGetViperData('B2345YZ', true)
     elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
-    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], [date12])
 
     and: 'The continue link is selected'
     checkAndSubmitLink.click()
@@ -84,7 +84,6 @@ class ReviewSpecification extends AbstractSpecification {
     response.escapeProfile == [riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true, escapeListAlerts: [[alertCode: 'XEL', dateCreated: '2025-01-01']], escapeRiskAlerts: [[alertCode: 'XER', dateCreated: '2025-01-01']]]
     response.violenceProfile == [riskType: 'VIOLENCE', numberOfAssaults: 5, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3]
     response.extremismProfile == [notifyRegionalCTLead: true, increasedRiskOfExtremism: true]
-    response.lifeProfile == [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'C']
   }
 
   def "The review page can be displayed without security input"() {
@@ -109,7 +108,7 @@ class ReviewSpecification extends AbstractSpecification {
     formApi.stubGetViperData('B2345YZ', true)
     elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
-    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2020-01-01'])
     at new TasklistPage(bookingId: '12')
     checkAndSubmitLink.click()
 
