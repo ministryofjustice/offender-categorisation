@@ -84,7 +84,7 @@ class EventSpecification extends AbstractSpecification {
 
     then: 'The prison id is updated as follows'
 
-    waitFor(20) {
+    waitFor {
       def data = db.getData(123)
       data.id == [1, 2]
       data.prison_id == ['MDI', 'LEI']
