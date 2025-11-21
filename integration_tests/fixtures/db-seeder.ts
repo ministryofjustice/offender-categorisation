@@ -1,5 +1,5 @@
 import { dbKeyConvertor, FormDbJson } from './db-key-convertor'
-import { LiteCategoryDbRow } from '../db/queries'
+import { LiteCategoryDbRow } from "../db/queries";
 
 export const dbSeeder = (formJson: FormDbJson[]) =>
   formJson.map(dbKeyConvertor).forEach(rowData => cy.task('insertFormTableDbRow', rowData))

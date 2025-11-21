@@ -99,6 +99,16 @@ export interface SecurityReferralDbRow {
   raised_date: string
 }
 
+export interface RiskChangeDbRow {
+  oldProfile: string
+  newProfile: string
+  offender_no: string
+  user_id: string
+  prison_id: string
+  status: string
+  raised_date: string
+}
+
 async function insertFormTableDbRow(rowData: MandatoryRowData & Partial<FormDbRow>) {
   const {
     id,
@@ -267,6 +277,21 @@ async function insertSecurityReferralTableDbRow({
   )
 }
 
+async function insertRiskChangeTableDbRow({
+  offenderNumber,
+  prisonId,
+  status,
+}: {
+  offenderNumber: string
+  prisonId: string,
+  status: string
+}) {
+  return await db.query(
+    `insert into risk_change (old_profile, new_profile, offender_no, user_id, prison_id, status, raised_date) values ($1, $2, $3, $4, $5, $6, $7)`,
+    ['{}', '{}', offenderNumber, 'SECURITY_USER', prisonId, status, new Date()],
+  )
+}
+
 async function getLiteData({
   bookingId,
 }: {
@@ -337,6 +362,7 @@ export default {
   insertFormTableDbRow,
   insertLiteCategoryTableDbRow,
   insertSecurityReferralTableDbRow,
+  insertRiskChangeTableDbRow,
   getLiteData,
   selectFormTableDbRow,
   selectLiteCategoryTableDbRow,
