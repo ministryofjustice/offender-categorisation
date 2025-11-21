@@ -95,6 +95,7 @@ module.exports = function createSqsService(offenderService, formService) {
       await db.doTransactional(async transactionalDbClient => {
         const context = { user: {} }
 
+        logger.info({ type: event.eventType }, 'My event')
         switch (event.eventType) {
           case 'BOOKING_NUMBER-CHANGED':
             {
