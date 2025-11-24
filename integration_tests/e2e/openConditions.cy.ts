@@ -379,8 +379,8 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateViolenceRatingSummary([
-      { question: 'Previous assaults in custody recorded', expectedAnswer: '5' },
-      { question: 'Serious assaults in the past 12 months', expectedAnswer: '2' },
+      { question: 'Previous assaults in custody recorded', expectedAnswer: '0' },
+      { question: 'Serious assaults in the past 12 months', expectedAnswer: '0' },
       { question: 'Any more information about risk of violence in custody', expectedAnswer: 'No' },
       { question: 'Serious threats to good order in custody recorded', expectedAnswer: 'Yes' },
     ])
@@ -439,8 +439,8 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateViolenceRatingSummary([
-      { question: 'Previous assaults in custody recorded', expectedAnswer: '5' },
-      { question: 'Serious assaults in the past 12 months', expectedAnswer: '2' },
+      { question: 'Previous assaults in custody recorded', expectedAnswer: '0' },
+      { question: 'Serious assaults in the past 12 months', expectedAnswer: '0' },
       { question: 'Any more information about risk of violence in custody', expectedAnswer: 'No' },
       { question: 'Serious threats to good order in custody recorded', expectedAnswer: 'Yes' },
     ])
@@ -563,8 +563,8 @@ describe('Open conditions', () => {
     ])
 
     categoriserReviewCYAPage.validateViolenceRatingSummary([
-      { question: 'Previous assaults in custody recorded', expectedAnswer: '5' },
-      { question: 'Serious assaults in the past 12 months', expectedAnswer: '2' },
+      { question: 'Previous assaults in custody recorded', expectedAnswer: '0' },
+      { question: 'Serious assaults in the past 12 months', expectedAnswer: '0' },
       { question: 'Any more information about risk of violence in custody', expectedAnswer: 'No' },
       { question: 'Serious threats to good order in custody recorded', expectedAnswer: 'Yes' },
     ])
@@ -856,12 +856,13 @@ describe('Open conditions', () => {
       offenderNo: 'B2345YZ',
       alertCode: 'ABC',
     })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: 'B2345YZ',
+      aboveThreshold: false,
+    })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: 'B2345YZ',
+      assaultIncidents: []
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
@@ -981,12 +982,13 @@ describe('Open conditions', () => {
       offenderNo: 'B2345YZ',
       alertCode: 'XER',
     })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: 'B2345YZ',
+      aboveThreshold: false,
+    })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: 'B2345YZ',
+      assaultIncidents: []
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',

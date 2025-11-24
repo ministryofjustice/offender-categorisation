@@ -541,20 +541,21 @@ describe('computeSuggestedCat', () => {
   }
   const dateOfBirth = moment().subtract(20, 'years')
   test.each`
-    data                                                                      | category
-    ${{}}                                                                     | ${'C'}
-    ${{ details: { dateOfBirth } }}                                           | ${'I'}
-    ${{ history: { catAType: 'A' } }}                                         | ${'B'}
-    ${{ ratings: { securityBack: { catB: 'Yes' } } }}                         | ${'B'}
-    ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}             | ${'B'}
-    ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}                    | ${'C'}
-    ${{ violenceProfile: { provisionalCategorisation: 'B' } }}                | ${'B'}
-    ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}                   | ${'B'}
-    ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}         | ${'B'}
-    ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }} | ${'B'}
-    ${{ extremismProfile: { increasedRiskOfExtremism: true } }}               | ${'B'}
-    ${{ lifeProfile: { provisionalCategorisation: 'B' } }}                    | ${'B'}
-    ${nearMisses}                                                             | ${'C'}
+    data                                                                                                           | category
+    ${{}}                                                                                                          | ${'C'}
+    ${{ details: { dateOfBirth } }}                                                                                | ${'I'}
+    ${{ history: { catAType: 'A' } }}                                                                              | ${'B'}
+    ${{ ratings: { securityBack: { catB: 'Yes' } } }}                                                              | ${'B'}
+    ${{ violenceProfile: { notifySafetyCustodyLead: false, numberOfAssaults: 5, numberOfNonSeriousAssaults: 1 } }} | ${'C'}
+    ${{ violenceProfile: { notifySafetyCustodyLead: true, numberOfAssaults: 4, numberOfNonSeriousAssaults: 1 } }}  | ${'C'}
+    ${{ violenceProfile: { notifySafetyCustodyLead: true, numberOfAssaults: 5, numberOfNonSeriousAssaults: 0 } }}  | ${'C'}
+    ${{ violenceProfile: { notifySafetyCustodyLead: true, numberOfAssaults: 5, numberOfNonSeriousAssaults: 1 } }}  | ${'B'}
+    ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}                                                        | ${'B'}
+    ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}                                              | ${'B'}
+    ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }}                                      | ${'B'}
+    ${{ extremismProfile: { increasedRiskOfExtremism: true } }}                                                    | ${'B'}
+    ${{ lifeProfile: { provisionalCategorisation: 'B' } }}                                                         | ${'B'}
+    ${nearMisses}                                                                                                  | ${'C'}
   `('should return cat $category for data: $data', ({ data, category }) => {
     expect(service.computeSuggestedCat(data)).toEqual(category)
   })

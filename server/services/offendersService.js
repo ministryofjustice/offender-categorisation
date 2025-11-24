@@ -35,6 +35,7 @@ const {
   FIXED_TERM_RECALL_DAYS_LIMIT,
   NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
 } = require('./recategorisation/recall/recalledOffenderData')
+const { getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents } = require('./incidents/incidentService')
 
 const dirname = process.cwd()
 
@@ -1807,6 +1808,12 @@ module.exports = function createOffendersService(
     }
   }
 
+  const getCountOfAssaultIncidents = async (context, offenderNo) => {
+    const nomisClient = nomisClientBuilder(context)
+    const assaultIncidents = await nomisClient.getAssaultIncidents(offenderNo)
+    return getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents(assaultIncidents)
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -1859,5 +1866,6 @@ module.exports = function createOffendersService(
     getU21Recats,
     isAwaitingApprovalOrSecurity,
     isRejectedBySupervisorSuitableForDisplay,
+    getCountOfAssaultIncidents,
   }
 }

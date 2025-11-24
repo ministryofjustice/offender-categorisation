@@ -31,7 +31,7 @@
 {% endif %}
 {% endset %}
 
-{% if data.violenceProfile.displayAssaults %}
+{% if data.violenceProfile.numberOfAssaults > 0 %}
     {% set violenceText %}
       This person has been reported as the perpetrator in {{ data.violenceProfile.numberOfAssaults }} assaults in custody before,
       including {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults and {{ data.violenceProfile.numberOfNonSeriousAssaults }} non-serious assaults in the past 12 months.
@@ -157,8 +157,8 @@
     {% set prevRiskAssessmentsRows = [checkOasysAssessment, oasysInfo] %}
   {% else %}
     {% set prevRiskAssessmentsRows = [checkOasysAssessment, bcstInfo] %}
-  {% endif %}  
-  
+  {% endif %}
+
 
 <h2 class="govuk-heading-m no-print">Previous risk assessments</h2>
 {{ govukSummaryList({

@@ -73,7 +73,7 @@
     ]
   },
   "engines": {
-    "node": ">= 20.11.0",
+    "node": ">= 24.11.0",
     "npm": ">= 10.2.4"
   },
   "nodemonConfig": {
@@ -148,7 +148,7 @@
     "@types/http-errors": "^2.0.4",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/node": "^20.11.4",
+    "@types/node": "^24.10.0",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "^1.0.17",
     "@types/passport-oauth2": "^1.8.0",
