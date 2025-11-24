@@ -241,9 +241,12 @@ describe("Women's Estate", () => {
       categoryDecisionPage.enterCategoryDecisionJustification('justification for category')
       categoryDecisionPage.continueButton().click()
 
-      cy.task('stubGetLifeProfile', {
-        offenderNo,
-        category: 'R',
+      cy.task('stubSentenceData', {
+        offenderNumbers: [offenderNo],
+        bookingIds: [ bookingId],
+        startDates: [
+          moment().subtract(1, 'days').format('yyyy-MM-dd'),
+        ],
       })
 
       taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
@@ -406,11 +409,6 @@ describe("Women's Estate", () => {
 
       // cy.visit(`/form/openconditions/provisionalCategory/${bookingId}`)
       // cy.url().should('include', `tasklist/${bookingId}`)
-
-      cy.task('stubGetLifeProfile', {
-        offenderNo,
-        category: 'R',
-      })
 
       taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
 
