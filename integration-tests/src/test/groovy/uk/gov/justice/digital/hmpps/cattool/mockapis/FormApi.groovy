@@ -1,4 +1,5 @@
-package uk.gov.justice.digital.hmpps.cattool.mockapis
+package uk.gov.justice.digital.hmpps.cattool.mockapis;
+
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import groovy.json.JsonOutput
@@ -6,18 +7,18 @@ import groovy.json.JsonOutput
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import static com.github.tomakehurst.wiremock.client.WireMock.get
 
-class PathfinderApi extends WireMockRule {
+public class FormApi extends WireMockRule {
 
-  PathfinderApi() {
-    super(8090);
+  FormApi() {
+    super(8088);
   }
 
-  void stubGetExtremismProfile(String offenderno, Number band) {
-    this.stubFor(get("/pathfinder/nominal/noms-id/${offenderno}")
+  void stubGetViperData(String prisonerNumber, boolean aboveThreshold) {
+    this.stubFor(get("/risk/viper/${prisonerNumber}")
       .willReturn(aResponse()
         .withStatus(200)
         .withHeader("Content-Type", "application/json")
-        .withBody(JsonOutput.toJson([band : band]))
+        .withBody(JsonOutput.toJson([aboveThreshold : aboveThreshold]))
       ))
   }
 }

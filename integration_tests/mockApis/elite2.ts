@@ -4,6 +4,7 @@ import moment from 'moment'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
 import { AgencyLocation } from '../factory/agencyLocation'
+import { NomisIncidentDto } from "../../server/data/nomis/incidents/nomisIncident.dto";
 
 const stubAgencyDetails = ({ agency }: { agency: string }): SuperAgentRequest =>
   stubFor({
@@ -1582,6 +1583,19 @@ const getOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
     },
   })
 
+const stubGetAssaultIncidents = ({ prisonerNumber, assaultIncidents }: { prisonerNumber: string, assaultIncidents: NomisIncidentDto[] }) =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offenders/${prisonerNumber}/incidents?incidentType=ASSAULT&incidentType=ASSAULTS3&participationRoles=ACTINV&participationRoles=ASSIAL&participationRoles=FIGHT&participationRoles=IMPED&participationRoles=PERP&participationRoles=SUSASS&participationRoles=SUSINV`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: assaultIncidents,
+    },
+  })
+
 export default {
   stubAgencyDetails,
   stubAgenciesPrison,
@@ -1618,4 +1632,5 @@ export default {
   verifyUpdateNextReviewDate,
   stubRecategorise,
   getOffenderStub,
+  stubGetAssaultIncidents,
 }

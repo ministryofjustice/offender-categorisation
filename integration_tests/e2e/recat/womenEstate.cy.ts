@@ -66,12 +66,13 @@ describe("Women's estate recategorisation", () => {
       offenderNo: testOffenderNumber,
       alertCode: 'ABC',
     })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: testOffenderNumber,
-      category: 'T',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: testOffenderNumber,
+      aboveThreshold: false,
+    })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: testOffenderNumber,
+      assaultIncidents: []
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
   })

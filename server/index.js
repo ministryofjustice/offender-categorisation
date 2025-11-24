@@ -8,7 +8,7 @@ buildAppInsightsClient()
 const createApp = require('./app')
 
 const formClient = require('./data/formClient')
-const { formApiClientBuilder } = require('./data/formApiClient')
+const { formApiClientBuilder } = require('./data/formApi/formApiClient')
 const statsClient = require('./data/statsClient')
 const nomisClientBuilder = require('./data/nomisClientBuilder')
 const riskProfilerClientBuilder = require('./data/riskProfilerClientBuilder')
