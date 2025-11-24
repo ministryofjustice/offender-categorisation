@@ -6,6 +6,7 @@ import { AGENCY_LOCATION } from "../factory/agencyLocation";
 import STATUS from '../../server/utils/statusEnum'
 import { CATEGORISATION_TYPE } from "../support/categorisationType";
 import { CATEGORISER_USER } from "../factory/user";
+import { LiteCategoryDbRow, RiskChangeDbRow, SecurityReferralDbRow } from "../db/queries";
 
 type DbQueryResult = { rowCount: number; rows: any[] }
 
@@ -165,6 +166,63 @@ describe('Events', () => {
         securityReviewedBy: null,
         securityReviewedDate: null,
       })
+      cy.task('insertLiteCategoryTableDbRow', {
+        bookingId: 123,
+        sequence: 1,
+        offenderNo: 'B0010XY',
+        category: 'V',
+        prisonId: AGENCY_LOCATION.LEI.id,
+        createdDate: new Date(),
+        approvedDate: new Date(),
+        assessedBy: 'CATEGORISER_USER',
+        approvedBy: 'SUPERVISOR_USER',
+        assessment_committee: 'Committee A',
+        assessment_comment: 'Initial assessment comment',
+        next_review_date: new Date(),
+        placement_prison_id: AGENCY_LOCATION.LEI.id,
+        approved_committee: 'Committee B',
+        approved_placement_prison_id: AGENCY_LOCATION.LEI.id,
+        approved_placement_comment: 'Approved placement comment',
+        approved_comment: 'Approved comment',
+      })
+      cy.task('insertLiteCategoryTableDbRow', {
+        bookingId: 123,
+        sequence: 2,
+        offenderNo: 'B0010XY',
+        category: 'V',
+        prisonId: AGENCY_LOCATION.LEI.id,
+        createdDate: new Date(),
+        approvedDate: null,
+        assessedBy: 'CATEGORISER_USER',
+        approvedBy: null,
+        assessment_committee: 'Committee A',
+        assessment_comment: 'Initial assessment comment',
+        next_review_date: new Date(),
+        placement_prison_id: AGENCY_LOCATION.LEI.id,
+        approved_committee: null,
+        approved_placement_prison_id: null,
+        approved_placement_comment: null,
+        approved_comment: null,
+      })
+      cy.task('insertLiteCategoryTableDbRow', {
+        bookingId: 124,
+        sequence: 1,
+        offenderNo: 'B0010XY',
+        category: 'V',
+        prisonId: AGENCY_LOCATION.LEI.id,
+        createdDate: new Date(),
+        approvedDate: new Date(),
+        assessedBy: 'CATEGORISER_USER',
+        approvedBy: 'SUPERVISOR_USER',
+        assessment_committee: 'Committee A',
+        assessment_comment: 'Initial assessment comment',
+        next_review_date: new Date(),
+        placement_prison_id: AGENCY_LOCATION.LEI.id,
+        approved_committee: 'Committee B',
+        approved_placement_prison_id: AGENCY_LOCATION.LEI.id,
+        approved_placement_comment: 'Approved placement comment',
+        approved_comment: 'Approved comment',
+      })
       cy.task('insertRiskChangeTableDbRow', {
         offenderNumber: 'B0010XY',
         prisonId: AGENCY_LOCATION.LEI.id,
@@ -205,6 +263,25 @@ describe('Events', () => {
         })
         cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 124 }, (data: DbQueryResult) => {
           return data.rowCount === 1 && data.rows[0].prison_id === AGENCY_LOCATION.LEI.id
+        })
+        cy.task('selectLiteCategoryTableDbRow', { bookingId: 123 }).then((result: { rows: LiteCategoryDbRow[] }) => {
+          return result.rows.length === 2 &&
+            result.rows.find(row => row.sequence === 1).prison_id === AGENCY_LOCATION.BMI.id &&
+            result.rows.find(row => row.sequence === 2).prison_id === AGENCY_LOCATION.LEI.id
+        })
+        cy.task('selectLiteCategoryTableDbRow', { bookingId: 124 }).then((result: { rows: LiteCategoryDbRow[] }) => {
+          return result.rows.length === 1 && result.rows[0].prison_id === AGENCY_LOCATION.LEI.id
+        })
+        cy.task('selectRiskChangeTableDbRow', { offenderNo: 'B0010XY' }).then((result: { rows: RiskChangeDbRow[] }) => {
+          return result.rows.length === 2 &&
+            result.rows.find(row => row.id === 1).prison_id === AGENCY_LOCATION.BMI.id &&
+            result.rows.find(row => row.id === 2).prison_id === AGENCY_LOCATION.LEI.id
+        })
+        cy.task('getSecurityReferral', { offenderNo: 'B0010XY' }).then((result: { rows: SecurityReferralDbRow[] }) => {
+          return result.rows.length === 1 && result.rows[0].prison_id === AGENCY_LOCATION.BMI.id
+        })
+        cy.task('getSecurityReferral', { offenderNo: 'B0010XZ' }).then((result: { rows: SecurityReferralDbRow[] }) => {
+          return result.rows.length === 1 && result.rows[0].prison_id === AGENCY_LOCATION.LEI.id
         })
       })
     })

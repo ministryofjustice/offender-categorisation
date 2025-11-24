@@ -100,6 +100,7 @@ export interface SecurityReferralDbRow {
 }
 
 export interface RiskChangeDbRow {
+  id: number
   oldProfile: string
   newProfile: string
   offender_no: string
@@ -324,6 +325,14 @@ async function selectNextReviewChangeHistoryTableDbRow({
   return await db.query(`select * from next_review_change_history where offender_no = $1`, [offenderNo])
 }
 
+async function selectRiskChangeTableDbRow({
+  offenderNo,
+}: {
+  offenderNo: FormDbRow['offenderNo']
+}): Promise<QueryArrayResult<RiskChangeDbRow[]>> {
+  return await db.query(`select * from risk_change where offender_no = $1`, [offenderNo])
+}
+
 async function updateRiskProfile({
   riskProfile,
   bookingId,
@@ -367,6 +376,7 @@ export default {
   selectFormTableDbRow,
   selectLiteCategoryTableDbRow,
   selectNextReviewChangeHistoryTableDbRow,
+  selectRiskChangeTableDbRow,
   updateRiskProfile,
   updateFormRecord,
   deleteRowsFromForm,
