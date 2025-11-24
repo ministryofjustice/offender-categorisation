@@ -144,9 +144,12 @@ describe('Tasklist', () => {
     const nextReviewConfirmationPage = NextReviewConfirmationPage.createForBookingIdAndChoiceNumber(bookingId, '6')
     nextReviewConfirmationPage.saveAndReturnButton().click()
 
-    cy.task('stubGetLifeProfile', {
-      offenderNo: offenderNumber,
-      category: 'C',
+    cy.task('stubSentenceData', {
+      offenderNumbers: [offenderNumber],
+      bookingIds: [ bookingId],
+      startDates: [
+        moment().subtract(1, 'days').format('yyyy-MM-dd'),
+      ],
     })
     taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
 

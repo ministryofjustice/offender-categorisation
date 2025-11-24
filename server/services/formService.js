@@ -556,7 +556,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     const isCatBDueToExtremism = data.extremismProfile?.increasedRiskOfExtremism || hasPreviousTerrorismOffences
 
     const isCatBDueToSeriousFurtherCharges = data.ratings?.furtherCharges?.furtherChargesCatB === 'Yes'
-    const isCatBDueToLife = data.lifeProfile?.provisionalCategorisation === 'B'
+    const isCatBDueToLife = data.lifeProfile?.life
 
     if (
       isCatBDueToPreviousCatA ||

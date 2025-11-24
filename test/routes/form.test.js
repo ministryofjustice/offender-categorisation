@@ -48,11 +48,6 @@ const formService = {
   getViperData: jest.fn(),
 }
 
-const riskProfilerService = {
-  getSecurityProfile: jest.fn(),
-  getLifeProfile: jest.fn(),
-}
-
 const offendersService = {
   getUncategorisedOffenders: jest.fn(),
   getOffenderDetails: jest.fn(),
@@ -66,6 +61,7 @@ const offendersService = {
   requiredCatType: jest.fn(),
   backToCategoriser: jest.fn(),
   getCountOfAssaultIncidents: jest.fn(),
+  hasLifeSentence: jest.fn(),
 }
 
 const userService = {
@@ -85,7 +81,6 @@ const formRoute = createRouter({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   pathfinderService,
   alertService,
   authenticationMiddleware,
@@ -133,7 +128,6 @@ beforeEach(() => {
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getCountOfAssaultIncidents.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
-  riskProfilerService.getSecurityProfile.mockResolvedValue({})
   pathfinderService.getExtremismProfile.mockResolvedValue({})
   alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
@@ -188,7 +182,6 @@ describe('GET /ratings/securityInput', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-        expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
       }),
   )
   test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
@@ -1374,6 +1367,7 @@ describe('GET /categoriser/review', () => {
     offendersService.getOffenceHistory.mockResolvedValue({
       offence: 'details',
     })
+    offendersService.hasLifeSentence.mockResolvedValue(false)
 
     return request(app)
       .get('/categoriser/review/12345')
