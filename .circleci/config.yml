@@ -15,7 +15,7 @@ orbs:
 parameters:
   node-version:
     type: string
-    default: 20.11-browsers
+    default: 24.11-browsers
   nonprod-releases-slack-channel:
     type: string
     default: sed-nonprod-releases
