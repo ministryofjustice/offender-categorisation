@@ -96,9 +96,8 @@ describe("Women's Estate", () => {
       })
 
       cy.task('stubGetOffenderDetailsWomen', { bookingId, category })
-      cy.task('stubGetSocProfile', {
+      cy.task('stubGetOcgmAlert', {
         offenderNo,
-        category,
         transferToSecurity: false,
       })
       cy.task('stubGetExtremismProfile', {
@@ -627,9 +626,8 @@ describe("Women's Estate", () => {
         cy.task('stubGetOffenderDetailsWomen', { bookingId, category: 'R', youngOffender, indeterminateSentence })
       }
 
-      cy.task('stubGetSocProfile', {
-        offenderNo,
-        category,
+      cy.task('stubGetOcgmAlert', {
+        offenderNo: offenderNo,
         transferToSecurity: false,
       })
       cy.task('stubGetExtremismProfile', {

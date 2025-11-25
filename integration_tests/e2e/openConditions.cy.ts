@@ -953,9 +953,8 @@ describe('Open conditions', () => {
       bookingIds: [11, 12],
       startDates: [sentenceStartDates.B2345XY, sentenceStartDates.B2345YZ],
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {

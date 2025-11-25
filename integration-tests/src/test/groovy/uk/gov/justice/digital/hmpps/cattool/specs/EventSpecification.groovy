@@ -39,7 +39,7 @@ class EventSpecification extends AbstractSpecification {
     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials('foo', 'bar')))
     .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration('http://localhost:4566', 'eu-west-2'))
     .build()
-
+  
   def "merge events should change the offenderNo in all tables"() {
 
     db.doCreateCompleteRow(1, 123, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,

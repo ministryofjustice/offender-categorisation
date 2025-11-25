@@ -28,4 +28,18 @@ class AlertsApi extends WireMockRule {
         .withBody(JsonOutput.toJson([content : responseContent,]))
       ))
   }
+
+  void stubGetActiveOcgmAlerts(String offenderno, boolean hasOcgmAlert) {
+    def responseContent = []
+    if (hasOcgmAlert) {
+      responseContent += [alertCode: [code: "DOCGM"], activeFrom: "2025-01-01"]
+    }
+
+    this.stubFor(get("/prisoners/" + offenderno + "/alerts?isActive=true&alertCode=DOCGM")
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withHeader("Content-Type", "application/json")
+        .withBody(JsonOutput.toJson([content : responseContent,]))
+      ))
+  }
 }

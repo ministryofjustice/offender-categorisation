@@ -1,6 +1,6 @@
-import { EscapeAlertDto } from './escapeAlert.dto'
+import { AlertDto } from './alertDto'
 
-export const makeTestEscapeAlertDto = (escapeAlertDto: Partial<EscapeAlertDto> = {}): EscapeAlertDto => ({
+export const makeTestEscapeAlertDto = (escapeAlertDto: Partial<AlertDto> = {}): AlertDto => ({
   content: [
     {
       alertCode: {

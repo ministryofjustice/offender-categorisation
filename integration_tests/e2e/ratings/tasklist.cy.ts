@@ -39,9 +39,8 @@ describe('Tasklist', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: offenderNumber,
-      category: 'C',
       transferToSecurity: false,
     })
 
@@ -94,10 +93,9 @@ describe('Tasklist', () => {
       prisonerNumber: offenderNumber,
       assaultIncidents: []
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: offenderNumber,
       transferToSecurity: false,
-      category: 'C',
     })
 
     taskListPage.violenceLink().click()

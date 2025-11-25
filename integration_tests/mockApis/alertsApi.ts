@@ -29,6 +29,34 @@ const stubGetEscapeProfile = ({
     },
   })
 
+const stubGetOcgmAlert = ({
+  offenderNo,
+  transferToSecurity,
+}: {
+  offenderNo: string
+  transferToSecurity: boolean
+}): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/alerts-api/prisoners/${offenderNo}/alerts?isActive=true&alertCode=DOCGM`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        content: transferToSecurity ? [
+          {
+            alertCode: {
+              code: "DOCGM",
+            },
+            activeFrom: '2016-09-14',
+          },
+        ] : [],
+      },
+    },
+  })
+
 const stubAlertsApiPing = (statusCode = 200): SuperAgentRequest =>
   stubFor({
     request: {
@@ -47,5 +75,6 @@ const stubAlertsApiPing = (statusCode = 200): SuperAgentRequest =>
 
 export default {
   stubGetEscapeProfile,
+  stubGetOcgmAlert,
   stubAlertsApiPing,
 }

@@ -11,7 +11,7 @@ module.exports = function Index({
   offendersService,
   userService,
   authenticationMiddleware,
-  riskProfilerService,
+  alertService,
   pathfinderService,
 }) {
   const router = express.Router()
@@ -80,7 +80,7 @@ module.exports = function Index({
       categorisationRecord = await addSocProfile({
         res,
         req,
-        riskProfilerService,
+        alertService,
         details,
         formService,
         bookingId,
