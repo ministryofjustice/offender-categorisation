@@ -39,72 +39,7 @@ class EventSpecification extends AbstractSpecification {
     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials('foo', 'bar')))
     .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration('http://localhost:4566', 'eu-west-2'))
     .build()
-
-  def "prison transfer events should change the prison id in all tables"() {
-
-    db.doCreateCompleteRow(1, 123, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,
-      1, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
-    db.doCreateCompleteRow(2, 123, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
-      2, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
-    db.doCreateCompleteRow(3, 124, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
-      1, null, 'MDI', 'A1234AA', 'current_timestamp(2)', null, null)
-    db.doCreateCompleteRow(4, 125, '{}', 'CATEGORISER_USER', 'STARTED', 'INITIAL', null, null, null,
-      1, null, 'MDI', 'A1234AB', 'current_timestamp(2)', null, null)
-
-    db.createRiskChange(1, 'A1234AA', null, 'PROCESSED', '{}', '{}', 'MDI', LocalDate.now())
-    db.createRiskChange(2, 'A1234AA', null, 'NEW', '{}', '{}', 'MDI', LocalDate.now())
-
-    db.createSecurityData('A1234AA', 'MDI', 1, 'NEW')
-    db.createSecurityData('A1234AB', 'MDI', 2, 'NEW')
-
-    db.createLiteCategorisation(123, 1, 'A1234AA', 'V', 'MDI')
-    db.createUnapprovedLiteCategorisation(123, 2, 'A1234AA', 'V', 'MDI', 'CATEGORISER_USER')
-    db.createLiteCategorisation(124, 1, 'A1234AA', 'V', 'MDI')
-
-    elite2Api.stubGetBasicOffenderDetails(123, 'A1234AB')
-    fixture.stubLogin(UserAccount.CATEGORISER_USER)
-
-    when: 'a prison transfer event arrives'
-
-    def sendMessageRequest = new SendMessageRequest()
-      .withQueueUrl('http://localhost:4566/000000000000/event')
-      .withMessageBody("""{
-        "Message" : "{ \\"eventType\\": \\"EXTERNAL_MOVEMENT_RECORD-INSERTED\\", \\"offenderIdDisplay\\": \\"A1234AA\\",\\"bookingId\\":123, \\"fromAgencyLocationId\\": \\"MDI\\", \\"toAgencyLocationId\\": \\"LEI\\", \\"movementType\\": \\"ADM\\", \\"movementSeq\\": 1, \\"movementDateTime\\": \\"2020-02-25T15:57:45\\", \\"directionCode\\": \\"IN\\",\\"eventDatetime\\": \\"2020-02-25T16:00:00.0\\", \\"nomisEventType\\": \\"M1_RESULT\\" }",
-        "Timestamp" : "2020-01-14T15:14:33.624Z",
-        "MessageAttributes" : {
-          "code" : { "Type" : "String", "Value" : "" } ,
-          "eventType" : { "Type" : "String", "Value" : "EXTERNAL_MOVEMENT_RECORD-INSERTED" } ,
-          "id" : { "Type" : "String", "Value" : "f9f1e5e4-999a-78ad-d1d8-442d8864481a" } ,
-          "contentType" : { "Type" : "String", "Value" : "text/plain;charset=UTF-8" } ,
-          "timestamp" : { "Type" : "Number.java.lang.Long", "Value" : "1579014873619" }
-        }
-      }""")
-
-    sqs.sendMessage(sendMessageRequest)
-
-    then: 'The prison id is updated as follows'
-
-    waitFor(20) {
-      def data = db.getData(123)
-      data.id == [1, 2]
-      data.prison_id == ['MDI', 'LEI']
-
-      db.getData(124).prison_id == ['MDI']
-
-      def lite = db.getLiteData(123)
-      lite.sequence == [1, 2]
-      lite.prison_id == ['MDI', 'LEI']
-      db.getLiteData(124).prison_id == ['MDI']
-
-      def rc = db.getRiskChange('A1234AA')
-      rc.id == [1, 2]
-      rc.prison_id == ['MDI', 'LEI']
-
-      db.getSecurityData('A1234AA').prison_id == ['LEI']
-      db.getSecurityData('A1234AB').prison_id == ['MDI']
-    }
-  }
-
+  
   def "merge events should change the offenderNo in all tables"() {
 
     db.doCreateCompleteRow(1, 123, '{}', 'CATEGORISER_USER', 'APPROVED', 'INITIAL', null, null, null,

@@ -5,6 +5,6 @@ export interface Alert {
   activeFrom: string
 }
 
-export interface EscapeAlertDto {
+export interface AlertDto {
   content: Alert[]
 }

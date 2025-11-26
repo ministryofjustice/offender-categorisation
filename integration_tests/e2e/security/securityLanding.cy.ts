@@ -111,9 +111,8 @@ describe('Security Landing', () => {
     cy.signIn()
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
 
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: testOffenderNumber,
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {

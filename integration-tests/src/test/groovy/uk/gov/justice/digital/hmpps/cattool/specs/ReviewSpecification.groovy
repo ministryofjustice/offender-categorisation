@@ -41,7 +41,7 @@ class ReviewSpecification extends AbstractSpecification {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     selectFirstPrisoner() // has been sorted to top of list!
     at(new TasklistPage(bookingId: '12'))
@@ -80,7 +80,7 @@ class ReviewSpecification extends AbstractSpecification {
     response.offences == [[bookingId: 12, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
                           [bookingId: 12, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
                           [bookingId: 12, offenceDescription: 'Undated offence']]
-    response.socProfile == [nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C']
+    response.socProfile == [transferToSecurity: false]
     response.escapeProfile == [riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true, escapeListAlerts: [[alertCode: 'XEL', dateCreated: '2025-01-01']], escapeRiskAlerts: [[alertCode: 'XER', dateCreated: '2025-01-01']]]
     response.violenceProfile == [riskType: 'VIOLENCE', numberOfAssaults: 5, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3]
     response.extremismProfile == [notifyRegionalCTLead: true, increasedRiskOfExtremism: true]

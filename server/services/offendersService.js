@@ -1824,14 +1824,15 @@ module.exports = function createOffendersService(
       nomisClient.getMainOffence(bookingId),
     ])
 
-    return (
-      sentenceTerms.find(sentence => sentence.lifeSentence) !== undefined ||
-      bookingDetails.find(bookingDetail => LIFE_IMPRISONMENT_STATUSES.includes(bookingDetail.imprisonmentStatus)) !==
-        undefined ||
-      mainOffences.find(mainOffence =>
-        mainOffence.offenceDescription.startsWith(MURDER_OFFENCE_DESCRIPTION_PREFACE),
-      ) !== undefined
+    const hasLifeSentenceTerm = sentenceTerms.some(sentence => sentence.lifeSentence)
+    const hasLifeImprisonmentStatusBooking = bookingDetails.some(bookingDetail =>
+      LIFE_IMPRISONMENT_STATUSES.includes(bookingDetail.imprisonmentStatus),
     )
+    const hasMainOffenceStartingWithMurder = mainOffences.some(mainOffence =>
+      mainOffence.offenceDescription.startsWith(MURDER_OFFENCE_DESCRIPTION_PREFACE),
+    )
+
+    return hasLifeSentenceTerm || hasLifeImprisonmentStatusBooking || hasMainOffenceStartingWithMurder
   }
 
   return {

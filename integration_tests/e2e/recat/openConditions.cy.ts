@@ -96,9 +96,8 @@ describe('Open Conditions', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {
@@ -244,10 +243,7 @@ describe('Open Conditions', () => {
         sequence_no: 1,
         risk_profile: {
           socProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'SOC',
             transferToSecurity: false,
-            provisionalCategorisation: 'C',
           },
           extremismProfile: {
             notifyRegionalCTLead: false,
@@ -357,7 +353,7 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          socProfile: { transferToSecurity: false },
           escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
           violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
@@ -513,7 +509,7 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          socProfile: { transferToSecurity: false },
           escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
           violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
@@ -806,7 +802,7 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          socProfile: { transferToSecurity: false },
           escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
           violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
@@ -1059,7 +1055,7 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          socProfile: { transferToSecurity: false },
           escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
           violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
@@ -1392,7 +1388,7 @@ describe('Open Conditions', () => {
               assessmentDescription: 'Categorisation',
             },
           ],
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          socProfile: { transferToSecurity: false },
           escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
           violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },

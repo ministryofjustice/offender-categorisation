@@ -210,7 +210,7 @@ class HomePageSpecification extends AbstractSpecification {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(678, "ON678")
-    riskProfilerApi.stubForTasklists('ON678', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('ON678', false)
     pathfinderApi.stubGetExtremismProfile('ON678', 1)
     selectFirstPrisoner() // selects B2345YZ
     at(new TasklistPage(bookingId: '678'))

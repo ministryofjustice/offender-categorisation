@@ -99,6 +99,17 @@ export interface SecurityReferralDbRow {
   raised_date: string
 }
 
+export interface RiskChangeDbRow {
+  id: number
+  oldProfile: string
+  newProfile: string
+  offender_no: string
+  user_id: string
+  prison_id: string
+  status: string
+  raised_date: string
+}
+
 async function insertFormTableDbRow(rowData: MandatoryRowData & Partial<FormDbRow>) {
   const {
     id,
@@ -267,6 +278,21 @@ async function insertSecurityReferralTableDbRow({
   )
 }
 
+async function insertRiskChangeTableDbRow({
+  offenderNumber,
+  prisonId,
+  status,
+}: {
+  offenderNumber: string
+  prisonId: string,
+  status: string
+}) {
+  return await db.query(
+    `insert into risk_change (old_profile, new_profile, offender_no, user_id, prison_id, status, raised_date) values ($1, $2, $3, $4, $5, $6, $7)`,
+    ['{}', '{}', offenderNumber, 'SECURITY_USER', prisonId, status, new Date()],
+  )
+}
+
 async function getLiteData({
   bookingId,
 }: {
@@ -297,6 +323,14 @@ async function selectNextReviewChangeHistoryTableDbRow({
   offenderNo: NextReviewChangeHistoryDbRow['offender_no']
 }): Promise<QueryArrayResult<NextReviewChangeHistoryDbRow[]>> {
   return await db.query(`select * from next_review_change_history where offender_no = $1`, [offenderNo])
+}
+
+async function selectRiskChangeTableDbRow({
+  offenderNo,
+}: {
+  offenderNo: FormDbRow['offenderNo']
+}): Promise<QueryArrayResult<RiskChangeDbRow[]>> {
+  return await db.query(`select * from risk_change where offender_no = $1`, [offenderNo])
 }
 
 async function updateRiskProfile({
@@ -337,10 +371,12 @@ export default {
   insertFormTableDbRow,
   insertLiteCategoryTableDbRow,
   insertSecurityReferralTableDbRow,
+  insertRiskChangeTableDbRow,
   getLiteData,
   selectFormTableDbRow,
   selectLiteCategoryTableDbRow,
   selectNextReviewChangeHistoryTableDbRow,
+  selectRiskChangeTableDbRow,
   updateRiskProfile,
   updateFormRecord,
   deleteRowsFromForm,

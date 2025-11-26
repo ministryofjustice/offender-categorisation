@@ -23,11 +23,6 @@ module.exports = context => {
   const apiGet = riskProfilerGetBuilder(context.user.username)
 
   return {
-    getSocProfile(offenderNo) {
-      const path = `${apiUrl}soc/${offenderNo}`
-      logger.debug(`getSocProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
-      return apiGet({ path })
-    },
     getViolenceProfile(offenderNo) {
       const path = `${apiUrl}violence/${offenderNo}`
       logger.debug(`getViolenceProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
