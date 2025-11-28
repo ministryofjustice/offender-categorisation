@@ -47,7 +47,7 @@ module.exports = function Index({
 }) {
   const router = express.Router()
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'local') {
     router.use((req, res, next) => {
       // eslint-disable-next-line no-console
       console.log(req.method, req.originalUrl)
@@ -205,58 +205,69 @@ module.exports = function Index({
   router.get(
     '/recategoriserHome',
     asyncMiddleware(async (req, res) => {
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-
-      const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
-      if (validation.error) {
-        logger.error('Recategoriser home page submitted with invalid filters.', validation.error)
-        return res.render('pages/error', {
-          message: 'Invalid recategoriser home filters',
-        })
-      }
-
-      // Can be removed after pilot of recategorisation prioritisation filter
-      if (validation.value.filterRemoved) {
-        logger.info(
-          `Recategorisation Prioritisation Filter: filter removed using chips: ${validation.value.filterRemoved}`,
-        )
-        delete validation.value.filterRemoved
-      }
-
-      const { sortAttribute } = validation.value
-      const sortDirection = validation.value.sortDirection ?? 'none'
-      delete validation.value.sortAttribute
-      delete validation.value.sortDirection
-
-      const offenders = user.activeCaseLoad
-        ? await offendersService.getRecategoriseOffenders(res.locals, user, validation.value)
-        : []
-
-      const riskChangeCount = await formService.getRiskChangeCount(res.locals.user.activeCaseLoad.caseLoadId)
-
-      // Can be removed after pilot of recategorisation prioritisation filter
-      if (typeof validation.value === 'object' && Object.keys(validation.value).length > 0) {
-        logger.info(
-          `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}, prisonId = ${user.activeCaseLoad.caseLoadId}`,
-        )
-      }
-
-      return res.render('pages/recategoriserHome', {
-        offenders,
-        riskChangeCount,
-        filters: validation.value,
-        allFilters: recategorisationHomeFilters,
-        filterKeys: recategorisationHomeFilterKeys,
-        numberOfFiltersApplied: Object.values(validation.value).flat().length,
-        url: '/recategoriserHome',
-        fullUrl: req.url,
-        hideHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
-        sortAttribute,
-        sortDirection,
-      })
+      return recategoriserHome(req, res)
     }),
   )
+
+  router.get(
+    '/recategoriserHomeDevelopment',
+    asyncMiddleware(async (req, res) => {
+      return recategoriserHome(req, res, true)
+    }),
+  )
+
+  const recategoriserHome = async (req, res, withSi1481Changes = false) => {
+    const user = await userService.getUser(res.locals)
+    res.locals.user = { ...user, ...res.locals.user }
+
+    const validation = recategorisationHomeSchema.validate(req.query, { stripUnknown: true, abortEarly: false })
+    if (validation.error) {
+      logger.error('Recategoriser home page submitted with invalid filters.', validation.error)
+      return res.render('pages/error', {
+        message: 'Invalid recategoriser home filters',
+      })
+    }
+
+    // Can be removed after pilot of recategorisation prioritisation filter
+    if (validation.value.filterRemoved) {
+      logger.info(
+        `Recategorisation Prioritisation Filter: filter removed using chips: ${validation.value.filterRemoved}`,
+      )
+      delete validation.value.filterRemoved
+    }
+
+    const { sortAttribute } = validation.value
+    const sortDirection = validation.value.sortDirection ?? 'none'
+    delete validation.value.sortAttribute
+    delete validation.value.sortDirection
+
+    const offenders = user.activeCaseLoad
+      ? await offendersService.getRecategoriseOffenders(res.locals, user, validation.value, withSi1481Changes)
+      : []
+
+    const riskChangeCount = await formService.getRiskChangeCount(res.locals.user.activeCaseLoad.caseLoadId)
+
+    // Can be removed after pilot of recategorisation prioritisation filter
+    if (typeof validation.value === 'object' && Object.keys(validation.value).length > 0) {
+      logger.info(
+        `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}, prisonId = ${user.activeCaseLoad.caseLoadId}`,
+      )
+    }
+
+    return res.render('pages/recategoriserHome', {
+      offenders,
+      riskChangeCount,
+      filters: validation.value,
+      allFilters: recategorisationHomeFilters,
+      filterKeys: recategorisationHomeFilterKeys,
+      numberOfFiltersApplied: Object.values(validation.value).flat().length,
+      url: '/recategoriserHome',
+      fullUrl: req.url,
+      hideHomeFilter: req.session.hideRecategoriserHomeFilter ?? false,
+      sortAttribute,
+      sortDirection,
+    })
+  }
 
   router.post(
     '/recategoriserHome/hide-filter',

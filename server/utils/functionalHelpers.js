@@ -18,6 +18,7 @@ module.exports = {
   isFirstVisit,
   inProgress,
   extractNextReviewDate,
+  extractAssessmentDate,
   addSocProfile,
 }
 
@@ -78,26 +79,30 @@ function extractNextReviewDate(details) {
   return catRecord && catRecord.nextReviewDate
 }
 
+function extractAssessmentDate(details) {
+  const catRecord = details?.assessments?.find(a => a.assessmentCode === 'CATEGORY')
+  return catRecord?.assessmentDate
+}
+
 async function addSocProfile({
   res,
-  riskProfilerService,
+  alertService,
   details,
   formService,
   bookingId,
   transactionalDbClient,
   req,
   categorisationRecord,
+  pathfinderService,
 }) {
   let { status } = categorisationRecord
   // only load the soc profile once - then it is saved against the record
   if (isFirstVisit(res)) {
-    const socProfile = await riskProfilerService.getSecurityProfile(details.offenderNo, res.locals)
-    const extremismProfile = await riskProfilerService.getExtremismProfile(
-      details.offenderNo,
-      res.locals,
-      false, // don't yet have the answer to this question - will be populated correctly in the review route
-    )
-
+    const ocgmAlertExists = await alertService.prisonerHasActiveOcgmAlert(details.offenderNo, res.locals)
+    const socProfile = {
+      transferToSecurity: ocgmAlertExists,
+    }
+    const extremismProfile = await pathfinderService.getExtremismProfile(details.offenderNo, res.locals)
     await formService.mergeRiskProfileData(bookingId, { socProfile, extremismProfile }, transactionalDbClient)
 
     status = await formService.referToSecurityIfRiskAssessed(

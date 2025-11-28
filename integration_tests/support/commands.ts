@@ -11,16 +11,27 @@ Cypress.Commands.add('checkDefinitionList', ({ term, definition }: { term: strin
 
 Cypress.Commands.add(
   'checkTableColumnTextValues',
-  ({ columnName, expectedValues }: { columnName: string; expectedValues: string[] }) => {
+  ({
+    columnName,
+    expectedValues,
+    tableIndex = 0,
+  }: {
+    columnName: string
+    expectedValues: string[]
+    tableIndex?: number
+  }) => {
     cy.get('table')
-      .contains('th', columnName)
-      .invoke('index')
-      .then(index => {
-        cy.get('tbody tr').each($row => {
-          const actualValue = $row.find(`td:eq(${index})`).text().trim()
-          const expectedValue = expectedValues.shift()
-          expect(actualValue).to.equal(expectedValue)
-        })
+      .eq(tableIndex)
+      .within(() => {
+        cy.contains('th', columnName)
+          .invoke('index')
+          .then(index => {
+            cy.get('tbody tr').each($row => {
+              const actualValue = $row.find(`td:eq(${index})`).text().trim()
+              const expectedValue = expectedValues.shift()
+              expect(actualValue).to.equal(expectedValue)
+            })
+          })
       })
   },
 )

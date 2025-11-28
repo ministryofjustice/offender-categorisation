@@ -22,7 +22,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     when: 'I go to the Next Review Date Question page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    nextReviewDateButton.click()
+    nextReviewDateLink.click()
 
     then: 'The page is displayed'
     at NextReviewDateQuestionPage
@@ -39,7 +39,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     when: 'Populated date is used, saved and accessed'
     submitButton.click()
     at TasklistRecatPage
-    nextReviewDateButton.click()
+    nextReviewDateLink.click()
     at NextReviewDateEditingPage
 
     then: "data is correctly populated"
@@ -68,7 +68,7 @@ class NextReviewDateSpecification extends AbstractSpecification {
     when: 'I go to the Next Review Date Question page'
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    nextReviewDateButton.click()
+    nextReviewDateLink.click()
 
     then: 'The page is displayed'
     at NextReviewDateQuestionPage
@@ -124,7 +124,6 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'The page is displayed with Nomis next-review-date'
     at NextReviewDateStandalonePage
-    existingDate.text() == '16/01/2020'
 
     when: 'invalid date is entered, with no reason'
     reviewDate << 'rubbish'
@@ -182,7 +181,6 @@ class NextReviewDateSpecification extends AbstractSpecification {
 
     then: 'The page is displayed with existing date'
     at NextReviewDateStandalonePage
-    existingDate.text() == '16/01/2020'
 
     when: 'date is modified'
     elite2Api.stubUpdateNextReviewDate(THREE_MONTHS_AHEAD_ISO)

@@ -21,9 +21,9 @@ const selectClause = `select id,
                     review_reason          as "reviewReason",
                     nomis_sequence_no      as "nomisSeq"`
 
-const ignoreCancelledClause = `and f.status <> 'CANCELLED'`
+const ignoreCancelledClause = `and f.status <> 'CANCELLED' and f.status <> '${Status.CANCELLED_RELEASE.name}'`
 
-const sequenceClause = `and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED')`
+const sequenceClause = `and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id and f2.status <> 'CANCELLED' and f2.status <> '${Status.CANCELLED_RELEASE.name}')`
 
 const sequenceClauseIncludeCancelled = `and f.sequence_no = (select max(f2.sequence_no) from form f2 where f2.booking_id = f.booking_id)`
 
@@ -88,7 +88,7 @@ module.exports = {
     logger.debug(`getApprovedCategorisations called for ${agencyId}, date ${fromDate}`)
     const query = {
       text: `select id, booking_id as "bookingId", user_id as "userId", status, form_response as "formObject", assigned_user_id as "assignedUserId", referred_date as "securityReferredDate", referred_by as "securityReferredBy", security_reviewed_date as "securityReviewedDate", security_reviewed_by as "securityReviewedBy", approval_date as "approvalDate", approved_by as "approvedBy", offender_no as "offenderNo", cat_type as "catType", nomis_sequence_no as "nomisSeq", sequence_no as "sequence"
-        from form f where f.prison_id = $1 and f.status = $2 and f.approval_date >= $3 and ($4::cat_type_enum is null or f.cat_type = $4::cat_type_enum) and f.status <> 'CANCELLED'`,
+        from form f where f.prison_id = $1 and f.status = $2 and f.approval_date >= $3 and ($4::cat_type_enum is null or f.cat_type = $4::cat_type_enum) and f.status <> 'CANCELLED' and f.status <> '${Status.CANCELLED_RELEASE.name}'`,
       values: [agencyId, 'APPROVED', fromDate, catType],
     }
     return transactionalClient.query(query)
@@ -203,7 +203,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateRecordWithNomisSeqNumber(bookingId, seq, transactionalClient) {
+  updateRecordWithNomisSeqNumber(bookingId, seq, transactionalClient = db) {
     logger.info(`updateRecordWithNomisSeqNumber called for booking id ${bookingId} and seq ${seq}`)
     const query = {
       text: `update form f set nomis_sequence_no = $1 where f.booking_id = $2 ${sequenceClause}`,
@@ -212,7 +212,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateFormData(bookingId, formResponse, transactionalClient) {
+  updateFormData(bookingId, formResponse, transactionalClient = db) {
     logger.info(`updateFormData for booking id ${bookingId}`)
     const query = {
       text: `update form f set form_response = $1 where f.booking_id = $2 ${sequenceClause}`,
@@ -221,7 +221,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  updateRiskProfileData(bookingId, data, transactionalClient) {
+  updateRiskProfileData(bookingId, data, transactionalClient = db) {
     logger.info(`updateRiskProfileData called for booking id ${bookingId}`)
     const query = {
       text: `update form f set risk_profile = $1 where f.booking_id = $2 ${sequenceClause}`,
@@ -239,7 +239,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  supervisorApproval(formResponse, bookingId, userId, transactionalClient) {
+  supervisorApproval(formResponse, bookingId, userId, transactionalClient = db) {
     logger.info(`recording supervisor approval for booking id ${bookingId} and user ${userId}`)
     const query = {
       text: `update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 ${sequenceClause}`,
@@ -266,7 +266,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  update(formResponse, bookingId, status, transactionalClient) {
+  update(formResponse, bookingId, status, transactionalClient = db) {
     logger.info(`updating record for booking id ${bookingId}`)
     const query = {
       text: `update form f set form_response = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
@@ -343,7 +343,7 @@ module.exports = {
     return transactionalClient.query(query)
   },
 
-  setSecurityReferralStatus(offenderNo, status, transactionalClient) {
+  setSecurityReferralStatus(offenderNo, status, transactionalClient = db) {
     logger.info(`setSecurityReferralStatus for ${offenderNo} to ${status}`)
     const query = {
       text: `update security_referral set status=$2 where offender_no=$1`,
@@ -515,9 +515,7 @@ module.exports = {
     approvedCommittee,
     nextReviewDate,
     approvedPlacement,
-    approvedPlacementComment,
     approvedComment,
-    approvedCategoryComment,
     transactionalClient,
   }) {
     logger.info(`lite categorisation record for booking id ${bookingId} and user ${approvedBy}`)
@@ -529,9 +527,7 @@ module.exports = {
                  approved_committee           = $6,
                  next_review_date             = $7,
                  approved_placement_prison_id = $8,
-                 approved_placement_comment   = $9,
-                 approved_comment             = $10,
-                 approved_category_comment    = $11
+                 approved_comment             = $9
              where booking_id = $1
                and sequence = $2`,
       values: [
@@ -543,9 +539,7 @@ module.exports = {
         approvedCommittee,
         nextReviewDate,
         approvedPlacement,
-        approvedPlacementComment,
         approvedComment,
-        approvedCategoryComment,
       ],
     }
     return transactionalClient.query(query)

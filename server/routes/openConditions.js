@@ -17,7 +17,6 @@ const formConfig = {
 }
 
 const NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE = 'EARLIEST_RELEASE_DATE'
-const NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME = 'VICTIM_CONTACT_SCHEME'
 const NOT_SUITABLE_REASON_PREVIOUS_SENTENCES = 'PREVIOUS_SENTENCES'
 const NOT_SUITABLE_FOREIGN_NATIONAL_FORM = 'FOREIGN_NATIONAL_FORM'
 const NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS = 'FOREIGN_NATIONAL_EXHAUSTED_APPEALS'
@@ -88,7 +87,6 @@ module.exports = function Index({ formService, offendersService, userService, au
           reason: joi
             .valid(
               NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE,
-              NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME,
               NOT_SUITABLE_REASON_PREVIOUS_SENTENCES,
               NOT_SUITABLE_FOREIGN_NATIONAL_FORM,
               NOT_SUITABLE_FOREIGN_NATIONAL_EXHAUSTED_APPEALS,
@@ -104,20 +102,13 @@ module.exports = function Index({ formService, offendersService, userService, au
       }
 
       let warningText = ''
-
-      const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change
-      const years = featurePolicyChangeThreeToFiveEnabled ? '5' : 'three'
+      const years = '5'
 
       switch (validation.value.reason) {
         case NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE:
           warningText =
             `This person cannot be sent to open conditions because they have more than ${years} years to their` +
             ' earliest release date and there are no special circumstances to warrant them moving into open conditions'
-          break
-        case NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME:
-          warningText =
-            'This person cannot be sent to open conditions because a victim of the crime has opted-in' +
-            ' to the Victim Contact Scheme and the VLO has not been contacted.'
           break
         case NOT_SUITABLE_REASON_PREVIOUS_SENTENCES:
           warningText =
@@ -171,7 +162,6 @@ module.exports = function Index({ formService, offendersService, userService, au
 
     const errors = req.flash('errors')
     const details = await offendersService.getOffenderDetails(res.locals, bookingId)
-    const featurePolicyChangeThreeToFiveEnabled = res.locals?.featureFlags?.three_to_five_policy_change
 
     return {
       data: { ...pageData, details },
@@ -181,7 +171,6 @@ module.exports = function Index({ formService, offendersService, userService, au
       catType: formData.catType,
       backLink,
       errors,
-      featurePolicyChangeThreeToFiveEnabled,
     }
   }
 
@@ -222,18 +211,11 @@ module.exports = function Index({ formService, offendersService, userService, au
     if (body.likelyToAbscond === 'No') {
       delete updated.likelyToAbscondText
     }
-    if (body.isOtherInformation === 'No') {
-      delete updated.otherInformationText
-    }
     if (body.categoryAppropriate === 'Yes') {
       delete updated.overriddenCategory
       delete updated.overriddenCategoryText
     }
     if (body.vcsOptedFor === 'No') {
-      delete updated.contactedVLO
-      delete updated.vloResponseText
-    }
-    if (body.contactedVLO === 'No') {
       delete updated.vloResponseText
     }
     return updated
@@ -402,7 +384,6 @@ module.exports = function Index({ formService, offendersService, userService, au
 
       if (
         userInput.justify === 'No' ||
-        userInput.contactedVLO === 'No' ||
         userInput.formCompleted === 'No' ||
         userInput.exhaustedAppeal === 'Yes' ||
         userInput.sevenOrMoreYears === 'Yes'
@@ -421,9 +402,6 @@ module.exports = function Index({ formService, offendersService, userService, au
   const calculateNotSuitableForOpenConditionsReason = userInput => {
     if (userInput.justify === 'No') {
       return NOT_SUITABLE_REASON_EARLIEST_RELEASE_DATE
-    }
-    if (userInput.contactedVLO === 'No') {
-      return NOT_SUITABLE_REASON_VICTIM_CONTACT_SCHEME
     }
     if (userInput.formCompleted === 'No') {
       return NOT_SUITABLE_FOREIGN_NATIONAL_FORM

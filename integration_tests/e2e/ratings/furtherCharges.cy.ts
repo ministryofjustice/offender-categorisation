@@ -37,9 +37,8 @@ describe('Further Charges', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
 
@@ -48,9 +47,7 @@ describe('Further Charges', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 1,
     })
 
     cy.stubLogin({
@@ -62,7 +59,7 @@ describe('Further Charges', () => {
     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
-    taskListPage.furtherChargesButton().click()
+    taskListPage.furtherChargesLink().click()
   })
 
   describe('form submission', () => {
@@ -139,7 +136,7 @@ describe('Further Charges', () => {
 
         furtherChargesPage.saveAndReturnButton().click()
 
-        taskListPage.furtherChargesButton().click()
+        taskListPage.furtherChargesLink().click()
 
         furtherChargesPage.validateFurtherChargesRadioButton({
           selection: ['NO'],
@@ -149,7 +146,7 @@ describe('Further Charges', () => {
         furtherChargesPage.validateFurtherChargesCategoryBAppropriateTextBox({ isVisible: false })
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
           expect(result.rows[0].form_response).to.deep.eq({
             ratings: {
               furtherCharges: { furtherCharges: 'No' },
@@ -167,7 +164,7 @@ describe('Further Charges', () => {
 
           furtherChargesPage.saveAndReturnButton().click()
 
-          taskListPage.furtherChargesButton().click()
+          taskListPage.furtherChargesLink().click()
 
           furtherChargesPage.validateFurtherChargesRadioButton({
             selection: ['YES'],
@@ -185,7 +182,7 @@ describe('Further Charges', () => {
           })
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-            expect(result.rows[0].status).to.eq(Status.STARTED.name)
+            expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
             expect(result.rows[0].form_response).to.deep.eq({
               ratings: {
                 furtherCharges: {
@@ -206,7 +203,7 @@ describe('Further Charges', () => {
 
           furtherChargesPage.saveAndReturnButton().click()
 
-          taskListPage.furtherChargesButton().click()
+          taskListPage.furtherChargesLink().click()
 
           furtherChargesPage.validateFurtherChargesRadioButton({
             selection: ['YES'],
@@ -224,7 +221,7 @@ describe('Further Charges', () => {
           })
 
           cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-            expect(result.rows[0].status).to.eq(Status.STARTED.name)
+            expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
             expect(result.rows[0].form_response).to.deep.eq({
               ratings: {
                 furtherCharges: {

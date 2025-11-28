@@ -2,27 +2,19 @@
 {% from "../macros/formatAnswer.html" import formatAnswerWithNA, formatDetailsWithNA %}
 
 {% set victimContactSchemeSummary %}
+  <h2 class="govuk-heading-m no-print">Victim Contact Scheme (VCS)</h2>
   {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 victimContactSchemeSummary no-print',
       rows: [
         {
-          key: { classes: 'summary-list-title', text: "Victim Contact Scheme (VCS)" },
-          actions: { items: [{
-          href: '/form/openConditions/victimContactScheme/' + data.details.bookingId,
-          text: "Change",
-          visuallyHiddenText: "victim contact scheme"
-          }] if showOpenConditionChangeLinks else []
-        }
-        },
-        {
-          key: { text: "Have any victims of the crime opted-in to the Victim Contact Scheme?" },
+          key: { text: "Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?" },
           value: { html: formatAnswerWithNA(data.openConditions.victimContactScheme.vcsOptedFor) },
-          actions: { items: [] }
-        },
-        {
-          key: { text: "Have you contacted the Victim Liaison Officer (VLO)?" },
-          value: { html: formatAnswerWithNA(data.openConditions.victimContactScheme.contactedVLO, data.openConditions.victimContactScheme.vloResponseText) },
-          actions: { items: [] }
+          actions: { items: [{
+              href: '/form/openConditions/victimContactScheme/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "victim contact scheme"
+            }] if showOpenConditionChangeLinks else []
+          }
         }
       ]
    })
@@ -30,50 +22,47 @@
 {% endset %}
 
   {% if data.openConditions.tprs %}
+    <h2 class="govuk-heading-m no-print">Temporary Presumptive Recategorisation Scheme (TPRS)</h2>
     {{ govukSummaryList({
       classes: 'govuk-!-margin-bottom-9 tprsSummary no-print',
       rows: [
         {
-          key: { classes: 'summary-list-title', text: "Temporary Presumptive Recategorisation Scheme (TPRS)" },
-            actions: { items: [{
+          key: { text: "Are they eligible for TPRS?" },
+          value: { text: data.openConditions.tprs.tprsSelected or 'Not applicable' },
+          actions: { items: [{
               href: '/form/openConditions/tprs/' + data.details.bookingId,
               text: "Change",
               visuallyHiddenText: "Temporary Presumptive Recategorisation Scheme"
             }] if showOpenConditionChangeLinks else []
           }
-        },
-        {
-          key: { text: "Are they eligible for TPRS?" },
-          value: { text: data.openConditions.tprs.tprsSelected or 'Not applicable' },
-          actions: { items: [] }
         }
       ]
     }) }}
   {% endif %}
 
-  {% set selectedOptionText = "5 or more years until earliest release date?" if featurePolicyChangeThreeToFiveEnabled else "3 or more years until earliest release date?" %}
-
+  <h2 class="govuk-heading-m no-print">Earliest release date</h2>
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 earliestReleaseDateSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Earliest release date" },
-        actions: { items: [{
-              href: '/form/openConditions/earliestReleaseDate/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "earliest release date"
-            }] if showOpenConditionChangeLinks else []
-        }
-      },
-      {
-        key: { text: selectedOptionText },
+        key: { text: "5 or more years until earliest release date?" },
         value: { text: data.openConditions.earliestReleaseDate.fiveOrMoreYears },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/earliestReleaseDate/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "earliest release date"
+          }] if showOpenConditionChangeLinks else []
+        }
       },
       {
         key: { text: "Reasons that justify moving to open conditions?" },
         value: { html: formatAnswerWithNA(data.openConditions.earliestReleaseDate.justify, data.openConditions.earliestReleaseDate.justifyText) },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/earliestReleaseDate/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "earliest release date"
+          }] if showOpenConditionChangeLinks else []
+        }
       }
     ]
   }) }}
@@ -84,166 +73,188 @@
 
 
  {% if catType == 'INITIAL' %}
+   <h2 class="govuk-heading-m no-print">Previous sentences</h2>
    {{ govukSummaryList({
       classes: 'govuk-!-margin-bottom-9 previousSentencesSummary',
       rows: [
         {
-          key: { classes: 'summary-list-title', text: "Previous sentences" },
-          actions: { items: [{
-                href: '/form/openConditions/previousSentences/' + data.details.bookingId,
-                text: "Change",
-                visuallyHiddenText: "previous sentences"
-              }] if showOpenConditionChangeLinks else []
-          }
-        },
-        {
           key: { text: "Have they been released from a previous sentence in the last 5 years?" },
           value: { html: formatAnswerWithNA(data.openConditions.previousSentences.releasedLastFiveYears) },
-          actions: { items: [] }
+          actions: { items: [{
+              href: '/form/openConditions/previousSentences/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "previous sentences"
+            }] if showOpenConditionChangeLinks else []
+          }
         },
         {
           key: { text: "Was that previous sentence for 7 years or more?"},
           value: { text: data.openConditions.previousSentences.sevenOrMoreYears or 'Not applicable'},
-          actions: { items: [] }
+          actions: { items: [{
+              href: '/form/openConditions/previousSentences/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "previous sentences"
+            }] if showOpenConditionChangeLinks else []
+          }
         }
      ]
    }) }}
 
    {{ victimContactSchemeSummary | safe}}
 
+   <h2 class="govuk-heading-m no-print">Sexual offences</h2>
    {{ govukSummaryList({
       classes: 'govuk-!-margin-bottom-9 sexualOffencesSummary',
       rows: [
         {
-          key: { classes: 'summary-list-title', text: "Sexual offences" },
-          actions: { items: [{
-                href: '/form/openConditions/sexualOffences/' + data.details.bookingId,
-                text: "Change",
-                visuallyHiddenText: "sexual offences"
-              }] if showOpenConditionChangeLinks else []
-          }
-        },
-        {
           key: { text: "Have they ever been convicted of a sexual offence?" },
           value: { text: data.openConditions.sexualOffences.haveTheyBeenEverConvicted },
-          actions: { items: [] }
+          actions: { items: [{
+              href: '/form/openConditions/sexualOffences/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "sexual offences"
+            }] if showOpenConditionChangeLinks else []
+          }
         },
         {
           key: { text: "Can the risk to the public be managed in open conditions?" },
           value: { html: formatAnswerWithNA(data.openConditions.sexualOffences.canTheRiskBeManaged) },
           value: { html: formatAnswerWithNA(data.openConditions.sexualOffences.canTheRiskBeManaged, data.openConditions.sexualOffences.howTheRiskCanBeManaged) },
-          actions: { items: [] }
+          actions: { items: [{
+              href: '/form/openConditions/sexualOffences/' + data.details.bookingId,
+              text: "Change",
+              visuallyHiddenText: "sexual offences"
+            }] if showOpenConditionChangeLinks else []
+          }
         }
      ]
    }) }}
  {% endif %}
 
+  <h2 class="govuk-heading-m no-print">Foreign national</h2>
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 foreignNationalSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Foreign national" },
-        actions: { items: [{
-              href: '/form/openConditions/foreignNational/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Foreign national"
-            }] if showOpenConditionChangeLinks else []
-        }
-      },
-      {
         key: { text: "Are they a foreign national?" },
         value: { text: data.openConditions.foreignNational.isForeignNational },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/foreignNational/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Foreign national"
+          }] if showOpenConditionChangeLinks else []
+        }
       },
       {
         key: { text: "Have the Home Office confirmed their immigration status?" },
         value: { text: data.openConditions.foreignNational.formCompleted or 'Not applicable' },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/foreignNational/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Foreign national"
+          }] if showOpenConditionChangeLinks else []
+        }
       },
       {
         key: { text: "Do they have a liability for deportation?" },
         value: { text: data.openConditions.foreignNational.dueDeported or 'Not applicable' },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/foreignNational/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Foreign national"
+          }] if showOpenConditionChangeLinks else []
+        }
       },
       {
         key: { text: "Have they been through all appeals process in the UK?" },
         value: { text: data.openConditions.foreignNational.exhaustedAppeal or 'Not applicable' },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/foreignNational/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Foreign national"
+          }] if showOpenConditionChangeLinks else []
+        }
       }
     ]
   }) }}
 
+  <h2 class="govuk-heading-m no-print">Foreign national</h2>
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 riskOfHarmSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Risk of serious harm" },
-        actions: { items: [{
-              href: '/form/openConditions/riskOfHarm/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Risk of serious harm"
-            }] if showOpenConditionChangeLinks else []
-        }
-      },
-      {
         key: { text: "Risk of serious harm to the public?" },
         value: { text: data.openConditions.riskOfHarm.seriousHarm },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/riskOfHarm/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Risk of serious harm"
+          }] if showOpenConditionChangeLinks else []
+        }
       },
       {
         key: { text: "Can this risk be managed?" },
         value: { html: formatAnswerWithNA(data.openConditions.riskOfHarm.harmManaged, data.openConditions.riskOfHarm.harmManagedText) },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/riskOfHarm/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Risk of serious harm"
+          }] if showOpenConditionChangeLinks else []
+        }
       }
     ]
   }) }}
 
+  <h2 class="govuk-heading-m no-print">Further charges</h2>
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 furtherChargesOpenSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Further charges" },
-        actions: { items: [{
-              href: '/form/openConditions/furtherCharges/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Further charges"
-            }] if showOpenConditionChangeLinks else []
-        }
-      },
-      {
         key: { text: "Are they facing any further charges?" },
         value: { text:  (catType == 'INITIAL' and data.ratings.furtherCharges.furtherCharges) or (data.openConditions.furtherCharges.furtherCharges) },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/furtherCharges/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Further charges"
+          }] if showOpenConditionChangeLinks else []
+        }
       },
       {
         key: { text: "Further charges details" },
         value: { html: formatDetailsWithNA(data.openConditions.furtherCharges.increasedRisk, data.openConditions.furtherCharges.furtherChargesText) },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/furtherCharges/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Further charges"
+          }] if showOpenConditionChangeLinks else []
+        }
       },
       {
         key: { text: "Do these further charges increase risk in open conditions?" },
         value: { text: data.openConditions.furtherCharges.increasedRisk or 'Not applicable' },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/furtherCharges/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Further charges"
+          }] if showOpenConditionChangeLinks else []
+        }
       }
     ]
   }) }}
 
+  <h2 class="govuk-heading-m no-print">Risk of escaping or absconding</h2>
  {{ govukSummaryList({
     classes: 'govuk-!-margin-bottom-9 riskLevelSummary',
     rows: [
       {
-        key: { classes: 'summary-list-title', text: "Risk of escaping or absconding" },
-        actions: { items: [{
-              href: '/form/openConditions/riskLevels/' + data.details.bookingId,
-              text: "Change",
-              visuallyHiddenText: "Risk of escaping or absconding"
-            }] if showOpenConditionChangeLinks else []
-        }
-      },
-      {
         key: { text: "Likely to abscond or abuse open conditions?" },
         value: { html: formatAnswerWithNA(data.openConditions.riskLevels.likelyToAbscond, data.openConditions.riskLevels.likelyToAbscondText) },
-        actions: { items: [] }
+        actions: { items: [{
+            href: '/form/openConditions/riskLevels/' + data.details.bookingId,
+            text: "Change",
+            visuallyHiddenText: "Risk of escaping or absconding"
+          }] if showOpenConditionChangeLinks else []
+        }
       }
     ]
   }) }}

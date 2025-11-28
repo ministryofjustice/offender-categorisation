@@ -1,6 +1,7 @@
 {% extends "../formTemplate.html" %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% set pageTitle = "Message from supervisor" %}
+{% from "../../macros/proposedCategoryChangeText.html" import proposedCategoryChangeText %}
 
 {% block navigation %}
 
@@ -18,12 +19,19 @@
     <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
   </div>
 
+  {% set rows = [{ key: { text: "Supervisor" }, value: { text: data.supervisor.confirmBack.supervisorName } }] %}
+  {% if data.supervisor.review.supervisorDecision and data.supervisor.review.supervisorDecision.startsWith("changeCategoryTo_") %}
+    {% set rows = (rows.push(
+      { key: { text: "Proposed change" }, value: { text: "Change the category to " + proposedCategoryChangeText(data.supervisor.review.supervisorDecision, false) } }
+    ), rows) %}
+  {% endif %}
+  {% set rows = (rows.push(
+    { key: { text: "Message" },    value: { text: data.supervisor.confirmBack.messageText | striptags(true) | escape | nl2br } }
+  ), rows) %}
+
   {{ govukSummaryList({
     classes: 'supervisorMessage',
-    rows: [
-      { key: { text: "Supervisor" }, value: { text: data.supervisor.confirmBack.supervisorName } },
-      { key: { text: "Message" },    value: { text: data.supervisor.confirmBack.messageText | striptags(true) | escape | nl2br } }
-    ]
+    rows: rows
   }) }}
 
 {% endblock %}

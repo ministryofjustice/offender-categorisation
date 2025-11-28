@@ -6,6 +6,9 @@ context('Healthcheck', () => {
     cy.task('stubElite2Ping')
     cy.task('stubPrisonerSearchPing')
     cy.task('stubRiskProfilerPing')
+    cy.task('stubPathfinderPing')
+    cy.task('stubAlertsApiPing')
+    cy.task('stubAdjudicationsApiPing')
   })
 
   context('All healthy', () => {

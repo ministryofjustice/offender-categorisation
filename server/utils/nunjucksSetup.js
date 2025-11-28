@@ -6,6 +6,7 @@ const {
   dateConverter,
   formatLength,
   getLongDateFormat,
+  getLongDateFormatIso,
   getVerboseDateFormat,
   catMappings,
   catLabel,
@@ -16,7 +17,7 @@ const {
   dpsUrl,
   isOpenCategory,
 } = require('./utils')
-const config = require('../config')
+const { config } = require('../config')
 const { inProgress, extractNextReviewDate } = require('./functionalHelpers')
 const { removeFilterFromFullUrl } = require('./nunjucks.utility')
 
@@ -59,6 +60,7 @@ module.exports = (app, path) => {
     .addGlobal('ReviewReason', ReviewReason)
     .addGlobal('dateConverter', dateConverter)
     .addGlobal('getLongDateFormat', getLongDateFormat)
+    .addGlobal('getLongDateFormatIso', getLongDateFormatIso)
     .addGlobal('getVerboseDateFormat', getVerboseDateFormat)
     .addGlobal('formatLength', formatLength)
     .addGlobal('googleTagManagerKey', config.googleTagManagerTag)
@@ -98,14 +100,5 @@ module.exports = (app, path) => {
       }
 
       return date
-    })
-    .addFilter('isFiveOrMoreYearsAway', sentenceExpiryDate => {
-      if (!sentenceExpiryDate) return false
-
-      const expiryDate = new Date(sentenceExpiryDate)
-      const fiveYearsFromNow = new Date()
-      fiveYearsFromNow.setFullYear(fiveYearsFromNow.getFullYear() + 5)
-
-      return expiryDate >= fiveYearsFromNow
     })
 }

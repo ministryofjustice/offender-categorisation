@@ -26,10 +26,12 @@ They will either:
   <li>change your assessment (and tell you why)</li>
   <li>reject your assessment and send it back to you with some suggestions</li>
 </ul>
-{% include "../partials/dcsSurveyLink.html" %}
-{{ govukButton({
+{% include "../partials/smartSurveyLink.html" %}
+<div class="govuk-!-margin-top-8">
+  {{ govukButton({
   text: "Finish",
   href: "/"
-}) }}
+  }) }}
+</div>
 
 {% endblock %}

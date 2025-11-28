@@ -3,8 +3,8 @@ const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 
 const logger = require('../../log')
-const config = require('../config')
-const getSanitisedError = require('../sanitisedError')
+const { config } = require('../config')
+const { getSanitisedError } = require('../getSanitisedError')
 
 const timeoutSpec = {
   response: config.apis.frontendComponents.timeout.response,

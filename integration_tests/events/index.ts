@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk'
-import config from '../../server/config'
+import { config } from '../../server/config'
+import { AGENCY_LOCATION } from "../factory/agencyLocation";
 
 AWS.config.update({
   region: 'eu-west-2',
@@ -45,10 +46,29 @@ const createPrisonerReleasedMessage = (nomsNumber: string, reason = 'RELEASED') 
   }
 }
 
+const createPrisonerTransferMessage = (nomsNumber: string, bookingId: Number, eventType = 'EXTERNAL_MOVEMENT_RECORD-INSERTED') => {
+  return {
+    Message: `{"eventType":"${eventType}","offenderIdDisplay":"${nomsNumber}","bookingId":${bookingId},"fromAgencyLocationId":"${AGENCY_LOCATION.LEI.id}","toAgencyLocationId":"${AGENCY_LOCATION.BMI.id}","movementType":"ADM","movementSeq": 1,"movementDateTime":"2020-02-25T15:57:45","directionCode":"IN","eventDatetime":"2020-02-25T16:00:00.0","nomisEventType":"M1_RESULT"}`,
+    Timestamp: '2020-01-14T15:14:33.624Z',
+    MessageAttributes: {
+      code: { Type: 'String', Value: '' },
+      eventType: { Type: 'String', Value: `${eventType}` },
+      id: { Type: 'String', Value: 'f9f1e5e4-999a-78ad-d1d8-442d8864481a' },
+      contentType: { Type: 'String', Value: 'text/plain;charset=UTF-8' },
+      timestamp: { Type: 'Long', Value: '1579014873619' }
+    }
+  }
+}
+
 const sendPrisonerReleasedMessage = ({ nomsNumber, reason = 'RELEASED' }) => {
   return sendMessage(eventParamsWith(createPrisonerReleasedMessage(nomsNumber, reason)))
 }
 
+const sendPrisonerTransferMessage = ({ nomsNumber, bookingId, eventType = 'EXTERNAL_MOVEMENT_RECORD-INSERTED' }) => {
+  return sendMessage(eventParamsWith(createPrisonerTransferMessage(nomsNumber, bookingId, eventType)))
+}
+
 export default {
   sendPrisonerReleasedMessage,
+  sendPrisonerTransferMessage,
 }

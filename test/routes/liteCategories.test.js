@@ -65,24 +65,20 @@ describe('assessment', () => {
   test('get form page', () => {
     formService.getCategorisationRecord.mockResolvedValue({})
     formService.getLiteCategorisation.mockResolvedValue({})
-    const sixMonths = moment().add(6, 'months').format('D/M/YYYY')
     return request(app)
       .get(`/12`)
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Other category assessment</h1>')
+        expect(res.text).toContain('Change security category</h1>')
         expect(res.text).toContain('<option value="RECP">Reception</option>')
         expect(res.text).toContain('<option value="SECUR">Security</option>')
-        expect(res.text).toMatch(
-          new RegExp(
-            `<input\\s+class="govuk-input govuk-!-width-full"\\s+id="nextReviewDate"\\s+name="nextReviewDate"\\s+type="text"\\s+value="${sixMonths}"\\s*>`,
-            's',
-          ),
-        )
-
         expect(res.text).toContain('<option value="SYI">Shrewsbury (HMP)</option>')
         expect(res.text).toContain('<option value="MDI">Moorland</option>')
+
+        expect(res.text).toMatch(/<input[^>]*id="nextReviewDateDay"[^>]*>/)
+        expect(res.text).toMatch(/<input[^>]*id="nextReviewDateMonth"[^>]*>/)
+        expect(res.text).toMatch(/<input[^>]*id="nextReviewDateYear"[^>]*>/)
       })
   })
 
@@ -111,14 +107,24 @@ describe('assessment', () => {
   })
 
   test('Post form page', () => {
-    const futureDate = moment().add(5, 'months').format('D/M/YYYY')
+    const futureDate = moment().add(5, 'months')
+
+    const futureDateFormInput = {
+      day: futureDate.date().toString(),
+      month: (futureDate.month() + 1).toString(),
+      year: futureDate.year().toString(),
+    }
+
+    const expectedDate = moment().add(5, 'months').format('D/M/YYYY')
+
     const userInput = {
-      category: 'R',
+      category: 'U',
       authority: 'RECP',
-      nextReviewDate: futureDate,
+      nextReviewDate: futureDateFormInput,
       placement: 'SYI',
       comment: 'some text some text',
     }
+
     return request(app)
       .post(`/12345`)
       .send(userInput)
@@ -129,6 +135,7 @@ describe('assessment', () => {
           context: mockContext,
           bookingId: 12345,
           ...userInput,
+          nextReviewDate: expectedDate,
           offenderNo: 'A1000EE',
           prisonId: 'BXI',
           transactionalClient: mockTransactionalClient,
@@ -155,13 +162,13 @@ describe('approve', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Other category approval</h1>')
-        expect(res.text).toContain('<div id="category" class="govuk-grid-column-one-third">Indeterminate Cat D')
-        expect(res.text).toContain('<div id="assessmentCommittee" class="govuk-grid-column-one-third">Governor')
-        expect(res.text).toContain('<div id="displayCreatedDate" class="govuk-grid-column-one-third">01/01/2020')
-        expect(res.text).toContain('<div id="assessedBy" class="govuk-grid-column-one-third">Fred Perry')
-        expect(res.text).toContain('<div id="placementPrisonId" class="govuk-grid-column-one-third">Shrewsbury (HMP)')
-        expect(res.text).toContain('<div id="assessmentComment" class="govuk-grid-column-one-third">comment text')
+        expect(res.text).toContain('Approve security category</h1>')
+        expect(res.text).toContain('Indeterminate Cat D')
+        expect(res.text).toContain('Governor')
+        expect(res.text).toContain('01/01/2020')
+        expect(res.text).toContain('Fred Perry')
+        expect(res.text).toContain('Shrewsbury (HMP)')
+        expect(res.text).toContain('comment text')
       })
   })
 
@@ -173,7 +180,7 @@ describe('approve', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Other category approval</h1>')
+        expect(res.text).toContain('Approve security category</h1>')
         expect(res.text).toContain('this person does not have a pending categorisation.')
       })
   })
@@ -186,21 +193,23 @@ describe('approve', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Other category approval</h1>')
+        expect(res.text).toContain('Approve security category</h1>')
         expect(res.text).toContain('A categorisation cannot be approved by the same user.')
       })
   })
 
   test('Post form page', () => {
-    const futureDate = moment().add(5, 'months').format('D/M/YYYY')
+    const futureDate = moment().add(5, 'months')
     const userInput = {
-      approvedDate: '15/4/2020',
+      approvedDate: { day: '15', month: '04', year: '2020' },
       supervisorCategory: 'E',
-      approvedCategoryComment: 'approvedCategoryComment',
       approvedCommittee: 'SECUR',
-      nextReviewDate: futureDate,
-      approvedPlacement: 'BMI',
-      approvedPlacementComment: 'approvedPlacementComment',
+      approvedNextReviewDate: {
+        day: futureDate.date().toString(),
+        month: (futureDate.month() + 1).toString(),
+        year: futureDate.year().toString(),
+      },
+      approvedPlacement: 'MDI',
       approvedComment: 'approvedComment',
     }
     formService.getLiteCategorisation.mockResolvedValue({ bookingId: 12, sequence: 4, assessedBy: 'me' })
@@ -211,6 +220,9 @@ describe('approve', () => {
       .expect(302)
       .expect('Location', `/liteCategories/confirmed/12345`)
       .expect(() => {
+        userInput.approvedDate = '15/4/2020'
+        userInput.nextReviewDate = futureDate.format('D/M/YYYY')
+        delete userInput.approvedNextReviewDate
         expect(offendersService.approveLiteCategorisation).toBeCalledWith({
           context: mockContext,
           bookingId: 12345,
@@ -222,15 +234,17 @@ describe('approve', () => {
   })
 
   test('Post form page - categorisation not found on nomis will redirect to /alreadyApproved', () => {
-    const futureDate = moment().add(5, 'months').format('D/M/YYYY')
+    const futureDate = moment().add(5, 'months')
     const userInput = {
-      approvedDate: '15/4/2020',
+      approvedDate: { day: '15', month: '4', year: '2020' },
       supervisorCategory: 'E',
-      approvedCategoryComment: 'approvedCategoryComment',
       approvedCommittee: 'SECUR',
-      nextReviewDate: futureDate,
-      approvedPlacement: 'BMI',
-      approvedPlacementComment: 'approvedPlacementComment',
+      approvedNextReviewDate: {
+        day: futureDate.date().toString(),
+        month: (futureDate.month() + 1).toString(),
+        year: futureDate.year().toString(),
+      },
+      approvedPlacement: 'MDI',
       approvedComment: 'approvedComment',
     }
     formService.getLiteCategorisation.mockResolvedValue({ bookingId: 12, sequence: 4, assessedBy: 'me' })

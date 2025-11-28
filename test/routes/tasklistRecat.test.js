@@ -21,9 +21,8 @@ const formService = {
   getLiteCategorisation: jest.fn(),
 }
 
-const riskProfilerService = {
-  getSecurityProfile: jest.fn(),
-  getExtremismProfile: jest.fn(),
+const alertService = {
+  prisonerHasActiveOcgmAlert: jest.fn(),
 }
 
 const offendersService = {
@@ -36,12 +35,17 @@ const userService = {
   getUser: jest.fn(),
 }
 
+const pathfinderService = {
+  getExtremismProfile: jest.fn(),
+}
+
 const tasklistRoute = createRouter({
   formService,
   offendersService,
   userService,
   authenticationMiddleware,
-  riskProfilerService,
+  alertService,
+  pathfinderService,
 })
 
 let app
@@ -99,15 +103,15 @@ describe('GET /tasklistRecat/', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
-        expect(res.text).toContain('Category review task list')
+        expect(res.text).toContain('Complete a categorisation review')
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('Offender Assessment System (OASys)')
+        expect(res.text).toContain('Previous risk assessments')
         expect(res.text).toContain('Security information')
         expect(res.text).toContain('Risk assessment')
         expect(res.text).toContain('Category decision')
         expect(res.text).toContain('Set next category review date')
         expect(res.text).toContain('Check and submit')
-        expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Not yet started')
         expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
           offenderNo: 'GN123',
           userId: 'CA_USER_TEST',
@@ -133,15 +137,15 @@ describe('GET /tasklistRecat/', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
-        expect(res.text).toContain('Category review task list')
+        expect(res.text).toContain('Complete a categorisation review')
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('Offender Assessment System (OASys)')
+        expect(res.text).toContain('Previous risk assessments')
         expect(res.text).toContain('Security information')
         expect(res.text).toContain('Risk assessment')
         expect(res.text).toContain('Category decision')
         expect(res.text).toContain('Set next category review date')
         expect(res.text).toContain('Check and submit')
-        expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Not yet started')
         expect(formService.updateStatusForOutstandingRiskChange).toBeCalledWith({
           offenderNo: 'GN123',
           userId: 'CA_USER_TEST',
@@ -160,19 +164,15 @@ describe('GET /tasklistRecat/', () => {
       formObject: { sample: 'string' },
       status: 'STARTED',
     })
-    const sampleSocProfile = {
-      transferToSecurity: true,
-      provisionalCategorisation: 'B',
-    }
     const sampleExtremismProfile = {
       provisionalCategorisation: 'B',
     }
-    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
-    riskProfilerService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
+    alertService.prisonerHasActiveOcgmAlert.mockResolvedValue(true)
+    pathfinderService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
       securityReferredDate: `${todayISO}`,
-      formObject: { sample: 'string', socProfile: sampleSocProfile },
+      formObject: { sample: 'string', socProfile: { transferToSecurity: true } },
       status: 'SECURITY_AUTO',
     })
 
@@ -181,19 +181,19 @@ describe('GET /tasklistRecat/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Category review task list')
+        expect(res.text).toContain('Complete a categorisation review')
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
         expect(res.text).toContain('href="/form/recat/riskAssessment/12345"')
 
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
-          { socProfile: sampleSocProfile, extremismProfile: sampleExtremismProfile },
+          { socProfile: { transferToSecurity: true }, extremismProfile: sampleExtremismProfile },
           mockTransactionalClient,
         )
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(
           '12345',
           'CA_USER_TEST',
-          sampleSocProfile,
+          { transferToSecurity: true },
           sampleExtremismProfile,
           'STARTED',
           mockTransactionalClient,
@@ -210,9 +210,9 @@ describe('GET /tasklistRecat/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Category review task list')
+        expect(res.text).toContain('Complete a categorisation review')
         expect(res.text).not.toContain(`Automatically referred to Security`)
-        expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Not yet started')
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
       })
   })
@@ -225,153 +225,4 @@ describe('GET /tasklistRecat/', () => {
       .expect(res => {
         expect(res.text).toContain('Submitted for approval')
       }))
-})
-
-describe('CAT-1340 Fasttrack disabled - GET /tasklistRecat/ Fast track C item', () => {
-  const sampleSocProfile = {
-    transferToSecurity: false,
-    provisionalCategorisation: 'C',
-  }
-  test('should hide fast track task for offender currently category B', () => {
-    offendersService.getOffenderDetails.mockResolvedValue({
-      offenderNo: 'GN123',
-      sentence: {
-        bookingId: 12345,
-        confirmedReleaseDate: '2022-06-01',
-        sentenceExpiryDate: '2020-06-17',
-      },
-      categoryCode: 'B',
-    })
-    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string' },
-      status: 'STARTED',
-    })
-    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
-    formService.getCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string', socProfile: sampleSocProfile },
-      status: 'STARTED',
-    })
-    return request(app)
-      .get('/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).not.toContain('Category C preliminary review questions')
-      })
-  })
-
-  test('should hide fast track task for offender with a SECURITY related status', () => {
-    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string' },
-      status: 'STARTED',
-    })
-
-    const sampleSocProfileAuto = {
-      transferToSecurity: true,
-      provisionalCategorisation: 'B',
-    }
-    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfileAuto)
-    formService.getCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string', socProfile: sampleSocProfile },
-      status: 'SECURITY_AUTO',
-    })
-    return request(app)
-      .get('/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).not.toContain('Category C preliminary review questions')
-      })
-  })
-
-  test('should hide fast track task for offender with 3 or less years until confirmed release date', () => {
-    offendersService.getOffenderDetails.mockResolvedValue({
-      offenderNo: 'GN123',
-      sentence: {
-        bookingId: 12345,
-        confirmedReleaseDate: '2022-05-31',
-        sentenceExpiryDate: '2020-06-17',
-      },
-      categoryCode: 'C',
-    })
-    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string' },
-      status: 'STARTED',
-    })
-
-    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
-    formService.getCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string', socProfile: sampleSocProfile },
-      status: 'STARTED',
-    })
-
-    return request(app)
-      .get('/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).not.toContain('Category C preliminary review questions')
-      })
-  })
-
-  test('should not display fast track task for eligible offender', () => {
-    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string' },
-      status: 'STARTED',
-    })
-
-    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
-    formService.getCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string', socProfile: sampleSocProfile },
-      status: 'STARTED',
-      bookingId: 1234567,
-    })
-    return request(app)
-      .get('/1234567')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).not.toContain('Category C preliminary review questions')
-      })
-  })
-
-  test('should hide fast track task for a cancelled fast track', () => {
-    formService.createOrRetrieveCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: { sample: 'string' },
-      status: 'STARTED',
-    })
-
-    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
-    formService.getCategorisationRecord.mockResolvedValue({
-      id: 1111,
-      formObject: {
-        sample: 'string',
-        socProfile: sampleSocProfile,
-        recat: {
-          nextReviewDate: { date: '10/06/2020' },
-          fasttrackEligibility: {
-            earlyCatD: 'No',
-            increaseCategory: 'Yes',
-          },
-        },
-      },
-      status: 'STARTED',
-    })
-    return request(app)
-      .get('/12345')
-      .expect(200)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).not.toContain('Category C preliminary review questions')
-      })
-  })
 })

@@ -210,14 +210,15 @@ class HomePageSpecification extends AbstractSpecification {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(678, "ON678")
-    riskProfilerApi.stubForTasklists('ON678', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('ON678', false)
+    pathfinderApi.stubGetExtremismProfile('ON678', 1)
     selectFirstPrisoner() // selects B2345YZ
     at(new TasklistPage(bookingId: '678'))
     headerValue*.text() == ['ON678', '17/02/1970', 'C-04-02', 'Coventry', 'A Felony', 'Another Felony', 'Latvian', '02/02/2020']
     elite2Api.stubAssessments(['ON678'])
     elite2Api.stubSentenceDataGetSingle('ON678', '2014-11-23')
     elite2Api.stubOffenceHistory('ON678')
-    offendingHistoryButton.click()
+    offendingHistoryLink.click()
     at(new CategoriserOffendingHistoryPage(bookingId: '12'))
     previousConvictionsNo.click()
     saveButton.click()
@@ -227,7 +228,7 @@ class HomePageSpecification extends AbstractSpecification {
 
     categorisationHomeLink.click()
     at CategoriserHomePage
-    statuses == ['Started (Api User)']
+    statuses == ['Automatically referred to Security']
 
     when: 'A second user views the uncategorised list'
 
@@ -240,7 +241,7 @@ class HomePageSpecification extends AbstractSpecification {
     at CategoriserHomePage
 
     then: 'The uncategorised list is displayed with the assigned user text'
-    statuses == ["Started (Hpa User)"]
+    statuses == ["Automatically referred to Security"]
     startButtons[0].text() == 'Edit'
   }
 

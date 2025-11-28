@@ -37,9 +37,8 @@ describe('Extremism', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
   })
@@ -58,16 +57,14 @@ describe('Extremism', () => {
     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
-    taskListPage.extremismButton().click()
+    taskListPage.extremismLink().click()
   }
 
   describe('increased risk variations', () => {
     it('should display the expected page when increasedRisk is true', () => {
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: true,
-        notifyRegionalCTLead: false,
+        band: 1,
       })
 
       stubLoginAndBrowseToExtremismPage()
@@ -84,9 +81,7 @@ describe('Extremism', () => {
     it('should display the expected page when increasedRisk is false', () => {
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
 
       stubLoginAndBrowseToExtremismPage()
@@ -107,9 +102,7 @@ describe('Extremism', () => {
     it('should show a validation error on empty form submission', () => {
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
 
       stubLoginAndBrowseToExtremismPage()
@@ -130,9 +123,7 @@ describe('Extremism', () => {
       it("should record a 'yes' decision", () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: true,
-          notifyRegionalCTLead: false,
+          band: 1,
         })
 
         stubLoginAndBrowseToExtremismPage()
@@ -142,7 +133,7 @@ describe('Extremism', () => {
         extremismPage.setPreviousTerrorismOffencesText('Some risk text')
         extremismPage.saveAndReturnButton().click()
 
-        taskListPage.extremismButton().click()
+        taskListPage.extremismLink().click()
 
         extremismPage.validatePreviousTerrorismOffencesRadioButton({
           selection: ['YES'],
@@ -152,7 +143,7 @@ describe('Extremism', () => {
         extremismPage.validatePreviousTerrorismOffencesTextBox({ isVisible: true, expectedText: 'Some risk text' })
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
           expect(result.rows[0].form_response).to.deep.eq({
             ratings: {
               extremismRating: { previousTerrorismOffences: 'Yes', previousTerrorismOffencesText: 'Some risk text' },
@@ -164,9 +155,7 @@ describe('Extremism', () => {
       it("should record a 'no' decision", () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: false,
-          notifyRegionalCTLead: false,
+          band: 4,
         })
 
         stubLoginAndBrowseToExtremismPage()
@@ -175,7 +164,7 @@ describe('Extremism', () => {
         extremismPage.selectPreviousTerrorismOffencesRadioButton('NO')
         extremismPage.saveAndReturnButton().click()
 
-        taskListPage.extremismButton().click()
+        taskListPage.extremismLink().click()
 
         extremismPage.validatePreviousTerrorismOffencesRadioButton({
           selection: ['NO'],
@@ -215,18 +204,14 @@ describe('Extremism', () => {
       it('validates when has previous terrorism offences', () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: true,
-          notifyRegionalCTLead: false,
+          band: 1,
         })
       })
 
       it('validates when does not have previous terrorism offences', () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: false,
-          notifyRegionalCTLead: false,
+          band: 4,
         })
       })
     })

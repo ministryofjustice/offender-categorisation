@@ -26,6 +26,10 @@ import SupervisorReviewOutcomePage from '../../pages/form/supervisor/outcome'
 import SupervisorMessagePage from '../../pages/form/supervisor/message'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
+import GiveBackToCategoriserPage from '../../pages/form/supervisor/giveBackToCategoriser'
+import FurtherInformationPage from '../../pages/form/supervisor/furtherInformation'
+import SupervisorConfirmBackPage from '../../pages/form/supervisor/confirmBack'
+import GiveBackToCategoriserOutcome from '../../pages/form/supervisor/giveBackToCategoriserOutcome'
 
 type DbQueryResult = { rowCount: number; rows: any[] }
 
@@ -92,29 +96,25 @@ describe('Open Conditions', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
+      alertCode: 'XEL',
     })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: 'B2345YZ',
+      aboveThreshold: true,
+    })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: 'B2345YZ',
+      assaultIncidents: []
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
 
@@ -129,11 +129,12 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     // Decision page
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.catDOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -141,10 +142,10 @@ describe('Open Conditions', () => {
     openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
     // 'the tasklist recat page is displayed with open conditions section added'
-    tasklistRecatPage.openConditionsButton().should('exist')
+    tasklistRecatPage.openConditionsLink().should('exist')
 
     // 'open conditions task is selected'
-    tasklistRecatPage.openConditionsButton().click()
+    tasklistRecatPage.openConditionsLink().click()
     const tprsPage = Page.verifyOnPage(TprsPage)
 
     // 'the TPRS page is displayed'
@@ -161,12 +162,12 @@ describe('Open Conditions', () => {
     //  'the Victim Contact Scheme page is displayed'
     const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
     victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-    victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
     victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
     victimContactSchemaPage.continueButton().click()
 
     // 'the Foreign National page is displayed'
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('YES')
     foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('YES')
     foreignNationalPage.selectLiabilityToBeDeportedRadioButton('YES')
@@ -201,7 +202,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'D' },
+            decision: { category: 'D', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -229,7 +230,7 @@ describe('Open Conditions', () => {
               isForeignNational: 'Yes',
             },
             earliestReleaseDate: { justify: 'Yes', justifyText: 'justify details text', fiveOrMoreYears: 'Yes' },
-            victimContactScheme: { vcsOptedFor: 'Yes', contactedVLO: 'Yes', vloResponseText: 'vlo response text' },
+            victimContactScheme: { vcsOptedFor: 'Yes', vloResponseText: 'vlo response text' },
           },
           openConditionsRequested: true,
         },
@@ -241,13 +242,12 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
+          socProfile: {
+            transferToSecurity: false,
+          },
           extremismProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'EXTREMISM',
             notifyRegionalCTLead: false,
-            increasedRiskOfExtremism: true,
-            provisionalCategorisation: 'C',
+            increasedRiskOfExtremism: false,
           },
         },
         prison_id: 'LEI',
@@ -285,19 +285,20 @@ describe('Open Conditions', () => {
     openConditionsNotRecommendedPage.continueButton().click()
 
     // 'tasklist page is displayed without the open conditions section and the cat data is cleared'
-    tasklistRecatPage.openConditionsButton().should('not.exist')
+    tasklistRecatPage.openConditionsLink().should('not.exist')
 
     // 'a new cat entered and the tasklistRecat continue button is clicked'
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     decisionPage.catCOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 6)
+    reviewRecatPage.changeLinks().should('have.length', 12)
     reviewRecatPage.validateSecurityInputSummary([
       { question: 'Automatic referral to security team', expectedAnswer: 'No' },
       { question: 'Manual referral to security team', expectedAnswer: 'Yes' },
@@ -316,6 +317,7 @@ describe('Open Conditions', () => {
     ])
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
     reviewRecatPage.validateNextReviewDateSummary([
       { question: 'What date should they be reviewed by?', expectedAnswer: 'Saturday 14 December 2019' },
@@ -329,7 +331,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'C' },
+            decision: { category: 'C', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -351,61 +353,10 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
-          escapeProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'EXTREMISM',
-            notifyRegionalCTLead: false,
-            increasedRiskOfExtremism: true,
-            provisionalCategorisation: 'C',
-          },
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -426,7 +377,6 @@ describe('Open Conditions', () => {
       delete expected.start_date
 
       const assessmentStartedToday = isToday(dbRecord.start_date)
-
       const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
 
       return dbRecordMatchesExpected && assessmentStartedToday
@@ -438,11 +388,12 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
     decisionPage.catDOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -450,10 +401,10 @@ describe('Open Conditions', () => {
     openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
     // 'the tasklist recat page is displayed with open conditions section added'
-    tasklistRecatPage.openConditionsButton().should('exist')
+    tasklistRecatPage.openConditionsLink().should('exist')
 
     // 'open conditions forms are completed'
-    tasklistRecatPage.openConditionsButton().click()
+    tasklistRecatPage.openConditionsLink().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.selectTprsRadioButton('NO')
@@ -468,6 +419,7 @@ describe('Open Conditions', () => {
     victimContactSchemaPage.continueButton().click()
 
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('NO')
     foreignNationalPage.continueButton().click()
 
@@ -484,19 +436,21 @@ describe('Open Conditions', () => {
     riskOfEscapingOrAbscondingPage.continueButton().click()
 
     // 'tasklist page is displayed with the open conditions section completed'
-    tasklistRecatPage.openConditionsButton().should('contain.text', 'Edit')
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.openConditionsLink().should('exist')
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      {
+        question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?',
+        expectedAnswer: 'No',
+      },
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
@@ -513,6 +467,7 @@ describe('Open Conditions', () => {
     ])
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category D' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
 
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
@@ -523,7 +478,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'D' },
+            decision: { category: 'D', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -554,66 +509,10 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'SOC',
-            transferToSecurity: false,
-            provisionalCategorisation: 'C',
-          },
-          escapeProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'EXTREMISM',
-            notifyRegionalCTLead: false,
-            increasedRiskOfExtremism: true,
-            provisionalCategorisation: 'C',
-          },
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -680,7 +579,7 @@ describe('Open Conditions', () => {
     const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
     recatAwaitingApprovalPage.getCategoryForApproval().contains('Category for approval is open category')
     recatAwaitingApprovalPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
@@ -720,9 +619,13 @@ describe('Open Conditions', () => {
     cy.task('stubSupervisorApprove')
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends open category')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+    cy.contains('The categoriser recommends open category')
+    supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
     supervisorReviewPage.submitButton().click()
+
+    const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
+    furtherInformationPage.enterFurtherInformation('super other info 1')
+    furtherInformationPage.submitButton().click()
 
     // 'Data is stored correctly'
 
@@ -734,9 +637,13 @@ describe('Open Conditions', () => {
       expect(dbRecord.assessment_date).not.equals(null)
       expect(dbRecord.nomis_sequence_no).equals(5)
       expect(dbRecord.status).equals('APPROVED')
-      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D' })
+      expect(dbRecord.form_response.recat.decision).to.deep.equal({
+        category: 'D',
+        justification: 'category justification text',
+      })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
-        review: { proposedCategory: 'D', supervisorCategoryAppropriate: 'Yes' },
+        review: { supervisorDecision: 'agreeWithCategoryDecision' },
+        furtherInformation: { otherInformationText: 'super other info 1' },
       })
 
       return true
@@ -744,6 +651,7 @@ describe('Open Conditions', () => {
 
     // 'the approved view page is shown'
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     supervisorReviewOutcomePage.finishButton().click()
 
     cy.task('stubCategorised', {
@@ -765,7 +673,7 @@ describe('Open Conditions', () => {
       'The categoriser recommends open category',
       'The supervisor also recommends open category',
     ])
-    approvedViewRecatPage.validateCommentsVisibility({ areVisible: false })
+    approvedViewRecatPage.validateCommentsVisibility({ areVisible: true })
   })
 
   it('recategoriser sets D, supervisor overrides to C', () => {
@@ -773,11 +681,12 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
     decisionPage.catDOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -785,10 +694,10 @@ describe('Open Conditions', () => {
     openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
     // 'the tasklist recat page is displayed with open conditions section added'
-    tasklistRecatPage.openConditionsButton().should('exist')
+    tasklistRecatPage.openConditionsLink().should('exist')
 
     // 'open conditions forms are completed'
-    tasklistRecatPage.openConditionsButton().click()
+    tasklistRecatPage.openConditionsLink().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.selectTprsRadioButton('NO')
@@ -803,6 +712,7 @@ describe('Open Conditions', () => {
     victimContactSchemaPage.continueButton().click()
 
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('NO')
     foreignNationalPage.continueButton().click()
 
@@ -819,19 +729,21 @@ describe('Open Conditions', () => {
     riskOfEscapingOrAbscondingPage.continueButton().click()
 
     // 'tasklist page is displayed with the open conditions section completed'
-    tasklistRecatPage.openConditionsButton().should('contain.text', 'Edit')
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.openConditionsLink().should('exist')
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
     reviewRecatPage.validateVictimContactSchemeSummary([
-      { question: 'Have any victims of the crime opted-in to the Victim Contact Scheme?', expectedAnswer: 'No' },
-      { question: 'Have you contacted the Victim Liaison Officer (VLO)?', expectedAnswer: 'Not applicable' },
+      {
+        question: 'Does this prisoner have any victims opted in to the Victim Contact Scheme (VCS)?',
+        expectedAnswer: 'No',
+      },
     ])
     reviewRecatPage.validateForeignNationalSummary([
       { question: 'Are they a foreign national?', expectedAnswer: 'No' },
@@ -848,6 +760,7 @@ describe('Open Conditions', () => {
     ])
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category D' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
 
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, (data: DbQueryResult) => {
@@ -858,7 +771,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'D' },
+            decision: { category: 'D', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -889,66 +802,10 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'SOC',
-            transferToSecurity: false,
-            provisionalCategorisation: 'C',
-          },
-          escapeProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'EXTREMISM',
-            notifyRegionalCTLead: false,
-            increasedRiskOfExtremism: true,
-            provisionalCategorisation: 'C',
-          },
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -1015,7 +872,7 @@ describe('Open Conditions', () => {
     const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
     recatAwaitingApprovalPage.getCategoryForApproval().contains('Category for approval is open category')
     recatAwaitingApprovalPage.validateEarliestReleaseDateSummary([
-      { question: '3 or more years until earliest release date?', expectedAnswer: 'No' },
+      { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
       { question: 'Reasons that justify moving to open conditions?', expectedAnswer: 'Not applicable' },
     ])
 
@@ -1055,12 +912,18 @@ describe('Open Conditions', () => {
     cy.task('stubSupervisorApprove')
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends open category')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-    supervisorReviewPage.overrideCatC().click()
-    supervisorReviewPage.enterOverrideReason('super changed D to C')
-    supervisorReviewPage.enterOtherInformationText('super other info')
+    cy.contains('The categoriser recommends open category')
+    supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_C').click()
     supervisorReviewPage.submitButton().click()
+
+    const giveBackToCategoriserPage = GiveBackToCategoriserPage.createForBookingId(12, 'Change to Category C')
+    giveBackToCategoriserPage.selectGiveBackToCategoriserRadioButton('NO')
+    cy.get('#supervisorOverriddenCategoryText').type('some justification of category change')
+    giveBackToCategoriserPage.submitButton().click()
+
+    const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
+    furtherInformationPage.enterFurtherInformation('super other info')
+    furtherInformationPage.submitButton().click()
 
     // 'Data is stored correctly'
 
@@ -1072,14 +935,22 @@ describe('Open Conditions', () => {
       expect(dbRecord.assessment_date).not.equals(null)
       expect(dbRecord.nomis_sequence_no).equals(5)
       expect(dbRecord.status).equals('APPROVED')
-      expect(dbRecord.form_response.recat.decision).to.deep.equal({ category: 'D' })
+      expect(dbRecord.form_response.recat.decision).to.deep.equal({
+        category: 'D',
+        justification: 'category justification text',
+      })
       expect(dbRecord.form_response.supervisor).to.deep.equal({
         review: {
-          proposedCategory: 'D',
-          otherInformationText: 'super other info',
+          supervisorDecision: 'changeCategoryTo_C',
           supervisorOverriddenCategory: 'C',
           supervisorCategoryAppropriate: 'No',
-          supervisorOverriddenCategoryText: 'super changed D to C',
+        },
+        changeCategory: {
+          giveBackToCategoriser: 'No',
+          supervisorOverriddenCategoryText: 'some justification of category change',
+        },
+        furtherInformation: {
+          otherInformationText: 'super other info',
         },
       })
 
@@ -1088,6 +959,7 @@ describe('Open Conditions', () => {
 
     // 'the approved view page is shown'
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     supervisorReviewOutcomePage.finishButton().click()
 
     cy.task('stubCategorised', {
@@ -1110,9 +982,6 @@ describe('Open Conditions', () => {
       'The recommended category was changed from open category to Category C',
     ])
     approvedViewRecatPage.validateCommentsVisibility({ areVisible: true })
-    approvedViewRecatPage.validateSupervisorComments({
-      expectedComments: 'super changed D to C',
-    })
     approvedViewRecatPage.validateOtherSupervisorComments({
       expectedComments: 'super other info',
     })
@@ -1123,20 +992,22 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     const decisionPage = Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
     decisionPage.catCOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed and Data is stored correctly. Data is persisted (and displayed) - regardless of the decision to end the open conditions flow'
     const reviewRecatPage = Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 6)
+    reviewRecatPage.changeLinks().should('have.length', 12)
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
 
     // 'I confirm the cat C category'
@@ -1162,7 +1033,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'C' },
+            decision: { category: 'C', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -1184,61 +1055,10 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
-          escapeProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'EXTREMISM',
-            notifyRegionalCTLead: false,
-            increasedRiskOfExtremism: true,
-            provisionalCategorisation: 'C',
-          },
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -1307,12 +1127,18 @@ describe('Open Conditions', () => {
     cy.task('stubSupervisorReject')
 
     const supervisorReviewPage = Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends Category C')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('NO')
-    supervisorReviewPage.overrideCatD().click()
-    supervisorReviewPage.enterOverrideReason('super overriding C to D reason text')
-    supervisorReviewPage.enterOtherInformationText('super other info 1')
+    supervisorReviewPage.supervisorDecisionRadioButton('CHANGE_TO_CATEGORY_D').click()
     supervisorReviewPage.submitButton().click()
+
+    const supervisorConfirmBackPage = SupervisorConfirmBackPage.createForBookingId(12)
+    supervisorConfirmBackPage.setConfirmationMessageText('super overriding C to D reason text')
+    supervisorConfirmBackPage.saveAndReturnButton().click()
+
+    const giveBackToCategoriserOutcomePage = GiveBackToCategoriserOutcome.createForBookingIdAndCategorisationType(
+      12,
+      CATEGORISATION_TYPE.RECAT,
+    )
+    giveBackToCategoriserOutcomePage.finishButton().should('be.visible').click()
 
     // 'supervisor is returned to home'
     Page.verifyOnPage(SupervisorHomePage)
@@ -1327,23 +1153,25 @@ describe('Open Conditions', () => {
     recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
     // 'the categoriser looks at the supervisor message'
-    tasklistRecatPage.supervisorMessageButton().click()
+    tasklistRecatPage.supervisorMessageLink().click()
 
     // 'the supervisor message is available'
     const supervisorMessagePage = Page.verifyOnPage(SupervisorMessagePage)
     supervisorMessagePage.validateMessages([
       { question: 'Supervisor', expectedAnswer: 'Test User' },
+      { question: 'Proposed change', expectedAnswer: 'Change the category to D' },
       { question: 'Message', expectedAnswer: 'super overriding C to D reason text' },
     ])
     supervisorMessagePage.saveAndReturnButton().click()
 
     // 'the recategoriser chooses cat D instead of C'
     Page.verifyOnPage(TasklistRecatPage)
-    tasklistRecatPage.decisionButton().click()
+    tasklistRecatPage.categoryDecisionLink().click()
 
     Page.verifyOnPage(DecisionPage)
     decisionPage.indeterminateWarning().should('not.exist')
     decisionPage.catDOption().click()
+    decisionPage.enterCategoryDecisionJustification('category justification text')
     decisionPage.submitButton().click()
 
     // Open Conditions Added Page
@@ -1351,8 +1179,8 @@ describe('Open Conditions', () => {
     openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
     // 'open conditions forms are accessed by categoriser'
-    tasklistRecatPage.openConditionsButton().should('exist')
-    tasklistRecatPage.openConditionsButton().click()
+    tasklistRecatPage.openConditionsLink().should('exist')
+    tasklistRecatPage.openConditionsLink().click()
 
     const tprsPage = Page.verifyOnPage(TprsPage)
     tprsPage.selectTprsRadioButton('NO')
@@ -1367,6 +1195,7 @@ describe('Open Conditions', () => {
     victimContactSchemaPage.continueButton().click()
 
     const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+    foreignNationalPage.validateInsetText()
     foreignNationalPage.selectForeignNationalRadioButton('NO')
     foreignNationalPage.continueButton().click()
 
@@ -1382,13 +1211,14 @@ describe('Open Conditions', () => {
     riskOfEscapingOrAbscondingPage.selectRiskLevelsRadioButton('NO')
     riskOfEscapingOrAbscondingPage.continueButton().click()
 
-    tasklistRecatPage.checkAndSubmitButton(12).click()
+    tasklistRecatPage.checkAndSubmitCategorisationLink(12).click()
 
     // 'the review page is displayed'
     Page.verifyOnPage(ReviewRecatPage)
-    reviewRecatPage.changeLinks().should('have.length', 13)
+    reviewRecatPage.changeLinks().should('have.length', 26)
     reviewRecatPage.validateCategoryDecisionSummary([
       { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category D' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'category justification text' },
     ])
 
     // 'I confirm the cat D category'
@@ -1457,12 +1287,16 @@ describe('Open Conditions', () => {
     cy.task('stubSupervisorApprove')
 
     Page.verifyOnPage(SupervisorReviewPage)
-    supervisorReviewPage.validateCategorisersRecommendedCategory('The categoriser recommends open category')
-    supervisorReviewPage.enterOtherInformationText('super other info 1 + 2')
-    supervisorReviewPage.selectAgreeWithProvisionalCategoryRadioButton('YES')
+    cy.contains('The categoriser recommends open category')
+    supervisorReviewPage.supervisorDecisionRadioButton('AGREE_WITH_CATEGORY_DECISION').click()
     supervisorReviewPage.submitButton().click()
 
+    const furtherInformationPage = FurtherInformationPage.createForBookingId(12)
+    furtherInformationPage.enterFurtherInformation('super other info 1 + 2')
+    furtherInformationPage.submitButton().click()
+
     const supervisorReviewOutcomePage = Page.verifyOnPage(SupervisorReviewOutcomePage)
+    supervisorReviewOutcomePage.smartSurveyLink().should('be.visible')
     supervisorReviewOutcomePage.finishButton().click()
 
     // 'Data is stored correctly'
@@ -1478,7 +1312,7 @@ describe('Open Conditions', () => {
         id: -1,
         form_response: {
           recat: {
-            decision: { category: 'D' },
+            decision: { category: 'D', justification: 'category justification text' },
             oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
             securityInput: { securityNoteNeeded: 'No', securityInputNeeded: 'Yes' },
             nextReviewDate: { date: '14/12/2019' },
@@ -1492,16 +1326,14 @@ describe('Open Conditions', () => {
           },
           supervisor: {
             review: {
-              proposedCategory: 'D',
-              otherInformationText: 'super other info 1super other info 1 + 2',
-              previousOverrideCategoryText: 'super overriding C to D reason text',
-              supervisorCategoryAppropriate: 'Yes',
+              supervisorDecision: 'agreeWithCategoryDecision',
             },
             confirmBack: {
               isRead: true,
               messageText: 'super overriding C to D reason text',
               supervisorName: 'Test User',
             },
+            furtherInformation: { otherInformationText: 'super other info 1 + 2' },
           },
           openConditions: {
             tprs: { tprsSelected: 'No' },
@@ -1556,61 +1388,10 @@ describe('Open Conditions', () => {
               assessmentDescription: 'Categorisation',
             },
           ],
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
-          escapeProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: true,
-            escapeListAlerts: [
-              {
-                active: true,
-                comment: 'First xel comment',
-                expired: false,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-14',
-                alertCodeDescription: 'Escape List',
-              },
-              {
-                active: false,
-                comment:
-                  '\nSecond xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\ncomment with lengthy text comment with lengthy text comment with lengthy text\n',
-                expired: true,
-                alertCode: 'XEL',
-                dateCreated: '2016-09-15',
-                alertCodeDescription: 'Escape List',
-              },
-            ],
-            escapeRiskAlerts: [
-              {
-                active: true,
-                comment: 'First xer comment',
-                expired: false,
-                alertCode: 'XER',
-                dateCreated: '2016-09-16',
-                alertCodeDescription: 'Escape Risk',
-              },
-            ],
-            provisionalCategorisation: 'C',
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'EXTREMISM',
-            notifyRegionalCTLead: false,
-            increasedRiskOfExtremism: true,
-            provisionalCategorisation: 'C',
-          },
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -1650,11 +1431,66 @@ describe('Open Conditions', () => {
       'The supervisor also recommends open category',
     ])
     approvedViewRecatPage.validateCommentsVisibility({ areVisible: true })
-    approvedViewRecatPage.validatePreviousSupervisorComments({
-      expectedComments: 'super overriding C to D reason text',
-    })
     approvedViewRecatPage.validateOtherSupervisorComments({
       expectedComments: 'super other info 1 + 2',
+    })
+  })
+
+  describe('conditional release or parole eligibility date', () => {
+    it('shows Parole eligibility date', () => {
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+      tasklistRecatPage.categoryDecisionLink().click()
+
+      const decisionPage = Page.verifyOnPage(DecisionPage)
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ' })
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Saturday 13 June 2020' })
+    })
+
+    it('shows Conditional release date', () => {
+      cy.task('stubGetOffenderDetails', {
+        bookingId: 12,
+        offenderNo: 'B2345YZ',
+        youngOffender: false,
+        indeterminateSentence: false,
+        paroleEligibilityDate: null,
+      })
+
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+      tasklistRecatPage.categoryDecisionLink().click()
+
+      const decisionPage = Page.verifyOnPage(DecisionPage)
+      decisionPage.checkConditionalReleaseDateInsetText('2020-02-02')
+    })
+
+    it('does not render Conditional release date is not available', () => {
+      cy.task('stubGetOffenderDetails', {
+        bookingId: 12,
+        offenderNo: 'B2345YZ',
+        youngOffender: false,
+        indeterminateSentence: false,
+        paroleEligibilityDate: null,
+        conditionalReleaseDate: null,
+      })
+
+      const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+      recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
+
+      const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
+      tasklistRecatPage.categoryDecisionLink().click()
+
+      const decisionPage = Page.verifyOnPage(DecisionPage)
+      decisionPage.assertTextVisibilityOnPage({ selector: 'span', text: 'Parole eligibility date: ', isVisible: false })
+      decisionPage.assertTextVisibilityOnPage({
+        selector: 'span',
+        text: 'Conditional release date: ',
+        isVisible: false,
+      })
     })
   })
 
@@ -1664,11 +1500,12 @@ describe('Open Conditions', () => {
       recategoriserHomePage.continueReviewForPrisoner(12, 'DUE')
 
       const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
-      tasklistRecatPage.decisionButton().click()
+      tasklistRecatPage.categoryDecisionLink().click()
 
       // Decision page
       const decisionPage = Page.verifyOnPage(DecisionPage)
       decisionPage.catDOption().click()
+      decisionPage.enterCategoryDecisionJustification('category justification text')
       decisionPage.submitButton().click()
 
       // Open Conditions Added Page
@@ -1676,10 +1513,10 @@ describe('Open Conditions', () => {
       openConditionsAddedPage.returnToRecatTasklistButton(12).click()
 
       // 'the tasklist recat page is displayed with open conditions section added'
-      tasklistRecatPage.openConditionsButton().should('exist')
+      tasklistRecatPage.openConditionsLink().should('exist')
 
       // 'open conditions task is selected'
-      tasklistRecatPage.openConditionsButton().click()
+      tasklistRecatPage.openConditionsLink().click()
       const tprsPage = Page.verifyOnPage(TprsPage)
 
       // 'the TPRS page is displayed'
@@ -1687,58 +1524,16 @@ describe('Open Conditions', () => {
       tprsPage.continueButton().click()
     })
 
-    it('Shows correct message when not suitable for open conditions because of earliest release date', () => {
-      // 'the Earliest Release page is displayed'
-      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
-      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
-      earliestReleasePage.selectJustifyRadioButton('NO')
-
-      cy.intercept('GET', '/form/openConditions/openConditionsNotSuitable/*', req => {
-        req.query.overrideFeatureFlag = 'false'
-      }).as('earliestReleaseDate')
-      earliestReleasePage.continueButton().click()
-      cy.wait('@earliestReleaseDate')
-
-      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
-      cy.contains(
-        'This person cannot be sent to open conditions because they have more than three years to their earliest release date and there are no special circumstances to warrant them moving into open conditions',
-      )
-    })
-
     it('Shows correct message when not suitable for open conditions because of earliest release date 3 to 5 change', () => {
       // 'the Earliest Release page is displayed'
       const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
       earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
       earliestReleasePage.selectJustifyRadioButton('NO')
-
-      cy.intercept('GET', '/form/openConditions/openConditionsNotSuitable/*', req => {
-        req.query.overrideFeatureFlag = 'true'
-      }).as('earliestReleaseDate')
       earliestReleasePage.continueButton().click()
-      cy.wait('@earliestReleaseDate')
 
       cy.get('h1').should('contain.text', 'Not suitable for open conditions')
       cy.contains(
         'This person cannot be sent to open conditions because they have more than 5 years to their earliest release date and there are no special circumstances to warrant them moving into open conditions',
-      )
-    })
-
-    it('Shows correct message when not suitable for open conditions because of VCS', () => {
-      // 'the Earliest Release page is displayed'
-      const earliestReleasePage = Page.verifyOnPage(EarliestReleaseDatePage)
-      earliestReleasePage.selectEarliestReleaseDateRadioButton('YES')
-      earliestReleasePage.selectJustifyRadioButton('YES')
-      earliestReleasePage.setJustifyOpenConditionsTextInput('justify details text')
-      earliestReleasePage.continueButton().click()
-
-      const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
-      victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('NO')
-      victimContactSchemaPage.continueButton().click()
-
-      cy.get('h1').should('contain.text', 'Not suitable for open conditions')
-      cy.contains(
-        'This person cannot be sent to open conditions because a victim of the crime has opted-in to the Victim Contact Scheme and the VLO has not been contacted.',
       )
     })
 
@@ -1752,11 +1547,11 @@ describe('Open Conditions', () => {
 
       const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
       victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
       victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
       victimContactSchemaPage.continueButton().click()
 
       const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+      foreignNationalPage.validateInsetText()
       foreignNationalPage.selectForeignNationalRadioButton('YES')
       foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('NO')
       foreignNationalPage.continueButton().click()
@@ -1775,11 +1570,11 @@ describe('Open Conditions', () => {
 
       const victimContactSchemaPage = Page.verifyOnPage(VictimContactSchemePage)
       victimContactSchemaPage.selectVictimContactSchemeRadioButton('YES')
-      victimContactSchemaPage.selectContactedVictimLiaisonOfficerRadioButton('YES')
       victimContactSchemaPage.setVictimLiaisonOfficerResponseTextInput('vlo response text')
       victimContactSchemaPage.continueButton().click()
 
       const foreignNationalPage = Page.verifyOnPage(ForeignNationalPage)
+      foreignNationalPage.validateInsetText()
       foreignNationalPage.selectForeignNationalRadioButton('YES')
       foreignNationalPage.selectHomeOfficeImmigrationStatusRadioButton('YES')
       foreignNationalPage.selectLiabilityToBeDeportedRadioButton('YES')

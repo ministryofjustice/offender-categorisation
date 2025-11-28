@@ -15,6 +15,10 @@ jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
 
 const createRouter = require('../../server/routes/recat')
 const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
+const { makeTestViperDto } = require('../../server/data/formApi/viper/viper.dto.test-factory')
+const {
+  makeTestCountOfAssaultIncidents,
+} = require('../../server/services/incidents/countOfAssaultIncidents.test-factory')
 
 const formConfig = {
   recat,
@@ -39,13 +43,7 @@ const formService = {
   deleteFormData: jest.fn(),
   recordNomisSeqNumber: jest.fn(),
   categoriserDecision: jest.fn(),
-}
-
-const riskProfilerService = {
-  getSecurityProfile: jest.fn(),
-  getViolenceProfile: jest.fn(),
-  getEscapeProfile: jest.fn(),
-  getExtremismProfile: jest.fn(),
+  getViperData: jest.fn(),
 }
 
 const offendersService = {
@@ -57,10 +55,19 @@ const offendersService = {
   createOrUpdateCategorisation: jest.fn(),
   getPrisonerBackground: jest.fn(),
   getRiskChangeForOffender: jest.fn(),
+  getCountOfAssaultIncidents: jest.fn(),
 }
 
 const userService = {
   getUser: jest.fn(),
+}
+
+const pathfinderService = {
+  getExtremismProfile: jest.fn(),
+}
+
+const alertService = {
+  getEscapeProfile: jest.fn(),
 }
 
 const mockFemalePrison = () => {
@@ -88,7 +95,8 @@ const formRoute = createRouter({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
+  pathfinderService,
+  alertService,
   authenticationMiddleware,
 })
 
@@ -110,6 +118,7 @@ beforeEach(() => {
   formService.deleteFormData.mockReturnValue({})
   formService.recordNomisSeqNumber.mockReturnValue({})
   formService.categoriserDecision.mockReturnValue({})
+  formService.getViperData.mockReturnValue({})
   offendersService.createOrUpdateCategorisation.mockReturnValue({ bookingId: 12345, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({
     displayName: 'Claire Dent',
@@ -119,11 +128,10 @@ beforeEach(() => {
   })
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getPrisonerBackground.mockResolvedValue({})
+  offendersService.getCountOfAssaultIncidents.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
-  riskProfilerService.getSecurityProfile.mockResolvedValue({})
-  riskProfilerService.getViolenceProfile.mockResolvedValue({})
-  riskProfilerService.getExtremismProfile.mockResolvedValue({})
-  riskProfilerService.getEscapeProfile.mockResolvedValue({})
+  pathfinderService.getExtremismProfile.mockResolvedValue({})
+  alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
   moment.now = jest.fn()
@@ -163,7 +171,6 @@ describe('recat', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.text).toContain(expectedContent)
-          expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
         }),
     )
     test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
@@ -325,16 +332,18 @@ describe('recat', () => {
       }))
 
   test('GET /form/recat/review violence profile - displayAssault', () => {
-    riskProfilerService.getViolenceProfile.mockResolvedValue({
-      nomsId: '1234AN',
-      riskType: 'VIOLENCE',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: true,
-      numberOfAssaults: 5,
-      numberOfSeriousAssaults: 2,
-      numberOfNonSeriousAssaults: 4,
-    })
+    formService.getViperData.mockResolvedValue(
+      makeTestViperDto({
+        aboveThreshold: false,
+      }),
+    )
+    offendersService.getCountOfAssaultIncidents.mockResolvedValue(
+      makeTestCountOfAssaultIncidents({
+        countOfAssaults: 5,
+        countOfRecentSeriousAssaults: 2,
+        countOfRecentNonSeriousAssaults: 4,
+      }),
+    )
     return request(app)
       .get(`/review/12345`)
       .expect(200)
@@ -348,15 +357,16 @@ describe('recat', () => {
   })
 
   test('GET /form/recat/review violence profile - all fine', () => {
-    riskProfilerService.getViolenceProfile.mockReturnValue({
-      nomsId: '1234AN',
-      riskType: 'VIOLENCE',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: false,
-      numberOfAssaults: 5,
-      numberOfSeriousAssaults: 2,
-    })
+    formService.getViperData.mockResolvedValue(
+      makeTestViperDto({
+        aboveThreshold: false,
+      }),
+    )
+    offendersService.getCountOfAssaultIncidents.mockResolvedValue(
+      makeTestCountOfAssaultIncidents({
+        countOfAssaults: 0,
+      }),
+    )
     return request(app)
       .get(`/review/12345`)
       .expect(200)
@@ -370,9 +380,7 @@ describe('recat', () => {
   })
 
   test('GET /form/recat/review extremism profile - increasedRiskOfExtremism', () => {
-    riskProfilerService.getExtremismProfile.mockReturnValue({
-      nomsId: '123AD',
-      riskType: 'EXTREMISM',
+    pathfinderService.getExtremismProfile.mockReturnValue({
       increasedRiskOfExtremism: true,
       notifyRegionalCTLead: true,
     })
@@ -389,9 +397,7 @@ describe('recat', () => {
   })
 
   test('GET /form/recat/review extremism profile - all fine', () => {
-    riskProfilerService.getExtremismProfile.mockReturnValue({
-      nomsId: '123AD',
-      riskType: 'EXTREMISM',
+    pathfinderService.getExtremismProfile.mockReturnValue({
       increasedRiskOfExtremism: false,
       notifyRegionalCTLead: false,
     })
@@ -621,89 +627,13 @@ describe('POST /form/recat/review', () => {
   })
 })
 
-describe('POST /form/recat/fasttrackProgress', () => {
-  test('Risk Assessment, next review date and decision are defaulted', () => {
-    formService.getCategorisationRecord.mockResolvedValue({
-      status: 'STARTED',
-      bookingId: 12345,
-      formObject: { something: 'alreadyOnTheForm' },
-    })
-    return request(app)
-      .post(`/fasttrackProgress/12345`)
-      .send({ progressText: 'They have done very well' })
-      .expect(302)
-      .expect('Location', `/form/recat/fasttrackConfirmation/12345`)
-      .expect(() => {
-        expect(formService.update).toBeCalledTimes(1)
-        expect(formService.updateFormData).toBeCalledWith(
-          '12345',
-          {
-            recat: {
-              decision: { category: 'C' },
-              nextReviewDate: { date: '5/6/2020' },
-              riskAssessment: {
-                higherCategory:
-                  'They pose no additional risks. There’s no reason to consider them for higher security conditions.',
-                lowerCategory:
-                  "They could not be considered for open conditions early. Their circumstances weren't exceptional enough.",
-                otherRelevant: 'No',
-              },
-              securityInput: { securityInputNeeded: 'No' },
-            },
-            something: 'alreadyOnTheForm',
-          },
-          mockTransactionalClient,
-        )
-      })
-  })
-
-  test('Only missing data is defaulted - all fields complete', () => {
-    formService.getCategorisationRecord.mockResolvedValue({
-      status: 'STARTED',
-      bookingId: 12345,
-      formObject: {
-        something: 'alreadyOnTheForm',
-        recat: {
-          nextReviewDate: { date: '10/06/2020' },
-          riskAssessment: {
-            higherCategory: 'higherCategory Text was already here - should not be cleared',
-            lowerCategory: 'lowerCategory Text was already here - should not be cleared',
-          },
-        },
-      },
-    })
-    return request(app)
-      .post(`/fasttrackProgress/12345`)
-      .send({ progressText: 'They have done very well' })
-      .expect(302)
-      .expect('Location', `/form/recat/fasttrackConfirmation/12345`)
-      .expect(() => {
-        expect(formService.update).toBeCalledTimes(1)
-        expect(formService.updateFormData).toBeCalledWith(
-          '12345',
-          {
-            recat: {
-              decision: { category: 'C' },
-              nextReviewDate: { date: '10/06/2020' },
-              riskAssessment: {
-                higherCategory: 'higherCategory Text was already here - should not be cleared',
-                lowerCategory: 'lowerCategory Text was already here - should not be cleared',
-                otherRelevant: 'No',
-              },
-              securityInput: { securityInputNeeded: 'No' }, // fasttrack not available if any security input
-            },
-            something: 'alreadyOnTheForm',
-          },
-          mockTransactionalClient,
-        )
-      })
-  })
-})
-
-describe('Testing oasys input page routing', () => {
+describe('Testing previous risk assessments routing', () => {
   test.each`
-    path                  | expectedContent
-    ${'oasysInput/12345'} | ${'Offender Assessment System (OASys)'}
+    path                               | expectedContent
+    ${'previousRiskAssessments/12345'} | ${'Previous risk assessments'}
+    ${'oasysInput/12345'}              | ${'Check their OASys assessment'}
+    ${'bcstInput/12345'}               | ${'Check their Basic Custody Screening Tool part 1 assessment'}
+    ${'oasysRequired/12345'}           | ${'You must complete an OASys for this person'}
   `('should render $expectedContent for $path', ({ path, expectedContent }) =>
     request(app)
       .get(`/${path}`)
@@ -713,6 +643,7 @@ describe('Testing oasys input page routing', () => {
         expect(res.text).toContain(expectedContent)
       }),
   )
+
   test('Oasys Validation error redirect to page', () => {
     request(app).post(`/oasysInput/866018`).expect(302).expect('Location', 'form/recat/oasysInput/866018')
   })

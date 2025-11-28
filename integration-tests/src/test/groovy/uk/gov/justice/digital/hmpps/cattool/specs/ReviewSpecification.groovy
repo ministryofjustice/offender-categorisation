@@ -41,24 +41,22 @@ class ReviewSpecification extends AbstractSpecification {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     selectFirstPrisoner() // has been sorted to top of list!
     at(new TasklistPage(bookingId: '12'))
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
-    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], [date12])
 
-    then: 'the completed text is displayed'
-    summarySection[0].text() == 'Review and categorisation'
-    summarySection[1].text() == 'All tasks completed'
-
-    when: 'The continue link is selected'
-    continueButton.click()
+    and: 'The continue link is selected'
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewPage
@@ -82,21 +80,10 @@ class ReviewSpecification extends AbstractSpecification {
     response.offences == [[bookingId: 12, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
                           [bookingId: 12, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
                           [bookingId: 12, offenceDescription: 'Undated offence']]
-    response.socProfile == [nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C']
-    response.escapeProfile == [nomsId                   : 'B2345YZ', riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true,
-                               escapeListAlerts         : [[active: true, comment: 'First xel comment', expired: false, alertCode: 'XEL', dateCreated: '2016-09-14', alertCodeDescription: 'Escape List'],
-                                                           [active: false, comment: '''
-Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text
- comment with lengthy text comment with lengthy text comment with lengthy text
-  comment with lengthy text comment with lengthy text comment with lengthy text
-   comment with lengthy text comment with lengthy text comment with lengthy text
-''', expired: true, alertCode: 'XEL', dateCreated: '2016-09-15', alertCodeDescription: 'Escape List']],
-                               escapeRiskAlerts         : [[active: true, comment: 'First xer comment', expired: false, alertCode: 'XER', dateCreated: '2016-09-16', alertCodeDescription: 'Escape Risk']],
-                               provisionalCategorisation: 'C']
-    response.violenceProfile == [nomsId                 : 'B2345YZ', riskType: 'VIOLENCE', displayAssaults: false, numberOfAssaults: 5, notifySafetyCustodyLead: true,
-                                 numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3, provisionalCategorisation: 'C', veryHighRiskViolentOffender: true]
-    response.extremismProfile == [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: true, provisionalCategorisation: 'C']
-    response.lifeProfile == [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'C']
+    response.socProfile == [transferToSecurity: false]
+    response.escapeProfile == [riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true, escapeListAlerts: [[alertCode: 'XEL', dateCreated: '2025-01-01']], escapeRiskAlerts: [[alertCode: 'XER', dateCreated: '2025-01-01']]]
+    response.violenceProfile == [riskType: 'VIOLENCE', numberOfAssaults: 5, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3]
+    response.extremismProfile == [notifyRegionalCTLead: true, increasedRiskOfExtremism: true]
   }
 
   def "The review page can be displayed without security input"() {
@@ -117,12 +104,13 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false, true)
-    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2020-01-01'])
     at new TasklistPage(bookingId: '12')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewPage

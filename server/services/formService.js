@@ -6,16 +6,19 @@ const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const RiskChange = require('../utils/riskChangeStatusEnum')
 const { isNilOrEmpty, pickBy, getFieldName } = require('../utils/functionalHelpers')
-const conf = require('../config')
+const { config: conf } = require('../config')
 const log = require('../../log')
 const { filterJsonObjectForLogging } = require('../utils/utils')
+const { OPEN_CONDITIONS_CATEGORIES, SUPERVISOR_DECISION_CHANGE_TO } = require('../data/categories')
+
+const MINIMUM_NUMBER_OF_ASSAULTS_TO_CONSIDER_FOR_CATEGORY_B = 5
 
 function dataIfExists(data) {
   return data.rows[0]
 }
 
 module.exports = function createFormService(formClient, formApiClientBuilder) {
-  async function getCategorisationRecord(bookingId, transactionalClient) {
+  async function getCategorisationRecord(bookingId, transactionalClient = undefined) {
     try {
       const data = await formClient.getFormDataForUser(bookingId, transactionalClient)
       return dataIfExists(data) || {}
@@ -88,18 +91,21 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     formSection,
     formName,
     status,
-    transactionalClient,
+    transactionalClient = undefined,
     logUpdate,
   }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
-    const newCategorisationForm = buildCategorisationForm({
-      formObject: currentCategorisation.formObject || {},
-      fieldMap: config.fields,
-      userInput,
-      formSection,
+    const newCategorisationForm = removeFieldsThatAreNoLongerRelevant(
+      buildCategorisationForm({
+        formObject: currentCategorisation.formObject || {},
+        fieldMap: config.fields,
+        userInput,
+        formSection,
+        formName,
+      }),
       formName,
-    })
+    )
 
     if (validateStatusIfProvided(currentCategorisation.status, status)) {
       if (logUpdate) {
@@ -111,6 +117,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
           )}`,
         )
       }
+
       await formClient.update(
         newCategorisationForm,
         bookingId,
@@ -118,6 +125,30 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         transactionalClient,
       )
     }
+    return newCategorisationForm
+  }
+
+  function removeFieldsThatAreNoLongerRelevant(categorisationForm, formName) {
+    const newCategorisationForm = JSON.parse(JSON.stringify(categorisationForm))
+
+    if (
+      !newCategorisationForm?.supervisor?.review?.supervisorDecision?.startsWith?.(SUPERVISOR_DECISION_CHANGE_TO) ||
+      OPEN_CONDITIONS_CATEGORIES.includes(newCategorisationForm?.supervisor?.review?.supervisorOverriddenCategory)
+    ) {
+      delete newCategorisationForm?.supervisor?.changeCategory
+      delete newCategorisationForm?.supervisor?.furtherInformation
+    }
+
+    // Remove mututally exclusive prev risk assessment fields
+
+    if (formName === 'oasysInput') {
+      delete newCategorisationForm?.recat?.bcstInput
+    }
+
+    if (formName === 'bcstInput') {
+      delete newCategorisationForm?.recat?.oasysInput
+    }
+
     return newCategorisationForm
   }
 
@@ -147,6 +178,8 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       formSection,
       formName,
     })
+
+    delete newCategorisationForm?.supervisor?.review?.supervisorDecision
 
     log.info(
       `Updating Categorisation for booking Id: ${bookingId}, offender No: ${
@@ -206,7 +239,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     formSection,
     formName,
     userId,
-    transactionalClient,
+    transactionalClient = undefined,
   }) {
     const currentCategorisation = await getCategorisationRecord(bookingId, transactionalClient)
 
@@ -320,10 +353,15 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       return {}
     }
     const nextReviewDate = moment(data.rows[0].nextReviewDate)
+    const inputNextReviewDate = {
+      day: nextReviewDate.date().toString(),
+      month: (nextReviewDate.month() + 1).toString(),
+      year: nextReviewDate.year().toString(),
+    }
     return {
       ...data.rows[0],
       displayNextReviewDate: nextReviewDate.format('DD/MM/YYYY'),
-      inputNextReviewDate: nextReviewDate.format('D/M/YYYY'),
+      inputNextReviewDate,
       displayCreatedDate: moment(data.rows[0].createdDate).format('DD/MM/YYYY'),
     }
   }
@@ -343,9 +381,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     approvedCommittee,
     nextReviewDate,
     approvedPlacement,
-    approvedPlacementComment,
     approvedComment,
-    approvedCategoryComment,
     transactionalClient,
   }) {
     return formClient.approveLiteCategorisation({
@@ -358,9 +394,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
       approvedCommittee,
       nextReviewDate,
       approvedPlacement,
-      approvedPlacementComment,
       approvedComment,
-      approvedCategoryComment,
       transactionalClient,
     })
   }
@@ -418,6 +452,10 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
   function buildCategorisationForm({ formObject, fieldMap, userInput, formSection, formName }) {
     const answers = fieldMap ? fieldMap.reduce(answersFromMapReducer(userInput), {}) : {}
 
+    if (userInput.supervisorDecision && userInput.supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
+      answers.supervisorOverriddenCategory = getCategoryFromSupervisorDecisionString(userInput.supervisorDecision)
+    }
+
     return {
       ...formObject,
       [formSection]: {
@@ -425,6 +463,19 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
         [formName]: answers,
       },
     }
+  }
+
+  /**
+   * The last letter of the supervisor decision is the category code e.g. 'B' or
+   * 'C' when the supervisor decision starts with SUPERVISOR_DECISION_CHANGE_TO
+   * @param supervisorDecision string
+   * @returns string
+   */
+  function getCategoryFromSupervisorDecisionString(supervisorDecision) {
+    if (supervisorDecision.startsWith(SUPERVISOR_DECISION_CHANGE_TO)) {
+      return supervisorDecision.slice(-1)
+    }
+    throw Error(`Cannot get category from supervisorDecision ${supervisorDecision}`)
   }
 
   function answersFromMapReducer(userInput) {
@@ -490,20 +541,23 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     if (isYoungOffender(data.details)) {
       return 'I'
     }
-    const isCatBDueToPreviousCatA = data.history && data.history.catAType
-    const isCatBDueToSecurity = data.ratings && data.ratings.securityBack && data.ratings.securityBack.catB === 'Yes'
+
+    const isCatBDueToPreviousCatA = data.history?.catAType
+    const isCatBDueToSecurity = data.ratings?.securityBack?.catB === 'Yes'
     const isCatBDueToViolence =
-      (data.violenceProfile && data.violenceProfile.veryHighRiskViolentOffender) || // Visor: not MVP
-      (data.violenceProfile && data.violenceProfile.provisionalCategorisation === 'B') // note: Qs on page ignored (info only)
-    const isCatBDueToEscape =
-      // The other Q on the escape page is info only
-      data.ratings && data.ratings.escapeRating && data.ratings.escapeRating.escapeCatB === 'Yes'
-    const isCatBDueToExtremism =
-      (data.extremismProfile && data.extremismProfile.provisionalCategorisation === 'B') ||
-      (data.ratings && data.ratings.extremismRating && data.ratings.extremismRating.previousTerrorismOffences === 'Yes')
-    const isCatBDueToSeriousFurtherCharges =
-      data.ratings && data.ratings.furtherCharges && data.ratings.furtherCharges.furtherChargesCatB === 'Yes'
-    const isCatBDueToLife = data.lifeProfile && data.lifeProfile.provisionalCategorisation === 'B'
+      data.violenceProfile?.notifySafetyCustodyLead &&
+      data.violenceProfile?.numberOfAssaults >= MINIMUM_NUMBER_OF_ASSAULTS_TO_CONSIDER_FOR_CATEGORY_B &&
+      data.violenceProfile?.numberOfNonSeriousAssaults > 0
+
+    // The other Q on the escape page is info only
+    const isCatBDueToEscape = data.ratings?.escapeRating?.escapeCatB === 'Yes'
+
+    const hasPreviousTerrorismOffences = data.ratings?.extremismRating?.previousTerrorismOffences === 'Yes'
+    const isCatBDueToExtremism = data.extremismProfile?.increasedRiskOfExtremism || hasPreviousTerrorismOffences
+
+    const isCatBDueToSeriousFurtherCharges = data.ratings?.furtherCharges?.furtherChargesCatB === 'Yes'
+    const isCatBDueToLife = data.lifeProfile?.life
+
     if (
       isCatBDueToPreviousCatA ||
       isCatBDueToSecurity ||
@@ -905,6 +959,11 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     }
   }
 
+  const getViperData = async (userId, offenderNo) => {
+    const formApiClient = formApiClientBuilder(userId)
+    return formApiClient.getViperData(offenderNo)
+  }
+
   return {
     getCategorisationRecord,
     update,
@@ -960,5 +1019,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     recordNextReview,
     getNextReview,
     deletePendingCategorisations,
+    getCategoryFromSupervisorDecisionString,
+    getViperData,
   }
 }

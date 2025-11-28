@@ -20,9 +20,8 @@ const formService = {
   getLiteCategorisation: jest.fn(),
 }
 
-const riskProfilerService = {
-  getSecurityProfile: jest.fn(),
-  getExtremismProfile: jest.fn(),
+const alertService = {
+  prisonerHasActiveOcgmAlert: jest.fn(),
 }
 
 const offendersService = {
@@ -36,12 +35,17 @@ const userService = {
   getUser: jest.fn(),
 }
 
+const pathfinderService = {
+  getExtremismProfile: jest.fn(),
+}
+
 const tasklistRoute = createRouter({
   formService,
   offendersService,
   userService,
   authenticationMiddleware,
-  riskProfilerService,
+  alertService,
+  pathfinderService,
 })
 
 let app
@@ -97,9 +101,9 @@ describe('GET /tasklist/', () => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
-        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Complete a categorisation')
         expect(res.text).toContain('Offending history')
-        expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Not yet started')
         expect(res.text).toContain('Further charges')
         expect(res.text).toContain('Safety and good order')
         expect(res.text).toContain('Risk of escape')
@@ -107,7 +111,7 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain('Security information')
         expect(res.text).not.toContain('Category decision')
         expect(res.text).toContain('Set next category review date')
-        expect(res.text).toContain('Review and categorisation')
+        expect(res.text).toContain('Check and submit')
       })
   })
 
@@ -137,9 +141,9 @@ describe('GET /tasklist/', () => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toContain('Conditional Release Date')
         expect(res.text).toContain('04/04/2020')
-        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Complete a categorisation')
         expect(res.text).toContain('Offending history')
-        expect(res.text).toContain('Not yet checked')
+        expect(res.text).toContain('Not yet started')
         expect(res.text).not.toContain('Further charges')
         expect(res.text).toContain('Safety and good order')
         expect(res.text).toContain('Risk of escape')
@@ -147,7 +151,7 @@ describe('GET /tasklist/', () => {
         expect(res.text).toContain('Security information')
         expect(res.text).toContain('Category decision')
         expect(res.text).toContain('Set next category review date')
-        expect(res.text).toContain('Review and categorisation')
+        expect(res.text).toContain('Check and submit')
       })
   })
 
@@ -168,19 +172,15 @@ describe('GET /tasklist/', () => {
       status: 'SECURITY_AUTO',
       securityReferredDate: `${todayISO}`,
     })
-    const sampleSocProfile = {
-      transferToSecurity: true,
-      provisionalCategorisation: 'B',
-    }
     const sampleExtremismProfile = {
       provisionalCategorisation: 'B',
     }
-    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
-    riskProfilerService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
+    alertService.prisonerHasActiveOcgmAlert.mockResolvedValue(true)
+    pathfinderService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
       securityReferredDate: `${todayISO}`,
-      formObject: { sample: 'string', socProfile: sampleSocProfile },
+      formObject: { sample: 'string', socProfile: { transferToSecurity: true } },
       status: 'SECURITY_AUTO',
     })
 
@@ -189,14 +189,14 @@ describe('GET /tasklist/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Complete a categorisation')
         expect(res.text).toContain(`Automatically referred to Security (${today})`)
         expect(res.text).toContain('href="/form/ratings/offendingHistory/12345"')
 
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
           {
-            socProfile: sampleSocProfile,
+            socProfile: { transferToSecurity: true },
             extremismProfile: sampleExtremismProfile,
           },
           mockTransactionalClient,
@@ -204,7 +204,7 @@ describe('GET /tasklist/', () => {
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(
           '12345',
           'CA_USER_TEST',
-          sampleSocProfile,
+          { transferToSecurity: true },
           sampleExtremismProfile,
           'STARTED',
           mockTransactionalClient,
@@ -220,7 +220,7 @@ describe('GET /tasklist/', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Categorisation task list')
+        expect(res.text).toContain('Complete a categorisation')
         expect(res.text).not.toContain(`Automatically referred to Security`)
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledTimes(1)
       })

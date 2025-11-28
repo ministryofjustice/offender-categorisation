@@ -1,5 +1,7 @@
 const { serviceCheckFactory, dbCheck } = require('../data/healthCheck')
-const { productId } = require('../config')
+const { config } = require('../config')
+
+const { productId } = config
 
 const service = (name, url) => {
   const check = serviceCheckFactory(name, url)
@@ -37,13 +39,23 @@ const db = () =>
     .then(() => ({ name: 'db', status: 'UP', message: 'UP' }))
     .catch(err => ({ name: 'db', status: 'ERROR', message: err.message }))
 
-module.exports = function healthcheckFactory(authUrl, elite2Url, riskProfilerUrl, allocationUrl, prisonerSearchUrl) {
+module.exports = function healthcheckFactory(
+  authUrl,
+  elite2Url,
+  riskProfilerUrl,
+  allocationUrl,
+  prisonerSearchUrl,
+  pathfinderApiUrl,
+  alertsApiUrl,
+) {
   const checks = [
     service('auth', `${authUrl}/ping`),
     service('elite2', `${elite2Url}health/ping`),
     service('riskProfiler', `${riskProfilerUrl}ping`),
     service('allocation', `${allocationUrl}health`),
     service('prisonerSearch', `${prisonerSearchUrl}health/ping`),
+    service('pathfinderApi', `${pathfinderApiUrl}health/ping`),
+    service('alertsApi', `${alertsApiUrl}health/ping`),
     db,
   ]
 

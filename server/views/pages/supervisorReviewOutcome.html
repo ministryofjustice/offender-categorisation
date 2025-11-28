@@ -16,12 +16,13 @@
 {{ govukPanel({
   titleText: "Review outcome saved"
 }) }}
-<br />
-<br />
-{% include "../partials/dcsSurveyLink.html" %}
-{{ govukButton({
+<p>This review is complete.</p>
+{% include "../partials/smartSurveyLink.html" %}
+<div class="govuk-!-margin-top-8">
+  {{ govukButton({
   text: "Finish",
   href: "/"
-}) }}
+  }) }}
+</div>
 
 {% endblock %}

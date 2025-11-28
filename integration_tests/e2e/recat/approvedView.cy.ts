@@ -7,6 +7,7 @@ import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
+import moment from 'moment'
 
 describe('Approved View', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -39,7 +40,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -58,7 +59,7 @@ describe('Approved View', () => {
       assignedUserId: null,
       approvedBy: null,
       review_reason: 'AGE',
-      approvalDate: '2025-03-06',
+      approvalDate: moment().subtract(2, 'months').format('YYYY-MM-DD'),
     })
 
     cy.task('insertFormTableDbRow', {
@@ -73,7 +74,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -97,23 +98,7 @@ describe('Approved View', () => {
     cy.task('updateRiskProfile', {
       bookingId: 12,
       riskProfile: {
-        socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false },
-        escapeProfile: {
-          nomsId: 'B2345YZ',
-          riskType: 'ESCAPE',
-          activeEscapeList: true,
-          activeEscapeRisk: true,
-          escapeListAlerts: [
-            {
-              active: true,
-              comment: 'First xel comment',
-              expired: true,
-              alertCode: 'XEL',
-              dateCreated: '2016-09-14',
-              alertCodeDescription: 'Escape List',
-            },
-          ],
-        },
+        socProfile: { transferToSecurity: false },
         violenceProfile: {
           nomsId: 'B2345YZ',
           riskType: 'VIOLENCE',
@@ -161,7 +146,15 @@ describe('Approved View', () => {
 
     const supervisorDonePage = Page.verifyOnPage(SupervisorDonePage)
     supervisorDonePage.validateToDoTableData([
-      ['B2345YZ', '06/03/2025', '', 'Lastname_supervisor_user, Firstname_supervisor_user', '', 'Recat', 'View'],
+      [
+        'B2345YZ',
+        moment().subtract(2, 'months').format('DD/MM/YYYY'),
+        '',
+        'Lastname_supervisor_user, Firstname_supervisor_user',
+        '',
+        'Recat',
+        'View',
+      ],
       [
         'Scramble, TimB2345XY',
         '21/02/2019',
@@ -177,6 +170,30 @@ describe('Approved View', () => {
     recatApprovedViewPage = Page.verifyOnPage(RecatApprovedViewPage)
 
     const approvedViewRecatPage = Page.verifyOnPage(RecatApprovedViewPage)
+
+    ;[
+      {
+        columnName: 'Line',
+        expectedValues: ['2'],
+      },
+      {
+        columnName: 'Start',
+        expectedValues: ['31/12/2018'],
+      },
+      {
+        columnName: 'Length of sentence',
+        expectedValues: ['6 years, 3 months'],
+      },
+      {
+        columnName: 'Consecutive to (line)',
+        expectedValues: [''],
+      },
+      {
+        columnName: 'Type',
+        expectedValues: ['Std sentence'],
+      },
+    ].forEach(cy.checkTableColumnTextValues)
+
     approvedViewRecatPage.validateCategorisationWarnings([
       'Category C',
       'The categoriser recommends Category C',
@@ -186,24 +203,29 @@ describe('Approved View', () => {
       {
         columnName: 'Categorisation date',
         expectedValues: ['24/03/2013', '08/06/2012'],
+        tableIndex: 1,
       },
       {
         columnName: 'Category decision',
         expectedValues: ['B', 'A'],
+        tableIndex: 1,
       },
       {
         columnName: 'Review location',
         expectedValues: ['LPI prison', 'LPI prison'],
+        tableIndex: 1,
       },
     ].forEach(cy.checkTableColumnTextValues)
 
     approvedViewRecatPage.validatePrisonerSummary(
       'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
     )
-    approvedViewRecatPage.validatePrisonerSummary(
-      'This person is considered an escape risk E-List: First xel comment 2016-09-14 (expired)',
-    )
     approvedViewRecatPage.validatePrisonerSummary('This person is at risk of engaging in, or vulnerable to, extremism.')
+
+    approvedViewRecatPage.validateCategoryDecisionSummary([
+      { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'justification test' },
+    ])
   })
 
   it('The approved view page is correctly displayed (Cat overridden by supervisor)', () => {
@@ -219,7 +241,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -252,7 +274,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -325,6 +347,10 @@ describe('Approved View', () => {
       areVisible: true,
       comments: "Here are the supervisor's comments on why the category was changed",
     })
+    approvedViewRecatPage.validateCategoryDecisionSummary([
+      { question: 'What security category is most suitable for this person?', expectedAnswer: 'Category C' },
+      { question: 'Information about why this category is appropriate', expectedAnswer: 'justification test' },
+    ])
     approvedViewRecatPage.getBackToCaseListButton().click()
   })
 
@@ -341,7 +367,7 @@ describe('Approved View', () => {
       startDate: new Date(),
       formResponse: {
         recat: {
-          decision: { category: 'C' },
+          decision: { category: 'C', justification: 'justification test' },
           oasysInput: { date: '14/12/2019', oasysRelevantInfo: 'No' },
           securityInput: { securityInputNeeded: 'Yes', securityNoteNeeded: 'No' },
           nextReviewDate: { date: '14/12/2019' },
@@ -405,5 +431,6 @@ describe('Approved View', () => {
     cy.get('.govuk-warning-text:eq(1)').should('contain.text', 'The categoriser recommends Category C')
     cy.get('.govuk-warning-text:eq(2)').should('contain.text', 'Warning')
     cy.get('.govuk-warning-text:eq(2)').should('contain.text', 'The supervisor also recommends Category C')
+    cy.contains('justification test')
   })
 })

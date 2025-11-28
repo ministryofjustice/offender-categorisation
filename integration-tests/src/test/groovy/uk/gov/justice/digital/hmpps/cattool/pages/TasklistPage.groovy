@@ -9,7 +9,7 @@ class TasklistPage extends Page {
   static url = '/tasklist/' + bookingId
 
   static at = {
-    headingText == 'Categorisation task list'
+    headingText == 'Complete a categorisation'
   }
 
   static content = {
@@ -20,11 +20,16 @@ class TasklistPage extends Page {
     sentenceTableRow2(required: false) { $('table#sentences tr', 2).find('td') }
     logoutLink { $('a', href: '/sign-out') }
     supervisorMessageButton(required: false) { $('#supervisorMessageButton') }
-    offendingHistoryButton { $('#offendingHistoryButton') }
+    offendingHistoryLink { $('#offendingHistoryLink') }
     furtherChargesButton { $('#furtherChargesButton') }
     securityButton { $('#securityButton') }
+    securityLink { $('#securityLink') }
+    securityLinkDisabled { $('#securityLinkDisabled') }
     openConditionsButton(required: false) { $('#openConditionsButton') }
     nextReviewDateButton { $('#nextReviewDateButton') }
+    nextReviewDateLink { $('#nextReviewDateLink') }
+    checkAndSubmitLink(required: false) { $('a#checkAndSubmitLink') }
+    checkAndSubmitLinkDisabled(required: false) { $('#checkAndSubmitLinkDisabled') }
 
     continueButton(required: false) { $('#review a') }
     continueButtonDisabled(required: false) { $('button:disabled') }

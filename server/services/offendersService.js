@@ -1,19 +1,26 @@
 const path = require('path')
 const moment = require('moment')
+const { toDate, differenceInDays, format, addDays } = require('date-fns')
 const logger = require('../../log')
 const Status = require('../utils/statusEnum')
 const CatType = require('../utils/catTypeEnum')
 const ReviewReason = require('../utils/reviewReasonEnum')
-const { isNilOrEmpty, inProgress, getIn, extractNextReviewDate } = require('../utils/functionalHelpers')
+const {
+  isNilOrEmpty,
+  inProgress,
+  getIn,
+  extractNextReviewDate,
+  extractAssessmentDate,
+} = require('../utils/functionalHelpers')
 const {
   properCaseName,
   dateConverter,
   dateConverterToISO,
-  get10BusinessDays,
   getNamesFromString,
+  get10BusinessDays,
 } = require('../utils/utils')
 const { sortByDateTime, sortByStatus } = require('./offenderSort')
-const config = require('../config')
+const { config } = require('../config')
 const riskChangeHelper = require('../utils/riskChange')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const liteCategoriesPrisonerPartition = require('../utils/liteCategoriesPrisonerPartition')
@@ -22,6 +29,14 @@ const {
   mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto,
 } = require('./recategorisation/prisonerSearch/recategorisationPrisonerSearch.dto')
 const { isReviewOverdue } = require('./reviewStatusCalculator')
+const { LEGAL_STATUS_REMAND } = require('../data/prisonerSearch/prisonerSearch.dto')
+const { getRecalledOffendersData } = require('./recategorisation/recall/recategorisationRecallService')
+const {
+  FIXED_TERM_RECALL_DAYS_LIMIT,
+  NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
+} = require('./recategorisation/recall/recalledOffenderData')
+const { getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents } = require('./incidents/incidentService')
+const { LIFE_IMPRISONMENT_STATUSES, MURDER_OFFENCE_DESCRIPTION_PREFACE } = require('../data/prisonerSearch/booking')
 
 const dirname = process.cwd()
 
@@ -55,7 +70,6 @@ async function getSentenceMap(offenderList, prisonerSearchClient) {
 async function getPrisonerSearchData(offenderList, prisonerSearchClient) {
   const bookingIds = offenderList.map(offender => offender.bookingId)
   const prisoners = await prisonerSearchClient.getPrisonersByBookingIds(bookingIds)
-
   return new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)]))
 }
 
@@ -108,7 +122,7 @@ function localStatusIsInconsistentWithNomisAwaitingApproval(dbRecord) {
 }
 
 function isInitialInProgress(dbRecord) {
-  return dbRecord.catType === CatType.INITIAL.name && inProgress(dbRecord)
+  return dbRecord?.catType === CatType.INITIAL.name && inProgress(dbRecord)
 }
 
 function calculateRecatDisplayStatus(displayStatus) {
@@ -126,6 +140,7 @@ module.exports = function createOffendersService(
   prisonerSearchClientBuilder,
   risksAndNeedsClientBuilder,
   probationOffenderSearchClientBuilder,
+  adjudicationsApiClientBuilder,
 ) {
   async function getUncategorisedOffenders(context, user, filters = {}) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
@@ -135,6 +150,7 @@ module.exports = function createOffendersService(
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
       const risksAndNeedsClient = risksAndNeedsClientBuilder(context.user)
       const probationOffenderSearchClient = probationOffenderSearchClientBuilder(context.user)
+      const adjudicationsApiClient = adjudicationsApiClientBuilder(context.user)
       const uncategorisedResult = await nomisClient.getUncategorisedOffenders(agencyId)
 
       const dbManualInProgress = await formService.getCategorisationRecords(
@@ -200,12 +216,13 @@ module.exports = function createOffendersService(
         filters,
         allRecords,
         new Map(prisoners.map(s => [s.bookingId, mapPrisonerSearchDtoToRecategorisationPrisonerSearchDto(s)])),
-        nomisClient,
+        null,
         agencyId,
         pomMap,
         user.staffId,
         risksAndNeedsClient,
         probationOffenderSearchClient,
+        adjudicationsApiClient,
       )
 
       const decoratedResults = await Promise.all(
@@ -718,7 +735,9 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
+    adjudicationsApiClient,
     filters = {},
+    withSi1481Changes = false,
   ) {
     const reviewTo = moment().add(config.recatMarginMonths, 'months').format('YYYY-MM-DD')
 
@@ -738,7 +757,6 @@ module.exports = function createOffendersService(
     )
 
     // trim db results to only those not in the Nomis-derived list
-
     const dbInProgressFiltered = dbManualInProgress.filter(d => !resultsReview.some(n => d.bookingId === n.bookingId))
 
     const allOffenders = [...resultsReview, ...dbInProgressFiltered]
@@ -747,16 +765,22 @@ module.exports = function createOffendersService(
       getPomMap(allOffenders, allocationClient),
     ])
 
+    const recalledOffenderData = withSi1481Changes
+      ? await getRecalledOffendersData(prisonerSearchData, nomisClient)
+      : null
+
     const filteredPrisoners = await filterListOfPrisoners(
       filters,
       allOffenders,
       prisonerSearchData,
-      nomisClient,
+      recalledOffenderData,
       agencyId,
       pomMap,
       user.staffId,
       risksAndNeedsClient,
       probationOffenderSearchClient,
+      adjudicationsApiClient,
+      withSi1481Changes,
     )
 
     return Promise.all(
@@ -770,13 +794,46 @@ module.exports = function createOffendersService(
         }
 
         const prisonerSearchRecord = prisonerSearchData.get(raw.bookingId) || null
+        if (prisonerSearchRecord?.legalStatus === LEGAL_STATUS_REMAND) {
+          return null
+        }
+
+        let reviewDueDate = nomisRecord.nextReviewDate
+
+        if (
+          withSi1481Changes &&
+          recalledOffenderData?.has(nomisRecord.offenderNo) &&
+          recalledOffenderData.get(nomisRecord.offenderNo).recallDate > nomisRecord.assessmentDate
+        ) {
+          // Fixed term recalls with less than or equal to 28 days to serve do not require a recategorisation
+          if (
+            prisonerSearchRecord?.postRecallReleaseDate &&
+            differenceInDays(
+              toDate(prisonerSearchRecord.postRecallReleaseDate),
+              toDate(recalledOffenderData.get(nomisRecord.offenderNo).recallDate),
+            ) <= FIXED_TERM_RECALL_DAYS_LIMIT
+          ) {
+            return null
+          }
+          // Recalls are due a recategorisation within 10 days of the recall date
+          // rather than the original next review date, e.g. if they are recalled on
+          // date x then the recat is due on x + 10 days, and overdue on the 11th day
+          reviewDueDate = format(
+            addDays(
+              toDate(recalledOffenderData.get(nomisRecord.offenderNo).recallDate),
+              NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
+            ),
+            'yyyy-MM-dd',
+          )
+        }
+
         if (
           prisonerSearchRecord == null ||
           prisonerSearchRecord.sentenceStartDate == null ||
           moment(prisonerSearchRecord.sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))
         ) {
           logger.info(
-            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}`,
+            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}, recall data = ${recalledOffenderData?.get(nomisRecord.offenderNo)}`,
           )
         }
 
@@ -819,9 +876,9 @@ module.exports = function createOffendersService(
           displayStatus: calculateRecatDisplayStatus(decorated.displayStatus),
           dbStatus: decorated.dbStatus,
           reason,
-          nextReviewDateDisplay: dateConverter(nomisRecord.nextReviewDate),
-          overdue: isReviewOverdue(nomisRecord.nextReviewDate),
-          overdueText: getOverdueText(nomisRecord.nextReviewDate),
+          nextReviewDateDisplay: dateConverter(reviewDueDate),
+          overdue: isReviewOverdue(reviewDueDate),
+          overdueText: getOverdueText(reviewDueDate),
           dbRecordExists: decorated.dbRecordExists,
           pnomis,
           buttonText,
@@ -833,7 +890,13 @@ module.exports = function createOffendersService(
 
   const getOffenderDetailsWithNextReviewDate = async (nomisClient, bookingId) => {
     const offenderDetails = await nomisClient.getOffenderDetails(bookingId)
-    return (offenderDetails && { ...offenderDetails, nextReviewDate: extractNextReviewDate(offenderDetails) }) || {}
+    if (!offenderDetails) return {}
+
+    return {
+      ...offenderDetails,
+      nextReviewDate: extractNextReviewDate(offenderDetails),
+      assessmentDate: extractAssessmentDate(offenderDetails),
+    }
   }
 
   async function handleRiskChangeDecision(context, bookingId, user, decision, transactionalDbClient) {
@@ -917,6 +980,7 @@ module.exports = function createOffendersService(
     prisonerSearchClient,
     risksAndNeedsClient,
     probationOffenderSearchClient,
+    adjudicationsApiClient,
     filters = {},
   ) {
     const u21From = moment()
@@ -946,12 +1010,13 @@ module.exports = function createOffendersService(
       filters,
       eliteCategorisationResultsU21,
       u21map,
-      nomisClient,
+      null,
       agencyId,
       pomMap,
       user.staffId,
       risksAndNeedsClient,
       probationOffenderSearchClient,
+      adjudicationsApiClient,
     )
 
     return Promise.all(
@@ -1013,7 +1078,7 @@ module.exports = function createOffendersService(
     return masterListWithoutNulls.concat(itemsToAdd)
   }
 
-  async function getRecategoriseOffenders(context, user, filters = {}) {
+  async function getRecategoriseOffenders(context, user, filters = {}, withSi1481Changes = false) {
     const agencyId = context.user.activeCaseLoad.caseLoadId
     try {
       const nomisClient = nomisClientBuilder(context)
@@ -1021,6 +1086,7 @@ module.exports = function createOffendersService(
       const prisonerSearchClient = prisonerSearchClientBuilder(context)
       const risksAndNeedsClient = risksAndNeedsClientBuilder(context.user)
       const probationOffenderSearchClient = probationOffenderSearchClientBuilder(context.user)
+      const adjudicationsApiClient = adjudicationsApiClientBuilder(context.user)
 
       const [decoratedResultsReview, decoratedResultsU21, securityReferredOffenders] = await Promise.all([
         getDueRecats(
@@ -1031,7 +1097,9 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
+          adjudicationsApiClient,
           filters,
+          withSi1481Changes,
         ),
         getU21Recats(
           agencyId,
@@ -1041,6 +1109,7 @@ module.exports = function createOffendersService(
           prisonerSearchClient,
           risksAndNeedsClient,
           probationOffenderSearchClient,
+          adjudicationsApiClient,
           filters,
         ),
         formService.getSecurityReferrals(agencyId),
@@ -1133,7 +1202,7 @@ module.exports = function createOffendersService(
 
   async function decorateWithCategorisationData(offender, user, nomisClient, categorisation) {
     let statusText
-    if (categorisation.status) {
+    if (categorisation?.status) {
       statusText = statusTextDisplay(categorisation.status)
       logger.debug(`retrieving status ${categorisation.status} for booking id ${offender.bookingId}`)
       if (categorisation.assignedUserId && categorisation.status === Status.STARTED.name) {
@@ -1323,8 +1392,8 @@ module.exports = function createOffendersService(
   async function getAllApprovedCategorisationsForOffender(nomisClient, offenderNo) {
     try {
       const allCategorisation = await nomisClient.getCategoryHistory(offenderNo)
-      // remove any that don't have an approval date  - these could be pending, rejected, cancelled
-      return allCategorisation.filter(c => c.approvalDate)
+      // remove any that don't have an approval date or assessment status P  - these could be pending, rejected, cancelled
+      return allCategorisation.filter(c => c.approvalDate && c.assessmentStatus !== 'P')
     } catch (error) {
       logger.error(error, 'Error during getAllApprovedCategorisationsForOffender')
       throw error
@@ -1496,11 +1565,9 @@ module.exports = function createOffendersService(
     sequence,
     approvedDate,
     supervisorCategory,
-    approvedCategoryComment,
     approvedCommittee,
     nextReviewDate,
     approvedPlacement,
-    approvedPlacementComment,
     approvedComment,
     transactionalClient,
   }) {
@@ -1522,9 +1589,7 @@ module.exports = function createOffendersService(
         approvedCommittee,
         nextReviewDate: nextReviewDateConverted,
         approvedPlacement,
-        approvedPlacementComment,
         approvedComment,
-        approvedCategoryComment,
         transactionalClient,
       })
       return nomisClient.createSupervisorApproval({
@@ -1532,11 +1597,9 @@ module.exports = function createOffendersService(
         assessmentSeq: sequence,
 
         category: supervisorCategory,
-        approvedCategoryComment,
         reviewCommitteeCode: approvedCommittee,
         nextReviewDate: nextReviewDateConverted,
         approvedPlacementAgencyId: approvedPlacement,
-        approvedPlacementText: approvedPlacementComment,
         evaluationDate: approvedDateConverted,
         committeeCommentText: approvedComment,
       })
@@ -1746,6 +1809,32 @@ module.exports = function createOffendersService(
     }
   }
 
+  const getCountOfAssaultIncidents = async (context, offenderNo) => {
+    const nomisClient = nomisClientBuilder(context)
+    const assaultIncidents = await nomisClient.getAssaultIncidents(offenderNo)
+    return getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents(assaultIncidents)
+  }
+
+  const hasLifeSentence = async (context, bookingId) => {
+    const nomisClient = nomisClientBuilder(context)
+    const prisonerSearchClient = prisonerSearchClientBuilder(context)
+    const [sentenceTerms, bookingDetails, mainOffences] = await Promise.all([
+      nomisClient.getSentenceTerms(bookingId),
+      prisonerSearchClient.getPrisonersByBookingIds([bookingId]),
+      nomisClient.getMainOffence(bookingId),
+    ])
+
+    const hasLifeSentenceTerm = sentenceTerms.some(sentence => sentence.lifeSentence)
+    const hasLifeImprisonmentStatusBooking = bookingDetails.some(bookingDetail =>
+      LIFE_IMPRISONMENT_STATUSES.includes(bookingDetail.imprisonmentStatus),
+    )
+    const hasMainOffenceStartingWithMurder = mainOffences.some(mainOffence =>
+      mainOffence.offenceDescription.startsWith(MURDER_OFFENCE_DESCRIPTION_PREFACE),
+    )
+
+    return hasLifeSentenceTerm || hasLifeImprisonmentStatusBooking || hasMainOffenceStartingWithMurder
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -1798,5 +1887,7 @@ module.exports = function createOffendersService(
     getU21Recats,
     isAwaitingApprovalOrSecurity,
     isRejectedBySupervisorSuitableForDisplay,
+    getCountOfAssaultIncidents,
+    hasLifeSentence,
   }
 }

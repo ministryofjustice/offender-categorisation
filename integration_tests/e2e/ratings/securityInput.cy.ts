@@ -40,9 +40,8 @@ describe('Security Input', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
   })
@@ -63,16 +62,14 @@ describe('Security Input', () => {
     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
-    taskListPage.securityButton().click()
+    taskListPage.securityLink().click()
   }
 
   describe('form submission', () => {
     it('should show a validation error on empty form submission', () => {
       cy.task('stubGetExtremismProfile', {
         offenderNo: 'B2345YZ',
-        category: 'C',
-        increasedRisk: false,
-        notifyRegionalCTLead: false,
+        band: 4,
       })
 
       stubLoginAndBrowseToCategoriserSecurityInputPage()
@@ -93,9 +90,7 @@ describe('Security Input', () => {
       it("should record a 'no' decision", () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: true,
-          notifyRegionalCTLead: false,
+          band: 4,
         })
 
         stubLoginAndBrowseToCategoriserSecurityInputPage()
@@ -105,7 +100,7 @@ describe('Security Input', () => {
         categoriserSecurityInputPage.validateSecurityInputTextBox({ isVisible: false })
         categoriserSecurityInputPage.saveAndReturnButton().click()
 
-        taskListPage.securityButton().click()
+        taskListPage.securityLink().click()
 
         categoriserSecurityInputPage.validateSecurityInputRadioButton({
           selection: ['NO'],
@@ -129,9 +124,7 @@ describe('Security Input', () => {
       it('should display error if no security input text is given', () => {
         cy.task('stubGetExtremismProfile', {
           offenderNo: 'B2345YZ',
-          category: 'C',
-          increasedRisk: true,
-          notifyRegionalCTLead: false,
+          band: 4,
         })
         stubLoginAndBrowseToCategoriserSecurityInputPage()
 
@@ -152,9 +145,7 @@ describe('Security Input', () => {
         beforeEach(() => {
           cy.task('stubGetExtremismProfile', {
             offenderNo: 'B2345YZ',
-            category: 'C',
-            increasedRisk: true,
-            notifyRegionalCTLead: false,
+            band: 4,
           })
 
           stubLoginAndBrowseToCategoriserSecurityInputPage()
@@ -166,7 +157,6 @@ describe('Security Input', () => {
         })
 
         it('should display the security referral information on the task list', () => {
-          taskListPage.validateButtonState({ buttonSelector: taskListPage.securityButton, isDisabled: true })
           taskListPage.validateSecurityReferralDate(new Date())
         })
 
@@ -254,7 +244,7 @@ describe('Security Input', () => {
 
             categoriserHomePage.selectPrisonerWithBookingId(bookingId, 'Edit')
 
-            taskListPage.securityButton().click()
+            taskListPage.securityLink().click()
 
             securityBackPage = CategoriserSecurityBackPage.createForBookingId(bookingId)
             securityBackPage.validateNoteFromSecurity(['Some security input text', 'security info text'])
@@ -280,9 +270,8 @@ describe('Security Input', () => {
               securityBackPage.selectedWarrantACategoryBRadioButton(warrantsACategoryBChoice)
               securityBackPage.saveAndReturnButton().click()
 
-              taskListPage.securityButton()
-              taskListPage.validateSecurityCompletedDate(new Date())
-              taskListPage.securityButton().should('contain.text', 'Edit')
+              taskListPage.securityLink()
+              taskListPage.securityLink().should('contain.text', 'Security information')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
                 expect(result.rows[0].referred_by).to.eq('CATEGORISER_USER')
@@ -307,7 +296,7 @@ describe('Security Input', () => {
                 })
               })
 
-              taskListPage.securityButton().click()
+              taskListPage.securityLink().click()
 
               securityBackPage.validateSecurityInputRadioButton({
                 selection: [warrantsACategoryBChoice],

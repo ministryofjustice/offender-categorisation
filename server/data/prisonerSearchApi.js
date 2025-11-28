@@ -2,9 +2,9 @@ const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log')
-const config = require('../config')
+const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
 
 const timeoutSpec = {
   response: config.apis.prisonerSearch.timeout.response,
@@ -50,6 +50,7 @@ module.exports = context => {
         response.forEach(r =>
           responses.push({
             bookingId: Number(r.bookingId),
+            prisonerNumber: r.prisonerNumber,
             releaseDate: r.releaseDate,
             sentenceStartDate: r.sentenceStartDate,
             status: r.status,

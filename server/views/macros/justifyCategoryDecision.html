@@ -1,0 +1,19 @@
+{% from "textarea/macro.njk" import govukTextarea %}
+
+{% macro justifyCategoryDecision(decisionJustification, errors) %}
+
+  {{ govukTextarea({
+    name: "justification",
+    id: "justification",
+    label: {
+      text: "Information about why this category is appropriate"
+    },
+    hint: {
+      text: "Your comments may be disclosed to the prisoner."
+    },
+    value: decisionJustification,
+    errorMessage: {
+      text: "You must enter information about why the category is appropriate"
+    } if (errors | findError('justification'))
+  }) }}
+{% endmacro %}

@@ -111,21 +111,17 @@ describe('Security Landing', () => {
     cy.signIn()
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
 
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: testOffenderNumber,
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: testOffenderNumber,
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
 
     recategoriserHomePage.selectPrisonerWithBookingId(testBookingId)
     cy.contains(`Flagged to be referred to Security (${moment().format('DD/MM/YYYY')})`)
-    cy.get('#securityButton').should('be.disabled')
 
     cy.task('getSecurityReferral', { offenderNumber: testOffenderNumber }).then(
       (result: { rows: SecurityReferralDbRow[] }) => {

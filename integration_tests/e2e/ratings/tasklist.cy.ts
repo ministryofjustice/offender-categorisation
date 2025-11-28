@@ -39,9 +39,8 @@ describe('Tasklist', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: offenderNumber,
-      category: 'C',
       transferToSecurity: false,
     })
 
@@ -50,9 +49,7 @@ describe('Tasklist', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: offenderNumber,
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
   })
 
@@ -76,32 +73,32 @@ describe('Tasklist', () => {
     taskListPage = TaskListPage.createForBookingId(bookingId)
 
     cy.task('stubOffenceHistory', { offenderNumber: offenderNumber })
-    taskListPage.offendingHistoryButton().click()
+    taskListPage.offendingHistoryLink().click()
 
     const categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(bookingId)
     categoriserOffendingHistoryPage.selectPreviousConvictionsRadioButton('NO')
     categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-    taskListPage.furtherChargesButton().click()
+    taskListPage.furtherChargesLink().click()
 
     const furtherChargesPage = FurtherChargesPage.createForBookingId(bookingId)
     furtherChargesPage.selectFurtherChargesRadioButton('NO')
     furtherChargesPage.saveAndReturnButton().click()
 
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: offenderNumber,
-      category: 'C',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: offenderNumber,
+      aboveThreshold: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: offenderNumber,
+      assaultIncidents: []
+    })
+    cy.task('stubGetOcgmAlert', {
       offenderNo: offenderNumber,
       transferToSecurity: false,
-      category: 'C',
     })
 
-    taskListPage.violenceButton().click()
+    taskListPage.violenceLink().click()
 
     const violencePage = ViolencePage.createForBookingId(bookingId)
     violencePage.validateViolenceWarningExists({ exists: false })
@@ -111,11 +108,9 @@ describe('Tasklist', () => {
 
     cy.task('stubGetEscapeProfile', {
       offenderNo: offenderNumber,
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: false,
+      alertCode: 'XER',
     })
-    taskListPage.escapeButton().click()
+    taskListPage.escapeLink().click()
 
     const escapePage = EscapePage.createForBookingId(bookingId)
     escapePage.selectShouldBeInCategoryBRadioButton('NO')
@@ -124,23 +119,21 @@ describe('Tasklist', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: offenderNumber,
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
-    taskListPage.extremismButton().click()
+    taskListPage.extremismLink().click()
 
     const extremismPage = ExtremismPage.createForBookingId(bookingId)
     extremismPage.selectPreviousTerrorismOffencesRadioButton('NO')
     extremismPage.saveAndReturnButton().click()
 
-    taskListPage.securityButton().click()
+    taskListPage.securityLink().click()
 
     const categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
     categoriserSecurityInputPage.selectSecurityInputRadioButton('NO')
     categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-    taskListPage.nextReviewDateButton().click()
+    taskListPage.nextReviewDateLink().click()
 
     const nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
     nextReviewQuestionPage.selectNextReviewRadioButton('IN_SIX_MONTHS')
@@ -149,14 +142,17 @@ describe('Tasklist', () => {
     const nextReviewConfirmationPage = NextReviewConfirmationPage.createForBookingIdAndChoiceNumber(bookingId, '6')
     nextReviewConfirmationPage.saveAndReturnButton().click()
 
-    cy.task('stubGetLifeProfile', {
-      offenderNo: offenderNumber,
-      category: 'C',
+    cy.task('stubSentenceData', {
+      offenderNumbers: [offenderNumber],
+      bookingIds: [ bookingId],
+      startDates: [
+        moment().subtract(1, 'days').format('yyyy-MM-dd'),
+      ],
     })
-    taskListPage.continueReviewAndCategorisationButton(bookingId).click()
+    taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
 
-    const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId)
-    categoriserReviewCYAPage.continueButton().click()
+    const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId, 'you continue')
+    categoriserReviewCYAPage.continueButton('Continue').click()
 
     cy.get('.govuk-warning-text:eq(0)').should(
       'contain.text',

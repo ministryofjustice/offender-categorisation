@@ -1,0 +1,45 @@
+{% extends "../formTemplate.html" %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "../../macros/breadCrumb.html" import breadCrumb %}
+
+{% set pageTitle = "Supervisor further information" %}
+{% set greenButtonText = "Save and submit" %}
+
+{% block navigation %}
+  {% set breadCrumbList = [
+    {href: '/', title: 'Categorisation dashboard'},
+    {href: '/form/supervisor/review/'+ data.details.bookingId, title: 'Approve category'}
+  ] %}
+  {{ breadCrumb(breadCrumbList) }}
+{% endblock %}
+
+{% block formItems %}
+<div class="govuk-body-s">
+
+  <h1 class="govuk-heading-l mainHeading">Further information</h1>
+  {{ govukTextarea({
+    name: "otherInformationText",
+    type: "otherInformationText",
+    id: "otherInformationText",
+    label: { text: "Is there any other information that you want to record? (optional)" },
+    hint: { text: "Your comments may be disclosed to the prisoner." },
+    value: data.supervisor.review.otherInformationText
+  }) }}
+
+  {% set cat = data.categoriser.provisionalCategory.suggestedCategory if catType == 'INITIAL' else data.recat.decision.category  %}
+  {% set overriddenCat = data.categoriser.provisionalCategory.overriddenCategory %}
+  {% set currentCat = overriddenCat if overriddenCat else cat %}
+  <input type="hidden" name="proposedCategory" value="{{ currentCat }}"/>
+  <input
+    type="hidden"
+    name="supervisorOverriddenCategory"
+    value="{{ data.supervisor.review.supervisorDecision.slice(-1) if data.supervisor.review.supervisorDecision.startsWith("changeCategoryTo_") else ''}}"
+  />
+  <input
+    type="hidden"
+    name="supervisorOverriddenCategoryText"
+    value="{{ data.supervisor.changeCategory.supervisorOverriddenCategoryText }}"
+  />
+
+</div>
+{% endblock %}

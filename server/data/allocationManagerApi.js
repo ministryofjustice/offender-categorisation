@@ -3,9 +3,9 @@ const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const LRU = require('lru-cache')
 const logger = require('../../log')
-const config = require('../config')
+const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
 
 // there are about 80000 prisoner altogether but they wont all be due for categorisation
 // 4 hour TTL is fine for slowly changing POM data but should give good hit ratio

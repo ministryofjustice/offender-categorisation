@@ -1,11 +1,9 @@
 const querystring = require('querystring')
 const superagent = require('superagent')
-const Agent = require('agentkeepalive')
-const { HttpsAgent } = require('agentkeepalive')
 const redis = require('redis')
 const { promisify } = require('util')
 const logger = require('../../log')
-const config = require('../config')
+const { config } = require('../config')
 
 module.exports = {
   generateOauthClientToken,
@@ -32,21 +30,23 @@ const timeoutSpec = {
   response: config.apis.riskProfiler.timeout.response,
   deadline: config.apis.riskProfiler.timeout.deadline,
 }
-const agentOptions = {
-  maxSockets: config.apis.oauth2.agent.maxSockets,
-  maxFreeSockets: config.apis.oauth2.agent.maxFreeSockets,
-  freeSocketTimeout: config.apis.oauth2.agent.freeSocketTimeout,
-}
-const keepaliveAgent = oauthUrl.startsWith('https') ? new HttpsAgent(agentOptions) : new Agent(agentOptions)
 
 function generateOauthClientToken(
-  clientId = config.apis.oauth2.apiClientId,
-  clientSecret = config.apis.oauth2.apiClientSecret,
+  clientId = config.apis.oauth2.authCodeClientId,
+  clientSecret = config.apis.oauth2.authCodeClientSecret,
 ) {
   return generate(clientId, clientSecret)
 }
 
 function generate(clientId, clientSecret) {
+  const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
+  return `Basic ${token}`
+}
+
+function generateSystemClientToken(
+  clientId = config.apis.oauth2.clientCredsClientId,
+  clientSecret = config.apis.oauth2.clientCredsClientSecret,
+) {
   const token = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
   return `Basic ${token}`
 }
@@ -58,21 +58,20 @@ async function getApiClientToken(username) {
     return { body: { access_token: tokenFromRedis } }
   }
 
-  const oauthRiskProfilerClientToken = generateOauthClientToken()
+  const oauthRiskProfilerClientToken = generateSystemClientToken()
 
   const oauthRequest = username
     ? querystring.stringify({ grant_type: 'client_credentials', username })
     : querystring.stringify({ grant_type: 'client_credentials' })
 
   logger.info(
-    `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.apiClientId}' and user '${username}'`,
+    `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.clientCredsClientId}' and user '${username}'`,
   )
 
   const newToken = await superagent
     .post(oauthUrl)
     .set('Authorization', oauthRiskProfilerClientToken)
     .set('content-type', 'application/x-www-form-urlencoded')
-    .agent(keepaliveAgent)
     .send(oauthRequest)
     .timeout(timeoutSpec)
 

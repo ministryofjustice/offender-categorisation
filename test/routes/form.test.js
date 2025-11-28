@@ -10,12 +10,13 @@ const supervisor = require('../../server/config/supervisor')
 const categoriser = require('../../server/config/categoriser')
 const security = require('../../server/config/security')
 const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
+const { makeTestViperDto } = require('../../server/data/formApi/viper/viper.dto.test-factory')
+const {
+  makeTestCountOfAssaultIncidents,
+} = require('../../server/services/incidents/countOfAssaultIncidents.test-factory')
+const { makeTestViolenceProfile } = require('../../server/utils/violenceProfile/violenceProfile.test-factory')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
-const context = {
-  featureFlags: makeTestFeatureFlagDto(),
-  user: { token: 'ABCDEF', username: 'me' },
-}
 
 const formConfig = {
   ratings,
@@ -44,14 +45,7 @@ const formService = {
   getSecurityReferral: jest.fn(),
   cancelOpenConditions: jest.fn(),
   categoriserDecision: jest.fn(),
-}
-
-const riskProfilerService = {
-  getSecurityProfile: jest.fn(),
-  getViolenceProfile: jest.fn(),
-  getEscapeProfile: jest.fn(),
-  getExtremismProfile: jest.fn(),
-  getLifeProfile: jest.fn(),
+  getViperData: jest.fn(),
 }
 
 const offendersService = {
@@ -66,6 +60,8 @@ const offendersService = {
   getOptionalAssessmentAgencyDescription: jest.fn(),
   requiredCatType: jest.fn(),
   backToCategoriser: jest.fn(),
+  getCountOfAssaultIncidents: jest.fn(),
+  hasLifeSentence: jest.fn(),
 }
 
 const userService = {
@@ -73,11 +69,20 @@ const userService = {
   getUserByUserId: jest.fn(),
 }
 
+const pathfinderService = {
+  getExtremismProfile: jest.fn(),
+}
+
+const alertService = {
+  getEscapeProfile: jest.fn(),
+}
+
 const formRoute = createRouter({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
+  pathfinderService,
+  alertService,
   authenticationMiddleware,
 })
 
@@ -116,15 +121,15 @@ beforeEach(() => {
   formService.isValid.mockResolvedValue(true)
   formService.recordNomisSeqNumber.mockReturnValue({})
   formService.getSecurityReferral.mockReturnValue({})
+  formService.getViperData.mockReturnValue({})
   offendersService.createOrUpdateCategorisation.mockReturnValue({ bookingId: 12, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({ displayName: 'Claire Dent' })
   offendersService.getCatAInformation.mockResolvedValue({})
   offendersService.getOffenceHistory.mockResolvedValue({})
+  offendersService.getCountOfAssaultIncidents.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
-  riskProfilerService.getSecurityProfile.mockResolvedValue({})
-  riskProfilerService.getViolenceProfile.mockResolvedValue({})
-  riskProfilerService.getExtremismProfile.mockResolvedValue({})
-  riskProfilerService.getEscapeProfile.mockResolvedValue({})
+  pathfinderService.getExtremismProfile.mockResolvedValue({})
+  alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
   db.pool.connect.mockResolvedValue(mockTransactionalClient)
 })
@@ -177,7 +182,6 @@ describe('GET /ratings/securityInput', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-        expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
       }),
   )
   test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
@@ -634,9 +638,9 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('Prisoner background')
-        expect(res.text).toContain('overriddenCategoryD')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_D')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
         expect(res.text).not.toContain('No, consider for open')
         expect(res.text).not.toContain('No, closed is more appropriate')
         expect(res.text).not.toContain(`id="femaleBanner"`)
@@ -814,11 +818,9 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('Prisoner background')
-        expect(res.text).not.toContain('overriddenCategoryD')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).toContain('overriddenCategoryT')
-        expect(res.text).toContain('value="T" checked')
-        expect(res.text).toContain('No, consider for open')
+        expect(res.text).not.toContain('changeCategoryTo_D')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).toContain('changeCategoryTo_T')
         expect(res.text).toContain(`id="femaleBanner"`)
         expect(res.text).toContain(`id="openConditionsInfoMessage"`)
       })
@@ -842,11 +844,9 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('Prisoner background')
-        expect(res.text).not.toContain('overriddenCategoryD')
-        expect(res.text).toContain('overriddenCategoryR')
-        expect(res.text).toContain('value="R" checked')
-        expect(res.text).not.toContain('overriddenCategoryT')
-        expect(res.text).toContain('No, closed is more appropriate')
+        expect(res.text).not.toContain('changeCategoryTo_D')
+        expect(res.text).toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
       })
   })
 
@@ -869,12 +869,11 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('Prisoner background')
-        expect(res.text).not.toContain('overriddenCategoryD')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryT')
-        expect(res.text).not.toContain('No, consider for open')
-        expect(res.text).toContain('overriddenCategoryI')
-        expect(res.text).toContain('overriddenCategoryJ')
+        expect(res.text).not.toContain('changeCategoryTo_D')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
+        expect(res.text).toContain('changeCategoryTo_I')
+        expect(res.text).toContain('changeCategoryTo_J')
         expect(res.text).toContain(`id="femaleBanner"`)
         expect(res.text).toContain(`id="openConditionsInfoMessage"`)
       })
@@ -899,13 +898,11 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('Prisoner background')
-        expect(res.text).not.toContain('overriddenCategoryD')
-        expect(res.text).not.toContain('overriddenCategoryT')
-        expect(res.text).not.toContain('overriddenCategoryJ')
-        expect(res.text).toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('value="R" checked')
-        expect(res.text).toContain('overriddenCategoryI')
-        expect(res.text).not.toContain('No, closed is more appropriate')
+        expect(res.text).not.toContain('changeCategoryTo_D')
+        expect(res.text).not.toContain('changeCategoryTo_T')
+        expect(res.text).not.toContain('changeCategoryTo_J')
+        expect(res.text).toContain('changeCategoryTo_R')
+        expect(res.text).toContain('changeCategoryTo_I')
       })
   })
 
@@ -928,13 +925,11 @@ describe('GET /supervisor/review', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).not.toContain('Prisoner background')
-        expect(res.text).not.toContain('overriddenCategoryD')
-        expect(res.text).not.toContain('overriddenCategoryT')
-        expect(res.text).not.toContain('overriddenCategoryI')
-        expect(res.text).toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('value="R" checked')
-        expect(res.text).toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('No, closed is more appropriate')
+        expect(res.text).not.toContain('changeCategoryTo_D')
+        expect(res.text).not.toContain('changeCategoryTo_T')
+        expect(res.text).not.toContain('changeCategoryTo_I')
+        expect(res.text).toContain('changeCategoryTo_R')
+        expect(res.text).toContain('changeCategoryTo_J')
       })
   })
 
@@ -955,13 +950,13 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('overriddenCategoryB')
-        expect(res.text).toContain('overriddenCategoryC')
-        expect(res.text).toContain('overriddenCategoryD')
-        expect(res.text).not.toContain('overriddenCategoryI')
-        expect(res.text).not.toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_B')
+        expect(res.text).toContain('changeCategoryTo_C')
+        expect(res.text).toContain('changeCategoryTo_D')
+        expect(res.text).not.toContain('changeCategoryTo_I')
+        expect(res.text).not.toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
       })
   })
 
@@ -982,13 +977,13 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('overriddenCategoryB')
-        expect(res.text).toContain('overriddenCategoryC')
-        expect(res.text).toContain('overriddenCategoryD')
-        expect(res.text).toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryI')
-        expect(res.text).not.toContain('overriddenCategoryT')
-        expect(res.text).not.toContain('overriddenCategoryR')
+        expect(res.text).toContain('changeCategoryTo_B')
+        expect(res.text).toContain('changeCategoryTo_C')
+        expect(res.text).toContain('changeCategoryTo_D')
+        expect(res.text).toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_I')
+        expect(res.text).not.toContain('changeCategoryTo_T')
+        expect(res.text).not.toContain('changeCategoryTo_R')
       })
   })
 
@@ -1009,13 +1004,11 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('overriddenCategoryT')
-        expect(res.text).toContain('value="T" checked')
-        expect(res.text).toContain('No, consider for open')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryB')
-        expect(res.text).not.toContain('overriddenCategoryC')
-        expect(res.text).not.toContain('overriddenCategoryD')
+        expect(res.text).toContain('changeCategoryTo_T')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_B')
+        expect(res.text).not.toContain('changeCategoryTo_C')
+        expect(res.text).not.toContain('changeCategoryTo_D')
       })
   })
 
@@ -1036,13 +1029,11 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('overriddenCategoryR')
-        expect(res.text).toContain('value="R" checked')
-        expect(res.text).toContain('No, closed is more appropriate')
-        expect(res.text).not.toContain('overriddenCategoryT')
-        expect(res.text).not.toContain('overriddenCategoryB')
-        expect(res.text).not.toContain('overriddenCategoryC')
-        expect(res.text).not.toContain('overriddenCategoryD')
+        expect(res.text).toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
+        expect(res.text).not.toContain('changeCategoryTo_B')
+        expect(res.text).not.toContain('changeCategoryTo_C')
+        expect(res.text).not.toContain('changeCategoryTo_D')
       })
   })
 
@@ -1063,15 +1054,15 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_T')
         expect(res.text).not.toContain('value="T" checked')
-        expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).toContain('changeCategoryTo_R')
         expect(res.text).not.toContain('value="T" checked')
-        expect(res.text).toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryI')
-        expect(res.text).not.toContain('overriddenCategoryB')
-        expect(res.text).not.toContain('overriddenCategoryC')
-        expect(res.text).not.toContain('overriddenCategoryD')
+        expect(res.text).toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_I')
+        expect(res.text).not.toContain('changeCategoryTo_B')
+        expect(res.text).not.toContain('changeCategoryTo_C')
+        expect(res.text).not.toContain('changeCategoryTo_D')
       })
   })
 
@@ -1093,15 +1084,15 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_T')
         expect(res.text).not.toContain('value="T" checked')
-        expect(res.text).toContain('overriddenCategoryR')
+        expect(res.text).toContain('changeCategoryTo_R')
         expect(res.text).not.toContain('value="R" checked')
-        expect(res.text).toContain('overriddenCategoryI')
-        expect(res.text).not.toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryB')
-        expect(res.text).not.toContain('overriddenCategoryC')
-        expect(res.text).not.toContain('overriddenCategoryD')
+        expect(res.text).toContain('changeCategoryTo_I')
+        expect(res.text).not.toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_B')
+        expect(res.text).not.toContain('changeCategoryTo_C')
+        expect(res.text).not.toContain('changeCategoryTo_D')
       })
   })
 
@@ -1123,14 +1114,14 @@ describe('GET /supervisor/review', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain('Prisoner background')
-        expect(res.text).toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_T')
         expect(res.text).not.toContain('value="T" checked')
-        expect(res.text).toContain('overriddenCategoryI')
-        expect(res.text).toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryB')
-        expect(res.text).not.toContain('overriddenCategoryC')
-        expect(res.text).not.toContain('overriddenCategoryD')
+        expect(res.text).toContain('changeCategoryTo_I')
+        expect(res.text).toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_B')
+        expect(res.text).not.toContain('changeCategoryTo_C')
+        expect(res.text).not.toContain('changeCategoryTo_D')
       })
   })
 
@@ -1167,13 +1158,13 @@ describe('GET /supervisor/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('overriddenCategoryB')
-        expect(res.text).toContain('overriddenCategoryC')
-        expect(res.text).toContain('overriddenCategoryD')
-        expect(res.text).toContain('overriddenCategoryI')
-        expect(res.text).not.toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_B')
+        expect(res.text).toContain('changeCategoryTo_C')
+        expect(res.text).toContain('changeCategoryTo_D')
+        expect(res.text).toContain('changeCategoryTo_I')
+        expect(res.text).not.toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
       })
   })
 
@@ -1190,13 +1181,13 @@ describe('GET /supervisor/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('overriddenCategoryC')
-        expect(res.text).toContain('overriddenCategoryD')
-        expect(res.text).not.toContain('overriddenCategoryB')
-        expect(res.text).not.toContain('overriddenCategoryI')
-        expect(res.text).not.toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_C')
+        expect(res.text).toContain('changeCategoryTo_D')
+        expect(res.text).not.toContain('changeCategoryTo_B')
+        expect(res.text).not.toContain('changeCategoryTo_I')
+        expect(res.text).not.toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
       })
   })
 
@@ -1216,13 +1207,13 @@ describe('GET /supervisor/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('overriddenCategoryB')
-        expect(res.text).toContain('overriddenCategoryC')
-        expect(res.text).toContain('overriddenCategoryD')
-        expect(res.text).toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryI')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_B')
+        expect(res.text).toContain('changeCategoryTo_C')
+        expect(res.text).toContain('changeCategoryTo_D')
+        expect(res.text).toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_I')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
       })
   })
 
@@ -1242,13 +1233,13 @@ describe('GET /supervisor/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('overriddenCategoryC')
-        expect(res.text).toContain('overriddenCategoryD')
-        expect(res.text).toContain('overriddenCategoryI')
-        expect(res.text).toContain('overriddenCategoryJ')
-        expect(res.text).not.toContain('overriddenCategoryB')
-        expect(res.text).not.toContain('overriddenCategoryR')
-        expect(res.text).not.toContain('overriddenCategoryT')
+        expect(res.text).toContain('changeCategoryTo_C')
+        expect(res.text).toContain('changeCategoryTo_D')
+        expect(res.text).toContain('changeCategoryTo_I')
+        expect(res.text).toContain('changeCategoryTo_J')
+        expect(res.text).not.toContain('changeCategoryTo_B')
+        expect(res.text).not.toContain('changeCategoryTo_R')
+        expect(res.text).not.toContain('changeCategoryTo_T')
       })
   })
 })
@@ -1284,7 +1275,8 @@ describe('GET /ratings/violence', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toContain(expectedContent)
-        expect(riskProfilerService.getViolenceProfile).toBeCalledTimes(1)
+        expect(offendersService.getCountOfAssaultIncidents).toBeCalledTimes(1)
+        expect(formService.getViperData).toBeCalledTimes(1)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
         expect(res.text).toContain(
           'This person has not been reported as the perpetrator in any assaults in custody before.',
@@ -1294,16 +1286,18 @@ describe('GET /ratings/violence', () => {
   )
 
   test('violence flag logic - assaults and notify', () => {
-    riskProfilerService.getViolenceProfile.mockResolvedValue({
-      nomsId: '1234AN',
-      riskType: 'VIOLENCE',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: true,
-      displayAssaults: true,
-      numberOfAssaults: 5,
-      numberOfSeriousAssaults: 2,
-      numberOfNonSeriousAssaults: 3,
-    })
+    formService.getViperData.mockResolvedValue(
+      makeTestViperDto({
+        aboveThreshold: true,
+      }),
+    )
+    offendersService.getCountOfAssaultIncidents.mockResolvedValue(
+      makeTestCountOfAssaultIncidents({
+        countOfAssaults: 5,
+        countOfRecentSeriousAssaults: 2,
+        countOfRecentNonSeriousAssaults: 3,
+      }),
+    )
     return request(app)
       .get(`/ratings/violenceRating/12345`)
       .expect(200)
@@ -1330,7 +1324,7 @@ describe('GET /ratings/extremism', () => {
       .expect(res => {
         expect(res.text).toContain(expectedContent)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
-        expect(riskProfilerService.getExtremismProfile).toBeCalledTimes(1)
+        expect(pathfinderService.getExtremismProfile).toBeCalledTimes(1)
       }),
   )
 })
@@ -1338,13 +1332,22 @@ describe('GET /ratings/extremism', () => {
 describe('GET /categoriser/review', () => {
   test('Should perform a merge with existing data when loading review', () => {
     // data that should be persisted
-    riskProfilerService.getEscapeProfile.mockResolvedValue({
+    alertService.getEscapeProfile.mockResolvedValue({
       flagA: 'B2345XY',
     })
-    riskProfilerService.getViolenceProfile.mockResolvedValue({
-      violenceFlag: true,
-    })
-    riskProfilerService.getExtremismProfile.mockResolvedValue({
+    formService.getViperData.mockResolvedValue(
+      makeTestViperDto({
+        aboveThreshold: true,
+      }),
+    )
+    offendersService.getCountOfAssaultIncidents.mockResolvedValue(
+      makeTestCountOfAssaultIncidents({
+        countOfAssaults: 5,
+        countOfRecentSeriousAssaults: 2,
+        countOfRecentNonSeriousAssaults: 3,
+      }),
+    )
+    pathfinderService.getExtremismProfile.mockResolvedValue({
       exFlag: true,
     })
     formService.getCategorisationRecord.mockResolvedValue({
@@ -1364,6 +1367,7 @@ describe('GET /categoriser/review', () => {
     offendersService.getOffenceHistory.mockResolvedValue({
       offence: 'details',
     })
+    offendersService.hasLifeSentence.mockResolvedValue(false)
 
     return request(app)
       .get('/categoriser/review/12345')
@@ -1378,9 +1382,12 @@ describe('GET /categoriser/review', () => {
             extremismProfile: {
               exFlag: true,
             },
-            violenceProfile: {
-              violenceFlag: true,
-            },
+            violenceProfile: makeTestViolenceProfile({
+              notifySafetyCustodyLead: true,
+              numberOfAssaults: 5,
+              numberOfSeriousAssaults: 2,
+              numberOfNonSeriousAssaults: 3,
+            }),
             history: {
               catARisk: true,
             },
@@ -1528,7 +1535,7 @@ describe('GET /categoriser/review', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Check your answers before you continue')
+        expect(res.text).toContain('Check your answers before submitting')
         expect(res.text).not.toContain('Further serious charges')
         expect(res.text).toContain('Open Conditions')
         expect(res.text).toContain('Are they facing any further charges?')
@@ -1624,36 +1631,16 @@ describe('GET /recat/review', () => {
   })
 })
 describe('POST /supervisor/review', () => {
-  test.each`
-    sectionName     | formName    | userInput                            | nextPath
-    ${'supervisor'} | ${'review'} | ${{ day: '12' }}                     | ${'/tasklist/supervisor/outcome/12345'}
-    ${'supervisor'} | ${'review'} | ${{ day: '12', catType: 'INITIAL' }} | ${'/tasklist/supervisor/outcome/12345?catType=INITIAL'}
-    ${'supervisor'} | ${'review'} | ${{ day: '12', catType: 'RECAT' }}   | ${'/tasklist/supervisor/outcome/12345?catType=RECAT'}
-  `(
-    'should render $expectedContent with $nextPath for supervisor/review',
-    ({ sectionName, formName, userInput, nextPath }) =>
-      request(app)
-        .post(`/${sectionName}/${formName}/12345`)
-        .send(userInput)
-        .expect(302)
-        .expect('Location', `${nextPath}`)
-        .expect(() => {
-          expect(formService.supervisorApproval).toBeCalledTimes(1)
-          expect(offendersService.getCatAInformation).toBeCalledTimes(0)
-          expect(offendersService.createSupervisorApproval).toBeCalledWith(context, '12345', userInput)
-          const updateArg = formService.supervisorApproval.mock.calls[0][0]
-          expect(updateArg.bookingId).toBe(12345)
-        }),
-  )
   test('Should delete recat decision if overriding to open conditions', () => {
     const userInput = {
-      supervisorCategoryAppropriate: 'no',
-      supervisorOverriddenCategory: 'D',
-      supervisorOverriddenCategoryText: 'bla',
+      messageText: 'something',
+      catType: 'RECAT',
     }
 
+    formService.update.mockReturnValue({ recat: {}, supervisor: { review: { supervisorOverriddenCategory: 'D' } } })
+
     return request(app)
-      .post(`/supervisor/review/12345`)
+      .post(`/supervisor/confirmBack/12345`)
       .send(userInput)
       .expect(302)
       .expect(() => {
@@ -1676,12 +1663,12 @@ describe('POST /supervisor/review', () => {
     offendersService.getPrisonerBackground.mockResolvedValue(catHistory)
 
     return request(app)
-      .post(`/supervisor/review/12345`)
+      .post(`/supervisor/further-information/12345`)
       .send(userInput)
       .expect(302)
       .expect(() => {
         expect(offendersService.getPrisonerBackground).toBeCalledTimes(1)
-        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory }, mockTransactionalClient)
+        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory })
       })
   })
 
@@ -1689,7 +1676,7 @@ describe('POST /supervisor/review', () => {
     const userInput = { catType: 'INITIAL' }
 
     return request(app)
-      .post(`/supervisor/review/12345`)
+      .post(`/supervisor/further-information/12345`)
       .send(userInput)
       .expect(302)
       .expect(() => {
@@ -1701,13 +1688,14 @@ describe('POST /supervisor/review', () => {
   test('should delete recat decision if overriding to open conditions - female', () => {
     mockFemalePrison()
     const userInput = {
-      supervisorCategoryAppropriate: 'no',
-      supervisorOverriddenCategory: 'T',
-      supervisorOverriddenCategoryText: 'bla',
+      messageText: 'something',
+      catType: 'RECAT',
     }
 
+    formService.update.mockReturnValue({ recat: {}, supervisor: { review: { supervisorOverriddenCategory: 'D' } } })
+
     return request(app)
-      .post(`/supervisor/review/12345`)
+      .post(`/supervisor/confirmBack/12345`)
       .send(userInput)
       .expect(302)
       .expect(() => {
@@ -1731,12 +1719,12 @@ describe('POST /supervisor/review', () => {
     offendersService.getPrisonerBackground.mockResolvedValue(catHistory)
 
     return request(app)
-      .post(`/supervisor/review/12345`)
+      .post(`/supervisor/further-information/12345`)
       .send(userInput)
       .expect(302)
       .expect(() => {
         expect(offendersService.getPrisonerBackground).toBeCalledTimes(1)
-        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory }, mockTransactionalClient)
+        expect(formService.mergeRiskProfileData).toBeCalledWith('12345', { catHistory })
       })
   })
 
@@ -1756,19 +1744,12 @@ describe('POST /supervisor/review', () => {
 })
 
 describe('POST /supervisor/confirmBack', () => {
-  test('redirects back to review if not confirmed', () =>
+  test('redirects to outcome page home if confirmed', () =>
     request(app)
       .post('/supervisor/confirmBack/12345')
-      .send({ confirmation: 'No' })
+      .send({ messageText: 'Something' })
       .expect(302)
-      .expect('Location', `/form/supervisor/review/12345`))
-
-  test('redirects to supervisor home if confirmed', () =>
-    request(app)
-      .post('/supervisor/confirmBack/12345')
-      .send({ confirmation: 'Yes' })
-      .expect(302)
-      .expect('Location', `/supervisorHome`)
+      .expect('Location', `/tasklist/supervisor/sent-back-to-categoriser/12345`)
       .expect(() => {
         expect(offendersService.backToCategoriser).toBeCalledWith(expect.anything(), '12345', mockTransactionalClient)
       }))
@@ -2013,7 +1994,7 @@ describe('GET /ratings/escapeRating', () => {
       escapeListAlerts: [],
       riskType: 'ESCAPE',
     }
-    riskProfilerService.getEscapeProfile.mockResolvedValue(escapeProfile)
+    alertService.getEscapeProfile.mockResolvedValue(escapeProfile)
     return request(app)
       .get(`/ratings/escapeRating/12345`)
       .expect(200)
@@ -2062,7 +2043,7 @@ describe('GET /ratings/escapeRating', () => {
       escapeListAlerts: [],
       riskType: 'ESCAPE',
     }
-    riskProfilerService.getEscapeProfile.mockResolvedValue(escapeProfile)
+    alertService.getEscapeProfile.mockResolvedValue(escapeProfile)
 
     return request(app)
       .get(`/ratings/escapeRating/12345`)

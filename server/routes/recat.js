@@ -3,12 +3,12 @@ const flash = require('connect-flash')
 const R = require('ramda')
 const { firstItem } = require('../utils/functionalHelpers')
 const {
-  calculateNextReviewDate,
   choosingHigherCategory,
   offenderAlertsLink,
   offenderCaseNotesLink,
   offenderAdjudicationLink,
   isFemalePrisonId,
+  formatLength,
 } = require('../utils/utils')
 const { handleCsrf, getPathFor } = require('../utils/routes')
 const asyncMiddlewareInDatabaseTransaction = require('../middleware/asyncMiddlewareInDatabaseTransaction')
@@ -16,6 +16,7 @@ const recat = require('../config/recat')
 const Status = require('../utils/statusEnum')
 const RiskChangeStatus = require('../utils/riskChangeStatusEnum')
 const log = require('../../log')
+const { mapDataToViolenceProfile } = require('../utils/violenceProfile/violenceProfileMapper')
 
 const formConfig = {
   recat,
@@ -25,8 +26,9 @@ module.exports = function Index({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   authenticationMiddleware,
+  pathfinderService,
+  alertService,
 }) {
   const router = express.Router()
 
@@ -59,24 +61,25 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
-      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
-      const extremismProfile = await riskProfilerService.getExtremismProfile(
-        offenderNo,
-        res.locals,
-        false, // not used for recat (contributes towards recommended category)
-      )
+
+      const [assaultIncidents, viper, extremismProfile, escapeProfile, categorisations] = await Promise.all([
+        offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
+        formService.getViperData(req.user.username, result.data.details.offenderNo),
+        pathfinderService.getExtremismProfile(result.data.details.offenderNo, res.locals),
+        alertService.getEscapeProfile(offenderNo, res.locals),
+        offendersService.getPrisonerBackground(res.locals, offenderNo),
+      ])
+
       const offenderDpsAlertsLink = offenderAlertsLink(offenderNo)
       const offenderDpsCaseNotesLink = offenderCaseNotesLink(offenderNo)
       const offenderDpsAdjudicationsLink = offenderAdjudicationLink(offenderNo)
-
-      const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
 
       const data = {
         ...result.data,
         categorisations,
         escapeProfile,
-        violenceProfile,
+        ...assaultIncidents,
+        viper,
         extremismProfile,
         offenderDpsAlertsLink,
         offenderDpsCaseNotesLink,
@@ -93,15 +96,16 @@ module.exports = function Index({
       const { bookingId } = req.params
       const result = await buildFormData(res, req, 'recat', 'prisonerBackground', bookingId, transactionalDbClient)
       const { offenderNo } = result.data.details
-      const violenceProfile = await riskProfilerService.getViolenceProfile(offenderNo, res.locals)
-      const escapeProfile = await riskProfilerService.getEscapeProfile(offenderNo, res.locals)
-      const extremismProfile = await riskProfilerService.getExtremismProfile(
-        offenderNo,
-        res.locals,
-        false, // contributes towards recommended category, only used in initial categorisations
-      )
 
-      const categorisations = await offendersService.getPrisonerBackground(res.locals, offenderNo)
+      const [assaultIncidents, viper, extremismProfile, escapeProfile, categorisations] = await Promise.all([
+        offendersService.getCountOfAssaultIncidents(res.locals, result.data.details.offenderNo),
+        formService.getViperData(req.user.username, result.data.details.offenderNo),
+        pathfinderService.getExtremismProfile(offenderNo, res.locals),
+        alertService.getEscapeProfile(offenderNo, res.locals),
+        offendersService.getPrisonerBackground(res.locals, offenderNo),
+      ])
+
+      const violenceProfile = mapDataToViolenceProfile(viper, assaultIncidents)
 
       const dataToStore = {
         escapeProfile,
@@ -139,24 +143,27 @@ module.exports = function Index({
   )
 
   router.get(
-    '/fasttrackConfirmation/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
+    '/previousRiskAssessments/:bookingId',
+    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { bookingId } = req.params
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      res.render(`formPages/recat/fasttrackConfirmation`, { bookingId })
+      const errors = req.flash('errors')
+
+      const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
+      const data = { details, bookingId, formData }
+
+      res.render('formPages/recat/previousRiskAssessmentsInput', { data, errors })
     }),
   )
 
-  router.get(
-    '/fasttrackCancelled/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res) => {
-      const { bookingId } = req.params
-      const user = await userService.getUser(res.locals)
-      res.locals.user = { ...user, ...res.locals.user }
-      res.render(`formPages/recat/fasttrackCancelled`, { bookingId })
-    }),
-  )
+  router.get('/oasysRequired/:bookingId', async (req, res) => {
+    const { bookingId } = req.params
+    const details = await offendersService.getOffenderDetails(res.locals, bookingId)
+    const data = { details, bookingId }
+
+    res.render('formPages/recat/oasysRequired', { data })
+  })
 
   router.get(
     '/:form/:bookingId',
@@ -173,18 +180,21 @@ module.exports = function Index({
     res.locals.user = { ...user, ...res.locals.user }
 
     const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
+
     if (!formData || !formData.formObject) {
       throw new Error('No categorisation found for this booking id')
     }
+
     res.locals.formObject = { ...formData.formObject, ...formData.riskProfile }
     res.locals.formId = formData.id
 
     const backLink = req.get('Referrer')
-
     const pageData = res.locals.formObject
+
     if (!pageData[section]) {
       pageData[section] = {}
     }
+
     pageData[section][form] = { ...pageData[section][form], ...firstItem(req.flash('userInput')) }
 
     const errors = req.flash('errors')
@@ -213,6 +223,9 @@ module.exports = function Index({
     if (body.oasysRelevantInfo === 'No') {
       delete updated.oasysInputText
     }
+    if (body.bcstRelevantInfo === 'No') {
+      delete updated.bcstInputText
+    }
     return updated
   }
 
@@ -238,6 +251,7 @@ module.exports = function Index({
         formName: form,
         transactionalClient: transactionalDbClient,
       })
+
       await formService.referToSecurityIfRequested(
         bookingId,
         req.user.username,
@@ -246,6 +260,7 @@ module.exports = function Index({
       )
 
       const nextPath = getPathFor({ data: req.body, config: formPageConfig })
+
       res.redirect(`${nextPath}${bookingId}`)
     }),
   )
@@ -420,6 +435,36 @@ module.exports = function Index({
     }),
   )
 
+  router.post('/previousRiskAssessments/:bookingId', async (req, res) => {
+    const section = 'recat'
+    const form = 'previousRiskAssessments'
+    const formPageConfig = formConfig[section][form]
+    const { bookingId } = req.params
+    const userInput = { ...req.body }
+
+    const prevOasysAssessmentAnswer = userInput.haveTheyHadRecentOasysAssessment
+    const baseUrl = '/form/recat'
+
+    if (!formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)) {
+      return
+    }
+
+    const { sentence } = await offendersService.getOffenderDetails(res.locals, bookingId)
+    const sentenceLength = sentence?.list?.[0] ? formatLength(sentence.list[0]) : ''
+
+    log.info(
+      `Categoriser selecting previous oasys assessment answer: Option: ${prevOasysAssessmentAnswer}, Release Date: ${sentence?.releaseDate}, Sentence Length: ${sentenceLength}`,
+    )
+
+    if (prevOasysAssessmentAnswer === 'yes') {
+      res.redirect(`${baseUrl}/oasysInput/${bookingId}`)
+    } else if (prevOasysAssessmentAnswer === 'no') {
+      res.redirect(`${baseUrl}/oasysRequired/${bookingId}`)
+    } else if (prevOasysAssessmentAnswer === 'notRequired') {
+      res.redirect(`${baseUrl}/bcstInput/${bookingId}`)
+    }
+  })
+
   router.post(
     '/review/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
@@ -457,109 +502,6 @@ module.exports = function Index({
   )
 
   router.post(
-    '/fasttrackEligibility/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const { bookingId } = req.params
-      const form = 'fasttrackEligibility'
-      const section = 'recat'
-      const formPageConfig = formConfig[section][form]
-      const userInput = clearConditionalFields(req.body)
-
-      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
-      if (!valid) {
-        return
-      }
-
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        transactionalClient: transactionalDbClient,
-      })
-
-      if (userInput.earlyCatD === 'Yes' || userInput.increaseCategory === 'Yes') {
-        res.redirect(`/form/recat/fasttrackCancelled/${bookingId}`)
-      } else {
-        const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-        res.redirect(`${nextPath}${bookingId}`)
-      }
-    }),
-  )
-
-  router.post(
-    '/fasttrackProgress/:bookingId',
-    asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      const { bookingId } = req.params
-      const form = 'fasttrackProgress'
-      const section = 'recat'
-      const formPageConfig = formConfig[section][form]
-      const userInput = clearConditionalFields(req.body)
-
-      const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
-      if (!valid) {
-        return
-      }
-
-      await formService.update({
-        bookingId: parseInt(bookingId, 10),
-        userId: req.user.username,
-        config: formPageConfig,
-        userInput,
-        formSection: section,
-        formName: form,
-        transactionalClient: transactionalDbClient,
-      })
-
-      // apply default text for fast track
-      const formData = await formService.getCategorisationRecord(bookingId, transactionalDbClient)
-
-      const newData = applyFasttrackDefaults(formData)
-      await formService.updateFormData(bookingId, newData, transactionalDbClient)
-
-      const nextPath = getPathFor({ data: req.body, config: formPageConfig })
-      res.redirect(`${nextPath}${bookingId}`)
-    }),
-  )
-
-  const applyFasttrackDefaults = data => {
-    const existingHigher = R.path(['formObject', 'recat', 'riskAssessment', 'higherCategory'], data)
-    const existingLower = R.path(['formObject', 'recat', 'riskAssessment', 'lowerCategory'], data)
-    const otherRelevant = R.path(['formObject', 'recat', 'riskAssessment', 'otherRelevant'], data)
-    const existingNextReviewDate = R.path(['formObject', 'recat', 'nextReviewDate', 'date'], data)
-    const existingSecurity = R.path(['formObject', 'recat', 'securityInput', 'securityInputNeeded'], data)
-
-    let newData = data.formObject
-    if (!existingHigher) {
-      newData = R.assocPath(
-        ['recat', 'riskAssessment', 'higherCategory'],
-        'They pose no additional risks. There’s no reason to consider them for higher security conditions.',
-        newData,
-      )
-    }
-    if (!existingLower) {
-      const defaultText =
-        "They could not be considered for open conditions early. Their circumstances weren't exceptional enough."
-      newData = R.assocPath(['recat', 'riskAssessment', 'lowerCategory'], defaultText, newData)
-    }
-    if (!otherRelevant) {
-      newData = R.assocPath(['recat', 'riskAssessment', 'otherRelevant'], 'No', newData)
-    }
-    if (!existingNextReviewDate) {
-      newData = R.assocPath(['recat', 'nextReviewDate', 'date'], calculateNextReviewDate('12'), newData)
-    }
-    if (!existingSecurity) {
-      newData = R.assocPath(['recat', 'securityInput', 'securityInputNeeded'], 'No', newData)
-    }
-
-    newData = R.assocPath(['recat', 'decision', 'category'], 'C', newData)
-
-    return newData
-  }
-
-  router.post(
     '/:form/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
       const { form, bookingId } = req.params
@@ -568,6 +510,7 @@ module.exports = function Index({
       const userInput = clearConditionalFields(req.body)
 
       const valid = formService.isValid(formPageConfig, req, res, `/form/${section}/${form}/${bookingId}`, userInput)
+
       if (!valid) {
         return
       }

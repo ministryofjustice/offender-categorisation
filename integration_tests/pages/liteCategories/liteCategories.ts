@@ -15,8 +15,14 @@ const SELECTORS = {
   COMMENT: {
     INPUT: '#comment',
   },
-  REASSESSMENT_DATE: {
-    INPUT: '#nextReviewDate',
+  REASSESSMENT_DATE_DAY: {
+    INPUT: '#nextReviewDateDay',
+  },
+  REASSESSMENT_DATE_MONTH: {
+    INPUT: '#nextReviewDateMonth',
+  },
+  REASSESSMENT_DATE_YEAR: {
+    INPUT: '#nextReviewDateYear',
   },
   RECOMMENDED_PLACEMENT: {
     INPUT: '#placement',
@@ -31,7 +37,7 @@ export default class LiteCategoriesPage extends Page {
   }
 
   constructor() {
-    super('Other category assessment')
+    super('Change security category')
   }
 
   static createForBookingId = (bookingId: number) => {
@@ -50,9 +56,17 @@ export default class LiteCategoriesPage extends Page {
   getComment = () => cy.get(SELECTORS.COMMENT.INPUT)
   setComment = (text: string) => this.getComment().clear().type(text)
 
-  clearReAssessmentDate = () => this.getReAssessmentDate().clear()
-  getReAssessmentDate = () => cy.get(SELECTORS.REASSESSMENT_DATE.INPUT)
-  setReAssessmentDate = (text: string) => this.clearReAssessmentDate().type(text)
+  clearReAssessmentDateDay = () => this.getReAssessmentDateDay().clear()
+  getReAssessmentDateDay = () => cy.get(SELECTORS.REASSESSMENT_DATE_DAY.INPUT)
+  setReAssessmentDateDay = (text: string) => this.clearReAssessmentDateDay().type(text)
+
+  clearReAssessmentDateMonth = () => this.getReAssessmentDateMonth().clear()
+  getReAssessmentDateMonth = () => cy.get(SELECTORS.REASSESSMENT_DATE_MONTH.INPUT)
+  setReAssessmentDateMonth = (text: string) => this.clearReAssessmentDateMonth().type(text)
+
+  clearReAssessmentDateYear = () => this.getReAssessmentDateYear().clear()
+  getReAssessmentDateYear = () => cy.get(SELECTORS.REASSESSMENT_DATE_YEAR.INPUT)
+  setReAssessmentDateYear = (text: string) => this.clearReAssessmentDateYear().type(text)
 
   getRecommendedPlacement = () => cy.get(SELECTORS.RECOMMENDED_PLACEMENT.INPUT)
   setRecommendedPlacement = (text: string) => this.getRecommendedPlacement().select(text)
@@ -90,6 +104,7 @@ export default class LiteCategoriesPage extends Page {
 
   validateAvailableCategoryOptions = () => {
     const expected = [
+      { value: '', text: 'Choose category' },
       { value: 'U', text: 'Unsentenced' },
       { value: 'Z', text: 'Unclass' },
       { value: 'A', text: 'Cat A' },

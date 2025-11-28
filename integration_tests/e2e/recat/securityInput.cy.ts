@@ -44,29 +44,25 @@ describe('Security Input', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
     cy.task('stubGetEscapeProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      onEscapeList: true,
-      activeOnEscapeList: true,
+      alertCode: 'XER',
     })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: 'B2345YZ',
+      aboveThreshold: true,
+    })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: 'B2345YZ',
+      assaultIncidents: []
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
   })
@@ -81,7 +77,7 @@ describe('Security Input', () => {
     recategoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TasklistRecatPage.createForBookingId(bookingId)
-    taskListPage.securityButton().click()
+    taskListPage.securityLink().click()
   }
 
   describe('form submission', () => {
@@ -177,7 +173,6 @@ describe('Security Input', () => {
         })
 
         it('should display the security referral information on the task list', () => {
-          taskListPage.validateButtonState({ buttonSelector: taskListPage.securityButton, isDisabled: true })
           taskListPage.validateSecurityReferralDate(new Date())
         })
 
@@ -258,7 +253,7 @@ describe('Security Input', () => {
 
             recategoriserHomePage.selectPrisonerWithBookingId(bookingId, 'Edit')
 
-            taskListPage.securityButton().click()
+            taskListPage.securityLink().click()
 
             securityBackPage = CategoriserSecurityBackPage.createForBookingId(bookingId)
             securityBackPage.validateNoteFromSecurity(['Some security input text', 'security info text'])

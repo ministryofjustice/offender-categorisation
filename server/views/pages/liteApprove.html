@@ -6,8 +6,10 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+{% from "date-input/macro.njk" import govukDateInput %}
 
-{% set pageTitle = "Other category approval" %}
+{% set pageTitle = "Approve security category" %}
 
 {% block beforeContent %}
 
@@ -30,7 +32,7 @@
 <div class="govuk-!-width-two-thirds govuk-body-s">
 
   <h1 class="govuk-heading-l govuk-!-padding-top-4" id="previousCategoryHeading">{{ pageTitle }}</h1>
-  <p>Approve a category assessment, exactly as in P-Nomis.</p>
+  <p>Approve this prisoner’s category outside of the standard assessment process.</p>
   {% if not liteInProgress %}
 
     {{ govukWarningText({
@@ -43,7 +45,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
       {{ govukButton({
-        text: "Return to Todo list",
+        text: "Return to dashboard",
         href: "/",
         classes: "grey-button"
       }) }}
@@ -71,7 +73,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
       {{ govukButton({
-        text: "Return to Todo list",
+        text: "Return to dashboard",
         href: "/",
         classes: "grey-button"
       }) }}
@@ -88,133 +90,124 @@
     </div>
 
   {% else %}
-  <hr />
   <h2>Submitted assessment details</h2>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Category</div>
-    <div id="category" class="govuk-grid-column-one-third">{{ assessmentData.categoryDisplay }}</div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Authority</div>
-    <div id="assessmentCommittee" class="govuk-grid-column-one-third">{{ assessmentData.assessmentCommitteeDisplay }}</div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Assessment date</div>
-    <div id="displayCreatedDate" class="govuk-grid-column-one-third">{{ assessmentData.displayCreatedDate }}</div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Assessor</div>
-    <div id="assessedBy" class="govuk-grid-column-one-third">{{ assessmentData.assessedByDisplay }}</div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Recommended placement</div>
-    <div id="placementPrisonId" class="govuk-grid-column-one-third">{{ assessmentData.placementPrisonIdDisplay }}</div>
-  </div>
-  <div class="govuk-grid-row govuk-!-margin-bottom-4">
-    <div class="govuk-grid-column-one-third govuk-!-font-weight-bold">Assessment comment</div>
-    <div id="assessmentComment" class="govuk-grid-column-one-third">{{ assessmentData.assessmentComment }}</div>
-  </div>
-  <hr />
+  {{ govukSummaryList({
+    rows: [
+      {
+        key: { text: "Category" },
+        value: { text: assessmentData.categoryDisplay },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Authority" },
+        value: { text: assessmentData.assessmentCommitteeDisplay },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Reassessment date" },
+        value: { text: assessmentData.displayNextReviewDate },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Recommended placement" },
+        value: { text: assessmentData.placementPrisonIdDisplay },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Assessment comment" },
+        value: { text: assessmentData.assessmentComment },
+        actions: { items: []}
+      },
+      {
+        key: { text: "Assessor" },
+        value: { text: assessmentData.assessedByDisplay },
+        actions: { items: [] }
+      },
+      {
+        key: { text: "Assessment date" },
+        value: { text: assessmentData.displayCreatedDate },
+        actions: { items: [] }
+      }
+    ]
+  }) }}
+
   <h2>Approval details</h2>
 
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-third">
-      {{ govukInput({
-        id: 'approvedDate',
-        name: 'approvedDate',
-        label: { text: 'Approval Date' },
-        errorMessage: {
-          text: 'Enter a valid date'
-        } if (errors | findError('approvedDate')),
-        classes: 'govuk-!-width-full',
-        value: approvedDate
-      }) }}
-      </div>
-      <div class="govuk-grid-column-one-third">
-      {{ govukSelect({
-        id: 'approvedCommittee',
-        name: 'approvedCommittee',
-        label: { text: 'Department' },
-        items: committees,
-        classes: 'govuk-!-width-full'
-      }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-third ">
-      {{ govukSelect({
-        id: 'supervisorCategory',
-        name: 'supervisorCategory',
-        label: { text: 'Approved category' },
-        items: cats,
-        classes: 'govuk-!-width-full'
-      }) }}
-      </div>
-      <div class="govuk-grid-column-two-thirds">
-        {{ govukTextarea({
-        id: 'approvedCategoryComment',
-        name: 'approvedCategoryComment',
-        rows: 1,
-        attributes: { 'maxLength': 240 },
-        label: { text: 'Comment' },
-        value: approvedCategoryComment
-        }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-third">
-      {{ govukSelect({
-        id: 'approvedPlacement',
-        name: 'approvedPlacement',
-        label: { text: 'Approved placement' },
-        items: prisonList,
-        classes: 'govuk-!-width-full'
-      }) }}
-      </div>
-      <div class="govuk-grid-column-two-thirds">
-      {{ govukTextarea({
-        id: 'approvedPlacementComment',
-        name: 'approvedPlacementComment',
-        rows: 1,
-        attributes: { 'maxLength': 240 },
-        label: { text: 'Comment' },
-        value: approvedPlacementComment
-      }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-      {{ govukTextarea({
-        id: 'approvedComment',
-        name: 'approvedComment',
-        rows: 1,
-        attributes: { 'maxLength': 240 },
-        label: { text: 'Approved comment' },
-        value: approvedComment
-      }) }}
-      </div>
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-third">
-      {{ govukInput({
-        id: 'nextReviewDate',
-        name: 'nextReviewDate',
-        label: { text: 'Next review date' },
-        errorMessage: {
-          text: 'Enter a valid future date'
-        } if (errors | findError('nextReviewDate')),
-        classes: 'govuk-!-width-full',
-        value: nextReviewDate
-      }) }}
-      </div>
-    </div>
+    {{ govukSelect({
+      id: 'supervisorCategory',
+      name: 'supervisorCategory',
+      label: { text: 'Approved category' },
+      items: cats,
+      errorMessage: errors | findError('supervisorCategory')
+    }) }}
+
+    {{ govukSelect({
+      id: 'approvedCommittee',
+      name: 'approvedCommittee',
+      label: { text: 'Approved authority' },
+      items: committees,
+      errorMessage: errors | findError('approvedCommittee')
+    }) }}
+
+    {{ govukDateInput({
+      id: "approvedNextReviewDate",
+      items: [
+        {"id": "approvedNextReviewDateDay", label: "Day", "name": "approvedNextReviewDate[day]", value: approvedNextReviewDate.day if approvedNextReviewDate else assessmentData.inputNextReviewDate.day, "classes": "govuk-input--width-2"},
+        {"id": "approvedNextReviewDateMonth", label: "Month", "name": "approvedNextReviewDate[month]", value: approvedNextReviewDate.month if approvedNextReviewDate else assessmentData.inputNextReviewDate.month, "classes": "govuk-input--width-2"},
+        {"id": "approvedNextReviewDateYear", label: "Year", "name": "approvedNextReviewDate[year]", value: approvedNextReviewDate.year if approvedNextReviewDate else assessmentData.inputNextReviewDate.year, "classes": "govuk-input--width-4"}
+      ],
+      hint: {
+        text: "For example, 27 3 2024"
+      },
+      fieldset: {
+        legend: {
+          text: 'Approved reassessment date',
+          isPageHeading: false
+        }
+      },
+      errorMessage: errors | findError('approvedNextReviewDate')
+    }) }}
+
+    {{ govukSelect({
+      id: 'approvedPlacement',
+      name: 'approvedPlacement',
+      label: { text: 'Approved placement' },
+      items: prisonList,
+      errorMessage: errors | findError('approvedPlacement')
+    }) }}
+
+    {{ govukTextarea({
+      id: 'approvedComment',
+      name: 'approvedComment',
+      attributes: { 'maxLength': 240 },
+      label: { text: 'Comments (optional)' },
+      value: approvedComment
+    }) }}
 
     {{ govukButton({
       text: 'Submit',
       attributes: {  }
+    }) }}
+    {{ govukDateInput({
+      id: "approvedDate",
+      items: [
+        {"id": "approvedDateDay", label: "Day", "name": "approvedDate[day]", value: approvedDate.day, "classes": "govuk-input--width-2"},
+        {"id": "approvedDateMonth", label: "Month", "name": "approvedDate[month]", value: approvedDate.month, "classes": "govuk-input--width-2"},
+        {"id": "approvedDateYear", label: "Year", "name": "approvedDate[year]", value: approvedDate.year, "classes": "govuk-input--width-4"}
+      ],
+      hint: {
+        text: "For example, 27 3 2024"
+      },
+      fieldset: {
+        legend: {
+          text: 'Approval Date',
+          isPageHeading: false
+        }
+      },
+      errorMessage: errors | findError('approvedDate')
     }) }}
   </form>
   {% endif %}

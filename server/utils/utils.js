@@ -1,12 +1,20 @@
 const moment = require('moment')
 const R = require('ramda')
-const { dpsUrl, femalePrisonIds } = require('../config')
+const { config } = require('../config')
+
+const { dpsUrl, femalePrisonIds } = config
 
 const dateConverter = from => from && moment(from, 'YYYY-MM-DD').format('DD/MM/YYYY')
+const dateConverterWithoutLeadingZeros = from => from && moment(from, 'YYYY-MM-DD').format('D/M/YYYY')
 const dateConverterToISO = from => from && moment(from, 'DD/MM/YYYY').format('YYYY-MM-DD')
 
 const getLongDateFormat = date => {
   if (date) return moment(date, 'DD/MM/YYYY').format('dddd D MMMM YYYY')
+  return ''
+}
+
+const getLongDateFormatIso = date => {
+  if (date) return moment(date).format('dddd D MMMM YYYY')
   return ''
 }
 
@@ -27,6 +35,7 @@ const formatLength = sentenceTerms => {
   if (sentenceTerms.lifeSentence) {
     return 'Life'
   }
+
   const years = formatValue(sentenceTerms.years, 'year')
   const months = formatValue(sentenceTerms.months, 'month')
   const weeks = formatValue(sentenceTerms.weeks, 'week')
@@ -53,6 +62,12 @@ const get10BusinessDays = from => {
     default:
   }
   return numberOfDays
+}
+
+const add10BusinessDays = isoDate => {
+  const sentenceDateMoment = moment(isoDate, 'YYYY-MM-DD')
+  const numberOfDays = get10BusinessDays(sentenceDateMoment)
+  return sentenceDateMoment.add(numberOfDays, 'day').format('YYYY-MM-DD')
 }
 
 const properCase = word =>
@@ -197,15 +212,29 @@ const setFemaleCaseLoads = caseLoads => {
 }
 
 const isOpenCategory = cat => {
+  // TODO replace with consts
   return ['D', 'J', 'T'].includes(cat)
+}
+
+const removeLeadingZerosFromDate = date => date.replace(/^0+/, '')?.replace(/\/0/g, '/')
+
+const formatDateForValidation = date => {
+  if (!date.day || !date.month || !date.year) {
+    return undefined
+  }
+
+  return `${date.day}/${date.month}/${date.year}`
 }
 
 module.exports = {
   dateConverter,
+  dateConverterWithoutLeadingZeros,
   dateConverterToISO,
   getLongDateFormat,
+  getLongDateFormatIso,
   getVerboseDateFormat,
   formatLength,
+  add10BusinessDays,
   get10BusinessDays,
   properCase,
   properCaseName,
@@ -232,4 +261,6 @@ module.exports = {
   isOpenCategory,
   // exposed for test purposes
   isBlank,
+  removeLeadingZerosFromDate,
+  formatDateForValidation,
 }

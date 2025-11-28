@@ -28,14 +28,12 @@ class TasklistRecatSpecification extends AbstractSpecification {
     headerValue*.text() == fixture.FULL_HEADER
     headerLink.text() == 'Hillmob, Ant'
     headerLink.@href == 'http://localhost:3000/prisoner/B2345YZ'
-    !continueButton
-    continueButtonDisabled.displayed
 
     and: 'SOC data is stored and merged correctly'
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile      : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
-                 extremismProfile: [nomsId: 'B2345YZ', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'C']
+    response == [socProfile      : [transferToSecurity: false],
+                 extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false]
     ]
     def row = data[0]
     row.booking_id == 12L
@@ -65,8 +63,8 @@ class TasklistRecatSpecification extends AbstractSpecification {
     and: 'data is stored correctly'
     def data = db.getData(21)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile      : [nomsId: 'C0001AA', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'I'],
-                 extremismProfile: [nomsId: 'C0001AA', riskType: 'EXTREMISM', notifyRegionalCTLead: false, increasedRiskOfExtremism: false, provisionalCategorisation: 'I']
+    response == [socProfile      : [transferToSecurity: false],
+                 extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false]
     ]
     def row = data[0]
     row.booking_id == 21L
@@ -83,7 +81,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
 
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    db.getSecurityData('B2345YZ')[0].status.value == 'PROCESSED'
+    db.getSecurityData('B2345YZ')[0].status == 'PROCESSED'
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI') // existing assessments
@@ -114,12 +112,9 @@ class TasklistRecatSpecification extends AbstractSpecification {
     at TasklistRecatPage
 
     then: 'the prisoner start button is locked'
-    securityButton.tag() == 'button'
-    securityButton.@disabled
+    securityLinkDisabled.displayed
     def today = LocalDate.now().format('dd/MM/yyyy')
-    $('#securitySection').text().contains("Automatically referred to Security ($today)")
-    summarySection[0].text() == 'Check and submit'
-    summarySection[1].text() == 'Tasks not yet complete'
+    $('#securityInfo').text().contains("Automatically referred to Security ($today)")
   }
 
   def "The recat tasklist correctly creates a subsequent database sequence when init record present"() {
@@ -133,7 +128,8 @@ class TasklistRecatSpecification extends AbstractSpecification {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     // TODO: was not in the to-do list so have to go directly, BUT NOW IS with wrong button label 'edit'
     to TasklistRecatPage, '12', reason: 'DUE'
 
@@ -170,7 +166,8 @@ class TasklistRecatSpecification extends AbstractSpecification {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     via TasklistRecatPage, '12'
 
     then: 'The correct error is displayed'

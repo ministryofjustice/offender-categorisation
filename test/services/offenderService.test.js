@@ -6,6 +6,7 @@ const RiskChangeStatus = require('../../server/utils/riskChangeStatusEnum')
 const CatType = require('../../server/utils/catTypeEnum')
 const { dateConverter } = require('../../server/utils/utils')
 const { DUE_DATE, OVERDUE } = require('../../server/services/filter/homeFilter')
+const { LEGAL_STATUS_REMAND } = require('../../server/data/prisonerSearch/prisonerSearch.dto')
 
 const DATE_MATCHER = '\\d{2}/\\d{2}/\\d{4}'
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
@@ -33,6 +34,7 @@ const nomisClient = {
   getBasicOffenderDetails: jest.fn(),
   getIdentifiersByBookingId: jest.fn(),
   setInactive: jest.fn(),
+  getOffenderPrisonPeriods: jest.fn(),
 }
 
 const prisonerSearchClient = {
@@ -50,6 +52,10 @@ const risksAndNeedsClient = {
 
 const probationOffenderSearchApiClient = {
   matchPrisoners: jest.fn(),
+}
+
+const adjudicationsApiClientClient = {
+  getAdjudications: jest.fn(),
 }
 
 const formService = {
@@ -79,6 +85,7 @@ const allocationClientBuilder = () => allocationClient
 const prisonerSearchClientBuilder = () => prisonerSearchClient
 const risksAndNeedsClientBuilder = () => risksAndNeedsClient
 const probationOffenderSearchClientBuilder = () => probationOffenderSearchApiClient
+const adjudicationsApiClientBuilder = () => adjudicationsApiClientClient
 
 let service
 
@@ -90,6 +97,7 @@ beforeEach(() => {
     prisonerSearchClientBuilder,
     risksAndNeedsClientBuilder,
     probationOffenderSearchClientBuilder,
+    adjudicationsApiClientBuilder,
   )
   formService.getCategorisationRecord.mockReturnValue({})
   formService.getLiteCategorisation.mockReturnValue({})
@@ -486,6 +494,34 @@ describe('getRecategoriseOffenders', () => {
 
     expect(result).toHaveLength(0)
     expect(formService.getCategorisationRecord).toBeCalledTimes(2)
+  })
+
+  test('No results due to legal status remand', async () => {
+    const data = [
+      {
+        offenderNo: 'G12345',
+        firstName: 'Jane',
+        lastName: 'Brown',
+        bookingId: 123,
+        category: 'B',
+        nextReviewDate: '2019-04-20',
+      },
+    ]
+    const prisonerSearchData = [
+      {
+        bookingId: 123,
+        legalStatus: LEGAL_STATUS_REMAND,
+      },
+    ]
+    formService.getCategorisationRecord.mockResolvedValue(null)
+    prisonerSearchClient.getPrisonersAtLocation.mockResolvedValue([])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    nomisClient.getRecategoriseOffenders.mockResolvedValue(data)
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue(prisonerSearchData)
+
+    const result = await service.getRecategoriseOffenders(context, 'user1', {})
+
+    expect(result).toHaveLength(0)
   })
 })
 
@@ -1294,11 +1330,9 @@ describe('Lite', () => {
       sequence: 6,
       approvedDate: '15/04/2020',
       supervisorCategory: 'E',
-      approvedCategoryComment: 'approvedCategoryComment',
       approvedCommittee: 'SECUR',
       nextReviewDate: '14/03/2020',
       approvedPlacement: 'BMI',
-      approvedPlacementComment: 'approvedPlacementComment',
       approvedComment: 'approvedComment',
       transactionalClient: mockTransactionalClient,
     })
@@ -1313,20 +1347,16 @@ describe('Lite', () => {
       approvedCommittee: 'SECUR',
       nextReviewDate: '2020-03-14',
       approvedPlacement: 'BMI',
-      approvedPlacementComment: 'approvedPlacementComment',
       approvedComment: 'approvedComment',
-      approvedCategoryComment: 'approvedCategoryComment',
       transactionalClient: mockTransactionalClient,
     })
     expect(nomisClient.createSupervisorApproval).toBeCalledWith({
       bookingId,
       assessmentSeq: 6,
       category: 'E',
-      approvedCategoryComment: 'approvedCategoryComment',
       reviewCommitteeCode: 'SECUR',
       nextReviewDate: '2020-03-14',
       approvedPlacementAgencyId: 'BMI',
-      approvedPlacementText: 'approvedPlacementComment',
       evaluationDate: '2020-04-15',
       committeeCommentText: 'approvedComment',
     })
@@ -1995,6 +2025,19 @@ describe('getPrisonerBackground', () => {
       approvalDate: '2019-04-17',
       assessmentAgencyId: 'BXI',
       assessmentStatus: 'A',
+    },
+    // Records which are rejected by supervisors, then cancelled will have an approval
+    // date even though they were never approved, it is the date they were rejected. They
+    // should not be included.
+    {
+      bookingId: -45,
+      offenderNo: 'ABC1',
+      classificationCode: 'B',
+      classification: 'Cat B',
+      assessmentDate: '2019-04-17',
+      approvalDate: '2019-04-17',
+      assessmentAgencyId: 'BXI',
+      assessmentStatus: 'P',
     },
   ]
 
@@ -3093,6 +3136,279 @@ describe('getDueRecats', () => {
     ])
   })
 
+  it('should show the expected offender who is due for a recat where their due date for recall date is before their release date', async () => {
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate: '2017-09-23',
+      },
+    ])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      {
+        bookingId: 1186272,
+        prisonerNumber: 'G9285UP',
+        releaseDate: '2018-11-15',
+        sentenceStartDate: '2017-04-01',
+        recall: true,
+        postRecallReleaseDate: '2019-09-01',
+      },
+    ])
+    nomisClient.getOffenderPrisonPeriods.mockResolvedValue({
+      prisonerNumber: 'G9285UP',
+      prisonPeriod: [
+        {
+          bookNumber: '47828A',
+          bookingId: 1186272,
+          entryDate: '2023-12-08T15:50:37',
+          releaseDate: '2023-12-08T16:21:24',
+          movementDates: [
+            {
+              reasonInToPrison: 'Imprisonment Without Option',
+              dateInToPrison: '2019-02-28T15:53:37',
+              inwardType: 'ADM',
+              reasonOutOfPrison: 'Wedding/Civil Ceremony',
+              dateOutOfPrison: '2019-02-28T15:53:37',
+              outwardType: 'TAP',
+              admittedIntoPrisonId: 'BMI',
+              releaseFromPrisonId: 'BSI',
+            },
+            {
+              reasonInToPrison: 'Wedding/Civil Ceremony',
+              dateInToPrison: '2019-01-01T15:54:12',
+              inwardType: 'TAP',
+              reasonOutOfPrison: 'Conditional Release (CJA91) -SH Term>1YR',
+              dateOutOfPrison: '2019-01-31T16:20:19',
+              outwardType: 'REL',
+              admittedIntoPrisonId: 'BSI',
+              releaseFromPrisonId: 'AYI',
+            },
+          ],
+        },
+        {
+          bookNumber: '47829A',
+          bookingId: 1186273,
+          entryDate: '2023-12-08T16:21:21',
+          movementDates: [
+            {
+              reasonInToPrison: 'Imprisonment Without Option',
+              dateInToPrison: '2023-12-08T16:21:21',
+              inwardType: 'ADM',
+              admittedIntoPrisonId: 'DGI',
+            },
+          ],
+          transfers: [
+            {
+              dateOutOfPrison: '2023-12-08T16:22:02',
+              dateInToPrison: '2023-12-08T16:23:32',
+              transferReason: 'Overcrowding Draft',
+              fromPrisonId: 'DGI',
+              toPrisonId: 'BLI',
+            },
+          ],
+          prisons: ['DGI', 'BLI'],
+        },
+      ],
+    })
+
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      null,
+      null,
+      null,
+      {},
+      true,
+    )
+
+    expect(result).toEqual([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate: '2017-09-23',
+        displayName: 'Khaliam, Obinins',
+        displayStatus: 'Not started',
+        reason: { name: 'DUE', value: 'Review due' },
+        nextReviewDateDisplay: '10/03/2019',
+        overdue: true,
+        overdueText: '82 days',
+        pnomis: false,
+        buttonText: 'Start',
+        pom: 'Steve Rendell',
+      },
+    ])
+  })
+
+  it('it should not show an offender who has a release date before their next review date, AND they are not currently in review', async () => {
+    const releaseDate = '2017-09-23'
+    const nextReviewDate = '2017-10-23'
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2017-03-27',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate,
+      },
+    ])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      {
+        bookingId: 1186272,
+        releaseDate,
+        sentenceStartDate: '2017-04-01',
+      },
+    ])
+
+    const result = await service.getDueRecats('A1234AA', {}, nomisClient, allocationClient, prisonerSearchClient)
+
+    expect(result).toEqual([null])
+  })
+
+  it('should show the expected offender who is due for a second recat after being recalled', async () => {
+    nomisClient.getRecategoriseOffenders.mockResolvedValue([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2019-02-29',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate: '2019-09-23',
+      },
+    ])
+    formService.getCategorisationRecords.mockResolvedValue([])
+    prisonerSearchClient.getPrisonersByBookingIds.mockResolvedValue([
+      {
+        bookingId: 1186272,
+        prisonerNumber: 'G9285UP',
+        releaseDate: '2020-12-15',
+        sentenceStartDate: '2017-04-01',
+        recall: true,
+        postRecallReleaseDate: '2019-09-01',
+      },
+    ])
+    nomisClient.getOffenderPrisonPeriods.mockResolvedValue({
+      prisonerNumber: 'G9285UP',
+      prisonPeriod: [
+        {
+          bookNumber: '47828A',
+          bookingId: 1186272,
+          entryDate: '2023-12-08T15:50:37',
+          releaseDate: '2023-12-08T16:21:24',
+          movementDates: [
+            {
+              reasonInToPrison: 'Imprisonment Without Option',
+              dateInToPrison: '2019-02-28T15:53:37',
+              inwardType: 'ADM',
+              reasonOutOfPrison: 'Wedding/Civil Ceremony',
+              dateOutOfPrison: '2019-02-28T15:53:37',
+              outwardType: 'TAP',
+              admittedIntoPrisonId: 'BMI',
+              releaseFromPrisonId: 'BSI',
+            },
+            {
+              reasonInToPrison: 'Wedding/Civil Ceremony',
+              dateInToPrison: '2019-01-01T15:54:12',
+              inwardType: 'TAP',
+              reasonOutOfPrison: 'Conditional Release (CJA91) -SH Term>1YR',
+              dateOutOfPrison: '2019-01-31T16:20:19',
+              outwardType: 'REL',
+              admittedIntoPrisonId: 'BSI',
+              releaseFromPrisonId: 'AYI',
+            },
+          ],
+        },
+        {
+          bookNumber: '47829A',
+          bookingId: 1186273,
+          entryDate: '2023-12-08T16:21:21',
+          movementDates: [
+            {
+              reasonInToPrison: 'Imprisonment Without Option',
+              dateInToPrison: '2023-12-08T16:21:21',
+              inwardType: 'ADM',
+              admittedIntoPrisonId: 'DGI',
+            },
+          ],
+          transfers: [
+            {
+              dateOutOfPrison: '2023-12-08T16:22:02',
+              dateInToPrison: '2023-12-08T16:23:32',
+              transferReason: 'Overcrowding Draft',
+              fromPrisonId: 'DGI',
+              toPrisonId: 'BLI',
+            },
+          ],
+          prisons: ['DGI', 'BLI'],
+        },
+      ],
+    })
+
+    const result = await service.getDueRecats(
+      'A1234AA',
+      {},
+      nomisClient,
+      allocationClient,
+      prisonerSearchClient,
+      null,
+      null,
+      null,
+      {},
+      true,
+    )
+
+    expect(result).toEqual([
+      {
+        offenderNo: 'G9285UP',
+        bookingId: 1186272,
+        firstName: 'OBININS',
+        lastName: 'KHALIAM',
+        assessmentDate: '2019-02-29',
+        approvalDate: '2017-03-28',
+        assessmentSeq: 3,
+        assessStatus: 'A',
+        category: 'D',
+        nextReviewDate: '2019-09-23',
+        displayName: 'Khaliam, Obinins',
+        displayStatus: 'Not started',
+        reason: { name: 'DUE', value: 'Review due' },
+        nextReviewDateDisplay: '23/09/2019',
+        overdue: false,
+        overdueText: '',
+        pnomis: false,
+        buttonText: 'Start',
+        pom: 'Steve Rendell',
+      },
+    ])
+  })
+
   it('it should not show an offender who has a release date before their next review date, AND they are not currently in review', async () => {
     const releaseDate = '2017-09-23'
     const nextReviewDate = '2017-10-23'
@@ -4006,6 +4322,52 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       expect(prisonerSearchClient.getPrisonersAtLocation).toBeCalled()
       expect(formService.getCategorisationRecord).toBeCalledTimes(2)
       expect(result).toMatchObject(expected)
+    })
+  })
+
+  describe('hasLifeSentence', () => {
+    it('should return false', async () => {
+      const testBookingId = 123
+      const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
+
+      nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+      prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue([{ imprisonmentStatus: 'SOMETHING' }])
+      nomisClient.getMainOffence.mockReturnValue([{ offenceDescription: 'something' }])
+      const result = await service.hasLifeSentence({}, testBookingId)
+      expect(result).toBe(false)
+    })
+
+    it('should return true due to sentence term', async () => {
+      const testBookingId = 123
+      const sentenceTerms = [{ years: 2, months: 4, lifeSentence: true }]
+
+      nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+      prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue([{ imprisonmentStatus: 'SOMETHING' }])
+      nomisClient.getMainOffence.mockReturnValue([{ offenceDescription: 'something' }])
+      const result = await service.hasLifeSentence({}, testBookingId)
+      expect(result).toBe(true)
+    })
+
+    it('should return true due to imprisonment status', async () => {
+      const testBookingId = 123
+      const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
+
+      nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+      prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue([{ imprisonmentStatus: 'CFLIFE' }])
+      nomisClient.getMainOffence.mockReturnValue([{ offenceDescription: 'something' }])
+      const result = await service.hasLifeSentence({}, testBookingId)
+      expect(result).toBe(true)
+    })
+
+    it('should return true due to main offence description', async () => {
+      const testBookingId = 123
+      const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
+
+      nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+      prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue([{ imprisonmentStatus: 'SOMETHING' }])
+      nomisClient.getMainOffence.mockReturnValue([{ offenceDescription: 'MURDER ETC' }])
+      const result = await service.hasLifeSentence({}, testBookingId)
+      expect(result).toBe(true)
     })
   })
 })

@@ -120,6 +120,12 @@ module.exports = {
           validationMessage: 'Select what category is most suitable for this person',
         },
       },
+      {
+        justification: {
+          responseType: 'requiredString',
+          validationMessage: 'You must enter information about why the category is appropriate',
+        },
+      },
     ],
     validate: true,
   },
@@ -160,56 +166,15 @@ module.exports = {
     ],
     validate: true,
   },
-  fasttrackEligibility: {
+  previousRiskAssessments: {
     fields: [
       {
-        earlyCatD: {
+        haveTheyHadRecentOasysAssessment: {
           responseType: 'requiredString',
-          validationMessage: 'Please enter yes or no',
-        },
-      },
-      {
-        increaseCategory: {
-          responseType: 'requiredString',
-          validationMessage: 'Please enter yes or no',
+          validationMessage: 'Please select an option',
         },
       },
     ],
-    nextPath: {
-      path: '/form/recat/fasttrackRemain/',
-    },
-    validate: true,
-  },
-  fasttrackRemain: {
-    fields: [
-      {
-        remainCatC: {
-          responseType: 'requiredString',
-          validationMessage: 'Please enter yes or no',
-        },
-      },
-    ],
-    nextPath: {
-      decisions: {
-        discriminator: 'remainCatC',
-        Yes: '/form/recat/fasttrackProgress/',
-        No: '/form/recat/fasttrackCancelled/',
-      },
-    },
-    validate: true,
-  },
-  fasttrackProgress: {
-    fields: [
-      {
-        progressText: {
-          responseType: 'requiredString',
-          validationMessage: 'Please enter details',
-        },
-      },
-    ],
-    nextPath: {
-      path: '/form/recat/fasttrackConfirmation/',
-    },
     validate: true,
   },
   oasysInput: {
@@ -218,22 +183,36 @@ module.exports = {
     },
     fields: [
       {
-        date: {
-          responseType: 'todayOrPastDate',
-          validationMessage: '',
-          errorMessagePrefix: 'Completion date of the latest full review',
-        },
-      },
-      {
         oasysRelevantInfo: {
           responseType: 'requiredString',
           validationMessage:
-            'Select yes if there was any information in the review that is relevant to the recategorisation',
+            'Select yes if there was any information in the assessment that is relevant to the recategorisation',
         },
       },
       {
         oasysInputText: {
           responseType: 'requiredStringIf_oasysRelevantInfo_Yes',
+          validationMessage: 'Enter any information relevant to their categorisation',
+        },
+      },
+    ],
+    validate: true,
+  },
+  bcstInput: {
+    nextPath: {
+      path: '/tasklistRecat/',
+    },
+    fields: [
+      {
+        bcstRelevantInfo: {
+          responseType: 'requiredString',
+          validationMessage:
+            'Select yes if there was any information in the assessment that is relevant to the recategorisation',
+        },
+      },
+      {
+        bcstInputText: {
+          responseType: 'requiredStringIf_bcstRelevantInfo_Yes',
           validationMessage: 'Enter any information relevant to their categorisation',
         },
       },

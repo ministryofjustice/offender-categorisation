@@ -9,6 +9,7 @@ const states = {
   APPROVED: { name: 'APPROVED', value: 'Approved' },
   SUPERVISOR_BACK: { name: 'SUPERVISOR_BACK', value: 'Back from Supervisor', displayOrder: 20 },
   CANCELLED: { name: 'CANCELLED', value: 'Cancelled' },
+  CANCELLED_RELEASE: { name: 'CANCELLED_RELEASE', value: 'Cancelled (Released)' },
 }
 states.SECURITY_MANUAL.previous = [
   states.STARTED,

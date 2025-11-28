@@ -15,12 +15,10 @@
 
 {% block content %}
 
-  <div class="govuk-grid-row">
-    {% include "../../partials/offenderDetails.html" %}
-    <hr/>
-  </div>
+  {% include "../../partials/offenderDetails.html" %}
+  <hr/>
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-6">
+  <div class="govuk-!-margin-bottom-6">
     <h1 class="govuk-!-width-two-thirds govuk-heading-l govuk-!-display-inline mainHeading">
       {{ pageTitle }}
     </h1>
@@ -31,12 +29,20 @@
       </a>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-body-s">
+  <div class="govuk-body-s">
 
     <div class="govuk-!-width-two-thirds">
     {% set categoriserCat = data.recat.decision.category %}
     {% set superCat = data.supervisor.review.supervisorOverriddenCategory if data.supervisor.review.supervisorCategoryAppropriate == 'No' %}
-    {% set superOtherComments = data.supervisor.review.otherInformationText %}
+
+    {% if data.supervisor and data.supervisor.furtherInformation and data.supervisor.furtherInformation.otherInformationText %}
+      {% set superOtherComments = data.supervisor.furtherInformation.otherInformationText %}
+    {% elseif data.supervisor and data.supervisor.review and data.supervisor.review.otherInformationText %}
+      {% set superOtherComments = data.supervisor.review.otherInformationText %}
+    {% else %}
+      {% set superOtherComments = '' %}
+    {% endif %}
+
     {% set superPreviousOverrideComments = data.supervisor.review.previousOverrideCategoryText %}
     {% set currentCat = superCat or categoriserCat %}
 
@@ -78,11 +84,14 @@
       </div>
     {% endif %}
 
-    {% if superCat or superOtherComments or superPreviousOverrideComments %}
+    {% set supervisorOverriddenCategoryText = data.supervisor.review.supervisorOverriddenCategoryText if data.supervisor.review.supervisorOverriddenCategoryText else data.supervisor.changeCategory.supervisorOverriddenCategoryText %}
+
+
+      {% if (superCat and supervisorOverriddenCategoryText) or superOtherComments or superPreviousOverrideComments %}
       <div class="govuk-!-margin-bottom-6">
         <label for="overriddenText-2" class="govuk-!-font-weight-bold">Comments</label>
-        {% if superCat %}
-          <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ data.supervisor.review.supervisorOverriddenCategoryText }}</div>
+        {% if superCat and supervisorOverriddenCategoryText %}
+          <div class="forms-comments-text govuk-!-margin-bottom-1" id="overriddenText-2">{{ supervisorOverriddenCategoryText }}</div>
         {% endif %}
         {% if superPreviousOverrideComments %}
           <div class="forms-comments-text govuk-!-margin-bottom-1" id="previous-overriddenText">{{ superPreviousOverrideComments }}</div>

@@ -16,19 +16,16 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, false)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', false, true)
+    formApi.stubGetViperData('B2345YZ', false)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
 
-    prisonerBackgroundButton.click()
+    prisonerBackgroundLink.click()
 
     then: 'The page is displayed'
     at PrisonerBackgroundPage
     headerValue*.text() == fixture.MINI_HEADER
-    alertInfo*.text() == [
-      'E-List: First xel comment 2016-09-14',
-      '''E-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)''',
-      'Escape Risk Alert: First xer comment 2016-09-16']
     extremismWarning.text() contains 'This person is at risk of engaging in, or vulnerable to, extremism'
     violenceWarning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months.'
     !violenceNotifyWarning.displayed
@@ -42,7 +39,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     offenceDetails << 'offenceDetails text'
     submitButton.click()
     at TasklistRecatPage
-    prisonerBackgroundButton.click()
+    prisonerBackgroundLink.click()
     at PrisonerBackgroundPage
 
     then: "data is correctly retrieved"
@@ -64,20 +61,24 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', false, true)
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', false, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
 
-    prisonerBackgroundButton.click()
+    prisonerBackgroundLink.click()
 
     at PrisonerBackgroundPage
     submitButton.click()
 
     then: 'I stay on the page with validation errors'
-    at PrisonerBackgroundPage
-    errorSummaries*.text() == ['Please enter details']
-    errors.text().toString() == "Error:\nPlease enter details"
-
+    waitFor { at PrisonerBackgroundPage }
+    waitFor {
+      errorSummaries*.text() == ['Please enter details']
+    }
+    waitFor {
+      errors.text().toString() == "Error:\nPlease enter details"
+    }
   }
 
   def "The prisoner background page provides a link to view Offender category history"() {
@@ -88,11 +89,12 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI')
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, false)
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, false)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, false, true)
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, false)
+    formApi.stubGetViperData('B2345YZ', false)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
 
-    prisonerBackgroundButton.click()
+    prisonerBackgroundLink.click()
     at PrisonerBackgroundPage
 
     then: 'Cat history is displayed in a new tab'

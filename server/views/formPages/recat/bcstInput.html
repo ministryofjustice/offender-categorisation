@@ -1,0 +1,66 @@
+{% extends "../formTemplate.html" %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "details/macro.njk" import govukDetails %}
+{% from "input/macro.njk" import govukInput %}
+
+{% set pageTitle = "Check their Basic Custody Screening Tool part 1 assessment" %}
+
+{% block navigation %}
+
+{% include "../../partials/breadcrumbPreviousRiskAssessments.html" %}
+
+{% endblock %}
+
+{% block formItems %}
+
+<h1 id="securityInputHeader" class="govuk-heading-l">{{ pageTitle }}</h1>
+
+<p>This person does not require an OASys assessment as their prison sentence or recall period is less than 10 months.</p>
+<p>You should use their Basic Custody Screening Tool (BCST) part 1 assessment instead.</p>
+
+{% set bcstInputTextHtml %}
+
+    {{ govukTextarea({
+        name: "bcstInputText",
+        type: "bcstInputText",
+        id: "bcstInputText",
+        label: { text: "Enter any relevant information" },
+        hint: { text: "Include any measures taken to mitigate the risk." },    
+        value: data.recat.bcstInput.bcstInputText,
+        errorMessage: {
+            text: (errors | findError('bcstInputText')).text
+                } if (errors | findError('bcstInputText'))
+        })
+    }}
+
+{% endset -%}
+
+    {{ govukRadios({
+        name: "bcstRelevantInfo",
+        fieldset: {
+            legend: {
+            html: '<h2 class="govuk-heading-m">Was there any information in their BCST part 1 assessment that is relevant to the recategorisation?</h2>'
+            }
+    },
+    errorMessage: {
+        text: (errors | findError('bcstRelevantInfo')).text
+    } if (errors | findError('bcstRelevantInfo')),
+    items: [
+        {
+        value: "Yes",
+        text: "Yes",
+        checked: data.recat.bcstInput.bcstRelevantInfo === 'Yes',
+        conditional: {
+            html: bcstInputTextHtml
+        }
+        },
+        {
+        value: "No",
+        checked: data.recat.bcstInput.bcstRelevantInfo === 'No',
+        text: "No"
+        }
+    ]
+    }) }}
+
+{% endblock %}

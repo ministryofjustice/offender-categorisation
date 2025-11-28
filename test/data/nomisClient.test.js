@@ -5,7 +5,7 @@ const redisFunctions = { on: jest.fn(), get: jest.fn(), set: jest.fn() }
 redis.createClient = jest.fn().mockReturnValue(redisFunctions)
 redisFunctions.get.mockImplementation((key, callback) => callback(null, 'redis-token'))
 
-const config = require('../../server/config')
+const { config } = require('../../server/config')
 const nomisClientBuilder = require('../../server/data/nomisClientBuilder')
 
 describe('nomisClient', () => {

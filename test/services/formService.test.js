@@ -3,7 +3,7 @@ const serviceCreator = require('../../server/services/formService')
 const { validate } = require('../../server/utils/fieldValidation')
 const Status = require('../../server/utils/statusEnum')
 const CatType = require('../../server/utils/catTypeEnum')
-const config = require('../../server/config')
+const { config } = require('../../server/config')
 
 const mockTransactionalClient = { query: jest.fn(), release: jest.fn() }
 const bookingId = 34
@@ -537,24 +537,26 @@ describe('computeSuggestedCat', () => {
       securityBack: { catB: 'No' },
       extremismRating: { previousTerrorismOffences: 'No' },
     },
-    lifeProfile: { provisionalCategorisation: 'C' },
+    lifeProfile: { life: false },
   }
   const dateOfBirth = moment().subtract(20, 'years')
   test.each`
-    data                                                                      | category
-    ${{}}                                                                     | ${'C'}
-    ${{ details: { dateOfBirth } }}                                           | ${'I'}
-    ${{ history: { catAType: 'A' } }}                                         | ${'B'}
-    ${{ ratings: { securityBack: { catB: 'Yes' } } }}                         | ${'B'}
-    ${{ violenceProfile: { veryHighRiskViolentOffender: true } }}             | ${'B'}
-    ${{ violenceProfile: { numberOfSeriousAssaults: 1 } }}                    | ${'C'}
-    ${{ violenceProfile: { provisionalCategorisation: 'B' } }}                | ${'B'}
-    ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}                   | ${'B'}
-    ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}         | ${'B'}
-    ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }} | ${'B'}
-    ${{ extremismProfile: { provisionalCategorisation: 'B' } }}               | ${'B'}
-    ${{ lifeProfile: { provisionalCategorisation: 'B' } }}                    | ${'B'}
-    ${nearMisses}                                                             | ${'C'}
+    data                                                                                                           | category
+    ${{}}                                                                                                          | ${'C'}
+    ${{ details: { dateOfBirth } }}                                                                                | ${'I'}
+    ${{ history: { catAType: 'A' } }}                                                                              | ${'B'}
+    ${{ ratings: { securityBack: { catB: 'Yes' } } }}                                                              | ${'B'}
+    ${{ violenceProfile: { notifySafetyCustodyLead: false, numberOfAssaults: 5, numberOfNonSeriousAssaults: 1 } }} | ${'C'}
+    ${{ violenceProfile: { notifySafetyCustodyLead: true, numberOfAssaults: 4, numberOfNonSeriousAssaults: 1 } }}  | ${'C'}
+    ${{ violenceProfile: { notifySafetyCustodyLead: true, numberOfAssaults: 5, numberOfNonSeriousAssaults: 0 } }}  | ${'C'}
+    ${{ violenceProfile: { notifySafetyCustodyLead: true, numberOfAssaults: 5, numberOfNonSeriousAssaults: 1 } }}  | ${'B'}
+    ${{ ratings: { escapeRating: { escapeCatB: 'Yes' } } }}                                                        | ${'B'}
+    ${{ ratings: { furtherCharges: { furtherChargesCatB: 'Yes' } } }}                                              | ${'B'}
+    ${{ ratings: { extremismRating: { previousTerrorismOffences: 'Yes' } } }}                                      | ${'B'}
+    ${{ extremismProfile: { increasedRiskOfExtremism: true } }}                                                    | ${'B'}
+    ${{ lifeProfile: { life: true } }}                                                                             | ${'B'}
+    ${{ lifeProfile: { life: false } }}                                                                            | ${'C'}
+    ${nearMisses}                                                                                                  | ${'C'}
   `('should return cat $category for data: $data', ({ data, category }) => {
     expect(service.computeSuggestedCat(data)).toEqual(category)
   })

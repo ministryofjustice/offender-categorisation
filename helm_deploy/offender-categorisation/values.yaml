@@ -5,7 +5,7 @@ generic-service:
   productId: "DPS006"
 
   image:
-    repository: quay.io/hmpps/offender-categorisation
+    repository: ghcr.io/ministryofjustice/offender-categorisation
     tag: latest
     pullPolicy: IfNotPresent
     port: 3000
@@ -52,11 +52,12 @@ generic-service:
 
     offender-categorisation:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
-      API_CLIENT_ID: "API_CLIENT_ID"
-      API_CLIENT_SECRET: "API_CLIENT_SECRET"
+      AUTH_CODE_CLIENT_ID: "AUTH_CODE_CLIENT_ID"
+      AUTH_CODE_CLIENT_SECRET: "AUTH_CODE_CLIENT_SECRET"
+      CLIENT_CREDS_CLIENT_ID: "CLIENT_CREDS_CLIENT_ID"
+      CLIENT_CREDS_CLIENT_SECRET: "CLIENT_CREDS_CLIENT_SECRET"
       SESSION_SECRET: "SESSION_SECRET"
       GOOGLE_TAG_MANAGER_TAG: "GOOGLE_TAG_MANAGER_TAG"
-      FEATURE_FLAG__EVENT__3_TO_5_POLICY_CHANGE: 'FEATURE_FLAG__EVENT__3_TO_5_POLICY_CHANGE'
 
     rp-sqs-instance-output:
       RP_QUEUE_URL: "sqs_rpc_url"

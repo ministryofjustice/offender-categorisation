@@ -6,6 +6,11 @@ import Page from '../../pages/page'
 import { FormDbJson } from '../../fixtures/db-key-convertor'
 import Status from '../../../server/utils/statusEnum'
 import ViolencePage from '../../pages/form/ratings/violence'
+import {
+  makeTestNomisIncidentDto,
+  makeTestNomisIncidentDtoResponse
+} from "../../../server/data/nomis/incidents/nomisIncident.dto.test-factory";
+import { QUESTION_ANSWER_YES, SERIOUS_ASSAULT_QUESTIONS } from "../../../server/data/nomis/incidents/nomisIncident.dto";
 
 describe('Violence', () => {
   let categoriserHomePage: CategoriserHomePage
@@ -34,16 +39,13 @@ describe('Violence', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
   })
 
@@ -61,17 +63,18 @@ describe('Violence', () => {
     categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
-    taskListPage.violenceButton().click()
+    taskListPage.violenceLink().click()
   }
 
   describe('form submission', () => {
     beforeEach(() => {
-      cy.task('stubGetViolenceProfile', {
-        offenderNo: 'B2345YZ',
-        category: 'C',
-        veryHighRiskViolentOffender: false,
-        notifySafetyCustodyLead: false,
-        displayAssaults: false,
+      cy.task('stubGetViperData', {
+        prisonerNumber: 'B2345YZ',
+        aboveThreshold: false,
+      })
+      cy.task('stubGetAssaultIncidents', {
+        prisonerNumber: 'B2345YZ',
+        assaultIncidents: []
       })
 
       stubLoginAndBrowseToViolenceInputPage()
@@ -137,7 +140,7 @@ describe('Violence', () => {
 
         violencePage.saveAndReturnButton().click()
 
-        taskListPage.violenceButton().click()
+        taskListPage.violenceLink().click()
 
         violencePage.validateHighRiskOfViolenceRadioButtons({
           selection: ['YES'],
@@ -177,12 +180,64 @@ describe('Violence', () => {
 
   describe('warning display', () => {
     it('should display the expected assault warning messages', () => {
-      cy.task('stubGetViolenceProfile', {
-        offenderNo: 'B2345YZ',
-        category: 'C',
-        veryHighRiskViolentOffender: false,
-        notifySafetyCustodyLead: false,
-        displayAssaults: true,
+      cy.task('stubGetViperData', {
+        prisonerNumber: 'B2345YZ',
+        aboveThreshold: false,
+      })
+      cy.task('stubGetAssaultIncidents', {
+        prisonerNumber: 'B2345YZ',
+        assaultIncidents: [
+          makeTestNomisIncidentDto({
+            incidentStatus: 'Something',
+            reportTime: (new Date()).toDateString(),
+            responses: [
+              makeTestNomisIncidentDtoResponse({
+                question: SERIOUS_ASSAULT_QUESTIONS[0],
+                answer: QUESTION_ANSWER_YES
+              })
+            ]
+          }),
+          makeTestNomisIncidentDto({
+            incidentStatus: 'Something',
+            reportTime: (new Date()).toDateString(),
+            responses: [
+              makeTestNomisIncidentDtoResponse({
+                question: SERIOUS_ASSAULT_QUESTIONS[0],
+                answer: QUESTION_ANSWER_YES
+              })
+            ]
+          }),
+          makeTestNomisIncidentDto({
+            incidentStatus: 'Something',
+            reportTime: (new Date()).toDateString(),
+            responses: [
+              makeTestNomisIncidentDtoResponse({
+                question: 'something',
+                answer: 'No'
+              })
+            ]
+          }),
+          makeTestNomisIncidentDto({
+            incidentStatus: 'Something',
+            reportTime: (new Date()).toDateString(),
+            responses: [
+              makeTestNomisIncidentDtoResponse({
+                question: 'something',
+                answer: 'No'
+              })
+            ]
+          }),
+          makeTestNomisIncidentDto({
+            incidentStatus: 'Something',
+            reportTime: (new Date()).toDateString(),
+            responses: [
+              makeTestNomisIncidentDtoResponse({
+                question: 'something',
+                answer: 'No'
+              })
+            ]
+          }),
+        ]
       })
 
       stubLoginAndBrowseToViolenceInputPage()
@@ -196,12 +251,13 @@ describe('Violence', () => {
     })
 
     it('should display the safer custody lead flag', () => {
-      cy.task('stubGetViolenceProfile', {
-        offenderNo: 'B2345YZ',
-        category: 'C',
-        veryHighRiskViolentOffender: false,
-        notifySafetyCustodyLead: true,
-        displayAssaults: false,
+      cy.task('stubGetViperData', {
+        prisonerNumber: 'B2345YZ',
+        aboveThreshold: true,
+      })
+      cy.task('stubGetAssaultIncidents', {
+        prisonerNumber: 'B2345YZ',
+        assaultIncidents: []
       })
 
       stubLoginAndBrowseToViolenceInputPage()

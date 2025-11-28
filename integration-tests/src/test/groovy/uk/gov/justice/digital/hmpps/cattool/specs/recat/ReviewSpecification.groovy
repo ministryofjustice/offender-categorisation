@@ -44,35 +44,33 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
 
-    then: 'the completed text is displayed'
-    summarySection[0].text() == 'Check and submit'
-    summarySection[1].text() == 'All tasks completed'
+    then: 'the check and submit link is displayed'
+    checkAndSubmitLink.displayed
 
     when: 'The continue link is selected'
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with the saved form details and securityBack link enabled'
     at ReviewRecatPage
     headerValue*.text() == fixture.FULL_HEADER
-    changeLinks.size() == 6
+    changeLinks.size() == 13
 
     prisonerBackgroundSummary*.text() == [
-      '',
       'Age 21',
       'Categorisation date Category decision Review location\n24/03/2013 B LPI prison\n08/06/2012 A LPI prison',
-      'This person has not been reported as the perpetrator in any assaults in custody before',
-      'This person is considered an escape risk\nE-List: First xel comment 2016-09-14\nE-List: Second xel comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text comment with lengthy text 2016-09-15 (expired) (inactive)\nEscape Risk Alert: First xer comment 2016-09-16',
+      'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months. You should consider the dates and context of these assaults in your assessment.',
+      'This person is considered an escape risk\nE-List: 2025-01-01\nEscape Risk Alert: 2025-01-01',
       'This person is at risk of engaging in, or vulnerable to, extremism.',
       'offence Details text']
-    securityInputSummary*.text() == ['', 'No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
-    riskAssessmentSummary*.text() == ['', 'lower security category text', 'higher security category text', 'Yes\nother relevant information']
-    assessmentSummary*.text() == ['', 'Category C']
-    higherSecurityReviewSummary*.text() == ['', 'good', 'step', 'No', 'conditions']
-    nextReviewDateSummary*.text() == ['', 'Saturday 14 December 2019']
+    securityInputSummary*.text() == ['No', 'Yes', 'No', 'Here is the Security information held on this prisoner']
+    riskAssessmentSummary*.text() == ['lower security category text', 'higher security category text', 'Yes\nother relevant information']
+    higherSecurityReviewSummary*.text() == ['good', 'step', 'No', 'conditions']
+    nextReviewDateSummary*.text() == ['Saturday 14 December 2019']
 
     !changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
     when: 'The page is submitted'
@@ -86,10 +84,10 @@ class ReviewSpecification extends AbstractSpecification {
     def riskProfile = data.risk_profile
     data.nomis_sequence_no == 4
     def json = riskProfile.toString()
-    json.contains '"socProfile": {"nomsId": "B2345YZ", "riskType": "SOC", "transferToSecurity": false'
-    json.contains '"escapeProfile": {"nomsId": "B2345YZ", "riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true,'
-    json.contains '"violenceProfile": {"nomsId": "B2345YZ", "riskType": "VIOLENCE", "displayAssaults": false, "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "provisionalCategorisation": "C", "numberOfNonSeriousAssaults": 3, "veryHighRiskViolentOffender": false}'
-    json.contains '"extremismProfile": {"nomsId": "B2345YZ", "riskType": "EXTREMISM", "notifyRegionalCTLead": true, "increasedRiskOfExtremism": true, "provisionalCategorisation": "C"}'
+    json.contains '"socProfile": {"transferToSecurity": false'
+    json.contains '"escapeProfile": {"riskType": "ESCAPE", "activeEscapeList": true, "activeEscapeRisk": true, "escapeListAlerts": [{"alertCode": "XEL", "dateCreated": "2025-01-01"}], "escapeRiskAlerts": [{"alertCode": "XER", "dateCreated": "2025-01-01"}]}'
+    json.contains '"violenceProfile": {"riskType": "VIOLENCE", "numberOfAssaults": 5, "notifySafetyCustodyLead": true, "numberOfSeriousAssaults": 2, "numberOfNonSeriousAssaults": 3}'
+    json.contains '"extremismProfile": {"notifyRegionalCTLead": true, "increasedRiskOfExtremism": true}'
   }
 
   def "The recat review page can be displayed without security input"() {
@@ -115,17 +113,18 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with manual security link enabled'
     at ReviewRecatPage
-    changeLinks.size() == 6
-    changeLinks.filter(href: contains('/form/recat/securityInput/')).displayed
-    securityInputSummary*.text() == ['', 'No', 'Yes', 'No']
+    changeLinks.size() == 12
+    changeLinks.filter(href: contains('/form/recat/securityInput/'))*.displayed
+    securityInputSummary*.text() == ['No', 'Yes', 'No']
   }
 
   def "The recat review page security flagged section"() {
@@ -152,15 +151,16 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     at TasklistRecatPage
-    riskProfilerApi.stubGetEscapeProfile('B2345YZ', 'C', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', false, true, false)
-    riskProfilerApi.stubGetExtremismProfile('B2345YZ', 'C', true, true, false)
+    alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
+    pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubAgencyDetails('LPI')
-    continueButton.click()
+    checkAndSubmitLink.click()
 
     then: 'the review page is displayed with security flagged showing as "yes"'
     at ReviewRecatPage
-    changeLinks.size() == 5
-    securityInputSummary*.text() == ['', 'No', 'No', 'Yes', 'security info text']
+    changeLinks.size() == 9
+    securityInputSummary*.text() == ['No', 'No', 'Yes', 'security info text']
   }
 }

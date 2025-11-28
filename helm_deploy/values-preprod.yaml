@@ -1,16 +1,15 @@
 generic-service:
-
   replicaCount: 4
 
   image:
-    repository: quay.io/hmpps/offender-categorisation
+    repository: ghcr.io/ministryofjustice/offender-categorisation
     tag: latest
     pullPolicy: IfNotPresent
     port: 3000
 
   ingress:
     enable_allowlist: true
-    hosts: [ preprod.offender-categorisation.service.justice.gov.uk ]
+    hosts: [preprod.offender-categorisation.service.justice.gov.uk]
 
   env:
     ENVIRONMENT: preprod
@@ -24,6 +23,9 @@ generic-service:
     RISKS_AND_NEEDS_ENDPOINT_URL_RESPONSE: 45000
     PROBATION_OFFENDER_SEARCH_ENDPOINT_URL: https://probation-offender-search-preprod.hmpps.service.justice.gov.uk/
     OFFENDER_CATEGORISATION_API_ENDPOINT_URL: https://hmpps-offender-categorisation-api-preprod.hmpps.service.justice.gov.uk/
+    PATHFINDER_API_ENDPOINT_URL: https://preprod-api.pathfinder.service.justice.gov.uk/
+    ALERTS_ENDPOINT_URL: https://alerts-api-preprod.hmpps.service.justice.gov.uk/
+    ADJUDICATIONS_ENDPOINT_URL: https://manage-adjudications-api-preprod.hmpps.service.justice.gov.uk/
     DPS_URL: https://digital-preprod.prison.service.justice.gov.uk/
     SUPPORT_URL: https://support-preprod.hmpps.service.justice.gov.uk/
     COMPONENT_API_URL: https://frontend-components-preprod.hmpps.service.justice.gov.uk

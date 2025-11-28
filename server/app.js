@@ -11,9 +11,8 @@ const cookieParser = require('cookie-parser')
 const redis = require('redis')
 const session = require('express-session')
 const RedisStore = require('connect-redis')(session)
-const getSanitisedError = require('./sanitisedError')
 require('./catToolSerialisers') // do not remove, logging requires it!
-const auth = require('./authentication/auth')
+const auth = require('./authentication/auth').default
 const healthFactory = require('./services/healthCheck')
 const createHomeRouter = require('./routes/home')
 const createFormRouter = require('./routes/form')
@@ -23,9 +22,8 @@ const authorisationMiddleware = require('./middleware/authorisationMiddleware')
 const getFrontEndComponentsMiddleware = require('./middleware/dpsFrontEndComponentsMiddleware')
 const setUpEnvironmentName = require('./utils/setUpEnvironmentName')
 const setUpWebSecurity = require('./utils/setUpWebSecurity')
-const logger = require('../log')
 const nunjucksSetup = require('./utils/nunjucksSetup')
-const config = require('./config')
+const { config } = require('./config')
 const createOpenConditionsRouter = require('./routes/openConditions')
 const createRecatRouter = require('./routes/recat')
 const createNextReviewDateRouter = require('./routes/nextReviewDate')
@@ -40,23 +38,25 @@ const production = process.env.NODE_ENV === 'production'
 const testMode = process.env.NODE_ENV === 'test'
 
 module.exports = function createApp({
-  signInService,
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   statsService,
   frontEndComponentsService,
+  pathfinderService,
+  alertService,
 }) {
   const app = express()
 
-  auth.init(signInService)
+  // Authentication Configuration
+  auth.init()
 
   app.set('json spaces', 2)
-
   // Configure Express for running behind proxies
   // https://expressjs.com/en/guide/behind-proxies.html
   app.set('trust proxy', true)
+  // Server Configuration
+  app.set('port', process.env.PORT || 3000)
 
   app.get('/ping', (req, res) => {
     return res.send('pong')
@@ -66,15 +66,11 @@ module.exports = function createApp({
   app.set('view engine', 'html')
 
   setUpEnvironmentName(app)
-
   nunjucksSetup(app, path)
-
-  // Server Configuration
-  app.set('port', process.env.PORT || 3000)
-
   app.use(setUpWebSecurity())
   app.use(addRequestId)
 
+  // should be moved to setUpWebSession middleware
   const client = redis.createClient({
     port: config.redis.port,
     password: config.redis.auth_token,
@@ -93,6 +89,7 @@ module.exports = function createApp({
     }),
   )
 
+  // Authentication strategy using Oauth2
   app.use(passport.initialize())
   app.use(passport.session())
 
@@ -151,6 +148,9 @@ module.exports = function createApp({
     config.apis.riskProfiler.url,
     config.apis.allocationManager.url,
     config.apis.prisonerSearch.url,
+    config.apis.pathfinderApi.url,
+    config.apis.alertsApi.url,
+    config.apis.adjudicationsApi.url,
   )
   app.get('/health', (req, res, next) => {
     health((err, result) => {
@@ -184,35 +184,6 @@ module.exports = function createApp({
     app.use(csurf())
   }
 
-  // JWT token refresh
-  app.use(async (req, res, next) => {
-    if (req.originalUrl.startsWith('/sign-out')) {
-      return next() // don't try to refresh token on sign-out route
-    }
-    if (req.user) {
-      const timeToRefresh = new Date() > req.user.refreshTime
-      if (timeToRefresh) {
-        try {
-          const newToken = await signInService.getRefreshedToken(req.user)
-          req.user.token = newToken.token
-          req.user.refreshToken = newToken.refreshToken
-          logger.info(`existing refreshTime in the past by ${new Date() - req.user.refreshTime}`)
-          logger.info(
-            `updating time by ${newToken.refreshTime - req.user.refreshTime} from ${req.user.refreshTime} to ${
-              newToken.refreshTime
-            }`,
-          )
-          req.user.refreshTime = newToken.refreshTime
-        } catch (error) {
-          const sanitisedError = getSanitisedError(error)
-          logger.error(sanitisedError, `Token refresh error: ${req.user.username}`)
-          return res.redirect('/sign-out')
-        }
-      }
-    }
-    return next()
-  })
-
   // Update a value in the cookie so that the set-cookie will be sent.
   // Only changes every minute so that it's not sent with every request.
   app.use((req, res, next) => {
@@ -223,7 +194,7 @@ module.exports = function createApp({
   app.use(cookieParser())
   app.use(featureFlagMiddleware)
 
-  const authLogoutUrl = `${config.apis.oauth2.externalUrl}/logout?client_id=${config.apis.oauth2.apiClientId}&redirect_uri=${config.domain}`
+  const authLogoutUrl = `${config.apis.oauth2.externalUrl}/logout?client_id=${config.apis.oauth2.authCodeClientId}&redirect_uri=${config.domain}`
 
   app.get('/autherror', (req, res) => {
     res.status(401)
@@ -235,6 +206,7 @@ module.exports = function createApp({
     return res.render('accessibility-statement', { user })
   })
 
+  // TODO move to setUpAuthentication middleware
   app.get('/login', passport.authenticate('oauth2'))
 
   app.get('/login/callback', (req, res, next) =>
@@ -244,6 +216,7 @@ module.exports = function createApp({
     })(req, res, next),
   )
 
+  // session.destroy() is called on sign-out
   app.use('/sign-out', (req, res, next) => {
     if (req.user) {
       req.logout(err => {
@@ -268,7 +241,14 @@ module.exports = function createApp({
   app.use('/', homeRouter)
   app.use(
     '/tasklist/',
-    createTasklistRouter({ formService, offendersService, userService, authenticationMiddleware, riskProfilerService }),
+    createTasklistRouter({
+      formService,
+      offendersService,
+      userService,
+      authenticationMiddleware,
+      pathfinderService,
+      alertService,
+    }),
   )
   app.use(
     '/tasklistRecat/',
@@ -277,7 +257,8 @@ module.exports = function createApp({
       offendersService,
       userService,
       authenticationMiddleware,
-      riskProfilerService,
+      pathfinderService,
+      alertService,
     }),
   )
 
@@ -293,7 +274,8 @@ module.exports = function createApp({
     formService,
     offendersService,
     userService,
-    riskProfilerService,
+    pathfinderService,
+    alertService,
     authenticationMiddleware,
   })
   app.use('/form/recat/', recatRouter)
@@ -318,8 +300,9 @@ module.exports = function createApp({
     formService,
     offendersService,
     userService,
-    riskProfilerService,
     authenticationMiddleware,
+    pathfinderService,
+    alertService,
   })
   app.use('/form/', formRouter)
   app.use('/supervisor/', formRouter)

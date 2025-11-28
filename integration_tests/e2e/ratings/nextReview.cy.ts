@@ -53,9 +53,8 @@ describe('Next Review', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
 
@@ -64,9 +63,7 @@ describe('Next Review', () => {
 
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: true,
-      notifyRegionalCTLead: false,
+      band: 1,
     })
 
     cy.task('stubAgencyDetails', { agency: 'LPI' })
@@ -84,19 +81,11 @@ describe('Next Review', () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
-
-      cy.intercept('GET', '/form/nextReviewDate/nextReviewDateQuestion/*', req => {
-        req.query.overrideFeatureFlag = 'false'
-      }).as('nextReviewDateQuestion')
-      taskListPage.nextReviewDateButton().click()
-      cy.wait('@nextReviewDateQuestion')
+      taskListPage.nextReviewDateLink().click()
 
       nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
-      nextReviewQuestionPage.assertTextVisibilityOnPage({
-        selector: 'div',
-        text: 'is 5 or more years away, they must be reviewed every 12 months',
-        isVisible: false,
-      })
+      nextReviewQuestionPage.checkPrisonerReviewGuidance()
+      nextReviewQuestionPage.checkConditionalReleaseDateInsetText('2020-02-02')
     })
 
     describe('invalid', () => {
@@ -134,44 +123,6 @@ describe('Next Review', () => {
     })
   })
 
-  describe('step 1 - when should they next be reviewed? 3 to 5 policy change', () => {
-    beforeEach(() => {
-      cy.stubLogin({ user: CATEGORISER_USER })
-      cy.signIn()
-
-      categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-      categoriserHomePage.selectPrisonerWithBookingId(bookingId)
-
-      taskListPage = TaskListPage.createForBookingId(bookingId)
-
-      cy.intercept('GET', '/form/nextReviewDate/nextReviewDateQuestion/*', req => {
-        req.query.overrideFeatureFlag = 'true'
-      }).as('nextReviewDateQuestion')
-      taskListPage.nextReviewDateButton().click()
-      cy.wait('@nextReviewDateQuestion')
-
-      nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
-      nextReviewQuestionPage.assertTextVisibilityOnPage({
-        selector: 'div',
-        text: 'is 5 or more years away, they must be reviewed every 12 months',
-      })
-    })
-
-    describe('invalid', () => {
-      it('should show a validation error on empty form submission 3 to 5 policy change', () => {
-        nextReviewQuestionPage.continueButton().click()
-
-        nextReviewQuestionPage.validateErrorSummaryMessages([
-          { index: 0, href: '#nextDateChoice', text: 'Please select a choice' },
-        ])
-
-        nextReviewQuestionPage.validateErrorMessages([
-          { selector: '#nextDateChoice-error', text: 'Please select a choice' },
-        ])
-      })
-    })
-  })
-
   describe('step 2 - Confirm the date they should be reviewed by', () => {
     beforeEach(() => {
       cy.stubLogin({
@@ -183,9 +134,11 @@ describe('Next Review', () => {
       categoriserHomePage.selectPrisonerWithBookingId(bookingId)
 
       taskListPage = TaskListPage.createForBookingId(bookingId)
-      taskListPage.nextReviewDateButton().click()
+      taskListPage.nextReviewDateLink().click()
 
       nextReviewQuestionPage = NextReviewQuestionPage.createForBookingId(bookingId)
+      nextReviewQuestionPage.checkPrisonerReviewGuidance()
+      nextReviewQuestionPage.checkConditionalReleaseDateInsetText('2020-02-02')
     })
 
     describe('invalid', () => {
@@ -194,6 +147,8 @@ describe('Next Review', () => {
         nextReviewQuestionPage.continueButton().click()
 
         nextReviewConfirmationPage = NextReviewConfirmationPage.createForBookingIdAndChoiceNumber(12, '6')
+        nextReviewConfirmationPage.checkPrisonerReviewGuidance()
+        nextReviewConfirmationPage.checkConditionalReleaseDateInsetText('2020-02-02')
       })
 
       it('should show a validation error if given an empty review date', () => {
@@ -242,10 +197,10 @@ describe('Next Review', () => {
       afterEach(() => {
         nextReviewConfirmationPage.saveAndReturnButton().click()
 
-        taskListPage.nextReviewDateButton().click()
+        taskListPage.nextReviewDateLink().click()
 
         cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
           expect(result.rows[0].cat_type).to.eq(CATEGORISATION_TYPE.INITIAL)
           expect(result.rows[0].user_id).to.eq(CATEGORISER_USER.username)
           expect(result.rows[0].assigned_user_id).to.eq(CATEGORISER_USER.username)
@@ -315,19 +270,12 @@ describe('Next Review', () => {
           cy.visit(`/${bookingId}`)
 
           categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
-
-          cy.intercept('GET', '/form/nextReviewDate/nextReviewDateStandalone/*', req => {
-            req.query.overrideFeatureFlag = 'false'
-          }).as('nextReviewStandalone')
           categoriserLandingPage.changeReviewDateButton().click()
-          cy.wait('@nextReviewStandalone')
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
-          nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
-          nextReviewStandalonePage.assertTextVisibilityOnPage({
-            selector: 'div',
-            text: 'Determinate prison sentence with three or more years left in custody',
-          })
+          nextReviewStandalonePage.checkCurrentReviewInsetText('2020-01-16')
+          nextReviewStandalonePage.checkPrisonerReviewGuidance()
+          nextReviewStandalonePage.checkConditionalReleaseDateInsetText('2020-02-02')
         })
 
         it('should reject an empty form submission', () => {
@@ -403,49 +351,6 @@ describe('Next Review', () => {
         })
       })
 
-      describe('with 3 to 5 policy change', () => {
-        beforeEach(() => {
-          cy.stubLogin({
-            user: CATEGORISER_USER,
-          })
-          cy.signIn()
-
-          dbSeeder(approvedFixture)
-
-          cy.visit(`/${bookingId}`)
-
-          categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
-
-          cy.intercept('GET', '/form/nextReviewDate/nextReviewDateStandalone/*', req => {
-            req.query.overrideFeatureFlag = 'true'
-          }).as('nextReviewStandalone')
-          categoriserLandingPage.changeReviewDateButton().click()
-          cy.wait('@nextReviewStandalone')
-
-          nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
-          nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
-          nextReviewStandalonePage.assertTextVisibilityOnPage({
-            selector: 'div',
-            text: 'Determinate sentence with 5 or more years left in custody',
-          })
-        })
-
-        it('should reject an empty form submission with 3 to 5 policy feature flag', () => {
-          nextReviewStandalonePage.clearNewReviewDateInput()
-          nextReviewStandalonePage.clearNewReviewReasonTextInput()
-          nextReviewStandalonePage.submitButton().click()
-
-          nextReviewStandalonePage.validateErrorSummaryMessages([
-            { index: 0, href: '#date', text: 'The review date must be a real date' },
-            { index: 1, href: '#reason', text: 'Enter reason for date change' },
-          ])
-          nextReviewStandalonePage.validateErrorMessages([
-            { selector: '#reviewDate-error', text: 'The review date must be a real date' },
-            { selector: '#reason-error', text: 'Enter reason for date change' },
-          ])
-        })
-      })
-
       describe('the nextReviewDate Standalone page saves details correctly', () => {
         it('should require a user to use the task list to change the date', () => {
           dbSeeder(awaitingApprovalFixture)
@@ -477,73 +382,12 @@ describe('Next Review', () => {
           cy.visit(`/${bookingId}`)
 
           const supervisorLandingPage = SupervisorLandingPage.createForBookingId(bookingId)
-
-          cy.intercept('GET', '/form/nextReviewDate/nextReviewDateStandalone/*', req => {
-            req.query.overrideFeatureFlag = 'false'
-          }).as('nextReviewStandalone')
           supervisorLandingPage.changeReviewDateButton().click()
-          cy.wait('@nextReviewStandalone')
 
           nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
-          nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
-          nextReviewStandalonePage.assertTextVisibilityOnPage({
-            selector: 'div',
-            text: 'Determinate prison sentence with three or more years left in custody',
-          })
-
-          const newReviewDate = moment().add(1, 'months').add(4, 'days').startOf('day')
-          const newReviewReason = 'Another test reason'
-
-          cy.task('stubUpdateNextReviewDate', { date: newReviewDate.format(EXPECTED_DATE_FORMAT_BACK_END) })
-
-          nextReviewStandalonePage.setNewReviewDateInput(newReviewDate.format(EXPECTED_DATE_FORMAT_FRONT_END))
-          nextReviewStandalonePage.setNewReviewReasonTextInput(newReviewReason)
-          nextReviewStandalonePage.submitButton().click()
-
-          supervisorLandingPage.validateChangeHistoryTableData([
-            [newReviewDate.format('D MMMM yyyy'), 'Another test reason'],
-          ])
-
-          cy.task('verifyUpdateNextReviewDate', { date: newReviewDate.format(EXPECTED_DATE_FORMAT_BACK_END) })
-
-          cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-            expect(result.rows[0].form_response.ratings.nextReviewDate).to.deep.eq({
-              date: '14/12/2019',
-            })
-          })
-
-          cy.task('selectNextReviewChangeHistoryTableDbRow', { offenderNo: 'B2345YZ' }).then(
-            (result: { rows: NextReviewChangeHistoryDbRow[] }) => {
-              expect(result.rows[0].reason).to.eq('Another test reason')
-              expect(result.rows[0].next_review_date).to.eq(newReviewDate.toISOString(false))
-              expect(result.rows[0].changed_by).to.eq(SUPERVISOR_USER.username)
-              expect(result.rows.length).to.eq(1)
-            },
-          )
-        })
-
-        it('should allow a supervisor to make a change with 3 to 5 policy feature flag', () => {
-          dbSeeder(supervisorChangeFixture)
-
-          cy.task('stubUncategorisedAwaitingApproval')
-          cy.stubLogin({ user: SUPERVISOR_USER })
-          cy.signIn()
-          cy.visit(`/${bookingId}`)
-
-          const supervisorLandingPage = SupervisorLandingPage.createForBookingId(bookingId)
-
-          cy.intercept('GET', '/form/nextReviewDate/nextReviewDateStandalone/*', req => {
-            req.query.overrideFeatureFlag = 'true'
-          }).as('nextReviewStandalone')
-          supervisorLandingPage.changeReviewDateButton().click()
-          cy.wait('@nextReviewStandalone')
-
-          nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
-          nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
-          nextReviewStandalonePage.assertTextVisibilityOnPage({
-            selector: 'div',
-            text: 'Determinate sentence with 5 or more years left in custody',
-          })
+          nextReviewStandalonePage.checkCurrentReviewInsetText('2020-01-16')
+          nextReviewStandalonePage.checkPrisonerReviewGuidance()
+          nextReviewStandalonePage.checkConditionalReleaseDateInsetText('2020-02-02')
 
           const newReviewDate = moment().add(1, 'months').add(4, 'days').startOf('day')
           const newReviewReason = 'Another test reason'
@@ -588,18 +432,11 @@ describe('Next Review', () => {
         cy.visit(`/${bookingId}`)
 
         categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
-        cy.intercept('GET', '/form/nextReviewDate/nextReviewDateStandalone/*', req => {
-          req.query.overrideFeatureFlag = 'false'
-        }).as('nextReviewStandalone')
         categoriserLandingPage.changeReviewDateButton().click()
-        cy.wait('@nextReviewStandalone')
 
         nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
-        nextReviewStandalonePage.validateExistingDateValue('16/01/2020')
-        nextReviewStandalonePage.assertTextVisibilityOnPage({
-          selector: 'div',
-          text: 'Determinate prison sentence with three or more years left in custody',
-        })
+        nextReviewStandalonePage.checkCurrentReviewInsetText('2020-01-16')
+        nextReviewStandalonePage.checkPrisonerReviewGuidance()
       })
 
       it('should reject an empty form submission', () => {
@@ -667,47 +504,6 @@ describe('Next Review', () => {
             expect(result.rows.length).to.eq(1)
           },
         )
-      })
-    })
-
-    describe('categorisation is not in progress with 3 to 5 feature flag', () => {
-      beforeEach(() => {
-        cy.stubLogin({
-          user: CATEGORISER_USER,
-        })
-        cy.signIn()
-
-        cy.visit(`/${bookingId}`)
-
-        categoriserLandingPage = CategoriserLandingPage.createForBookingId(bookingId)
-
-        cy.intercept('GET', '/form/nextReviewDate/nextReviewDateStandalone/*', req => {
-          req.query.overrideFeatureFlag = 'true'
-        }).as('nextReviewStandalone')
-        categoriserLandingPage.changeReviewDateButton().click()
-        cy.wait('@nextReviewStandalone')
-
-        nextReviewStandalonePage = NextReviewStandalonePage.createForBookingId(bookingId)
-        nextReviewStandalonePage.validateExistingDateLongValue(moment('01/16/2020').format('dddd D MMMM YYYY'))
-        nextReviewStandalonePage.assertTextVisibilityOnPage({
-          selector: 'div',
-          text: 'Determinate sentence with 5 or more years left in custody',
-        })
-      })
-
-      it('should reject an empty form submission with 3 to 5 feature flag', () => {
-        nextReviewStandalonePage.clearNewReviewDateInput()
-        nextReviewStandalonePage.clearNewReviewReasonTextInput()
-        nextReviewStandalonePage.submitButton().click()
-
-        nextReviewStandalonePage.validateErrorSummaryMessages([
-          { index: 0, href: '#date', text: 'The review date must be a real date' },
-          { index: 1, href: '#reason', text: 'Enter reason for date change' },
-        ])
-        nextReviewStandalonePage.validateErrorMessages([
-          { selector: '#reviewDate-error', text: 'The review date must be a real date' },
-          { selector: '#reason-error', text: 'Enter reason for date change' },
-        ])
       })
     })
   })

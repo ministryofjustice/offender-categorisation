@@ -4,9 +4,20 @@ const { HttpsAgent } = require('agentkeepalive')
 
 const moment = require('moment')
 const logger = require('../../log')
-const config = require('../config')
+const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
+const {
+  INCIDENT_TYPE_ASSAULT,
+  INCIDENT_TYPE_ASSAULTS3,
+  PARTICIPATION_ROLE_ACTINV,
+  PARTICIPATION_ROLE_ASSIAL,
+  PARTICIPATION_ROLE_FIGHT,
+  PARTICIPATION_ROLE_IMPED,
+  PARTICIPATION_ROLE_PERP,
+  PARTICIPATION_ROLE_SUSASS,
+  PARTICIPATION_ROLE_SUSINV,
+} = require('./nomis/incidents/nomisIncident.dto')
 
 const timeoutSpec = {
   response: config.apis.elite2.timeout.response,
@@ -144,9 +155,27 @@ module.exports = context => {
       const path = `${apiUrl}api/bookings/${bookingId}/identifiers`
       return nomisClientGet({ path })
     },
-    getOffenderAdjudications(offenderNos, fromDate, toDate, agencyId) {
-      const path = `${apiUrl}api/offenders/adjudication-hearings?agencyId=${agencyId}&fromDate=${fromDate}&toDate=${toDate}`
-      return nomisClientPost({ path, body: offenderNos })
+    getOffenderPrisonPeriods(offenderNo) {
+      const path = `${apiUrl}api/offenders/${offenderNo}/prison-timeline`
+      return nomisClientGet({ path })
+    },
+    getAssaultIncidents(offenderNo) {
+      const incidentTypeQueryParams = [INCIDENT_TYPE_ASSAULT, INCIDENT_TYPE_ASSAULTS3]
+        .map(incidentType => `incidentType=${incidentType}`)
+        .join('&')
+      const participationRoleQueryParams = [
+        PARTICIPATION_ROLE_ACTINV,
+        PARTICIPATION_ROLE_ASSIAL,
+        PARTICIPATION_ROLE_FIGHT,
+        PARTICIPATION_ROLE_IMPED,
+        PARTICIPATION_ROLE_PERP,
+        PARTICIPATION_ROLE_SUSASS,
+        PARTICIPATION_ROLE_SUSINV,
+      ]
+        .map(participationRole => `participationRoles=${participationRole}`)
+        .join('&')
+      const path = `${apiUrl}api/offenders/${offenderNo}/incidents?${incidentTypeQueryParams}&${participationRoleQueryParams}`
+      return nomisClientGet({ path })
     },
   }
 }

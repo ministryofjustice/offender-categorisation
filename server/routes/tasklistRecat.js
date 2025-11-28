@@ -39,7 +39,8 @@ module.exports = function Index({
   offendersService,
   userService,
   authenticationMiddleware,
-  riskProfilerService,
+  pathfinderService,
+  alertService,
 }) {
   const router = express.Router()
 
@@ -104,12 +105,13 @@ module.exports = function Index({
       categorisationRecord = await addSocProfile({
         res,
         req,
-        riskProfilerService,
+        alertService,
         details,
         formService,
         bookingId,
         transactionalDbClient,
         categorisationRecord,
+        pathfinderService,
       })
 
       await formService.updateStatusForOutstandingRiskChange({
@@ -119,61 +121,20 @@ module.exports = function Index({
         status: RiskChange.REVIEWED_FIRST.name,
       })
 
-      //  <<-------disabling Fast track as part of CAT-1340------>>
-
-      // const { eligibleForFasttrack, fasttrackCancelled } = calculateFasttrackFlags(
-      //   details,
-      //   categorisationRecord,
-      //   bookingId
-      // )
-
-      const { eligibleForFasttrack, fasttrackCancelled } = false
-
       const data = {
         details,
         ...res.locals.formObject,
         status: categorisationRecord.status,
         displayStatus: categorisationRecord.status && Status[categorisationRecord.status].value,
-        eligibleForFasttrack,
-        fasttrackCancelled,
         securityReferredDate:
           categorisationRecord.securityReferredDate &&
           moment(categorisationRecord.securityReferredDate).format('DD/MM/YYYY'),
         isInWomensEstate: isFemalePrisonId(details.prisonId),
       }
+
       return res.render('pages/tasklistRecat', { data, backLink, reason })
     }),
   )
-
-  //  <<-------disabling Fast track as part of CAT-1340------>>
-
-  // const calculateFasttrackFlags = (details, categorisationRecord, bookingId) => {
-  //   const { formObject } = categorisationRecord
-  //   const eligibleForFasttrack =
-  //     over3YearsLeftOnSentence(details) &&
-  //     (categorisationRecord.status === Status.STARTED.name ||
-  //       categorisationRecord.status === Status.SUPERVISOR_BACK.name) &&
-  //     details.categoryCode === 'C'
-  //
-  //   const fasttrackCancelled =
-  //     getIn(['recat', 'fasttrackRemain', 'remainCatC'], formObject) === 'No' ||
-  //     getIn(['recat', 'fasttrackEligibility', 'earlyCatD'], formObject) === 'Yes' ||
-  //     getIn(['recat', 'fasttrackEligibility', 'increaseCategory'], formObject) === 'Yes'
-  //
-  //   log.debug(
-  //     `eligible for fast track status: ${eligibleForFasttrack} for offender no ${
-  //       details.offenderNo
-  //     },  booking id ${bookingId},  category: ${details.categoryCode}, status ${
-  //       categorisationRecord.status
-  //     }, confirmedReleaseDate: ${details.sentence && details.sentence.confirmedReleaseDate}`
-  //   )
-  //   if (fasttrackCancelled) {
-  //     log.debug(
-  //       `Fast track C was completed and cancelled for offender no ${details.offenderNo},  booking id ${bookingId}`
-  //     )
-  //   }
-  //   return { eligibleForFasttrack, fasttrackCancelled }
-  // }
 
   router.get(
     '/recategoriserSubmitted/:bookingId',

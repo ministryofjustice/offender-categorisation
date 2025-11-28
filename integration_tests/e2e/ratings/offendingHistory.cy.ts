@@ -31,16 +31,13 @@ describe('Offending History', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
-      category: 'C',
-      increasedRisk: false,
-      notifyRegionalCTLead: false,
+      band: 4,
     })
 
     cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
@@ -60,7 +57,7 @@ describe('Offending History', () => {
     cy.get('a[href*="/tasklist/12"]').click()
 
     taskListPage = TaskListPage.createForBookingId(12)
-    taskListPage.offendingHistoryButton().click()
+    taskListPage.offendingHistoryLink().click()
 
     categoriserOffendingHistoryPage = CategoriserOffendingHistoryPage.createForBookingId(12)
   }
@@ -131,7 +128,7 @@ describe('Offending History', () => {
         categoriserOffendingHistoryPage.validatePreviousConvictionsTextBox({ isVisible: false })
         categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-        taskListPage.offendingHistoryButton().click()
+        taskListPage.offendingHistoryLink().click()
 
         categoriserOffendingHistoryPage.validatePreviousConvictionRadioButtons({
           selection: ['YES'],
@@ -154,7 +151,7 @@ describe('Offending History', () => {
         categoriserOffendingHistoryPage.setPreviousConvictionsText('some convictions details')
         categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-        taskListPage.offendingHistoryButton().click()
+        taskListPage.offendingHistoryLink().click()
 
         categoriserOffendingHistoryPage.validatePreviousConvictionRadioButtons({
           selection: ['NO'],

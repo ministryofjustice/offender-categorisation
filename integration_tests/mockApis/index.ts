@@ -7,6 +7,9 @@ import tokenVerification from './tokenVerification'
 import dpsComponents from './dpsComponents'
 import probationOffenderSearchApi from './probationOffenderSearchApi'
 import formApi from './formApi'
+import pathfinderApi from './pathfinderApi'
+import alertsApi from './alertsApi'
+import adjudicationsApi from './adjudicationsApi'
 
 export default {
   ...allocationManager,
@@ -18,4 +21,7 @@ export default {
   ...dpsComponents,
   ...probationOffenderSearchApi,
   ...formApi,
+  ...pathfinderApi,
+  ...alertsApi,
+  ...adjudicationsApi,
 }

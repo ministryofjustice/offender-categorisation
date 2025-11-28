@@ -2,9 +2,9 @@ const superagent = require('superagent')
 const Agent = require('agentkeepalive')
 const { HttpsAgent } = require('agentkeepalive')
 const logger = require('../../log')
-const config = require('../config')
+const { config } = require('../config')
 const { getApiClientToken } = require('../authentication/clientCredentials')
-const getSanitisedError = require('../sanitisedError')
+const { getSanitisedError } = require('../getSanitisedError')
 
 const timeoutSpec = {
   response: config.apis.riskProfiler.timeout.response,
@@ -23,26 +23,9 @@ module.exports = context => {
   const apiGet = riskProfilerGetBuilder(context.user.username)
 
   return {
-    getSocProfile(offenderNo) {
-      const path = `${apiUrl}soc/${offenderNo}`
-      logger.debug(`getSocProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
-      return apiGet({ path })
-    },
     getViolenceProfile(offenderNo) {
       const path = `${apiUrl}violence/${offenderNo}`
       logger.debug(`getViolenceProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
-      return apiGet({ path })
-    },
-    getEscapeProfile(offenderNo) {
-      const path = `${apiUrl}escape/${offenderNo}`
-      logger.debug(`getEscapeProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo}`)
-      return apiGet({ path })
-    },
-    getExtremismProfile(offenderNo, previousOffences) {
-      const path = `${apiUrl}extremism/${offenderNo}?previousOffences=${previousOffences}`
-      logger.debug(
-        `getExtremismProfile calling riskProfiler api : ${path} for offenderNo ${offenderNo} and previousOffences ${previousOffences}`,
-      )
       return apiGet({ path })
     },
     getLifeProfile(offenderNo) {

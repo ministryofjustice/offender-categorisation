@@ -12,6 +12,7 @@
 
 {% set sentence = data.details.sentence %}
 <div class="govuk-grid-row govuk-!-padding-left-3">
+  <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Prisoner details</h2>
 
   <div class="govuk-grid-column-one-third">
     {{ headerTitle('Name') }}
@@ -96,47 +97,40 @@
       {{ headerTitle('Sentence Expiry Date') }}
       {{ headerValue(dateConverter(sentence.sentenceExpiryDate)) }}
     {% endif %}
+  </div>
+</div>
 
-    {% if sentence.list | length == 1 %}
-      {% set first = sentence.list[0] %}
-      {{ headerTitle('Court-issued sentence') }}
+{% if sentence.list | length > 0 %}
+  {% if sentence.list | length > 1 %}
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-4 govuk-!-margin-top-4">Court-issued sentences</h2>
+  {% else %}
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-4 govuk-!-margin-top-4">Court-issued sentence</h3>
+  {% endif %}
+
+    <div class="govuk-grid-column-full">
       <div class="govuk-grid-row">
-        <p class="govuk-!-margin-top-1 govuk-!-font-weight-bold">{{ formatLength(first) }} ({{ first.sentenceTypeDescription }})</p>
+        <table class="govuk-table" id="sentences" >
+          <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">Line</th>
+            <th class="govuk-table__header" scope="col">Start</th>
+            <th class="govuk-table__header" scope="col">Length of sentence</th>
+            <th class="govuk-table__header" scope="col">Consecutive to (line)</th>
+            <th class="govuk-table__header" scope="col">Type</th>
+          </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+          {% for row in sentence.list %}
+          <tr class="govuk-table__row ">
+            <td class="govuk-table__cell">{{ row.sentenceSequence }}</td>
+            <td class="govuk-table__cell">{{ dateConverter(row.startDate) }}</td>
+            <td class="govuk-table__cell">{{ formatLength(row) }}</td>
+            <td class="govuk-table__cell">{{ row.consecutiveTo }}</td>
+            <td class="govuk-table__cell">{{ row.sentenceTypeDescription }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
       </div>
-    {% elif sentence.list | length == 0 %}
-      {{ headerTitle('Court-issued sentence') }}
-      {{ headerValue() }}
-    {% endif %}
-  </div>
-</div>
-
-{% if sentence.list | length > 1 %}
-<div class="govuk-grid-row govuk-!-padding-left-3">
-  <div class="govuk-grid-column-full">
-    {{ headerTitle('Court-issued sentences') }}
-    <hr />
-    <table class="govuk-table" id="sentences" >
-      <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Line</th>
-        <th class="govuk-table__header" scope="col">Start</th>
-        <th class="govuk-table__header" scope="col">Length of sentence</th>
-        <th class="govuk-table__header" scope="col">Consecutive to (line)</th>
-        <th class="govuk-table__header" scope="col">Type</th>
-      </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-      {% for row in sentence.list %}
-      <tr class="govuk-table__row ">
-        <td class="govuk-table__cell">{{ row.sentenceSequence }}</td>
-        <td class="govuk-table__cell">{{ dateConverter(row.startDate) }}</td>
-        <td class="govuk-table__cell">{{ formatLength(row) }}</td>
-        <td class="govuk-table__cell">{{ row.consecutiveTo }}</td>
-        <td class="govuk-table__cell">{{ row.sentenceTypeDescription }}</td>
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+    </div>
 {% endif %}

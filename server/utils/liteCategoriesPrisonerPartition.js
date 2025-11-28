@@ -5,7 +5,8 @@ function liteCategoriesPrisonerPartition(unapprovedLiteCategorisations, prisoner
   unapprovedLiteCategorisations.forEach(offender => {
     const prisoner = prisonerData.find(pd => pd.bookingId === offender.bookingId)
 
-    if (prisoner && prisoner.status === 'ACTIVE IN') {
+    const prisonerCurrentlyInPrison = prisoner && prisoner.status.startsWith('ACTIVE')
+    if (prisonerCurrentlyInPrison) {
       insidePrison.push(offender)
     } else {
       released.push(offender)

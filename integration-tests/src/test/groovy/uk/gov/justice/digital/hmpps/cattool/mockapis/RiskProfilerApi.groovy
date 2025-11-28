@@ -12,9 +12,8 @@ class RiskProfilerApi extends WireMockRule {
     super(8082)
   }
 
-  void stubForTasklists(String offenderno, String category, boolean transferToSecurity = false, boolean increasedRisk = false, boolean notifyRegionalCTLead = false) {
+  void stubForTasklists(String offenderno, String category, boolean transferToSecurity = false) {
     stubGetSocProfile(offenderno, category, transferToSecurity)
-    stubGetExtremismProfile(offenderno, category, increasedRisk, notifyRegionalCTLead)
   }
 
   void stubGetSocProfile(String offenderno, String category, boolean transferToSecurity) {
@@ -26,22 +25,6 @@ class RiskProfilerApi extends WireMockRule {
                                      riskType                 : 'SOC',
                                      provisionalCategorisation: category,
                                      transferToSecurity       : transferToSecurity]))))
-  }
-
-  void stubGetViolenceProfile(String offenderno, String category, boolean veryHighRiskViolentOffender, boolean notifySafetyCustodyLead, boolean displayAssaults) {
-    this.stubFor(get("/risk-profile/violence/${offenderno}")
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withHeader('Content-Type', 'application/json')
-        .withBody(JsonOutput.toJson([nomsId                     : offenderno,
-                                     riskType                   : 'VIOLENCE',
-                                     provisionalCategorisation  : category,
-                                     veryHighRiskViolentOffender: veryHighRiskViolentOffender,
-                                     notifySafetyCustodyLead    : notifySafetyCustodyLead,
-                                     displayAssaults            : displayAssaults,
-                                     numberOfAssaults           : 5,
-                                     numberOfSeriousAssaults    : 2,
-                                     numberOfNonSeriousAssaults : 3]))))
   }
 
   void stubGetEscapeProfile(String offenderno, String category, boolean onEscapeList, boolean activeOnEscapeList) {
@@ -112,29 +95,6 @@ Second xel comment with lengthy text comment with lengthy text comment with leng
                                                                   dateCreated         : "2016-09-16",
                                                                   expired             : false,
                                                                   active              : true],]]))))
-  }
-
-
-  void stubGetExtremismProfile(String offenderno, String category, boolean increasedRisk, boolean notifyRegionalCTLead, boolean previousOffences = false) {
-    this.stubFor(get("/risk-profile/extremism/$offenderno?previousOffences=$previousOffences")
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withHeader('Content-Type', 'application/json')
-        .withBody(JsonOutput.toJson([nomsId                   : offenderno,
-                                     riskType                 : 'EXTREMISM',
-                                     provisionalCategorisation: category,
-                                     increasedRiskOfExtremism : increasedRisk,
-                                     notifyRegionalCTLead     : notifyRegionalCTLead]))))
-  }
-
-  void stubGetLifeProfile(String offenderno, String category) {
-    this.stubFor(get("/risk-profile/life/$offenderno")
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withHeader('Content-Type', 'application/json')
-        .withBody(JsonOutput.toJson([nomsId                   : offenderno,
-                                     riskType                 : 'LIFE',
-                                     provisionalCategorisation: category,]))))
   }
 
   void stubHealth() {
