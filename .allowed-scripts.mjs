@@ -7,7 +7,7 @@ export default configureAllowedScripts({
      // Needed by jest for running tests in watch mode
      'node_modules/fsevents@2.3.3': 'ALLOW',
      // Needed to run integration tests
-     'node_modules/cypress@15.5.0': 'ALLOW',
+     'node_modules/cypress@13.17.0': 'ALLOW',
      'node_modules/aws-sdk@2.1633.0': 'FORBID',
    },
 })
