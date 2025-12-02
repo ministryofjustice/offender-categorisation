@@ -66,7 +66,9 @@ jobs:
         with:
           name: npm_build_artifacts
       - name: install node dependencies
-        run: npm run setup
+        uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_build.yml@v2 # WORKFLOW_VERSION
+        with:
+          install_command: 'npm run setup'
       - name: Create localstack queues
         shell: bash
         run: |

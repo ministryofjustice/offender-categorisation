@@ -162,7 +162,7 @@
     "audit-ci": "^6.6.1",
     "concurrently": "^8.2.2",
     "cookie-session": "^2.0.0",
-    "cypress": "^13.17.0",
+    "cypress": "15.5.0",
     "cypress-multi-reporters": "^1.6.4",
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
