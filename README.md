@@ -94,7 +94,7 @@ Use docker compose to download and run the four required containers
 
 Either set the environment variable `SQS_ENABLED=false` or make sure all the SQS queues have started up in the categorisation-localstack container and categorisation-localstack-setup container has exited
 
-Install dependencies using `npm install`
+Install dependencies using `npm run setup`
 
 Run the application using `npm run start`
 
