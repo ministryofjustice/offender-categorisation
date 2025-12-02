@@ -32,7 +32,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --check \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
     "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
-    "clear-dlq": "ts-node jobs/dead-letter/clearDeadLetterQueuesWithExit.ts"
+    "clear-dlq": "ts-node jobs/dead-letter/clearDeadLetterQueuesWithExit.ts",
+    "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "jest": {
     "preset": "ts-jest",

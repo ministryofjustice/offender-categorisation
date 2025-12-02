@@ -27,7 +27,7 @@ RUN apt-get install -y make python3 wget gnupg gnupg1 gnupg2 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
-RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit
+RUN CYPRESS_INSTALL_BINARY=0 npm run setup --no-audit
 
 COPY . .
 RUN npm run build
