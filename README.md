@@ -4,9 +4,7 @@
 
 [![CircleCI](https://circleci.com/gh/ministryofjustice/offender-categorisation/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/offender-categorisation/tree/main)
 [![Known Vulnerabilities](https://snyk.io/test/github/ministryofjustice/offender-categorisation/badge.svg)](https://snyk.io/test/github/ministryofjustice/offender-categorisation)
-[![Repo Standards Badge](https://img.shields.io/badge/dynamic/json?color=blue&style=flat&logo=github&label=MoJ%20Compliant&query=%24.data%5B%3F%28%40.name%20%3D%3D%20%22offender-categorisation%22%29%5D.status&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fgithub_repositories)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/github_repositories#offender-categorisation 'Link to report')
-
-<!-- [![License: ##](https://img.shields.io/badge/License-##-lightgrey.svg)](https://opensource.org/licenses/##) -->
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/offender-categorisation/badge)](https://github-community.service.justice.gov.uk/repository-standards/offender-categorisation)
 
 [![JS](https://img.shields.io/badge/JavaScript-323330?style=flat&logo=javascript&logoColor=F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![NPM](https://img.shields.io/badge/NPM-%23000000.svg?style=flat&logo=npm&logoColor=white)](https://www.npmjs.com)
