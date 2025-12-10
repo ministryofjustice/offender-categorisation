@@ -73,9 +73,8 @@ describe('Supervisor Review', () => {
     cy.task('stubUncategorisedAwaitingApproval')
     cy.task('stubGetOffenderDetails', { bookingId, offenderNo, youngOffender, indeterminateSentence })
 
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo,
-      category,
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {

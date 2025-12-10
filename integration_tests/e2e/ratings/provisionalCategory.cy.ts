@@ -39,9 +39,8 @@ describe('Provisional Category', () => {
         youngOffender: false,
         indeterminateSentence: false,
       })
-      cy.task('stubGetSocProfile', {
+      cy.task('stubGetOcgmAlert', {
         offenderNo: 'B2345YZ',
-        category: 'C',
         transferToSecurity: false,
       })
       cy.task('stubGetExtremismProfile', {
@@ -57,16 +56,20 @@ describe('Provisional Category', () => {
         onEscapeList: true,
         activeOnEscapeList: false,
       })
-      cy.task('stubGetViolenceProfile', {
-        offenderNo: 'B2345YZ',
-        category: 'C',
-        veryHighRiskViolentOffender: false,
-        notifySafetyCustodyLead: false,
-        displayAssaults: false,
+      cy.task('stubGetViperData', {
+        prisonerNumber: 'B2345YZ',
+        aboveThreshold: false,
       })
-      cy.task('stubGetLifeProfile', {
-        offenderNo: 'B2345YZ',
-        category: 'C',
+      cy.task('stubGetAssaultIncidents', {
+        prisonerNumber: 'B2345YZ',
+        assaultIncidents: []
+      })
+      cy.task('stubSentenceData', {
+        offenderNumbers: ['B2345YZ'],
+        bookingIds: [ bookingId],
+        startDates: [
+          moment().subtract(1, 'days').format('yyyy-MM-dd'),
+        ],
       })
 
       cy.task('insertFormTableDbRow', {

@@ -41,7 +41,7 @@ class ReviewSpecification extends AbstractSpecification {
     fixture.loginAs(CATEGORISER_USER)
     at CategoriserHomePage
     elite2Api.stubGetOffenderDetails(12, 'B2345YZ', false,  false, 'C', false)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     selectFirstPrisoner() // has been sorted to top of list!
     at(new TasklistPage(bookingId: '12'))
@@ -50,9 +50,10 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
-    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], [date12])
 
     and: 'The continue link is selected'
     checkAndSubmitLink.click()
@@ -79,12 +80,10 @@ class ReviewSpecification extends AbstractSpecification {
     response.offences == [[bookingId: 12, offenceDate: '2019-02-21', offenceDescription: 'Libel'],
                           [bookingId: 12, offenceDate: '2019-02-22', offenceRangeDate: '2019-02-24', offenceDescription: 'Slander'],
                           [bookingId: 12, offenceDescription: 'Undated offence']]
-    response.socProfile == [nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C']
+    response.socProfile == [transferToSecurity: false]
     response.escapeProfile == [riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: true, escapeListAlerts: [[alertCode: 'XEL', dateCreated: '2025-01-01']], escapeRiskAlerts: [[alertCode: 'XER', dateCreated: '2025-01-01']]]
-    response.violenceProfile == [nomsId                 : 'B2345YZ', riskType: 'VIOLENCE', displayAssaults: false, numberOfAssaults: 5, notifySafetyCustodyLead: true,
-                                 numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3, provisionalCategorisation: 'C', veryHighRiskViolentOffender: true]
+    response.violenceProfile == [riskType: 'VIOLENCE', numberOfAssaults: 5, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 2, numberOfNonSeriousAssaults: 3]
     response.extremismProfile == [notifyRegionalCTLead: true, increasedRiskOfExtremism: true]
-    response.lifeProfile == [nomsId: 'B2345YZ', riskType: 'LIFE', provisionalCategorisation: 'C']
   }
 
   def "The review page can be displayed without security input"() {
@@ -106,9 +105,10 @@ class ReviewSpecification extends AbstractSpecification {
     elite2Api.stubSentenceDataGetSingle('B2345YZ', '2014-11-23')
     elite2Api.stubOffenceHistory('B2345YZ')
     alertsApi.stubGetEscapeAlerts('B2345YZ', true, true)
-    riskProfilerApi.stubGetViolenceProfile('B2345YZ', 'C', true, true, false)
+    formApi.stubGetViperData('B2345YZ', true)
+    elite2Api.stubGetAssaultIncidents('B2345YZ')
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
-    riskProfilerApi.stubGetLifeProfile('B2345YZ', 'C')
+    prisonerSearchApi.stubSentenceData(['B2345YZ'], [12], ['2020-01-01'])
     at new TasklistPage(bookingId: '12')
     checkAndSubmitLink.click()
 

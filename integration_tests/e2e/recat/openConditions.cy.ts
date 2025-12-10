@@ -96,9 +96,8 @@ describe('Open Conditions', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {
@@ -109,12 +108,13 @@ describe('Open Conditions', () => {
       offenderNo: 'B2345YZ',
       alertCode: 'XEL',
     })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: 'B2345YZ',
+      aboveThreshold: true,
+    })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: 'B2345YZ',
+      assaultIncidents: []
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
 
@@ -243,10 +243,7 @@ describe('Open Conditions', () => {
         sequence_no: 1,
         risk_profile: {
           socProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'SOC',
             transferToSecurity: false,
-            provisionalCategorisation: 'C',
           },
           extremismProfile: {
             notifyRegionalCTLead: false,
@@ -356,26 +353,10 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
-          escapeProfile: {
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: false,
-            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
-            escapeRiskAlerts: [],
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {},
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -396,7 +377,6 @@ describe('Open Conditions', () => {
       delete expected.start_date
 
       const assessmentStartedToday = isToday(dbRecord.start_date)
-
       const dbRecordMatchesExpected = compareObjects(expected, dbRecord)
 
       return dbRecordMatchesExpected && assessmentStartedToday
@@ -529,31 +509,10 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'SOC',
-            transferToSecurity: false,
-            provisionalCategorisation: 'C',
-          },
-          escapeProfile: {
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: false,
-            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
-            escapeRiskAlerts: [],
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {},
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -843,31 +802,10 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'SOC',
-            transferToSecurity: false,
-            provisionalCategorisation: 'C',
-          },
-          escapeProfile: {
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: false,
-            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
-            escapeRiskAlerts: [],
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {},
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -1117,26 +1055,10 @@ describe('Open Conditions', () => {
         referred_by: null,
         sequence_no: 1,
         risk_profile: {
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
-          escapeProfile: {
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: false,
-            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
-            escapeRiskAlerts: [],
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {},
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',
@@ -1466,26 +1388,10 @@ describe('Open Conditions', () => {
               assessmentDescription: 'Categorisation',
             },
           ],
-          socProfile: { nomsId: 'B2345YZ', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'C' },
-          escapeProfile: {
-            riskType: 'ESCAPE',
-            activeEscapeList: true,
-            activeEscapeRisk: false,
-            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
-            escapeRiskAlerts: [],
-          },
-          violenceProfile: {
-            nomsId: 'B2345YZ',
-            riskType: 'VIOLENCE',
-            displayAssaults: false,
-            numberOfAssaults: 5,
-            notifySafetyCustodyLead: true,
-            numberOfSeriousAssaults: 2,
-            provisionalCategorisation: 'C',
-            numberOfNonSeriousAssaults: 3,
-            veryHighRiskViolentOffender: true,
-          },
-          extremismProfile: {},
+          socProfile: { transferToSecurity: false },
+          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
+          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
         offender_no: 'B2345YZ',

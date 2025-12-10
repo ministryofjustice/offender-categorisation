@@ -5,7 +5,6 @@ import groovy.json.JsonOutput
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import static com.github.tomakehurst.wiremock.client.WireMock.get
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 
 class PathfinderApi extends WireMockRule {
 

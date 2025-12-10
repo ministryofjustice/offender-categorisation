@@ -1,6 +1,5 @@
 import logger = require('../../log')
-
-import { mapAlertToEscapeProfile, EscapeProfile } from '../utils/escapeProfileMapper'
+import { EscapeProfile, mapAlertToEscapeProfile } from '../utils/escapeProfileMapper'
 
 export default class CreateAlertService {
   // eslint-disable-next-line no-empty-function
@@ -10,8 +9,18 @@ export default class CreateAlertService {
     try {
       const alertsApiClient = this.alertsApiClientBuilder(user)
       const response = await alertsApiClient.getActivePrisonerEscapeAlerts(offenderNo)
-      const escapeProfile = mapAlertToEscapeProfile(response.content)
-      return escapeProfile
+      return mapAlertToEscapeProfile(response.content)
+    } catch (error) {
+      logger.error(error)
+      throw error
+    }
+  }
+
+  async prisonerHasActiveOcgmAlert(offenderNo: string, user: { username: string }): Promise<boolean> {
+    try {
+      const alertsApiClient = this.alertsApiClientBuilder(user)
+      const response = await alertsApiClient.getActiveOcgmAlerts(offenderNo)
+      return response.content?.length > 0
     } catch (error) {
       logger.error(error)
       throw error

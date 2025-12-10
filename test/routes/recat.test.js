@@ -15,6 +15,10 @@ jest.doMock('jwt-decode', () => jest.fn(() => ({ authorities: roles })))
 
 const createRouter = require('../../server/routes/recat')
 const { makeTestFeatureFlagDto } = require('../../server/middleware/featureFlag.test-factory')
+const { makeTestViperDto } = require('../../server/data/formApi/viper/viper.dto.test-factory')
+const {
+  makeTestCountOfAssaultIncidents,
+} = require('../../server/services/incidents/countOfAssaultIncidents.test-factory')
 
 const formConfig = {
   recat,
@@ -39,13 +43,7 @@ const formService = {
   deleteFormData: jest.fn(),
   recordNomisSeqNumber: jest.fn(),
   categoriserDecision: jest.fn(),
-}
-
-const riskProfilerService = {
-  getSecurityProfile: jest.fn(),
-  getViolenceProfile: jest.fn(),
-  getEscapeProfile: jest.fn(),
-  getExtremismProfile: jest.fn(),
+  getViperData: jest.fn(),
 }
 
 const offendersService = {
@@ -57,6 +55,7 @@ const offendersService = {
   createOrUpdateCategorisation: jest.fn(),
   getPrisonerBackground: jest.fn(),
   getRiskChangeForOffender: jest.fn(),
+  getCountOfAssaultIncidents: jest.fn(),
 }
 
 const userService = {
@@ -96,7 +95,6 @@ const formRoute = createRouter({
   formService,
   offendersService,
   userService,
-  riskProfilerService,
   pathfinderService,
   alertService,
   authenticationMiddleware,
@@ -120,6 +118,7 @@ beforeEach(() => {
   formService.deleteFormData.mockReturnValue({})
   formService.recordNomisSeqNumber.mockReturnValue({})
   formService.categoriserDecision.mockReturnValue({})
+  formService.getViperData.mockReturnValue({})
   offendersService.createOrUpdateCategorisation.mockReturnValue({ bookingId: 12345, seq: 4 })
   offendersService.getOffenderDetails.mockResolvedValue({
     displayName: 'Claire Dent',
@@ -129,9 +128,8 @@ beforeEach(() => {
   })
   offendersService.getOffenceHistory.mockResolvedValue({})
   offendersService.getPrisonerBackground.mockResolvedValue({})
+  offendersService.getCountOfAssaultIncidents.mockResolvedValue({})
   userService.getUser.mockResolvedValue({})
-  riskProfilerService.getSecurityProfile.mockResolvedValue({})
-  riskProfilerService.getViolenceProfile.mockResolvedValue({})
   pathfinderService.getExtremismProfile.mockResolvedValue({})
   alertService.getEscapeProfile.mockResolvedValue({})
   db.pool.connect = jest.fn()
@@ -173,7 +171,6 @@ describe('recat', () => {
         .expect('Content-Type', /html/)
         .expect(res => {
           expect(res.text).toContain(expectedContent)
-          expect(riskProfilerService.getSecurityProfile).toBeCalledTimes(0)
         }),
     )
     test('categoriser cannot edit security page if page is locked - redirect to tasklist)', () => {
@@ -335,16 +332,18 @@ describe('recat', () => {
       }))
 
   test('GET /form/recat/review violence profile - displayAssault', () => {
-    riskProfilerService.getViolenceProfile.mockResolvedValue({
-      nomsId: '1234AN',
-      riskType: 'VIOLENCE',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: true,
-      numberOfAssaults: 5,
-      numberOfSeriousAssaults: 2,
-      numberOfNonSeriousAssaults: 4,
-    })
+    formService.getViperData.mockResolvedValue(
+      makeTestViperDto({
+        aboveThreshold: false,
+      }),
+    )
+    offendersService.getCountOfAssaultIncidents.mockResolvedValue(
+      makeTestCountOfAssaultIncidents({
+        countOfAssaults: 5,
+        countOfRecentSeriousAssaults: 2,
+        countOfRecentNonSeriousAssaults: 4,
+      }),
+    )
     return request(app)
       .get(`/review/12345`)
       .expect(200)
@@ -358,15 +357,16 @@ describe('recat', () => {
   })
 
   test('GET /form/recat/review violence profile - all fine', () => {
-    riskProfilerService.getViolenceProfile.mockReturnValue({
-      nomsId: '1234AN',
-      riskType: 'VIOLENCE',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: false,
-      numberOfAssaults: 5,
-      numberOfSeriousAssaults: 2,
-    })
+    formService.getViperData.mockResolvedValue(
+      makeTestViperDto({
+        aboveThreshold: false,
+      }),
+    )
+    offendersService.getCountOfAssaultIncidents.mockResolvedValue(
+      makeTestCountOfAssaultIncidents({
+        countOfAssaults: 0,
+      }),
+    )
     return request(app)
       .get(`/review/12345`)
       .expect(200)

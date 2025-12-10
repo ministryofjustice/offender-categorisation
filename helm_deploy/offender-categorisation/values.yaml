@@ -5,7 +5,7 @@ generic-service:
   productId: "DPS006"
 
   image:
-    repository: quay.io/hmpps/offender-categorisation
+    repository: ghcr.io/ministryofjustice/offender-categorisation
     tag: latest
     pullPolicy: IfNotPresent
     port: 3000

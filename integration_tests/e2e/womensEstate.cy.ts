@@ -96,9 +96,8 @@ describe("Women's Estate", () => {
       })
 
       cy.task('stubGetOffenderDetailsWomen', { bookingId, category })
-      cy.task('stubGetSocProfile', {
+      cy.task('stubGetOcgmAlert', {
         offenderNo,
-        category,
         transferToSecurity: false,
       })
       cy.task('stubGetExtremismProfile', {
@@ -173,12 +172,13 @@ describe("Women's Estate", () => {
       categoriserOffendingHistoryPage.selectPreviousConvictionsRadioButton('NO')
       categoriserOffendingHistoryPage.saveAndReturnButton().click()
 
-      cy.task('stubGetViolenceProfile', {
-        offenderNo,
-        category,
-        veryHighRiskViolentOffender: false,
-        notifySafetyCustodyLead: false,
-        displayAssaults: false,
+      cy.task('stubGetViperData', {
+        prisonerNumber: offenderNo,
+        aboveThreshold: false,
+      })
+      cy.task('stubGetAssaultIncidents', {
+        prisonerNumber: offenderNo,
+        assaultIncidents: []
       })
 
       taskListPage.violenceLink().click()
@@ -240,9 +240,12 @@ describe("Women's Estate", () => {
       categoryDecisionPage.enterCategoryDecisionJustification('justification for category')
       categoryDecisionPage.continueButton().click()
 
-      cy.task('stubGetLifeProfile', {
-        offenderNo,
-        category: 'R',
+      cy.task('stubSentenceData', {
+        offenderNumbers: [offenderNo],
+        bookingIds: [ bookingId],
+        startDates: [
+          moment().subtract(1, 'days').format('yyyy-MM-dd'),
+        ],
       })
 
       taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
@@ -307,8 +310,8 @@ describe("Women's Estate", () => {
         { term: 'Previous convictions on NOMIS', definition: 'Undated offence' },
         { term: 'Relevant convictions on PNC', definition: 'No' },
         // safety and good order
-        { term: 'Previous assaults in custody recorded', definition: '5' },
-        { term: 'Serious assaults in the past 12 months', definition: '2' },
+        { term: 'Previous assaults in custody recorded', definition: '0' },
+        { term: 'Serious assaults in the past 12 months', definition: '0' },
         { term: 'Any more information about risk of violence in custody', definition: 'No' },
         { term: 'Serious threats to good order in custody recorded', definition: 'No' },
         // risk of escape
@@ -406,11 +409,6 @@ describe("Women's Estate", () => {
       // cy.visit(`/form/openconditions/provisionalCategory/${bookingId}`)
       // cy.url().should('include', `tasklist/${bookingId}`)
 
-      cy.task('stubGetLifeProfile', {
-        offenderNo,
-        category: 'R',
-      })
-
       taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
 
       cy.task('stubCategorise', {
@@ -473,8 +471,8 @@ describe("Women's Estate", () => {
         { term: 'Previous convictions on NOMIS', definition: 'Undated offence' },
         { term: 'Relevant convictions on PNC', definition: 'No' },
         // safety and good order
-        { term: 'Previous assaults in custody recorded', definition: '5' },
-        { term: 'Serious assaults in the past 12 months', definition: '2' },
+        { term: 'Previous assaults in custody recorded', definition: '0' },
+        { term: 'Serious assaults in the past 12 months', definition: '0' },
         { term: 'Any more information about risk of violence in custody', definition: 'No' },
         { term: 'Serious threats to good order in custody recorded', definition: 'No' },
         // risk of escape
@@ -628,9 +626,8 @@ describe("Women's Estate", () => {
         cy.task('stubGetOffenderDetailsWomen', { bookingId, category: 'R', youngOffender, indeterminateSentence })
       }
 
-      cy.task('stubGetSocProfile', {
-        offenderNo,
-        category,
+      cy.task('stubGetOcgmAlert', {
+        offenderNo: offenderNo,
         transferToSecurity: false,
       })
       cy.task('stubGetExtremismProfile', {

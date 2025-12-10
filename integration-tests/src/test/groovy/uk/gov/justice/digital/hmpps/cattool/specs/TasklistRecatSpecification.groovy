@@ -32,7 +32,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     and: 'SOC data is stored and merged correctly'
     def data = db.getData(12)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile      : [nomsId: "B2345YZ", riskType: "SOC", transferToSecurity: false, provisionalCategorisation: 'C'],
+    response == [socProfile      : [transferToSecurity: false],
                  extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false]
     ]
     def row = data[0]
@@ -63,7 +63,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     and: 'data is stored correctly'
     def data = db.getData(21)
     def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile      : [nomsId: 'C0001AA', riskType: 'SOC', transferToSecurity: false, provisionalCategorisation: 'I'],
+    response == [socProfile      : [transferToSecurity: false],
                  extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false]
     ]
     def row = data[0]
@@ -81,7 +81,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
 
     fixture.gotoTasklistRecat(false)
     at TasklistRecatPage
-    db.getSecurityData('B2345YZ')[0].status.value == 'PROCESSED'
+    db.getSecurityData('B2345YZ')[0].status == 'PROCESSED'
 
     elite2Api.stubAssessments('B2345YZ')
     elite2Api.stubAgencyDetails('LPI') // existing assessments
@@ -128,7 +128,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     // TODO: was not in the to-do list so have to go directly, BUT NOW IS with wrong button label 'edit'
     to TasklistRecatPage, '12', reason: 'DUE'
@@ -166,7 +166,7 @@ class TasklistRecatSpecification extends AbstractSpecification {
     fixture.loginAs(RECATEGORISER_USER)
     browser.at RecategoriserHomePage
     elite2Api.stubGetOffenderDetails(12)
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 4)
     via TasklistRecatPage, '12'
 

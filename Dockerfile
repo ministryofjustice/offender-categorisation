@@ -2,7 +2,7 @@
 ARG BUILD_NUMBER
 ARG GIT_REF
 
-FROM node:20.12-bookworm-slim as base
+FROM node:24-bookworm-slim AS base
 
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get install -y curl
 
 # Stage: build assets
-FROM base as build
+FROM base AS build
 ARG BUILD_NUMBER
 ARG GIT_REF
 
@@ -27,13 +27,13 @@ RUN apt-get install -y make python3 wget gnupg gnupg1 gnupg2 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
-RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit
+RUN CYPRESS_INSTALL_BINARY=0 npm run setup --no-audit
 
 COPY . .
 RUN npm run build
 
-ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
-ENV GIT_REF ${GIT_REF:-dummy}
+ENV BUILD_NUMBER=${BUILD_NUMBER:-1_0_0}
+ENV GIT_REF=${GIT_REF:-dummy}
 RUN export BUILD_NUMBER=${BUILD_NUMBER} && \
     export GIT_REF=${GIT_REF} && \
     npm run record-build-info
@@ -45,8 +45,8 @@ FROM base
 
 ARG BUILD_NUMBER
 ARG GIT_REF
-ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
-ENV GIT_REF ${GIT_REF:-dummy}
+ENV BUILD_NUMBER=${BUILD_NUMBER:-1_0_0}
+ENV GIT_REF=${GIT_REF:-dummy}
 
 RUN apt-get update && \
     apt-get upgrade -y && \

@@ -41,8 +41,8 @@ class PotentialReviewsSpecification extends AbstractSpecification {
       ratings: TestFixture.defaultRatingsC]), 'INITIAL')
     def raisedDate = LocalDate.of(2019, 1, 31)
     db.createRiskChange(-1, 'B2345XY', null, 'NEW',
-      JsonOutput.toJson([socProfile: [nomsId: "B2345XY", riskType: "SOC", transferToSecurity: true, provisionalCategorisation: "C"]]),
-      JsonOutput.toJson([socProfile: [nomsId: "B2345XY", riskType: "SOC", transferToSecurity: true, provisionalCategorisation: "C"]]),
+      JsonOutput.toJson([socProfile: [transferToSecurity: true]]),
+      JsonOutput.toJson([socProfile: [transferToSecurity: true]]),
       'LEI',
       raisedDate)
 

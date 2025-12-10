@@ -20,8 +20,8 @@ const formService = {
   getLiteCategorisation: jest.fn(),
 }
 
-const riskProfilerService = {
-  getSecurityProfile: jest.fn(),
+const alertService = {
+  prisonerHasActiveOcgmAlert: jest.fn(),
 }
 
 const offendersService = {
@@ -44,7 +44,7 @@ const tasklistRoute = createRouter({
   offendersService,
   userService,
   authenticationMiddleware,
-  riskProfilerService,
+  alertService,
   pathfinderService,
 })
 
@@ -172,19 +172,15 @@ describe('GET /tasklist/', () => {
       status: 'SECURITY_AUTO',
       securityReferredDate: `${todayISO}`,
     })
-    const sampleSocProfile = {
-      transferToSecurity: true,
-      provisionalCategorisation: 'B',
-    }
     const sampleExtremismProfile = {
       provisionalCategorisation: 'B',
     }
-    riskProfilerService.getSecurityProfile.mockResolvedValue(sampleSocProfile)
+    alertService.prisonerHasActiveOcgmAlert.mockResolvedValue(true)
     pathfinderService.getExtremismProfile.mockResolvedValue(sampleExtremismProfile)
     formService.getCategorisationRecord.mockResolvedValue({
       id: 1111,
       securityReferredDate: `${todayISO}`,
-      formObject: { sample: 'string', socProfile: sampleSocProfile },
+      formObject: { sample: 'string', socProfile: { transferToSecurity: true } },
       status: 'SECURITY_AUTO',
     })
 
@@ -200,7 +196,7 @@ describe('GET /tasklist/', () => {
         expect(formService.mergeRiskProfileData).toBeCalledWith(
           '12345',
           {
-            socProfile: sampleSocProfile,
+            socProfile: { transferToSecurity: true },
             extremismProfile: sampleExtremismProfile,
           },
           mockTransactionalClient,
@@ -208,7 +204,7 @@ describe('GET /tasklist/', () => {
         expect(formService.referToSecurityIfRiskAssessed).toBeCalledWith(
           '12345',
           'CA_USER_TEST',
-          sampleSocProfile,
+          { transferToSecurity: true },
           sampleExtremismProfile,
           'STARTED',
           mockTransactionalClient,

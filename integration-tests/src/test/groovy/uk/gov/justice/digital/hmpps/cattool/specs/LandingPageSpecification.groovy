@@ -34,7 +34,7 @@ class LandingPageSpecification extends AbstractSpecification {
     nextReviewDateButton.displayed
 
     when: 'It is clicked'
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     recatButton.click()
@@ -165,7 +165,7 @@ class LandingPageSpecification extends AbstractSpecification {
     !warning.displayed
 
     when: 'It is clicked'
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     elite2Api.stubUpdateNextReviewDate(LocalDate.now().plusDays(fixture.get10BusinessDays()).format('yyyy-MM-dd'))
     editButton.click()
@@ -306,7 +306,7 @@ class LandingPageSpecification extends AbstractSpecification {
     !nextReviewDateButton.displayed
 
     when: 'It is clicked'
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 1)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
@@ -339,7 +339,7 @@ class LandingPageSpecification extends AbstractSpecification {
     warning.text() endsWith 'This prisoner is already Cat B'
 
     when: 'It is clicked'
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     initialButton.click()
@@ -374,7 +374,7 @@ class LandingPageSpecification extends AbstractSpecification {
     !warning.displayed
 
     when: 'It is clicked'
-    riskProfilerApi.stubForTasklists('B2345YZ', 'C', false)
+    alertsApi.stubGetActiveOcgmAlerts('B2345YZ', false)
     pathfinderApi.stubGetExtremismProfile('B2345YZ', 3)
     elite2Api.stubSetInactive(12, 'ACTIVE')
     editButton.click()

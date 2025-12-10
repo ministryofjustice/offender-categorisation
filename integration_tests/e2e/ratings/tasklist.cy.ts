@@ -39,9 +39,8 @@ describe('Tasklist', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: offenderNumber,
-      category: 'C',
       transferToSecurity: false,
     })
 
@@ -86,17 +85,17 @@ describe('Tasklist', () => {
     furtherChargesPage.selectFurtherChargesRadioButton('NO')
     furtherChargesPage.saveAndReturnButton().click()
 
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: offenderNumber,
-      category: 'C',
-      veryHighRiskViolentOffender: false,
-      notifySafetyCustodyLead: false,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: offenderNumber,
+      aboveThreshold: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: offenderNumber,
+      assaultIncidents: []
+    })
+    cy.task('stubGetOcgmAlert', {
       offenderNo: offenderNumber,
       transferToSecurity: false,
-      category: 'C',
     })
 
     taskListPage.violenceLink().click()
@@ -143,9 +142,12 @@ describe('Tasklist', () => {
     const nextReviewConfirmationPage = NextReviewConfirmationPage.createForBookingIdAndChoiceNumber(bookingId, '6')
     nextReviewConfirmationPage.saveAndReturnButton().click()
 
-    cy.task('stubGetLifeProfile', {
-      offenderNo: offenderNumber,
-      category: 'C',
+    cy.task('stubSentenceData', {
+      offenderNumbers: [offenderNumber],
+      bookingIds: [ bookingId],
+      startDates: [
+        moment().subtract(1, 'days').format('yyyy-MM-dd'),
+      ],
     })
     taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
 

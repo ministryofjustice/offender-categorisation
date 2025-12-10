@@ -4324,4 +4324,50 @@ describe('isRejectedBySupervisorSuitableForDisplay', () => {
       expect(result).toMatchObject(expected)
     })
   })
+
+  describe('hasLifeSentence', () => {
+    it('should return false', async () => {
+      const testBookingId = 123
+      const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
+
+      nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+      prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue([{ imprisonmentStatus: 'SOMETHING' }])
+      nomisClient.getMainOffence.mockReturnValue([{ offenceDescription: 'something' }])
+      const result = await service.hasLifeSentence({}, testBookingId)
+      expect(result).toBe(false)
+    })
+
+    it('should return true due to sentence term', async () => {
+      const testBookingId = 123
+      const sentenceTerms = [{ years: 2, months: 4, lifeSentence: true }]
+
+      nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+      prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue([{ imprisonmentStatus: 'SOMETHING' }])
+      nomisClient.getMainOffence.mockReturnValue([{ offenceDescription: 'something' }])
+      const result = await service.hasLifeSentence({}, testBookingId)
+      expect(result).toBe(true)
+    })
+
+    it('should return true due to imprisonment status', async () => {
+      const testBookingId = 123
+      const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
+
+      nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+      prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue([{ imprisonmentStatus: 'CFLIFE' }])
+      nomisClient.getMainOffence.mockReturnValue([{ offenceDescription: 'something' }])
+      const result = await service.hasLifeSentence({}, testBookingId)
+      expect(result).toBe(true)
+    })
+
+    it('should return true due to main offence description', async () => {
+      const testBookingId = 123
+      const sentenceTerms = [{ years: 2, months: 4, lifeSentence: false }]
+
+      nomisClient.getSentenceTerms.mockReturnValue(sentenceTerms)
+      prisonerSearchClient.getPrisonersByBookingIds.mockReturnValue([{ imprisonmentStatus: 'SOMETHING' }])
+      nomisClient.getMainOffence.mockReturnValue([{ offenceDescription: 'MURDER ETC' }])
+      const result = await service.hasLifeSentence({}, testBookingId)
+      expect(result).toBe(true)
+    })
+  })
 })

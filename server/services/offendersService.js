@@ -35,6 +35,8 @@ const {
   FIXED_TERM_RECALL_DAYS_LIMIT,
   NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
 } = require('./recategorisation/recall/recalledOffenderData')
+const { getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents } = require('./incidents/incidentService')
+const { LIFE_IMPRISONMENT_STATUSES, MURDER_OFFENCE_DESCRIPTION_PREFACE } = require('../data/prisonerSearch/booking')
 
 const dirname = process.cwd()
 
@@ -1807,6 +1809,32 @@ module.exports = function createOffendersService(
     }
   }
 
+  const getCountOfAssaultIncidents = async (context, offenderNo) => {
+    const nomisClient = nomisClientBuilder(context)
+    const assaultIncidents = await nomisClient.getAssaultIncidents(offenderNo)
+    return getCountOfRecentAssaultsAndSeriousAssaultsFromAssaultIncidents(assaultIncidents)
+  }
+
+  const hasLifeSentence = async (context, bookingId) => {
+    const nomisClient = nomisClientBuilder(context)
+    const prisonerSearchClient = prisonerSearchClientBuilder(context)
+    const [sentenceTerms, bookingDetails, mainOffences] = await Promise.all([
+      nomisClient.getSentenceTerms(bookingId),
+      prisonerSearchClient.getPrisonersByBookingIds([bookingId]),
+      nomisClient.getMainOffence(bookingId),
+    ])
+
+    const hasLifeSentenceTerm = sentenceTerms.some(sentence => sentence.lifeSentence)
+    const hasLifeImprisonmentStatusBooking = bookingDetails.some(bookingDetail =>
+      LIFE_IMPRISONMENT_STATUSES.includes(bookingDetail.imprisonmentStatus),
+    )
+    const hasMainOffenceStartingWithMurder = mainOffences.some(mainOffence =>
+      mainOffence.offenceDescription.startsWith(MURDER_OFFENCE_DESCRIPTION_PREFACE),
+    )
+
+    return hasLifeSentenceTerm || hasLifeImprisonmentStatusBooking || hasMainOffenceStartingWithMurder
+  }
+
   return {
     getUncategorisedOffenders,
     getUnapprovedOffenders,
@@ -1859,5 +1887,7 @@ module.exports = function createOffendersService(
     getU21Recats,
     isAwaitingApprovalOrSecurity,
     isRejectedBySupervisorSuitableForDisplay,
+    getCountOfAssaultIncidents,
+    hasLifeSentence,
   }
 }

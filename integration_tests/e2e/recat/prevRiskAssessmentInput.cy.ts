@@ -35,9 +35,8 @@ describe('Previous Risk Assessments', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubGetSocProfile', {
+    cy.task('stubGetOcgmAlert', {
       offenderNo: 'B2345YZ',
-      category: 'C',
       transferToSecurity: false,
     })
     cy.task('stubGetExtremismProfile', {
@@ -48,12 +47,13 @@ describe('Previous Risk Assessments', () => {
       offenderNo: 'B2345YZ',
       alertCode: 'XER',
     })
-    cy.task('stubGetViolenceProfile', {
-      offenderNo: 'B2345YZ',
-      category: 'C',
-      veryHighRiskViolentOffender: true,
-      notifySafetyCustodyLead: true,
-      displayAssaults: false,
+    cy.task('stubGetViperData', {
+      prisonerNumber: 'B2345YZ',
+      aboveThreshold: true,
+    })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: 'B2345YZ',
+      assaultIncidents: []
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
   })
