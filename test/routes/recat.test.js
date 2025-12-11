@@ -350,7 +350,7 @@ describe('recat', () => {
       .expect('Content-Type', /html/)
       .expect(res => {
         expect(res.text).toMatch(
-          /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 4 non-serious assaults in the past 12 months./,
+          /This person has been reported as involved in 5 assaults in custody. In the past 12 months, there have been\s+2 serious assaults and 4 non-serious assaults./,
         )
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Category task list/s)
       })
@@ -372,10 +372,8 @@ describe('recat', () => {
       .expect(200)
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).not.toContain('This person has been reported as the perpetrator')
-        expect(res.text).toContain(
-          'This person has not been reported as the perpetrator in any assaults in custody before',
-        )
+        expect(res.text).not.toContain('This person has been reported as involved in')
+        expect(res.text).toContain('This person has not been reported as involved in any assaults in custody before')
       })
   })
 

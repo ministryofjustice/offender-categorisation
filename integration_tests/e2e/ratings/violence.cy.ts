@@ -8,9 +8,9 @@ import Status from '../../../server/utils/statusEnum'
 import ViolencePage from '../../pages/form/ratings/violence'
 import {
   makeTestNomisIncidentDto,
-  makeTestNomisIncidentDtoResponse
-} from "../../../server/data/nomis/incidents/nomisIncident.dto.test-factory";
-import { QUESTION_ANSWER_YES, SERIOUS_ASSAULT_QUESTIONS } from "../../../server/data/nomis/incidents/nomisIncident.dto";
+  makeTestNomisIncidentDtoResponse,
+} from '../../../server/data/nomis/incidents/nomisIncident.dto.test-factory'
+import { QUESTION_ANSWER_YES, SERIOUS_ASSAULT_QUESTIONS } from '../../../server/data/nomis/incidents/nomisIncident.dto'
 
 describe('Violence', () => {
   let categoriserHomePage: CategoriserHomePage
@@ -74,7 +74,7 @@ describe('Violence', () => {
       })
       cy.task('stubGetAssaultIncidents', {
         prisonerNumber: 'B2345YZ',
-        assaultIncidents: []
+        assaultIncidents: [],
       })
 
       stubLoginAndBrowseToViolenceInputPage()
@@ -85,7 +85,7 @@ describe('Violence', () => {
         exists: true,
       })
       violencePage.validateExpectedViolenceInfo(
-        'This person has not been reported as the perpetrator in any assaults in custody before',
+        'This person has not been reported as involved in any assaults in custody before',
       )
       violencePage.validateViolenceWarningExists({
         exists: false,
@@ -189,55 +189,55 @@ describe('Violence', () => {
         assaultIncidents: [
           makeTestNomisIncidentDto({
             incidentStatus: 'Something',
-            reportTime: (new Date()).toDateString(),
+            reportTime: new Date().toDateString(),
             responses: [
               makeTestNomisIncidentDtoResponse({
                 question: SERIOUS_ASSAULT_QUESTIONS[0],
-                answer: QUESTION_ANSWER_YES
-              })
-            ]
+                answer: QUESTION_ANSWER_YES,
+              }),
+            ],
           }),
           makeTestNomisIncidentDto({
             incidentStatus: 'Something',
-            reportTime: (new Date()).toDateString(),
+            reportTime: new Date().toDateString(),
             responses: [
               makeTestNomisIncidentDtoResponse({
                 question: SERIOUS_ASSAULT_QUESTIONS[0],
-                answer: QUESTION_ANSWER_YES
-              })
-            ]
+                answer: QUESTION_ANSWER_YES,
+              }),
+            ],
           }),
           makeTestNomisIncidentDto({
             incidentStatus: 'Something',
-            reportTime: (new Date()).toDateString(),
+            reportTime: new Date().toDateString(),
             responses: [
               makeTestNomisIncidentDtoResponse({
                 question: 'something',
-                answer: 'No'
-              })
-            ]
+                answer: 'No',
+              }),
+            ],
           }),
           makeTestNomisIncidentDto({
             incidentStatus: 'Something',
-            reportTime: (new Date()).toDateString(),
+            reportTime: new Date().toDateString(),
             responses: [
               makeTestNomisIncidentDtoResponse({
                 question: 'something',
-                answer: 'No'
-              })
-            ]
+                answer: 'No',
+              }),
+            ],
           }),
           makeTestNomisIncidentDto({
             incidentStatus: 'Something',
-            reportTime: (new Date()).toDateString(),
+            reportTime: new Date().toDateString(),
             responses: [
               makeTestNomisIncidentDtoResponse({
                 question: 'something',
-                answer: 'No'
-              })
-            ]
+                answer: 'No',
+              }),
+            ],
           }),
-        ]
+        ],
       })
 
       stubLoginAndBrowseToViolenceInputPage()
@@ -245,7 +245,7 @@ describe('Violence', () => {
       violencePage = ViolencePage.createForBookingId(bookingId)
 
       violencePage.validateExpectedViolenceWarning(
-        'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months',
+        'This person has been reported as involved in 5 assaults in custody. In the past 12 months, there have been 2 serious assaults and 3 non-serious assaults. You should consider the dates and context of these assaults in your assessment.',
       )
       violencePage.validateViolenceInfoExists({ exists: false })
     })
@@ -257,7 +257,7 @@ describe('Violence', () => {
       })
       cy.task('stubGetAssaultIncidents', {
         prisonerNumber: 'B2345YZ',
-        assaultIncidents: []
+        assaultIncidents: [],
       })
 
       stubLoginAndBrowseToViolenceInputPage()

@@ -27,7 +27,7 @@ class PrisonerBackgroundSpecification extends AbstractSpecification {
     at PrisonerBackgroundPage
     headerValue*.text() == fixture.MINI_HEADER
     extremismWarning.text() contains 'This person is at risk of engaging in, or vulnerable to, extremism'
-    violenceWarning.text() contains 'This person has been reported as the perpetrator in 5 assaults in custody before, including 2 serious assaults and 3 non-serious assaults in the past 12 months.'
+    violenceWarning.text() contains 'This person has been reported as involved in 5 assaults in custody. In the past 12 months, there have been 2 serious assaults and 3 non-serious assaults. You should consider the dates and context of these assaults in your assessment.'
     !violenceNotifyWarning.displayed
     escapeWarning.text().contains('This person is considered an escape risk')
     !escapeInfo.displayed

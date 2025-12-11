@@ -56,9 +56,9 @@
 
   {% if data.countOfAssaults > 0 %}
     {% set warningText %}
-      This person has been reported as the perpetrator in {{ data.countOfAssaults }} assaults in custody before,
-      including {{ data.countOfRecentSeriousAssaults }} serious assaults and {{ data.countOfRecentNonSeriousAssaults }} non-serious assaults in the past 12 months.
-      You should consider the dates and context of these assaults in your assessment.
+      This person has been reported as involved in {{ data.countOfAssaults }} assaults in custody. In the past 12 months, there have been
+      {{ data.countOfRecentSeriousAssaults }} serious assaults and {{ data.countOfRecentNonSeriousAssaults }} non-serious assaults. You 
+      should consider the dates and context of these assaults in your assessment.
     {% endset %}
     {{ govukWarningText({
       text: warningText,
@@ -77,7 +77,7 @@
   {% endif %}
   {% if not (data.viper.aboveThreshold or data.countOfAssaults > 0) %}
     {{ govukInsetText({
-      text: "This person has not been reported as the perpetrator in any assaults in custody before.",
+      text: "This person has not been reported as involved in any assaults in custody before.",
       attributes: {  'id': 'violenceInfo' }
     }) }}
   {% endif %}
@@ -137,9 +137,9 @@
   <ul>
     <li>CSIP notes</li>
   <li><a target="_blank" href="https://safety-diagnostic-tool.apps.alpha.mojanalytics.xyz">Safety diagnostic tool</a></li>
-    <li><a target="_blank" href="{{ data.offenderDpsCaseNotesLink }}">NOMIS case notes</a></li>
+    <li><a target="_blank" href="{{ data.offenderDpsCaseNotesLink }}">Case notes</a></li>
     <li><a target="_blank" href="{{ data.offenderDpsAdjudicationsLink }}">Adjudications</a></li>
-    <li><a target="_blank" href="{{ data.offenderDpsAlertsLink }}">NOMIS alerts</a></li>
+    <li><a target="_blank" href="{{ data.offenderDpsAlertsLink }}">Alerts</a></li>
     <li><a id="historyLink" target="_blank" href="/categoryHistory/{{ data.details.bookingId }}">Previous categorisation assessments</a></li>
     <li>Compliance with their sentence plan</li>
   </ul>
