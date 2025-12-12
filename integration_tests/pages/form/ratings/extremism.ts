@@ -12,7 +12,7 @@ type PreviousTerrorismOffencesChoiceValues =
 
 const SELECTORS = {
   INFO: '.govuk-inset-text',
-  WARNING: '.govuk-warning-text__text',
+  WARNING: '.moj-alert--warning',
   PREVIOUS_TERRORISM_OFFENCES: {
     ERROR: '#previousTerrorismOffencesText-error',
     TEXT_ERROR: '#previousTerrorismOffencesText-error',

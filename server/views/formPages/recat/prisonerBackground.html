@@ -1,10 +1,10 @@
 {% extends "../formTemplate.html" %}
-{% from "warning-text/macro.njk" import govukWarningText %}
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "details/macro.njk" import govukDetails %}
 {% from "../../macros/renderAlert.html" import renderAlert %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set pageTitle = "Prisoner background" %}
 
@@ -56,28 +56,28 @@
 
   {% if data.countOfAssaults > 0 %}
     {% set warningText %}
-      This person has been reported as the perpetrator in {{ data.countOfAssaults }} assaults in custody before,
-      including {{ data.countOfRecentSeriousAssaults }} serious assaults and {{ data.countOfRecentNonSeriousAssaults }} non-serious assaults in the past 12 months.
-      You should consider the dates and context of these assaults in your assessment.
+      This person has been reported as involved in {{ data.countOfAssaults }} assaults in custody. In the past 12 months, there have been
+      {{ data.countOfRecentSeriousAssaults }} serious assaults and {{ data.countOfRecentNonSeriousAssaults }} non-serious assaults. You 
+      should consider the dates and context of these assaults in your assessment.
     {% endset %}
-    {{ govukWarningText({
+    {{ mojAlert({
+      variant: "warning",
+      dismissible: false,
       text: warningText,
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides govuk-!-padding-right-1",
       attributes: {  'id': 'violenceWarning' }
     }) }}
   {% endif %}
   {% if data.viper.aboveThreshold %}
-    {{ govukWarningText({
+    {{ mojAlert({
+      variant: "warning",
+      dismissible: false,
       text: 'Please notify your safer custody lead about this prisoner',
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides",
       attributes: {  'id': 'violenceNotifyWarning' }
     }) }}
   {% endif %}
   {% if not (data.viper.aboveThreshold or data.countOfAssaults > 0) %}
     {{ govukInsetText({
-      text: "This person has not been reported as the perpetrator in any assaults in custody before.",
+      text: "This person has not been reported as involved in any assaults in custody before.",
       attributes: {  'id': 'violenceInfo' }
     }) }}
   {% endif %}
@@ -85,10 +85,11 @@
 <h1 class="govuk-heading-s">Risk of escape</h1>
 
 {% if data.escapeProfile.activeEscapeList or data.escapeProfile.activeEscapeRisk %}
-  {{ govukWarningText({
+
+  {{ mojAlert({
+    variant: "warning",
+    dismissible: false,
     text: 'This person is considered an escape risk',
-    iconFallbackText: "Warning",
-    classes: "forms-warning-text warning-overrides",
     attributes: {  'id': 'escapeWarning' }
   }) }}
 
@@ -113,10 +114,10 @@
 <h1 class="govuk-heading-s">Extremism</h1>
 
   {% if data.extremismProfile.increasedRiskOfExtremism %}
-    {{ govukWarningText({
-      text: "This person is at risk of engaging in, or vulnerable to, extremism",
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides",
+    {{ mojAlert({
+      variant: "warning",
+      dismissible: false,
+      text: 'This person is at risk of engaging in, or vulnerable to, extremism',
       attributes: {  'id': 'extremismWarning' }
     }) }}
   {% else %}
@@ -127,7 +128,7 @@
   {% endif %}
 
   {% if data.extremismProfile.notifyRegionalCTLead %}
-  <p class="govuk-heading-s">Please contact the Regional CT Team who will provide input on this person's CT risk</p>
+    <p class="govuk-heading-s">Please contact the Regional CT Team who will provide input on this person's CT risk</p>
   {% endif %}
 
 <h1 class="govuk-heading-m">Other sources to check</h1>
@@ -137,9 +138,9 @@
   <ul>
     <li>CSIP notes</li>
   <li><a target="_blank" href="https://safety-diagnostic-tool.apps.alpha.mojanalytics.xyz">Safety diagnostic tool</a></li>
-    <li><a target="_blank" href="{{ data.offenderDpsCaseNotesLink }}">NOMIS case notes</a></li>
+    <li><a target="_blank" href="{{ data.offenderDpsCaseNotesLink }}">Case notes</a></li>
     <li><a target="_blank" href="{{ data.offenderDpsAdjudicationsLink }}">Adjudications</a></li>
-    <li><a target="_blank" href="{{ data.offenderDpsAlertsLink }}">NOMIS alerts</a></li>
+    <li><a target="_blank" href="{{ data.offenderDpsAlertsLink }}">Alerts</a></li>
     <li><a id="historyLink" target="_blank" href="/categoryHistory/{{ data.details.bookingId }}">Previous categorisation assessments</a></li>
     <li>Compliance with their sentence plan</li>
   </ul>

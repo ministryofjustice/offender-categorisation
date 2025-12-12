@@ -1,8 +1,8 @@
 {% extends "../formTemplate.html" %}
-{% from "warning-text/macro.njk" import govukWarningText %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set pageTitle = "Extremism" %}
 
@@ -34,10 +34,10 @@
 <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
 
   {% if data.extremismProfile.increasedRiskOfExtremism %}
-    {{ govukWarningText({
-      text: "This person is at risk of engaging in, or vulnerable to, extremism",
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides"
+    {{ mojAlert({
+      variant: "warning",
+      dismissible: false,
+      text: 'This person is at risk of engaging in, or vulnerable to, extremism'
     }) }}
   {% else %}
     {{ govukInsetText({

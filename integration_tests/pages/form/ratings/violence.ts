@@ -23,7 +23,7 @@ type SeriousThreatChoiceValues =
 const SELECTORS = {
   VIOLENCE: {
     INFO: '.govuk-inset-text',
-    WARNING: '.govuk-warning-text__text',
+    WARNING: '.moj-alert--warning',
   },
   HIGH_RISK_OF_VIOLENCE: {
     ERROR: '#highRiskOfViolence-error',

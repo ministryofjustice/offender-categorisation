@@ -71,7 +71,7 @@ describe("Women's estate recategorisation", () => {
     })
     cy.task('stubGetAssaultIncidents', {
       prisonerNumber: testOffenderNumber,
-      assaultIncidents: []
+      assaultIncidents: [],
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
   })
@@ -98,9 +98,7 @@ describe("Women's estate recategorisation", () => {
     cy.get('#extremismInfo').contains(
       'This person is not currently considered to be at risk of engaging in, or vulnerable to, extremism.',
     )
-    cy.get('#violenceInfo').contains(
-      'This person has not been reported as the perpetrator in any assaults in custody before.',
-    )
+    cy.get('#violenceInfo').contains('This person has not been reported as involved in any assaults in custody before.')
     cy.get('#escapeInfo').contains('This person is not on the E-List and does not have an Escape Risk Alert.')
     checkPrisonerHeaderSummary()
     cy.get('#offenceDetails').type('offenceDetails text')

@@ -1,9 +1,9 @@
 {% extends "../formTemplate.html" %}
-{% from "warning-text/macro.njk" import govukWarningText %}
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "inset-text/macro.njk" import govukInsetText %}
 {% from "details/macro.njk" import govukDetails %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 
 {% set pageTitle = "Safety and good order" %}
 
@@ -51,26 +51,27 @@
 
   {% if data.countOfAssaults > 0 %}
     {% set warningText %}
-      This person has been reported as the perpetrator in {{ data.countOfAssaults }} assaults in custody before,
-      including {{ data.countOfRecentSeriousAssaults }} serious assaults and {{ data.countOfRecentNonSeriousAssaults }} non-serious assaults in the past 12 months.
-      You should consider the dates and context of these assaults in your assessment.
+      This person has been reported as involved in {{ data.countOfAssaults }} assaults in custody. In the past 12 months, 
+      there have been {{ data.countOfRecentSeriousAssaults }} serious assaults and {{ data.countOfRecentNonSeriousAssaults }} 
+      non-serious assaults. You should consider the dates and context of these assaults in your assessment.
     {% endset %}
-    {{ govukWarningText({
-      text: warningText,
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides govuk-!-padding-right-1"
+    {{ mojAlert({
+      variant: "warning",
+      dismissible: false,
+      text: warningText
     }) }}
   {% endif %}
   {% if data.viper.aboveThreshold %}
-    {{ govukWarningText({
+    {{ mojAlert({
+      variant: "warning",
+      dismissible: false,
       text: 'Please notify your safer custody lead about this prisoner',
-      iconFallbackText: "Warning",
-      classes: "forms-warning-text warning-overrides"
+      attributes: {  'id': 'violenceNotifyWarning' }
     }) }}
  {% endif %}
  {% if not (data.viper.aboveThreshold or data.countOfAssaults > 0) %}
     {{ govukInsetText({
-      text: "This person has not been reported as the perpetrator in any assaults in custody before."
+      text: "This person has not been reported as involved in any assaults in custody before."
     }) }}
   {% endif %}
 

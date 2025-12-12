@@ -1278,10 +1278,8 @@ describe('GET /ratings/violence', () => {
         expect(offendersService.getCountOfAssaultIncidents).toBeCalledTimes(1)
         expect(formService.getViperData).toBeCalledTimes(1)
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard.+Categorisation task list/s)
-        expect(res.text).toContain(
-          'This person has not been reported as the perpetrator in any assaults in custody before.',
-        )
-        expect(res.text).not.toContain("'This person has been reported as the perpetrator")
+        expect(res.text).toContain('This person has not been reported as involved in any assaults in custody before.')
+        expect(res.text).not.toContain("'This person has been reported as involved in")
       }),
   )
 
@@ -1305,7 +1303,7 @@ describe('GET /ratings/violence', () => {
       .expect(res => {
         expect(res.text).toMatch(/Digital Prison Services.+Categorisation dashboard/s)
         expect(res.text).toMatch(
-          /This person has been reported as the perpetrator in 5 assaults in custody before,\s+including 2 serious assaults and 3 non-serious assaults in the past 12 months./,
+          /This person has been reported as involved in 5 assaults in custody. In the past 12 months,\s+there have been 2 serious assaults and 3\s+non-serious assaults/,
         )
         expect(res.text).toContain('Please notify your safer custody lead about this prisoner')
       })

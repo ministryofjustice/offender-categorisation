@@ -73,8 +73,8 @@ attributes: {  'id': 'escapeWarning'},
 <h2 id="violenceSection" class="govuk-heading-m  govuk-!-padding-top-4">Safety and good order</h2>
 
     {% set warningText %}
-      They have been reported as the perpetrator of {{ data.newProfile.violence.numberOfAssaults }} assaults in custody before,
-      including {{ data.newProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.newProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults in the past 12 months
+      This person has been reported as involved in {{ data.newProfile.violence.numberOfAssaults }} assaults in custody. In the past 12 months,
+      there have been {{ data.newProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.newProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults
     {% endset %}
     {{ govukWarningText({
       html: warningText,
@@ -101,8 +101,8 @@ attributes: {  'id': 'escapeWarning'},
     {% if data.oldProfile.violence.numberOfAssaults == 0 %}
       There are no reported assaults during this sentence
     {% else %}
-      They have been reported as the perpetrator of {{ data.oldProfile.violence.numberOfAssaults }} assaults in custody before,
-      including {{ data.oldProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.oldProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults in the past 12 months
+      This person has been reported as involved in {{ data.oldProfile.violence.numberOfAssaults }} assaults in custody. In the past 12 months,
+      there have been {{ data.oldProfile.violence.numberOfSeriousAssaults }} serious assaults and {{ data.oldProfile.violence.numberOfNonSeriousAssaults }} non-serious assaults
     {% endif %}
     {% endset %}
     {{ govukWarningText({

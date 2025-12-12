@@ -178,7 +178,7 @@ describe('Supervisor Review', () => {
       },
       {
         term: 'Safety and good order',
-        definition: 'This person has not been reported as the perpetrator in any assaults in custody before',
+        definition: 'This person has not been reported as involved in any assaults in custody before',
       },
       {
         term: 'Risk of escape',
