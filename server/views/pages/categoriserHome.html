@@ -81,7 +81,7 @@
                 {% set statusColumn %}
                   {% if offender.displayStatus == 'Back from Supervisor' %}
                     {{ govukTag({
-                      html: 'REJECTED BY<br/>SUPERVISOR'
+                      html: 'Rejected by Supervisor'
                     }) }}
                   {% else %}
                     {{ offender.displayStatus }}
