@@ -33,12 +33,12 @@
 
 {% if data.violenceProfile.numberOfAssaults > 0 %}
     {% set violenceText %}
-      This person has been reported as the perpetrator in {{ data.violenceProfile.numberOfAssaults }} assaults in custody before,
-      including {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults and {{ data.violenceProfile.numberOfNonSeriousAssaults }} non-serious assaults in the past 12 months.
-      You should consider the dates and context of these assaults in your assessment.
+      This person has been reported as involved in {{ data.violenceProfile.numberOfAssaults }} assaults in custody. In the past 12 months, there have been
+      {{ data.violenceProfile.numberOfSeriousAssaults }} serious assaults and {{ data.violenceProfile.numberOfNonSeriousAssaults }} non-serious assaults. You should consider 
+      the dates and context of these assaults in your assessment.
     {% endset %}
   {% else %}
-    {% set violenceText = "This person has not been reported as the perpetrator in any assaults in custody before" %}
+    {% set violenceText = "This person has not been reported as involved in any assaults in custody before" %}
 {% endif %}
 
 {% set escape %}
