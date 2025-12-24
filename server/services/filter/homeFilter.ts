@@ -153,9 +153,7 @@ const getOffenderNumbersWithLowRoshScore = async (
 ) => {
   const prisonerNumbersWithLowRoshScore = []
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
-  let startTime = Date.now()
   const probationOffenderSearchOffenders = await probationOffenderSearchClient.matchPrisoners(prisonerNumbers)
-  logger.info(`CAT prioritisation filter investigation: fetching crns took ${Date.now() - startTime}ms`)
   if (typeof probationOffenderSearchOffenders === 'undefined') {
     return []
   }
@@ -165,7 +163,6 @@ const getOffenderNumbersWithLowRoshScore = async (
       probationOffenderSearchOffender.otherIds.nomsNumber,
     ]),
   )
-  startTime = Date.now()
   let crnsWithNoRoshLevel = 0
   const BATCH_SIZE = 50
   for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
@@ -184,8 +181,6 @@ const getOffenderNumbersWithLowRoshScore = async (
       }),
     )
   }
-  logger.info(`CAT prioritisation filter investigation: fetching RoSH took ${Date.now() - startTime}ms`)
-  logger.info(`CAT prioritisation filter investigation: ${crnsWithNoRoshLevel} crns without RoSH level`)
   return prisonerNumbersWithLowRoshScore
 }
 
