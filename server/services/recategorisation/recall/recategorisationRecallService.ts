@@ -1,6 +1,5 @@
 import { RecategorisationPrisonerSearchDto } from '../prisonerSearch/recategorisationPrisonerSearch.dto'
 import { RecalledOffenderData } from './recalledOffenderData'
-import logger from '../../../../log'
 
 export const ADMISSION_TYPE = 'ADM'
 
