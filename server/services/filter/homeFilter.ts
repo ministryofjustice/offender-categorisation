@@ -170,8 +170,6 @@ const getOffenderNumbersWithLowRoshScore = async (
       // eslint-disable-next-line no-loop-func
       crnBatch.map(async crn => {
         const risksSummary = await risksAndNeedsClient.getRisksSummary(crn)
-        if (typeof risksSummary.overallRiskLevel === 'undefined') {
-        }
         if (risksSummary.overallRiskLevel === OverallRiskLevel.low) {
           prisonerNumbersWithLowRoshScore.push(crnsToOffenderNumbers[crn])
         }
