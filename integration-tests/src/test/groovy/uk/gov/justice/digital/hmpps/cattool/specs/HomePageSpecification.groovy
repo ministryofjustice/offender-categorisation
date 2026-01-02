@@ -410,9 +410,6 @@ class HomePageSpecification extends AbstractSpecification {
     prisonerSearchApi.stubSentenceData(['B2345XY', 'B2345YZ'], [12, 11], [LocalDate.now().toString(), LocalDate.now().toString()])
     finishButton.click()
     at RecategoriserHomePage
-
-    elite2Api.stubCategorised([11])
-    elite2Api.stubGetStaffDetailsByUsernameList()
   }
 
   def "Log out"() {
