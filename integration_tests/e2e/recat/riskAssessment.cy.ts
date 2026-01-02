@@ -36,7 +36,7 @@ describe('Risk assessment page', () => {
     cy.signIn()
   })
 
-  it('Navigates to the prisoner background page, testing the validation, links and entering data correctly', () => {
+  it('Navigates to the risk assessment page, testing the validation, entering and saving data correctly', () => {
     const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
     recategoriserHomePage.selectPrisonerWithBookingId(12, 'Start', 'DUE')
     const tasklistRecatPage = Page.verifyOnPage(TasklistRecatPage)
