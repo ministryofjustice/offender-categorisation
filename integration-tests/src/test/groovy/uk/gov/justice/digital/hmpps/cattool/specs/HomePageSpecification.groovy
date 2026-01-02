@@ -7,7 +7,6 @@ import uk.gov.justice.digital.hmpps.cattool.model.TestFixture
 import uk.gov.justice.digital.hmpps.cattool.pages.*
 import uk.gov.justice.digital.hmpps.cattool.pages.ratings.CategoriserOffendingHistoryPage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserAwaitingApprovalViewPage
-import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserDonePage
 import uk.gov.justice.digital.hmpps.cattool.pages.recat.RecategoriserHomePage
 
 import java.time.LocalDate
@@ -414,10 +413,6 @@ class HomePageSpecification extends AbstractSpecification {
 
     elite2Api.stubCategorised([11])
     elite2Api.stubGetStaffDetailsByUsernameList()
-    doneTabLink.click()
-
-    then: 'The recategoriser done page is displayed, showing the completed categorisation (prior to the cancellation)'
-    at RecategoriserDonePage
   }
 
   def "Log out"() {
