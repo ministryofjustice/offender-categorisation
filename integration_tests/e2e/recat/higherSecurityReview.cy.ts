@@ -20,9 +20,6 @@ describe('Higher security review', () => {
       bookingIds: [11, 12],
       startDates: [today, today],
     })
-    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
-    cy.task('stubSentenceDataGetSingle', { offenderNumber: 'B2345YZ', formattedReleaseDate: '2014-11-23' })
-    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
       offenderNo: 'B2345YZ',
@@ -33,23 +30,6 @@ describe('Higher security review', () => {
       offenderNo: 'B2345YZ',
       transferToSecurity: false,
     })
-    cy.task('stubGetExtremismProfile', {
-      offenderNo: 'B2345YZ',
-      band: 4,
-    })
-    cy.task('stubGetEscapeProfile', {
-      offenderNo: 'B2345YZ',
-      alertCode: 'XEL',
-    })
-    cy.task('stubGetViperData', {
-      prisonerNumber: 'B2345YZ',
-      aboveThreshold: true,
-    })
-    cy.task('stubGetAssaultIncidents', {
-      prisonerNumber: 'B2345YZ',
-      assaultIncidents: [],
-    })
-    cy.task('stubAgencyDetails', { agency: 'LPI' })
 
     cy.stubLogin({
       user: RECATEGORISER_USER,
