@@ -903,7 +903,7 @@ const stubGetOffenderDetailsWomenYOI = ({
           agencyId: 'PFI',
           firstName: 'TINY',
           lastName: 'TIM',
-          dateOfBirth: youngOffender ? '2005-01-01' : '1970-02-17',
+          dateOfBirth: youngOffender ? moment().subtract(16, 'years').format('yyyy-MM-dd') : '1970-02-17',
           category: 'Cat ' + category,
           categoryCode: category,
           assessments: nextReviewDate ? [{ assessmentCode: 'CATEGORY', nextReviewDate: nextReviewDate }] : null,
