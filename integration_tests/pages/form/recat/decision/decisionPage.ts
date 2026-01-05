@@ -17,6 +17,7 @@ export default class DecisionPage extends Page {
   closedOption = (): PageElement => cy.get('#closedOption')
   yoiClosedOption = (): PageElement => cy.get('#catIOption')
   yoiOpenOption = (): PageElement => cy.get('#catJOption')
+  catBOption = (): PageElement => cy.get('#catBOption')
   catCOption = (): PageElement => cy.get('#catCOption')
   catDOption = (): PageElement => cy.get('#catDOption')
   hints = (): PageElement => cy.get('.govuk-radios__hint')
