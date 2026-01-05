@@ -23,7 +23,7 @@ type OtherEvidenceChoiceValues =
 const SELECTORS = {
   ALERT: '.govuk-details__text p',
   INFO: '.govuk-inset-text',
-  WARNING: '.govuk-warning-text__text',
+  WARNING: '.moj-alert--warning',
   CAT_B: {
     ERROR: '#escapeCatB-error',
     QUESTION: 'input[name="escapeCatB"]',
