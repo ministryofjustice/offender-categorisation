@@ -252,7 +252,7 @@ module.exports = function createFormService(formClient, formApiClientBuilder) {
     })
 
     if (validateStatusIfProvided(currentCategorisation.status, Status.APPROVED.name)) {
-      log.info(
+      log.debug(
         `Supervisor approval for booking Id: ${bookingId}, offender No: ${
           currentCategorisation.offenderNo
         }. user name: ${currentCategorisation.userId} \nWith details ${JSON.stringify(
