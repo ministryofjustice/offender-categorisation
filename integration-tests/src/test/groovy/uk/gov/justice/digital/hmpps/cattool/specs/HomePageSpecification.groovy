@@ -87,7 +87,7 @@ class HomePageSpecification extends AbstractSpecification {
     ]
 
     statuses == [
-      'REJECTED BY\nSUPERVISOR',
+      'Returned by Supervisor',
       'Started (Api User)',
       'Awaiting approval',
       'Started (Api User)',
