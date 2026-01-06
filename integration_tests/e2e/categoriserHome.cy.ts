@@ -81,7 +81,7 @@ describe('Categoriser Home page', () => {
         cy.signIn()
       })
 
-      it('should show upcoming categorisations', () => {
+      it('should show upcoming categorisations including displaying Started and Edit for in progress categorisations', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         categoriserHomePage.validateToDoTableData([
           [
@@ -225,6 +225,7 @@ describe('Categoriser Home page', () => {
           ],
         ])
       })
+
       it('should maintain sort order when apply filters clicked', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         cy.get('th button[data-index="0"]').click({ force: true })
@@ -233,6 +234,7 @@ describe('Categoriser Home page', () => {
       })
     })
   })
+
   describe('side filters', () => {
     beforeEach(() => {
       cy.task('stubUncategorised')
@@ -248,6 +250,7 @@ describe('Categoriser Home page', () => {
       })
       cy.signIn()
     })
+
     it('should hide the filter when hide filter button is pressed and keep hidden until show filter is pressed', () => {
       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
       categoriserHomePage.filterContainer().should('be.visible')
@@ -263,6 +266,7 @@ describe('Categoriser Home page', () => {
       categoriserHomePage.filterContainer().should('be.visible')
       categoriserHomePage.hideFilterButton().should('contain', 'Hide filter')
     })
+
     it('should apply the filters that are selected', () => {
       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
       categoriserHomePage.overdueCheckbox().should('not.be.checked')
@@ -271,6 +275,7 @@ describe('Categoriser Home page', () => {
       categoriserHomePage.overdueCheckbox().should('be.checked')
       cy.contains('You have 1 filter applied')
     })
+
     it('should show correct message when no results and filters are applied', () => {
       const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
       categoriserHomePage.overdueCheckbox().click()
