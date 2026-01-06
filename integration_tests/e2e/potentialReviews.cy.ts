@@ -5,6 +5,7 @@ import PotentialReviewsPage from '../pages/recategoriser/potentialReviewsPage'
 import { AGENCY_LOCATION } from '../factory/agencyLocation'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import STATUS from '../../server/utils/statusEnum'
+import moment from "moment/moment";
 
 describe('Potential reviews', () => {
   beforeEach(() => {
@@ -71,7 +72,7 @@ describe('Potential reviews', () => {
     recategoriserHomePage.potentialReviewsTab().click()
     const potentialReviewsPage = Page.verifyOnPage(PotentialReviewsPage)
     potentialReviewsPage.validateCategoryReviewsTableData([
-      ['31/01/2019', 'Clark, FrankB2345XY', '31/12/2025', 'Check now'],
+      ['31/01/2019', 'Clark, FrankB2345XY', moment().subtract(2, 'days').format('DD/MM/yyyy'), 'Check now'],
     ])
   })
 })
