@@ -22,7 +22,6 @@ import { PrisonerAllocationDto } from '../../data/allocationManager/prisonerAllo
 import { ProbationOffenderSearchApiClient } from '../../data/probationOffenderSearch/probationOffenderSearchApiClient'
 import { RisksAndNeedsApiClient } from '../../data/risksAndNeeds/risksAndNeedsApi'
 import { OverallRiskLevel } from '../../data/risksAndNeeds/riskSummary.dto'
-import logger from '../../../log'
 import { AdjudicationsApiClient } from '../../data/adjudicationsApi/adjudicationsApiClient'
 import {
   NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
@@ -153,9 +152,7 @@ const getOffenderNumbersWithLowRoshScore = async (
 ) => {
   const prisonerNumbersWithLowRoshScore = []
   const prisonerNumbers = prisoners.map(prisoner => prisoner.offenderNo)
-  let startTime = Date.now()
   const probationOffenderSearchOffenders = await probationOffenderSearchClient.matchPrisoners(prisonerNumbers)
-  logger.info(`CAT prioritisation filter investigation: fetching crns took ${Date.now() - startTime}ms`)
   if (typeof probationOffenderSearchOffenders === 'undefined') {
     return []
   }
@@ -165,8 +162,6 @@ const getOffenderNumbersWithLowRoshScore = async (
       probationOffenderSearchOffender.otherIds.nomsNumber,
     ]),
   )
-  startTime = Date.now()
-  let crnsWithNoRoshLevel = 0
   const BATCH_SIZE = 50
   for (let range = 0; range < Object.keys(crnsToOffenderNumbers).length; range += BATCH_SIZE) {
     const crnBatch = Object.keys(crnsToOffenderNumbers).slice(range, range + BATCH_SIZE)
@@ -175,17 +170,12 @@ const getOffenderNumbersWithLowRoshScore = async (
       // eslint-disable-next-line no-loop-func
       crnBatch.map(async crn => {
         const risksSummary = await risksAndNeedsClient.getRisksSummary(crn)
-        if (typeof risksSummary.overallRiskLevel === 'undefined') {
-          crnsWithNoRoshLevel += 1
-        }
         if (risksSummary.overallRiskLevel === OverallRiskLevel.low) {
           prisonerNumbersWithLowRoshScore.push(crnsToOffenderNumbers[crn])
         }
       }),
     )
   }
-  logger.info(`CAT prioritisation filter investigation: fetching RoSH took ${Date.now() - startTime}ms`)
-  logger.info(`CAT prioritisation filter investigation: ${crnsWithNoRoshLevel} crns without RoSH level`)
   return prisonerNumbersWithLowRoshScore
 }
 
