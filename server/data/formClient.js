@@ -132,7 +132,7 @@ module.exports = {
   },
 
   referToSecurity(bookingId, userId, status, transactionalClient) {
-    logger.info(`referToSecurity called for ${userId}, status ${status} and booking id ${bookingId}`)
+    logger.info(`referToSecurity called with status ${status} for booking id ${bookingId}`)
     const query = {
       text: `update form f set status = $1, referred_date = CURRENT_TIMESTAMP, referred_by = $2 where f.booking_id = $3 ${sequenceClause}`,
       values: [status, userId, bookingId],
@@ -141,7 +141,7 @@ module.exports = {
   },
 
   securityReviewed(bookingId, status, userId, transactionalClient) {
-    logger.info(`securityReviewed called for ${userId} with status ${status} and booking id ${bookingId}`)
+    logger.info(`securityReviewed called with status ${status} and booking id ${bookingId}`)
     const query = {
       text: `update form f set security_reviewed_date = CURRENT_TIMESTAMP, security_reviewed_by = $1, status = $2 where f.booking_id = $3 ${sequenceClause}`,
       values: [userId, status, bookingId],
@@ -231,7 +231,7 @@ module.exports = {
   },
 
   cancel(bookingId, user, transactionalClient) {
-    logger.info(`cancel called for booking id ${bookingId} and user ${user}`)
+    logger.info(`cancel called for booking id ${bookingId}`)
     const query = {
       text: `update form f set status = $1, cancelled_by = $2, cancelled_date = CURRENT_TIMESTAMP where f.booking_id = $3 ${sequenceClause}`,
       values: [Status.CANCELLED.name, user, bookingId],
@@ -240,7 +240,7 @@ module.exports = {
   },
 
   supervisorApproval(formResponse, bookingId, userId, transactionalClient = db) {
-    logger.info(`recording supervisor approval for booking id ${bookingId} and user ${userId}`)
+    logger.info(`recording supervisor approval for booking id ${bookingId}`)
     const query = {
       text: `update form f set form_response = $1, status = $2, approved_by = $3, approval_date = CURRENT_DATE where f.booking_id = $4 ${sequenceClause}`,
       values: [formResponse, 'APPROVED', userId, bookingId],
@@ -249,7 +249,7 @@ module.exports = {
   },
 
   categoriserDecisionWithFormResponse(formResponse, bookingId, userId, transactionalClient) {
-    logger.info(`recording assessment decision (awaiting approval) for booking id ${bookingId} and user ${userId}`)
+    logger.info(`recording assessment decision (awaiting approval) for booking id ${bookingId}`)
     const query = {
       text: `update form f set form_response = $1, status = $2, assessed_by = $3, assessment_date = CURRENT_DATE where f.booking_id = $4 ${sequenceClause}`,
       values: [formResponse, 'AWAITING_APPROVAL', userId, bookingId],
@@ -258,7 +258,7 @@ module.exports = {
   },
 
   categoriserDecision(bookingId, userId, transactionalClient) {
-    logger.info(`recording assessment decision (awaiting approval) for booking id ${bookingId} and user ${userId}`)
+    logger.info(`recording assessment decision (awaiting approval) for booking id ${bookingId}`)
     const query = {
       text: `update form f set status = $1, assessed_by = $2, assessment_date = CURRENT_DATE where f.booking_id = $3 ${sequenceClause}`,
       values: ['AWAITING_APPROVAL', userId, bookingId],
@@ -518,7 +518,7 @@ module.exports = {
     approvedComment,
     transactionalClient,
   }) {
-    logger.info(`lite categorisation record for booking id ${bookingId} and user ${approvedBy}`)
+    logger.info(`lite categorisation record for booking id ${bookingId}`)
     const query = {
       text: `update lite_category
              set approved_date                = $3,
