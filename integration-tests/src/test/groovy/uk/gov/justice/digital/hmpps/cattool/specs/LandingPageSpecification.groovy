@@ -140,7 +140,7 @@ class LandingPageSpecification extends AbstractSpecification {
     then: 'The page contains a warning'
     at LandingPage
     !recatButton.displayed
-    warning.text() contains 'This prisoner is Cat A. They cannot be categorised here'
+    warning.text() contains "You cannot start a category review early for a Cat A prisoner. You'll need to change their security category."
   }
 
   def "A recategoriser user sees a continue button when a recat is in progress"() {
