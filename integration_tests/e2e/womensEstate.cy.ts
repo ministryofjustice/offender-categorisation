@@ -1043,7 +1043,7 @@ describe("Women's Estate", () => {
             [
               { key: 'Name', value: 'Tim, Tiny' },
               { key: 'NOMIS ID', value: offenderNo },
-              { key: 'Date of birth', value: '01/01/2005' },
+              { key: 'Date of birth', value: moment().subtract(16, 'years').format('DD/MM/YYYY') },
               { key: 'Current category', value: 'YOI closed' },
             ],
             // column 2

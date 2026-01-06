@@ -231,9 +231,6 @@ module.exports = function createOffendersService(
           const dbRecord = raw.lastName ? await formService.getCategorisationRecord(raw.bookingId) : raw
 
           if (dbRecord.catType === 'RECAT') {
-            logger.info(
-              `Initial cat missing recalls investigation: booking id=${dbRecord.bookingId}, offenderNo=${dbRecord.offenderNo}, Nomis status=${nomisRecord.status}, PG status=${dbRecord.status}`,
-            )
             return null
           }
 
@@ -824,16 +821,6 @@ module.exports = function createOffendersService(
               NUMBER_OF_DAYS_AFTER_RECALL_RECAT_IS_DUE,
             ),
             'yyyy-MM-dd',
-          )
-        }
-
-        if (
-          prisonerSearchRecord == null ||
-          prisonerSearchRecord.sentenceStartDate == null ||
-          moment(prisonerSearchRecord.sentenceStartDate).isAfter(moment(nomisRecord.assessmentDate))
-        ) {
-          logger.info(
-            `recategorisationDashboardErrorInvestigation: ${nomisRecord.offenderNo}, assessmentDate = ${nomisRecord.assessmentDate}, sentence date = ${prisonerSearchRecord?.sentenceStartDate}, next review date = ${nomisRecord.nextReviewDate}, legalStatus = ${prisonerSearchRecord?.legalStatus}, recall = ${prisonerSearchRecord?.recall}, recall data = ${recalledOffenderData?.get(nomisRecord.offenderNo)}`,
           )
         }
 
