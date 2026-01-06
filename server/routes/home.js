@@ -228,11 +228,7 @@ module.exports = function Index({
       })
     }
 
-    // Can be removed after pilot of recategorisation prioritisation filter
     if (validation.value.filterRemoved) {
-      logger.info(
-        `Recategorisation Prioritisation Filter: filter removed using chips: ${validation.value.filterRemoved}`,
-      )
       delete validation.value.filterRemoved
     }
 
@@ -246,13 +242,6 @@ module.exports = function Index({
       : []
 
     const riskChangeCount = await formService.getRiskChangeCount(res.locals.user.activeCaseLoad.caseLoadId)
-
-    // Can be removed after pilot of recategorisation prioritisation filter
-    if (typeof validation.value === 'object' && Object.keys(validation.value).length > 0) {
-      logger.info(
-        `Recategorisation Prioritisation Filter: number of results with filters applied: filters = ${JSON.stringify(validation.value)}, records = ${offenders.length}, prisonId = ${user.activeCaseLoad.caseLoadId}`,
-      )
-    }
 
     return res.render('pages/recategoriserHome', {
       offenders,

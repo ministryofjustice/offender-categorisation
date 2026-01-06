@@ -64,7 +64,7 @@ async function getApiClientToken(username) {
     ? querystring.stringify({ grant_type: 'client_credentials', username })
     : querystring.stringify({ grant_type: 'client_credentials' })
 
-  logger.info(
+  logger.debug(
     `Oauth request '${oauthRequest}' for client id '${config.apis.oauth2.clientCredsClientId}' and user '${username}'`,
   )
 

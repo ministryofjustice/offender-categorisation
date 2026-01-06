@@ -354,6 +354,27 @@ describe('Approved View', () => {
     approvedViewRecatPage.getBackToCaseListButton().click()
   })
 
+  it('The done tab does not show categorisations completed through Nomis (recat role)', () => {
+    cy.task('stubRecategorise')
+    cy.task('stubGetPrisonerSearchPrisoners')
+    cy.task('stubSentenceData', {
+      offenderNumbers: ['B2345XY', 'B2345YZ'],
+      bookingIds: [11, 12],
+      startDates: [today, today],
+    })
+    cy.task('stubCategorised', {
+      bookingIds: [],
+    })
+
+    cy.stubLogin({
+      user: RECATEGORISER_USER,
+    })
+    cy.signIn()
+    const recategoriserHomePage = Page.verifyOnPage(RecategoriserHomePage)
+    recategoriserHomePage.doneTabLink().click()
+    cy.get('#no-results-message').should('contain.text', 'No category review prisoners found')
+  })
+
   it('The approved view page is correctly displayed (recat role)', () => {
     cy.task('insertFormTableDbRow', {
       id: -1,
@@ -385,6 +406,27 @@ describe('Approved View', () => {
       securityReviewedDate: null,
       assignedUserId: null,
       approvedBy: SUPERVISOR_USER.username,
+      review_reason: 'AGE',
+    })
+
+    // unapproved cat shouldn't be shown
+    cy.task('insertFormTableDbRow', {
+      id: -2,
+      bookingId: 13,
+      nomisSequenceNumber: 9,
+      catType: CATEGORISATION_TYPE.RECAT,
+      offenderNo: 'B2345YZ',
+      sequenceNumber: 1,
+      status: STATUS.STARTED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: new Date(),
+      formResponse: {
+        recat: {},
+      },
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      assignedUserId: null,
+      approvedBy: null,
       review_reason: 'AGE',
     })
 
