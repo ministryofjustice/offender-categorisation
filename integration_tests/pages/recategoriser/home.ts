@@ -19,6 +19,10 @@ export default class RecategoriserHomePage extends BaseRecategoriserPage {
     cy.contains(`a[href="/tasklistRecat/${bookingId}?reason=${reason}"]`, expectedButtonText).click()
   }
 
+  selectPrisonerAwaitingApprovalWithBookingId(bookingId: number, expectedButtonText = 'View') {
+    cy.contains(`a[href="/form/awaitingApprovalView/${bookingId}"]`, expectedButtonText).click()
+  }
+
   continueReviewForPrisoner = (bookingId: number, reviewReason: 'DUE') =>
     cy.get(`a[href="/tasklistRecat/${bookingId}?reason=${reviewReason}"`).should('contain.text', 'Edit').click()
 

@@ -19,7 +19,7 @@ import OpenConditionsNotRecommended from '../../pages/form/openConditions/notRec
 import { compareObjects, isToday } from '../../support/utilities'
 import ReviewRecatPage from '../../pages/form/recat/reviewRecatPage'
 import CategoriserSubmittedPage from '../../pages/taskList/categoriserSubmitted'
-import RecatAwaitingApprovalPage from '../../pages/recatAwaitingSupervisorApproval/awaitingApprovalView'
+import AwaitingApprovalPage from '../../pages/awaitingSupervisorApproval/awaitingApprovalView'
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorReviewPage from '../../pages/form/supervisor/review'
 import SupervisorReviewOutcomePage from '../../pages/form/supervisor/outcome'
@@ -114,7 +114,7 @@ describe('Open Conditions', () => {
     })
     cy.task('stubGetAssaultIncidents', {
       prisonerNumber: 'B2345YZ',
-      assaultIncidents: []
+      assaultIncidents: [],
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
 
@@ -354,8 +354,20 @@ describe('Open Conditions', () => {
         sequence_no: 1,
         risk_profile: {
           socProfile: { transferToSecurity: false },
-          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
-          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
+          violenceProfile: {
+            riskType: 'VIOLENCE',
+            numberOfAssaults: 0,
+            notifySafetyCustodyLead: true,
+            numberOfSeriousAssaults: 0,
+            numberOfNonSeriousAssaults: 0,
+          },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
@@ -510,8 +522,20 @@ describe('Open Conditions', () => {
         sequence_no: 1,
         risk_profile: {
           socProfile: { transferToSecurity: false },
-          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
-          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
+          violenceProfile: {
+            riskType: 'VIOLENCE',
+            numberOfAssaults: 0,
+            notifySafetyCustodyLead: true,
+            numberOfSeriousAssaults: 0,
+            numberOfNonSeriousAssaults: 0,
+          },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
@@ -576,7 +600,7 @@ describe('Open Conditions', () => {
     recategoriserHomePage.viewReviewAwaitingApprovalForPrisoner(12)
 
     // 'The correct category is retrieved and data is correct'
-    const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
+    const recatAwaitingApprovalPage = Page.verifyOnPage(AwaitingApprovalPage)
     recatAwaitingApprovalPage.getCategoryForApproval().contains('Category for approval is open category')
     recatAwaitingApprovalPage.validateEarliestReleaseDateSummary([
       { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
@@ -803,8 +827,20 @@ describe('Open Conditions', () => {
         sequence_no: 1,
         risk_profile: {
           socProfile: { transferToSecurity: false },
-          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
-          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
+          violenceProfile: {
+            riskType: 'VIOLENCE',
+            numberOfAssaults: 0,
+            notifySafetyCustodyLead: true,
+            numberOfSeriousAssaults: 0,
+            numberOfNonSeriousAssaults: 0,
+          },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
@@ -869,7 +905,7 @@ describe('Open Conditions', () => {
     recategoriserHomePage.viewReviewAwaitingApprovalForPrisoner(12)
 
     // 'The correct category is retrieved and data is correct'
-    const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
+    const recatAwaitingApprovalPage = Page.verifyOnPage(AwaitingApprovalPage)
     recatAwaitingApprovalPage.getCategoryForApproval().contains('Category for approval is open category')
     recatAwaitingApprovalPage.validateEarliestReleaseDateSummary([
       { question: '5 or more years until earliest release date?', expectedAnswer: 'No' },
@@ -1056,8 +1092,20 @@ describe('Open Conditions', () => {
         sequence_no: 1,
         risk_profile: {
           socProfile: { transferToSecurity: false },
-          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
-          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
+          violenceProfile: {
+            riskType: 'VIOLENCE',
+            numberOfAssaults: 0,
+            notifySafetyCustodyLead: true,
+            numberOfSeriousAssaults: 0,
+            numberOfNonSeriousAssaults: 0,
+          },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',
@@ -1389,8 +1437,20 @@ describe('Open Conditions', () => {
             },
           ],
           socProfile: { transferToSecurity: false },
-          escapeProfile: { riskType: 'ESCAPE', activeEscapeList: true, activeEscapeRisk: false, escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }], escapeRiskAlerts: [] },
-          violenceProfile: { riskType: 'VIOLENCE', numberOfAssaults: 0, notifySafetyCustodyLead: true, numberOfSeriousAssaults: 0, numberOfNonSeriousAssaults: 0 },
+          escapeProfile: {
+            riskType: 'ESCAPE',
+            activeEscapeList: true,
+            activeEscapeRisk: false,
+            escapeListAlerts: [{ alertCode: 'XEL', dateCreated: '2016-09-14' }],
+            escapeRiskAlerts: [],
+          },
+          violenceProfile: {
+            riskType: 'VIOLENCE',
+            numberOfAssaults: 0,
+            notifySafetyCustodyLead: true,
+            numberOfSeriousAssaults: 0,
+            numberOfNonSeriousAssaults: 0,
+          },
           extremismProfile: { notifyRegionalCTLead: false, increasedRiskOfExtremism: false },
         },
         prison_id: 'LEI',

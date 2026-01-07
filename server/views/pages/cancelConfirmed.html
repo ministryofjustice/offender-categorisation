@@ -19,7 +19,8 @@
 
 {{ govukButton({
   text: "Finish",
-  href: "/"
+  href: "/",
+   attributes: { id: "finishButton" }
 }) }}
 <div>
   <a href="/{{ data.details.bookingId }}" id="manageLink">Manage prisoner</a>

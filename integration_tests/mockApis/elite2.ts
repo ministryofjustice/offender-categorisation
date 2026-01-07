@@ -4,7 +4,7 @@ import moment from 'moment'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
 import { AgencyLocation } from '../factory/agencyLocation'
-import { NomisIncidentDto } from "../../server/data/nomis/incidents/nomisIncident.dto";
+import { NomisIncidentDto } from '../../server/data/nomis/incidents/nomisIncident.dto'
 
 const stubAgencyDetails = ({ agency }: { agency: string }): SuperAgentRequest =>
   stubFor({
@@ -1203,6 +1203,36 @@ const stubUncategorised = (): SuperAgentRequest =>
     },
   })
 
+const stubUncategorisedAfterCancellation = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345XY',
+          firstName: 'PENELOPE',
+          lastName: 'PITSTOP',
+          status: 'UNCATEGORISED',
+          assessmentSeq: 5,
+        },
+        {
+          bookingId: 11,
+          offenderNo: 'B2345YZ',
+          firstName: 'ANT',
+          lastName: 'HILLMOB',
+          status: 'UNCATEGORISED',
+          assessmentSeq: 4,
+        },
+      ],
+    },
+  })
+
 const stubUncategorisedFull = (): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1590,7 +1620,13 @@ const getOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
     },
   })
 
-const stubGetAssaultIncidents = ({ prisonerNumber, assaultIncidents }: { prisonerNumber: string, assaultIncidents: NomisIncidentDto[] }) =>
+const stubGetAssaultIncidents = ({
+  prisonerNumber,
+  assaultIncidents,
+}: {
+  prisonerNumber: string
+  assaultIncidents: NomisIncidentDto[]
+}) =>
   stubFor({
     request: {
       method: 'GET',
@@ -1600,6 +1636,19 @@ const stubGetAssaultIncidents = ({ prisonerNumber, assaultIncidents }: { prisone
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: assaultIncidents,
+    },
+  })
+
+const stubSetInactive = ({ bookingId, status }: { bookingId: number; status: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      url: `/elite2/api/offender-assessments/category/${bookingId}/inactive?status=${status}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {},
     },
   })
 
@@ -1628,6 +1677,7 @@ export default {
   stubSupervisorApproveNoPendingAssessmentError,
   stubSupervisorReject,
   stubUncategorised,
+  stubUncategorisedAfterCancellation,
   stubUncategorisedFull,
   stubUncategorisedAwaitingApproval,
   stubUncategorisedAwaitingApprovalForWomenYOI,
@@ -1640,4 +1690,5 @@ export default {
   stubRecategorise,
   getOffenderStub,
   stubGetAssaultIncidents,
+  stubSetInactive,
 }
