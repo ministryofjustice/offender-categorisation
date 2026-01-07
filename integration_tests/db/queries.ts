@@ -282,14 +282,20 @@ async function insertRiskChangeTableDbRow({
   offenderNumber,
   prisonId,
   status,
+  oldRiskProfileJson = '{}',
+  newRiskProfileJson = '{}',
+  raisedDate = new Date(),
 }: {
   offenderNumber: string
   prisonId: string,
-  status: string
+  status: string,
+  oldRiskProfileJson: string,
+  newRiskProfileJson: string,
+  raisedDate: Date,
 }) {
   return await db.query(
     `insert into risk_change (old_profile, new_profile, offender_no, user_id, prison_id, status, raised_date) values ($1, $2, $3, $4, $5, $6, $7)`,
-    ['{}', '{}', offenderNumber, 'SECURITY_USER', prisonId, status, new Date()],
+    [oldRiskProfileJson, newRiskProfileJson, offenderNumber, 'SECURITY_USER', prisonId, status, raisedDate],
   )
 }
 

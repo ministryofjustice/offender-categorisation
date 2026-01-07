@@ -1544,6 +1544,13 @@ const stubRecategorise = (
         nextReviewDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
         assessmentStatus: 'A',
       },
+      {
+        bookingId: 11,
+        offenderNo: 'B2345XY',
+        classificationCode: 'C',
+        nextReviewDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
+        assessmentStatus: 'A',
+      },
     ]
   }
   const latestOnlyStub = () =>
