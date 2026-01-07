@@ -24,4 +24,7 @@ export default class RecategoriserHomePage extends BaseRecategoriserPage {
 
   viewReviewAwaitingApprovalForPrisoner = (bookingId: number) =>
     cy.get(`a[href="/form/awaitingApprovalView/${bookingId}"`).should('contain.text', 'View').click()
+
+  potentialReviewsTab = () =>
+    cy.get(`a[href="/recategoriserCheck"`).should('contain.text', 'Potential reviews')
 }
