@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { RECATEGORISER_USER } from '../../factory/user'
+import { RECATEGORISER_USER, SUPERVISOR_USER } from '../../factory/user'
 import { CATEGORISATION_TYPE } from '../../support/categorisationType'
 import { AGENCY_LOCATION } from '../../factory/agencyLocation'
 import STATUS from '../../../server/utils/statusEnum'
@@ -21,13 +21,47 @@ describe('Cancel recategorisation', () => {
     cy.task('setUpDb')
     cy.task('deleteRowsFromForm')
 
+    // new recat
+    cy.task('insertFormTableDbRow', {
+      id: -2,
+      bookingId: 12,
+      nomisSequenceNumber: 6,
+      catType: CATEGORISATION_TYPE.RECAT,
+      offenderNo: 'B2345XY',
+      sequenceNumber: 1,
+      status: STATUS.APPROVED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: new Date('2023-01-01'),
+      formResponse: {
+        recat: {
+          decision: { category: 'C', justification: 'approved recat' },
+          oasysInput: { date: '14/12/2024', oasysRelevantInfo: 'No' },
+          securityInput: { securityInputNeeded: 'No', securityNoteNeeded: 'No' },
+          nextReviewDate: { date: '14/12/2038' },
+          prisonerBackground: { offenceDetails: 'offence Details text' },
+          riskAssessment: {
+            lowerCategory: 'lower security category text',
+            otherRelevant: 'Yes',
+            higherCategory: 'higher security category text',
+            otherRelevantText: 'other relevant information',
+          },
+        },
+      },
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      assignedUserId: null,
+      approvedBy: SUPERVISOR_USER.username,
+      review_reason: 'DUE',
+    })
+
+    // historic recat
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
       nomisSequenceNumber: 7,
       catType: CATEGORISATION_TYPE.RECAT,
       offenderNo: 'B2345XY',
-      sequenceNumber: 1,
+      sequenceNumber: 2,
       status: STATUS.AWAITING_APPROVAL.name,
       prisonId: AGENCY_LOCATION.LEI.id,
       startDate: new Date(),
@@ -118,7 +152,7 @@ describe('Cancel recategorisation', () => {
     cy.signIn()
   })
 
-  it('allows a recategorisation awaiting approval to be viewed and cancelled', () => {
+  it('allows a recategorisation awaiting approval to be viewed and cancelled previously approved record', () => {
     const recatHomePage = Page.verifyOnPage(RecategoriserHomePage)
 
     recatHomePage.selectPrisonerAwaitingApprovalWithBookingId(bookingId, 'View')
@@ -145,7 +179,7 @@ describe('Cancel recategorisation', () => {
           lastName: 'PITSTOP',
           category: 'B',
           nextReviewDate: moment(today).subtract(4, 'days').format('yyyy-MM-DD'),
-          assessStatus: 'A', // show Start button
+          assessStatus: 'A',
         },
         {
           bookingId: 11,
@@ -163,8 +197,9 @@ describe('Cancel recategorisation', () => {
     cancelConfirmedPage.finishButton().should('be.visible')
     cancelConfirmedPage.finishButton().click()
 
+    // check new recat
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, data => {
-      const dbRecord = data.rows[0]
+      const dbRecord = data.rows[1]
 
       expect(dbRecord.status).to.equal('CANCELLED')
       expect(dbRecord.cancelled_by).to.equal('RECATEGORISER_USER')
@@ -173,7 +208,27 @@ describe('Cancel recategorisation', () => {
       return true
     })
 
+    // check historic recat
+    cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, data => {
+      const dbRecord = data.rows[0]
+
+      expect(dbRecord.status).to.equal('APPROVED')
+      expect(dbRecord.cancelled_by).to.equal(null)
+      expect(dbRecord.cancelled_date).to.equal(null)
+
+      return true
+    })
+
     const recatHomePageReloaded = Page.verifyOnPage(RecategoriserHomePage)
-    recatHomePageReloaded.selectPrisonerWithBookingId(bookingId, 'Start')
+
+    cy.contains('tr', 'B2345XY').within(() => {
+      cy.get('td')
+        .invoke('text')
+        .then(text => {
+          const normalised = text.replace(/\s+/g, ' ').trim()
+          expect(normalised).to.include('Not started')
+          expect(normalised).to.include('Start')
+        })
+    })
   })
 })
