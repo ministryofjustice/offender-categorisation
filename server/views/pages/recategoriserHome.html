@@ -88,7 +88,7 @@
           {% set statusColumn %}
             {% if review.displayStatus == 'Back from Supervisor' %}
               {{ govukTag({
-              html: 'Rejected by supervisor'
+              html: 'Returned by supervisor'
               }) }}
             {% else %}
               {{ review.displayStatus }}
