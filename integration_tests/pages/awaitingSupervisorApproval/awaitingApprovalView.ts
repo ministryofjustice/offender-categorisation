@@ -1,6 +1,6 @@
 import Page, { DtDlQuestionExpectedAnswerPair, PageElement } from '../page'
 
-export default class RecatAwaitingApprovalPage extends Page {
+export default class AwaitingApprovalPage extends Page {
   static baseUrl: string = '/form/awaitingApprovalView'
 
   constructor() {

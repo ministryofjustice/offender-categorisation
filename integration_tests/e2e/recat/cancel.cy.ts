@@ -6,7 +6,7 @@ import STATUS from '../../../server/utils/statusEnum'
 
 import RecategoriserHomePage from '../../pages/recategoriser/home'
 import Page from '../../pages/page'
-import RecatAwaitingApprovalPage from '../../pages/recatAwaitingSupervisorApproval/awaitingApprovalView'
+import AwaitingApprovalPage from '../../pages/awaitingSupervisorApproval/awaitingApprovalView'
 import CancelPage from '../../pages/cancel/cancel'
 import CancelConfirmedPage from '../../pages/cancel/cancelConfirmed'
 
@@ -157,7 +157,7 @@ describe('Cancel recategorisation', () => {
 
     recatHomePage.selectPrisonerAwaitingApprovalWithBookingId(bookingId, 'View')
 
-    const recatAwaitingApprovalPage = Page.verifyOnPage(RecatAwaitingApprovalPage)
+    const recatAwaitingApprovalPage = Page.verifyOnPage(AwaitingApprovalPage)
     recatAwaitingApprovalPage.cancelLink().click()
 
     const cancelPage = Page.verifyOnPage(CancelPage)
@@ -219,7 +219,7 @@ describe('Cancel recategorisation', () => {
       return true
     })
 
-    const recatHomePageReloaded = Page.verifyOnPage(RecategoriserHomePage)
+    Page.verifyOnPage(RecategoriserHomePage)
 
     cy.contains('tr', 'B2345XY').within(() => {
       cy.get('td')

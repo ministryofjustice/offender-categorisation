@@ -1203,6 +1203,36 @@ const stubUncategorised = (): SuperAgentRequest =>
     },
   })
 
+const stubUncategorisedAfterCancellation = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345XY',
+          firstName: 'PENELOPE',
+          lastName: 'PITSTOP',
+          status: 'UNCATEGORISED',
+          assessmentSeq: 5,
+        },
+        {
+          bookingId: 11,
+          offenderNo: 'B2345YZ',
+          firstName: 'ANT',
+          lastName: 'HILLMOB',
+          status: 'UNCATEGORISED',
+          assessmentSeq: 4,
+        },
+      ],
+    },
+  })
+
 const stubUncategorisedFull = (): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1640,6 +1670,7 @@ export default {
   stubSupervisorApproveNoPendingAssessmentError,
   stubSupervisorReject,
   stubUncategorised,
+  stubUncategorisedAfterCancellation,
   stubUncategorisedFull,
   stubUncategorisedAwaitingApproval,
   stubUncategorisedAwaitingApprovalForWomenYOI,

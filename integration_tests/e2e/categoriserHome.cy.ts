@@ -5,7 +5,7 @@ import CategoriserHomePage from '../pages/categoriser/home'
 import { CASELOAD } from '../factory/caseload'
 import dbSeeder from '../fixtures/db-seeder'
 import initialCategorisation from '../fixtures/categoriser/home'
-import { calculateOverdueText, get10BusinessDays } from '../support/utilities'
+import { calculateOverdueText } from '../support/utilities'
 
 describe('Categoriser Home page', () => {
   beforeEach(() => {
