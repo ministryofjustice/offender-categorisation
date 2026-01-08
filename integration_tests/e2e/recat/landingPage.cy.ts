@@ -29,6 +29,8 @@ describe('Recategoriser Landing page', () => {
       transferToSecurity: false,
     })
 
+    cy.task('stubAssessments', { offenderNumber: 'B2345XY', emptyResponse: false, bookingId: 12 })
+
     cy.task('stubAgencyDetails', { agency: 'LPI' })
   })
 
@@ -40,7 +42,6 @@ describe('Recategoriser Landing page', () => {
       youngOffender: false,
       indeterminateSentence: false,
     })
-    cy.task('stubAssessments', { offenderNumber: 'B2345XY' })
 
     cy.stubLogin({
       user: RECATEGORISER_USER,
@@ -96,12 +97,6 @@ describe('Recategoriser Landing page', () => {
       categoryCode: 'U',
     })
 
-    cy.task('stubAssessments', {
-      offenderNumber: 'B2345XY',
-      emptyResponse: false,
-      bookingId: 12,
-    })
-
     cy.stubLogin({ user: RECATEGORISER_USER })
     cy.signIn()
 
@@ -121,11 +116,6 @@ describe('Recategoriser Landing page', () => {
       indeterminateSentence: false,
       category: 'A',
       categoryCode: 'A',
-    })
-    cy.task('stubAssessments', {
-      offenderNumber: 'B2345XY',
-      emptyResponse: false,
-      bookingId: 12,
     })
 
     cy.stubLogin({ user: RECATEGORISER_USER })
@@ -168,10 +158,74 @@ describe('Recategoriser Landing page', () => {
       category: 'C',
       categoryCode: 'C',
     })
-    cy.task('stubAssessments', {
-      offenderNumber: 'B2345XY',
-      emptyResponse: false,
+
+    cy.stubLogin({ user: RECATEGORISER_USER })
+    cy.signIn()
+
+    cy.visit('/12')
+
+    const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
+  })
+
+  it('A recategoriser user sees a warning for initial cat being in progress', () => {
+    cy.task('insertFormTableDbRow', {
+      id: -1,
       bookingId: 12,
+      catType: CATEGORISATION_TYPE.INITIAL,
+      offenderNo: 'B2345XY',
+      sequenceNumber: 1,
+      status: STATUS.STARTED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: today,
+      formResponse: {},
+      assignedUserId: RECATEGORISER_USER.username,
+    })
+
+    cy.task('stubGetOffenderDetails', {
+      bookingId: 12,
+      offenderNo: 'B2345XY',
+      youngOffender: false,
+      indeterminateSentence: false,
+      category: 'C',
+      categoryCode: 'C',
+    })
+
+    cy.stubLogin({
+      user: RECATEGORISER_USER,
+    })
+    cy.signIn()
+
+    cy.visit('/12')
+
+    const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
+
+    landingPage.recatButton().should('not.exist')
+    landingPage.editButton().should('not.exist')
+    landingPage.warning().should('be.visible')
+    landingPage.warning().should('contain.text', 'This prisoner has an initial categorisation in progress')
+  })
+
+  it('A recategoriser user sees a warning for awaiting approval', () => {
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      bookingId: 12,
+      catType: CATEGORISATION_TYPE.RECAT,
+      offenderNo: 'B2345XY',
+      sequenceNumber: 1,
+      status: STATUS.AWAITING_APPROVAL.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: today,
+      formResponse: {},
+      assignedUserId: RECATEGORISER_USER.username,
+    })
+
+    cy.task('stubGetOffenderDetails', {
+      bookingId: 12,
+      offenderNo: 'B2345XY',
+      youngOffender: false,
+      indeterminateSentence: false,
+      category: 'C',
+      categoryCode: 'C',
     })
 
     cy.stubLogin({ user: RECATEGORISER_USER })
@@ -180,5 +234,79 @@ describe('Recategoriser Landing page', () => {
     cy.visit('/12')
 
     const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
+
+    landingPage.recatButton().should('not.exist')
+    landingPage.warning().should('be.visible')
+    landingPage.warning().should('contain.text', 'This prisoner is awaiting supervisor approval')
+    landingPage.viewButton().should('be.visible')
+  })
+
+  it('A recategoriser user sees no next review button if there are no existing cats', () => {
+    cy.task('stubGetOffenderDetails', {
+      bookingId: 12,
+      offenderNo: 'B2345XY',
+      youngOffender: false,
+      indeterminateSentence: false,
+      category: 'C',
+      categoryCode: 'C',
+      nextReviewDate: null,
+    })
+    cy.task('stubAssessments', {
+      offenderNumber: 'B2345XY',
+      emptyResponse: true,
+    })
+
+    cy.stubLogin({ user: RECATEGORISER_USER })
+    cy.signIn()
+
+    cy.visit('/12')
+
+    const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
+
+    landingPage.nextReviewDateButton().should('not.exist')
+  })
+
+  describe('Women"s estate', () => {
+    it('A recategoriser user can proceed with a cat when prisoner is Women"s Open category (T)', () => {
+      cy.task('stubGetOffenderDetails', {
+        bookingId: 12,
+        offenderNo: 'B2345XY',
+        youngOffender: false,
+        indeterminateSentence: false,
+        category: 'T',
+        categoryCode: 'T',
+      })
+
+      cy.stubLogin({ user: RECATEGORISER_USER })
+      cy.signIn()
+
+      cy.visit('/12')
+
+      const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
+
+      landingPage.recatButton().should('be.visible')
+      landingPage.warning().should('not.exist')
+    })
+
+    it('A recategoriser user can proceed with a cat when prisoner is Women"s Closed category (R)', () => {
+      cy.task('stubGetOffenderDetails', {
+        bookingId: 12,
+        offenderNo: 'B2345XY',
+        youngOffender: false,
+        indeterminateSentence: false,
+        category: 'R',
+        categoryCode: 'R',
+      })
+
+      cy.stubLogin({ user: RECATEGORISER_USER })
+      cy.signIn()
+
+      cy.visit('/12')
+
+      const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
+
+      landingPage.recatButton().should('be.visible')
+      landingPage.warning().should('not.exist')
+    })
   })
 })
