@@ -4,7 +4,7 @@ import moment from 'moment'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
 import { AgencyLocation } from '../factory/agencyLocation'
-import { NomisIncidentDto } from "../../server/data/nomis/incidents/nomisIncident.dto";
+import { NomisIncidentDto } from '../../server/data/nomis/incidents/nomisIncident.dto'
 
 const stubAgencyDetails = ({ agency }: { agency: string }): SuperAgentRequest =>
   stubFor({
@@ -1590,7 +1590,13 @@ const getOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
     },
   })
 
-const stubGetAssaultIncidents = ({ prisonerNumber, assaultIncidents }: { prisonerNumber: string, assaultIncidents: NomisIncidentDto[] }) =>
+const stubGetAssaultIncidents = ({
+  prisonerNumber,
+  assaultIncidents,
+}: {
+  prisonerNumber: string
+  assaultIncidents: NomisIncidentDto[]
+}) =>
   stubFor({
     request: {
       method: 'GET',
@@ -1600,6 +1606,52 @@ const stubGetAssaultIncidents = ({ prisonerNumber, assaultIncidents }: { prisone
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: assaultIncidents,
+    },
+  })
+
+const stubGetCategoryHistory = () =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: '/elite2/api/offender-assessments/CATEGORY?offenderNo=B2345YZ&latestOnly=false&activeOnly=false',
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      jsonBody: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 5,
+          classificationCode: 'C',
+          assessmentDate: '2019-06-18',
+          prisonId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 4,
+          classificationCode: 'P',
+          assessmentDate: '2018-06-08',
+          prisonId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 3,
+          classificationCode: 'B',
+          assessmentDate: '2013-03-24',
+          prisonId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 2,
+          classificationCode: 'A',
+          assessmentDate: '2012-06-08',
+          prisonId: 'LPI',
+        },
+      ],
     },
   })
 
@@ -1640,4 +1692,5 @@ export default {
   stubRecategorise,
   getOffenderStub,
   stubGetAssaultIncidents,
+  stubGetCategoryHistory,
 }

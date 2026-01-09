@@ -287,11 +287,11 @@ async function insertRiskChangeTableDbRow({
   raisedDate = new Date(),
 }: {
   offenderNumber: string
-  prisonId: string,
-  status: string,
-  oldRiskProfileJson: string,
-  newRiskProfileJson: string,
-  raisedDate: Date,
+  prisonId: string
+  status: string
+  oldRiskProfileJson: string
+  newRiskProfileJson: string
+  raisedDate: Date
 }) {
   return await db.query(
     `insert into risk_change (old_profile, new_profile, offender_no, user_id, prison_id, status, raised_date) values ($1, $2, $3, $4, $5, $6, $7)`,
@@ -373,6 +373,26 @@ const getSecurityReferral = async ({ offenderNumber }: { offenderNumber: string 
   return await db.query(`select * from security_referral where offender_no = $1`, [offenderNumber])
 }
 
+const updateNomisSequenceNumber = async ({
+  bookingId,
+  sequenceNumber,
+  nomisSequenceNumber,
+}: {
+  bookingId: number
+  sequenceNumber: number
+  nomisSequenceNumber: number
+}) => {
+  return await db.query(
+    `
+      update form
+      set nomis_sequence_no = $1
+      where booking_id = $2
+      and sequence_no = $3
+    `,
+    [nomisSequenceNumber, bookingId, sequenceNumber],
+  )
+}
+
 export default {
   insertFormTableDbRow,
   insertLiteCategoryTableDbRow,
@@ -388,4 +408,5 @@ export default {
   deleteRowsFromForm,
   deleteRowsFromSecurityReferral,
   getSecurityReferral,
+  updateNomisSequenceNumber,
 }
