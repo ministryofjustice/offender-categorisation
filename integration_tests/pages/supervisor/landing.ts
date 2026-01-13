@@ -25,8 +25,9 @@ export default class SupervisorLandingPage extends Page {
     return new SupervisorLandingPage()
   }
 
-  changeReviewDateButton = (): PageElement => cy.get(SELECTORS.BUTTON.NEXT_REVIEW_DATE).contains('Change review date')
-
+  nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
+  paragraphs = (): PageElement => cy.get('p')
+  approveButton = (): PageElement => cy.get('#approveButton')
   validateChangeHistoryTableData = (expectedValues: ChangeHistoryTableData) =>
     cy.checkTableRowData<ChangeHistoryTableData>({
       tableRowsSelector: 'table#nextReviewDateTable > tbody > tr',
