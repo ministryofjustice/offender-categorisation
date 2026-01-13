@@ -1,7 +1,7 @@
 import { READONLY_USER } from '../factory/user'
 
 import Page from '../pages/page'
-import CategoriserLandingPage from '../pages/categoriser/landingPage'
+import CategoriserLandingPage from '../pages/categoriser/landing'
 import CategoryHistoryPage from '../pages/categoryHistory'
 import ApprovedViewPage from '../pages/form/approvedView'
 
@@ -87,11 +87,12 @@ describe('Read-only user - category history', () => {
     cy.stubLogin({ user: READONLY_USER })
     cy.signIn()
 
-    cy.visit(`/${bookingId}`)
+    cy.visit('/12')
+
     const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-    landingPage.nextReviewDate().should('be.visible')
-    landingPage.nextReviewDate().should('have.text', 'They are due to be reviewed by Thursday 16 January 2020.')
+    landingPage.nextReviewDateText().should('be.visible')
+    landingPage.nextReviewDateText().should('have.text', 'They are due to be reviewed by Thursday 16 January 2020.')
 
     cy.task('stubAssessmentsWithCurrent', { offenderNo })
     cy.task('stubAgencyDetails', { agency: 'LEI' })

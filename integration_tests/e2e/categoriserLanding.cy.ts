@@ -4,7 +4,7 @@ import { AGENCY_LOCATION } from '../factory/agencyLocation'
 import STATUS from '../../server/utils/statusEnum'
 
 import TaskListPage from '../pages/taskList/taskList'
-import CategoriserLandingPage from '../pages/categoriser/landingPage'
+import CategoriserLandingPage from '../pages/categoriser/landing'
 import Page from '../pages/page'
 
 describe('Categoriser Landing page', () => {
@@ -53,10 +53,10 @@ describe('Categoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-    landingPage.initialButton().should('be.visible')
+    landingPage.validateInitialButtonExists({ exists: true })
     landingPage.initialButton().invoke('attr', 'href').should('contain', '/tasklist/12?reason=MANUAL')
+    landingPage.validateNextReviewDateButtonExists({ exists: false })
     landingPage.warning().should('not.exist')
-    landingPage.nextReviewDateButton().should('not.exist')
 
     landingPage.initialButton().click()
     Page.verifyOnPage(TaskListPage)
@@ -94,11 +94,12 @@ describe('Categoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-    landingPage.initialButton().should('be.visible')
-    landingPage.recatButton().should('not.exist')
+    landingPage.validateInitialButtonExists({ exists: true })
+    landingPage.validateRecatButtonExists({ exists: false })
     landingPage.warning().should('contain.text', 'This prisoner is already Cat B')
 
     landingPage.initialButton().click()
+
     Page.verifyOnPage(TaskListPage)
 
     cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 12 }, data => {
@@ -150,8 +151,8 @@ describe('Categoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-    landingPage.initialButton().should('not.exist')
-    landingPage.editButton().should('be.visible')
+    landingPage.validateInitialButtonExists({ exists: false })
+    landingPage.validateEditButtonExists({ exists: true })
     landingPage.warning().should('not.exist')
     landingPage.editButton().click()
 
@@ -192,8 +193,8 @@ describe('Categoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-    landingPage.initialButton().should('not.exist')
-    landingPage.editButton().should('not.exist')
+    landingPage.validateInitialButtonExists({ exists: false })
+    landingPage.validateEditButtonExists({ exists: false })
     landingPage
       .warning()
       .should('be.visible')
@@ -234,11 +235,9 @@ describe('Categoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-    landingPage.initialButton().should('not.exist')
-
+    landingPage.validateInitialButtonExists({ exists: false })
+    landingPage.validateViewButtonExists({ exists: true })
     landingPage.warning().should('be.visible').and('contain.text', 'This prisoner is awaiting supervisor approval')
-
-    landingPage.viewButton().should('be.visible')
   })
 
   it('A categoriser user sees a next review button when a previous cat exists', () => {
@@ -257,7 +256,7 @@ describe('Categoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-    landingPage.nextReviewDateButton().should('be.visible')
+    landingPage.validateNextReviewDateButtonExists({ exists: true })
   })
 
   describe("Women's estate", () => {
@@ -277,7 +276,7 @@ describe('Categoriser Landing page', () => {
 
       const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-      landingPage.initialButton().should('be.visible')
+      landingPage.validateInitialButtonExists({ exists: true })
       landingPage.warning().should('be.visible').and('contain.text', 'This prisoner is already Cat T')
     })
 
@@ -297,7 +296,7 @@ describe('Categoriser Landing page', () => {
 
       const landingPage = Page.verifyOnPage(CategoriserLandingPage)
 
-      landingPage.initialButton().should('be.visible')
+      landingPage.validateInitialButtonExists({ exists: true })
       landingPage.warning().should('be.visible').and('contain.text', 'This prisoner is already Cat R')
     })
   })

@@ -84,7 +84,7 @@ describe('Supervisor Landing page', () => {
 
     const landingPage = Page.verifyOnPage(SupervisorLandingPage)
 
-    landingPage.approveButton().should('be.visible')
+    landingPage.validateApproveButtonExists({ exists: true })
   })
 
   it('A supervisor user sees a started initial cat', () => {
@@ -109,6 +109,7 @@ describe('Supervisor Landing page', () => {
     cy.signIn()
 
     cy.visit('/12')
+
     const landingPage = Page.verifyOnPage(SupervisorLandingPage)
 
     landingPage.paragraphs().should('contain.text', "This prisoner's initial categorisation is in progress.")
@@ -134,6 +135,7 @@ describe('Supervisor Landing page', () => {
     cy.signIn()
 
     cy.visit('/12')
+
     const landingPage = Page.verifyOnPage(SupervisorLandingPage)
 
     landingPage.paragraphs().should('contain.text', 'This prisoner has a categorisation review in progress.')
@@ -159,6 +161,7 @@ describe('Supervisor Landing page', () => {
     cy.signIn()
 
     cy.visit('/12')
+
     const landingPage = Page.verifyOnPage(SupervisorLandingPage)
 
     landingPage.paragraphs().should('contain.text', 'They are due to be reviewed by:')
@@ -184,8 +187,9 @@ describe('Supervisor Landing page', () => {
     cy.signIn()
 
     cy.visit('/12')
+
     const landingPage = Page.verifyOnPage(SupervisorLandingPage)
 
-    landingPage.nextReviewDateButton().should('be.visible')
+    landingPage.validateNextReviewDateButtonExists({ exists: true })
   })
 })

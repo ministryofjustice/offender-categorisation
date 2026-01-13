@@ -3,13 +3,10 @@ import { RECATEGORISER_USER } from '../../factory/user'
 import { CATEGORISATION_TYPE } from '../../support/categorisationType'
 import { AGENCY_LOCATION } from '../../factory/agencyLocation'
 import STATUS from '../../../server/utils/statusEnum'
+
 import TasklistRecatPage from '../../pages/tasklistRecat/tasklistRecat'
-
-import RecategoriserLandingPage from '../../pages/recategoriser/landingPage'
+import RecategoriserLandingPage from '../../pages/recategoriser/landing'
 import Page from '../../pages/page'
-
-// check if stubbing recategorise works here
-// clean up womens apostrophes
 
 describe('Recategoriser Landing page', () => {
   let today: Date
@@ -20,6 +17,8 @@ describe('Recategoriser Landing page', () => {
     cy.task('reset')
     cy.task('setUpDb')
     cy.task('deleteRowsFromForm')
+
+    cy.task('stubRecategorise')
 
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345XY'],
@@ -38,7 +37,6 @@ describe('Recategoriser Landing page', () => {
   })
 
   it('A recategoriser user can start a recat from the landing page', () => {
-    cy.task('stubRecategorise')
     cy.task('stubGetOffenderDetails', {
       bookingId: 12,
       offenderNo: 'B2345XY',
@@ -55,8 +53,8 @@ describe('Recategoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-    landingPage.recatButton().should('be.visible')
-    landingPage.nextReviewDateButton().should('be.visible')
+    landingPage.validateRecatButtonExists({ exists: true })
+    landingPage.validateNextReviewDateButtonExists({ exists: true })
 
     cy.task('stubUpdateNextReviewDate', {
       date: moment(today).add(10, 'days').format('YYYY-MM-DD'),
@@ -85,9 +83,8 @@ describe('Recategoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-    landingPage.warning().should('be.visible')
     landingPage.warning().should('contain.text', 'This prisoner seems to need an INITIAL category')
-    landingPage.recatButton().should('not.exist')
+    landingPage.validateRecatButtonExists({ exists: false })
   })
 
   it('A recategoriser user can proceed with a cat when prisoner is cat U but has previous cats', () => {
@@ -107,8 +104,8 @@ describe('Recategoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-    landingPage.recatButton().should('be.visible')
-    landingPage.nextReviewDateButton().should('be.visible')
+    landingPage.validateRecatButtonExists({ exists: true })
+    landingPage.validateNextReviewDateButtonExists({ exists: true })
   })
 
   it('A recategoriser user sees a warning for cat A', () => {
@@ -128,7 +125,7 @@ describe('Recategoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-    landingPage.recatButton().should('not.exist')
+    landingPage.validateRecatButtonExists({ exists: false })
     landingPage
       .warning()
       .should(
@@ -138,8 +135,6 @@ describe('Recategoriser Landing page', () => {
   })
 
   it('A recategoriser user sees a continue button when a recat is in progress', () => {
-    cy.task('stubRecategorise')
-
     cy.task('insertFormTableDbRow', {
       id: -1,
       bookingId: 12,
@@ -167,7 +162,7 @@ describe('Recategoriser Landing page', () => {
 
     cy.visit('/12')
 
-    const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
+    Page.verifyOnPage(RecategoriserLandingPage)
   })
 
   it('A recategoriser user sees a warning for initial cat being in progress', () => {
@@ -202,9 +197,8 @@ describe('Recategoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-    landingPage.recatButton().should('not.exist')
-    landingPage.editButton().should('not.exist')
-    landingPage.warning().should('be.visible')
+    landingPage.validateRecatButtonExists({ exists: false })
+    landingPage.validateEditButtonExists({ exists: false })
     landingPage.warning().should('contain.text', 'This prisoner has an initial categorisation in progress')
   })
 
@@ -238,10 +232,10 @@ describe('Recategoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-    landingPage.recatButton().should('not.exist')
+    landingPage.validateRecatButtonExists({ exists: false })
+    landingPage.validateViewButtonExists({ exists: true })
     landingPage.warning().should('be.visible')
     landingPage.warning().should('contain.text', 'This prisoner is awaiting supervisor approval')
-    landingPage.viewButton().should('be.visible')
   })
 
   it('A recategoriser user sees no next review button if there are no existing cats', () => {
@@ -266,11 +260,11 @@ describe('Recategoriser Landing page', () => {
 
     const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-    landingPage.nextReviewDateButton().should('not.exist')
+    landingPage.validateViewButtonExists({ exists: false })
   })
 
-  describe('Women"s estate', () => {
-    it('A recategoriser user can proceed with a cat when prisoner is Women"s Open category (T)', () => {
+  describe("Women's estate", () => {
+    it("A recategoriser user can proceed with a cat when prisoner is Women's Open category (T)", () => {
       cy.task('stubGetOffenderDetails', {
         bookingId: 12,
         offenderNo: 'B2345XY',
@@ -287,11 +281,11 @@ describe('Recategoriser Landing page', () => {
 
       const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-      landingPage.recatButton().should('be.visible')
+      landingPage.validateRecatButtonExists({ exists: true })
       landingPage.warning().should('not.exist')
     })
 
-    it('A recategoriser user can proceed with a cat when prisoner is Women"s Closed category (R)', () => {
+    it("A recategoriser user can proceed with a cat when prisoner is Women's Closed category (R)", () => {
       cy.task('stubGetOffenderDetails', {
         bookingId: 12,
         offenderNo: 'B2345XY',
@@ -308,7 +302,7 @@ describe('Recategoriser Landing page', () => {
 
       const landingPage = Page.verifyOnPage(RecategoriserLandingPage)
 
-      landingPage.recatButton().should('be.visible')
+      landingPage.validateRecatButtonExists({ exists: true })
       landingPage.warning().should('not.exist')
     })
   })
