@@ -38,10 +38,18 @@ describe('Multiple Role User Home page', () => {
 
     const supervisorHomePage = Page.verifyOnPage(SupervisorHomePage)
     supervisorHomePage.multipleRoleDiv().should('be.visible')
+    supervisorHomePage.roleSwitchSelect().should('be.visible')
+    supervisorHomePage.roleSwitchSelect().should('have.value', 'supervisor')
+    supervisorHomePage.roleSwitchSelect().find('option[value="supervisor"]').should('have.text', 'Supervisor')
+    supervisorHomePage.roleSwitchSelect().find('option[value="categoriser"]').should('have.text', 'Categoriser')
 
     supervisorHomePage.switchRole('categoriser')
     const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
     categoriserHomePage.multipleRoleDiv().should('be.visible')
+    categoriserHomePage.roleSwitchSelect().should('be.visible')
+    categoriserHomePage.roleSwitchSelect().should('have.value', 'categoriser')
+    categoriserHomePage.roleSwitchSelect().find('option[value="supervisor"]').should('have.text', 'Supervisor')
+    categoriserHomePage.roleSwitchSelect().find('option[value="categoriser"]').should('have.text', 'Categoriser')
 
     categoriserHomePage.switchRole('supervisor')
     const supervisorHomePageAgain = Page.verifyOnPage(SupervisorHomePage)
