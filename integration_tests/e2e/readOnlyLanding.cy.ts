@@ -3,6 +3,7 @@ import { READONLY_USER } from '../factory/user'
 import Page from '../pages/page'
 import CategoriserLandingPage from '../pages/categoriser/landingPage'
 import CategoryHistoryPage from '../pages/categoryHistory'
+import ApprovedViewPage from '../pages/form/approvedView'
 
 describe('Read-only user - category history', () => {
   const bookingId = 12
@@ -33,31 +34,31 @@ describe('Read-only user - category history', () => {
 
   it('A read-only user can view previous categorisations and next review date if prisoner is in their prison', () => {
     cy.task('insertFormTableDbRow', {
-      id: -2,
-      bookingId,
-      offenderNo,
-      sequenceNumber: 2,
-      nomisSequenceNumber: 5,
-      catType: 'INITIAL',
-      status: 'APPROVED',
-      prisonId: 'LEI',
-      assignedUserId: 'CATEGORISER_USER',
-      approvedBy: 'CATEGORISER_USER',
-      startDate: today,
-      formResponse: {},
-    })
-
-    cy.task('insertFormTableDbRow', {
       id: -3,
       bookingId,
       offenderNo,
-      sequenceNumber: 3,
+      sequenceNumber: 2,
       nomisSequenceNumber: 4,
       catType: 'RECAT',
       status: 'APPROVED',
       prisonId: 'BXI',
       assignedUserId: 'RECATEGORISER_USER',
       approvedBy: 'RECATEGORISER_USER',
+      startDate: today,
+      formResponse: {},
+    })
+
+    cy.task('insertFormTableDbRow', {
+      id: -2,
+      bookingId,
+      offenderNo,
+      sequenceNumber: 3,
+      nomisSequenceNumber: 5,
+      catType: 'INITIAL',
+      status: 'APPROVED',
+      prisonId: 'LEI',
+      assignedUserId: 'CATEGORISER_USER',
+      approvedBy: 'CATEGORISER_USER',
       startDate: today,
       formResponse: {},
     })
@@ -101,35 +102,41 @@ describe('Read-only user - category history', () => {
     landingPage.historyButton().click()
 
     const historyPage = Page.verifyOnPage(CategoryHistoryPage)
-    historyPage.rows().should('have.length.at.least', 3)
 
-    historyPage
-      .rows()
-      .eq(0)
-      .within(() => {
-        cy.get('td').eq(0).should('contain.text', '18/06/2019')
-        cy.get('td').eq(1).should('contain.text', 'Unsentenced')
-        cy.get('td').eq(2).should('contain.text', 'LPI prison')
-        cy.get('td')
-          .eq(3)
-          .find('a')
-          .should('have.attr', 'href')
-          .and('contain', `/form/approvedView/${bookingId}?sequenceNo=3`)
-      })
+    historyPage.rows().should('have.length', 4)
 
-    historyPage
-      .rows()
-      .eq(2)
-      .within(() => {
-        cy.get('td').eq(1).should('contain.text', 'B')
-        cy.get('td').eq(3).should('not.have.descendants', 'a')
-      })
+    historyPage.assertRow(0, {
+      date: '18/06/2019',
+      category: 'Unsentenced',
+      location: 'LPI prison',
+      hasViewLink: true,
+      hrefContains: '/form/approvedView/12?sequenceNo=3',
+    })
 
-    cy.task('stubAssessments', { offenderNumber: offenderNo })
-    cy.task('stubAgencyDetails', { agency: 'BXI' })
-    cy.task('stubAgencyDetails', { agency: 'LEI' })
+    historyPage.assertRow(1, {
+      date: '08/06/2018',
+      category: 'P',
+      location: 'LPI prison',
+      hasViewLink: true,
+      hrefContains: '/form/approvedView/12?sequenceNo=2',
+    })
 
-    historyPage.rows().eq(0).find('td > a').invoke('removeAttr', 'target').click()
-    cy.url().should('contain', `/form/approvedView/${bookingId}?sequenceNo=3`)
+    historyPage.assertRow(2, {
+      date: '24/03/2013',
+      category: 'B',
+      location: 'LPI prison',
+      hasViewLink: false,
+    })
+
+    historyPage.assertRow(3, {
+      date: '08/06/2012',
+      category: 'A',
+      location: 'LPI prison',
+      hasViewLink: false,
+    })
+
+    historyPage.clickViewLink(0)
+
+    Page.verifyOnPage(ApprovedViewPage)
   })
 })
