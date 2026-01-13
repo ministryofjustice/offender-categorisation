@@ -64,7 +64,7 @@
       {% endif %}
     {% else %}
       {{ govukWarningText({
-        text: 'This prisoner is ' + data.details.category + '. They cannot be categorised here',
+        text: 'You cannot start a category review early for a ' + data.details.category + " prisoner. You'll need to change their security category.",
         iconFallbackText: "Warning",
         classes: "forms-warning-text warning-overrides"
       }) }}
