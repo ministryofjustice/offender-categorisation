@@ -413,7 +413,6 @@ module.exports = function Index({
   router.get(
     '/categoryHistory/:bookingId',
     asyncMiddlewareInDatabaseTransaction(async (req, res, transactionalDbClient) => {
-      // check here!
       const user = await userService.getUser(res.locals)
       res.locals.user = { ...user, ...res.locals.user }
       const { bookingId } = req.params
