@@ -480,18 +480,12 @@ module.exports = function Index({
         offendersService.getCategoryHistory(res.locals, bookingId, transactionalDbClient),
       ])
 
-      console.log(details, '<-- details')
-      console.log(details.categoryCode, '<-- details on landing page')
-      console.log(categoryHistory.history, '<-- category history on landing page')
-
       const nextReviewDate = extractNextReviewDate(details)
       const requiredCatType = offendersService.requiredCatType(
         parseInt(bookingId, 10),
         details.categoryCode,
         categoryHistory.history,
       )
-
-      console.log(requiredCatType, '<-- required cat type')
 
       const nextReviewDateHistory = await formService.getNextReview(details.offenderNo, transactionalDbClient)
       const firstRecord = categoryHistory?.history.length > 0 && categoryHistory.history[0]
