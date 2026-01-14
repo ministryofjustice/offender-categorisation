@@ -8,8 +8,6 @@ import Page from '../pages/page'
 import RecategoriserHomePage from '../pages/recategoriser/home'
 import { AGENCY_LOCATION } from '../factory/agencyLocation'
 import { CASELOAD } from '../factory/caseload'
-import SupervisorHomePage from '../pages/supervisor/home'
-import { calculateDueDate } from '../support/utilities'
 
 const commonOffenderData = {
   offenderNo: 'dummy',

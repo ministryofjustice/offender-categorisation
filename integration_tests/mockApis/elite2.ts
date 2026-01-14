@@ -1639,6 +1639,56 @@ const stubGetAssaultIncidents = ({
     },
   })
 
+const stubGetCategoryHistory = () =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: '/elite2/api/offender-assessments/CATEGORY?offenderNo=B2345YZ&latestOnly=false&activeOnly=false',
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      jsonBody: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 5,
+          classificationCode: 'U',
+          approvalDate: '2019-06-18',
+          assessmentStatus: 'A',
+          assessmentAgencyId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 4,
+          classificationCode: 'P',
+          approvalDate: '2018-06-08',
+          assessmentStatus: 'A',
+          assessmentAgencyId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 3,
+          classificationCode: 'B',
+          approvalDate: '2013-03-24',
+          assessmentStatus: 'A',
+          assessmentAgencyId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 2,
+          classificationCode: 'A',
+          approvalDate: '2012-06-08',
+          assessmentStatus: 'A',
+          assessmentAgencyId: 'LPI',
+        },
+      ],
+    },
+  })
+
 const stubSetInactive = ({ bookingId, status }: { bookingId: number; status: string }): SuperAgentRequest =>
   stubFor({
     request: {
@@ -1690,5 +1740,6 @@ export default {
   stubRecategorise,
   getOffenderStub,
   stubGetAssaultIncidents,
+  stubGetCategoryHistory,
   stubSetInactive,
 }
