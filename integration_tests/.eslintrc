@@ -1,11 +1,18 @@
 {
-  "plugins": ["cypress", "no-only-tests"],
+  "plugins": ["cypress", "no-only-tests", "@typescript-eslint"],
   "env": {
     "cypress/globals": true
   },
-  "extends": ["plugin:cypress/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "plugin:cypress/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
   "rules": {
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-    "no-only-tests/no-only-tests": "error"
+    "no-only-tests/no-only-tests": "error",
+    "class-methods-use-this": "off",
+    "no-underscore-dangle": "off"
   }
 }
