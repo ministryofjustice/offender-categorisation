@@ -1,7 +1,7 @@
-import { SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
-import SupervisorHomePage from '../pages/supervisor/home'
-import Page from '../pages/page'
-import { calculateDueDate } from '../support/utilities'
+import { SECURITY_USER, SUPERVISOR_USER } from '../../factory/user'
+import SupervisorHomePage from '../../pages/supervisor/home'
+import Page from '../../pages/page'
+import { calculateDueDate } from '../../support/utilities'
 
 describe('Supervisor Home page', () => {
   beforeEach(() => {

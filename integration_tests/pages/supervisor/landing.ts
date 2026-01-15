@@ -1,15 +1,7 @@
-import Page, { PageElement } from '../page'
+import { PageElement } from '../page'
+import BaseLandingPage from '../baseLandingPage'
 
-type StringArray = [string, ...string[]][]
-type ChangeHistoryTableData = StringArray
-
-const SELECTORS = {
-  BUTTON: {
-    NEXT_REVIEW_DATE: '#nextReviewDateButton',
-  },
-}
-
-export default class SupervisorLandingPage extends Page {
+export default class SupervisorLandingPage extends BaseLandingPage {
   private static _bookingId: number
 
   static get baseUrl(): string {
@@ -25,11 +17,7 @@ export default class SupervisorLandingPage extends Page {
     return new SupervisorLandingPage()
   }
 
-  changeReviewDateButton = (): PageElement => cy.get(SELECTORS.BUTTON.NEXT_REVIEW_DATE).contains('Change review date')
-
-  validateChangeHistoryTableData = (expectedValues: ChangeHistoryTableData) =>
-    cy.checkTableRowData<ChangeHistoryTableData>({
-      tableRowsSelector: 'table#nextReviewDateTable > tbody > tr',
-      expectedValues,
-    })
+  nextReviewDateButton = (): PageElement => cy.get('#nextReviewDateButton')
+  paragraphs = (): PageElement => cy.get('p')
+  approveButton = (): PageElement => cy.get('#approveButton')
 }

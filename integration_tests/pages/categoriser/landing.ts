@@ -1,16 +1,6 @@
-import Page, { PageElement } from '../page'
-
-type StringArray = [string, ...string[]][]
-type ChangeHistoryTableData = StringArray
-
-const SELECTORS = {
-  BUTTON: {
-    LITE_CATEGORIES: '#liteCategoriesButton',
-    NEXT_REVIEW_DATE: '#nextReviewDateButton',
-  },
-}
-
-export default class CategoriserLandingPage extends Page {
+import { PageElement } from '../page'
+import BaseLandingPage from '../baseLandingPage'
+export default class CategoriserLandingPage extends BaseLandingPage {
   private static _bookingId: number
 
   static get baseUrl(): string {
@@ -26,15 +16,7 @@ export default class CategoriserLandingPage extends Page {
     return new CategoriserLandingPage()
   }
 
-  changeReviewDateButton = (): PageElement => cy.get(SELECTORS.BUTTON.NEXT_REVIEW_DATE).contains('Change review date')
-  liteCategoriesButton = (): PageElement => cy.get(SELECTORS.BUTTON.LITE_CATEGORIES).contains('Change category')
-
-  validateChangeHistoryTableData = (expectedValues: ChangeHistoryTableData) =>
-    cy.checkTableRowData<ChangeHistoryTableData>({
-      tableRowsSelector: 'table#nextReviewDateTable > tbody > tr',
-      expectedValues,
-    })
-
-  validateNextReviewDateButtonExists = ({ exists }: { exists: boolean }) =>
-    this.validateSelectorExists(SELECTORS.BUTTON.NEXT_REVIEW_DATE, exists)
+  initialButton = (): PageElement => cy.get('#initialButton')
+  editButton = (): PageElement => cy.get('#editButton')
+  historyButton = (): PageElement => cy.get('#historyButton')
 }
