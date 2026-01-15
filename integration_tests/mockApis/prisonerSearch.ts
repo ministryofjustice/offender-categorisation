@@ -1,6 +1,6 @@
 import { SuperAgentRequest } from 'superagent'
-import { stubFor } from './wiremock'
 import moment from 'moment'
+import { stubFor } from './wiremock'
 
 type OffenderNumber = string
 type BookingId = number
@@ -138,6 +138,7 @@ const stubSentenceData = ({
           ? moment(releaseDates[idx]).toISOString()
           : moment().add(1, 'days').toISOString(),
         firstName: `firstName-${index}`,
+        // eslint-disable-next-line no-plusplus
         lastName: `lastName-${index++}`,
         offenceCode: `OFF${offenderNumber}`,
         statuteCode: `ST${offenderNumber}`,

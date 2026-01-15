@@ -45,14 +45,16 @@ const stubGetOcgmAlert = ({
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: {
-        content: transferToSecurity ? [
-          {
-            alertCode: {
-              code: "DOCGM",
-            },
-            activeFrom: '2016-09-14',
-          },
-        ] : [],
+        content: transferToSecurity
+          ? [
+              {
+                alertCode: {
+                  code: 'DOCGM',
+                },
+                activeFrom: '2016-09-14',
+              },
+            ]
+          : [],
       },
     },
   })

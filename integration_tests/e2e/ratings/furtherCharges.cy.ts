@@ -1,7 +1,7 @@
+import moment from 'moment'
 import CategoriserHomePage from '../../pages/categoriser/home'
 import FurtherChargesPage, { FurtherChargesCategoryBAppropriateChoice } from '../../pages/form/ratings/furtherCharges'
 import TaskListPage from '../../pages/taskList/taskList'
-import moment from 'moment'
 import { CATEGORISER_USER } from '../../factory/user'
 import Page from '../../pages/page'
 import { FormDbJson } from '../../fixtures/db-key-convertor'

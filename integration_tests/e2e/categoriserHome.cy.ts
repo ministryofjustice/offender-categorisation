@@ -3,7 +3,7 @@ import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER } from '../factory/use
 import Page from '../pages/page'
 import CategoriserHomePage from '../pages/categoriser/home'
 import { CASELOAD } from '../factory/caseload'
-import dbSeeder from '../fixtures/db-seeder'
+import { dbSeeder } from '../fixtures/db-seeder'
 import initialCategorisation from '../fixtures/categoriser/home'
 import { calculateOverdueText } from '../support/utilities'
 
@@ -54,7 +54,7 @@ describe('Categoriser Home page', () => {
       const startDates = offenderData.map(o => o.startDate)
 
       const reviewDatesDict: Record<string, string> = offenderData.reduce((acc, { offenderNo, startDate }) => {
-        acc[offenderNo] = calculateOverdueText(startDate)
+        acc[offenderNo] = calculateOverdueText(startDate.toISOString())
         return acc
       }, {})
 

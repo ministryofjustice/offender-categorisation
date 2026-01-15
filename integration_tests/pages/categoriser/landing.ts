@@ -1,5 +1,6 @@
 import { PageElement } from '../page'
 import BaseLandingPage from '../baseLandingPage'
+
 export default class CategoriserLandingPage extends BaseLandingPage {
   private static _bookingId: number
 

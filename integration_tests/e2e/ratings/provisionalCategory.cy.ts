@@ -62,14 +62,12 @@ describe('Provisional Category', () => {
       })
       cy.task('stubGetAssaultIncidents', {
         prisonerNumber: 'B2345YZ',
-        assaultIncidents: []
+        assaultIncidents: [],
       })
       cy.task('stubSentenceData', {
         offenderNumbers: ['B2345YZ'],
-        bookingIds: [ bookingId],
-        startDates: [
-          moment().subtract(1, 'days').format('yyyy-MM-dd'),
-        ],
+        bookingIds: [bookingId],
+        startDates: [moment().subtract(1, 'days').format('yyyy-MM-dd')],
       })
 
       cy.task('insertFormTableDbRow', {

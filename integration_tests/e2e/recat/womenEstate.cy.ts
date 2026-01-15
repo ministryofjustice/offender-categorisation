@@ -1,5 +1,5 @@
-import RecategoriserHomePage from '../../pages/recategoriser/home'
 import moment from 'moment'
+import RecategoriserHomePage from '../../pages/recategoriser/home'
 import { FEMALE_RECAT_USER, FEMALE_SECURITY_USER } from '../../factory/user'
 import Page from '../../pages/page'
 import TasklistRecatPage from '../../pages/tasklistRecat/tasklistRecat'
@@ -144,7 +144,7 @@ describe("Women's estate recategorisation", () => {
     securityHomePage.validateCategorisationReferralsToDoTableColumnData([
       {
         columnName: 'Name and prison number',
-        expectedValues: ['Clark, Frank' + testOffenderNumber],
+        expectedValues: [`Clark, Frank${testOffenderNumber}`],
       },
       {
         columnName: 'Referred by',

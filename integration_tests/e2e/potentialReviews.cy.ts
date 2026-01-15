@@ -1,3 +1,4 @@
+import moment from 'moment/moment'
 import { RECATEGORISER_USER } from '../factory/user'
 import Page from '../pages/page'
 import RecategoriserHomePage from '../pages/recategoriser/home'
@@ -6,7 +7,6 @@ import RiskProfileChangePage from '../pages/recategoriser/riskProfileChangePage'
 import { AGENCY_LOCATION } from '../factory/agencyLocation'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
 import STATUS from '../../server/utils/statusEnum'
-import moment from 'moment/moment'
 import TasklistRecatPage from '../pages/tasklistRecat/tasklistRecat'
 import { RiskChangeDbRow } from '../db/queries'
 

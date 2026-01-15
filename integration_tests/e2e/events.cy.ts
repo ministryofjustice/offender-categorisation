@@ -1,12 +1,12 @@
-import dbSeeder, { dbSeederLiteCategory } from '../fixtures/db-seeder'
+import { dbSeeder, dbSeederLiteCategory } from '../fixtures/db-seeder'
 import mensUnapprovedInitialCategorisationSeedData from '../fixtures/events/mensUnapprovedInitialCategorisationSeedData'
 import mensUnapprovedRecategorisationSeedData from '../fixtures/events/mensUnapprovedRecategorisationSeedData'
 import mensUnapprovedLiteCategorisationSeedData from '../fixtures/events/mensUnapprovedLiteCategorisationSeedData'
-import { AGENCY_LOCATION } from "../factory/agencyLocation";
+import { AGENCY_LOCATION } from '../factory/agencyLocation'
 import STATUS from '../../server/utils/statusEnum'
-import { CATEGORISATION_TYPE } from "../support/categorisationType";
-import { CATEGORISER_USER } from "../factory/user";
-import { LiteCategoryDbRow, RiskChangeDbRow, SecurityReferralDbRow } from "../db/queries";
+import { CATEGORISATION_TYPE } from '../support/categorisationType'
+import { CATEGORISER_USER } from '../factory/user'
+import { LiteCategoryDbRow, RiskChangeDbRow, SecurityReferralDbRow } from '../db/queries'
 
 type DbQueryResult = { rowCount: number; rows: any[] }
 
@@ -226,12 +226,12 @@ describe('Events', () => {
       cy.task('insertRiskChangeTableDbRow', {
         offenderNumber: 'B0010XY',
         prisonId: AGENCY_LOCATION.LEI.id,
-        status: 'PROCESSED'
+        status: 'PROCESSED',
       })
       cy.task('insertRiskChangeTableDbRow', {
         offenderNumber: 'B0010XY',
         prisonId: AGENCY_LOCATION.LEI.id,
-        status: 'NEW'
+        status: 'NEW',
       })
       cy.task('insertSecurityReferralTableDbRow', {
         offenderNumber: 'B0010XY',
@@ -259,23 +259,30 @@ describe('Events', () => {
       cy.task('sendPrisonerTransferMessage', { nomsNumber: 'B0010XY', bookingId: 123 }).then(() => {
         cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 123 }, (data: DbQueryResult) => {
           cy.log('Result: ', data.rowCount)
-          return data.rows.find(r => r.id === 1).prison_id === AGENCY_LOCATION.LEI.id && data.rows.find(r => r.id === 2).prison_id === AGENCY_LOCATION.BMI.id
+          return (
+            data.rows.find(r => r.id === 1).prison_id === AGENCY_LOCATION.LEI.id &&
+            data.rows.find(r => r.id === 2).prison_id === AGENCY_LOCATION.BMI.id
+          )
         })
         cy.assertDBWithRetries('selectFormTableDbRow', { bookingId: 124 }, (data: DbQueryResult) => {
           return data.rowCount === 1 && data.rows[0].prison_id === AGENCY_LOCATION.LEI.id
         })
         cy.task('selectLiteCategoryTableDbRow', { bookingId: 123 }).then((result: { rows: LiteCategoryDbRow[] }) => {
-          return result.rows.length === 2 &&
+          return (
+            result.rows.length === 2 &&
             result.rows.find(row => row.sequence === 1).prison_id === AGENCY_LOCATION.BMI.id &&
             result.rows.find(row => row.sequence === 2).prison_id === AGENCY_LOCATION.LEI.id
+          )
         })
         cy.task('selectLiteCategoryTableDbRow', { bookingId: 124 }).then((result: { rows: LiteCategoryDbRow[] }) => {
           return result.rows.length === 1 && result.rows[0].prison_id === AGENCY_LOCATION.LEI.id
         })
         cy.task('selectRiskChangeTableDbRow', { offenderNo: 'B0010XY' }).then((result: { rows: RiskChangeDbRow[] }) => {
-          return result.rows.length === 2 &&
+          return (
+            result.rows.length === 2 &&
             result.rows.find(row => row.id === 1).prison_id === AGENCY_LOCATION.BMI.id &&
             result.rows.find(row => row.id === 2).prison_id === AGENCY_LOCATION.LEI.id
+          )
         })
         cy.task('getSecurityReferral', { offenderNo: 'B0010XY' }).then((result: { rows: SecurityReferralDbRow[] }) => {
           return result.rows.length === 1 && result.rows[0].prison_id === AGENCY_LOCATION.BMI.id
@@ -285,6 +292,5 @@ describe('Events', () => {
         })
       })
     })
-
   })
 })
