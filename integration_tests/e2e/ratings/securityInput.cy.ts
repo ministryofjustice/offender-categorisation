@@ -1,7 +1,7 @@
 import CategoriserHomePage from '../../pages/categoriser/home'
 import TaskListPage from '../../pages/taskList/taskList'
 import moment from 'moment/moment'
-import { CATEGORISER_USER, SECURITY_USER, UserAccount } from '../../factory/user'
+import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER, UserAccount } from '../../factory/user'
 import Page from '../../pages/page'
 import CategoriserSecurityInputPage from '../../pages/form/ratings/categoriserSecurityInputPage'
 import { FormDbJson } from '../../fixtures/db-key-convertor'
@@ -9,9 +9,12 @@ import Status from '../../../server/utils/statusEnum'
 import SecurityHomePage from '../../pages/security/home'
 import AuthSignInPage from '../../pages/authSignIn'
 import SecurityReviewPage from '../../pages/form/security/review'
+import CategoriserReviewCYAPage from '../../pages/form/categoriser/review'
 import CategoriserSecurityBackPage, {
   WarrantACategoryBChoice,
 } from '../../pages/form/ratings/categoriserSecurityBackPage'
+import { CATEGORISATION_TYPE } from '../../support/categorisationType'
+import { AGENCY_LOCATION } from '../../factory/agencyLocation'
 
 describe('Security Input', () => {
   let categoriserHomePage: CategoriserHomePage
@@ -27,6 +30,10 @@ describe('Security Input', () => {
 
   beforeEach(() => {
     bookingId = 12
+
+    cy.task('reset')
+    cy.task('setUpDb')
+    cy.task('deleteRowsFromForm')
 
     cy.task('stubUncategorised')
     cy.task('stubSentenceData', {
@@ -44,6 +51,78 @@ describe('Security Input', () => {
       offenderNo: 'B2345YZ',
       transferToSecurity: false,
     })
+    cy.task('stubGetExtremismProfile', {
+      offenderNo: 'B2345YZ',
+      band: 4,
+    })
+    cy.task('stubGetEscapeProfile', {
+      offenderNo: 'B2345YZ',
+      alertCode: 'XEL',
+    })
+    cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
+    cy.task('stubAssessments', { offenderNumber: 'B2345YZ' })
+    cy.task('stubGetAssaultIncidents', {
+      prisonerNumber: 'B2345YZ',
+      assaultIncidents: [],
+    })
+    cy.task('stubGetViperData', {
+      prisonerNumber: 'B2345YZ',
+      aboveThreshold: false,
+    })
+    cy.task('stubGetCategoryHistory')
+
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      bookingId,
+      nomisSequenceNumber: 5,
+      catType: CATEGORISATION_TYPE.INITIAL,
+      offenderNo: 'B2345YZ',
+      sequenceNumber: 5,
+      status: Status.STARTED.name,
+      prisonId: AGENCY_LOCATION.LEI.id,
+      startDate: new Date(),
+      formResponse: {
+        categoriser: {
+          provisionalCategory: {
+            suggestedCategory: 'C',
+            overriddenCategory: 'D',
+            categoryAppropriate: 'No',
+            otherInformationText: 'over ridden category text',
+          },
+        },
+        ratings: {
+          offendingHistory: {
+            previousConvictions: 'Yes',
+            previousConvictionsText: 'some convictions',
+          },
+          securityInput: {},
+          furtherCharges: {
+            furtherCharges: 'Yes',
+            furtherChargesText: 'some charges',
+          },
+          violenceRating: {
+            highRiskOfViolence: 'No',
+            seriousThreat: 'Yes',
+          },
+          escapeRating: {
+            escapeOtherEvidence: 'Yes',
+            escapeOtherEvidenceText: 'evidence details',
+            escapeCatB: 'Yes',
+            escapeCatBText: 'cat b details',
+          },
+          extremismRating: {
+            previousTerrorismOffences: 'Yes',
+          },
+          nextReviewDate: {
+            date: '14/12/2019',
+          },
+        },
+      },
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      assignedUserId: null,
+      approvedBy: SUPERVISOR_USER.username,
+    })
   })
 
   /**
@@ -59,7 +138,7 @@ describe('Security Input', () => {
     cy.signIn()
 
     categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
-    categoriserHomePage.selectPrisonerWithBookingId(bookingId)
+    categoriserHomePage.selectPrisonerWithBookingId(bookingId, 'Edit')
 
     taskListPage = TaskListPage.createForBookingId(bookingId)
     taskListPage.securityLink().click()
@@ -67,11 +146,6 @@ describe('Security Input', () => {
 
   describe('form submission', () => {
     it('should show a validation error on empty form submission', () => {
-      cy.task('stubGetExtremismProfile', {
-        offenderNo: 'B2345YZ',
-        band: 4,
-      })
-
       stubLoginAndBrowseToCategoriserSecurityInputPage()
 
       categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
@@ -87,18 +161,20 @@ describe('Security Input', () => {
     })
 
     describe('it should record a valid form submission', () => {
-      it("should record a 'no' decision", () => {
-        cy.task('stubGetExtremismProfile', {
-          offenderNo: 'B2345YZ',
-          band: 4,
-        })
-
+      it("should record a 'no' decision and display correctly on the check your answers page", () => {
         stubLoginAndBrowseToCategoriserSecurityInputPage()
 
         categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
         categoriserSecurityInputPage.selectSecurityInputRadioButton('NO')
         categoriserSecurityInputPage.validateSecurityInputTextBox({ isVisible: false })
         categoriserSecurityInputPage.saveAndReturnButton().click()
+
+        cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
+          expect(result.rows[0].status).to.eq(Status.STARTED.name)
+          expect(result.rows[0].form_response.ratings).to.deep.include({
+            securityInput: { securityInputNeeded: 'No' },
+          })
+        })
 
         taskListPage.securityLink().click()
 
@@ -111,21 +187,18 @@ describe('Security Input', () => {
           isVisible: false,
         })
 
-        cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-          expect(result.rows[0].status).to.eq(Status.STARTED.name)
-          expect(result.rows[0].form_response).to.deep.eq({
-            ratings: {
-              securityInput: { securityInputNeeded: 'No' },
-            },
-          })
-        })
+        categoriserSecurityInputPage.saveAndReturnButton().click()
+        taskListPage.checkAndSubmitCategorisationLink(12).click()
+
+        const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(12, 'you continue')
+        categoriserReviewCYAPage.validateSecurityInputSummary([
+          { question: 'Automatic referral to security team', expectedAnswer: 'No' },
+          { question: 'Manual referral to security team', expectedAnswer: 'No' },
+          { question: 'Flagged by security team', expectedAnswer: 'No' },
+        ])
       })
 
       it('should display error if no security input text is given', () => {
-        cy.task('stubGetExtremismProfile', {
-          offenderNo: 'B2345YZ',
-          band: 4,
-        })
         stubLoginAndBrowseToCategoriserSecurityInputPage()
 
         categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
@@ -143,11 +216,6 @@ describe('Security Input', () => {
 
       describe("it should record a 'yes' decision", () => {
         beforeEach(() => {
-          cy.task('stubGetExtremismProfile', {
-            offenderNo: 'B2345YZ',
-            band: 4,
-          })
-
           stubLoginAndBrowseToCategoriserSecurityInputPage()
 
           categoriserSecurityInputPage = CategoriserSecurityInputPage.createForBookingId(bookingId)
@@ -266,7 +334,7 @@ describe('Security Input', () => {
 
           // -- spacer
           ;['YES', 'NO'].forEach((warrantsACategoryBChoice: WarrantACategoryBChoice) => {
-            it(`should allow a categoriser to enter a category decision: ${warrantsACategoryBChoice}`, () => {
+            it(`should allow a categoriser to enter a category decision: ${warrantsACategoryBChoice} and display correctly on the check your answers page`, () => {
               securityBackPage.selectedWarrantACategoryBRadioButton(warrantsACategoryBChoice)
               securityBackPage.saveAndReturnButton().click()
 
@@ -274,24 +342,26 @@ describe('Security Input', () => {
               taskListPage.securityLink().should('contain.text', 'Security information')
 
               cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
-                expect(result.rows[0].referred_by).to.eq('CATEGORISER_USER')
-                expect(result.rows[0].cat_type).to.eq('INITIAL')
-                expect(moment(result.rows[0].start_date).isSame(new Date(), 'day')).to.eq(true)
-                expect(moment(result.rows[0].referred_date).isSame(new Date(), 'day')).to.eq(true)
-                expect(result.rows[0].form_response).to.deep.eq({
-                  ratings: {
-                    securityBack: {
-                      catB: warrantsACategoryBChoice === 'YES' ? 'Yes' : 'No',
-                    },
-                    securityInput: {
-                      securityInputNeeded: 'Yes',
-                      securityInputNeededText: 'Some security input text',
-                    },
+                const row = result.rows[0]
+
+                expect(row.referred_by).to.eq('CATEGORISER_USER')
+                expect(row.cat_type).to.eq('INITIAL')
+                expect(moment(row.start_date).isSame(new Date(), 'day')).to.eq(true)
+                expect(moment(row.referred_date).isSame(new Date(), 'day')).to.eq(true)
+
+                expect(row.form_response.ratings).to.deep.include({
+                  securityBack: {
+                    catB: warrantsACategoryBChoice === 'YES' ? 'Yes' : 'No',
                   },
-                  security: {
-                    review: {
-                      securityReview: 'Some security input text security info text',
-                    },
+                  securityInput: {
+                    securityInputNeeded: 'Yes',
+                    securityInputNeededText: 'Some security input text',
+                  },
+                })
+
+                expect(row.form_response.security).to.deep.include({
+                  review: {
+                    securityReview: 'Some security input text security info text',
                   },
                 })
               })
@@ -302,6 +372,34 @@ describe('Security Input', () => {
                 selection: [warrantsACategoryBChoice],
                 isChecked: true,
               })
+
+              securityBackPage.saveAndReturnButton().click()
+              taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
+
+              const categoriserReviewCYAPage = CategoriserReviewCYAPage.createForBookingId(bookingId, 'you continue')
+
+              categoriserReviewCYAPage.validateSecurityInputSummary([
+                {
+                  question: 'Automatic referral to security team',
+                  expectedAnswer: 'No',
+                },
+                {
+                  question: 'Manual referral to security team',
+                  expectedAnswer: 'Yes',
+                },
+                {
+                  question: 'Flagged by security team',
+                  expectedAnswer: 'No',
+                },
+                {
+                  question: 'Security comments',
+                  expectedAnswer: 'Some security input text security info text',
+                },
+                {
+                  question: 'Warrant category B?',
+                  expectedAnswer: warrantsACategoryBChoice === 'YES' ? 'Yes' : 'No',
+                },
+              ])
             })
           })
         })
