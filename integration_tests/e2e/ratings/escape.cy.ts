@@ -197,6 +197,7 @@ describe('Escape Risk', () => {
 
       escapePage.saveAndReturnButton().click()
 
+      cy.contains('Automatically referred to Security').should('be.visible')
       cy.task('selectFormTableDbRow', { bookingId }).then((result: { rows: FormDbJson[] }) => {
         expect(result.rows[0].status).to.eq(Status.SECURITY_AUTO.name)
         expect(result.rows[0].form_response).to.deep.eq({
