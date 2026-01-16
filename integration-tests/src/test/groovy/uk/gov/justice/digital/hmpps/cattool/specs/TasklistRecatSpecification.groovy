@@ -18,62 +18,6 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORIS
 
 class TasklistRecatSpecification extends AbstractSpecification {
 
-  def "The recat tasklist for a categoriser is present"() {
-    when: 'I go to the recat tasklist page'
-
-    fixture.gotoTasklistRecat()
-
-    then: 'The tasklist page is displayed'
-    at TasklistRecatPage
-    headerValue*.text() == fixture.FULL_HEADER
-    headerLink.text() == 'Hillmob, Ant'
-    headerLink.@href == 'http://localhost:3000/prisoner/B2345YZ'
-
-    and: 'SOC data is stored and merged correctly'
-    def data = db.getData(12)
-    def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile      : [transferToSecurity: false],
-                 extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false]
-    ]
-    def row = data[0]
-    row.booking_id == 12L
-    row.user_id == "RECATEGORISER_USER"
-    row.status == "STARTED"
-    row.assigned_user_id == "RECATEGORISER_USER"
-    row.sequence_no == 1
-    row.prison_id == "LEI"
-    row.offender_no == "B2345YZ"
-    row.start_date.toLocalDate().equals(LocalDate.now())
-    row.cat_type == "RECAT"
-    row.review_reason == "DUE"
-    row.due_by_date.toLocalDate().equals(LocalDate.of(2020, 1, 16))
-  }
-
-  def "The recat tasklist of YOI prisoner is correct"() {
-    when: 'I go to the recat tasklist page for a YOI prisoner'
-
-    fixture.gotoTasklistRecatForCatI() // get 404 from http://localhost:8080/api/bookings/12?basicInfo=false
-
-    then: 'The tasklist page is displayed'
-    at TasklistRecatPage
-    headerValue[0].text() == 'C0001AA'
-    headerValue[1].text() == '01/01/2018'
-    headerValue[2].text() == 'YOI closed'
-
-    and: 'data is stored correctly'
-    def data = db.getData(21)
-    def response = new JsonSlurper().parseText(data.risk_profile[0].toString())
-    response == [socProfile      : [transferToSecurity: false],
-                 extremismProfile: [notifyRegionalCTLead: false, increasedRiskOfExtremism: false]
-    ]
-    def row = data[0]
-    row.booking_id == 21L
-    row.offender_no == "C0001AA"
-    row.cat_type == "RECAT"
-    row.review_reason == "AGE"
-    row.due_by_date.toLocalDate().equals(LocalDate.of(2039, 1, 1))
-  }
-
   def "The recat tasklist page allows cancellation including security flag handling"() {
     db.createSecurityData('B2345YZ')
 
@@ -103,18 +47,6 @@ class TasklistRecatSpecification extends AbstractSpecification {
 
     and: 'any security flag is reset'
     db.getSecurityData('B2345YZ')[0].status == 'NEW'
-  }
-
-  def "The tasklist page displays an alert when status is transferred to security"() {
-    when: 'I go to the tasklist page'
-
-    fixture.gotoTasklistRecat(true)
-    at TasklistRecatPage
-
-    then: 'the prisoner start button is locked'
-    securityLinkDisabled.displayed
-    def today = LocalDate.now().format('dd/MM/yyyy')
-    $('#securityInfo').text().contains("Automatically referred to Security ($today)")
   }
 
   def "The recat tasklist correctly creates a subsequent database sequence when init record present"() {

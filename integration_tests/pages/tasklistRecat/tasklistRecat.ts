@@ -20,6 +20,7 @@ export default class TasklistRecatPage extends Page {
   nextReviewDateLink = (): PageElement => cy.get('#nextReviewDateLink')
   openConditionsLink = (): PageElement => cy.get('#openConditionsLink')
   supervisorMessageLink = (): PageElement => cy.get('#supervisorMessageLink')
+  cancelLink = (): PageElement => cy.get('a#cancelLink')
 
   static createForBookingId = (bookingId: number) => {
     this._bookingId = bookingId
