@@ -53,7 +53,7 @@ describe('Previous Risk Assessments', () => {
     })
     cy.task('stubGetAssaultIncidents', {
       prisonerNumber: 'B2345YZ',
-      assaultIncidents: []
+      assaultIncidents: [],
     })
     cy.task('stubAgencyDetails', { agency: 'LPI' })
   })

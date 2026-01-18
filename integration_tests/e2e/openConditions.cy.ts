@@ -1,3 +1,4 @@
+import moment from 'moment/moment'
 import { CATEGORISER_USER, RECATEGORISER_USER, SUPERVISOR_USER } from '../factory/user'
 import STATUS from '../../server/utils/statusEnum'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
@@ -31,7 +32,6 @@ import FurtherInformationPage from '../pages/form/supervisor/furtherInformation'
 import SupervisorConfirmBackPage from '../pages/form/supervisor/confirmBack'
 import GiveBackToCategoriserPage from '../pages/form/supervisor/giveBackToCategoriser'
 import GiveBackToCategoriserOutcome from '../pages/form/supervisor/giveBackToCategoriserOutcome'
-import moment from "moment/moment";
 
 describe('Open conditions', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
@@ -863,7 +863,7 @@ describe('Open conditions', () => {
     })
     cy.task('stubGetAssaultIncidents', {
       prisonerNumber: 'B2345YZ',
-      assaultIncidents: []
+      assaultIncidents: [],
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',
@@ -972,10 +972,8 @@ describe('Open conditions', () => {
     cy.task('stubOffenceHistory', { offenderNumber: 'B2345YZ' })
     cy.task('stubSentenceData', {
       offenderNumbers: ['B2345YZ'],
-      bookingIds: [ 12],
-      startDates: [
-        moment().subtract(1, 'days').format('yyyy-MM-dd'),
-      ],
+      bookingIds: [12],
+      startDates: [moment().subtract(1, 'days').format('yyyy-MM-dd')],
     })
     cy.task('stubAgencyDetails', { agency: 'LEI' })
   }
@@ -991,7 +989,7 @@ describe('Open conditions', () => {
     })
     cy.task('stubGetAssaultIncidents', {
       prisonerNumber: 'B2345YZ',
-      assaultIncidents: []
+      assaultIncidents: [],
     })
     cy.task('stubGetExtremismProfile', {
       offenderNo: 'B2345YZ',

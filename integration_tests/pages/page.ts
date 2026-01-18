@@ -44,6 +44,12 @@ export default abstract class Page {
 
   errors = (): PageElement => cy.get('.govuk-error-message')
 
+  multipleRoleDiv = (): PageElement => cy.get('#multiple-role')
+
+  roleSwitchSelect = (): PageElement => cy.get('#roleSwitch')
+
+  switchRole = (role: string): PageElement => this.roleSwitchSelect().select(role)
+
   validateRadioButtonSelections = (optionSelectors: string[], isChecked: boolean): void =>
     optionSelectors.forEach(optionSelector =>
       cy.get(optionSelector).should(isChecked ? 'be.checked' : 'not.be.checked'),

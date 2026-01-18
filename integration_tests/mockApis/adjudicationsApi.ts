@@ -1,10 +1,10 @@
-import { SuperAgentRequest } from "superagent";
-import { stubFor } from "./wiremock";
+import { SuperAgentRequest } from 'superagent'
+import { stubFor } from './wiremock'
 
 const stubAdjudicationHearings = ({
   bookingId,
-    fromDate,
-  }: {
+  fromDate,
+}: {
   bookingId: number
   fromDate: string
 }): SuperAgentRequest =>

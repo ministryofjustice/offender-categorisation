@@ -5,7 +5,7 @@ export const selectors = {
   CONFIRM_BACK: '#messageText',
   SUPERVISOR_DECISION_ERROR: '#supervisorDecision-error',
   CONFIRM_BACK_ERROR: '#messageText-error',
-  INDETERMINATE_WARNING: '#indeterminateWarning'
+  INDETERMINATE_WARNING: '#indeterminateWarning',
 }
 
 export const supervisorDecisionRadioButtonChoices = {
@@ -69,9 +69,7 @@ export default class SupervisorReviewPage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href:
-        | typeof selectors.SUPERVISOR_DECISION
-        | typeof selectors.CONFIRM_BACK
+      href: typeof selectors.SUPERVISOR_DECISION | typeof selectors.CONFIRM_BACK
       text: string
     }[],
   ) {
@@ -80,9 +78,7 @@ export default class SupervisorReviewPage extends Page {
 
   validateErrorMessages(
     errorMessages: {
-      selector:
-        | typeof selectors.SUPERVISOR_DECISION_ERROR
-        | typeof selectors.CONFIRM_BACK_ERROR
+      selector: typeof selectors.SUPERVISOR_DECISION_ERROR | typeof selectors.CONFIRM_BACK_ERROR
       text: string
     }[],
   ) {

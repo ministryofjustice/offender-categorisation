@@ -35,8 +35,7 @@ export default class CategoryDecisionPage extends Page {
   selectCategoryDecisionRadioButton = (selectedTextValue: CategoryDecisionChoice): PageElement =>
     cy.get(categoryDecisionRadioChoiceHtmlSelectors[selectedTextValue]).click()
 
-  enterCategoryDecisionJustification = (text: String): PageElement =>
-    cy.get('#justification').type(text)
+  enterCategoryDecisionJustification = (text: string): PageElement => cy.get('#justification').type(text)
 
   selectYOICategoryDecisionRadioButton = (selectedTextValue: YOICategoryDecisionChoice): PageElement =>
     cy.get(yoiCategoryDecisionRadioChoiceHtmlSelectors[selectedTextValue]).click()

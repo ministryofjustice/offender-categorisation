@@ -74,7 +74,7 @@ export default class LiteCategoriesPage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href: typeof SELECTORS.REASSESSMENT_DATE.INPUT
+      href: string
       text: string
     }[],
   ) {
@@ -83,7 +83,7 @@ export default class LiteCategoriesPage extends Page {
 
   validateErrorMessages(
     errorMessages: {
-      selector: typeof SELECTORS.REASSESSMENT_DATE.INPUT
+      selector: string
       text: string
     }[],
   ) {

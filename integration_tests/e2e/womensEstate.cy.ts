@@ -14,7 +14,7 @@ import NextReviewQuestionPage from '../pages/form/ratings/nextReviewQuestionPage
 import NextReviewConfirmationPage from '../pages/form/ratings/nextReviewConfirmationPage'
 import CategoriserReviewCYAPage from '../pages/form/categoriser/review'
 import CategoriserSubmittedPage from '../pages/taskList/categoriserSubmitted'
-import dbSeeder from '../fixtures/db-seeder'
+import { dbSeeder } from '../fixtures/db-seeder'
 import SupervisorHomePage from '../pages/supervisor/home'
 import SupervisorReviewPage, { supervisorDecisionRadioButtonChoices } from '../pages/form/supervisor/review'
 import { CATEGORISATION_TYPE } from '../support/categorisationType'
@@ -178,7 +178,7 @@ describe("Women's Estate", () => {
       })
       cy.task('stubGetAssaultIncidents', {
         prisonerNumber: offenderNo,
-        assaultIncidents: []
+        assaultIncidents: [],
       })
 
       taskListPage.violenceLink().click()
@@ -242,10 +242,8 @@ describe("Women's Estate", () => {
 
       cy.task('stubSentenceData', {
         offenderNumbers: [offenderNo],
-        bookingIds: [ bookingId],
-        startDates: [
-          moment().subtract(1, 'days').format('yyyy-MM-dd'),
-        ],
+        bookingIds: [bookingId],
+        startDates: [moment().subtract(1, 'days').format('yyyy-MM-dd')],
       })
 
       taskListPage.checkAndSubmitCategorisationLink(bookingId).click()

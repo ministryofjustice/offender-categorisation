@@ -36,7 +36,7 @@ describe('Security Landing', () => {
     })
     cy.signIn()
     cy.visit(`securityLanding/${testBookingId}`)
-    let securityLandingPage = SecurityLandingPage.createForBookingId(testBookingId)
+    const securityLandingPage = SecurityLandingPage.createForBookingId(testBookingId)
     securityLandingPage.verifyPageHeading('Refer this person to security at next category review')
     securityLandingPage.referButton().click()
     cy.task('getSecurityReferral', { offenderNumber: testOffenderNumber }).then(

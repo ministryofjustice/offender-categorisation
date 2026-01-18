@@ -7,7 +7,7 @@ export default class CategoriserReviewCYAPage extends Page {
     return `/form/categoriser/review/${this._bookingId}`
   }
 
-  constructor(continueOrSubmitInTitle: String) {
+  constructor(continueOrSubmitInTitle: string) {
     super(`Check your answers before ${continueOrSubmitInTitle}`)
   }
 

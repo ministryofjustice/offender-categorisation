@@ -6,5 +6,3 @@ export const dbSeeder = (formJson: FormDbJson[]) =>
 
 export const dbSeederLiteCategory = (liteCategoryJson: LiteCategoryDbRow[]) =>
   liteCategoryJson.forEach(rowData => cy.task('insertLiteCategoryTableDbRow', rowData))
-
-export default dbSeeder

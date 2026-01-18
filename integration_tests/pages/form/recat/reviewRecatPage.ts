@@ -21,56 +21,38 @@ export default class ReviewRecatPage extends Page {
   changeLinks = (): PageElement => cy.get('a.govuk-link').filter(':contains("Change")')
 
   validateSecurityInputSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('securityInputSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('securityInputSummary', [...expected])
   }
 
   validateRiskAssessmentSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('riskAssessmentSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('riskAssessmentSummary', [...expected])
   }
 
   validateCategoryDecisionSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('assessmentSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('assessmentSummary', [...expected])
   }
 
   validateNextReviewDateSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('nextReviewDateSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('nextReviewDateSummary', [...expected])
   }
 
   validateRiskOfHarmSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('riskOfHarmSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('riskOfHarmSummary', [...expected])
   }
 
   validateEarliestReleaseDateSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('earliestReleaseDateSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('earliestReleaseDateSummary', [...expected])
   }
 
   validateVictimContactSchemeSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('victimContactSchemeSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('victimContactSchemeSummary', [...expected])
   }
 
   validateForeignNationalSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('foreignNationalSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('foreignNationalSummary', [...expected])
   }
 
   validateRiskLevelSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('riskLevelSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('riskLevelSummary', [...expected])
   }
 }

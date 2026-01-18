@@ -1,6 +1,6 @@
 import { CASELOAD } from '../../factory/caseload'
 import { CATEGORISER_USER, SUPERVISOR_USER } from '../../factory/user'
-import dbSeeder from '../../fixtures/db-seeder'
+import { dbSeeder } from '../../fixtures/db-seeder'
 import initialCategorisation from '../../fixtures/recategoriser/initialCategorisation'
 import Page from '../../pages/page'
 import SupervisorHomePage from '../../pages/supervisor/home'
@@ -40,7 +40,7 @@ const commonColumn2 = [
 
 describe('Supervisor Review', () => {
   const bookingId = 12
-  let offenderNo = 'B2345YZ'
+  const offenderNo = 'B2345YZ'
   let category: string
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
+import moment from 'moment/moment'
 import CategoriserHomePage from '../../pages/categoriser/home'
 import TaskListPage from '../../pages/taskList/taskList'
-import moment from 'moment/moment'
 import { CATEGORISER_USER, SECURITY_USER, SUPERVISOR_USER, UserAccount } from '../../factory/user'
 import Page from '../../pages/page'
 import CategoriserSecurityInputPage from '../../pages/form/ratings/categoriserSecurityInputPage'

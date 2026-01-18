@@ -20,6 +20,8 @@ import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.CATEGORISER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.RECATEGORISER_USER
 import static uk.gov.justice.digital.hmpps.cattool.model.UserAccount.FEMALE_USER
 
+// TODO check if these default are part of cypress fixtures and migrate if needed before removing
+
 class TestFixture {
 
   Browser browser

@@ -1,8 +1,8 @@
+import moment from 'moment'
 import { CATEGORISER_USER, RECATEGORISER_USER, SUPERVISOR_USER } from '../factory/user'
 import LiteCategoriesPage from '../pages/liteCategories/liteCategories'
 import { CASELOAD } from '../factory/caseload'
 import CategoriserLandingPage from '../pages/categoriser/landing'
-import moment from 'moment'
 import LiteCategoriesConfirmedPage from '../pages/liteCategories/confirmed'
 import { LiteCategoryDbRow } from '../db/queries'
 import Page from '../pages/page'
@@ -16,8 +16,6 @@ import { unapprovedLiteCategorisation } from '../fixtures/liteCategoriser/unappr
 import SupervisorLiteListPage from '../pages/liteCategories/approveList'
 import LiteCategoriesAlreadyApprovedPage from '../pages/liteCategories/alreadyApproved'
 import { calculateOverdueText } from '../support/utilities'
-
-const SHORT_DATE_FORMAT = 'D/M/YYYY'
 
 describe('Lite Categories', () => {
   let categoriserLandingPage: CategoriserLandingPage
@@ -241,17 +239,17 @@ describe('Lite Categories', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         categoriserHomePage.validateToDoTableData([
           [
-            calculateOverdueText(sentenceStartDates.B2345YZ),
+            calculateOverdueText(sentenceStartDates.B2345YZ.toISOString()),
             'Pitstop, PenelopeB2345XY',
-            moment().diff(moment(sentenceStartDates['B2345YZ']).startOf('day'), 'days').toString(),
+            moment().diff(moment(sentenceStartDates.B2345YZ).startOf('day'), 'days').toString(),
             'Not categorised',
             'Engelbert Humperdinck',
             'OTHER',
           ],
           [
-            calculateOverdueText(sentenceStartDates.B2345XY),
+            calculateOverdueText(sentenceStartDates.B2345XY.toISOString()),
             'Hillmob, AntB2345YZ',
-            moment().diff(moment(sentenceStartDates['B2345XY']).startOf('day'), 'days').toString(),
+            moment().diff(moment(sentenceStartDates.B2345XY).startOf('day'), 'days').toString(),
             'Awaiting approval',
             'Engelbert Humperdinck',
             'PNOMIS',

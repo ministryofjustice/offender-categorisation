@@ -1,6 +1,6 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
-import { makeTestViperDto } from "../../server/data/formApi/viper/viper.dto.test-factory";
+import { makeTestViperDto } from '../../server/data/formApi/viper/viper.dto.test-factory'
 
 export default {
   stubSubmitSecurityReview: ({ bookingId }: { bookingId: number }): SuperAgentRequest =>
@@ -15,7 +15,13 @@ export default {
         jsonBody: true,
       },
     }),
-  stubGetViperData: ({ prisonerNumber, aboveThreshold }: { prisonerNumber: string, aboveThreshold: boolean }): SuperAgentRequest =>
+  stubGetViperData: ({
+    prisonerNumber,
+    aboveThreshold,
+  }: {
+    prisonerNumber: string
+    aboveThreshold: boolean
+  }): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',
@@ -25,7 +31,7 @@ export default {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: makeTestViperDto({
-          aboveThreshold
+          aboveThreshold,
         }),
       },
     }),

@@ -1,5 +1,5 @@
-import { LiteCategoryDbRow } from '../../db/queries'
 import moment from 'moment'
+import { LiteCategoryDbRow } from '../../db/queries'
 
 export const unapprovedLiteCategorisation: LiteCategoryDbRow[] = [
   {
@@ -21,5 +21,6 @@ export const unapprovedLiteCategorisation: LiteCategoryDbRow[] = [
     approved_placement_prison_id: null,
     approved_placement_comment: null,
     approved_comment: null,
+    approved_category_comment: null,
   },
 ]

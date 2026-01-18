@@ -40,9 +40,7 @@ export default class VictimContactSchemePage extends Page {
   validateErrorSummaryMessages(
     errorSummaryMessages: {
       index: number
-      href:
-        | VictimContactSchemeChoiceValues
-        | typeof SELECTORS.VICTIM_LIAISON_OFFICER_RESPONSE.TEXTAREA
+      href: VictimContactSchemeChoiceValues | typeof SELECTORS.VICTIM_LIAISON_OFFICER_RESPONSE.TEXTAREA
       text: string
     }[],
   ) {

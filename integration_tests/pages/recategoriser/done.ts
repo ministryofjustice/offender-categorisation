@@ -19,5 +19,5 @@ export default class RecategoriserDonePage extends BaseRecategoriserPage {
     cy.get(`a[href="/tasklistRecat/${bookingId}?reason=${reviewReason}"`).should('contain.text', 'Edit').click()
 
   viewReviewAwaitingApprovalForPrisoner = (bookingId: number) =>
-    cy.get(`a[href="/form/awaitingApprovalView/${bookingId}"`).should('contain.text', 'View').click()*/
+    cy.get(`a[href="/form/awaitingApprovalView/${bookingId}"`).should('contain.text', 'View').click() */
 }
