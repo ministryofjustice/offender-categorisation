@@ -1,13 +1,13 @@
 import moment from 'moment'
-import { RECATEGORISER_USER, RECATEGORISER_USER_PNI, SECURITY_USER, SUPERVISOR_USER } from '../factory/user'
-import STATUS from '../../server/utils/statusEnum'
-import REVIEW_REASON from '../../server/utils/reviewReasonEnum'
-import { CATEGORISATION_TYPE } from '../support/categorisationType'
-import defaultRatingsFactory from '../factory/defaultRatings'
-import Page from '../pages/page'
-import RecategoriserHomePage from '../pages/recategoriser/home'
-import { AGENCY_LOCATION } from '../factory/agencyLocation'
-import { CASELOAD } from '../factory/caseload'
+import { RECATEGORISER_USER, RECATEGORISER_USER_PNI, SECURITY_USER, SUPERVISOR_USER } from '../../factory/user'
+import STATUS from '../../../server/utils/statusEnum'
+import REVIEW_REASON from '../../../server/utils/reviewReasonEnum'
+import { CATEGORISATION_TYPE } from '../../support/categorisationType'
+import defaultRatingsFactory from '../../factory/defaultRatings'
+import Page from '../../pages/page'
+import RecategoriserHomePage from '../../pages/recategoriser/home'
+import { AGENCY_LOCATION } from '../../factory/agencyLocation'
+import { CASELOAD } from '../../factory/caseload'
 
 const commonOffenderData = {
   offenderNo: 'dummy',
