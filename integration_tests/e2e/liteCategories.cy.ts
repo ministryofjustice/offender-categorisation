@@ -17,8 +17,6 @@ import SupervisorLiteListPage from '../pages/liteCategories/approveList'
 import LiteCategoriesAlreadyApprovedPage from '../pages/liteCategories/alreadyApproved'
 import { calculateOverdueText } from '../support/utilities'
 
-const SHORT_DATE_FORMAT = 'D/M/YYYY'
-
 describe('Lite Categories', () => {
   let categoriserLandingPage: CategoriserLandingPage
   let liteCategoriesPage: LiteCategoriesPage
@@ -241,7 +239,7 @@ describe('Lite Categories', () => {
         const categoriserHomePage = Page.verifyOnPage(CategoriserHomePage)
         categoriserHomePage.validateToDoTableData([
           [
-            calculateOverdueText(sentenceStartDates.B2345YZ as unknown as string), // FIXME type here doesn't match
+            calculateOverdueText(sentenceStartDates.B2345YZ.toISOString()),
             'Pitstop, PenelopeB2345XY',
             moment().diff(moment(sentenceStartDates.B2345YZ).startOf('day'), 'days').toString(),
             'Not categorised',
@@ -249,7 +247,7 @@ describe('Lite Categories', () => {
             'OTHER',
           ],
           [
-            calculateOverdueText(sentenceStartDates.B2345XY as unknown as string), // FIXME type here doesn't match
+            calculateOverdueText(sentenceStartDates.B2345XY.toISOString()),
             'Hillmob, AntB2345YZ',
             moment().diff(moment(sentenceStartDates.B2345XY).startOf('day'), 'days').toString(),
             'Awaiting approval',
