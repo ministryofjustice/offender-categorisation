@@ -1,10 +1,12 @@
 import moment from 'moment'
-import { RECATEGORISER_USER } from '../../factory/user'
+import { QueryResult } from 'pg'
+import { CATEGORISER_USER, RECATEGORISER_USER } from '../../factory/user'
 import Page from '../../pages/page'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
 import TasklistRecatPage from '../../pages/tasklistRecat/tasklistRecat'
 import CancelPage from '../../pages/cancel/cancel'
 import CancelConfirmedPage from '../../pages/cancel/cancelConfirmed'
+import { FormDbRowRaw } from '../../db/queries'
 
 describe('Recat tasklist cancellation includes security flag handling', () => {
   beforeEach(() => {
@@ -56,7 +58,8 @@ describe('Recat tasklist cancellation includes security flag handling', () => {
     const tasklist = TasklistRecatPage.createForBookingId(12)
 
     cy.task('getSecurityReferral', { offenderNumber: 'B2345YZ' }).then(
-      // in the deprecated groove test this was expecting 'PROCESSED', but I couldn't find any logic suggesting that would be the case
+      // in the deprecated groovy test this was expecting 'PROCESSED',
+      // but I couldn't find any logic suggesting that would be the case
       (result: { rows: Array<{ status: string }> }) => {
         expect(result.rows[0].status).to.eq('REFERRED')
       },
@@ -85,5 +88,102 @@ describe('Recat tasklist cancellation includes security flag handling', () => {
         expect(result.rows[0].status).to.eq('NEW')
       },
     )
+  })
+
+  it('creates seq 2 STARTED RECAT when seq 1 APPROVED RECAT exists', () => {
+    // Mirror deprecated db.createDataWithStatusAndCatType(12, 'APPROVED', '{}', 'RECAT')
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      bookingId: 12,
+      formResponse: '{}',
+      userId: 'RECATEGORISER_USER',
+      status: 'APPROVED',
+      catType: 'RECAT',
+      assignedUserId: null,
+      referredDate: null,
+      referredBy: null,
+      sequenceNumber: 1,
+      riskProfile: null,
+      prisonId: 'LEI',
+      offenderNo: 'dummy',
+      startDate: new Date(),
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      approvalDate: new Date(),
+      approvedBy: 'SUPERVISOR_USER',
+      assessmentDate: null,
+      assessedBy: null,
+      reviewReason: 'DUE',
+      dueByDate: null,
+      cancelledDate: null,
+      cancelledBy: null,
+      nomisSequenceNumber: null,
+    })
+
+    cy.stubLogin({ user: RECATEGORISER_USER })
+    cy.signIn()
+
+    const recatHome = Page.verifyOnPage(RecategoriserHomePage)
+    recatHome.selectPrisonerWithBookingId(12, 'Start')
+    Page.verifyOnPage(TasklistRecatPage)
+
+    cy.task('selectFormTableDbRow', { bookingId: 12 }).then((data: QueryResult<FormDbRowRaw>) => {
+      const rows = [...data.rows].sort((a, b) => a.sequence_no - b.sequence_no)
+      expect(rows.map(r => r.status)).to.deep.eq(['APPROVED', 'STARTED'])
+      expect(rows.map(r => r.cat_type)).to.deep.eq(['RECAT', 'RECAT'])
+      expect(rows.map(r => r.sequence_no)).to.deep.eq([1, 2])
+    })
+  })
+
+  it('continues current RECAT when seq 1 STARTED RECAT exists (does not create seq 2)', () => {
+    // Mirror: db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT')
+    cy.task('insertFormTableDbRow', {
+      id: -1,
+      bookingId: 12,
+      formResponse: '{}',
+      userId: 'RECATEGORISER_USER',
+      status: 'STARTED',
+      catType: 'RECAT',
+      assignedUserId: null,
+      referredDate: null,
+      referredBy: null,
+      sequenceNumber: 1,
+      riskProfile: null,
+      prisonId: 'LEI',
+      offenderNo: 'dummy',
+      startDate: new Date(),
+      securityReviewedBy: null,
+      securityReviewedDate: null,
+      approvalDate: null,
+      approvedBy: null,
+      assessmentDate: null,
+      assessedBy: null,
+      reviewReason: 'DUE',
+      dueByDate: null,
+      cancelledDate: null,
+      cancelledBy: null,
+      nomisSequenceNumber: null,
+    })
+
+    cy.task('stubGetUserDetails', {
+      user: CATEGORISER_USER,
+      caseloadId: 'LEI',
+    })
+
+    cy.stubLogin({ user: RECATEGORISER_USER })
+    cy.signIn()
+
+    const recatHome = Page.verifyOnPage(RecategoriserHomePage)
+    recatHome.selectPrisonerWithBookingId(12, 'Edit')
+    Page.verifyOnPage(TasklistRecatPage)
+
+    cy.task('selectFormTableDbRow', { bookingId: 12 }).then((data: QueryResult<FormDbRowRaw>) => {
+      const rows = [...data.rows].sort((a, b) => a.sequence_no - b.sequence_no)
+
+      expect(rows).to.have.length(1)
+      expect(rows.map(r => r.status)).to.deep.eq(['STARTED'])
+      expect(rows.map(r => r.cat_type)).to.deep.eq(['RECAT'])
+      expect(rows.map(r => r.sequence_no)).to.deep.eq([1])
+    })
   })
 })

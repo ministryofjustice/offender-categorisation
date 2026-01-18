@@ -1,5 +1,5 @@
 import { mergeRight } from 'ramda'
-import { QueryArrayResult } from 'pg'
+import { QueryResult } from 'pg'
 import db from '../../server/data/dataAccess/db'
 
 export type CatType = 'INITIAL' | 'RECAT'
@@ -9,6 +9,46 @@ type MandatoryRowData = Pick<
   FormDbRow,
   'id' | 'bookingId' | 'sequenceNumber' | 'prisonId' | 'offenderNo' | 'startDate' | 'catType' | 'reviewReason'
 >
+
+export interface FormDbRowRaw {
+  id: number
+
+  form_response: unknown | null // jsonb
+  booking_id: number
+
+  user_id: string | null
+  status: string | null
+  assigned_user_id: string | null
+
+  referred_date: string | Date | null
+  referred_by: string | null
+
+  sequence_no: number
+  risk_profile: unknown | null // jsonb
+
+  prison_id: string
+  offender_no: string
+
+  start_date: string | Date
+
+  security_reviewed_by: string | null
+  security_reviewed_date: string | Date | null
+
+  approval_date: string | Date | null
+  cat_type: CatType
+
+  nomis_sequence_no: number | null
+
+  assessment_date: string | Date | null
+  approved_by: string | null
+  assessed_by: string | null
+
+  review_reason: ReviewReason | null
+  due_by_date: string | Date | null
+
+  cancelled_date: string | Date | null
+  cancelled_by: string | null
+}
 
 export interface FormDbRow {
   id: number
@@ -305,7 +345,7 @@ async function getLiteData({
   bookingId,
 }: {
   bookingId: LiteCategoryDbRow['booking_id']
-}): Promise<QueryArrayResult<LiteCategoryDbRow[]>> {
+}): Promise<QueryResult<LiteCategoryDbRow>> {
   return db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
 }
 
@@ -313,7 +353,7 @@ async function selectFormTableDbRow({
   bookingId,
 }: {
   bookingId: FormDbRow['bookingId']
-}): Promise<QueryArrayResult<FormDbRow[]>> {
+}): Promise<QueryResult<FormDbRowRaw>> {
   return db.query(`select * from form where booking_id = $1 order by sequence_no`, [bookingId])
 }
 
@@ -321,7 +361,7 @@ async function selectLiteCategoryTableDbRow({
   bookingId,
 }: {
   bookingId: LiteCategoryDbRow['booking_id']
-}): Promise<QueryArrayResult<LiteCategoryDbRow[]>> {
+}): Promise<QueryResult<LiteCategoryDbRow>> {
   return db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
 }
 
@@ -329,7 +369,7 @@ async function selectNextReviewChangeHistoryTableDbRow({
   offenderNo,
 }: {
   offenderNo: NextReviewChangeHistoryDbRow['offender_no']
-}): Promise<QueryArrayResult<NextReviewChangeHistoryDbRow[]>> {
+}): Promise<QueryResult<NextReviewChangeHistoryDbRow>> {
   return db.query(`select * from next_review_change_history where offender_no = $1`, [offenderNo])
 }
 
@@ -337,7 +377,7 @@ async function selectRiskChangeTableDbRow({
   offenderNo,
 }: {
   offenderNo: FormDbRow['offenderNo']
-}): Promise<QueryArrayResult<RiskChangeDbRow[]>> {
+}): Promise<QueryResult<RiskChangeDbRow>> {
   return db.query(`select * from risk_change where offender_no = $1`, [offenderNo])
 }
 
