@@ -7,6 +7,7 @@ import TasklistRecatPage from '../../pages/tasklistRecat/tasklistRecat'
 import CancelPage from '../../pages/cancel/cancel'
 import CancelConfirmedPage from '../../pages/cancel/cancelConfirmed'
 import { FormDbRowRaw } from '../../db/queries'
+import ErrorPage from '../../pages/error/error'
 
 const insertFormRow = (overrides: Partial<Parameters<typeof cy.task>[1]>) =>
   cy.task('insertFormTableDbRow', {
@@ -197,6 +198,30 @@ describe('Recat tasklist DB sequencing and cancellation behaviour', () => {
       expect(rows.map(r => r.cat_type)).to.deep.eq(['INITIAL', 'RECAT'])
       expect(rows.map(r => r.sequence_no)).to.deep.eq([1, 2])
       expect(rows.map(r => r.review_reason)).to.deep.eq(['DUE', 'DUE'])
+    })
+  })
+
+  it('shows error when an incomplete INITIAL record exists (SECURITY_BACK)', () => {
+    // Mirror: db.createDataWithStatusAndCatType(12, 'SECURITY_BACK', '{}', 'INITIAL')
+    insertFormRow({
+      userId: 'CATEGORISER_USER',
+      status: 'SECURITY_BACK',
+      catType: 'INITIAL',
+      formResponse: '{}',
+      approvalDate: null,
+      approvedBy: null,
+    })
+
+    cy.stubLogin({ user: RECATEGORISER_USER })
+    cy.signIn()
+
+    Page.verifyOnPage(RecategoriserHomePage)
+    cy.visit('/tasklistRecat/12')
+
+    const errorPage = new ErrorPage()
+    errorPage.checkErrorMessage({
+      heading: 'Error: The initial categorisation is still in progress',
+      body: '',
     })
   })
 })
