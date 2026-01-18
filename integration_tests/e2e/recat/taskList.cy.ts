@@ -8,7 +8,47 @@ import CancelPage from '../../pages/cancel/cancel'
 import CancelConfirmedPage from '../../pages/cancel/cancelConfirmed'
 import { FormDbRowRaw } from '../../db/queries'
 
-describe('Recat tasklist cancellation includes security flag handling', () => {
+const insertFormRow = (overrides: Partial<Parameters<typeof cy.task>[1]>) =>
+  cy.task('insertFormTableDbRow', {
+    id: -1,
+    bookingId: 12,
+    formResponse: '{}',
+    userId: 'RECATEGORISER_USER',
+    status: 'APPROVED',
+    catType: 'RECAT',
+    assignedUserId: null,
+    referredDate: null,
+    referredBy: null,
+    sequenceNumber: 1,
+    riskProfile: null,
+    prisonId: 'LEI',
+    offenderNo: 'dummy',
+    startDate: new Date(),
+    securityReviewedBy: null,
+    securityReviewedDate: null,
+    approvalDate: new Date(),
+    approvedBy: 'SUPERVISOR_USER',
+    assessmentDate: null,
+    assessedBy: null,
+    reviewReason: 'DUE',
+    dueByDate: null,
+    cancelledDate: null,
+    cancelledBy: null,
+    nomisSequenceNumber: null,
+    ...overrides,
+  })
+
+const defaultRatingsC = {
+  offendingHistory: { previousConvictions: 'Yes', previousConvictionsText: 'some convictions' },
+  securityInput: { securityInputNeeded: 'No' },
+  furtherCharges: { furtherCharges: 'No' },
+  violenceRating: { highRiskOfViolence: 'No', seriousThreat: 'No' },
+  escapeRating: { escapeOtherEvidence: 'No' },
+  extremismRating: { previousTerrorismOffences: 'No' },
+  nextReviewDate: { date: '14/12/2019' },
+}
+
+describe('Recat tasklist DB sequencing and cancellation behaviour', () => {
   beforeEach(() => {
     const today = new Date()
 
@@ -37,10 +77,7 @@ describe('Recat tasklist cancellation includes security flag handling', () => {
       basicInfo: false,
     })
 
-    cy.task('stubGetOcgmAlert', {
-      offenderNo: 'B2345YZ',
-      transferToSecurity: false,
-    })
+    cy.task('stubGetOcgmAlert', { offenderNo: 'B2345YZ', transferToSecurity: false })
     cy.task('stubGetExtremismProfile', { offenderNo: 'B2345YZ', band: 4 })
   })
 
@@ -92,33 +129,7 @@ describe('Recat tasklist cancellation includes security flag handling', () => {
 
   it('creates seq 2 STARTED RECAT when seq 1 APPROVED RECAT exists', () => {
     // Mirror deprecated db.createDataWithStatusAndCatType(12, 'APPROVED', '{}', 'RECAT')
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      formResponse: '{}',
-      userId: 'RECATEGORISER_USER',
-      status: 'APPROVED',
-      catType: 'RECAT',
-      assignedUserId: null,
-      referredDate: null,
-      referredBy: null,
-      sequenceNumber: 1,
-      riskProfile: null,
-      prisonId: 'LEI',
-      offenderNo: 'dummy',
-      startDate: new Date(),
-      securityReviewedBy: null,
-      securityReviewedDate: null,
-      approvalDate: new Date(),
-      approvedBy: 'SUPERVISOR_USER',
-      assessmentDate: null,
-      assessedBy: null,
-      reviewReason: 'DUE',
-      dueByDate: null,
-      cancelledDate: null,
-      cancelledBy: null,
-      nomisSequenceNumber: null,
-    })
+    insertFormRow({})
 
     cy.stubLogin({ user: RECATEGORISER_USER })
     cy.signIn()
@@ -136,35 +147,12 @@ describe('Recat tasklist cancellation includes security flag handling', () => {
   })
 
   it('continues current RECAT when seq 1 STARTED RECAT exists (does not create seq 2)', () => {
-    // Mirror: db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT')
-    cy.task('insertFormTableDbRow', {
-      id: -1,
-      bookingId: 12,
-      formResponse: '{}',
-      userId: 'RECATEGORISER_USER',
+    // Mirror db.createDataWithStatusAndCatType(12, 'STARTED', '{}', 'RECAT')
+    insertFormRow({
       status: 'STARTED',
-      catType: 'RECAT',
-      assignedUserId: null,
-      referredDate: null,
-      referredBy: null,
-      sequenceNumber: 1,
-      riskProfile: null,
-      prisonId: 'LEI',
-      offenderNo: 'dummy',
-      startDate: new Date(),
-      securityReviewedBy: null,
-      securityReviewedDate: null,
       approvalDate: null,
       approvedBy: null,
-      assessmentDate: null,
-      assessedBy: null,
-      reviewReason: 'DUE',
-      dueByDate: null,
-      cancelledDate: null,
-      cancelledBy: null,
-      nomisSequenceNumber: null,
     })
-
     cy.task('stubGetUserDetails', {
       user: CATEGORISER_USER,
       caseloadId: 'LEI',
@@ -184,6 +172,31 @@ describe('Recat tasklist cancellation includes security flag handling', () => {
       expect(rows.map(r => r.status)).to.deep.eq(['STARTED'])
       expect(rows.map(r => r.cat_type)).to.deep.eq(['RECAT'])
       expect(rows.map(r => r.sequence_no)).to.deep.eq([1])
+    })
+  })
+
+  it('creates seq 2 STARTED RECAT when seq 1 APPROVED INITIAL exists', () => {
+    // Mirror db.createDataWithStatusAndCatType(12, 'APPROVED', JsonOutput.toJson([ratings: TestFixture.defaultRatingsC]), 'INITIAL')
+    insertFormRow({
+      userId: 'CATEGORISER_USER',
+      catType: 'INITIAL',
+      formResponse: JSON.stringify({ ratings: defaultRatingsC }),
+    })
+
+    cy.stubLogin({ user: RECATEGORISER_USER })
+    cy.signIn()
+
+    const recatHome = Page.verifyOnPage(RecategoriserHomePage)
+    recatHome.selectPrisonerWithBookingId(12, 'Start', 'DUE')
+    Page.verifyOnPage(TasklistRecatPage)
+
+    cy.task('selectFormTableDbRow', { bookingId: 12 }).then((data: QueryResult<FormDbRowRaw>) => {
+      const rows = [...data.rows].sort((a, b) => a.sequence_no - b.sequence_no)
+
+      expect(rows.map(r => r.status)).to.deep.eq(['APPROVED', 'STARTED'])
+      expect(rows.map(r => r.cat_type)).to.deep.eq(['INITIAL', 'RECAT'])
+      expect(rows.map(r => r.sequence_no)).to.deep.eq([1, 2])
+      expect(rows.map(r => r.review_reason)).to.deep.eq(['DUE', 'DUE'])
     })
   })
 })
