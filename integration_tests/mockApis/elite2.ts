@@ -1,6 +1,6 @@
 import { Response, SuperAgentRequest } from 'superagent'
-import { getMatchingRequests, stubFor } from './wiremock'
 import moment from 'moment'
+import { getMatchingRequests, stubFor } from './wiremock'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
 import { AgencyLocation } from '../factory/agencyLocation'
@@ -573,7 +573,7 @@ const stubGetOffenderDetails = ({
           firstName: 'ANT',
           lastName: 'HILLMOB',
           dateOfBirth: youngOffender ? '2018-01-01' : '1970-02-17',
-          category: 'Cat ' + category,
+          category: `Cat ${category}`,
           categoryCode: category,
           assessments: nextReviewDate ? [{ assessmentCode: 'CATEGORY', nextReviewDate }] : null,
           assignedLivingUnit: { description: 'C-04-02', agencyName: 'Coventry' },
@@ -904,7 +904,7 @@ const stubGetOffenderDetailsWomenYOI = ({
           firstName: 'TINY',
           lastName: 'TIM',
           dateOfBirth: youngOffender ? moment().subtract(16, 'years').format('YYYY-MM-DD') : '1970-02-17',
-          category: 'Cat ' + category,
+          category: `Cat ${category}`,
           categoryCode: category,
           assessments: nextReviewDate ? [{ assessmentCode: 'CATEGORY', nextReviewDate: nextReviewDate }] : null,
           assignedLivingUnit: { description: 'C-04-02', agencyName: 'Coventry' },

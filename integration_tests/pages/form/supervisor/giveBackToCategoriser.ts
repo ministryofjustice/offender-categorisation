@@ -1,4 +1,4 @@
-import Page, { PageElement } from "../../page";
+import Page, { PageElement } from '../../page'
 
 const giveBackToCategoriserRadioChoiceHtmlSelectors = {
   YES: '#giveBackToCategoriser',

@@ -10,8 +10,10 @@ export default class SupervisorHomePage extends BaseSupervisorPage {
   }
 
   startReviewForPrisoner = (bookingId: number) =>
-    cy.get(`a[href="/form/supervisor/review/${bookingId}"`).should('contain.text', 'Start').click()
+    cy.get(`a[href="/form/supervisor/review/${bookingId}"]`).should('contain.text', 'Start').click()
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   validateToDoTableData = (expectedValues: ToDoTableData) =>
     cy.checkTableRowData<ToDoTableData>({
       tableRowsSelector: 'table#offenderTable > tbody > tr',

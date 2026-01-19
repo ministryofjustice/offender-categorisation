@@ -48,8 +48,8 @@ declare namespace Cypress {
      */
     assertDBWithRetries(
       task: string,
-      arg: any,
-      assertionFn: (result: any) => boolean,
+      arg,
+      assertionFn: (result) => boolean,
       retries?: number,
       delay?: number,
     ): Chainable<boolean>

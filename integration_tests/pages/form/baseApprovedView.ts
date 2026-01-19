@@ -1,4 +1,4 @@
-import Page, { DtDlQuestionExpectedAnswerPair, PageElement } from "../page";
+import Page, { DtDlQuestionExpectedAnswerPair, PageElement } from '../page'
 
 export default abstract class BaseApprovedViewPage extends Page {
   validateCategorisationWarnings(warnings: string[]) {
@@ -40,15 +40,11 @@ export default abstract class BaseApprovedViewPage extends Page {
   }
 
   validateOtherInformationSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('otherInformationSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('otherInformationSummary', [...expected])
   }
 
   validateCategoryDecisionSummary = (expected: DtDlQuestionExpectedAnswerPair[]) => {
-    this.validateDescriptionList('assessmentSummary', [
-      ...expected,
-    ])
+    this.validateDescriptionList('assessmentSummary', [...expected])
   }
 
   submitButton = (): PageElement => cy.get('button[type="submit"]').contains('Submit')

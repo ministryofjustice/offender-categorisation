@@ -11,8 +11,4 @@ export default abstract class BaseCategoriserPage extends Page {
   filterContainer = (): PageElement => cy.get('#filterContainer')
   applyFiltersButton = (): PageElement => cy.get('#applyFilters')
   overdueCheckbox = (): PageElement => cy.get(`[data-qa=${OVERDUE}_checkbox]`)
-
-  multipleRoleDiv = (): PageElement => cy.get('#multiple-role')
-  roleSwitchSelect = (): PageElement => cy.get('#roleSwitch')
-  switchRole = (role: string): PageElement => this.roleSwitchSelect().select(role)
 }
