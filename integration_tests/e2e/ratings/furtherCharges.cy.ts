@@ -164,6 +164,7 @@ describe('Further Charges', () => {
 
           furtherChargesPage.saveAndReturnButton().click()
 
+          cy.contains('Automatically referred to Security').should('be.visible')
           taskListPage.furtherChargesLink().click()
 
           furtherChargesPage.validateFurtherChargesRadioButton({
@@ -202,7 +203,7 @@ describe('Further Charges', () => {
           furtherChargesPage.setFurtherChargesCategoryBAppropriateText('There are further charges')
 
           furtherChargesPage.saveAndReturnButton().click()
-
+          cy.contains('Automatically referred to Security').should('be.visible')
           taskListPage.furtherChargesLink().click()
 
           furtherChargesPage.validateFurtherChargesRadioButton({
