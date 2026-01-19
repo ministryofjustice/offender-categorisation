@@ -132,6 +132,7 @@ describe('Extremism', () => {
         extremismPage.selectPreviousTerrorismOffencesRadioButton('YES')
         extremismPage.setPreviousTerrorismOffencesText('Some risk text')
         extremismPage.saveAndReturnButton().click()
+        cy.contains('Automatically referred to Security').should('be.visible')
 
         taskListPage.extremismLink().click()
 
