@@ -1,6 +1,5 @@
 node_modules
 public
-integration-tests/build
 *.html
 assets/js/preventDoubleSubmit/index.js
 assets/js/html5shiv-3.7.3.min.js

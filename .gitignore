@@ -17,10 +17,7 @@ test-results.xml
 build-info.json
 yarn-error.log
 .eslintcache
-.gradle
 .localstack
-integration-tests/build
-integration-tests/out
 integration_tests/screenshots/*
 .env
 volume/cache

@@ -33,7 +33,6 @@ You will need the following tools installed:
 |      node      | &ge;18.17.x |                         NodeJS interpreter                         |
 |     docker     |  &ge;18.x   |          Installing/removing/managing containers & images          |
 | docker-compose | &ge;1.25.x  |      Convenience utility for grouped management of containers      |
-|      jdk       |    17.x     |       For running the integration tests using groovy 2.5.18        |
 
 ## Getting started
 
@@ -181,54 +180,7 @@ To run the jest unit tests:
 npm run test
 ```
 
-### Integration Tests (Groovy)
-
-To run the integration tests you need to install _chromedriver_ :
-
-`brew install --cask chromedriver`
-(If there are permission problems, you can show in finder then 'open' it and allow it to run.)
-
-Or for non-macs, download from <https://chromedriver.chromium.org/downloads> and put _chromedriver.exe_ on your path.
-
-The integration tests uses wiremock stubs to log into the application so the default configuration listed above should be used
-
-The easiest way to run the integration tests on your local machine is to:
-
-- Start the docker containers by running `docker-compose-test.yml`
-
-- Run the application `npm run start` using the default environment variables
-
-- Run `./gradlew chromeTest` to run with a visible browser or `./gradlew chromeHeadlessTest` to run without a visible browser
-
-The tests can be run in debug mode for troubleshooting.
-
-More detailed instructions can be found here: <https://dsdmoj.atlassian.net/wiki/spaces/DCAT/pages/3919872182/UI+Code+Local+Setup#Integration-Tests>
-
-#### Example Test `.env` File
-
-```
-DB_USER=form-builder
-DB_PASS=form-builder
-DB_SERVER=0.0.0.0
-DB_NAME=form-builder
-SQS_ENABLED=true
-NOMIS_AUTH_URL=http://localhost:9090/auth
-NOMIS_AUTH_EXTERNAL_URL=http://localhost:9090/auth
-EVENT_QUEUE_ACCESS_KEY_ID=dummy
-EVENT_QUEUE_SECRET_ACCESS_KEY=dummy
-EVENT_DL_QUEUE_ACCESS_KEY_ID=dummy
-EVENT_DL_QUEUE_SECRET_ACCESS_KEY=dummy
-RP_QUEUE_ACCESS_KEY_ID=dummy
-RP_QUEUE_SECRET_ACCESS_KEY=dummy
-RP_DL_QUEUE_ACCESS_KEY_ID=dummy
-RP_DL_QUEUE_SECRET_ACCESS_KEY=dummy
-RP_QUEUE_URL=http://0.0.0.0:4576/queue/risk_profiler_change
-RP_DL_QUEUE_URL=http://0.0.0.0:4576/queue/risk_profiler_change_dlq
-EVENT_QUEUE_URL=http://0.0.0.0:4576/queue/event
-EVENT_DL_QUEUE_URL=http://0.0.0.0:4576/queue/event_dlq
-```
-
-### Running integration tests (Cypress)
+### Running Cypress integration tests
 
 For local running, start a test db, redis, and wiremock instance by:
 
