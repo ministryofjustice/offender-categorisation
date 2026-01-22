@@ -1,6 +1,6 @@
+import moment from 'moment/moment'
 import CategoriserHomePage from '../../pages/categoriser/home'
 import TaskListPage from '../../pages/taskList/taskList'
-import moment from 'moment/moment'
 import { CATEGORISER_USER, UserAccount } from '../../factory/user'
 import Page from '../../pages/page'
 import ExtremismPage from '../../pages/form/ratings/extremism'
@@ -132,6 +132,7 @@ describe('Extremism', () => {
         extremismPage.selectPreviousTerrorismOffencesRadioButton('YES')
         extremismPage.setPreviousTerrorismOffencesText('Some risk text')
         extremismPage.saveAndReturnButton().click()
+        cy.contains('Automatically referred to Security').should('be.visible')
 
         taskListPage.extremismLink().click()
 

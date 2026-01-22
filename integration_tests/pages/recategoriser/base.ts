@@ -9,5 +9,6 @@ export default abstract class BaseRecategoriserPage extends Page {
   applyFiltersButton = (): PageElement => cy.get('#applyFilters')
   selectAllFiltersButton = (): PageElement => cy.get('#selectAllSuitabilityForOpenConditionsFilter')
   lowRiskOfEscapeFilterCheckbox = (): PageElement => cy.get(`[data-qa=${LOW_RISK_OF_ESCAPE}_checkbox]`)
-  doneTabLink = (): PageElement => cy.get('[id=done-tab]')
+  todoTabLink = (): PageElement => cy.get('[id=todo-tab]').contains('Category reviews')
+  doneTabLink = (): PageElement => cy.get('[id=done-tab]').contains('Finished reviews')
 }

@@ -1,7 +1,7 @@
+import moment from 'moment'
 import CategoriserHomePage from '../../pages/categoriser/home'
 import FurtherChargesPage, { FurtherChargesCategoryBAppropriateChoice } from '../../pages/form/ratings/furtherCharges'
 import TaskListPage from '../../pages/taskList/taskList'
-import moment from 'moment'
 import { CATEGORISER_USER } from '../../factory/user'
 import Page from '../../pages/page'
 import { FormDbJson } from '../../fixtures/db-key-convertor'
@@ -164,6 +164,7 @@ describe('Further Charges', () => {
 
           furtherChargesPage.saveAndReturnButton().click()
 
+          cy.contains('Automatically referred to Security').should('be.visible')
           taskListPage.furtherChargesLink().click()
 
           furtherChargesPage.validateFurtherChargesRadioButton({
@@ -202,7 +203,7 @@ describe('Further Charges', () => {
           furtherChargesPage.setFurtherChargesCategoryBAppropriateText('There are further charges')
 
           furtherChargesPage.saveAndReturnButton().click()
-
+          cy.contains('Automatically referred to Security').should('be.visible')
           taskListPage.furtherChargesLink().click()
 
           furtherChargesPage.validateFurtherChargesRadioButton({

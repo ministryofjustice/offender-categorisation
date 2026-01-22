@@ -1,7 +1,7 @@
+import moment from 'moment'
 import CategoriserHomePage from '../../pages/categoriser/home'
 import FurtherChargesPage from '../../pages/form/ratings/furtherCharges'
 import TaskListPage from '../../pages/taskList/taskList'
-import moment from 'moment'
 import { CATEGORISER_USER, FEMALE_USER } from '../../factory/user'
 import Page from '../../pages/page'
 import { CASELOAD } from '../../factory/caseload'
@@ -91,7 +91,7 @@ describe('Tasklist', () => {
     })
     cy.task('stubGetAssaultIncidents', {
       prisonerNumber: offenderNumber,
-      assaultIncidents: []
+      assaultIncidents: [],
     })
     cy.task('stubGetOcgmAlert', {
       offenderNo: offenderNumber,
@@ -144,10 +144,8 @@ describe('Tasklist', () => {
 
     cy.task('stubSentenceData', {
       offenderNumbers: [offenderNumber],
-      bookingIds: [ bookingId],
-      startDates: [
-        moment().subtract(1, 'days').format('yyyy-MM-dd'),
-      ],
+      bookingIds: [bookingId],
+      startDates: [moment().subtract(1, 'days').format('yyyy-MM-dd')],
     })
     taskListPage.checkAndSubmitCategorisationLink(bookingId).click()
 

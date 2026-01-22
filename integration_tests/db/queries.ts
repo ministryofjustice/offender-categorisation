@@ -1,6 +1,6 @@
 import { mergeRight } from 'ramda'
+import { QueryResult } from 'pg'
 import db from '../../server/data/dataAccess/db'
-import { QueryArrayResult } from 'pg'
 
 export type CatType = 'INITIAL' | 'RECAT'
 export type ReviewReason = 'DUE' | 'AGE' | 'MANUAL' | 'RISK_CHANGE'
@@ -9,6 +9,46 @@ type MandatoryRowData = Pick<
   FormDbRow,
   'id' | 'bookingId' | 'sequenceNumber' | 'prisonId' | 'offenderNo' | 'startDate' | 'catType' | 'reviewReason'
 >
+
+export interface FormDbRowRaw {
+  id: number
+
+  form_response: unknown | null // jsonb
+  booking_id: number
+
+  user_id: string | null
+  status: string | null
+  assigned_user_id: string | null
+
+  referred_date: string | Date | null
+  referred_by: string | null
+
+  sequence_no: number
+  risk_profile: unknown | null // jsonb
+
+  prison_id: string
+  offender_no: string
+
+  start_date: string | Date
+
+  security_reviewed_by: string | null
+  security_reviewed_date: string | Date | null
+
+  approval_date: string | Date | null
+  cat_type: CatType
+
+  nomis_sequence_no: number | null
+
+  assessment_date: string | Date | null
+  approved_by: string | null
+  assessed_by: string | null
+
+  review_reason: ReviewReason | null
+  due_by_date: string | Date | null
+
+  cancelled_date: string | Date | null
+  cancelled_by: string | null
+}
 
 export interface FormDbRow {
   id: number
@@ -139,10 +179,12 @@ async function insertFormTableDbRow(rowData: MandatoryRowData & Partial<FormDbRo
     cancelledBy,
   } = mergeRight(defaultRowData, rowData)
 
+  // eslint-disable-next-line no-nested-ternary
   const approvalDateDB = approvalDate !== null ? approvalDate : status === 'APPROVED' ? new Date(Date.now()) : null
+  // eslint-disable-next-line no-nested-ternary
   const approvedByDB = approvedBy !== null ? approvedBy : status === 'APPROVED' ? 'SUPERVISOR_USER' : null
 
-  return await db.query(
+  return db.query(
     `INSERT INTO form ( id
                       , form_response
                       , booking_id
@@ -219,7 +261,7 @@ async function insertLiteCategoryTableDbRow({
   approved_placement_comment,
   approved_comment,
 }: LiteCategoryDbRow) {
-  return await db.query(
+  return db.query(
     `insert into lite_category (  booking_id,
                                       sequence,
                                       category,
@@ -272,7 +314,7 @@ async function insertSecurityReferralTableDbRow({
   id: FormDbRow['id']
   status: FormDbRow['status']
 }) {
-  return await db.query(
+  return db.query(
     `insert into security_referral (id, offender_no, user_id, prison_id, status, raised_date) values ($1, $2, $3, $4, $5, $6)`,
     [id, offenderNumber, 'SECURITY_USER', prisonId, status, new Date()],
   )
@@ -282,14 +324,20 @@ async function insertRiskChangeTableDbRow({
   offenderNumber,
   prisonId,
   status,
+  oldRiskProfileJson = '{}',
+  newRiskProfileJson = '{}',
+  raisedDate = new Date(),
 }: {
   offenderNumber: string
-  prisonId: string,
+  prisonId: string
   status: string
+  oldRiskProfileJson: string
+  newRiskProfileJson: string
+  raisedDate: Date
 }) {
-  return await db.query(
+  return db.query(
     `insert into risk_change (old_profile, new_profile, offender_no, user_id, prison_id, status, raised_date) values ($1, $2, $3, $4, $5, $6, $7)`,
-    ['{}', '{}', offenderNumber, 'SECURITY_USER', prisonId, status, new Date()],
+    [oldRiskProfileJson, newRiskProfileJson, offenderNumber, 'SECURITY_USER', prisonId, status, raisedDate],
   )
 }
 
@@ -297,40 +345,40 @@ async function getLiteData({
   bookingId,
 }: {
   bookingId: LiteCategoryDbRow['booking_id']
-}): Promise<QueryArrayResult<LiteCategoryDbRow[]>> {
-  return await db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
+}): Promise<QueryResult<LiteCategoryDbRow>> {
+  return db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
 }
 
 async function selectFormTableDbRow({
   bookingId,
 }: {
   bookingId: FormDbRow['bookingId']
-}): Promise<QueryArrayResult<FormDbRow[]>> {
-  return await db.query(`select * from form where booking_id = $1 order by sequence_no`, [bookingId])
+}): Promise<QueryResult<FormDbRowRaw>> {
+  return db.query(`select * from form where booking_id = $1 order by sequence_no`, [bookingId])
 }
 
 async function selectLiteCategoryTableDbRow({
   bookingId,
 }: {
   bookingId: LiteCategoryDbRow['booking_id']
-}): Promise<QueryArrayResult<LiteCategoryDbRow[]>> {
-  return await db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
+}): Promise<QueryResult<LiteCategoryDbRow>> {
+  return db.query(`select * from lite_category where booking_id = $1 order by sequence`, [bookingId])
 }
 
 async function selectNextReviewChangeHistoryTableDbRow({
   offenderNo,
 }: {
   offenderNo: NextReviewChangeHistoryDbRow['offender_no']
-}): Promise<QueryArrayResult<NextReviewChangeHistoryDbRow[]>> {
-  return await db.query(`select * from next_review_change_history where offender_no = $1`, [offenderNo])
+}): Promise<QueryResult<NextReviewChangeHistoryDbRow>> {
+  return db.query(`select * from next_review_change_history where offender_no = $1`, [offenderNo])
 }
 
 async function selectRiskChangeTableDbRow({
   offenderNo,
 }: {
   offenderNo: FormDbRow['offenderNo']
-}): Promise<QueryArrayResult<RiskChangeDbRow[]>> {
-  return await db.query(`select * from risk_change where offender_no = $1`, [offenderNo])
+}): Promise<QueryResult<RiskChangeDbRow>> {
+  return db.query(`select * from risk_change where offender_no = $1`, [offenderNo])
 }
 
 async function updateRiskProfile({
@@ -340,7 +388,7 @@ async function updateRiskProfile({
   riskProfile: FormDbRow['riskProfile']
   bookingId: FormDbRow['bookingId']
 }) {
-  return await db.query(`update form set risk_profile = $1::JSON where booking_id = $2`, [riskProfile, bookingId])
+  return db.query(`update form set risk_profile = $1::JSON where booking_id = $2`, [riskProfile, bookingId])
 }
 
 const updateFormRecord = async ({
@@ -353,7 +401,7 @@ const updateFormRecord = async ({
   formResponse: any
 }) => {
   const existingFormResponse = await db.query(`select form_response from form where booking_id = $1`, [bookingId])
-  return await db.query(`update form set status = $1, form_response = $2 where booking_id = $3`, [
+  return db.query(`update form set status = $1, form_response = $2 where booking_id = $3`, [
     status,
     mergeRight(existingFormResponse.rows[0]?.form_response, formResponse),
     bookingId,
@@ -364,7 +412,27 @@ const deleteRowsFromForm = () => db.query({ text: 'truncate form cascade' })
 const deleteRowsFromSecurityReferral = () => db.query({ text: 'truncate security_referral cascade' })
 
 const getSecurityReferral = async ({ offenderNumber }: { offenderNumber: string }) => {
-  return await db.query(`select * from security_referral where offender_no = $1`, [offenderNumber])
+  return db.query(`select * from security_referral where offender_no = $1`, [offenderNumber])
+}
+
+const updateNomisSequenceNumber = async ({
+  bookingId,
+  sequenceNumber,
+  nomisSequenceNumber,
+}: {
+  bookingId: number
+  sequenceNumber: number
+  nomisSequenceNumber: number
+}) => {
+  return db.query(
+    `
+      update form
+      set nomis_sequence_no = $1
+      where booking_id = $2
+      and sequence_no = $3
+    `,
+    [nomisSequenceNumber, bookingId, sequenceNumber],
+  )
 }
 
 export default {
@@ -382,4 +450,5 @@ export default {
   deleteRowsFromForm,
   deleteRowsFromSecurityReferral,
   getSecurityReferral,
+  updateNomisSequenceNumber,
 }

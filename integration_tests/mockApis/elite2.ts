@@ -1,10 +1,10 @@
 import { Response, SuperAgentRequest } from 'superagent'
-import { getMatchingRequests, stubFor } from './wiremock'
 import moment from 'moment'
+import { getMatchingRequests, stubFor } from './wiremock'
 import { UserAccount } from '../factory/user'
 import { CASELOAD } from '../factory/caseload'
 import { AgencyLocation } from '../factory/agencyLocation'
-import { NomisIncidentDto } from "../../server/data/nomis/incidents/nomisIncident.dto";
+import { NomisIncidentDto } from '../../server/data/nomis/incidents/nomisIncident.dto'
 
 const stubAgencyDetails = ({ agency }: { agency: string }): SuperAgentRequest =>
   stubFor({
@@ -573,7 +573,7 @@ const stubGetOffenderDetails = ({
           firstName: 'ANT',
           lastName: 'HILLMOB',
           dateOfBirth: youngOffender ? '2018-01-01' : '1970-02-17',
-          category: 'Cat ' + category,
+          category: `Cat ${category}`,
           categoryCode: category,
           assessments: nextReviewDate ? [{ assessmentCode: 'CATEGORY', nextReviewDate }] : null,
           assignedLivingUnit: { description: 'C-04-02', agencyName: 'Coventry' },
@@ -904,7 +904,7 @@ const stubGetOffenderDetailsWomenYOI = ({
           firstName: 'TINY',
           lastName: 'TIM',
           dateOfBirth: youngOffender ? moment().subtract(16, 'years').format('YYYY-MM-DD') : '1970-02-17',
-          category: 'Cat ' + category,
+          category: `Cat ${category}`,
           categoryCode: category,
           assessments: nextReviewDate ? [{ assessmentCode: 'CATEGORY', nextReviewDate: nextReviewDate }] : null,
           assignedLivingUnit: { description: 'C-04-02', agencyName: 'Coventry' },
@@ -1197,6 +1197,36 @@ const stubUncategorised = (): SuperAgentRequest =>
           firstName: 'ANT',
           lastName: 'HILLMOB',
           status: 'AWAITING_APPROVAL',
+          assessmentSeq: 4,
+        },
+      ],
+    },
+  })
+
+const stubUncategorisedAfterCancellation = (): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: `/elite2/api/offender-assessments/category/LEI?type=UNCATEGORISED`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345XY',
+          firstName: 'PENELOPE',
+          lastName: 'PITSTOP',
+          status: 'UNCATEGORISED',
+          assessmentSeq: 5,
+        },
+        {
+          bookingId: 11,
+          offenderNo: 'B2345YZ',
+          firstName: 'ANT',
+          lastName: 'HILLMOB',
+          status: 'UNCATEGORISED',
           assessmentSeq: 4,
         },
       ],
@@ -1544,6 +1574,13 @@ const stubRecategorise = (
         nextReviewDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
         assessmentStatus: 'A',
       },
+      {
+        bookingId: 11,
+        offenderNo: 'B2345XY',
+        classificationCode: 'C',
+        nextReviewDate: moment().subtract(2, 'days').format('yyyy-MM-DD'),
+        assessmentStatus: 'A',
+      },
     ]
   }
   const latestOnlyStub = () =>
@@ -1583,7 +1620,13 @@ const getOffenderStub = ({ offenderNumber }: { offenderNumber: string }) =>
     },
   })
 
-const stubGetAssaultIncidents = ({ prisonerNumber, assaultIncidents }: { prisonerNumber: string, assaultIncidents: NomisIncidentDto[] }) =>
+const stubGetAssaultIncidents = ({
+  prisonerNumber,
+  assaultIncidents,
+}: {
+  prisonerNumber: string
+  assaultIncidents: NomisIncidentDto[]
+}) =>
   stubFor({
     request: {
       method: 'GET',
@@ -1593,6 +1636,69 @@ const stubGetAssaultIncidents = ({ prisonerNumber, assaultIncidents }: { prisone
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: assaultIncidents,
+    },
+  })
+
+const stubGetCategoryHistory = () =>
+  stubFor({
+    request: {
+      method: 'GET',
+      url: '/elite2/api/offender-assessments/CATEGORY?offenderNo=B2345YZ&latestOnly=false&activeOnly=false',
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      jsonBody: [
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 5,
+          classificationCode: 'U',
+          approvalDate: '2019-06-18',
+          assessmentStatus: 'A',
+          assessmentAgencyId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 4,
+          classificationCode: 'P',
+          approvalDate: '2018-06-08',
+          assessmentStatus: 'A',
+          assessmentAgencyId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 3,
+          classificationCode: 'B',
+          approvalDate: '2013-03-24',
+          assessmentStatus: 'A',
+          assessmentAgencyId: 'LPI',
+        },
+        {
+          bookingId: 12,
+          offenderNo: 'B2345YZ',
+          assessmentSeq: 2,
+          classificationCode: 'A',
+          approvalDate: '2012-06-08',
+          assessmentStatus: 'A',
+          assessmentAgencyId: 'LPI',
+        },
+      ],
+    },
+  })
+
+const stubSetInactive = ({ bookingId, status }: { bookingId: number; status: string }): SuperAgentRequest =>
+  stubFor({
+    request: {
+      method: 'PUT',
+      url: `/elite2/api/offender-assessments/category/${bookingId}/inactive?status=${status}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {},
     },
   })
 
@@ -1621,6 +1727,7 @@ export default {
   stubSupervisorApproveNoPendingAssessmentError,
   stubSupervisorReject,
   stubUncategorised,
+  stubUncategorisedAfterCancellation,
   stubUncategorisedFull,
   stubUncategorisedAwaitingApproval,
   stubUncategorisedAwaitingApprovalForWomenYOI,
@@ -1633,4 +1740,6 @@ export default {
   stubRecategorise,
   getOffenderStub,
   stubGetAssaultIncidents,
+  stubGetCategoryHistory,
+  stubSetInactive,
 }

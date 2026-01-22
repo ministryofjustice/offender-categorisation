@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { CATEGORISATION_TYPE } from '../../support/categorisationType'
 import { AGENCY_LOCATION } from '../../factory/agencyLocation'
 import STATUS from '../../../server/utils/statusEnum'
@@ -7,7 +8,6 @@ import RecatApprovedViewPage from '../../pages/form/recatApprovedView'
 import SupervisorHomePage from '../../pages/supervisor/home'
 import SupervisorDonePage from '../../pages/supervisor/done'
 import RecategoriserHomePage from '../../pages/recategoriser/home'
-import moment from 'moment'
 
 describe('Approved View', () => {
   let sentenceStartDates: Record<'B2345XY' | 'B2345YZ', Date>
